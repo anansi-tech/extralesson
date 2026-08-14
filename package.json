@@ -13,7 +13,7 @@
     "generate": "tsx scripts/generate.ts"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^2",
+    "@ai-sdk/openai": "^2.0.118",
     "ai": "^5",
     "katex": "^0.16.22",
     "mongoose": "^8",

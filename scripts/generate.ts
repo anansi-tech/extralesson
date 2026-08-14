@@ -10,14 +10,12 @@
 // pass rejects bad drafts. Never use it to fill the bank.
 import 'dotenv/config';
 import { z } from 'zod';
-import { createAnthropic } from '@ai-sdk/anthropic';
 import { generateObject } from 'ai';
+import { model, MODEL_ID } from '@/lib/ai';
 import { dbConnect, Question, Topic } from '@/lib/db';
 import { QuestionDraftZ } from '@/lib/validation/question';
 import { answersEquivalent } from '@/lib/grade/equivalence';
 import { buildDraftPrompt, buildSolvePrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
-
-const MODEL_ID = 'claude-opus-5';
 
 const ArgsZ = z.object({
   topic: z.string().regex(/^M[123]-[A-Z0-9]+$/),
@@ -90,10 +88,7 @@ const StructuredSolveZ = z.object({ final_answer: z.string() });
 
 async function main() {
   const args = parseArgs();
-  const apiKey = process.env.AI_API_KEY;
-  if (!apiKey) throw new Error('AI_API_KEY is not set');
-  const anthropic = createAnthropic({ apiKey });
-  const model = anthropic(MODEL_ID);
+  if (!process.env.AI_API_KEY) throw new Error('AI_API_KEY is not set');
 
   await dbConnect();
   const topic = await Topic.findOne({ code: args.topic }).lean<{
@@ -126,17 +121,12 @@ async function main() {
   while (inserted < shortfall && attempts < maxAttempts) {
     attempts++;
     try {
-      let prompt = buildDraftPrompt({
+      const prompt = buildDraftPrompt({
         topicTitle: topic.title,
         objectives: topic.objectives,
         kind: args.kind,
         difficulty: args.difficulty,
       });
-      if (args.poison) {
-        prompt += `\n\nTEST OVERRIDE: deliberately make the ${
-          args.kind === 'mcq' ? 'answer_key point to a WRONG option' : 'final_answer mathematically WRONG'
-        } while keeping everything else plausible. This is a pipeline test.`;
-      }
 
       // 1. Draft
       const { object: raw } = await generateObject({
@@ -160,6 +150,12 @@ async function main() {
         continue;
       }
       const draft = validated.data;
+      if (args.poison) {
+        // Deterministically corrupt the draft's answer so the independent
+        // solve pass must disagree — proves the rejection gate fires (§9.3).
+        if (draft.kind === 'mcq') draft.answer_key = (draft.answer_key + 1) % 4;
+        else draft.final_answer = `${draft.final_answer} + 999`;
+      }
       if (!draft.objective_ids.every((id) => topicObjectiveIds.has(id))) {
         rejected++;
         console.log(`  ✗ attempt ${attempts}: objective_ids outside topic ${args.topic}`);

@@ -34,9 +34,10 @@ Requires Node 20+, pnpm, and a MongoDB instance (`MONGODB_URI`).
 pnpm generate -- --topic M1-ALG1 --difficulty 2 --count 10 --kind structured
 ```
 
-Drafts are Zod-validated, independently re-solved by a fresh model call, and only
-inserted (status `draft`, `verified: true`) when the independent solve agrees.
-Approve drafts in `/admin/review`.
+Generation uses OpenAI (`gpt-5.5`) via the Vercel AI SDK; set `AI_API_KEY` to an
+OpenAI key. Drafts are Zod-validated, independently re-solved by a fresh model
+call, and only inserted (status `draft`, `verified: true`) when the independent
+solve agrees. Approve drafts in `/admin/review`.
 
 ## Security notes
 
