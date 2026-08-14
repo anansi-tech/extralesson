@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-14T14:50:55Z",
+  "mode": "unlicensed-metadata-only",
+  "policy": {
+    "attempts_per_invocation": 1,
+    "accepted_status": "draft",
+    "rejected_question_content_retained": false,
+    "source_question_content_retained": false
+  },
+  "pilot": {
+    "since": "2026-08-14T14:31:27Z",
+    "module": 3,
+    "attempts": 9,
+    "accepted": 3,
+    "rejected": 6,
+    "structured": {
+      "attempts": 5,
+      "accepted": 0,
+      "rejected": 5
+    },
+    "mcq": {
+      "attempts": 4,
+      "accepted": 3,
+      "rejected": 1
+    }
+  },
+  "generation_usage": {
+    "input_tokens": 39716,
+    "cached_input_tokens": 0,
+    "output_tokens": 48213,
+    "reasoning_tokens": 33575
+  },
+  "attempts": [
+    {
+      "topic_code": "M3-STAT2",
+      "kind": "mcq",
+      "difficulty": 2,
+      "prompt_version": "v8",
+      "outcome": "accepted",
+      "reason": null,
+      "usage": { "input_tokens": 3443, "output_tokens": 1889, "reasoning_tokens": 1223 }
+    },
+    {
+      "topic_code": "M3-RFG2",
+      "kind": "structured",
+      "difficulty": 3,
+      "prompt_version": "v8",
+      "outcome": "rejected",
+      "reason": "independent-solve-disagreement",
+      "usage": { "input_tokens": 6274, "output_tokens": 10362, "reasoning_tokens": 8088 }
+    },
+    {
+      "topic_code": "M3-GEO2",
+      "kind": "structured",
+      "difficulty": 3,
+      "prompt_version": "v8",
+      "outcome": "rejected",
+      "reason": "diagram-label-schema-validation",
+      "usage": { "input_tokens": 2677, "output_tokens": 8276, "reasoning_tokens": 6214 }
+    },
+    {
+      "topic_code": "M3-VM2",
+      "kind": "structured",
+      "difficulty": 3,
+      "prompt_version": "v8",
+      "outcome": "rejected",
+      "reason": "archetype-mismatch",
+      "usage": { "input_tokens": 5180, "output_tokens": 4815, "reasoning_tokens": 2431 }
+    },
+    {
+      "topic_code": "M3-GEO2",
+      "kind": "structured",
+      "difficulty": 3,
+      "prompt_version": "v9",
+      "outcome": "rejected",
+      "reason": "independent-solve-incomplete-draft-answer",
+      "usage": { "input_tokens": 4713, "output_tokens": 9739, "reasoning_tokens": 7451 }
+    },
+    {
+      "topic_code": "M3-VM2",
+      "kind": "structured",
+      "difficulty": 3,
+      "prompt_version": "v9",
+      "outcome": "rejected",
+      "reason": "independent-solve-disagreement",
+      "usage": { "input_tokens": 4311, "output_tokens": 6866, "reasoning_tokens": 4489 }
+    },
+    {
+      "topic_code": "M3-RFG2",
+      "kind": "mcq",
+      "difficulty": 2,
+      "prompt_version": "v9",
+      "outcome": "rejected",
+      "reason": "blind-cognitive-control-mismatch",
+      "usage": { "input_tokens": 4323, "output_tokens": 1597, "reasoning_tokens": 826 }
+    },
+    {
+      "topic_code": "M3-GEO2",
+      "kind": "mcq",
+      "difficulty": 2,
+      "prompt_version": "v9",
+      "outcome": "accepted",
+      "reason": null,
+      "usage": { "input_tokens": 3795, "output_tokens": 2290, "reasoning_tokens": 1414 }
+    },
+    {
+      "topic_code": "M3-VM2",
+      "kind": "mcq",
+      "difficulty": 2,
+      "prompt_version": "v9",
+      "outcome": "accepted",
+      "reason": null,
+      "usage": { "input_tokens": 5000, "output_tokens": 2379, "reasoning_tokens": 1439 }
+    }
+  ],
+  "blind_evaluation": {
+    "recorded_artifact": "design/research/question-bank-m3-pilot-evaluation-terra.json",
+    "recorded_usage": {
+      "input_tokens": 1790,
+      "cached_input_tokens": 1787,
+      "output_tokens": 695,
+      "reasoning_tokens": 421
+    },
+    "unrecorded_completed_calls": 1,
+    "unrecorded_call_reason": "comparison failed after evaluation because the local topic map used obsolete codes; provider usage was not emitted"
+  }
+}

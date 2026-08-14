@@ -1,9 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { blindReviewIssues, deterministicPresentationIssues } from '@/lib/generation/question-quality';
+import {
+  blindReviewIssues,
+  deterministicPresentationIssues,
+  reviewRouteForModule,
+} from '@/lib/generation/question-quality';
 import { buildDefaultQuestionRecipe } from '@/lib/generation/question-recipe';
 import { QuestionVisualZ } from '@/lib/validation/question-visual';
 
 describe('deterministic presentation quality', () => {
+  it('routes M3 directly to Terra while retaining Luna-first review for M1-M2', () => {
+    expect(reviewRouteForModule(1)).toEqual({ primary: 'luna', comparator: 'terra' });
+    expect(reviewRouteForModule(2)).toEqual({ primary: 'luna', comparator: 'terra' });
+    expect(reviewRouteForModule(3)).toEqual({ primary: 'terra', comparator: null });
+  });
+
   it('rejects a diagram confined to a tiny part of the fixed canvas', () => {
     const visual = QuestionVisualZ.parse({
       format: 'diagram', visual_type: 'geometry-figure',

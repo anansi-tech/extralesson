@@ -25,6 +25,15 @@ export const BlindReviewIssueZ = [
 
 export type BlindReviewIssue = typeof BlindReviewIssueZ[number];
 
+export function reviewRouteForModule(module: 1 | 2 | 3): {
+  primary: 'luna' | 'terra';
+  comparator: 'terra' | null;
+} {
+  return module === 3
+    ? { primary: 'terra', comparator: null }
+    : { primary: 'luna', comparator: 'terra' };
+}
+
 // Diagram coordinates are rendered directly on a fixed 0–100 canvas. Reject
 // layouts that use only a tiny corner; mathematical correctness alone does
 // not make such a figure usable for students.

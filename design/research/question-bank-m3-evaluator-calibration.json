@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-14T14:49:42.971Z",
+  "mode": "unlicensed-metadata-only",
+  "primary_model": "gpt-5.6-luna",
+  "comparator_model": "gpt-5.6-terra",
+  "question_count": 3,
+  "agreement": {
+    "difficulty_bps": 6667,
+    "archetype_bps": 6667,
+    "profile_bps": 6667,
+    "readiness_bps": 10000,
+    "concerns_bps": 10000,
+    "core_classification_bps": 0
+  },
+  "same_pilot_gate": true,
+  "same_gate_failures": false,
+  "routing": {
+    "decision": "comparator-required",
+    "primary_first_pass_approved": false,
+    "comparator_escalation_conditions": [
+      "primary-readiness-not-pass",
+      "primary-concern-present",
+      "primary-intended-difficulty-mismatch",
+      "primary-intended-archetype-mismatch",
+      "primary-intended-profile-mismatch"
+    ],
+    "frontier_adjudication_needed": false,
+    "frontier_adjudication_conditions": [
+      "primary-comparator-readiness-disagreement",
+      "primary-comparator-concern-disagreement"
+    ]
+  },
+  "items": [
+    {
+      "question_id": "6a7f26e4a58d51571cb64c04",
+      "topic_code": "M3-STAT2",
+      "primary": {
+        "difficulty": 2,
+        "archetype": "interpretation",
+        "profile": "AK",
+        "readiness": "pass",
+        "concerns": []
+      },
+      "comparator": {
+        "difficulty": 2,
+        "archetype": "multi-step-application",
+        "profile": "AK",
+        "readiness": "pass",
+        "concerns": []
+      },
+      "agreement": {
+        "difficulty": true,
+        "archetype": false,
+        "profile": true,
+        "readiness": true,
+        "concerns": true,
+        "core_classification": false
+      }
+    },
+    {
+      "question_id": "6a7f2a106ccf18205f721f71",
+      "topic_code": "M3-GEO2",
+      "primary": {
+        "difficulty": 2,
+        "archetype": "interpretation",
+        "profile": "AK",
+        "readiness": "pass",
+        "concerns": []
+      },
+      "comparator": {
+        "difficulty": 2,
+        "archetype": "interpretation",
+        "profile": "R",
+        "readiness": "pass",
+        "concerns": []
+      },
+      "agreement": {
+        "difficulty": true,
+        "archetype": true,
+        "profile": false,
+        "readiness": true,
+        "concerns": true,
+        "core_classification": false
+      }
+    },
+    {
+      "question_id": "6a7f2a3d476eecc6f3d0faf9",
+      "topic_code": "M3-VM2",
+      "primary": {
+        "difficulty": 1,
+        "archetype": "direct-procedure",
+        "profile": "AK",
+        "readiness": "pass",
+        "concerns": []
+      },
+      "comparator": {
+        "difficulty": 2,
+        "archetype": "direct-procedure",
+        "profile": "AK",
+        "readiness": "pass",
+        "concerns": []
+      },
+      "agreement": {
+        "difficulty": false,
+        "archetype": true,
+        "profile": true,
+        "readiness": true,
+        "concerns": true,
+        "core_classification": false
+      }
+    }
+  ]
+}

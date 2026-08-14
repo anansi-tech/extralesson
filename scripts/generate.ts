@@ -36,8 +36,11 @@ import {
 } from '@/lib/generation/question-recipe';
 import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-targets';
 import { repairQuestionOutput } from '@/lib/generation/question-output';
-import { deterministicPresentationIssues } from '@/lib/generation/question-quality';
-import { blindReviewIssues } from '@/lib/generation/question-quality';
+import {
+  blindReviewIssues,
+  deterministicPresentationIssues,
+  reviewRouteForModule,
+} from '@/lib/generation/question-quality';
 import { BlindPilotEvaluationZ } from '@/lib/generation/pilot-evaluation';
 import {
   buildBlindSingleReviewPrompt,
@@ -313,8 +316,10 @@ async function main() {
         continue;
       }
 
-      // 3. Blind cognitive/presentation review. Luna is the calibrated first
-      // pass; only a flag or hidden-control mismatch invokes Terra.
+      // 3. Blind cognitive/presentation review. M1-M2 use the calibrated
+      // Luna-first/Terra-escalation route. The M3 pilot found Terra required
+      // for higher-module cognitive classification, so M3 goes directly to
+      // Terra and a failed control is rejected without a weaker-model appeal.
       const reviewPrompt = buildBlindSingleReviewPrompt({
         question_id: 'candidate',
         kind: draft.kind,
@@ -323,8 +328,13 @@ async function main() {
         marks: draft.marks,
         visual: draft.visual,
       });
+      const reviewRoute = reviewRouteForModule(topic.module);
+      const primaryReviewModel = reviewRoute.primary === 'terra' ? escalationModel : reviewModel;
+      const primaryReviewModelId = reviewRoute.primary === 'terra'
+        ? ESCALATION_MODEL_ID
+        : REVIEW_MODEL_ID;
       const { object: primaryReview, usage: primaryReviewUsage } = await generateObject({
-        model: reviewModel,
+        model: primaryReviewModel,
         schema: BlindPilotEvaluationZ,
         prompt: reviewPrompt,
         providerOptions: { openai: { reasoningEffort: 'low' } },
@@ -335,6 +345,13 @@ async function main() {
       let comparatorReview: z.infer<typeof BlindPilotEvaluationZ> | null = null;
       let acceptedBy: 'primary' | 'comparator' = 'primary';
       if (primaryReviewIssues.length > 0) {
+        if (reviewRoute.comparator === null) {
+          rejected++;
+          console.log(
+            `  ✗ attempt ${attempts}: blind review rejected — ${primaryReviewModelId}=${primaryReviewIssues.join(',')}`,
+          );
+          continue;
+        }
         const { object, usage } = await generateObject({
           model: escalationModel,
           schema: BlindPilotEvaluationZ,
@@ -348,7 +365,7 @@ async function main() {
         if (comparatorIssues.length > 0) {
           rejected++;
           console.log(
-            `  ✗ attempt ${attempts}: blind review rejected — ${REVIEW_MODEL_ID}=${primaryReviewIssues.join(',')}; ${ESCALATION_MODEL_ID}=${comparatorIssues.join(',')}`,
+            `  ✗ attempt ${attempts}: blind review rejected — ${primaryReviewModelId}=${primaryReviewIssues.join(',')}; ${ESCALATION_MODEL_ID}=${comparatorIssues.join(',')}`,
           );
           continue;
         }
@@ -356,7 +373,7 @@ async function main() {
       }
       const reviewRecord = {
         prompt_version: QUESTION_REVIEW_PROMPT_VERSION,
-        primary_model: REVIEW_MODEL_ID,
+        primary_model: primaryReviewModelId,
         primary: primaryReview,
         comparator_model: comparatorReview ? ESCALATION_MODEL_ID : null,
         comparator: comparatorReview,

@@ -38,7 +38,11 @@ const ArgsZ = z.object({
   output: z.string().min(1).default(DEFAULT_OUTPUT),
   promptVersion: z.string().min(1).optional(),
   reuseEvaluationsFrom: z.string().min(1).optional(),
-}).strict();
+  reuseGenerationReviews: z.boolean(),
+}).strict().refine(
+  (args) => !(args.reuseEvaluationsFrom && args.reuseGenerationReviews),
+  { message: 'choose only one evaluation reuse source' },
+);
 
 const ReusableEvaluationArtifactZ = z.object({
   evaluator: z.object({ model: z.string().min(1) }).passthrough(),
@@ -58,6 +62,7 @@ function parseArgs() {
     since: get('since'), limit: get('limit'), output: get('output'),
     promptVersion: get('prompt-version'),
     reuseEvaluationsFrom: get('reuse-evaluations-from'),
+    reuseGenerationReviews: argv.includes('--reuse-generation-reviews'),
   });
 }
 
@@ -69,7 +74,14 @@ const StoredQuestionZ = z.object({
   options: z.array(z.string()).optional().default([]),
   marks: z.number().int().positive(),
   visual: QuestionVisualZ.nullable().optional().default(null),
-  gen_meta: z.object({ recipe: QuestionRecipeZ, prompt_version: z.string().min(1) }),
+  gen_meta: z.object({
+    recipe: QuestionRecipeZ,
+    prompt_version: z.string().min(1),
+    review: z.object({
+      primary_model: z.string().min(1),
+      primary: BlindPilotEvaluationZ,
+    }).passthrough().nullable().optional(),
+  }),
 }).passthrough();
 
 function blindQuestions(questions: z.infer<typeof StoredQuestionZ>[]) {
@@ -98,6 +110,7 @@ async function main() {
   let object: z.infer<typeof BlindPilotBatchZ>;
   let usage = { inputTokens: 0, cachedInputTokens: 0, outputTokens: 0, reasoningTokens: 0 };
   let evaluatorModel: string;
+  let reusedSource: string | null = null;
   if (args.reuseEvaluationsFrom) {
     const stored = ReusableEvaluationArtifactZ.parse(
       JSON.parse(await readFile(args.reuseEvaluationsFrom, 'utf8')),
@@ -109,6 +122,20 @@ async function main() {
     }
     object = BlindPilotBatchZ.parse({ evaluations: reused });
     evaluatorModel = stored.evaluator.model;
+    reusedSource = args.reuseEvaluationsFrom;
+  } else if (args.reuseGenerationReviews) {
+    const models = new Set(questions.map((question) => question.gen_meta.review?.primary_model));
+    if (models.size !== 1 || models.has(undefined)) {
+      throw new Error('Selected questions do not share one stored primary review model');
+    }
+    object = BlindPilotBatchZ.parse({
+      evaluations: questions.map((question) => ({
+        ...question.gen_meta.review!.primary,
+        question_id: question._id,
+      })),
+    });
+    evaluatorModel = [...models][0]!;
+    reusedSource = 'gen_meta.review.primary';
   } else {
     const env = EnvZ.parse(process.env);
     const openai = createOpenAI({ apiKey: env.AI_API_KEY });
@@ -178,7 +205,7 @@ async function main() {
     },
     evaluator: {
       model: evaluatorModel,
-      reused_evaluations_from: args.reuseEvaluationsFrom ?? null,
+      reused_evaluations_from: reusedSource,
       blind_inputs_excluded: ['recipe', 'recorded-difficulty', 'recorded-profile', 'answer', 'solution', 'corpus-targets', 'generation-model'],
       usage: {
         input_tokens: usage.inputTokens ?? 0,
@@ -201,7 +228,7 @@ async function main() {
   const temporary = `${args.output}.tmp`;
   await writeFile(temporary, `${JSON.stringify(artifact, null, 2)}\n`, 'utf8');
   await rename(temporary, args.output);
-  console.log(`Evaluated ${rows.length} questions with ${evaluatorModel}${args.reuseEvaluationsFrom ? ' (stored judgments; zero new model calls)' : ''}.`);
+  console.log(`Evaluated ${rows.length} questions with ${evaluatorModel}${reusedSource ? ' (stored judgments; zero new model calls)' : ''}.`);
   console.log(`Readiness: pass=${artifact.summary.pass}, review=${artifact.summary.review}, reject=${artifact.summary.reject}.`);
   console.log(`Token usage: input=${artifact.evaluator.usage.input_tokens}, cached=${artifact.evaluator.usage.cached_input_tokens}, output=${artifact.evaluator.usage.output_tokens}, reasoning=${artifact.evaluator.usage.reasoning_tokens}.`);
   process.exit(0);
