@@ -20,7 +20,6 @@ import {
 import { QuestionRecipeZ } from '@/lib/generation/question-recipe';
 import { QuestionVisualZ } from '@/lib/validation/question-visual';
 import { buildBlindBatchReviewPrompt } from '@/lib/prompts/question-review';
-import { PROMPT_VERSION } from '@/lib/prompts/question-gen';
 
 const DEFAULT_OUTPUT = 'design/research/question-bank-pilot-evaluation.json';
 const DEFAULT_MODEL = 'gpt-5.6-luna';
@@ -34,7 +33,7 @@ const ArgsZ = z.object({
   since: z.string().datetime(),
   limit: z.coerce.number().int().min(1).max(12).default(6),
   output: z.string().min(1).default(DEFAULT_OUTPUT),
-  promptVersion: z.string().min(1).default(PROMPT_VERSION),
+  promptVersion: z.string().min(1).optional(),
 }).strict();
 
 function parseArgs() {
@@ -57,7 +56,7 @@ const StoredQuestionZ = z.object({
   options: z.array(z.string()).optional().default([]),
   marks: z.number().int().positive(),
   visual: QuestionVisualZ.nullable().optional().default(null),
-  gen_meta: z.object({ recipe: QuestionRecipeZ }),
+  gen_meta: z.object({ recipe: QuestionRecipeZ, prompt_version: z.string().min(1) }),
 }).passthrough();
 
 function blindQuestions(questions: z.infer<typeof StoredQuestionZ>[]) {
@@ -89,11 +88,12 @@ async function main() {
   const env = EnvZ.parse(process.env);
   const targets = QuestionBankTargetsArtifactZ.parse(targetsJson);
   await dbConnect();
-  const raw = await Question.find({
+  const query: Record<string, unknown> = {
     status: 'draft',
-    'gen_meta.prompt_version': args.promptVersion,
     'gen_meta.ts': { $gte: new Date(args.since) },
-  }).sort({ 'gen_meta.ts': 1 }).limit(args.limit).lean();
+  };
+  if (args.promptVersion) query['gen_meta.prompt_version'] = args.promptVersion;
+  const raw = await Question.find(query).sort({ 'gen_meta.ts': 1 }).limit(args.limit).lean();
   const questions = z.array(StoredQuestionZ).length(args.limit).parse(raw);
 
   const openai = createOpenAI({ apiKey: env.AI_API_KEY });
@@ -143,7 +143,14 @@ async function main() {
     generated_at: new Date().toISOString(),
     mode: 'unlicensed-metadata-only',
     source_classification_sha256: targets.source_classification_sha256,
-    pilot: { since: args.since, question_count: rows.length, status_at_evaluation: 'draft' },
+    pilot: {
+      since: args.since,
+      question_count: rows.length,
+      status_at_evaluation: 'draft',
+      generation_prompt_filter: args.promptVersion ?? null,
+      generation_prompt_versions: [...new Set(questions.map((question) => question.gen_meta.prompt_version))]
+        .sort(),
+    },
     evaluator: {
       model: env.PILOT_EVALUATOR_MODEL,
       blind_inputs_excluded: ['recipe', 'recorded-difficulty', 'recorded-profile', 'answer', 'solution', 'corpus-targets', 'generation-model'],

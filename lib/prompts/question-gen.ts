@@ -4,7 +4,7 @@ import type { QuestionVisual } from '@/lib/validation/question-visual';
 
 // Generation prompts (ROUND_1 §4). Bump PROMPT_VERSION on any wording change —
 // it is recorded in gen_meta.prompt_version on every inserted question.
-export const PROMPT_VERSION = 'v6';
+export const PROMPT_VERSION = 'v7';
 
 function demandRequirements(recipe: QuestionRecipe): string {
   if (recipe.difficulty === 1) {
