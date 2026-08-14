@@ -3,6 +3,7 @@ import targetsJson from '@/design/research/question-bank-targets.json';
 import {
   buildCorpusInformedQuestionRecipe,
   buildDefaultQuestionRecipe,
+  difficultyAllowsArchetype,
   pickLeastCoveredObjective,
   questionMatchesRecipe,
   QuestionRecipeZ,
@@ -170,5 +171,29 @@ describe('QuestionRecipeZ', () => {
       .not.toBeNull();
     expect(buildCorpusInformedQuestionRecipe({ ...common, presentation: 'text' }).visual_type)
       .toBeNull();
+  });
+
+  it('does not borrow an easier cognitive pattern when a difficulty is unobserved', () => {
+    const recipe = buildCorpusInformedQuestionRecipe({
+      targets: bankTargets,
+      topicCode: 'M3-VM2',
+      objectiveIds: ['M3.4.1'],
+      kind: 'mcq',
+      difficulty: 3,
+      ordinal: 0,
+      presentation: 'text',
+    });
+
+    expect(recipe.archetype).toBe('reverse-reasoning');
+    expect(recipe.command_verb).toBe('interpret');
+    expect(difficultyAllowsArchetype(recipe.difficulty, recipe.archetype)).toBe(true);
+  });
+
+  it('rejects weak archetypes in demanding recipes', () => {
+    const recipe = buildDefaultQuestionRecipe({
+      objectiveIds: ['M3.4.1'], kind: 'mcq', difficulty: 3,
+    });
+    expect(QuestionRecipeZ.safeParse({ ...recipe, archetype: 'concept-recognition' }).success)
+      .toBe(false);
   });
 });

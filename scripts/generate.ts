@@ -28,6 +28,7 @@ import {
 } from '@/lib/generation/question-recipe';
 import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-targets';
 import { repairQuestionOutput } from '@/lib/generation/question-output';
+import { deterministicPresentationIssues } from '@/lib/generation/question-quality';
 
 const bankTargets = QuestionBankTargetsArtifactZ.parse(targetsJson);
 
@@ -261,6 +262,12 @@ async function main() {
       if (!draft.objective_ids.every((id) => topicObjectiveIds.has(id))) {
         rejected++;
         console.log(`  ✗ attempt ${attempts}: objective_ids outside topic ${args.topic}`);
+        continue;
+      }
+      const presentationIssues = deterministicPresentationIssues(draft.visual);
+      if (presentationIssues.length > 0) {
+        rejected++;
+        console.log(`  ✗ attempt ${attempts}: deterministic presentation gate — ${presentationIssues.join(', ')}`);
         continue;
       }
 

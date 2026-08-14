@@ -4,7 +4,37 @@ import type { QuestionVisual } from '@/lib/validation/question-visual';
 
 // Generation prompts (ROUND_1 §4). Bump PROMPT_VERSION on any wording change —
 // it is recorded in gen_meta.prompt_version on every inserted question.
-export const PROMPT_VERSION = 'v5';
+export const PROMPT_VERSION = 'v6';
+
+function demandRequirements(recipe: QuestionRecipe): string {
+  if (recipe.difficulty === 1) {
+    return `DIFFICULTY-1 DEMAND (hard requirement):
+- Assess one familiar recognition, interpretation, or routine procedure.
+- The solution should need one principal mathematical move. Do not add artificial wording or irrelevant data.`;
+  }
+  if (recipe.difficulty === 2 && recipe.kind === 'mcq') {
+    return `DIFFICULTY-2 MCQ DEMAND (hard requirement):
+- The correct option must require at least TWO DEPENDENT mathematical moves, or interpretation followed by a calculation/classification that uses the interpreted result.
+- The answer must not be readable directly from the stem, visual, table, labels, or a single definition.
+- A visual must contribute information that the stem does not simply repeat.`;
+  }
+  if (recipe.difficulty === 2) {
+    return `DIFFICULTY-2 STRUCTURED DEMAND (hard requirement):
+- Require at least TWO DEPENDENT operations or decisions.
+- Include the requested parts, with a later part using an earlier result or integrating a real constraint such as packaging, scale, units, or interpretation.
+- Reasoning marks must reward an actual decision or translation, not routine arithmetic relabelled as reasoning.`;
+  }
+  if (recipe.kind === 'mcq') {
+    return `DIFFICULTY-3 MCQ DEMAND (hard requirement):
+- Require at least TWO syllabus concepts and THREE DEPENDENT reasoning moves.
+- Use reverse reasoning, comparison of conditions, or a non-obvious constraint; recognition or direct substitution is not sufficient.
+- Every option must require carrying the reasoning far enough to distinguish it. Difficulty must come from mathematics, not wording.`;
+  }
+  return `DIFFICULTY-3 STRUCTURED DEMAND (hard requirement):
+- Require synthesis of at least TWO syllabus concepts across THREE DEPENDENT stages.
+- Include a genuine justification, reverse-reasoning step, or decision under a non-obvious constraint.
+- Reasoning marks must reward conclusions supported by prior results. Difficulty must come from mathematics, not extra prose or arithmetic volume.`;
+}
 
 const MCQ_EXEMPLAR = `{
   "kind": "mcq",
@@ -74,12 +104,14 @@ QUESTION RECIPE (follow every field exactly):
 
 MARK PROFILES (official CXC): every mark is CK (Conceptual Knowledge — recalling/recognising concepts), AK (Algorithmic Knowledge — carrying out procedures), or R (Reasoning — translating, justifying, multi-step problem solving).
 
+${demandRequirements(recipe)}
+
 RULES:
 - The question must be ORIGINAL — written in exam style but never copied or near-copied from any CXC past paper.
 - Do not quote, reconstruct, paraphrase, or imitate a distinctive source question. The recipe contains abstract controls only.
 - Use Caribbean contexts naturally where a context is needed (EC dollars, island place names, cricket, market stalls) without being forced.
 - Math must be typeset KaTeX-safe: inline math in $...$, escape backslashes correctly in JSON.
-- Set visual to null when the recipe visual type is none. Otherwise return a structured visual object whose visual_type exactly matches the recipe. Include every coordinate, label, value, table cell, and relationship required to solve the question. The stem must explicitly refer to the visual. alt_text must describe the display without revealing the answer. Never return SVG, HTML, a URL, base64, or drawing instructions in prose; only use the typed visual fields allowed by the response schema.
+- Set visual to null when the recipe visual type is none. Otherwise return a structured visual object whose visual_type exactly matches the recipe. Include every coordinate, label, value, table cell, and relationship required to solve the question. The stem must explicitly refer to the visual. alt_text must describe the display without revealing the answer. For fixed-canvas diagram points, use the full 0–100 layout space: the largest horizontal or vertical span must be at least 35 units. Never return SVG, HTML, a URL, base64, or drawing instructions in prose; only use the typed visual fields allowed by the response schema.
 - DELIMITER CONVENTION (hard rule, every field — stem, options, rubric criteria, final_answer, worked_solution, misconception triggers and remediations): the $ sign is EXCLUSIVELY a math delimiter, always in balanced $...$ pairs. Currency is NEVER written with a bare $. Write currency as EC$ immediately followed by the amount (EC$12, EC$3.40) or spell out "dollars". Never put EC$ amounts inside $...$ math.
 - ${kind === 'mcq'
       ? 'Exactly 4 options. Distractors must each come from a plausible specific error. answer_key is the 0-based index of the correct option. marks = 1.'

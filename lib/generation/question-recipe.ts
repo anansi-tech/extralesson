@@ -106,12 +106,35 @@ export const QuestionRecipeZ = z
   .refine((recipe) => {
     const modulePrefix = recipe.objective_ids[0]?.slice(0, 2);
     return recipe.objective_ids.every((id) => id.startsWith(`${modulePrefix}.`));
-  }, { message: 'all recipe objectives must belong to one module', path: ['objective_ids'] });
+  }, { message: 'all recipe objectives must belong to one module', path: ['objective_ids'] })
+  .refine(
+    (recipe) => difficultyAllowsArchetype(recipe.difficulty, recipe.archetype),
+    { message: 'archetype is too weak for the requested difficulty', path: ['archetype'] },
+  );
 
 export type QuestionRecipe = z.infer<typeof QuestionRecipeZ>;
 
 export const RecipePresentationZ = z.enum(['auto', 'visual', 'text']);
 export type RecipePresentation = z.infer<typeof RecipePresentationZ>;
+
+const ArchetypesByDifficulty = {
+  1: new Set(['concept-recognition', 'direct-procedure', 'interpretation']),
+  2: new Set([
+    'direct-procedure',
+    'multi-step-application',
+    'interpretation',
+    'comparison',
+    'reverse-reasoning',
+  ]),
+  3: new Set(['multi-step-application', 'justification', 'reverse-reasoning']),
+} as const;
+
+export function difficultyAllowsArchetype(
+  difficulty: 1 | 2 | 3,
+  archetype: z.infer<typeof QuestionArchetypeZ>,
+): boolean {
+  return ArchetypesByDifficulty[difficulty].has(archetype as never);
+}
 
 export function pickLeastCoveredObjective<T extends { id: string }>(
   objectives: T[],
@@ -269,7 +292,8 @@ export function buildCorpusInformedQuestionRecipe(args: {
   if (!topic) return fallback;
   const style = topic.observed_style[args.kind];
   let pool = style.representative_patterns.filter((pattern) => pattern.difficulty === args.difficulty);
-  if (pool.length === 0) pool = style.representative_patterns;
+  const hasObservedDifficulty = pool.length > 0;
+  if (!hasObservedDifficulty) pool = style.representative_patterns;
 
   const wantsVisual = args.presentation === 'visual'
     ? true
@@ -283,6 +307,13 @@ export function buildCorpusInformedQuestionRecipe(args: {
   if (objectivePool.length > 0) pool = objectivePool;
   const pattern = weightedPattern(pool, args.ordinal);
   if (!pattern) return fallback;
+
+  // Presentation and context may safely borrow from a nearby observed
+  // pattern. Cognitive controls may not: carrying a difficulty-1 archetype
+  // into a difficulty-3 recipe creates a polished but fundamentally easier
+  // question. Fall back to the explicit difficulty recipe instead.
+  const usePatternDemand =
+    hasObservedDifficulty && difficultyAllowsArchetype(args.difficulty, pattern.archetype);
 
   const command = pattern.primary_command_verb === 'none'
     ? null
@@ -300,8 +331,10 @@ export function buildCorpusInformedQuestionRecipe(args: {
 
   return QuestionRecipeZ.parse({
     ...fallback,
-    archetype: pattern.archetype,
-    command_verb: command === null ? null : command.success ? command.data : fallback.command_verb,
+    archetype: usePatternDemand ? pattern.archetype : fallback.archetype,
+    command_verb: usePatternDemand
+      ? command === null ? null : command.success ? command.data : fallback.command_verb
+      : fallback.command_verb,
     context_category: context.success ? context.data : fallback.context_category,
     representation: representationForVisual(visualType),
     visual_type: visualType,
