@@ -120,3 +120,37 @@ export function compareBlindEvaluation(args: {
     exact_intended_control_match: Object.values(matches).every(Boolean),
   };
 }
+
+export function summarizePilotComparisons(rows: Array<{
+  blind_evaluation: BlindPilotEvaluation;
+  comparison: ReturnType<typeof compareBlindEvaluation>;
+}>) {
+  const controlDimensions = rows.flatMap((row) => Object.values(row.comparison.intended_control_matches));
+  const difficultyMatches = rows.filter((row) => row.comparison.intended_control_matches.difficulty).length;
+  const profileMatches = rows.filter((row) => row.comparison.intended_control_matches.profile).length;
+  const visualScores = rows
+    .map((row) => row.blind_evaluation.visual_legibility)
+    .filter((score): score is number => score !== null);
+  const gate_failures: string[] = [];
+  if (difficultyMatches < Math.ceil(rows.length * 5 / 6)) {
+    gate_failures.push('difficulty-alignment-below-threshold');
+  }
+  if (profileMatches < Math.ceil(rows.length * 5 / 6)) {
+    gate_failures.push('profile-alignment-below-threshold');
+  }
+  if (rows.some((row) => row.blind_evaluation.readiness === 'reject')) {
+    gate_failures.push('blind-review-rejection');
+  }
+  if (visualScores.some((score) => score < 3)) {
+    gate_failures.push('visual-legibility-below-threshold');
+  }
+  return {
+    intended_control_dimension_matches: controlDimensions.filter(Boolean).length,
+    intended_control_dimensions: controlDimensions.length,
+    difficulty_matches: difficultyMatches,
+    profile_matches: profileMatches,
+    minimum_visual_legibility: visualScores.length > 0 ? Math.min(...visualScores) : null,
+    pilot_gate: gate_failures.length === 0 ? 'pass' as const : 'fail' as const,
+    gate_failures,
+  };
+}

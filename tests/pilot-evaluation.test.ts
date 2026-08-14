@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import targetsJson from '@/design/research/question-bank-targets.json';
 import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-targets';
-import { compareBlindEvaluation } from '@/lib/generation/pilot-evaluation';
+import { compareBlindEvaluation, summarizePilotComparisons } from '@/lib/generation/pilot-evaluation';
 import { buildCorpusInformedQuestionRecipe } from '@/lib/generation/question-recipe';
 
 const targets = QuestionBankTargetsArtifactZ.parse(targetsJson);
@@ -43,5 +43,33 @@ describe('blind pilot comparison', () => {
     expect(comparison.source_question_count).toBeGreaterThan(0);
     expect(comparison.prevalence_bps.difficulty).toBeGreaterThan(0);
     expect(comparison.nearest_representative_pattern.similarity_bps).toBeGreaterThan(0);
+  });
+
+  it('fails a polished pilot when difficulty, profile, or visual alignment is weak', () => {
+    const recipe = buildCorpusInformedQuestionRecipe({
+      targets,
+      topicCode: 'M2-GEO1',
+      objectiveIds: ['M2.4.1'],
+      kind: 'mcq',
+      difficulty: 2,
+      ordinal: 0,
+      presentation: 'visual',
+    });
+    const blind_evaluation = {
+      question_id: 'pilot-2', difficulty: 1 as const, archetype: 'concept-recognition' as const,
+      profile: 'CK' as const, part_count: 1, context_category: 'none' as const,
+      visual_type: recipe.visual_type, exam_fidelity: 5, clarity: 5,
+      visual_legibility: 2, visual_necessity: 4, readiness: 'pass' as const,
+      concerns: ['visual-scale-risk' as const],
+    };
+    const comparison = compareBlindEvaluation({
+      targets, topicCode: 'M2-GEO1', kind: 'mcq', recipe, evaluation: blind_evaluation,
+    });
+    const summary = summarizePilotComparisons([{ blind_evaluation, comparison }]);
+
+    expect(summary.pilot_gate).toBe('fail');
+    expect(summary.gate_failures).toContain('difficulty-alignment-below-threshold');
+    expect(summary.gate_failures).toContain('profile-alignment-below-threshold');
+    expect(summary.gate_failures).toContain('visual-legibility-below-threshold');
   });
 });

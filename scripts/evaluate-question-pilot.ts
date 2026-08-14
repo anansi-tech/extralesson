@@ -15,6 +15,7 @@ import {
   BlindPilotBatchZ,
   compareBlindEvaluation,
   expectedProfile,
+  summarizePilotComparisons,
 } from '@/lib/generation/pilot-evaluation';
 import { QuestionRecipeZ } from '@/lib/generation/question-recipe';
 import { QuestionVisualZ } from '@/lib/validation/question-visual';
@@ -153,6 +154,7 @@ async function main() {
     };
   });
   const scores = rows.flatMap((row) => [row.blind_evaluation.exam_fidelity, row.blind_evaluation.clarity]);
+  const gateSummary = summarizePilotComparisons(rows);
   const artifact = {
     schema_version: 1,
     generated_at: new Date().toISOString(),
@@ -175,6 +177,7 @@ async function main() {
       reject: rows.filter((row) => row.blind_evaluation.readiness === 'reject').length,
       exact_intended_control_matches: rows.filter((row) => row.comparison.exact_intended_control_match).length,
       mean_fidelity_and_clarity_bps: Math.round(scores.reduce((sum, score) => sum + score, 0) * 10_000 / (scores.length * 5)),
+      ...gateSummary,
     },
     questions: rows,
   };
@@ -185,6 +188,7 @@ async function main() {
   console.log(`Evaluated ${rows.length} questions with ${env.PILOT_EVALUATOR_MODEL}.`);
   console.log(`Readiness: pass=${artifact.summary.pass}, review=${artifact.summary.review}, reject=${artifact.summary.reject}.`);
   console.log(`Token usage: input=${artifact.evaluator.usage.input_tokens}, cached=${artifact.evaluator.usage.cached_input_tokens}, output=${artifact.evaluator.usage.output_tokens}, reasoning=${artifact.evaluator.usage.reasoning_tokens}.`);
+  process.exit(0);
 }
 
 main().catch((error) => {
