@@ -84,6 +84,10 @@ export function parseNumeric(raw: string): number | null {
     return Number.isFinite(v) ? (percent ? v / 100 : v) : null;
   }
   if (s === '') return null;
+  // Number followed by a unit/noun ("72 cm", "5 pieces", "500 ml"): parse the
+  // numeric head. Letters must not touch the digits ("2x" stays algebraic).
+  const unitTail = s.match(/^(-?[\d.]+(?: \d+\/\d+)?|-?[\d.]+\/[\d.]+) [a-z][a-z .°]*$/);
+  if (unitTail) return parseNumeric(unitTail[1]);
   const n = Number(s);
   if (!Number.isFinite(n)) return null;
   return percent ? n / 100 : n;

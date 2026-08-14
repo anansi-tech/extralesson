@@ -26,6 +26,14 @@ describe('parseNumeric', () => {
     expect(parseNumeric('2x + 1')).toBeNull();
     expect(parseNumeric('')).toBeNull();
   });
+
+  it('parses a number followed by a unit or noun', () => {
+    expect(parseNumeric('72 cm')).toBe(72);
+    expect(parseNumeric('5 pieces')).toBe(5);
+    expect(parseNumeric('500 ml')).toBe(500);
+    expect(parseNumeric('1 1/2 hours')).toBe(1.5);
+    expect(parseNumeric('2x')).toBeNull(); // algebra, not a unit
+  });
 });
 
 describe('answersEquivalent', () => {
@@ -79,5 +87,15 @@ describe('answersEquivalent', () => {
     expect(answersEquivalent('\\sqrt{9}', '3')).toBe(true);
     expect(answersEquivalent('2x - 4', '2(x - 2)')).toBe(true);
     expect(answersEquivalent('2x - 4', '2x + 4')).toBe(false);
+  });
+});
+
+describe('answersEquivalent — unit-word tails (pilot regression)', () => {
+  it('treats "5 pieces" and "5" as equivalent per part', () => {
+    expect(answersEquivalent('5 pieces', '5')).toBe(true);
+    expect(answersEquivalent('72 cm', '72')).toBe(true);
+    expect(answersEquivalent('3 lengths', '3')).toBe(true);
+    expect(answersEquivalent('9 edges', '9')).toBe(true);
+    expect(answersEquivalent('5 pieces', '6')).toBe(false);
   });
 });
