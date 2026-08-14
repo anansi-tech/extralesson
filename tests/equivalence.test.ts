@@ -44,6 +44,7 @@ describe('answersEquivalent', () => {
     expect(answersEquivalent('x = 2', 'X = 2')).toBe(true);
     expect(answersEquivalent('$x=2$', 'x=2')).toBe(true);
     expect(answersEquivalent('x = 2', 'x = 3')).toBe(false);
+    expect(answersEquivalent('Print; do not print', 'Print; Not print')).toBe(true);
   });
 
   it('strips "x =" style prefixes and part labels', () => {

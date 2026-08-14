@@ -23,6 +23,7 @@ function preClean(raw: string): string {
     .replace(/[×·]/g, '*')
     .replace(/÷/g, '/')
     .replace(/°/g, '')
+    .replace(/\bdo not\b/g, 'not')
     .replace(/\s+/g, ' ')
     .trim();
 }
