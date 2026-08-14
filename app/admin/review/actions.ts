@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { dbConnect, Question } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth/session';
 import { QuestionDraftZ } from '@/lib/validation/question';
+import { approvalGate } from '@/lib/generation/approve-gate';
 
 const IdZ = z.string().regex(/^[a-f0-9]{24}$/);
 
@@ -23,7 +24,8 @@ export async function rejectQuestion(id: string): Promise<void> {
 }
 
 // Edit -> Approve: the reviewer edits the question JSON; it must pass the same
-// Zod boundary as generated drafts before it can be approved.
+// gates as generated drafts — Zod, then visual verify + an independent
+// re-solve (R1.5 §5) — before it can be approved.
 export async function editAndApproveQuestion(
   id: string,
   editedJson: string,
@@ -39,6 +41,10 @@ export async function editAndApproveQuestion(
   if (!validated.success) {
     const issue = validated.error.issues[0];
     return { error: `${issue?.path.join('.') || 'question'}: ${issue?.message}` };
+  }
+  const gate = await approvalGate(validated.data);
+  if (!gate.ok) {
+    return { error: gate.reason };
   }
   await dbConnect();
   await Question.updateOne(
