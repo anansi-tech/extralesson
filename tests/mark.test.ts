@@ -3,9 +3,9 @@ import { markMcq, markStructured } from '@/lib/grade/mark';
 import type { RubricItem } from '@/lib/types';
 
 const rubric: RubricItem[] = [
-  { code: 'CK1', profile: 'CK', criterion: 'concept', mark_value: 1 },
-  { code: 'AK1', profile: 'AK', criterion: 'procedure', mark_value: 2 },
-  { code: 'R1', profile: 'R', criterion: 'result', mark_value: 1 },
+  { code: 'CK1', profile: 'CK', criterion: 'concept', mark_value: 1, part_label: 'a' },
+  { code: 'AK1', profile: 'AK', criterion: 'procedure', mark_value: 2, part_label: 'a' },
+  { code: 'R1', profile: 'R', criterion: 'result', mark_value: 1, part_label: 'a' },
 ];
 
 describe('markMcq', () => {

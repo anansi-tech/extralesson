@@ -23,6 +23,46 @@ export interface RubricItem {
   profile: Profile;
   criterion: string;
   mark_value: number;
+  part_label: string; // which part this criterion belongs to ('a'..'f')
+}
+
+// R1.5 §2 — question structure
+export type Archetype =
+  | 'multi-step-application'
+  | 'direct-procedure'
+  | 'interpretation'
+  | 'justification'
+  | 'reverse-reasoning'
+  | 'comparison'
+  | 'complete-the-table';
+
+export type Representation = 'prose' | 'diagram' | 'graph' | 'table' | 'chart' | 'venn';
+
+// 15 SVG templates + dataTable (semantic HTML). Model emits {template, params},
+// never raw SVG (R1.5 §3).
+export type TemplateName =
+  | 'triangleLabeled'
+  | 'circleCenter'
+  | 'parallelTransversal'
+  | 'polygonMarkedAngle'
+  | 'coordinateGrid'
+  | 'travelGraph'
+  | 'barChart'
+  | 'pieChart'
+  | 'histogram'
+  | 'cumulativeFrequency'
+  | 'venn2'
+  | 'compositeShape'
+  | 'patternFigure'
+  | 'numberLine'
+  | 'bearingDiagram'
+  | 'dataTable';
+
+export interface QuestionPart {
+  label: string; // flat 'a'..'f' — no (i)/(ii) nesting
+  prompt: string;
+  marks: number;
+  answer: string; // values-only convention
 }
 
 export interface Misconception {

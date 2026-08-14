@@ -6,6 +6,25 @@ const RubricItemSchema = new Schema(
     profile: { type: String, enum: ['CK', 'AK', 'R'], required: true },
     criterion: { type: String, required: true },
     mark_value: { type: Number, required: true },
+    part_label: { type: String, default: 'a' }, // R1.5: which part this row marks
+  },
+  { _id: false },
+);
+
+const PartSchema = new Schema(
+  {
+    label: { type: String, required: true }, // 'a'..'f', flat
+    prompt: { type: String, required: true },
+    marks: { type: Number, required: true },
+    answer: { type: String, required: true }, // values-only convention
+  },
+  { _id: false },
+);
+
+const VisualSchema = new Schema(
+  {
+    template: { type: String, required: true }, // TemplateName; params validated in lib/visuals
+    params: { type: Schema.Types.Mixed, required: true },
   },
   { _id: false },
 );
@@ -25,7 +44,28 @@ const QuestionSchema = new Schema({
   objective_ids: { type: [String], required: true },
   module: { type: Number, enum: [1, 2, 3], required: true }, // denormalized; must agree with objective_ids
   kind: { type: String, enum: ['mcq', 'structured'], required: true },
+  stimulus: { type: String }, // shared context (KaTeX-safe), R1.5
   stem: { type: String, required: true }, // KaTeX-safe
+  visual: { type: VisualSchema, default: undefined }, // R1.5 §3
+  parts: { type: [PartSchema], default: [] }, // R1.5 §2; backfilled for old rows
+  archetype: {
+    type: String,
+    enum: [
+      'multi-step-application',
+      'direct-procedure',
+      'interpretation',
+      'justification',
+      'reverse-reasoning',
+      'comparison',
+      'complete-the-table',
+    ],
+    default: 'multi-step-application',
+  },
+  representation: {
+    type: String,
+    enum: ['prose', 'diagram', 'graph', 'table', 'chart', 'venn'],
+    default: 'prose',
+  },
   options: { type: [String] }, // mcq: exactly 4
   answer_key: { type: Number }, // mcq
   profile: { type: String, enum: ['CK', 'AK', 'R'] }, // mcq: single profile per item
