@@ -235,6 +235,8 @@ describe('QuestionRecipeZ', () => {
     expect(recipe.kind).toBe('structured');
     expect(recipe.marks).toBeGreaterThanOrEqual(12);
     expect(recipe.objective_ids.length).toBeGreaterThan(1);
+    expect(recipe.archetype).toBe('justification');
+    expect(recipe.command_verb).toBe('justify');
     if (recipe.kind === 'structured') {
       expect(recipe.profile_split.CK + recipe.profile_split.AK + recipe.profile_split.R)
         .toBe(recipe.marks);

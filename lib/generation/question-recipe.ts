@@ -401,6 +401,15 @@ export function buildCorpusInformedQuestionRecipe(args: {
   const command = pattern.primary_command_verb === 'none'
     ? null
     : CommandVerbZ.safeParse(pattern.primary_command_verb);
+  // A top-level Paper 2 record may contain several commands while the
+  // fingerprint retains only its first/primary verb. When the classified
+  // archetype is justification, a procedural first verb such as calculate
+  // or express conflicts with the observable contract used by generation
+  // and blind review. Preserve the archetype and require an explicit
+  // justification somewhere in the original practice question.
+  const calibratedCommand = usePatternDemand && pattern.archetype === 'justification'
+    ? 'justify' as const
+    : command === null ? null : command.success ? command.data : fallback.command_verb;
   const context = ContextCategoryZ.safeParse(pattern.context_category === 'finance'
     ? 'consumer'
     : pattern.context_category);
@@ -435,9 +444,7 @@ export function buildCorpusInformedQuestionRecipe(args: {
     ...structuredPatternControls,
     ...structuredProfile,
     archetype: usePatternDemand ? pattern.archetype : fallback.archetype,
-    command_verb: usePatternDemand
-      ? command === null ? null : command.success ? command.data : fallback.command_verb
-      : fallback.command_verb,
+    command_verb: usePatternDemand ? calibratedCommand : fallback.command_verb,
     context_category: context.success ? context.data : fallback.context_category,
     representation: representationForVisual(visualType),
     visual_type: visualType,
