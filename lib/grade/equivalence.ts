@@ -18,6 +18,7 @@ function preClean(raw: string): string {
     .replace(/\\left|\\right|\\,|\\;/g, '')
     .replace(/\$+/g, '') // KaTeX delimiters and bare dollar signs
     .replace(/\b(ec|us|tt|bds|gy|j)\s*(?=\d)/g, '') // currency prefixes left after $ strip
+    .replace(/\b(-?[\d,.]+)\s*(ec|us|tt|bds|gy|j)\s+dollars?\b/g, '$1')
     .replace(/[−–]/g, '-') // unicode minus / en-dash
     .replace(/[×·]/g, '*')
     .replace(/÷/g, '/')
@@ -133,6 +134,7 @@ function mathEquivalent(a: string, b: string): boolean | null {
 }
 
 function valueEquivalent(a: string, b: string): boolean {
+  if (a === b) return true;
   const na = parseNumeric(a);
   const nb = parseNumeric(b);
   if (na !== null && nb !== null) return closeEnough(na, nb);

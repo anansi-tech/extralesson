@@ -66,6 +66,12 @@ describe('answersEquivalent', () => {
       answersEquivalent('One crate of oranges costs = EC$70; limes = EC$58', '70; 58'),
     ).toBe(true);
     expect(answersEquivalent('EC$10; EC$16', 'EC$10; EC$17')).toBe(false);
+    expect(
+      answersEquivalent(
+        'population parameter; 185 EC dollars; sample statistic',
+        'Population parameter; EC$185; Sample statistic',
+      ),
+    ).toBe(true);
   });
 
   it('treats equivalent fractions/decimals and KaTeX forms as equal', () => {
