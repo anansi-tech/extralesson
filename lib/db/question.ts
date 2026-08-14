@@ -88,6 +88,8 @@ const QuestionSchema = new Schema({
     prompt_version: { type: String, required: true },
     verified: { type: Boolean, required: true },
     ts: { type: Date, required: true },
+    recipe: { type: Schema.Types.Mixed }, // R1.5: the 6-field recipe, shown to reviewers
+    dedup_score: { type: Number }, // R1.5: max cosine vs approved bank (score only)
   },
 });
 

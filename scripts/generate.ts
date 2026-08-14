@@ -1,28 +1,34 @@
-// Question generation pipeline (ROUND_1 §4).
-// Usage: pnpm generate -- --topic M1-ALG1 --difficulty 2 --count 10 --kind structured [--dry-run]
+// Recipe-driven question generation (R1.5 §5).
+// Default: `pnpm generate -- --count 10` — each question's recipe comes from
+// the largest target-matrix deficit. `--topic M1-ALG1` (and `--kind`,
+// `--difficulty`) narrow the deficit search as overrides.
 //
-// `--count` is the TARGET number of questions for (topic, kind, difficulty):
-// existing non-retired questions count toward it, so re-running is idempotent
-// and an interrupted run is resumable.
+// Post-gen gate order (§5): Zod → visual verify → independent solve →
+// internal dedup vs approved bank. Every rejection logs the full evidence.
 //
-// `--poison` is a verification hook (ROUND_1 §9.3): it instructs the draft
-// model to embed a wrong answer, demonstrating that the independent solve
-// pass rejects bad drafts. Never use it to fill the bank.
+// `--poison` (verification hook, §8.2): corrupts the validated draft's
+// answers so the independent solve pass must disagree. Never for bank fill.
 import 'dotenv/config';
 import { z } from 'zod';
 import { generateObject } from 'ai';
 import { model, MODEL_ID } from '@/lib/ai';
 import { dbConnect, Question, Topic } from '@/lib/db';
-import { QuestionDraftZ } from '@/lib/validation/question';
-import { answersEquivalent } from '@/lib/grade/equivalence';
+import { deriveFinalAnswer, QuestionDraftZ } from '@/lib/validation/question';
 import { normalizeEscapedNewlines } from '@/lib/text';
-import { buildDraftPrompt, buildSolvePrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
+import { buildDraftPrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
+import { getCoverage } from '@/lib/admin/coverage';
+import { nextRecipe, type ObjectiveCoverage, type QuestionRecipe, type RecipeContext } from '@/lib/generation/recipe';
+import { independentSolve } from '@/lib/generation/solve';
+import { checkDuplicate } from '@/lib/generation/dedup';
+import { verifyQuestionVisual } from '@/lib/visuals/verify';
+import { paramsDocFor } from '@/lib/visuals';
+import type { ModuleNumber } from '@/lib/types';
 
 const ArgsZ = z.object({
-  topic: z.string().regex(/^M[123]-[A-Z0-9]+$/),
-  difficulty: z.coerce.number().pipe(z.union([z.literal(1), z.literal(2), z.literal(3)])),
   count: z.coerce.number().int().min(1).max(50),
-  kind: z.enum(['mcq', 'structured']),
+  topic: z.string().regex(/^M[123]-[A-Z0-9]+$/).optional(),
+  kind: z.enum(['mcq', 'structured']).optional(),
+  difficulty: z.coerce.number().pipe(z.union([z.literal(1), z.literal(2), z.literal(3)])).optional(),
   dryRun: z.boolean(),
   poison: z.boolean(),
 });
@@ -34,206 +40,229 @@ function parseArgs() {
     return i >= 0 ? argv[i + 1] : undefined;
   };
   const parsed = ArgsZ.safeParse({
+    count: get('count') ?? '10',
     topic: get('topic'),
-    difficulty: get('difficulty'),
-    count: get('count'),
     kind: get('kind'),
+    difficulty: get('difficulty'),
     dryRun: argv.includes('--dry-run'),
     poison: argv.includes('--poison'),
   });
   if (!parsed.success) {
-    console.error('Usage: pnpm generate -- --topic M1-ALG1 --difficulty 2 --count 10 --kind structured [--dry-run]');
+    console.error('Usage: pnpm generate -- --count 10 [--topic M1-ALG1] [--kind structured] [--difficulty 2] [--dry-run]');
     console.error(parsed.error.flatten().fieldErrors);
     process.exit(1);
   }
   return parsed.data;
 }
 
-// Loose structural schemas for model output; strict domain validation
-// (rubric sums, profiles, module agreement) happens afterwards via Zod.
-const MisconceptionLooseZ = z.object({
-  trigger: z.string(),
-  name: z.string(),
-  remediation: z.string(),
-});
+// Loose structural schemas for model output; the strict Zod boundary runs
+// afterwards (gate 1) so failures are logged, not thrown.
+const MisconceptionLooseZ = z.object({ trigger: z.string(), name: z.string(), remediation: z.string() });
+const PartLooseZ = z.object({ label: z.string(), prompt: z.string(), marks: z.number(), answer: z.string() });
+const VisualLooseZ = z.object({ template: z.string(), params: z.record(z.unknown()) }).nullable();
 
 const McqLooseZ = z.object({
-  objective_ids: z.array(z.string()),
+  stimulus: z.string().nullable(),
   stem: z.string(),
   options: z.array(z.string()),
   answer_key: z.number(),
   profile: z.enum(['CK', 'AK', 'R']),
+  visual: VisualLooseZ,
+  parts: z.array(PartLooseZ),
   worked_solution: z.string(),
   misconceptions: z.array(MisconceptionLooseZ),
 });
 
 const StructuredLooseZ = z.object({
-  objective_ids: z.array(z.string()),
+  stimulus: z.string().nullable(),
   stem: z.string(),
-  marks: z.number(),
+  visual: VisualLooseZ,
+  parts: z.array(PartLooseZ),
   rubric: z.array(
     z.object({
       code: z.string(),
       profile: z.enum(['CK', 'AK', 'R']),
       criterion: z.string(),
       mark_value: z.number(),
+      part_label: z.string(),
     }),
   ),
-  final_answer: z.string(),
   worked_solution: z.string(),
   misconceptions: z.array(MisconceptionLooseZ),
 });
 
-const McqSolveZ = z.object({ answer_index: z.number(), final_answer: z.string() });
-const StructuredSolveZ = z.object({ final_answer: z.string() });
+async function buildRecipe(args: ReturnType<typeof parseArgs>): Promise<{
+  recipe: QuestionRecipe;
+  context: RecipeContext;
+  module: ModuleNumber;
+  topicTitle: string;
+  objectives: { id: string; text: string; notes?: string }[];
+}> {
+  const { matrix, objectiveApproved } = await getCoverage();
+  const topics = await Topic.find().lean<
+    { code: string; title: string; module: ModuleNumber; order: number; objectives: { id: string; text: string; notes?: string }[] }[]
+  >();
+
+  const objectivesByTopic = new Map<string, ObjectiveCoverage[]>(
+    topics.map((t) => [
+      t.code,
+      t.objectives.map((o) => ({ id: o.id, approved: objectiveApproved.get(o.id) ?? 0 })),
+    ]),
+  );
+
+  // Overrides narrow the deficit search (§5): restrict the matrix view.
+  const scopedMatrix = args.topic
+    ? { ...matrix, topics: matrix.topics.filter((t) => t.code === args.topic) }
+    : matrix;
+  const picked = nextRecipe(scopedMatrix, objectivesByTopic);
+  const recipe = {
+    ...picked.recipe,
+    ...(args.kind ? { kind: args.kind, marks: args.kind === 'mcq' ? 1 : picked.recipe.marks } : {}),
+    ...(args.difficulty ? { difficulty: args.difficulty } : {}),
+  };
+  const topicDoc = topics.find((t) => t.code === picked.context.topic_code)!;
+  const wanted = new Set(recipe.objective_ids);
+  return {
+    recipe,
+    context: picked.context,
+    module: topicDoc.module,
+    topicTitle: topicDoc.title,
+    objectives: topicDoc.objectives.filter((o) => wanted.has(o.id)),
+  };
+}
 
 async function main() {
   const args = parseArgs();
   if (!process.env.AI_API_KEY) throw new Error('AI_API_KEY is not set');
-
   await dbConnect();
-  const topic = await Topic.findOne({ code: args.topic }).lean<{
-    module: 1 | 2 | 3;
-    code: string;
-    title: string;
-    objectives: { id: string; text: string; notes?: string }[];
-  } | null>();
-  if (!topic) throw new Error(`Topic ${args.topic} not found — run pnpm seed:topics first`);
-  const topicObjectiveIds = new Set(topic.objectives.map((o) => o.id));
-
-  const existing = await Question.countDocuments({
-    kind: args.kind,
-    difficulty: args.difficulty,
-    status: { $ne: 'retired' },
-    objective_ids: { $in: [...topicObjectiveIds] },
-  });
-  const shortfall = args.count - existing;
-  console.log(`${args.topic} ${args.kind} d${args.difficulty}: ${existing} existing, target ${args.count}.`);
-  if (shortfall <= 0) {
-    console.log('Target already met — nothing to do.');
-    process.exit(0);
-  }
 
   let inserted = 0;
   let rejected = 0;
   let attempts = 0;
-  const maxAttempts = shortfall * 3; // give up rather than loop forever
+  const maxAttempts = args.count * 3;
 
-  while (inserted < shortfall && attempts < maxAttempts) {
+  while (inserted < args.count && attempts < maxAttempts) {
     attempts++;
     try {
-      const prompt = buildDraftPrompt({
-        topicTitle: topic.title,
-        objectives: topic.objectives,
-        kind: args.kind,
-        difficulty: args.difficulty,
-      });
+      const { recipe, context, module, topicTitle, objectives } = await buildRecipe(args);
+      const visualContract =
+        recipe.representation === 'prose' ? '' : paramsDocFor(context.template_hints);
+      console.log(
+        `→ attempt ${attempts}: recipe ${recipe.kind} ${context.topic_code} d${recipe.difficulty} ${recipe.marks}mk ${recipe.archetype}/${recipe.representation} [${recipe.objective_ids.join(', ')}]`,
+      );
 
-      // 1. Draft
+      // Draft
       const { object: raw } = await generateObject({
         model,
-        schema: args.kind === 'mcq' ? McqLooseZ : StructuredLooseZ,
-        prompt,
+        schema: recipe.kind === 'mcq' ? McqLooseZ : StructuredLooseZ,
+        prompt: buildDraftPrompt({ topicTitle, objectives, recipe, context, module, visualContract }),
       });
 
-      // 2. Strict Zod validation (rubric sums, profiles, module agreement)
+      // Normalize prose fields, assemble candidate
+      const clean = normalizeEscapedNewlines;
+      const parts = raw.parts.map((p) => ({ ...p, prompt: clean(p.prompt), answer: clean(p.answer) }));
       const candidate = {
         ...raw,
-        kind: args.kind,
-        module: topic.module,
-        difficulty: args.difficulty,
-        ...(args.kind === 'mcq' ? { marks: 1 } : {}),
+        kind: recipe.kind,
+        module,
+        objective_ids: recipe.objective_ids,
+        archetype: recipe.archetype,
+        representation: recipe.representation,
+        difficulty: recipe.difficulty,
+        marks: recipe.marks,
+        stimulus: raw.stimulus ? clean(raw.stimulus) : undefined,
+        stem: clean(raw.stem),
+        visual: raw.visual ?? undefined,
+        parts,
+        worked_solution: clean(raw.worked_solution),
+        misconceptions: raw.misconceptions.map((m) => ({ ...m, remediation: clean(m.remediation) })),
+        ...(recipe.kind === 'structured' ? { final_answer: deriveFinalAnswer(parts) } : {}),
       };
+
+      // Gate 1: Zod
       const validated = QuestionDraftZ.safeParse(candidate);
       if (!validated.success) {
         rejected++;
-        console.log(`  ✗ attempt ${attempts}: failed validation — ${validated.error.issues[0]?.message}`);
+        const issue = validated.error.issues[0];
+        console.log(`  ✗ Zod: ${issue?.path.join('.')}: ${issue?.message}`);
         continue;
       }
       const draft = validated.data;
-      // Some responses double-escape newlines (literal "\n" text); normalize
-      // every prose field before the solve pass and insert.
-      draft.stem = normalizeEscapedNewlines(draft.stem);
-      draft.worked_solution = normalizeEscapedNewlines(draft.worked_solution);
-      draft.misconceptions = draft.misconceptions.map((m) => ({
-        trigger: m.trigger,
-        name: m.name,
-        remediation: normalizeEscapedNewlines(m.remediation),
-      }));
-      if (draft.kind === 'structured') {
-        draft.rubric = draft.rubric.map((r) => ({
-          ...r,
-          criterion: normalizeEscapedNewlines(r.criterion),
-        }));
+
+      // Gate 2: visual verify (auto-reject before the solve pass, §3)
+      if (draft.visual) {
+        const vres = verifyQuestionVisual(draft.visual as never, {
+          stimulus: draft.stimulus,
+          stem: draft.stem,
+          partPrompts: draft.parts.map((p) => p.prompt),
+        });
+        if (!vres.ok) {
+          rejected++;
+          console.log(`  ✗ visual verify: ${vres.issues.join(' | ')}`);
+          continue;
+        }
       }
+
       if (args.poison) {
-        // Deterministically corrupt the draft's answer so the independent
-        // solve pass must disagree — proves the rejection gate fires (§9.3).
+        // Deterministic corruption so the solve pass provably disagrees.
         if (draft.kind === 'mcq') draft.answer_key = (draft.answer_key + 1) % 4;
-        else draft.final_answer = `${draft.final_answer} + 999`;
+        else {
+          draft.parts[draft.parts.length - 1].answer += ' + 999';
+          draft.final_answer = deriveFinalAnswer(draft.parts);
+        }
       }
-      if (!draft.objective_ids.every((id) => topicObjectiveIds.has(id))) {
+
+      // Gate 3: independent solve
+      const solve = await independentSolve(draft);
+      if (!solve.agrees) {
         rejected++;
-        console.log(`  ✗ attempt ${attempts}: objective_ids outside topic ${args.topic}`);
+        console.log('  ✗ independent solve DISAGREED — auto-rejected');
+        console.log(`      draft answer: ${JSON.stringify(solve.draftAnswer)}`);
+        console.log(`      solve answer: ${JSON.stringify(solve.solveAnswer)}`);
         continue;
       }
 
-      // 3. Independent solve pass — fresh call, stem only
-      let solved: boolean;
-      let draftAnswer: string;
-      let solveAnswer: string;
-      if (draft.kind === 'mcq') {
-        const { object: sol } = await generateObject({
-          model,
-          schema: McqSolveZ,
-          prompt: buildSolvePrompt({ stem: draft.stem, kind: 'mcq', options: draft.options }),
-        });
-        solved = sol.answer_index === draft.answer_key;
-        draftAnswer = `key=${draft.answer_key} (${draft.options[draft.answer_key]})`;
-        solveAnswer = `index=${sol.answer_index} (${draft.options[sol.answer_index] ?? '?'}) — "${sol.final_answer}"`;
-      } else {
-        const { object: sol } = await generateObject({
-          model,
-          schema: StructuredSolveZ,
-          prompt: buildSolvePrompt({ stem: draft.stem, kind: 'structured' }),
-        });
-        solved = answersEquivalent(sol.final_answer, draft.final_answer);
-        draftAnswer = draft.final_answer;
-        solveAnswer = sol.final_answer;
-      }
-      if (!solved) {
+      // Gate 4: internal dedup vs approved bank
+      const approvedStems = (
+        await Question.find({ status: 'approved' }).select('stem').lean<{ stem: string }[]>()
+      ).map((q) => q.stem);
+      const dedup = await checkDuplicate(draft.stem, approvedStems);
+      if (dedup.duplicate) {
         rejected++;
-        // Always log the full pair verbatim so rejection quality stays
-        // inspectable at a glance.
-        console.log(`  ✗ attempt ${attempts}: independent solve DISAGREED — auto-rejected`);
-        console.log(`      draft answer: ${JSON.stringify(draftAnswer)}`);
-        console.log(`      solve answer: ${JSON.stringify(solveAnswer)}`);
+        console.log(`  ✗ dedup: ${dedup.reason} (score ${dedup.score})`);
         continue;
       }
 
       if (args.dryRun) {
         inserted++;
-        console.log(`  ✓ attempt ${attempts}: verified (dry-run, not inserted): ${draft.stem.slice(0, 70)}…`);
+        console.log(`  ✓ verified (dry-run, not inserted): ${draft.stem.slice(0, 70)}…`);
         continue;
       }
 
       await Question.create({
         ...draft,
         status: 'draft',
-        gen_meta: { model: MODEL_ID, prompt_version: PROMPT_VERSION, verified: true, ts: new Date() },
+        gen_meta: {
+          model: MODEL_ID,
+          prompt_version: PROMPT_VERSION,
+          verified: true,
+          ts: new Date(),
+          recipe,
+          dedup_score: dedup.score,
+        },
       });
       inserted++;
-      console.log(`  ✓ attempt ${attempts}: inserted draft (${inserted}/${shortfall}): ${draft.stem.slice(0, 70)}…`);
+      console.log(`  ✓ inserted draft (${inserted}/${args.count}): ${draft.stem.slice(0, 70)}…`);
     } catch (err) {
       rejected++;
-      console.log(`  ✗ attempt ${attempts}: error — ${err instanceof Error ? err.message : err}`);
+      console.log(`  ✗ error — ${err instanceof Error ? err.message : err}`);
     }
   }
 
   console.log(
     `Done. ${inserted} ${args.dryRun ? 'verified (dry-run)' : 'inserted'}, ${rejected} rejected across ${attempts} attempts.`,
   );
-  process.exit(inserted >= shortfall ? 0 : 2);
+  process.exit(inserted >= args.count ? 0 : 2);
 }
 
 main().catch((err) => {
