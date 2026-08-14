@@ -11,7 +11,7 @@
 // pass rejects bad drafts. Never use it to fill the bank.
 import 'dotenv/config';
 import { z } from 'zod';
-import { generateObject } from 'ai';
+import { generateObject, NoObjectGeneratedError } from 'ai';
 import targetsJson from '@/design/research/question-bank-targets.json';
 import { model, MODEL_ID } from '@/lib/ai';
 import { dbConnect, Question, Topic } from '@/lib/db';
@@ -299,7 +299,28 @@ async function main() {
       console.log(`  ✓ attempt ${attempts}: inserted draft (${inserted}/${shortfall}): ${draft.stem.slice(0, 70)}…`);
     } catch (err) {
       rejected++;
-      console.log(`  ✗ attempt ${attempts}: error — ${err instanceof Error ? err.message : err}`);
+      if (NoObjectGeneratedError.isInstance(err)) {
+        if (err.usage) addUsage(err.usage);
+        let diagnostics = '';
+        if (err.text) {
+          try {
+            const raw: unknown = JSON.parse(err.text);
+            const parsed = (args.kind === 'mcq' ? McqLooseZ : StructuredLooseZ).safeParse(raw);
+            if (!parsed.success) {
+              diagnostics = ` — ${parsed.error.issues.slice(0, 6)
+                .map((issue) => `${issue.path.join('.') || '<root>'}: ${issue.message}`)
+                .join('; ')}`;
+            }
+          } catch {
+            diagnostics = ' — response was not valid JSON';
+          }
+        }
+        console.log(
+          `  ✗ attempt ${attempts}: model output failed schema validation (finish=${err.finishReason ?? 'unknown'})${diagnostics}`,
+        );
+      } else {
+        console.log(`  ✗ attempt ${attempts}: error — ${err instanceof Error ? err.message : err}`);
+      }
     }
   }
 
