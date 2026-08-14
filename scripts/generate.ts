@@ -29,7 +29,8 @@ import { QuestionVisualZ } from '@/lib/validation/question-visual';
 import { buildDraftPrompt, buildSolvePrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
 import {
   buildCorpusInformedQuestionRecipe,
-  pickLeastCoveredObjective,
+  hasObservedDifficulty,
+  pickCorpusInformedObjective,
   questionMatchesRecipe,
   RecipePresentationZ,
 } from '@/lib/generation/question-recipe';
@@ -156,6 +157,16 @@ async function main() {
     objectives: { id: string; text: string; notes?: string }[];
   } | null>();
   if (!topic) throw new Error(`Topic ${args.topic} not found — run pnpm seed:topics first`);
+  if (!hasObservedDifficulty({
+    targets: bankTargets,
+    topicCode: topic.code,
+    kind: args.kind,
+    difficulty: args.difficulty,
+  })) {
+    throw new Error(
+      `${topic.code} ${args.kind} has no eligible difficulty-${args.difficulty} real-paper fingerprint; choose an observed combination`,
+    );
+  }
   const topicObjectiveIds = new Set(topic.objectives.map((o) => o.id));
 
   // Pick the least-covered objective so generation closes objective-level
@@ -205,8 +216,21 @@ async function main() {
   while (inserted < shortfall && attempts < maxAttempts) {
     attempts++;
     try {
-      const targetObjective = pickLeastCoveredObjective(topic.objectives, objectiveCounts);
-      if (!targetObjective) throw new Error(`Topic ${args.topic} has no objectives`);
+      const targetObjective = pickCorpusInformedObjective({
+        objectives: topic.objectives,
+        counts: objectiveCounts,
+        targets: bankTargets,
+        topicCode: topic.code,
+        kind: args.kind,
+        difficulty: args.difficulty,
+        ordinal: existing + inserted,
+        presentation: args.presentation,
+      });
+      if (!targetObjective) {
+        throw new Error(
+          `${args.topic} has no objective with an eligible ${args.kind} difficulty-${args.difficulty} ${args.presentation} fingerprint`,
+        );
+      }
       const recipe = buildCorpusInformedQuestionRecipe({
         targets: bankTargets,
         topicCode: topic.code,

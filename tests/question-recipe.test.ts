@@ -4,6 +4,8 @@ import {
   buildCorpusInformedQuestionRecipe,
   buildDefaultQuestionRecipe,
   difficultyAllowsArchetype,
+  hasObservedDifficulty,
+  pickCorpusInformedObjective,
   pickLeastCoveredObjective,
   questionMatchesRecipe,
   QuestionRecipeZ,
@@ -187,6 +189,30 @@ describe('QuestionRecipeZ', () => {
     expect(recipe.archetype).toBe('reverse-reasoning');
     expect(recipe.command_verb).toBe('interpret');
     expect(difficultyAllowsArchetype(recipe.difficulty, recipe.archetype)).toBe(true);
+  });
+
+  it('selects objectives from matching difficulty and presentation evidence', () => {
+    const objectives = Array.from({ length: 11 }, (_, index) => ({ id: `M2.1.${index + 1}` }));
+    const selected = pickCorpusInformedObjective({
+      objectives,
+      counts: new Map(objectives.map((objective) => [objective.id, 0])),
+      targets: bankTargets,
+      topicCode: 'M2-STAT1',
+      kind: 'mcq',
+      difficulty: 2,
+      ordinal: 1,
+      presentation: 'visual',
+    });
+    expect(selected?.id).toBe('M2.1.7');
+  });
+
+  it('detects unobserved topic, kind, and difficulty combinations', () => {
+    expect(hasObservedDifficulty({
+      targets: bankTargets, topicCode: 'M3-VM2', kind: 'mcq', difficulty: 3,
+    })).toBe(false);
+    expect(hasObservedDifficulty({
+      targets: bankTargets, topicCode: 'M3-VM2', kind: 'structured', difficulty: 3,
+    })).toBe(true);
   });
 
   it('rejects weak archetypes in demanding recipes', () => {

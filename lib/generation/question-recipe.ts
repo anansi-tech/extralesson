@@ -146,6 +146,63 @@ export function pickLeastCoveredObjective<T extends { id: string }>(
   )[0];
 }
 
+export function hasObservedDifficulty(args: {
+  targets: QuestionBankTargetsArtifact;
+  topicCode: string;
+  kind: 'mcq' | 'structured';
+  difficulty: 1 | 2 | 3;
+}): boolean {
+  const topic = args.targets.topics.find((candidate) => candidate.topic_code === args.topicCode);
+  return topic?.observed_style[args.kind].distributions.difficulty
+    .some((entry) => entry.value === String(args.difficulty)) ?? false;
+}
+
+export function pickCorpusInformedObjective<T extends { id: string }>(args: {
+  objectives: T[];
+  counts: ReadonlyMap<string, number>;
+  targets: QuestionBankTargetsArtifact;
+  topicCode: string;
+  kind: 'mcq' | 'structured';
+  difficulty: 1 | 2 | 3;
+  ordinal: number;
+  presentation?: RecipePresentation;
+}): T | undefined {
+  const topic = args.targets.topics.find((candidate) => candidate.topic_code === args.topicCode);
+  if (!topic) return pickLeastCoveredObjective(args.objectives, args.counts);
+  const style = topic.observed_style[args.kind];
+  let patterns = style.representative_patterns
+    .filter((pattern) => pattern.difficulty === args.difficulty);
+  if (patterns.length === 0) return undefined;
+  const wantsVisual = args.presentation === 'visual'
+    ? true
+    : args.presentation === 'text'
+      ? false
+      : visualDue(args.ordinal, style.visual_question_share_bps);
+  const presentationPatterns = patterns.filter((pattern) => isVisualPattern(pattern) === wantsVisual);
+  if (presentationPatterns.length > 0) patterns = presentationPatterns;
+
+  const objectiveById = new Map(args.objectives.map((objective) => [objective.id, objective]));
+  const weights = new Map<string, number>();
+  for (const pattern of patterns) {
+    for (const objectiveId of pattern.objective_ids) {
+      if (objectiveById.has(objectiveId)) {
+        weights.set(objectiveId, (weights.get(objectiveId) ?? 0) + pattern.count);
+      }
+    }
+  }
+  if (weights.size === 0) return undefined;
+  return [...weights.entries()]
+    .sort(([leftId, leftWeight], [rightId, rightWeight]) => {
+      // Highest remaining corpus demand first: a frequently observed objective
+      // can support proportionally more questions before a rarer one is due.
+      const leftScore = leftWeight / ((args.counts.get(leftId) ?? 0) + 1);
+      const rightScore = rightWeight / ((args.counts.get(rightId) ?? 0) + 1);
+      return rightScore - leftScore || leftId.localeCompare(rightId);
+    })
+    .map(([id]) => objectiveById.get(id))
+    .find((objective): objective is T => objective !== undefined);
+}
+
 export function questionMatchesRecipe(
   question: {
     kind: 'mcq' | 'structured';
@@ -292,8 +349,8 @@ export function buildCorpusInformedQuestionRecipe(args: {
   if (!topic) return fallback;
   const style = topic.observed_style[args.kind];
   let pool = style.representative_patterns.filter((pattern) => pattern.difficulty === args.difficulty);
-  const hasObservedDifficulty = pool.length > 0;
-  if (!hasObservedDifficulty) pool = style.representative_patterns;
+  const observedDifficulty = pool.length > 0;
+  if (!observedDifficulty) pool = style.representative_patterns;
 
   const wantsVisual = args.presentation === 'visual'
     ? true
@@ -313,7 +370,7 @@ export function buildCorpusInformedQuestionRecipe(args: {
   // into a difficulty-3 recipe creates a polished but fundamentally easier
   // question. Fall back to the explicit difficulty recipe instead.
   const usePatternDemand =
-    hasObservedDifficulty && difficultyAllowsArchetype(args.difficulty, pattern.archetype);
+    observedDifficulty && difficultyAllowsArchetype(args.difficulty, pattern.archetype);
 
   const command = pattern.primary_command_verb === 'none'
     ? null
