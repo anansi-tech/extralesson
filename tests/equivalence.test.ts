@@ -99,3 +99,39 @@ describe('answersEquivalent — unit-word tails (pilot regression)', () => {
     expect(answersEquivalent('5 pieces', '6')).toBe(false);
   });
 });
+
+describe('answersEquivalent — word answers (pilot regression)', () => {
+  it('matches word answers that differ only in case or a generic noun', () => {
+    expect(answersEquivalent('obtuse angle', 'Obtuse angle')).toBe(true);
+    expect(answersEquivalent('corresponding angles', 'Corresponding angles')).toBe(true);
+    expect(answersEquivalent('alternate interior angles', 'Alternate interior angles')).toBe(true);
+    expect(answersEquivalent('obtuse', 'obtuse angle')).toBe(true);
+    expect(answersEquivalent('105°, obtuse', '105°; obtuse angle')).toBe(true);
+  });
+
+  it('still rejects genuinely different classifications', () => {
+    expect(answersEquivalent('acute angle', 'Exterior angle')).toBe(false);
+    expect(answersEquivalent('corresponding angles', 'alternate angles')).toBe(false);
+    expect(answersEquivalent('obtuse angle', '68°')).toBe(false);
+  });
+
+  it('accepts reworded sentence-length justifications, not different claims', () => {
+    expect(
+      answersEquivalent(
+        'grouped data uses class midpoints, not actual values',
+        'class midpoints are used instead of the actual data values',
+      ),
+    ).toBe(true);
+    expect(
+      answersEquivalent(
+        'the sample was too small to be representative',
+        'the questionnaire used leading questions',
+      ),
+    ).toBe(false);
+  });
+
+  it('prose comparison never hijacks algebraic comparison', () => {
+    expect(answersEquivalent('2x - 4', '2(x - 2)')).toBe(true);
+    expect(answersEquivalent('2x - 4', '2x + 4')).toBe(false);
+  });
+});

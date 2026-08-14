@@ -136,13 +136,60 @@ function mathEquivalent(a: string, b: string): boolean | null {
   }
 }
 
+// Generic nouns that never distinguish two answers ("obtuse" vs "obtuse
+// angle" is one answer). Never strip an answer down to nothing.
+const GENERIC_WORDS = new Set([
+  'a', 'an', 'the', 'is', 'are', 'of',
+  'angle', 'angles', 'degree', 'degrees', 'unit', 'units',
+]);
+
+function contentTokens(s: string): string[] {
+  const all = s
+    .replace(/[^a-z0-9°/.\s-]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean);
+  const kept = all.filter((t) => !GENERIC_WORDS.has(t));
+  return kept.length > 0 ? kept : all;
+}
+
+// Word answers ("corresponding angles", "grouped data uses class midpoints").
+// Short classification answers must match on content words exactly, so
+// "acute" vs "exterior" still fails. Sentence-length answers — the
+// justification archetype — are reworded freely by an independent solver, so
+// they match on substantial content-word overlap instead.
+function wordsEquivalent(a: string, b: string): boolean {
+  const ta = contentTokens(a);
+  const tb = contentTokens(b);
+  if (ta.length === 0 || tb.length === 0) return false;
+  if ([...ta].sort().join(' ') === [...tb].sort().join(' ')) return true;
+  if (ta.length >= 4 || tb.length >= 4) {
+    const setA = new Set(ta);
+    const setB = new Set(tb);
+    let shared = 0;
+    for (const t of setA) if (setB.has(t)) shared++;
+    return shared / Math.max(setA.size, setB.size) >= 0.6;
+  }
+  return false;
+}
+
+// Prose is not algebra. mathjs parses "obtuse angle" as implicit
+// multiplication, and rationalize() then returns a non-zero garbage
+// expression that would read as "not equivalent" — so the symbolic path only
+// runs when both sides actually look mathematical.
+function looksMathematical(s: string): boolean {
+  return !/[a-z]{2,}/.test(s.replace(/sqrt|frac|pi|text|cdot|times/g, ''));
+}
+
 function valueEquivalent(a: string, b: string): boolean {
   const na = parseNumeric(a);
   const nb = parseNumeric(b);
   if (na !== null && nb !== null) return closeEnough(na, nb);
-  const m = mathEquivalent(a, b);
-  if (m !== null) return m;
-  return a === b; // both sides are already pre-cleaned/label-stripped
+  if (looksMathematical(a) && looksMathematical(b)) {
+    const m = mathEquivalent(a, b);
+    if (m !== null) return m;
+  }
+  // both sides are already pre-cleaned/label-stripped
+  return a === b || wordsEquivalent(a, b);
 }
 
 // True when two answers are equivalent. Multi-part answers ("x = -1/3 or
