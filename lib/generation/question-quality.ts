@@ -34,9 +34,9 @@ export function reviewRouteForModule(module: 1 | 2 | 3): {
     : { primary: 'luna', comparator: 'terra' };
 }
 
-// Diagram coordinates are rendered directly on a fixed 0–100 canvas. Reject
-// layouts that use only a tiny corner; mathematical correctness alone does
-// not make such a figure usable for students.
+// Generated diagrams are expected to use their normalized coordinate space
+// meaningfully. The renderer auto-fits for resilience, but a tiny source span
+// remains a legacy-quality signal and is rejected before insertion.
 export function deterministicPresentationIssues(
   visual: QuestionVisual | null | undefined,
 ): DeterministicQualityIssue[] {

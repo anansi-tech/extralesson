@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import QuestionVisualFigure from '@/app/components/question-visual';
+import QuestionVisualFigure, { svgPlainLabel } from '@/app/components/question-visual';
+import { draftVisualAuditIssues } from '@/lib/generation/visual-audit';
 import { QuestionVisualZ, type QuestionVisual } from '@/lib/validation/question-visual';
 
 const visuals: QuestionVisual[] = [
@@ -68,5 +69,39 @@ describe('question visual boundary and renderer', () => {
     expect(html).toContain('<table');
     expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
     expect(html).not.toContain('<script>');
+  });
+
+  it('auto-fits a legacy tiny diagram and renders SVG-safe labels', () => {
+    const visual = QuestionVisualZ.parse({
+      format: 'diagram', visual_type: 'geometry-figure',
+      alt_text: 'Two segments meeting at the vertex of a right angle.',
+      points: [
+        { id: 'P', x: 1, y: 1, label: '$P(1,1)$' },
+        { id: 'Q', x: 7, y: 3, label: '$Q(7,3)$' },
+        { id: 'R', x: 6, y: 6, label: '$R(6,6)$' },
+      ],
+      segments: [
+        { from: 'P', to: 'Q', label: '$PQ$' },
+        { from: 'Q', to: 'R', label: '$QR$' },
+      ],
+    });
+    const html = renderToStaticMarkup(<QuestionVisualFigure visual={visual} />);
+    const pointCoordinates = [...html.matchAll(/<circle cx="([\d.]+)" cy="([\d.]+)" r="4"/g)]
+      .map((match) => ({ x: Number(match[1]), y: Number(match[2]) }));
+    expect(Math.max(...pointCoordinates.map((point) => point.x)) - Math.min(...pointCoordinates.map((point) => point.x)))
+      .toBeGreaterThan(250);
+    expect(Math.max(...pointCoordinates.map((point) => point.y)) - Math.min(...pointCoordinates.map((point) => point.y)))
+      .toBeGreaterThan(200);
+    expect(html).toContain('P(1,1)');
+    expect(html).not.toContain('$P(1,1)$');
+    expect(html).toContain('paint-order="stroke"');
+    expect(draftVisualAuditIssues(visual)).toEqual(['visual-scale-risk']);
+  });
+
+  it('normalizes the supported math subset in SVG labels', () => {
+    expect(svgPlainLabel('$\\angle PQR = 90^{\\circ}$')).toBe('∠ PQR = 90°');
+    expect(svgPlainLabel('$AB \\perp CD$')).toBe('AB ⊥ CD');
+    expect(svgPlainLabel('$\\frac{1}{2}x_1$')).toBe('1/2x_1');
+    expect(svgPlainLabel('Cost (EC$)')).toBe('Cost (EC$)');
   });
 });

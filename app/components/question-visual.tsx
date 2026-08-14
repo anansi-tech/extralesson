@@ -5,6 +5,29 @@ const HEIGHT = 360;
 const PAD = 44;
 const SERIES_COLORS = ['#1E2430', '#C1121F', '#2E7D5B', '#3A5A8C', '#A66A00'];
 
+// SVG <text> does not run through KaTeX. Generated labels are deliberately
+// short, so convert their small supported math subset to readable Unicode
+// instead of displaying raw delimiters and commands.
+export function svgPlainLabel(raw: string): string {
+  return raw
+    .replace(/EC\$/g, 'EC¤')
+    .replaceAll('$', '')
+    .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '$1/$2')
+    .replace(/\\sqrt\{([^{}]+)\}/g, '√$1')
+    .replace(/\\text\{([^{}]*)\}/g, '$1')
+    .replace(/\^\{?\\circ\}?/g, '°')
+    .replace(/\\angle/g, '∠')
+    .replace(/\\perp/g, '⊥')
+    .replace(/\\parallel/g, '∥')
+    .replace(/\\times/g, '×')
+    .replace(/\\vec\{([^{}]+)\}/g, '$1⃗')
+    .replace(/_\{([^{}]+)\}/g, '_$1')
+    .replace(/[{}]/g, '')
+    .replace(/\\/g, '')
+    .replaceAll('EC¤', 'EC$')
+    .trim();
+}
+
 function ticks(min: number, max: number, step: number): number[] {
   const values: number[] = [];
   const first = Math.ceil(min / step) * step;
@@ -78,26 +101,56 @@ function Plot({ visual }: { visual: Extract<QuestionVisual, { format: 'plot' }> 
                   <circle cx={x(point.x)} cy={y(point.y)} r="3.5" fill={color} />
                 )}
                 {point.label && (
-                  <text x={x(point.x) + 6} y={y(point.y) - 7} fontSize="12" fill={color}>{point.label}</text>
+                  <text x={x(point.x) + 6} y={y(point.y) - 7} fontSize="12" fill={color}>{svgPlainLabel(point.label)}</text>
                 )}
               </g>
             ))}
-            {series.label && <text x={right} y={Math.max(14, top - 12) + index * 14} textAnchor="end" fontSize="11" fill={color}>{series.label}</text>}
+            {series.label && <text x={right} y={Math.max(14, top - 12) + index * 14} textAnchor="end" fontSize="11" fill={color}>{svgPlainLabel(series.label)}</text>}
           </g>
         );
       })}
-      {visual.x_label && <text x={right} y={Math.min(HEIGHT - 5, bottom + 34)} textAnchor="end" fontSize="12">{visual.x_label}</text>}
-      {visual.y_label && <text x={Math.max(5, left - 35)} y={top} fontSize="12">{visual.y_label}</text>}
+      {visual.x_label && <text x={right} y={Math.min(HEIGHT - 5, bottom + 34)} textAnchor="end" fontSize="12">{svgPlainLabel(visual.x_label)}</text>}
+      {visual.y_label && <text x={Math.max(5, left - 35)} y={top} fontSize="12">{svgPlainLabel(visual.y_label)}</text>}
     </svg>
   );
 }
 
 function Diagram({ visual }: { visual: Extract<QuestionVisual, { format: 'diagram' }> }) {
   const points = new Map(visual.points.map((point) => [point.id, point]));
-  const scale = (HEIGHT - PAD * 2) / 100;
-  const left = (WIDTH - 100 * scale) / 2;
+  const circleBounds = visual.circles.flatMap((circle) => {
+    const center = points.get(circle.center)!;
+    return [
+      { x: center.x - circle.radius, y: center.y - circle.radius },
+      { x: center.x + circle.radius, y: center.y + circle.radius },
+    ];
+  });
+  const bounds = [...visual.points, ...circleBounds];
+  const minX = Math.min(...bounds.map((point) => point.x));
+  const maxX = Math.max(...bounds.map((point) => point.x));
+  const minY = Math.min(...bounds.map((point) => point.y));
+  const maxY = Math.max(...bounds.map((point) => point.y));
+  const spanX = Math.max(1, maxX - minX);
+  const spanY = Math.max(1, maxY - minY);
+  const horizontalPad = 72;
+  const verticalPad = 56;
+  const scale = Math.min(
+    (WIDTH - horizontalPad * 2) / spanX,
+    (HEIGHT - verticalPad * 2) / spanY,
+  );
+  const left = (WIDTH - spanX * scale) / 2 - minX * scale;
+  const top = (HEIGHT - spanY * scale) / 2 - minY * scale;
   const x = (value: number) => left + value * scale;
-  const y = (value: number) => PAD + value * scale;
+  const y = (value: number) => top + value * scale;
+  const centroid = {
+    x: visual.points.reduce((sum, point) => sum + point.x, 0) / visual.points.length,
+    y: visual.points.reduce((sum, point) => sum + point.y, 0) / visual.points.length,
+  };
+  const labelHalo = {
+    paintOrder: 'stroke' as const,
+    stroke: '#FFFDF6',
+    strokeWidth: 5,
+    strokeLinejoin: 'round' as const,
+  };
   return (
     <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-auto w-full" aria-hidden="true">
       {visual.circles.map((circle, index) => {
@@ -105,13 +158,23 @@ function Diagram({ visual }: { visual: Extract<QuestionVisual, { format: 'diagra
         return (
           <g key={index}>
             <circle cx={x(center.x)} cy={y(center.y)} r={circle.radius * scale} fill="none" stroke="#1E2430" strokeWidth="2" />
-            {circle.label && <text x={x(center.x)} y={y(center.y) - circle.radius * scale - 7} textAnchor="middle" fontSize="12">{circle.label}</text>}
+            {circle.label && <text {...labelHalo} x={x(center.x)} y={y(center.y) - circle.radius * scale - 9} textAnchor="middle" fontSize="12">{svgPlainLabel(circle.label)}</text>}
           </g>
         );
       })}
       {visual.segments.map((segment, index) => {
         const from = points.get(segment.from)!;
         const to = points.get(segment.to)!;
+        const midpoint = { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 };
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const length = Math.hypot(dx, dy) || 1;
+        let normalX = -dy / length;
+        let normalY = dx / length;
+        if ((midpoint.x - centroid.x) * normalX + (midpoint.y - centroid.y) * normalY < 0) {
+          normalX *= -1;
+          normalY *= -1;
+        }
         return (
           <g key={index}>
             <line
@@ -120,21 +183,28 @@ function Diagram({ visual }: { visual: Extract<QuestionVisual, { format: 'diagra
               strokeDasharray={segment.style === 'dashed' ? '7 5' : undefined}
             />
             {segment.label && (
-              <text x={(x(from.x) + x(to.x)) / 2 + 5} y={(y(from.y) + y(to.y)) / 2 - 6} fontSize="12" fill="#C1121F">
-                {segment.label}
+              <text {...labelHalo} x={x(midpoint.x) + normalX * 15} y={y(midpoint.y) + normalY * 15} textAnchor="middle" dominantBaseline="middle" fontSize="12" fill="#C1121F">
+                {svgPlainLabel(segment.label)}
               </text>
             )}
           </g>
         );
       })}
-      {visual.points.map((point) => (
-        <g key={point.id}>
-          <circle cx={x(point.x)} cy={y(point.y)} r="3.5" fill="#1E2430" />
-          <text x={x(point.x) + 7} y={y(point.y) - 7} fontSize="13" fontWeight="600">
-            {point.label ?? point.id}
-          </text>
-        </g>
-      ))}
+      {visual.points.map((point) => {
+        const horizontal = point.x - centroid.x;
+        const vertical = point.y - centroid.y;
+        const textAnchor = horizontal < -0.25 ? 'end' : horizontal > 0.25 ? 'start' : 'middle';
+        const labelX = x(point.x) + (textAnchor === 'start' ? 10 : textAnchor === 'end' ? -10 : 0);
+        const labelY = y(point.y) + (vertical > 0.25 ? 19 : -11);
+        return (
+          <g key={point.id}>
+            <circle cx={x(point.x)} cy={y(point.y)} r="4" fill="#1E2430" />
+            <text {...labelHalo} x={labelX} y={labelY} textAnchor={textAnchor} fontSize="13" fontWeight="600">
+              {svgPlainLabel(point.label ?? point.id)}
+            </text>
+          </g>
+        );
+      })}
     </svg>
   );
 }
@@ -164,7 +234,7 @@ function Chart({ visual }: { visual: Extract<QuestionVisual, { format: 'chart' }
         {visual.labels.map((label, index) => (
           <g key={`${label}-${index}`}>
             <rect x="410" y={72 + index * 28} width="14" height="14" fill={SERIES_COLORS[index % SERIES_COLORS.length]} />
-            <text x="432" y={84 + index * 28} fontSize="12">{label}: {visual.values[index]}</text>
+            <text x="432" y={84 + index * 28} fontSize="12">{svgPlainLabel(label)}: {visual.values[index]}</text>
           </g>
         ))}
       </svg>
@@ -191,13 +261,13 @@ function Chart({ visual }: { visual: Extract<QuestionVisual, { format: 'chart' }
             ) : (
               <rect x={center - slot * 0.35} y={top} width={slot * 0.7} height={Math.max(1, height)} fill="#3A5A8C" />
             )}
-            <text x={center} y={HEIGHT - PAD + 18} textAnchor="middle" fontSize="10">{visual.labels[index]}</text>
+            <text x={center} y={HEIGHT - PAD + 18} textAnchor="middle" fontSize="10">{svgPlainLabel(visual.labels[index])}</text>
             <text x={center} y={top - 7} textAnchor="middle" fontSize="11">{value}</text>
           </g>
         );
       })}
-      {visual.y_label && <text x="10" y={PAD} fontSize="12">{visual.y_label}</text>}
-      {visual.x_label && <text x={WIDTH / 2} y={HEIGHT - 5} textAnchor="middle" fontSize="12">{visual.x_label}</text>}
+      {visual.y_label && <text x="10" y={PAD} fontSize="12">{svgPlainLabel(visual.y_label)}</text>}
+      {visual.x_label && <text x={WIDTH / 2} y={HEIGHT - 5} textAnchor="middle" fontSize="12">{svgPlainLabel(visual.x_label)}</text>}
     </svg>
   );
 }
@@ -229,7 +299,7 @@ function NumberLine({ visual }: { visual: Extract<QuestionVisual, { format: 'num
           <circle cx={x(interval.to)} cy="70" r="6" fill={interval.to_closed ? '#C1121F' : 'white'} stroke="#C1121F" strokeWidth="2" />
         </g>
       ))}
-      {visual.markers.map((marker, index) => <g key={index}><circle cx={x(marker.value)} cy="70" r="5" fill={marker.style === 'open' ? 'white' : '#2E7D5B'} stroke="#2E7D5B" strokeWidth="2" />{marker.label && <text x={x(marker.value)} y="45" textAnchor="middle" fontSize="12">{marker.label}</text>}</g>)}
+      {visual.markers.map((marker, index) => <g key={index}><circle cx={x(marker.value)} cy="70" r="5" fill={marker.style === 'open' ? 'white' : '#2E7D5B'} stroke="#2E7D5B" strokeWidth="2" />{marker.label && <text x={x(marker.value)} y="45" textAnchor="middle" fontSize="12">{svgPlainLabel(marker.label)}</text>}</g>)}
     </svg>
   );
 }
@@ -242,9 +312,9 @@ function SetDiagram({ visual }: { visual: Extract<QuestionVisual, { format: 'set
       <text x="48" y="48" fontSize="14" fontWeight="600">{visual.universal_label}</text>
       {visual.sets.map((set, index) => {
         const position = positions[index];
-        return <g key={set.id}><circle cx={position.x} cy={position.y} r="105" fill={`${SERIES_COLORS[index]}18`} stroke={SERIES_COLORS[index]} strokeWidth="2" /><text x={position.x} y={position.y - 78} textAnchor="middle" fontSize="14" fontWeight="600">{set.label}</text><text x={position.x} y={position.y} textAnchor="middle" fontSize="12">{set.values.join(', ')}</text></g>;
+        return <g key={set.id}><circle cx={position.x} cy={position.y} r="105" fill={`${SERIES_COLORS[index]}18`} stroke={SERIES_COLORS[index]} strokeWidth="2" /><text x={position.x} y={position.y - 78} textAnchor="middle" fontSize="14" fontWeight="600">{svgPlainLabel(set.label)}</text><text x={position.x} y={position.y} textAnchor="middle" fontSize="12">{set.values.map(svgPlainLabel).join(', ')}</text></g>;
       })}
-      {visual.outside_values.length > 0 && <text x="55" y="315" fontSize="12">Outside: {visual.outside_values.join(', ')}</text>}
+      {visual.outside_values.length > 0 && <text x="55" y="315" fontSize="12">Outside: {visual.outside_values.map(svgPlainLabel).join(', ')}</text>}
     </svg>
   );
 }
