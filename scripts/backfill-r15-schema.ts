@@ -40,11 +40,19 @@ async function main() {
       changed = true;
     }
     if (changed) backfilled++;
-    // Pre-R1.5 content: single-part prose questions predating the parts
-    // schema. Regenerate rather than migrate.
-    if (q.status === 'draft' && q.gen_meta?.prompt_version && q.gen_meta.prompt_version < 'v5') {
+    // Pre-R1.5 drafts: regenerate rather than migrate.
+    if (q.status === 'draft') {
       q.status = 'retired';
       q.reject_reason = 'superseded-r15';
+      retired++;
+    }
+    // Branch-format visuals ({format, visual_type, ...}) cannot render under
+    // the R1.5 template system ({template, params}); those questions are
+    // retired for regeneration regardless of status. Prose questions stay.
+    const visual = q.visual as unknown as Record<string, unknown> | undefined;
+    if (q.status !== 'retired' && visual && 'format' in visual && !('template' in visual)) {
+      q.status = 'retired';
+      q.reject_reason = 'superseded-r15-visual';
       retired++;
     }
     if (changed || q.isModified()) await q.save();

@@ -21,10 +21,13 @@ const PartSchema = new Schema(
   { _id: false },
 );
 
+// Domain validation happens at the Zod boundary; keeping these non-required
+// stops Mongoose from failing saves when it materializes an empty subdocument
+// on visual-less rows.
 const VisualSchema = new Schema(
   {
-    template: { type: String, required: true }, // TemplateName; params validated in lib/visuals
-    params: { type: Schema.Types.Mixed, required: true },
+    template: { type: String }, // TemplateName; params validated in lib/visuals
+    params: { type: Schema.Types.Mixed },
   },
   { _id: false },
 );
