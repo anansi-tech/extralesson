@@ -1,10 +1,284 @@
-export default function Home() {
+import type { Metadata } from 'next';
+import './landing.css';
+import { LANDING, paymentLink } from '@/lib/landing-content';
+
+// Faithful port of design/extralesson-landing.html (ROUND_1 §7).
+// Copy changed only where exam facts changed: the old M1/A1 mark language is
+// now CK/AK/R-neutral, and channel-specific report wording was neutralized.
+
+export const metadata: Metadata = {
+  title: 'ExtraLesson — Your child’s own CXC examiner',
+  description:
+    'AI-powered CSEC Maths tutoring that marks real working the way a CXC examiner does — step by step. Built by a Grenadian island scholar. Founding Families: $25 through the January sitting.',
+  openGraph: {
+    title: 'ExtraLesson — Your child’s own CXC examiner',
+    description:
+      'CSEC Maths tutoring that marks the way examiners award marks — step by step. Founding Families: $25.',
+    type: 'website',
+  },
+};
+
+export default function LandingPage() {
   return (
-    <main className="ruled min-h-screen p-8">
-      <div className="text-2xl font-black">
-        extra<em className="not-italic text-red-pen">lesson</em>
+    <div className="landing">
+      <header className="hero">
+        <div className="wrap">
+          <div className="logo">
+            extra<em>lesson</em>
+          </div>
+          <h1>
+            Your child&rsquo;s own
+            <br />
+            CXC examiner.<span className="pen"> In red pen.</span>
+          </h1>
+          <p className="lede">
+            ExtraLesson is AI-powered CSEC Maths tutoring that marks your child&rsquo;s{' '}
+            <b>real working</b> the way a CXC examiner marks Paper 2 — mark by mark, with the exact
+            feedback that turns a Grade IV into a Grade II.
+          </p>
+          <a className="btn" href="#offer">
+            Become a Founding Family — {LANDING.price}
+            <small>
+              FULL ACCESS THROUGH THE JANUARY SITTING · {LANDING.places} FAMILIES ONLY
+            </small>
+          </a>
+          <div className="heronote">
+            FOR CSEC MATHEMATICS · {LANDING.sittingNote} · WORKS ON ANY PHONE
+          </div>
+        </div>
+      </header>
+
+      <div className="stats">
+        <div className="wrap">
+          <div className="grid">
+            <div>
+              <div className="n red">{LANDING.statAvgScore}</div>
+              <div className="l">{LANDING.statAvgScoreLabel}</div>
+            </div>
+            <div>
+              <div className="n red">{LANDING.statBenchmark}</div>
+              <div className="l">{LANDING.statBenchmarkLabel}</div>
+            </div>
+            <div>
+              <div className="n">Jan</div>
+              <div className="l">
+                {'The re-sit is in January.\nPreparation starts now.'}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <p className="mt-4 text-dim">Landing page coming in a later task.</p>
-    </main>
+
+      <section>
+        <div className="wrap">
+          <div className="demo">
+            <div className="demo-copy">
+              <div className="eyebrow">Why it&rsquo;s different</div>
+              <h2>Apps quiz. We mark.</h2>
+              <p>
+                Multiple-choice apps drill Paper 1. But <b>half the grade is Paper 2</b> — written
+                problems where examiners award marks for method, step by step. That&rsquo;s where
+                students bleed marks they didn&rsquo;t know they were losing.
+              </p>
+              <p>
+                Your child works <b>on paper, by hand</b> — the way the real exam works — and gets
+                it marked like an examiner would:
+              </p>
+              <ul className="marklist">
+                <li>
+                  <span className="chip">MARKS</span>
+                  <span>Marked the way examiners award marks — step by step</span>
+                </li>
+                <li>
+                  <span className="chip">WHY</span>
+                  <span>The exact slip named — and what it costs on the real paper</span>
+                </li>
+                <li>
+                  <span className="chip">NEXT</span>
+                  <span>A similar question immediately, so the fix sticks</span>
+                </li>
+              </ul>
+              <p>
+                Fifteen minutes a day, aimed at the topics worth the most marks for <b>your</b>{' '}
+                child.
+              </p>
+            </div>
+            <div className="phone">
+              <div className="page">
+                <div className="q">
+                  <b>4.</b> Solve for x: 3x² − 5x − 2 = 0 <span className="qm">[3 marks]</span>
+                </div>
+                <div className="work">
+                  <span className="score-pill">2 / 3</span>
+                  <div className="cap">Your working</div>
+                  <div className="hand">
+                    (3x + 1)(x − 2) = 0 <span className="tick">✓</span>
+                    <br />
+                    3x + 1 = 0 → x = 1/3{' '}
+                    <span className="tick" style={{ fontSize: 14 }}>
+                      ✗ sign
+                    </span>
+                    <br />x − 2 = 0 → x = 2 <span className="tick">✓</span>
+                  </div>
+                </div>
+                <div className="markrow">
+                  <span>Method — correct factorisation</span>
+                  <span className="aw y">✓ AWARDED</span>
+                </div>
+                <div className="markrow">
+                  <span>Method — both roots attempted</span>
+                  <span className="aw y">✓ AWARDED</span>
+                </div>
+                <div className="markrow">
+                  <span>Accuracy — both roots correct</span>
+                  <span className="aw n">✗ LOST</span>
+                </div>
+                <div className="verdict">
+                  <div className="vt">Sign slip — a classic.</div>
+                  <div className="vm">
+                    3x + 1 = 0 gives x = <b>−1/3</b>. You&rsquo;d lose this exact mark on Paper 2.
+                    Try one more like it?
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="rule-top">
+        <div className="wrap">
+          <div className="eyebrow">How it works</div>
+          <h2>Fifteen minutes. Every day. In red pen.</h2>
+          <div className="steps">
+            <div className="step">
+              <div className="sn">STEP 1</div>
+              <h3>Diagnose</h3>
+              <p>
+                A short placement test maps your child against the full CSEC syllabus and sets a
+                predicted grade — the one number we all work to move.
+              </p>
+            </div>
+            <div className="step">
+              <div className="sn">STEP 2</div>
+              <h3>Practise &amp; get marked</h3>
+              <p>
+                Daily 15-minute sessions on their weakest, highest-mark topics — marked the way
+                examiners award marks, step by step.
+              </p>
+            </div>
+            <div className="step">
+              <div className="sn">STEP 3</div>
+              <h3>You see everything</h3>
+              <p>
+                Every Sunday, a plain-English report: sessions done, accuracy trend, predicted
+                grade, and what&rsquo;s next. No logins for parents. No mystery.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="rule-top">
+        <div className="wrap">
+          <div className="founder">
+            <div className="badge">DN</div>
+            <div>
+              <div className="eyebrow">Why I built this</div>
+              <p style={{ marginTop: 8 }}>
+                I sat these exams in Grenada. <b>Ten CXC subjects, island scholar.</b> Then I taught
+                high school for two years before leaving for engineering degrees, a PhD in computer
+                science and AI, and a career leading AI teams in the US.
+              </p>
+              <p>
+                Every step of that road started with CXC passes. But the maths results haven&rsquo;t
+                moved in a generation — the average score is still {LANDING.statAvgScore}. Not
+                because our children are less capable. Because{' '}
+                <b>nobody teaches them how the exam is actually marked.</b>
+              </p>
+              <p>
+                So I built the examiner I wish every student had: patient, precise, available every
+                single day — and honest in red pen. My own family in Grenada tested it first.
+              </p>
+              <div className="sig">David Noel</div>
+              <div className="cred">
+                PHD COMPUTER SCIENCE · FORMER HIGH SCHOOL TEACHER · ISLAND SCHOLAR, GRENADA
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="offer">
+        <div className="wrap">
+          <div className="offer">
+            <div className="eyebrow">Founding Families · {LANDING.places} places</div>
+            <h2>Everything, through the January sitting.</h2>
+            <div className="price">{LANDING.price}</div>
+            <div className="per">ONE PAYMENT · NO SUBSCRIPTION · USD</div>
+            <ul>
+              <li>Full CSEC Maths programme — diagnostic, daily sessions, examiner-style marking</li>
+              <li>Weekly parent report, every Sunday</li>
+              <li>Predicted grade tracking from day one to exam day</li>
+              <li>Founding Family price locked for life on everything we launch next</li>
+              <li>Direct line to me — your feedback shapes the product</li>
+            </ul>
+            <a className="btn" href={paymentLink()}>
+              Reserve your place — {LANDING.price}
+              <small>SECURE CHECKOUT · CARD OR APPLE PAY</small>
+            </a>
+            <div className="cap">
+              LAUNCHES {LANDING.launchDate} · IN TIME FOR THE JANUARY SITTING · NOT SATISFIED AT
+              LAUNCH? FULL REFUND, NO QUESTIONS.
+            </div>
+          </div>
+
+          <div className="sponsor">
+            <h3>In Brooklyn? Toronto? London? 🌍</h3>
+            <p>
+              Sponsor a niece, nephew, or godchild back home. You pay from abroad, they study on any
+              phone on the island, and <b>you</b> get the Sunday report. It&rsquo;s the extra
+              lessons money your family already sends — finally with a report card attached.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="rule-top">
+        <div className="wrap faq">
+          <div className="eyebrow">Questions parents ask</div>
+          <dl>
+            <dt>Does it work on a basic phone?</dt>
+            <dd>Yes. Any smartphone with a camera. Low data by design — no video streaming.</dd>
+            <dt>My child is re-sitting in January. Is this for them?</dt>
+            <dd>
+              Especially for them. January candidates re-sit Papers 1 and 2 (SBA scores carry over)
+              — exactly what ExtraLesson trains. Ten focused weeks is enough to move a grade.
+            </dd>
+            <dt>Is this real CXC past papers?</dt>
+            <dd>
+              No — CXC&rsquo;s papers are their copyright. Our questions are original, written to
+              the current public syllabus and marked to mark-scheme conventions, and reviewed by a
+              former Caribbean high-school teacher (me).
+            </dd>
+            <dt>What if it doesn&rsquo;t help my child?</dt>
+            <dd>
+              Full refund at launch if you&rsquo;re not satisfied — no questions, no forms.
+              I&rsquo;m building this with the first hundred families, not just for them.
+            </dd>
+          </dl>
+        </div>
+      </section>
+
+      <footer>
+        <div
+          className="wrap"
+          style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}
+        >
+          <div>EXTRALESSON · AN ANANSI EDUCATION PRODUCT</div>
+          <div>{LANDING.contactEmail} · MADE FOR THE CARIBBEAN 🇬🇩</div>
+        </div>
+      </footer>
+    </div>
   );
 }
