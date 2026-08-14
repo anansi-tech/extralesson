@@ -235,7 +235,11 @@ async function main() {
   const completed = await readExisting(args.output, args.restart, inventoryHash);
   const completedIds = new Set(completed.map((paper) => paper.corpus_entry_id));
   if (selected.every((entry) => completedIds.has(entry.id))) {
-    const artifact = await writeArtifact(args.output, inventoryHash, allEligible.length, completed);
+    const artifact = buildClassificationArtifact({
+      inventoryHash,
+      eligiblePapers: allEligible.length,
+      papers: completed,
+    });
     console.log(JSON.stringify(artifact.summary, null, 2));
     return;
   }

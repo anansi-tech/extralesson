@@ -12,6 +12,7 @@
     "seed:blueprints": "tsx scripts/seed-blueprints.ts",
     "inventory:corpus": "tsx scripts/inventory-corpus.ts",
     "classify:corpus": "tsx scripts/classify-corpus.ts",
+    "build:bank-targets": "tsx scripts/build-question-bank-targets.ts",
     "generate": "tsx scripts/generate.ts"
   },
   "dependencies": {
