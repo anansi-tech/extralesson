@@ -39,4 +39,18 @@ describe('repairQuestionOutput', () => {
       },
     });
   });
+
+  it('pads omitted table cells without inventing values or truncating rows', () => {
+    const repaired = repairQuestionOutput(JSON.stringify({
+      visual: {
+        format: 'table', visual_type: 'data-table',
+        headers: ['Interval', 'Frequency', 'Cumulative frequency'],
+        rows: [['0–9', '4', '4'], ['10–19', '7']],
+      },
+    }));
+    expect(JSON.parse(repaired!).visual.rows).toEqual([
+      ['0–9', '4', '4'],
+      ['10–19', '7', ''],
+    ]);
+  });
 });

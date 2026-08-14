@@ -33,6 +33,21 @@ function removeEmptyOptionalLabels(value: unknown): boolean {
   return changed;
 }
 
+function padShortTableRows(visual: Record<string, unknown>): boolean {
+  if (
+    visual.format !== 'table' ||
+    !Array.isArray(visual.headers) ||
+    !Array.isArray(visual.rows)
+  ) return false;
+  let changed = false;
+  for (const row of visual.rows) {
+    if (!Array.isArray(row) || row.length >= visual.headers.length) continue;
+    while (row.length < visual.headers.length) row.push('');
+    changed = true;
+  }
+  return changed;
+}
+
 // Repair only redundant/optional presentation metadata before applying the
 // same strict Zod boundary again. Mathematical coordinates and values are
 // never rewritten.
@@ -51,6 +66,7 @@ export function repairQuestionOutput(text: string): string | null {
         changed = true;
       }
     }
+    if (padShortTableRows(visual as Record<string, unknown>)) changed = true;
     return changed ? JSON.stringify(raw) : null;
   } catch {
     return null;
