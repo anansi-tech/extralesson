@@ -35,9 +35,22 @@ pnpm generate -- --topic M1-ALG1 --difficulty 2 --count 10 --kind structured
 ```
 
 Generation uses OpenAI (`gpt-5.5`) via the Vercel AI SDK; set `AI_API_KEY` to an
-OpenAI key. Drafts are Zod-validated, independently re-solved by a fresh model
-call, and only inserted (status `draft`, `verified: true`) when the independent
-solve agrees. Approve drafts in `/admin/review`.
+OpenAI key. The checked-in corpus target catalog selects abstract, topic-specific
+question recipes, including visual frequency and format. Visuals are stored as
+strict data and rendered by first-party components; generated SVG or HTML is not
+accepted. Drafts are Zod-validated, independently re-solved by a fresh model call
+with the same visual data, and only inserted (status `draft`, `verified: true`)
+when the independent solve agrees. Approve drafts in `/admin/review`.
+
+After deploying this schema change to a database containing existing questions,
+run the idempotent backfill once:
+
+```bash
+pnpm backfill:question-generation
+```
+
+The 400-question bank is a launch minimum. Preview a larger, proportionally
+equivalent plan locally with `pnpm plan:bank -- --total 800`.
 
 ## Security notes
 

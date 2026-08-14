@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { OBJECTIVE_ID_RE } from '@/lib/validation/question';
-import type { QuestionDraft } from '@/lib/validation/question';
+import { RenderableVisualTypeZ } from '@/lib/validation/question-visual';
+import type { QuestionBankTargetsArtifact } from '@/lib/generation/question-bank-targets';
 
 export const QuestionArchetypeZ = z.enum([
   'concept-recognition',
@@ -15,12 +16,34 @@ export const QuestionArchetypeZ = z.enum([
 export const CommandVerbZ = z.enum([
   'calculate',
   'compare',
+  'complete',
+  'construct',
+  'describe',
   'determine',
+  'draw',
+  'estimate',
+  'evaluate',
   'explain',
+  'express',
+  'factorise',
+  'factorize',
+  'find',
+  'identify',
   'interpret',
   'justify',
+  'label',
+  'list',
+  'measure',
+  'plot',
+  'prove',
+  'represent',
+  'shade',
   'show',
+  'simplify',
+  'sketch',
   'solve',
+  'state',
+  'write',
 ]);
 
 export const RepresentationZ = z.enum([
@@ -39,15 +62,18 @@ export const ContextCategoryZ = z.enum([
   'sport',
   'workplace',
   'environment',
+  'school',
+  'other',
 ]);
 
 const RecipeBaseZ = z.object({
   objective_ids: z.array(z.string().regex(OBJECTIVE_ID_RE)).min(1).max(2),
   difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
   archetype: QuestionArchetypeZ,
-  command_verb: CommandVerbZ,
+  command_verb: CommandVerbZ.nullable(),
   representation: RepresentationZ,
   context_category: ContextCategoryZ,
+  visual_type: RenderableVisualTypeZ.nullable().default(null),
   misconception_families: z.array(z.string().min(1)).max(3).default([]),
 });
 
@@ -94,13 +120,30 @@ export function pickLeastCoveredObjective<T extends { id: string }>(
   )[0];
 }
 
-export function questionMatchesRecipe(question: QuestionDraft, recipe: QuestionRecipe): boolean {
+export function questionMatchesRecipe(
+  question: {
+    kind: 'mcq' | 'structured';
+    difficulty: 1 | 2 | 3;
+    marks: number;
+    objective_ids: string[];
+    profile?: 'CK' | 'AK' | 'R';
+    rubric?: {
+      profile: 'CK' | 'AK' | 'R';
+      mark_value: number;
+      code?: string;
+      criterion?: string;
+    }[];
+    visual?: { visual_type: string } | null;
+  },
+  recipe: QuestionRecipe,
+): boolean {
   if (
     question.kind !== recipe.kind ||
     question.difficulty !== recipe.difficulty ||
     question.marks !== recipe.marks ||
     question.objective_ids.length !== recipe.objective_ids.length ||
-    !question.objective_ids.every((id) => recipe.objective_ids.includes(id))
+    !question.objective_ids.every((id) => recipe.objective_ids.includes(id)) ||
+    (question.visual?.visual_type ?? null) !== recipe.visual_type
   ) {
     return false;
   }
@@ -109,6 +152,7 @@ export function questionMatchesRecipe(question: QuestionDraft, recipe: QuestionR
     return question.profile === recipe.profile;
   }
   if (question.kind === 'structured' && recipe.kind === 'structured') {
+    if (!question.rubric) return false;
     const actual = question.rubric.reduce((totals, item) => {
       totals[item.profile] += item.mark_value;
       return totals;
@@ -132,6 +176,7 @@ export function buildDefaultQuestionRecipe(args: {
     difficulty: args.difficulty,
     representation: 'symbolic' as const,
     context_category: 'none' as const,
+    visual_type: null,
     misconception_families: [],
   };
 
@@ -174,4 +219,83 @@ export function buildDefaultQuestionRecipe(args: {
     },
   } as const;
   return QuestionRecipeZ.parse({ ...common, ...byDifficulty[args.difficulty], kind: 'structured' });
+}
+
+function isVisualPattern(pattern: { visual_types: string[] }): boolean {
+  return pattern.visual_types.some((visualType) => RenderableVisualTypeZ.safeParse(visualType).success);
+}
+
+function visualDue(ordinal: number, shareBps: number): boolean {
+  return Math.floor((ordinal + 1) * shareBps / 10_000) > Math.floor(ordinal * shareBps / 10_000);
+}
+
+function weightedPattern<T extends { count: number }>(patterns: T[], ordinal: number): T | undefined {
+  const total = patterns.reduce((sum, pattern) => sum + pattern.count, 0);
+  if (total <= 0) return undefined;
+  let slot = ordinal % total;
+  for (const pattern of patterns) {
+    if (slot < pattern.count) return pattern;
+    slot -= pattern.count;
+  }
+  return patterns[0];
+}
+
+function representationForVisual(
+  visualType: z.infer<typeof RenderableVisualTypeZ> | null,
+): z.infer<typeof RepresentationZ> {
+  if (!visualType) return 'symbolic';
+  if (['data-table', 'statistical-chart', 'matrix-diagram'].includes(visualType)) return 'inline-data';
+  return 'coordinate-data';
+}
+
+export function buildCorpusInformedQuestionRecipe(args: {
+  targets: QuestionBankTargetsArtifact;
+  topicCode: string;
+  objectiveIds: string[];
+  kind: 'mcq' | 'structured';
+  difficulty: 1 | 2 | 3;
+  ordinal: number;
+}): QuestionRecipe {
+  const fallback = buildDefaultQuestionRecipe({
+    objectiveIds: args.objectiveIds,
+    kind: args.kind,
+    difficulty: args.difficulty,
+  });
+  const topic = args.targets.topics.find((candidate) => candidate.topic_code === args.topicCode);
+  if (!topic) return fallback;
+  const style = topic.observed_style[args.kind];
+  let pool = style.representative_patterns.filter((pattern) => pattern.difficulty === args.difficulty);
+  if (pool.length === 0) pool = style.representative_patterns;
+
+  const wantsVisual = visualDue(args.ordinal, style.visual_question_share_bps);
+  const presentationPool = pool.filter((pattern) => isVisualPattern(pattern) === wantsVisual);
+  if (presentationPool.length > 0) pool = presentationPool;
+  const objectivePool = pool.filter((pattern) =>
+    args.objectiveIds.some((objectiveId) => pattern.objective_ids.includes(objectiveId)));
+  if (objectivePool.length > 0) pool = objectivePool;
+  const pattern = weightedPattern(pool, args.ordinal);
+  if (!pattern) return fallback;
+
+  const command = pattern.primary_command_verb === 'none'
+    ? null
+    : CommandVerbZ.safeParse(pattern.primary_command_verb);
+  const context = ContextCategoryZ.safeParse(pattern.context_category === 'finance'
+    ? 'consumer'
+    : pattern.context_category);
+  const renderableVisuals = pattern.visual_types
+    .map((visualType) => RenderableVisualTypeZ.safeParse(visualType))
+    .filter((result): result is { success: true; data: z.infer<typeof RenderableVisualTypeZ> } => result.success)
+    .map((result) => result.data);
+  const visualType = wantsVisual && renderableVisuals.length > 0
+    ? renderableVisuals[args.ordinal % renderableVisuals.length]
+    : null;
+
+  return QuestionRecipeZ.parse({
+    ...fallback,
+    archetype: pattern.archetype,
+    command_verb: command === null ? null : command.success ? command.data : fallback.command_verb,
+    context_category: context.success ? context.data : fallback.context_category,
+    representation: representationForVisual(visualType),
+    visual_type: visualType,
+  });
 }

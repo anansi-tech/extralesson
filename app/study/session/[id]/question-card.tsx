@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import QuestionVisualFigure from '@/app/components/question-visual';
+import type { QuestionVisual } from '@/lib/validation/question-visual';
 import { submitAnswer, type Feedback } from './actions';
 
 export interface CardQuestion {
@@ -12,6 +14,7 @@ export interface CardQuestion {
   stemHtml: string;
   optionsHtml?: string[];
   marks: number;
+  visual: QuestionVisual | null;
   rubricCodes: { code: string; profile: string; mark_value: number }[];
 }
 
@@ -68,6 +71,8 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           [{question.marks} mark{question.marks === 1 ? '' : 's'}]
         </span>
       </div>
+
+      {question.visual && <QuestionVisualFigure visual={question.visual} />}
 
       {question.kind === 'mcq' && question.optionsHtml && (
         <div className="mt-4 space-y-2">

@@ -11,17 +11,22 @@
 import 'dotenv/config';
 import { z } from 'zod';
 import { generateObject } from 'ai';
+import targetsJson from '@/design/research/question-bank-targets.json';
 import { model, MODEL_ID } from '@/lib/ai';
 import { dbConnect, Question, Topic } from '@/lib/db';
 import { QuestionDraftZ } from '@/lib/validation/question';
 import { answersEquivalent } from '@/lib/grade/equivalence';
 import { normalizeEscapedNewlines } from '@/lib/text';
+import { QuestionVisualZ } from '@/lib/validation/question-visual';
 import { buildDraftPrompt, buildSolvePrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
 import {
-  buildDefaultQuestionRecipe,
+  buildCorpusInformedQuestionRecipe,
   pickLeastCoveredObjective,
   questionMatchesRecipe,
 } from '@/lib/generation/question-recipe';
+import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-targets';
+
+const bankTargets = QuestionBankTargetsArtifactZ.parse(targetsJson);
 
 const ArgsZ = z.object({
   topic: z.string().regex(/^M[123]-[A-Z0-9]+$/),
@@ -68,6 +73,7 @@ const McqLooseZ = z.object({
   options: z.array(z.string()),
   answer_key: z.number(),
   profile: z.enum(['CK', 'AK', 'R']),
+  visual: QuestionVisualZ.nullable(),
   worked_solution: z.string(),
   misconceptions: z.array(MisconceptionLooseZ),
 });
@@ -85,6 +91,7 @@ const StructuredLooseZ = z.object({
     }),
   ),
   final_answer: z.string(),
+  visual: QuestionVisualZ.nullable(),
   worked_solution: z.string(),
   misconceptions: z.array(MisconceptionLooseZ),
 });
@@ -143,10 +150,13 @@ async function main() {
     try {
       const targetObjective = pickLeastCoveredObjective(topic.objectives, objectiveCounts);
       if (!targetObjective) throw new Error(`Topic ${args.topic} has no objectives`);
-      const recipe = buildDefaultQuestionRecipe({
+      const recipe = buildCorpusInformedQuestionRecipe({
+        targets: bankTargets,
+        topicCode: topic.code,
         objectiveIds: [targetObjective.id],
         kind: args.kind,
         difficulty: args.difficulty,
+        ordinal: existing + inserted,
       });
       const prompt = buildDraftPrompt({
         topicTitle: topic.title,
@@ -216,7 +226,12 @@ async function main() {
         const { object: sol } = await generateObject({
           model,
           schema: McqSolveZ,
-          prompt: buildSolvePrompt({ stem: draft.stem, kind: 'mcq', options: draft.options }),
+          prompt: buildSolvePrompt({
+            stem: draft.stem,
+            kind: 'mcq',
+            options: draft.options,
+            visual: draft.visual,
+          }),
         });
         solved = sol.answer_index === draft.answer_key;
         draftAnswer = `key=${draft.answer_key} (${draft.options[draft.answer_key]})`;
@@ -225,7 +240,7 @@ async function main() {
         const { object: sol } = await generateObject({
           model,
           schema: StructuredSolveZ,
-          prompt: buildSolvePrompt({ stem: draft.stem, kind: 'structured' }),
+          prompt: buildSolvePrompt({ stem: draft.stem, kind: 'structured', visual: draft.visual }),
         });
         solved = answersEquivalent(sol.final_answer, draft.final_answer);
         draftAnswer = draft.final_answer;
@@ -251,7 +266,13 @@ async function main() {
       await Question.create({
         ...draft,
         status: 'draft',
-        gen_meta: { model: MODEL_ID, prompt_version: PROMPT_VERSION, verified: true, ts: new Date() },
+        gen_meta: {
+          model: MODEL_ID,
+          prompt_version: PROMPT_VERSION,
+          verified: true,
+          ts: new Date(),
+          recipe,
+        },
       });
       inserted++;
       objectiveCounts.set(targetObjective.id, (objectiveCounts.get(targetObjective.id) ?? 0) + 1);

@@ -43,3 +43,14 @@ flag, influence those style distributions. Representative joint patterns preserv
 actually co-occurred, including at least one pattern for every observed visual type where available.
 The catalog contains no question wording or source assets, and it is not permission to reconstruct a
 source question; every generated question must remain original.
+
+The 400-question figure is a launch minimum, not a ceiling. Preview an exactly apportioned larger bank
+without network or model calls:
+
+```bash
+pnpm plan:bank -- --total 800
+```
+
+The scaled plan preserves the 60/40 structured-to-MCQ mix, reapportions topics from the official
+paper weights, and scales visual coverage from the checked-in style targets. Generation and review can
+therefore proceed in batches without changing the underlying catalog.

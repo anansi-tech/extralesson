@@ -2,6 +2,7 @@ import 'katex/dist/katex.min.css';
 import { dbConnect, Question } from '@/lib/db';
 import { getCoverage, getNextDraftId } from '@/lib/admin/coverage';
 import { renderMathHtml } from '@/lib/katex';
+import { QuestionVisualZ } from '@/lib/validation/question-visual';
 import ReviewCard, { type ReviewQuestion } from './review-card';
 
 export const metadata = { title: 'Review queue — ExtraLesson admin' };
@@ -9,7 +10,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function ReviewPage() {
   await dbConnect();
-  const [{ topics, approvedTotal, draftsRemaining }, nextId] = await Promise.all([
+  const [{ topics, bankTarget, approvedTotal, draftsRemaining }, nextId] = await Promise.all([
     getCoverage(),
     getNextDraftId(),
   ]);
@@ -29,11 +30,13 @@ export default async function ReviewPage() {
         profile?: string;
         difficulty: number;
         marks: number;
+        visual?: unknown;
         rubric?: { code: string; profile: string; criterion: string; mark_value: number }[];
         final_answer?: string;
         worked_solution: string;
         misconceptions: { trigger: string; name: string; remediation: string }[];
       };
+      const visual = QuestionVisualZ.nullable().parse(raw.visual ?? null);
       question = {
         id: String(raw._id),
         objective_ids: raw.objective_ids,
@@ -45,6 +48,7 @@ export default async function ReviewPage() {
         profile: raw.profile,
         difficulty: raw.difficulty,
         marks: raw.marks,
+        visual,
         rubric: raw.rubric?.map((r) => ({ ...r, criterionHtml: renderMathHtml(r.criterion) })),
         final_answer: raw.final_answer,
         solutionHtml: renderMathHtml(raw.worked_solution),
@@ -63,6 +67,7 @@ export default async function ReviewPage() {
               : { rubric: raw.rubric, final_answer: raw.final_answer }),
             difficulty: raw.difficulty,
             marks: raw.marks,
+            visual,
             worked_solution: raw.worked_solution,
             misconceptions: raw.misconceptions,
           },
@@ -86,7 +91,7 @@ export default async function ReviewPage() {
           </div>
           <div className="font-mono text-xs text-dim">
             <b className="text-ink">{draftsRemaining}</b> drafts remaining ·{' '}
-            <b className="text-ink">{approvedTotal}</b>/400 approved
+            <b className="text-ink">{approvedTotal}</b>/{bankTarget} approved
           </div>
         </header>
 
@@ -104,7 +109,7 @@ export default async function ReviewPage() {
           </h2>
           <div className="mt-2 grid gap-x-8 gap-y-1 sm:grid-cols-2">
             {topics.map((t) => (
-              <div key={t.code} className="flex items-baseline justify-between text-sm">
+              <div key={t.code} className="flex flex-wrap items-baseline justify-between text-sm">
                 <span>
                   <span className="font-mono text-xs text-dim">{t.code}</span> {t.title}
                 </span>
@@ -114,6 +119,9 @@ export default async function ReviewPage() {
                   </b>
                   /{t.target}
                   {t.drafts > 0 && <span className="text-dim"> (+{t.drafts} drafts)</span>}
+                </span>
+                <span className="w-full text-right font-mono text-[10px] text-dim">
+                  MCQ {t.approvedMcq}/{t.targetMcq} · structured {t.approvedStructured}/{t.targetStructured} · visuals {t.approvedVisual}/{t.targetVisual}
                 </span>
               </div>
             ))}

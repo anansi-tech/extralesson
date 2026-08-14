@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest';
+import targetsJson from '@/design/research/question-bank-targets.json';
 import {
+  buildCorpusInformedQuestionRecipe,
   buildDefaultQuestionRecipe,
   pickLeastCoveredObjective,
   questionMatchesRecipe,
   QuestionRecipeZ,
 } from '@/lib/generation/question-recipe';
+import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-targets';
+
+const bankTargets = QuestionBankTargetsArtifactZ.parse(targetsJson);
 
 describe('QuestionRecipeZ', () => {
   it('selects the least-covered objective with a deterministic tie break', () => {
@@ -123,5 +128,29 @@ describe('QuestionRecipeZ', () => {
         { code: 'AK1', profile: 'AK', criterion: 'Divides by 2 correctly', mark_value: 1 },
       ],
     }, recipe)).toBe(false);
+  });
+
+  it('selects deterministic corpus-informed styles while retaining official profile controls', () => {
+    const topic = bankTargets.topics.find((entry) => entry.topic_code === 'M2-GEO1')!;
+    const objectiveId = topic.observed_style.mcq.distributions.objective_id[0].value;
+    const recipes = Array.from({ length: 20 }, (_, ordinal) => buildCorpusInformedQuestionRecipe({
+      targets: bankTargets,
+      topicCode: topic.topic_code,
+      objectiveIds: [objectiveId],
+      kind: 'mcq',
+      difficulty: 2,
+      ordinal,
+    }));
+    expect(recipes.every((recipe) => recipe.kind === 'mcq' && recipe.profile === 'AK')).toBe(true);
+    expect(recipes.some((recipe) => recipe.visual_type !== null)).toBe(true);
+    expect(recipes.some((recipe) => recipe.visual_type === null)).toBe(true);
+    expect(buildCorpusInformedQuestionRecipe({
+      targets: bankTargets,
+      topicCode: topic.topic_code,
+      objectiveIds: [objectiveId],
+      kind: 'mcq',
+      difficulty: 2,
+      ordinal: 7,
+    })).toEqual(recipes[7]);
   });
 });

@@ -31,6 +31,8 @@ const QuestionSchema = new Schema({
   profile: { type: String, enum: ['CK', 'AK', 'R'] }, // mcq: single profile per item
   difficulty: { type: Number, enum: [1, 2, 3], required: true },
   marks: { type: Number, required: true },
+  // Strict shape validation lives at every write boundary in question-visual.ts.
+  visual: { type: Schema.Types.Mixed, default: null },
   rubric: { type: [RubricItemSchema] }, // structured only
   // structured only: canonical final answer, drives the §6.3 equivalence check
   // and the pipeline's independent-solve comparison (mcq uses answer_key).
@@ -45,6 +47,8 @@ const QuestionSchema = new Schema({
     prompt_version: { type: String, required: true },
     verified: { type: Boolean, required: true },
     ts: { type: Date, required: true },
+    // Exact abstract controls used for reproducibility; null on legacy rows.
+    recipe: { type: Schema.Types.Mixed, default: null },
   },
 });
 

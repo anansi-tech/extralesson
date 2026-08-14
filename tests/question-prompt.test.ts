@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { buildDefaultQuestionRecipe } from '@/lib/generation/question-recipe';
-import { buildDraftPrompt } from '@/lib/prompts/question-gen';
+import { QuestionRecipeZ } from '@/lib/generation/question-recipe';
+import { buildDraftPrompt, buildSolvePrompt } from '@/lib/prompts/question-gen';
+import { QuestionVisualZ } from '@/lib/validation/question-visual';
 
 describe('question generation prompt recipes', () => {
   it('requires the exact objective and MCQ profile', () => {
@@ -34,5 +36,30 @@ describe('question generation prompt recipes', () => {
     expect(prompt).toContain('PROFILE MARKS: CK 1, AK 3, R 3');
     expect(prompt).toContain('Marks: 7');
     expect(prompt).toContain('match its exact CK/AK/R totals');
+  });
+
+  it('requires typed visual data in both draft and independent solve prompts', () => {
+    const recipe = QuestionRecipeZ.parse({
+      ...buildDefaultQuestionRecipe({ objectiveIds: ['M2.3.4'], kind: 'mcq', difficulty: 2 }),
+      representation: 'inline-data',
+      visual_type: 'data-table',
+    });
+    const draftPrompt = buildDraftPrompt({
+      topicTitle: 'Relations, Functions and Graphs 1',
+      objectives: [{ id: 'M2.3.4', text: 'Use a table of values.' }],
+      recipe,
+    });
+    expect(draftPrompt).toContain('Visual type: data-table');
+    expect(draftPrompt).toContain('Never return SVG, HTML, a URL, base64');
+
+    const solvePrompt = buildSolvePrompt({
+      kind: 'mcq', stem: 'Use the supplied table.', options: ['1', '2', '3', '4'],
+      visual: QuestionVisualZ.parse({
+        format: 'table', visual_type: 'data-table', alt_text: 'A table with one row of values.',
+        headers: ['x', 'y'], rows: [['1', '2']],
+      }),
+    });
+    expect(solvePrompt).toContain('Machine-readable visual supplied');
+    expect(solvePrompt).toContain('"visual_type":"data-table"');
   });
 });

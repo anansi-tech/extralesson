@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { QuestionVisualZ } from '@/lib/validation/question-visual';
 
 // Boundary validation for questions (ROUND_1 §3.3). Every question write —
 // generation pipeline output, admin edits — passes through here.
@@ -28,6 +29,7 @@ const QuestionBaseZ = z.object({
   stem: z.string().min(10),
   difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
   marks: z.number().int().min(1),
+  visual: QuestionVisualZ.nullable().default(null),
   worked_solution: z.string().min(1),
   misconceptions: z.array(MisconceptionZ).default([]),
 });

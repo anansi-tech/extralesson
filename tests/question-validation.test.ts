@@ -95,8 +95,7 @@ describe('QuestionDraftZ — mcq', () => {
   });
 
   it('rejects mcq without a top-level profile', () => {
-    const { profile: _profile, ...noProfile } = validMcq;
-    expect(QuestionDraftZ.safeParse(noProfile).success).toBe(false);
+    expect(QuestionDraftZ.safeParse({ ...validMcq, profile: undefined }).success).toBe(false);
   });
 
   it('rejects malformed objective ids', () => {

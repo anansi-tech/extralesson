@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
+import QuestionVisualFigure from '@/app/components/question-visual';
+import type { QuestionVisual } from '@/lib/validation/question-visual';
 import { approveQuestion, editAndApproveQuestion, rejectQuestion } from './actions';
 
 export interface ReviewQuestion {
@@ -14,6 +16,7 @@ export interface ReviewQuestion {
   profile?: string;
   difficulty: number;
   marks: number;
+  visual: QuestionVisual | null;
   rubric?: { code: string; profile: string; criterionHtml: string; mark_value: number }[];
   final_answer?: string;
   solutionHtml: string;
@@ -86,6 +89,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
       </div>
 
       <div className="text-lg" dangerouslySetInnerHTML={{ __html: question.stemHtml }} />
+      {question.visual && <QuestionVisualFigure visual={question.visual} />}
 
       {question.optionsHtml && (
         <ol className="mt-3 space-y-1">

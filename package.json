@@ -13,6 +13,8 @@
     "inventory:corpus": "tsx scripts/inventory-corpus.ts",
     "classify:corpus": "tsx scripts/classify-corpus.ts",
     "build:bank-targets": "tsx scripts/build-question-bank-targets.ts",
+    "plan:bank": "tsx scripts/plan-question-bank.ts",
+    "backfill:question-generation": "tsx scripts/backfill-question-generation.ts",
     "generate": "tsx scripts/generate.ts"
   },
   "dependencies": {

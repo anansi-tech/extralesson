@@ -1,11 +1,14 @@
-import { Blueprint, Question, Topic } from '@/lib/db';
-import { topicWeights } from '@/lib/mastery/fold';
+import targetsJson from '@/design/research/question-bank-targets.json';
+import { Question, Topic } from '@/lib/db';
+import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-targets';
+import { QuestionVisualZ } from '@/lib/validation/question-visual';
 
 // Coverage vs blueprint targets (ROUND_1 §5): the 400-question bank target is
 // distributed across topics proportionally to their blueprint weight
 // (P1 items + P2 mark share). Queue order = lowest coverage first.
 
-export const BANK_TARGET = 400;
+const bankTargets = QuestionBankTargetsArtifactZ.parse(targetsJson);
+export const BANK_TARGET = bankTargets.summary.bank_target;
 
 export interface TopicCoverage {
   code: string;
@@ -14,43 +17,51 @@ export interface TopicCoverage {
   order: number;
   objectivePrefix: string; // 'M1.5.'
   target: number;
+  targetMcq: number;
+  targetStructured: number;
+  targetVisual: number;
   approved: number;
+  approvedMcq: number;
+  approvedStructured: number;
+  approvedVisual: number;
   drafts: number;
 }
 
 export async function getCoverage(): Promise<{
   topics: TopicCoverage[];
+  bankTarget: number;
   approvedTotal: number;
   draftsRemaining: number;
 }> {
-  const [topics, blueprints, questions] = await Promise.all([
+  const [topics, questions] = await Promise.all([
     Topic.find().lean<{ code: string; title: string; module: 1 | 2 | 3; order: number }[]>(),
-    Blueprint.find().lean<
-      { paper: 'P1' | 'P2'; module: number; allocations: { topic_codes: string[]; items?: number; marks?: number }[] }[]
-    >(),
     Question.find({ status: { $in: ['draft', 'approved'] } })
-      .select('objective_ids status')
-      .lean<{ objective_ids: string[]; status: string }[]>(),
+      .select('objective_ids status kind visual')
+      .lean<{ objective_ids: string[]; status: string; kind: 'mcq' | 'structured'; visual?: unknown }[]>(),
   ]);
 
-  const weights = new Map<string, number>();
-  for (const mod of [1, 2, 3]) {
-    for (const [code, w] of topicWeights(blueprints, mod)) weights.set(code, w);
-  }
-  const totalWeight = [...weights.values()].reduce((s, w) => s + w, 0);
+  const targetsByTopic = new Map(bankTargets.topics.map((topic) => [topic.topic_code, topic]));
 
   const byPrefix = new Map<string, TopicCoverage>();
   const result: TopicCoverage[] = topics
     .sort((a, b) => a.module - b.module || a.order - b.order)
     .map((t) => {
+      const target = targetsByTopic.get(t.code);
       const cov: TopicCoverage = {
         code: t.code,
         title: t.title,
         module: t.module,
         order: t.order,
         objectivePrefix: `M${t.module}.${t.order}.`,
-        target: Math.round((BANK_TARGET * (weights.get(t.code) ?? 0)) / totalWeight),
+        target: target?.target_questions.total ?? 0,
+        targetMcq: target?.target_questions.mcq ?? 0,
+        targetStructured: target?.target_questions.structured ?? 0,
+        targetVisual: (target?.target_visual_questions.mcq ?? 0) +
+          (target?.target_visual_questions.structured ?? 0),
         approved: 0,
+        approvedMcq: 0,
+        approvedStructured: 0,
+        approvedVisual: 0,
         drafts: 0,
       };
       byPrefix.set(cov.objectivePrefix, cov);
@@ -65,14 +76,19 @@ export async function getCoverage(): Promise<{
     const cov = prefix ? byPrefix.get(prefix) : undefined;
     if (q.status === 'approved') {
       approvedTotal++;
-      if (cov) cov.approved++;
+      if (cov) {
+        cov.approved++;
+        if (q.kind === 'mcq') cov.approvedMcq++;
+        else cov.approvedStructured++;
+        if (QuestionVisualZ.safeParse(q.visual).success) cov.approvedVisual++;
+      }
     } else {
       draftsRemaining++;
       if (cov) cov.drafts++;
     }
   }
 
-  return { topics: result, approvedTotal, draftsRemaining };
+  return { topics: result, bankTarget: BANK_TARGET, approvedTotal, draftsRemaining };
 }
 
 // The next draft to review: from the topic with the lowest approved/target

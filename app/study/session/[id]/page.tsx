@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { dbConnect, Attempt, PracticeSession, Question, Student } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
+import { QuestionVisualZ } from '@/lib/validation/question-visual';
 import { loadStudyState } from '@/lib/study/state';
 import QuestionCard, { type CardQuestion } from './question-card';
 import type { ModuleNumber, ProfileMarks } from '@/lib/types';
@@ -146,6 +147,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
     stem: string;
     options?: string[];
     marks: number;
+    visual?: unknown;
     rubric?: { code: string; profile: string; criterion: string; mark_value: number }[];
   } | null>();
   if (!question) notFound();
@@ -158,6 +160,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
     stemHtml: renderMathHtml(question.stem),
     optionsHtml: question.options?.map(renderMathHtml),
     marks: question.marks,
+    visual: QuestionVisualZ.nullable().parse(question.visual ?? null),
     rubricCodes:
       question.rubric?.map((r) => ({ code: r.code, profile: r.profile, mark_value: r.mark_value })) ??
       [],
