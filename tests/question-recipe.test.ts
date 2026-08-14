@@ -153,4 +153,22 @@ describe('QuestionRecipeZ', () => {
       ordinal: 7,
     })).toEqual(recipes[7]);
   });
+
+  it('supports controlled visual and text presentation for a review pilot', () => {
+    const topic = bankTargets.topics.find((entry) => entry.topic_code === 'M2-GEO1')!;
+    const objectiveId = topic.observed_style.mcq.distributions.objective_id[0].value;
+    const common = {
+      targets: bankTargets,
+      topicCode: topic.topic_code,
+      objectiveIds: [objectiveId],
+      kind: 'mcq' as const,
+      difficulty: 2 as const,
+      ordinal: 0,
+    };
+
+    expect(buildCorpusInformedQuestionRecipe({ ...common, presentation: 'visual' }).visual_type)
+      .not.toBeNull();
+    expect(buildCorpusInformedQuestionRecipe({ ...common, presentation: 'text' }).visual_type)
+      .toBeNull();
+  });
 });

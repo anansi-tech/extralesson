@@ -110,6 +110,9 @@ export const QuestionRecipeZ = z
 
 export type QuestionRecipe = z.infer<typeof QuestionRecipeZ>;
 
+export const RecipePresentationZ = z.enum(['auto', 'visual', 'text']);
+export type RecipePresentation = z.infer<typeof RecipePresentationZ>;
+
 export function pickLeastCoveredObjective<T extends { id: string }>(
   objectives: T[],
   counts: ReadonlyMap<string, number>,
@@ -255,6 +258,7 @@ export function buildCorpusInformedQuestionRecipe(args: {
   kind: 'mcq' | 'structured';
   difficulty: 1 | 2 | 3;
   ordinal: number;
+  presentation?: RecipePresentation;
 }): QuestionRecipe {
   const fallback = buildDefaultQuestionRecipe({
     objectiveIds: args.objectiveIds,
@@ -267,7 +271,11 @@ export function buildCorpusInformedQuestionRecipe(args: {
   let pool = style.representative_patterns.filter((pattern) => pattern.difficulty === args.difficulty);
   if (pool.length === 0) pool = style.representative_patterns;
 
-  const wantsVisual = visualDue(args.ordinal, style.visual_question_share_bps);
+  const wantsVisual = args.presentation === 'visual'
+    ? true
+    : args.presentation === 'text'
+      ? false
+      : visualDue(args.ordinal, style.visual_question_share_bps);
   const presentationPool = pool.filter((pattern) => isVisualPattern(pattern) === wantsVisual);
   if (presentationPool.length > 0) pool = presentationPool;
   const objectivePool = pool.filter((pattern) =>

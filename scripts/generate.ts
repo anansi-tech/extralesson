@@ -1,5 +1,6 @@
 // Question generation pipeline (ROUND_1 §4).
-// Usage: pnpm generate -- --topic M1-ALG1 --difficulty 2 --count 10 --kind structured [--dry-run]
+// Usage: pnpm generate -- --topic M1-ALG1 --difficulty 2 --count 10 --kind structured
+//   [--presentation auto|visual|text] [--dry-run]
 //
 // `--count` is the TARGET number of questions for (topic, kind, difficulty):
 // existing non-retired questions count toward it, so re-running is idempotent
@@ -23,6 +24,7 @@ import {
   buildCorpusInformedQuestionRecipe,
   pickLeastCoveredObjective,
   questionMatchesRecipe,
+  RecipePresentationZ,
 } from '@/lib/generation/question-recipe';
 import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-targets';
 
@@ -33,6 +35,7 @@ const ArgsZ = z.object({
   difficulty: z.coerce.number().pipe(z.union([z.literal(1), z.literal(2), z.literal(3)])),
   count: z.coerce.number().int().min(1).max(50),
   kind: z.enum(['mcq', 'structured']),
+  presentation: RecipePresentationZ,
   dryRun: z.boolean(),
   poison: z.boolean(),
 });
@@ -48,11 +51,12 @@ function parseArgs() {
     difficulty: get('difficulty'),
     count: get('count'),
     kind: get('kind'),
+    presentation: get('presentation') ?? 'auto',
     dryRun: argv.includes('--dry-run'),
     poison: argv.includes('--poison'),
   });
   if (!parsed.success) {
-    console.error('Usage: pnpm generate -- --topic M1-ALG1 --difficulty 2 --count 10 --kind structured [--dry-run]');
+    console.error('Usage: pnpm generate -- --topic M1-ALG1 --difficulty 2 --count 10 --kind structured [--presentation auto|visual|text] [--dry-run]');
     console.error(parsed.error.flatten().fieldErrors);
     process.exit(1);
   }
@@ -143,6 +147,18 @@ async function main() {
   let inserted = 0;
   let rejected = 0;
   let attempts = 0;
+  const usageTotals = { inputTokens: 0, cachedInputTokens: 0, outputTokens: 0, reasoningTokens: 0 };
+  const addUsage = (usage: {
+    inputTokens?: number;
+    cachedInputTokens?: number;
+    outputTokens?: number;
+    reasoningTokens?: number;
+  }) => {
+    usageTotals.inputTokens += usage.inputTokens ?? 0;
+    usageTotals.cachedInputTokens += usage.cachedInputTokens ?? 0;
+    usageTotals.outputTokens += usage.outputTokens ?? 0;
+    usageTotals.reasoningTokens += usage.reasoningTokens ?? 0;
+  };
   const maxAttempts = shortfall * 3; // give up rather than loop forever
 
   while (inserted < shortfall && attempts < maxAttempts) {
@@ -157,6 +173,7 @@ async function main() {
         kind: args.kind,
         difficulty: args.difficulty,
         ordinal: existing + inserted,
+        presentation: args.presentation,
       });
       const prompt = buildDraftPrompt({
         topicTitle: topic.title,
@@ -165,11 +182,12 @@ async function main() {
       });
 
       // 1. Draft
-      const { object: raw } = await generateObject({
+      const { object: raw, usage: draftUsage } = await generateObject({
         model,
         schema: args.kind === 'mcq' ? McqLooseZ : StructuredLooseZ,
         prompt,
       });
+      addUsage(draftUsage);
 
       // 2. Strict Zod validation (rubric sums, profiles, module agreement)
       const candidate = {
@@ -223,7 +241,7 @@ async function main() {
       let draftAnswer: string;
       let solveAnswer: string;
       if (draft.kind === 'mcq') {
-        const { object: sol } = await generateObject({
+        const { object: sol, usage: solveUsage } = await generateObject({
           model,
           schema: McqSolveZ,
           prompt: buildSolvePrompt({
@@ -233,15 +251,17 @@ async function main() {
             visual: draft.visual,
           }),
         });
+        addUsage(solveUsage);
         solved = sol.answer_index === draft.answer_key;
         draftAnswer = `key=${draft.answer_key} (${draft.options[draft.answer_key]})`;
         solveAnswer = `index=${sol.answer_index} (${draft.options[sol.answer_index] ?? '?'}) — "${sol.final_answer}"`;
       } else {
-        const { object: sol } = await generateObject({
+        const { object: sol, usage: solveUsage } = await generateObject({
           model,
           schema: StructuredSolveZ,
           prompt: buildSolvePrompt({ stem: draft.stem, kind: 'structured', visual: draft.visual }),
         });
+        addUsage(solveUsage);
         solved = answersEquivalent(sol.final_answer, draft.final_answer);
         draftAnswer = draft.final_answer;
         solveAnswer = sol.final_answer;
@@ -285,6 +305,9 @@ async function main() {
 
   console.log(
     `Done. ${inserted} ${args.dryRun ? 'verified (dry-run)' : 'inserted'}, ${rejected} rejected across ${attempts} attempts.`,
+  );
+  console.log(
+    `Token usage: input=${usageTotals.inputTokens}, cached=${usageTotals.cachedInputTokens}, output=${usageTotals.outputTokens}, reasoning=${usageTotals.reasoningTokens}.`,
   );
   process.exit(inserted >= shortfall ? 0 : 2);
 }
