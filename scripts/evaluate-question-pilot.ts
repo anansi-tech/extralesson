@@ -20,6 +20,7 @@ import {
   summarizePilotComparisons,
 } from '@/lib/generation/pilot-evaluation';
 import { QuestionRecipeZ } from '@/lib/generation/question-recipe';
+import { topicCodeForObjective } from '@/lib/generation/topic-lookup';
 import { QuestionVisualZ } from '@/lib/validation/question-visual';
 import { buildBlindBatchReviewPrompt } from '@/lib/prompts/question-review';
 
@@ -82,19 +83,6 @@ function blindQuestions(questions: z.infer<typeof StoredQuestionZ>[]) {
   }));
 }
 
-function topicForObjective(objectiveId: string) {
-  const modulePrefix = objectiveId.slice(0, 2);
-  const section = objectiveId.split('.')[1];
-  const byPrefix: Record<string, string> = {
-    'M1.1': 'M1-NUM', 'M1.2': 'M1-COMP', 'M1.3': 'M1-SETS', 'M1.4': 'M1-MEAS', 'M1.5': 'M1-ALG1',
-    'M2.1': 'M2-STAT1', 'M2.2': 'M2-STAT2', 'M2.3': 'M2-RFG1', 'M2.4': 'M2-GEO1', 'M2.5': 'M2-TRIG1',
-    'M3.1': 'M3-SEQ', 'M3.2': 'M3-VAR', 'M3.3': 'M3-GEO2', 'M3.4': 'M3-VM2', 'M3.5': 'M3-PROB',
-  };
-  const topic = byPrefix[`${modulePrefix}.${section}`];
-  if (!topic) throw new Error(`No topic mapping for ${objectiveId}`);
-  return topic;
-}
-
 async function main() {
   const args = parseArgs();
   const targets = QuestionBankTargetsArtifactZ.parse(targetsJson);
@@ -149,7 +137,7 @@ async function main() {
   const rows = questions.map((question, index) => {
     const recipe = question.gen_meta.recipe;
     const evaluation = object.evaluations[index];
-    const topicCode = topicForObjective(question.objective_ids[0]);
+    const topicCode = topicCodeForObjective(question.objective_ids[0]);
     return {
       question_id: question._id,
       topic_code: topicCode,
