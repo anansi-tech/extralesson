@@ -29,7 +29,8 @@ const visuals: QuestionVisual[] = [
   }),
   QuestionVisualZ.parse({
     format: 'set-diagram', visual_type: 'set-diagram', alt_text: 'Two labelled sets inside a universal set.',
-    sets: [{ id: 'A', label: 'A', values: ['1', '2'] }, { id: 'B', label: 'B', values: ['2', '3'] }],
+    universal_label: '$U$',
+    sets: [{ id: 'A', label: '$A$', values: ['1', '2'] }, { id: 'B', label: '$B$', values: ['2', '3'] }],
   }),
   QuestionVisualZ.parse({
     format: 'matrix', visual_type: 'matrix-diagram', alt_text: 'Two matrices joined by an equals sign.',
@@ -103,5 +104,9 @@ describe('question visual boundary and renderer', () => {
     expect(svgPlainLabel('$AB \\perp CD$')).toBe('AB ⊥ CD');
     expect(svgPlainLabel('$\\frac{1}{2}x_1$')).toBe('1/2x_1');
     expect(svgPlainLabel('Cost (EC$)')).toBe('Cost (EC$)');
+    const setHtml = renderToStaticMarkup(<QuestionVisualFigure visual={visuals[5]} />);
+    expect(setHtml).toContain('>U</text>');
+    expect(setHtml).toContain('>A</text>');
+    expect(setHtml).not.toContain('$U$');
   });
 });

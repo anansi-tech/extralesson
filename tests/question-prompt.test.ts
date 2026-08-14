@@ -69,6 +69,7 @@ describe('question generation prompt recipes', () => {
     expect(draftPrompt).toContain('Visual type: data-table');
     expect(draftPrompt).toContain('Never return SVG, HTML, a URL, base64');
     expect(draftPrompt).toContain('40 characters or fewer');
+    expect(draftPrompt).toContain('plain display text without $ delimiters');
 
     const solvePrompt = buildSolvePrompt({
       kind: 'mcq', stem: 'Use the supplied table.', options: ['1', '2', '3', '4'],

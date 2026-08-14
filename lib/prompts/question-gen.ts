@@ -4,7 +4,7 @@ import type { QuestionVisual } from '@/lib/validation/question-visual';
 
 // Generation prompts (ROUND_1 §4). Bump PROMPT_VERSION on any wording change —
 // it is recorded in gen_meta.prompt_version on every inserted question.
-export const PROMPT_VERSION = 'v9';
+export const PROMPT_VERSION = 'v10';
 
 function archetypeRequirement(recipe: QuestionRecipe): string {
   const definitions = {
@@ -127,6 +127,7 @@ RULES:
 - Use Caribbean contexts naturally where a context is needed (EC dollars, island place names, cricket, market stalls) without being forced.
 - Math must be typeset KaTeX-safe: inline math in $...$, escape backslashes correctly in JSON.
 - Set visual to null when the recipe visual type is none. Otherwise return a structured visual object whose visual_type exactly matches the recipe. Include every coordinate, label, value, table cell, and relationship required to solve the question. Keep every point, segment, circle, axis, series, and matrix label concise at 40 characters or fewer. The stem must explicitly refer to the visual. alt_text must describe the display without revealing the answer. For fixed-canvas diagram points, use the full 0–100 layout space: the largest horizontal or vertical span must be at least 35 units. Never return SVG, HTML, a URL, base64, or drawing instructions in prose; only use the typed visual fields allowed by the response schema.
+- Every label inside visual data must be plain display text without $ delimiters or LaTeX commands. For example, use "U", "A", "PQ", and "90°", never "$U$", "$A$", "$PQ$", or "90^{\\circ}". Mathematical typesetting rules still apply to the question's prose fields.
 - DELIMITER CONVENTION (hard rule, every field — stem, options, rubric criteria, final_answer, worked_solution, misconception triggers and remediations): the $ sign is EXCLUSIVELY a math delimiter, always in balanced $...$ pairs. Currency is NEVER written with a bare $. Write currency as EC$ immediately followed by the amount (EC$12, EC$3.40) or spell out "dollars". Never put EC$ amounts inside $...$ math.
 - ${kind === 'mcq'
       ? 'Exactly 4 options. Distractors must each come from a plausible specific error. answer_key is the 0-based index of the correct option. marks = 1.'

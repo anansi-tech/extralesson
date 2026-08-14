@@ -309,7 +309,7 @@ function SetDiagram({ visual }: { visual: Extract<QuestionVisual, { format: 'set
   return (
     <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-auto w-full" aria-hidden="true">
       <rect x="35" y="25" width="570" height="310" fill="#FFFDF6" stroke="#1E2430" strokeWidth="2" />
-      <text x="48" y="48" fontSize="14" fontWeight="600">{visual.universal_label}</text>
+      <text x="48" y="48" fontSize="14" fontWeight="600">{svgPlainLabel(visual.universal_label)}</text>
       {visual.sets.map((set, index) => {
         const position = positions[index];
         return <g key={set.id}><circle cx={position.x} cy={position.y} r="105" fill={`${SERIES_COLORS[index]}18`} stroke={SERIES_COLORS[index]} strokeWidth="2" /><text x={position.x} y={position.y - 78} textAnchor="middle" fontSize="14" fontWeight="600">{svgPlainLabel(set.label)}</text><text x={position.x} y={position.y} textAnchor="middle" fontSize="12">{set.values.map(svgPlainLabel).join(', ')}</text></g>;
