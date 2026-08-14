@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-14T14:49:33.724Z",
+  "mode": "unlicensed-metadata-only",
+  "source_classification_sha256": "7b575ef4320c88ab6b5c98f3a21d344f959676107a68e7720d96518c6834bbc2",
+  "pilot": {
+    "since": "2026-08-14T14:31:27Z",
+    "question_count": 3,
+    "status_at_evaluation": "draft",
+    "generation_prompt_filter": null,
+    "generation_prompt_versions": [
+      "v8",
+      "v9"
+    ]
+  },
+  "evaluator": {
+    "model": "gpt-5.6-luna",
+    "reused_evaluations_from": "gen_meta.review.primary",
+    "blind_inputs_excluded": [
+      "recipe",
+      "recorded-difficulty",
+      "recorded-profile",
+      "answer",
+      "solution",
+      "corpus-targets",
+      "generation-model"
+    ],
+    "usage": {
+      "input_tokens": 0,
+      "cached_input_tokens": 0,
+      "output_tokens": 0,
+      "reasoning_tokens": 0
+    }
+  },
+  "summary": {
+    "pass": 3,
+    "review": 0,
+    "reject": 0,
+    "exact_intended_control_matches": 2,
+    "mean_fidelity_and_clarity_bps": 10000,
+    "intended_control_dimension_matches": 16,
+    "intended_control_dimensions": 18,
+    "difficulty_matches": 2,
+    "archetype_matches": 2,
+    "profile_matches": 3,
+    "minimum_visual_legibility": 5,
+    "pilot_gate": "fail",
+    "gate_failures": [
+      "difficulty-alignment-below-threshold",
+      "archetype-alignment-below-threshold"
+    ]
+  },
+  "questions": [
+    {
+      "question_id": "6a7f26e4a58d51571cb64c04",
+      "topic_code": "M3-STAT2",
+      "kind": "mcq",
+      "intended_control": {
+        "difficulty": 2,
+        "archetype": "interpretation",
+        "profile": "AK",
+        "acceptable_profiles": [
+          "AK"
+        ],
+        "part_count": 1,
+        "context_category": "data",
+        "visual_type": "statistical-chart"
+      },
+      "blind_evaluation": {
+        "question_id": "6a7f26e4a58d51571cb64c04",
+        "difficulty": 2,
+        "archetype": "interpretation",
+        "profile": "AK",
+        "part_count": 1,
+        "context_category": "data",
+        "visual_type": "statistical-chart",
+        "exam_fidelity": 5,
+        "clarity": 5,
+        "visual_legibility": 5,
+        "visual_necessity": 5,
+        "readiness": "pass",
+        "concerns": []
+      },
+      "comparison": {
+        "source_question_count": 77,
+        "observed_visual_question_share_bps": 4545,
+        "prevalence_bps": {
+          "difficulty": 4156,
+          "archetype": 2727,
+          "profile": 6623,
+          "part_count": 10000,
+          "context_category": 6623,
+          "visual_presentation": 2727
+        },
+        "nearest_representative_pattern": {
+          "similarity_bps": 10000,
+          "source_share_bps": 779
+        },
+        "acceptable_profiles": [
+          "AK"
+        ],
+        "intended_control_matches": {
+          "difficulty": true,
+          "archetype": true,
+          "profile": true,
+          "part_count": true,
+          "context_category": true,
+          "visual_type": true
+        },
+        "exact_intended_control_match": true
+      }
+    },
+    {
+      "question_id": "6a7f2a106ccf18205f721f71",
+      "topic_code": "M3-GEO2",
+      "kind": "mcq",
+      "intended_control": {
+        "difficulty": 2,
+        "archetype": "interpretation",
+        "profile": "AK",
+        "acceptable_profiles": [
+          "AK"
+        ],
+        "part_count": 1,
+        "context_category": "none",
+        "visual_type": "transformation-grid"
+      },
+      "blind_evaluation": {
+        "question_id": "6a7f2a106ccf18205f721f71",
+        "difficulty": 2,
+        "archetype": "interpretation",
+        "profile": "AK",
+        "part_count": 1,
+        "context_category": "none",
+        "visual_type": "transformation-grid",
+        "exam_fidelity": 5,
+        "clarity": 5,
+        "visual_legibility": 5,
+        "visual_necessity": 5,
+        "readiness": "pass",
+        "concerns": []
+      },
+      "comparison": {
+        "source_question_count": 136,
+        "observed_visual_question_share_bps": 8382,
+        "prevalence_bps": {
+          "difficulty": 4926,
+          "archetype": 4706,
+          "profile": 7353,
+          "part_count": 10000,
+          "context_category": 8382,
+          "visual_presentation": 3750
+        },
+        "nearest_representative_pattern": {
+          "similarity_bps": 10000,
+          "source_share_bps": 221
+        },
+        "acceptable_profiles": [
+          "AK"
+        ],
+        "intended_control_matches": {
+          "difficulty": true,
+          "archetype": true,
+          "profile": true,
+          "part_count": true,
+          "context_category": true,
+          "visual_type": true
+        },
+        "exact_intended_control_match": true
+      }
+    },
+    {
+      "question_id": "6a7f2a3d476eecc6f3d0faf9",
+      "topic_code": "M3-VM2",
+      "kind": "mcq",
+      "intended_control": {
+        "difficulty": 2,
+        "archetype": "multi-step-application",
+        "profile": "AK",
+        "acceptable_profiles": [
+          "AK"
+        ],
+        "part_count": 1,
+        "context_category": "none",
+        "visual_type": "vector-diagram"
+      },
+      "blind_evaluation": {
+        "question_id": "6a7f2a3d476eecc6f3d0faf9",
+        "difficulty": 1,
+        "archetype": "direct-procedure",
+        "profile": "AK",
+        "part_count": 1,
+        "context_category": "none",
+        "visual_type": "vector-diagram",
+        "exam_fidelity": 5,
+        "clarity": 5,
+        "visual_legibility": 5,
+        "visual_necessity": 5,
+        "readiness": "pass",
+        "concerns": []
+      },
+      "comparison": {
+        "source_question_count": 12,
+        "observed_visual_question_share_bps": 6667,
+        "prevalence_bps": {
+          "difficulty": 5000,
+          "archetype": 3334,
+          "profile": 5000,
+          "part_count": 10000,
+          "context_category": 10000,
+          "visual_presentation": 4167
+        },
+        "nearest_representative_pattern": {
+          "similarity_bps": 8333,
+          "source_share_bps": 833
+        },
+        "acceptable_profiles": [
+          "AK"
+        ],
+        "intended_control_matches": {
+          "difficulty": false,
+          "archetype": false,
+          "profile": true,
+          "part_count": true,
+          "context_category": true,
+          "visual_type": true
+        },
+        "exact_intended_control_match": false
+      }
+    }
+  ]
+}
