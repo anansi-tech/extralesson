@@ -72,3 +72,36 @@ describe('visual verify gate', () => {
     expect(describeVisual(visual)).toContain('Mon: 10');
   });
 });
+
+describe('visual verify gate — text cross-checks are advisory', () => {
+  it('a diagram carrying its own dimensions passes, with an advisory', () => {
+    // CSEC norm: dimensions are labelled on the figure, not repeated in prose.
+    const result = verifyQuestionVisual(
+      {
+        template: 'compositeShape',
+        params: { kind: 'cuboid', length: 40, width: 25, height: 15, unit: 'cm' },
+      },
+      { stem: 'The diagram shows a carton. Calculate its volume.', partPrompts: [] },
+    );
+    expect(result.ok).toBe(true);
+    expect(result.issues).toEqual([]);
+    expect(result.advisories.length).toBeGreaterThan(0);
+  });
+
+  it('intrinsic numeric inconsistency is still a hard failure', () => {
+    const result = verifyQuestionVisual(
+      {
+        template: 'compositeShape',
+        params: {
+          kind: 'rect-minus-rect',
+          outer_length: 10, outer_width: 8,
+          inner_length: 20, inner_width: 4, // inner does not fit inside outer
+          unit: 'cm',
+        },
+      },
+      { stem: 'The shaded region is shown in the diagram.', partPrompts: [] },
+    );
+    expect(result.ok).toBe(false);
+    expect(result.issues.length).toBeGreaterThan(0);
+  });
+});

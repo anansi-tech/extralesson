@@ -205,6 +205,9 @@ async function main() {
           console.log(`  ✗ visual verify: ${vres.issues.join(' | ')}`);
           continue;
         }
+        if (vres.advisories.length > 0) {
+          console.log(`  · visual note: ${vres.advisories.join(' | ')}`);
+        }
       }
 
       if (args.poison) {

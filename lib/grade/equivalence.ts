@@ -21,6 +21,7 @@ function preClean(raw: string): string {
     .replace(/[−–]/g, '-') // unicode minus / en-dash
     .replace(/[×·]/g, '*')
     .replace(/÷/g, '/')
+    .replace(/\^\s*\{?\s*\\?circ\s*\}?/g, '°') // KaTeX degrees: ^\circ, ^{\circ}
     .replace(/°/g, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -162,11 +163,19 @@ function wordsEquivalent(a: string, b: string): boolean {
   const tb = contentTokens(b);
   if (ta.length === 0 || tb.length === 0) return false;
   if ([...ta].sort().join(' ') === [...tb].sort().join(' ')) return true;
+
+  const setA = new Set(ta);
+  const setB = new Set(tb);
+  const [small, large] = setA.size <= setB.size ? [setA, setB] : [setB, setA];
+  let shared = 0;
+  for (const t of small) if (large.has(t)) shared++;
+
+  // One side adding a qualifier the other omits ("hexagon" / "regular
+  // hexagon") is one answer at mark-scheme level. Disjoint answers are not.
+  if (shared === small.size) return true;
+
+  // Sentence-length answers (justifications) are reworded freely.
   if (ta.length >= 4 || tb.length >= 4) {
-    const setA = new Set(ta);
-    const setB = new Set(tb);
-    let shared = 0;
-    for (const t of setA) if (setB.has(t)) shared++;
     return shared / Math.max(setA.size, setB.size) >= 0.6;
   }
   return false;

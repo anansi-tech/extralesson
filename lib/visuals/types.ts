@@ -41,3 +41,21 @@ export function numbersInText(context: VerifyContext): number[] {
 export function valueStatedInText(value: number, context: VerifyContext): boolean {
   return numbersInText(context).some((n) => Math.abs(n - value) < 1e-9);
 }
+
+// Templates end text cross-check findings with this exact phrase so the gate
+// can classify them (see verifyQuestionVisual).
+//
+// These are ADVISORY, not failures. An exam diagram legitimately carries
+// givens the prose never repeats — "the diagram shows a carton" with the
+// dimensions labelled on the figure is the CSEC norm, and requiring every
+// visual value to also appear in the text rejects correct questions. The
+// spec's integrity rule runs the other way (a value stated in the stem must
+// not be contradicted by the visual); that direction is covered by the
+// independent solve pass, which sees the stem AND the visual as text and
+// disagrees when they conflict. Intrinsic numeric checks — angle sums,
+// monotonic cumulative data, transformation consistency — remain hard fails.
+export const TEXT_CROSSCHECK_PHRASE = 'never appears in the question text';
+
+export function isTextCrossCheckIssue(issue: string): boolean {
+  return issue.includes(TEXT_CROSSCHECK_PHRASE);
+}

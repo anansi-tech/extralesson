@@ -135,3 +135,19 @@ describe('answersEquivalent — word answers (pilot regression)', () => {
     expect(answersEquivalent('2x - 4', '2x + 4')).toBe(false);
   });
 });
+
+describe('answersEquivalent — pilot round 2 regressions', () => {
+  it('normalizes KaTeX degree notation', () => {
+    expect(parseNumeric('$67^\\circ$')).toBe(67);
+    expect(answersEquivalent('$67^\\circ$', '67°')).toBe(true);
+    expect(answersEquivalent('$113^{\\circ}$', '113°')).toBe(true);
+    expect(answersEquivalent('$67^\\circ$', '113°')).toBe(false);
+  });
+
+  it('accepts a qualifier one side omits, not a different answer', () => {
+    expect(answersEquivalent('hexagon', 'Regular hexagon')).toBe(true);
+    expect(answersEquivalent('$AB=AC$', 'AB = AC')).toBe(true);
+    expect(answersEquivalent('hexagon', 'Regular pentagon')).toBe(false);
+    expect(answersEquivalent('acute', 'interior angle')).toBe(false);
+  });
+});

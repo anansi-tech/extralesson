@@ -4,7 +4,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 // The apiKey is passed explicitly because our env var is AI_API_KEY,
 // not the OPENAI_API_KEY the SDK would read by default.
 // All provider imports live here — nowhere else.
-export const MODEL_ID = 'gpt-5.5';
+export const MODEL_ID = 'gpt-5.6-terra';
 
 const openai = createOpenAI({ apiKey: process.env.AI_API_KEY });
 
