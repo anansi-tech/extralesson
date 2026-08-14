@@ -14,23 +14,44 @@ const FORMAT_BY_VISUAL_TYPE: Readonly<Record<string, string>> = {
   'mapping-diagram': 'mapping',
 };
 
-// The visual type already determines the renderer format. Some structured
-// outputs omit that redundant discriminator, so repair it deterministically
-// before the same strict Zod boundary is applied again.
+const OPTIONAL_LABEL_KEYS = new Set(['label', 'x_label', 'y_label']);
+
+function removeEmptyOptionalLabels(value: unknown): boolean {
+  if (Array.isArray(value)) {
+    return value.reduce((changed, item) => removeEmptyOptionalLabels(item) || changed, false);
+  }
+  if (typeof value !== 'object' || value === null) return false;
+  let changed = false;
+  for (const [key, child] of Object.entries(value)) {
+    if (OPTIONAL_LABEL_KEYS.has(key) && typeof child === 'string' && child.trim() === '') {
+      delete (value as Record<string, unknown>)[key];
+      changed = true;
+    } else if (removeEmptyOptionalLabels(child)) {
+      changed = true;
+    }
+  }
+  return changed;
+}
+
+// Repair only redundant/optional presentation metadata before applying the
+// same strict Zod boundary again. Mathematical coordinates and values are
+// never rewritten.
 export function repairQuestionOutput(text: string): string | null {
   try {
     const raw: unknown = JSON.parse(text);
     if (typeof raw !== 'object' || raw === null || !('visual' in raw)) return null;
     const visual = (raw as { visual?: unknown }).visual;
-    if (typeof visual !== 'object' || visual === null || 'format' in visual) return null;
-    const visualType = (visual as { visual_type?: unknown }).visual_type;
-    if (typeof visualType !== 'string') return null;
-    const format = FORMAT_BY_VISUAL_TYPE[visualType];
-    if (!format) return null;
-    return JSON.stringify({
-      ...raw,
-      visual: { ...visual, format },
-    });
+    if (typeof visual !== 'object' || visual === null) return null;
+    let changed = removeEmptyOptionalLabels(visual);
+    if (!('format' in visual)) {
+      const visualType = (visual as { visual_type?: unknown }).visual_type;
+      const format = typeof visualType === 'string' ? FORMAT_BY_VISUAL_TYPE[visualType] : undefined;
+      if (format) {
+        (visual as { format?: string }).format = format;
+        changed = true;
+      }
+    }
+    return changed ? JSON.stringify(raw) : null;
   } catch {
     return null;
   }

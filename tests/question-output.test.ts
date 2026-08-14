@@ -22,4 +22,21 @@ describe('repairQuestionOutput', () => {
       visual: { visual_type: 'unknown' },
     }))).toBeNull();
   });
+
+  it('omits empty optional visual labels without changing mathematical data', () => {
+    const repaired = repairQuestionOutput(JSON.stringify({
+      stem: 'Use the graph.',
+      visual: {
+        format: 'plot', visual_type: 'function-graph', x_range: [-2, 2],
+        series: [{ label: '', points: [{ x: -1, y: 2, label: '' }, { x: 1, y: 4 }] }],
+      },
+    }));
+    expect(JSON.parse(repaired!)).toEqual({
+      stem: 'Use the graph.',
+      visual: {
+        format: 'plot', visual_type: 'function-graph', x_range: [-2, 2],
+        series: [{ points: [{ x: -1, y: 2 }, { x: 1, y: 4 }] }],
+      },
+    });
+  });
 });
