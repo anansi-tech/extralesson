@@ -38,6 +38,8 @@ const QuestionSchema = new Schema({
   worked_solution: { type: String, required: true },
   misconceptions: { type: [MisconceptionSchema], default: [] },
   status: { type: String, enum: ['draft', 'approved', 'retired'], default: 'draft', required: true },
+  // Why a question was retired outside the review flow (e.g. 'delimiter-collision').
+  reject_reason: { type: String },
   gen_meta: {
     model: { type: String, required: true },
     prompt_version: { type: String, required: true },

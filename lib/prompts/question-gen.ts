@@ -2,19 +2,19 @@ import type { Objective, QuestionKind } from '@/lib/types';
 
 // Generation prompts (ROUND_1 §4). Bump PROMPT_VERSION on any wording change —
 // it is recorded in gen_meta.prompt_version on every inserted question.
-export const PROMPT_VERSION = 'v2';
+export const PROMPT_VERSION = 'v3';
 
 const MCQ_EXEMPLAR = `{
   "kind": "mcq",
-  "stem": "A store marks up an item costing $80 by 35%. What is the selling price?",
-  "options": ["$108", "$115", "$28", "$105.33"],
+  "stem": "A store marks up an item costing EC$80 by 35%. What is the selling price?",
+  "options": ["EC$108", "EC$115", "EC$28", "EC$105.33"],
   "answer_key": 0,
   "profile": "AK",
   "difficulty": 1,
   "marks": 1,
-  "worked_solution": "Markup $= 0.35 \\\\times 80 = 28$. Selling price $= 80 + 28 = \\\\$108$.",
+  "worked_solution": "Markup $= 0.35 \\\\times 80 = 28$. Selling price: $80 + 28 = 108$, so the answer is EC$108.",
   "misconceptions": [
-    { "trigger": "$28", "name": "Markup instead of price", "remediation": "You found the markup amount. Add it to the cost price: $80 + 28 = 108$." }
+    { "trigger": "EC$28", "name": "Markup instead of price", "remediation": "You found the markup amount. Add it to the cost price: $80 + 28 = 108$, giving EC$108." }
   ]
 }`;
 
@@ -60,9 +60,10 @@ RULES:
 - The question must be ORIGINAL — written in exam style but never copied or near-copied from any CXC past paper.
 - Use Caribbean contexts naturally where a context is needed (EC dollars, island place names, cricket, market stalls) without being forced.
 - Math must be typeset KaTeX-safe: inline math in $...$, escape backslashes correctly in JSON.
+- DELIMITER CONVENTION (hard rule, every field — stem, options, rubric criteria, final_answer, worked_solution, misconception triggers and remediations): the $ sign is EXCLUSIVELY a math delimiter, always in balanced $...$ pairs. Currency is NEVER written with a bare $. Write currency as EC$ immediately followed by the amount (EC$12, EC$3.40) or spell out "dollars". Never put EC$ amounts inside $...$ math.
 - ${kind === 'mcq'
       ? 'Exactly 4 options. Distractors must each come from a plausible specific error. answer_key is the 0-based index of the correct option. Set "profile" to the single profile the item assesses. marks = 1.'
-      : 'Write a rubric of 2-6 criteria. Codes are CK1, CK2..., AK1..., R1... matching each criterion\'s profile. mark_values must sum to marks (2-9 marks total). final_answer must contain ONLY the final value(s) — no sentences, no labels, no working. One value per required part/root, separated by "; ". Examples: "42.5" · "x = -1/3; x = 2" · "$70; $58".'}
+      : 'Write a rubric of 2-6 criteria. Codes are CK1, CK2..., AK1..., R1... matching each criterion\'s profile. mark_values must sum to marks (2-9 marks total). final_answer must contain ONLY the final value(s) — no sentences, no labels, no working. One value per required part/root, separated by "; ". Examples: "42.5" · "x = -1/3; x = 2" · "EC$70; EC$58".'}
 - misconceptions: 1-3 entries. Each trigger is a specific wrong final answer a student might give; name the error; remediation explains the fix in one or two sentences.
 - worked_solution: complete, correct, step-by-step, KaTeX-safe.
 
@@ -93,5 +94,5 @@ Return JSON: {"answer_index": <0-based index of the correct option>, "final_answ
 
 ${args.stem}
 
-Return JSON: {"final_answer": "..."} where final_answer contains ONLY the final value(s) — no working, no equation setup, no explanations, no (a)/(b) labels, no sentences. One value per required part/root, separated by "; ". Examples: "42.5" · "x = -1/3; x = 2" · "$70; $58".`;
+Return JSON: {"final_answer": "..."} where final_answer contains ONLY the final value(s) — no working, no equation setup, no explanations, no (a)/(b) labels, no sentences. One value per required part/root, separated by "; ". Examples: "42.5" · "x = -1/3; x = 2" · "EC$70; EC$58".`;
 }
