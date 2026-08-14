@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { generateObject } from 'ai';
 import { model } from '@/lib/ai';
 import { buildSolvePrompt } from '@/lib/prompts/question-gen';
-import { answersEquivalent } from '@/lib/grade/equivalence';
+import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { describeVisual, type StoredVisual } from '@/lib/visuals';
 import type { QuestionDraft } from '@/lib/validation/question';
 
@@ -62,7 +62,7 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     sol.part_answers.length === draft.parts.length &&
     draft.parts.every((p) => {
       const s = solByLabel.get(p.label);
-      return s !== undefined && answersEquivalent(s, p.answer);
+      return s !== undefined && answersEquivalentAny(s, p.answer, p.accept);
     });
 
   return {

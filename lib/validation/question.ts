@@ -87,6 +87,10 @@ export const PartZ = z.object({
   prompt: z.string().min(1),
   marks: z.number().int().min(1),
   answer: z.string().min(1), // values-only convention
+  // Mark-scheme accept list: alternative correct forms of THIS part's answer
+  // (real schemes write "edge (accept: line segment)"). Grading and the solve
+  // gate treat any listed form as correct.
+  accept: z.array(z.string().min(1)).max(4).optional(),
 });
 
 const PART_LABELS = ['a', 'b', 'c', 'd', 'e', 'f'];

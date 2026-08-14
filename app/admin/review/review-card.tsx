@@ -13,7 +13,7 @@ export interface ReviewQuestion {
   stimulusHtml?: string;
   stemHtml: string;
   visualHtml?: string;
-  parts: { label: string; promptHtml: string; marks: number; answer: string }[];
+  parts: { label: string; promptHtml: string; marks: number; answer: string; accept?: string[] }[];
   optionsHtml?: string[];
   answer_key?: number;
   profile?: string;
@@ -131,6 +131,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
               <span dangerouslySetInnerHTML={{ __html: p.promptHtml }} />
               <span className="ml-auto shrink-0 font-mono text-[10px] text-dim">
                 [{p.marks}] → {p.answer}
+                {p.accept?.length ? ` (accept: ${p.accept.join(' / ')})` : ''}
               </span>
             </li>
           ))}

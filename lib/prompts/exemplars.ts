@@ -1,6 +1,6 @@
 import type { ModuleNumber } from '@/lib/types';
 
-// Module-matched exemplars for the v5 draft prompt (R1.5 §5). Two per module
+// Module-matched exemplars for the draft prompt (R1.5 §5). Two per module
 // (one structured, one mcq), in the R1.5 schema shape. These are ORIGINAL
 // in-house seeds — the founder replaces or extends them as blind-review
 // feedback accumulates. Style and JSON shape only; the model must never reuse
@@ -71,7 +71,7 @@ const M2_STRUCTURED = `{
   "parts": [
     { "label": "a", "prompt": "State the modal class.", "marks": 1, "answer": "5-9" },
     { "label": "b", "prompt": "Calculate an estimate of the mean number of wickets.", "marks": 4, "answer": "9.17" },
-    { "label": "c", "prompt": "State ONE reason your answer to (b) is an estimate.", "marks": 1, "answer": "grouped data uses class midpoints, not actual values" }
+    { "label": "c", "prompt": "State ONE reason your answer to (b) is an estimate.", "marks": 1, "answer": "grouped data uses class midpoints, not actual values", "accept": ["the actual values within each class are unknown"] }
   ],
   "rubric": [
     { "code": "CK1", "profile": "CK", "criterion": "Identifies the modal class from frequencies", "mark_value": 1, "part_label": "a" },

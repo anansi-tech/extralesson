@@ -1,4 +1,4 @@
-import { answersEquivalent } from './equivalence';
+import { answersEquivalentAny } from './equivalence';
 import type { ProfileMarks, RubricItem } from '@/lib/types';
 
 // Round 1 marking (ROUND_1 §6.3): the final-answer equivalence check drives
@@ -36,7 +36,7 @@ export interface PartInput {
 
 export function markStructuredParts(
   rubric: RubricItem[],
-  parts: { label: string; answer: string }[],
+  parts: { label: string; answer: string; accept?: string[] }[],
   inputs: PartInput[],
 ): MarkResult {
   const inputByLabel = new Map(inputs.map((i) => [i.label, i]));
@@ -54,6 +54,7 @@ export function markStructuredParts(
       part.answer,
       input?.answer ?? '',
       input?.working ?? '',
+      part.accept,
     );
     if (!result.correct) allCorrect = false;
     awarded.push(...result.rubric_awarded.filter((c) => c !== 'R0'));
@@ -70,8 +71,9 @@ export function markStructured(
   canonicalAnswer: string,
   studentAnswer: string,
   working: string,
+  accept?: string[],
 ): MarkResult {
-  const correct = answersEquivalent(studentAnswer, canonicalAnswer);
+  const correct = answersEquivalentAny(studentAnswer, canonicalAnswer, accept);
   const trimmed = working.trim();
   const hasWorking = trimmed.length > 0;
   const hasWorkedStep = trimmed.includes('=') || trimmed.split('\n').filter((l) => l.trim()).length >= 2;

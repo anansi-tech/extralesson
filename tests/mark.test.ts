@@ -100,3 +100,27 @@ describe('markStructuredParts — per-part equivalence (R1.5)', () => {
     expect(r.rubric_awarded).toEqual(['AK1']);
   });
 });
+
+describe('mark-scheme accept lists', () => {
+  const terminologyRubric: RubricItem[] = [
+    { code: 'CK1', profile: 'CK', criterion: 'names the feature', mark_value: 1, part_label: 'a' },
+  ];
+  const part = [{ label: 'a', answer: 'edge', accept: ['line segment where two faces meet'] }];
+
+  it('any accepted form earns the marks', () => {
+    for (const student of ['edge', 'Edge', 'line segment where two faces meet']) {
+      const r = markStructuredParts(terminologyRubric, part, [
+        { label: 'a', answer: student, working: '' },
+      ]);
+      expect(r.correct, student).toBe(true);
+      expect(r.profile_marks.CK).toBe(1);
+    }
+  });
+
+  it('an unlisted answer still fails', () => {
+    const r = markStructuredParts(terminologyRubric, part, [
+      { label: 'a', answer: 'vertex', working: '' },
+    ]);
+    expect(r.correct).toBe(false);
+  });
+});

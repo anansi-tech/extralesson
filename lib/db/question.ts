@@ -17,6 +17,7 @@ const PartSchema = new Schema(
     prompt: { type: String, required: true },
     marks: { type: Number, required: true },
     answer: { type: String, required: true }, // values-only convention
+    accept: { type: [String], default: undefined }, // mark-scheme alternatives
   },
   { _id: false },
 );

@@ -34,7 +34,7 @@ export default async function ReviewPage() {
         profile?: string;
         difficulty: number;
         marks: number;
-        parts?: { label: string; prompt: string; marks: number; answer: string }[];
+        parts?: { label: string; prompt: string; marks: number; answer: string; accept?: string[] }[];
         rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string }[];
         final_answer?: string;
         worked_solution: string;
@@ -63,6 +63,7 @@ export default async function ReviewPage() {
           label: p.label,
           marks: p.marks,
           answer: p.answer,
+          accept: p.accept,
           promptHtml: renderMathHtml(p.prompt),
         })),
         optionsHtml: raw.options?.map(renderMathHtml),

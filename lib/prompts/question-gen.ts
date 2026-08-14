@@ -5,7 +5,7 @@ import { exemplarsFor } from './exemplars';
 // Generation prompts (R1.5 §5): recipe + style spec Part A + 2 module-matched
 // exemplars + visual-template contract. Bump PROMPT_VERSION on any wording
 // change — it is recorded in gen_meta.prompt_version on every insert.
-export const PROMPT_VERSION = 'v5';
+export const PROMPT_VERSION = 'v6';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -89,7 +89,8 @@ ${visualContract}
   const partsSection =
     kind === 'mcq'
       ? 'PARTS: exactly one part, label "a", marks 1, whose "answer" is the correct option text.'
-      : `PARTS (hard requirement): ${partCountGuidance(recipe.marks)} flat parts labeled "a", "b", ... (never (i)/(ii) nesting). Part marks sum to ${recipe.marks}. Each part's "answer" contains ONLY that part's final value (values-only convention). Later parts build on earlier results where natural. "final_answer" must be the parts' answers joined with "; ".`;
+      : `PARTS (hard requirement): ${partCountGuidance(recipe.marks)} flat parts labeled "a", "b", ... (never (i)/(ii) nesting). Part marks sum to ${recipe.marks}. Each part's "answer" contains ONLY that part's final value (values-only convention). Later parts build on earlier results where natural. "final_answer" must be the parts' answers joined with "; ".
+- When a part asks the student to NAME, STATE, or CLASSIFY something, "answer" must be the standard syllabus term, and every other wording an examiner would accept goes in that part's "accept" array (a mark scheme's "accept:" list — e.g. answer "edge", accept ["line segment where two faces meet"]). Omit "accept" for numeric/algebraic answers unless a genuinely different correct form exists.`;
 
   return `You are writing an original practice question for CSEC Mathematics (CXC 05/G/SYLL 16, 2027 syllabus) in the style of ${kind === 'mcq' ? 'Paper 1 (multiple choice)' : 'Paper 2 (structured response)'}.
 

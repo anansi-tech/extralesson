@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { answersEquivalent, parseNumeric } from '@/lib/grade/equivalence';
+import { answersEquivalent, answersEquivalentAny, parseNumeric } from '@/lib/grade/equivalence';
 
 describe('parseNumeric', () => {
   it('parses plain numbers, negatives, decimals', () => {
@@ -149,5 +149,15 @@ describe('answersEquivalent — pilot round 2 regressions', () => {
     expect(answersEquivalent('$AB=AC$', 'AB = AC')).toBe(true);
     expect(answersEquivalent('hexagon', 'Regular pentagon')).toBe(false);
     expect(answersEquivalent('acute', 'interior angle')).toBe(false);
+  });
+});
+
+describe('answersEquivalentAny — mark-scheme accept lists', () => {
+  it('matches the canonical answer or any accepted alternative', () => {
+    expect(answersEquivalentAny('edge', 'edge', ['line segment'])).toBe(true);
+    expect(answersEquivalentAny('line segment', 'edge', ['line segment'])).toBe(true);
+    expect(answersEquivalentAny('Line segment', 'edge', ['line segment'])).toBe(true);
+    expect(answersEquivalentAny('vertex', 'edge', ['line segment'])).toBe(false);
+    expect(answersEquivalentAny('edge', 'edge')).toBe(true);
   });
 });

@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { dbConnect, Attempt, PracticeSession, Question } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { markMcq, markStructuredParts } from '@/lib/grade/mark';
-import { answersEquivalent } from '@/lib/grade/equivalence';
+import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { renderMathHtml } from '@/lib/katex';
 import type { ProfileMarks, QuestionPart, RubricItem } from '@/lib/types';
 
@@ -73,13 +73,17 @@ export async function submitAnswer(input: {
     result = markMcq(question.profile!, question.marks, idx, question.answer_key!);
     partResults = [{ label: 'a', correct: result.correct }];
   } else {
-    const parts = (question.parts ?? []).map((p) => ({ label: p.label, answer: p.answer }));
+    const parts = (question.parts ?? []).map((p) => ({
+      label: p.label,
+      answer: p.answer,
+      accept: p.accept,
+    }));
     const inputs = answers.map((a) => ({ ...a, working }));
     result = markStructuredParts(question.rubric ?? [], parts, inputs);
     const inputByLabel = new Map(answers.map((a) => [a.label, a.answer]));
     partResults = parts.map((p) => ({
       label: p.label,
-      correct: answersEquivalent(inputByLabel.get(p.label) ?? '', p.answer),
+      correct: answersEquivalentAny(inputByLabel.get(p.label) ?? '', p.answer, p.accept),
     }));
     storedAnswer = answers.map((a) => `(${a.label}) ${a.answer}`).join('; ');
   }
@@ -107,7 +111,7 @@ export async function submitAnswer(input: {
         ? [question.options?.[Number(answers[0]?.answer)] ?? String(answers[0]?.answer)]
         : partResults.filter((p) => !p.correct).map((p) => answers.find((a) => a.label === p.label)?.answer ?? '');
     const match = question.misconceptions.find((m) =>
-      wrongAnswers.some((w) => answersEquivalent(m.trigger, w)),
+      wrongAnswers.some((w) => answersEquivalentAny(w, m.trigger)),
     );
     if (match) {
       feedbackTitle = match.name;

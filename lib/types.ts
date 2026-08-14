@@ -63,6 +63,7 @@ export interface QuestionPart {
   prompt: string;
   marks: number;
   answer: string; // values-only convention
+  accept?: string[]; // mark-scheme alternatives ("edge — accept: line segment")
 }
 
 export interface Misconception {

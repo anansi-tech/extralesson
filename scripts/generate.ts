@@ -58,7 +58,7 @@ function parseArgs() {
 // Loose structural schemas for model output; the strict Zod boundary runs
 // afterwards (gate 1) so failures are logged, not thrown.
 const MisconceptionLooseZ = z.object({ trigger: z.string(), name: z.string(), remediation: z.string() });
-const PartLooseZ = z.object({ label: z.string(), prompt: z.string(), marks: z.number(), answer: z.string() });
+const PartLooseZ = z.object({ label: z.string(), prompt: z.string(), marks: z.number(), answer: z.string(), accept: z.array(z.string()).nullish() });
 const VisualLooseZ = z.object({ template: z.string(), params: z.record(z.unknown()) }).nullable();
 
 const McqLooseZ = z.object({
@@ -164,7 +164,12 @@ async function main() {
 
       // Normalize prose fields, assemble candidate
       const clean = normalizeEscapedNewlines;
-      const parts = raw.parts.map((p) => ({ ...p, prompt: clean(p.prompt), answer: clean(p.answer) }));
+      const parts = raw.parts.map((p) => ({
+        ...p,
+        prompt: clean(p.prompt),
+        answer: clean(p.answer),
+        accept: p.accept?.length ? p.accept.map(clean) : undefined,
+      }));
       const candidate = {
         ...raw,
         kind: recipe.kind,

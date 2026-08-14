@@ -221,3 +221,16 @@ export function answersEquivalent(a: string, b: string): boolean {
   }
   return true;
 }
+
+// Mark-scheme any-of matching: a candidate is correct when it is equivalent
+// to the canonical answer OR to any listed accepted alternative. This is the
+// single entry point for grading and the solve gate — synonymy lives in the
+// question's accept list (as on a real mark scheme), never in heuristics here.
+export function answersEquivalentAny(
+  candidate: string,
+  canonical: string,
+  accept?: string[],
+): boolean {
+  if (answersEquivalent(candidate, canonical)) return true;
+  return (accept ?? []).some((alt) => answersEquivalent(candidate, alt));
+}
