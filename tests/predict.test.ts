@@ -2,19 +2,19 @@ import { describe, expect, it } from 'vitest';
 import {
   predictModule,
   predictOverall,
-  SBA_NEUTRAL_FRACTION,
+  PROJECT_NEUTRAL_FRACTION,
 } from '@/lib/grade/predict';
 
 describe('predictModule — honest arithmetic', () => {
-  it('splits mastery across P1 (30) and P2 (50) with neutral SBA (20)', () => {
+  it('splits mastery across P1 (30) and P2 (50) with neutral Paper 3 project (20)', () => {
     const p = predictModule(1, 0.5);
     expect(p.p1_estimate).toBe(15);
     expect(p.p2_estimate).toBe(25);
-    expect(p.sba_assumed).toBe(SBA_NEUTRAL_FRACTION * 20);
+    expect(p.project_assumed).toBe(PROJECT_NEUTRAL_FRACTION * 20);
     expect(p.total_estimate).toBe(52);
   });
 
-  it('full mastery earns A; zero mastery earns U (only the SBA assumption remains)', () => {
+  it('full mastery earns A; zero mastery earns U (only the project assumption remains)', () => {
     expect(predictModule(2, 1).letter).toBe('A');
     expect(predictModule(2, 1).total_estimate).toBe(92);
     const zero = predictModule(2, 0);

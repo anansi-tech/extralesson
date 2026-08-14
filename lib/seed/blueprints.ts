@@ -61,8 +61,8 @@ export const seedBlueprints: SeedBlueprint[] = [
       { topic_codes: ['M1-CONS', 'M1-NTC'], marks: 9 },
       // "Graphs, Sets, Measurement and Algebra 1 — 12"
       { topic_codes: ['M1-GRAPHS', 'M1-SETS', 'M1-MEAS', 'M1-ALG1'], marks: 12 },
-      // "*Investigation — 9": may be set on any combination of Module 1 objectives
-      // (PDF page 11 footnote). Investigation-type questions are Round 2 — this
+      // "*Investigative question — 9": may be set on any combination of Module 1
+      // objectives (PDF page 11 footnote). That question type is Round 2 — this
       // allocation exists only for blueprint-faithful weighting.
       {
         topic_codes: ['M1-NTC', 'M1-CONS', 'M1-SETS', 'M1-MEAS', 'M1-ALG1', 'M1-GRAPHS'],

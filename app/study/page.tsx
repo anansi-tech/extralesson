@@ -87,7 +87,7 @@ export default async function StudyDashboard({
             </>
           )}
           <div className="mt-1 font-mono text-[9px] text-dim">
-            SBA assumed at neutral carry-over — estimates move as you practise.
+            Paper 3 project assumed at neutral carry-over — estimates move as you practise.
           </div>
         </section>
 

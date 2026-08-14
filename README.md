@@ -43,9 +43,21 @@ Approve drafts in `/admin/review`.
 - Auth is passwordless magic-link (HMAC-SHA256, 15-minute expiry, single-use).
 - **Rotating `SESSION_SECRET` logs out every user globally.** This is intentional:
   sessions are stateless HMAC cookies, so the secret is the kill switch.
+- No email provider is configured this round — magic links are printed to the
+  server log (`[magic-link] …`). Grab the link from there to sign in.
 
-## Tests
+## Tests & verification
 
 ```bash
-pnpm test
+pnpm test                                                       # Vitest, all green
+grep -riE 'whatsapp|twilio|investigation|sba' app lib scripts   # kill-list: zero hits
+grep -riwE 'vision|upload' app lib scripts                      # kill-list: zero hits
+grep -riE "from ['\"]stripe" app lib scripts                    # no Stripe SDK: zero hits
+```
+
+To demonstrate the pipeline's independent-solve rejection, run generation with
+the `--poison` test hook and watch drafts get auto-rejected:
+
+```bash
+pnpm generate -- --topic M1-ALG1 --difficulty 1 --count 2 --kind mcq --dry-run --poison
 ```

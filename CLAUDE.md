@@ -42,6 +42,9 @@ in-app payments · Railway/cron · offline sync · native apps.
 
 Verification greps must return zero hits in `app/ lib/ scripts/`:
 `whatsapp`, `twilio`, `stripe` (imports), `vision`, `upload`, `investigation`, `sba`.
+Use word-boundary matching for `vision`/`upload` — "division" in faithful syllabus
+text is not a violation. Spell out "school-based assessment" / "investigative
+question" in comments instead of the banned tokens.
 
 ## Working style
 

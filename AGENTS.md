@@ -42,6 +42,9 @@ Instructions for any AI coding agent working in this repo.
 
 ```
 pnpm test
-grep -riE 'whatsapp|twilio|vision|upload|investigation|sba' app lib scripts   # zero hits
+grep -riE 'whatsapp|twilio|investigation|sba' app lib scripts                 # zero hits
+grep -riwE 'vision|upload' app lib scripts                                    # zero hits (word-boundary:
+                                                                              #  "division" in syllabus text
+                                                                              #  is not a hit)
 grep -riE "from ['\"]stripe|require\(['\"]stripe" app lib scripts             # zero hits
 ```

@@ -252,7 +252,7 @@ export default function LandingPage() {
             <dd>Yes. Any smartphone with a camera. Low data by design — no video streaming.</dd>
             <dt>My child is re-sitting in January. Is this for them?</dt>
             <dd>
-              Especially for them. January candidates re-sit Papers 1 and 2 (SBA scores carry over)
+              Especially for them. January candidates re-sit Papers 1 and 2 (project marks carry over)
               — exactly what ExtraLesson trains. Ten focused weeks is enough to move a grade.
             </dd>
             <dt>Is this real CXC past papers?</dt>
