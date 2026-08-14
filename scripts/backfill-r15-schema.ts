@@ -46,17 +46,22 @@ async function main() {
       q.reject_reason = 'superseded-r15';
       retired++;
     }
-    // Branch-format visuals ({format, visual_type, ...}) cannot render under
-    // the R1.5 template system ({template, params}); those questions are
-    // retired for regeneration regardless of status. Prose questions stay.
-    const visual = q.visual as unknown as Record<string, unknown> | undefined;
-    if (q.status !== 'retired' && visual && 'format' in visual && !('template' in visual)) {
-      q.status = 'retired';
-      q.reject_reason = 'superseded-r15-visual';
-      retired++;
-    }
     if (changed || q.isModified()) await q.save();
   }
+
+  // Branch-format visuals ({format, visual_type, ...}) cannot render under
+  // the R1.5 template system ({template, params}); those questions are
+  // retired for regeneration regardless of status. Prose questions stay.
+  // Raw collection query: hydrated docs strip off-schema visual keys.
+  const visualRetire = await Question.collection.updateMany(
+    {
+      status: { $ne: 'retired' },
+      'visual.format': { $exists: true },
+      'visual.template': { $exists: false },
+    },
+    { $set: { status: 'retired', reject_reason: 'superseded-r15-visual' } },
+  );
+  retired += visualRetire.modifiedCount;
   console.log(`Backfilled ${backfilled}, retired ${retired} pre-R1.5 drafts of ${questions.length}.`);
   process.exit(0);
 }
