@@ -4,7 +4,20 @@ import type { QuestionVisual } from '@/lib/validation/question-visual';
 
 // Generation prompts (ROUND_1 §4). Bump PROMPT_VERSION on any wording change —
 // it is recorded in gen_meta.prompt_version on every inserted question.
-export const PROMPT_VERSION = 'v7';
+export const PROMPT_VERSION = 'v8';
+
+function archetypeRequirement(recipe: QuestionRecipe): string {
+  const definitions = {
+    'concept-recognition': 'The student must recall, identify, or classify without performing a calculation or transformation.',
+    'direct-procedure': 'The student must carry out one familiar algorithm or calculation; merely reading an input from a visual does not change this label.',
+    interpretation: 'The central demand must be extracting mathematical meaning, a relationship, or a conclusion from a representation—not merely reading values before routine calculation.',
+    'multi-step-application': 'The student must combine at least two dependent procedures or decisions; an explicit proof is not the central demand.',
+    comparison: 'The student must evaluate at least two objects, methods, cases, or conditions against a mathematical criterion.',
+    justification: 'The student must explain, prove, show why, or support a conclusion; a final value alone cannot earn all marks.',
+    'reverse-reasoning': 'The student must infer an unknown input, cause, rule, or property from a supplied result or condition.',
+  } as const;
+  return `ARCHETYPE CONTRACT (hard requirement): ${definitions[recipe.archetype]}`;
+}
 
 function demandRequirements(recipe: QuestionRecipe): string {
   if (recipe.difficulty === 1) {
@@ -105,6 +118,8 @@ QUESTION RECIPE (follow every field exactly):
 MARK PROFILES (official CXC): every mark is CK (Conceptual Knowledge — recalling/recognising concepts), AK (Algorithmic Knowledge — carrying out procedures), or R (Reasoning — translating, justifying, multi-step problem solving).
 
 ${demandRequirements(recipe)}
+
+${archetypeRequirement(recipe)}
 
 RULES:
 - The question must be ORIGINAL — written in exam style but never copied or near-copied from any CXC past paper.

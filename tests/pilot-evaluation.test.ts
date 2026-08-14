@@ -108,6 +108,7 @@ describe('blind pilot comparison', () => {
 
     expect(summary.pilot_gate).toBe('fail');
     expect(summary.gate_failures).toContain('difficulty-alignment-below-threshold');
+    expect(summary.gate_failures).toContain('archetype-alignment-below-threshold');
     expect(summary.gate_failures).toContain('profile-alignment-below-threshold');
     expect(summary.gate_failures).toContain('visual-legibility-below-threshold');
   });

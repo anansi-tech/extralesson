@@ -142,6 +142,7 @@ export function summarizePilotComparisons(rows: Array<{
 }>) {
   const controlDimensions = rows.flatMap((row) => Object.values(row.comparison.intended_control_matches));
   const difficultyMatches = rows.filter((row) => row.comparison.intended_control_matches.difficulty).length;
+  const archetypeMatches = rows.filter((row) => row.comparison.intended_control_matches.archetype).length;
   const profileMatches = rows.filter((row) => row.comparison.intended_control_matches.profile).length;
   const visualScores = rows
     .map((row) => row.blind_evaluation.visual_legibility)
@@ -149,6 +150,9 @@ export function summarizePilotComparisons(rows: Array<{
   const gate_failures: string[] = [];
   if (difficultyMatches < Math.ceil(rows.length * 5 / 6)) {
     gate_failures.push('difficulty-alignment-below-threshold');
+  }
+  if (archetypeMatches < Math.ceil(rows.length * 5 / 6)) {
+    gate_failures.push('archetype-alignment-below-threshold');
   }
   if (profileMatches < Math.ceil(rows.length * 5 / 6)) {
     gate_failures.push('profile-alignment-below-threshold');
@@ -163,6 +167,7 @@ export function summarizePilotComparisons(rows: Array<{
     intended_control_dimension_matches: controlDimensions.filter(Boolean).length,
     intended_control_dimensions: controlDimensions.length,
     difficulty_matches: difficultyMatches,
+    archetype_matches: archetypeMatches,
     profile_matches: profileMatches,
     minimum_visual_legibility: visualScores.length > 0 ? Math.min(...visualScores) : null,
     pilot_gate: gate_failures.length === 0 ? 'pass' as const : 'fail' as const,

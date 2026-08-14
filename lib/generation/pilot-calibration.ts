@@ -98,6 +98,7 @@ export function calibratePilotEvaluators(
   };
   const lunaFirstPassApproved =
     agreement.difficulty_bps >= 8_000 &&
+    agreement.archetype_bps >= 8_000 &&
     agreement.profile_bps >= 8_000 &&
     agreement.readiness_bps === 10_000 &&
     agreement.concerns_bps === 10_000;
@@ -120,6 +121,7 @@ export function calibratePilotEvaluators(
         'primary-readiness-not-pass',
         'primary-concern-present',
         'primary-intended-difficulty-mismatch',
+        'primary-intended-archetype-mismatch',
         'primary-intended-profile-mismatch',
       ],
       frontier_adjudication_needed: readinessDisagreement || concernDisagreement,

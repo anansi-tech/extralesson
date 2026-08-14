@@ -11,6 +11,7 @@ export type DeterministicQualityIssue = typeof DeterministicQualityIssueZ[number
 
 export const BlindReviewIssueZ = [
   'difficulty-mismatch',
+  'archetype-mismatch',
   'profile-mismatch',
   'part-count-mismatch',
   'visual-type-mismatch',
@@ -46,6 +47,7 @@ export function blindReviewIssues(
 ): BlindReviewIssue[] {
   const issues: BlindReviewIssue[] = [];
   if (evaluation.difficulty !== recipe.difficulty) issues.push('difficulty-mismatch');
+  if (evaluation.archetype !== recipe.archetype) issues.push('archetype-mismatch');
   if (!expectedProfiles(recipe).includes(evaluation.profile)) issues.push('profile-mismatch');
   if (evaluation.part_count !== recipe.part_count) issues.push('part-count-mismatch');
   if (evaluation.visual_type !== recipe.visual_type) issues.push('visual-type-mismatch');

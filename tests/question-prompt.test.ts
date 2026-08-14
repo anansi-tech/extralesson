@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { buildDefaultQuestionRecipe } from '@/lib/generation/question-recipe';
 import { QuestionRecipeZ } from '@/lib/generation/question-recipe';
 import { buildDraftPrompt, buildSolvePrompt } from '@/lib/prompts/question-gen';
+import {
+  buildBlindSingleReviewPrompt,
+  QUESTION_REVIEW_PROMPT_VERSION,
+} from '@/lib/prompts/question-review';
 import { QuestionVisualZ } from '@/lib/validation/question-visual';
 
 describe('question generation prompt recipes', () => {
@@ -36,6 +40,19 @@ describe('question generation prompt recipes', () => {
     expect(prompt).toContain('PROFILE MARKS: CK 1, AK 3, R 3');
     expect(prompt).toContain('Marks: 7');
     expect(prompt).toContain('match its exact CK/AK/R totals');
+    expect(prompt).toContain('ARCHETYPE CONTRACT (hard requirement)');
+    expect(prompt).toContain('explain, prove, show why');
+  });
+
+  it('gives blind reviewers operational archetype definitions and priority', () => {
+    const prompt = buildBlindSingleReviewPrompt({
+      question_id: 'candidate', kind: 'mcq', stem: 'Which relation is a function?',
+      options: ['A', 'B', 'C', 'D'], marks: 1, visual: null,
+    });
+    expect(QUESTION_REVIEW_PROMPT_VERSION).toBe('v2');
+    expect(prompt).toContain('archetype concept-recognition');
+    expect(prompt).toContain('archetype reverse-reasoning');
+    expect(prompt).toContain('Choose one dominant archetype using this priority');
   });
 
   it('requires typed visual data in both draft and independent solve prompts', () => {

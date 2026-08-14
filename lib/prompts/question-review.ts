@@ -1,7 +1,7 @@
 import type { QuestionKind } from '@/lib/types';
 import type { QuestionVisual } from '@/lib/validation/question-visual';
 
-export const QUESTION_REVIEW_PROMPT_VERSION = 'v1';
+export const QUESTION_REVIEW_PROMPT_VERSION = 'v2';
 
 export interface BlindReviewQuestion {
   question_id: string;
@@ -19,6 +19,14 @@ You are not given the author's intended difficulty, profile, archetype, recipe, 
 Scale definitions:
 - difficulty 1: routine single-step; 2: at least two dependent mathematical moves or meaningful interpretation followed by use of the result; 3: at least two concepts and three dependent stages with demanding reasoning.
 - profile CK: recall/recognition; AK: carry out a procedure; R: translate, justify, reverse-reason, or integrate dependent reasoning. Choose the dominant demand actually needed to answer.
+- archetype concept-recognition: recall, identify, or classify without carrying out a calculation or transformation.
+- archetype direct-procedure: carry out one familiar algorithm or calculation. Reading an input value from a visual does not by itself make the task interpretation.
+- archetype interpretation: extract mathematical meaning, a relationship, or a conclusion from a graph, table, diagram, statement, or representation. Merely reading values before a routine calculation is not enough.
+- archetype multi-step-application: combine at least two dependent procedures or decisions to solve the task, without an explicit proof or explanation being the central demand.
+- archetype comparison: evaluate two or more objects, methods, cases, or conditions against a mathematical criterion and contrast or select between them.
+- archetype justification: explain, prove, show why, or support a conclusion; an unsupported final value is insufficient.
+- archetype reverse-reasoning: infer an unknown input, cause, rule, or property from a supplied result or condition.
+- Choose one dominant archetype using this priority when demands overlap: justification, reverse-reasoning, comparison, multi-step-application, interpretation, direct-procedure, concept-recognition.
 - exam_fidelity and clarity: 1 poor to 5 excellent.
 - visual_legibility and visual_necessity: 1 poor/decorative to 5 excellent/essential; use null when there is no visual.
 - readiness pass: could enter human content review unchanged; review: promising but needs editing; reject: materially misleading, ambiguous, malformed, or unlike the expected exam standard.

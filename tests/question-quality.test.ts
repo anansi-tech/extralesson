@@ -45,6 +45,7 @@ describe('deterministic presentation quality', () => {
       readiness: 'pass', concerns: [],
     }, recipe);
     expect(issues).toContain('difficulty-mismatch');
+    expect(issues).toContain('archetype-mismatch');
     expect(issues).toContain('profile-mismatch');
   });
 
