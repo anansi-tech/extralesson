@@ -44,8 +44,10 @@ const PlotVisualZ = z.object({
   format: z.literal('plot'),
   visual_type: z.enum(['coordinate-grid', 'function-graph', 'transformation-grid', 'vector-diagram']),
   alt_text: z.string().min(10).max(240),
-  x_range: z.tuple([NumericZ, NumericZ]),
-  y_range: z.tuple([NumericZ, NumericZ]),
+  // Homogeneous fixed-length arrays produce a strict-output-compatible JSON
+  // Schema, unlike tuple schemas (prefixItems) which the model API rejects.
+  x_range: z.array(NumericZ).length(2),
+  y_range: z.array(NumericZ).length(2),
   x_step: z.number().finite().positive().max(1_000),
   y_step: z.number().finite().positive().max(1_000),
   x_label: LabelZ.optional(),
