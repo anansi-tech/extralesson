@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function ReviewPage() {
   await dbConnect();
-  const [{ topics, approvedTotal, draftsRemaining }, nextId] = await Promise.all([
+  const [{ matrix, approvedTotal, draftsRemaining }, nextId] = await Promise.all([
     getCoverage(),
     getNextDraftId(),
   ]);
@@ -100,34 +100,86 @@ export default async function ReviewPage() {
 
         <section className="mt-10">
           <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
-            Coverage vs blueprint targets
+            P1 matrix — {matrix.p1_actual_total}/160 MCQs ·{' '}
+            {matrix.p1_actual_total > 0
+              ? Math.round((matrix.mcq_visual_actual / matrix.p1_actual_total) * 100)
+              : 0}
+            % visual (target 37%)
           </h2>
           <div className="mt-2 grid gap-x-8 gap-y-1 sm:grid-cols-2">
-            {topics.map((t) => (
-              <div key={t.code} className="flex items-baseline justify-between text-sm">
+            {matrix.topics.map((t) => (
+              <div key={`p1-${t.code}`} className="flex items-baseline justify-between text-sm">
                 <span>
                   <span className="font-mono text-xs text-dim">{t.code}</span> {t.title}
                 </span>
                 <span className="font-mono text-xs">
-                  <b className={t.approved >= t.target ? 'text-green-pen' : 'text-ink'}>
-                    {t.approved}
+                  <b className={t.p1_actual >= t.p1_target ? 'text-green-pen' : 'text-ink'}>
+                    {t.p1_actual}
                   </b>
-                  /{t.target}
-                  {t.drafts > 0 && <span className="text-dim"> (+{t.drafts} drafts)</span>}
+                  /{t.p1_target}
                 </span>
               </div>
             ))}
           </div>
-          {[1, 2, 3].map((m) => {
-            const mod = topics.filter((t) => t.module === m);
-            const approved = mod.reduce((s, t) => s + t.approved, 0);
-            const target = mod.reduce((s, t) => s + t.target, 0);
-            return (
-              <div key={m} className="mt-1 font-mono text-xs text-dim">
-                M{m}: {approved}/{target} approved
+        </section>
+
+        <section className="mt-8">
+          <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
+            P2 matrix — {matrix.p2_actual_total}/240 structured · coverage in rubric marks
+          </h2>
+          <div className="mt-2 grid gap-x-8 gap-y-1 sm:grid-cols-2">
+            {matrix.topics.map((t) => (
+              <div key={`p2-${t.code}`} className="flex items-baseline justify-between text-sm">
+                <span>
+                  <span className="font-mono text-xs text-dim">{t.code}</span> {t.title}
+                </span>
+                <span className="font-mono text-xs">
+                  <b
+                    className={
+                      t.p2_marks_actual >= t.p2_marks_target ? 'text-green-pen' : 'text-ink'
+                    }
+                  >
+                    {t.p2_marks_actual}
+                  </b>
+                  /{t.p2_marks_target} marks
+                  {t.p2_questions > 0 && <span className="text-dim"> ({t.p2_questions}q)</span>}
+                </span>
               </div>
-            );
-          })}
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-8 grid gap-6 sm:grid-cols-2">
+          <div>
+            <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
+              Profile marks by module (P2, target 9/12/9 per 30)
+            </h2>
+            {([1, 2, 3] as const).map((m) => (
+              <div key={m} className="mt-1 font-mono text-xs text-dim">
+                M{m}: CK {matrix.profile_actuals[m].p2.CK} · AK {matrix.profile_actuals[m].p2.AK} ·
+                R {matrix.profile_actuals[m].p2.R}
+              </div>
+            ))}
+          </div>
+          <div>
+            <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
+              Archetypes (structured, target 67/11/11/9/2)
+            </h2>
+            {Object.entries(matrix.archetype_actuals.structured).map(([a, n]) => (
+              <div key={a} className="mt-1 font-mono text-xs text-dim">
+                {a}: {n}
+              </div>
+            ))}
+            <h2 className="mt-3 font-mono text-xs uppercase tracking-widest text-dim">
+              Difficulty (target 25/50/25)
+            </h2>
+            <div className="mt-1 font-mono text-xs text-dim">
+              mcq {matrix.difficulty_actuals.mcq[1]}/{matrix.difficulty_actuals.mcq[2]}/
+              {matrix.difficulty_actuals.mcq[3]} · structured{' '}
+              {matrix.difficulty_actuals.structured[1]}/{matrix.difficulty_actuals.structured[2]}/
+              {matrix.difficulty_actuals.structured[3]}
+            </div>
+          </div>
         </section>
       </div>
     </main>
