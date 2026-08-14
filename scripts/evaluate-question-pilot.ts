@@ -3,7 +3,7 @@
 // answers, solutions, generation model, or corpus targets. The saved artifact
 // contains only abstract judgments and comparisons—never source-paper content.
 import 'dotenv/config';
-import { mkdir, rename, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { createOpenAI } from '@ai-sdk/openai';
 import { generateObject } from 'ai';
@@ -13,8 +13,10 @@ import { dbConnect, Question } from '@/lib/db';
 import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-targets';
 import {
   BlindPilotBatchZ,
+  BlindPilotEvaluationZ,
   compareBlindEvaluation,
   expectedProfile,
+  expectedProfiles,
   summarizePilotComparisons,
 } from '@/lib/generation/pilot-evaluation';
 import { QuestionRecipeZ } from '@/lib/generation/question-recipe';
@@ -34,7 +36,16 @@ const ArgsZ = z.object({
   limit: z.coerce.number().int().min(1).max(12).default(6),
   output: z.string().min(1).default(DEFAULT_OUTPUT),
   promptVersion: z.string().min(1).optional(),
+  reuseEvaluationsFrom: z.string().min(1).optional(),
 }).strict();
+
+const ReusableEvaluationArtifactZ = z.object({
+  evaluator: z.object({ model: z.string().min(1) }).passthrough(),
+  questions: z.array(z.object({
+    question_id: z.string().min(1),
+    blind_evaluation: BlindPilotEvaluationZ,
+  }).passthrough()).min(1),
+}).passthrough();
 
 function parseArgs() {
   const argv = process.argv.slice(2);
@@ -45,6 +56,7 @@ function parseArgs() {
   return ArgsZ.parse({
     since: get('since'), limit: get('limit'), output: get('output'),
     promptVersion: get('prompt-version'),
+    reuseEvaluationsFrom: get('reuse-evaluations-from'),
   });
 }
 
@@ -85,7 +97,6 @@ function topicForObjective(objectiveId: string) {
 
 async function main() {
   const args = parseArgs();
-  const env = EnvZ.parse(process.env);
   const targets = QuestionBankTargetsArtifactZ.parse(targetsJson);
   await dbConnect();
   const query: Record<string, unknown> = {
@@ -96,14 +107,39 @@ async function main() {
   const raw = await Question.find(query).sort({ 'gen_meta.ts': 1 }).limit(args.limit).lean();
   const questions = z.array(StoredQuestionZ).length(args.limit).parse(raw);
 
-  const openai = createOpenAI({ apiKey: env.AI_API_KEY });
-  const { object, usage } = await generateObject({
-    model: openai(env.PILOT_EVALUATOR_MODEL),
-    schema: BlindPilotBatchZ,
-    prompt: buildBlindBatchReviewPrompt(blindQuestions(questions)),
-    maxOutputTokens: 8_000,
-    providerOptions: { openai: { reasoningEffort: 'low' } },
-  });
+  let object: z.infer<typeof BlindPilotBatchZ>;
+  let usage = { inputTokens: 0, cachedInputTokens: 0, outputTokens: 0, reasoningTokens: 0 };
+  let evaluatorModel: string;
+  if (args.reuseEvaluationsFrom) {
+    const stored = ReusableEvaluationArtifactZ.parse(
+      JSON.parse(await readFile(args.reuseEvaluationsFrom, 'utf8')),
+    );
+    const byId = new Map(stored.questions.map((row) => [row.question_id, row.blind_evaluation]));
+    const reused = questions.map((question) => byId.get(question._id));
+    if (reused.some((evaluation) => !evaluation)) {
+      throw new Error('Reusable artifact does not contain every selected question id');
+    }
+    object = BlindPilotBatchZ.parse({ evaluations: reused });
+    evaluatorModel = stored.evaluator.model;
+  } else {
+    const env = EnvZ.parse(process.env);
+    const openai = createOpenAI({ apiKey: env.AI_API_KEY });
+    const result = await generateObject({
+      model: openai(env.PILOT_EVALUATOR_MODEL),
+      schema: BlindPilotBatchZ,
+      prompt: buildBlindBatchReviewPrompt(blindQuestions(questions)),
+      maxOutputTokens: 8_000,
+      providerOptions: { openai: { reasoningEffort: 'low' } },
+    });
+    object = result.object;
+    usage = {
+      inputTokens: result.usage.inputTokens ?? 0,
+      cachedInputTokens: result.usage.cachedInputTokens ?? 0,
+      outputTokens: result.usage.outputTokens ?? 0,
+      reasoningTokens: result.usage.reasoningTokens ?? 0,
+    };
+    evaluatorModel = env.PILOT_EVALUATOR_MODEL;
+  }
   const expectedIds = questions.map((question) => question._id);
   const actualIds = object.evaluations.map((evaluation) => evaluation.question_id);
   if (new Set(actualIds).size !== expectedIds.length || actualIds.some((id, index) => id !== expectedIds[index])) {
@@ -122,6 +158,7 @@ async function main() {
         difficulty: recipe.difficulty,
         archetype: recipe.archetype,
         profile: expectedProfile(recipe),
+        acceptable_profiles: expectedProfiles(recipe),
         part_count: recipe.part_count,
         context_category: recipe.context_category,
         visual_type: recipe.visual_type,
@@ -152,7 +189,8 @@ async function main() {
         .sort(),
     },
     evaluator: {
-      model: env.PILOT_EVALUATOR_MODEL,
+      model: evaluatorModel,
+      reused_evaluations_from: args.reuseEvaluationsFrom ?? null,
       blind_inputs_excluded: ['recipe', 'recorded-difficulty', 'recorded-profile', 'answer', 'solution', 'corpus-targets', 'generation-model'],
       usage: {
         input_tokens: usage.inputTokens ?? 0,
@@ -175,7 +213,7 @@ async function main() {
   const temporary = `${args.output}.tmp`;
   await writeFile(temporary, `${JSON.stringify(artifact, null, 2)}\n`, 'utf8');
   await rename(temporary, args.output);
-  console.log(`Evaluated ${rows.length} questions with ${env.PILOT_EVALUATOR_MODEL}.`);
+  console.log(`Evaluated ${rows.length} questions with ${evaluatorModel}${args.reuseEvaluationsFrom ? ' (stored judgments; zero new model calls)' : ''}.`);
   console.log(`Readiness: pass=${artifact.summary.pass}, review=${artifact.summary.review}, reject=${artifact.summary.reject}.`);
   console.log(`Token usage: input=${artifact.evaluator.usage.input_tokens}, cached=${artifact.evaluator.usage.cached_input_tokens}, output=${artifact.evaluator.usage.output_tokens}, reasoning=${artifact.evaluator.usage.reasoning_tokens}.`);
   process.exit(0);

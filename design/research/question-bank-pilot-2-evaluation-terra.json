@@ -1,0 +1,316 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-14T14:06:02.442Z",
+  "mode": "unlicensed-metadata-only",
+  "source_classification_sha256": "7b575ef4320c88ab6b5c98f3a21d344f959676107a68e7720d96518c6834bbc2",
+  "pilot": {
+    "since": "2026-08-14T13:42:57Z",
+    "question_count": 5,
+    "status_at_evaluation": "draft",
+    "generation_prompt_filter": null,
+    "generation_prompt_versions": [
+      "v6"
+    ]
+  },
+  "evaluator": {
+    "model": "gpt-5.6-terra",
+    "blind_inputs_excluded": [
+      "recipe",
+      "recorded-difficulty",
+      "recorded-profile",
+      "answer",
+      "solution",
+      "corpus-targets",
+      "generation-model"
+    ],
+    "usage": {
+      "input_tokens": 1846,
+      "cached_input_tokens": 0,
+      "output_tokens": 862,
+      "reasoning_tokens": 417
+    }
+  },
+  "summary": {
+    "pass": 5,
+    "review": 0,
+    "reject": 0,
+    "exact_intended_control_matches": 0,
+    "mean_fidelity_and_clarity_bps": 9800,
+    "intended_control_dimension_matches": 24,
+    "intended_control_dimensions": 30,
+    "difficulty_matches": 5,
+    "profile_matches": 4,
+    "minimum_visual_legibility": 5,
+    "pilot_gate": "fail",
+    "gate_failures": [
+      "profile-alignment-below-threshold"
+    ]
+  },
+  "questions": [
+    {
+      "question_id": "6a7f1b8632fa409bcea8cee5",
+      "topic_code": "M1-SETS",
+      "kind": "mcq",
+      "intended_control": {
+        "difficulty": 1,
+        "archetype": "interpretation",
+        "profile": "CK",
+        "part_count": 1,
+        "context_category": "none",
+        "visual_type": "set-diagram"
+      },
+      "blind_evaluation": {
+        "question_id": "6a7f1b8632fa409bcea8cee5",
+        "difficulty": 1,
+        "archetype": "concept-recognition",
+        "profile": "CK",
+        "part_count": 1,
+        "context_category": "none",
+        "visual_type": "set-diagram",
+        "exam_fidelity": 5,
+        "clarity": 5,
+        "visual_legibility": 5,
+        "visual_necessity": 5,
+        "readiness": "pass",
+        "concerns": []
+      },
+      "comparison": {
+        "source_question_count": 184,
+        "observed_visual_question_share_bps": 5109,
+        "prevalence_bps": {
+          "difficulty": 6848,
+          "archetype": 2120,
+          "profile": 5272,
+          "part_count": 10000,
+          "context_category": 8098,
+          "visual_presentation": 5055
+        },
+        "nearest_representative_pattern": {
+          "similarity_bps": 8333,
+          "source_share_bps": 543
+        },
+        "intended_control_matches": {
+          "difficulty": true,
+          "archetype": false,
+          "profile": true,
+          "part_count": true,
+          "context_category": true,
+          "visual_type": true
+        },
+        "exact_intended_control_match": false
+      }
+    },
+    {
+      "question_id": "6a7f1bae76d9b36a441614af",
+      "topic_code": "M1-MEAS",
+      "kind": "structured",
+      "intended_control": {
+        "difficulty": 2,
+        "archetype": "multi-step-application",
+        "profile": "AK",
+        "part_count": 2,
+        "context_category": "travel",
+        "visual_type": null
+      },
+      "blind_evaluation": {
+        "question_id": "6a7f1bae76d9b36a441614af",
+        "difficulty": 2,
+        "archetype": "multi-step-application",
+        "profile": "R",
+        "part_count": 2,
+        "context_category": "travel",
+        "visual_type": null,
+        "exam_fidelity": 5,
+        "clarity": 5,
+        "visual_legibility": null,
+        "visual_necessity": null,
+        "readiness": "pass",
+        "concerns": []
+      },
+      "comparison": {
+        "source_question_count": 102,
+        "observed_visual_question_share_bps": 9314,
+        "prevalence_bps": {
+          "difficulty": 5980,
+          "archetype": 7941,
+          "profile": 784,
+          "part_count": 3333,
+          "context_category": 2647,
+          "visual_presentation": 686
+        },
+        "nearest_representative_pattern": {
+          "similarity_bps": 8333,
+          "source_share_bps": 98
+        },
+        "intended_control_matches": {
+          "difficulty": true,
+          "archetype": true,
+          "profile": false,
+          "part_count": true,
+          "context_category": true,
+          "visual_type": true
+        },
+        "exact_intended_control_match": false
+      }
+    },
+    {
+      "question_id": "6a7f1c57fd96e7a9ab43a24f",
+      "topic_code": "M2-RFG1",
+      "kind": "mcq",
+      "intended_control": {
+        "difficulty": 2,
+        "archetype": "interpretation",
+        "profile": "AK",
+        "part_count": 1,
+        "context_category": "none",
+        "visual_type": "function-graph"
+      },
+      "blind_evaluation": {
+        "question_id": "6a7f1c57fd96e7a9ab43a24f",
+        "difficulty": 2,
+        "archetype": "multi-step-application",
+        "profile": "AK",
+        "part_count": 1,
+        "context_category": "none",
+        "visual_type": "function-graph",
+        "exam_fidelity": 5,
+        "clarity": 5,
+        "visual_legibility": 5,
+        "visual_necessity": 5,
+        "readiness": "pass",
+        "concerns": []
+      },
+      "comparison": {
+        "source_question_count": 201,
+        "observed_visual_question_share_bps": 6070,
+        "prevalence_bps": {
+          "difficulty": 2388,
+          "archetype": 149,
+          "profile": 4080,
+          "part_count": 10000,
+          "context_category": 9950,
+          "visual_presentation": 2985
+        },
+        "nearest_representative_pattern": {
+          "similarity_bps": 8333,
+          "source_share_bps": 249
+        },
+        "intended_control_matches": {
+          "difficulty": true,
+          "archetype": false,
+          "profile": true,
+          "part_count": true,
+          "context_category": true,
+          "visual_type": true
+        },
+        "exact_intended_control_match": false
+      }
+    },
+    {
+      "question_id": "6a7f1d5bca836710317c9baf",
+      "topic_code": "M2-STAT1",
+      "kind": "mcq",
+      "intended_control": {
+        "difficulty": 2,
+        "archetype": "interpretation",
+        "profile": "AK",
+        "part_count": 1,
+        "context_category": "data",
+        "visual_type": "statistical-chart"
+      },
+      "blind_evaluation": {
+        "question_id": "6a7f1d5bca836710317c9baf",
+        "difficulty": 2,
+        "archetype": "direct-procedure",
+        "profile": "AK",
+        "part_count": 1,
+        "context_category": "school",
+        "visual_type": "statistical-chart",
+        "exam_fidelity": 4,
+        "clarity": 5,
+        "visual_legibility": 5,
+        "visual_necessity": 5,
+        "readiness": "pass",
+        "concerns": []
+      },
+      "comparison": {
+        "source_question_count": 164,
+        "observed_visual_question_share_bps": 6098,
+        "prevalence_bps": {
+          "difficulty": 3415,
+          "archetype": 2561,
+          "profile": 6463,
+          "part_count": 10000,
+          "context_category": 732,
+          "visual_presentation": 4207
+        },
+        "nearest_representative_pattern": {
+          "similarity_bps": 6667,
+          "source_share_bps": 671
+        },
+        "intended_control_matches": {
+          "difficulty": true,
+          "archetype": false,
+          "profile": true,
+          "part_count": true,
+          "context_category": false,
+          "visual_type": true
+        },
+        "exact_intended_control_match": false
+      }
+    },
+    {
+      "question_id": "6a7f1da57b1e47170ef2ce9f",
+      "topic_code": "M2-GEO1",
+      "kind": "mcq",
+      "intended_control": {
+        "difficulty": 2,
+        "archetype": "multi-step-application",
+        "profile": "AK",
+        "part_count": 1,
+        "context_category": "none",
+        "visual_type": "geometry-figure"
+      },
+      "blind_evaluation": {
+        "question_id": "6a7f1da57b1e47170ef2ce9f",
+        "difficulty": 2,
+        "archetype": "interpretation",
+        "profile": "AK",
+        "part_count": 1,
+        "context_category": "none",
+        "visual_type": "geometry-figure",
+        "exam_fidelity": 5,
+        "clarity": 5,
+        "visual_legibility": 5,
+        "visual_necessity": 5,
+        "readiness": "pass",
+        "concerns": []
+      },
+      "comparison": {
+        "source_question_count": 208,
+        "observed_visual_question_share_bps": 8077,
+        "prevalence_bps": {
+          "difficulty": 4615,
+          "archetype": 962,
+          "profile": 5625,
+          "part_count": 10000,
+          "context_category": 7788,
+          "visual_presentation": 7212
+        },
+        "nearest_representative_pattern": {
+          "similarity_bps": 8333,
+          "source_share_bps": 1154
+        },
+        "intended_control_matches": {
+          "difficulty": true,
+          "archetype": false,
+          "profile": true,
+          "part_count": true,
+          "context_category": true,
+          "visual_type": true
+        },
+        "exact_intended_control_match": false
+      }
+    }
+  ]
+}

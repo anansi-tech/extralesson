@@ -1,6 +1,6 @@
 import type { QuestionVisual } from '@/lib/validation/question-visual';
 import type { BlindPilotEvaluation } from '@/lib/generation/pilot-evaluation';
-import { expectedProfile } from '@/lib/generation/pilot-evaluation';
+import { expectedProfiles } from '@/lib/generation/pilot-evaluation';
 import type { QuestionRecipe } from '@/lib/generation/question-recipe';
 
 export const DeterministicQualityIssueZ = [
@@ -46,7 +46,7 @@ export function blindReviewIssues(
 ): BlindReviewIssue[] {
   const issues: BlindReviewIssue[] = [];
   if (evaluation.difficulty !== recipe.difficulty) issues.push('difficulty-mismatch');
-  if (evaluation.profile !== expectedProfile(recipe)) issues.push('profile-mismatch');
+  if (!expectedProfiles(recipe).includes(evaluation.profile)) issues.push('profile-mismatch');
   if (evaluation.part_count !== recipe.part_count) issues.push('part-count-mismatch');
   if (evaluation.visual_type !== recipe.visual_type) issues.push('visual-type-mismatch');
   if (evaluation.readiness !== 'pass') issues.push('readiness-not-pass');

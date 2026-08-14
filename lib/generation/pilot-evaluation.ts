@@ -42,7 +42,18 @@ export const BlindPilotBatchZ = z.object({
 
 export type BlindPilotEvaluation = z.infer<typeof BlindPilotEvaluationZ>;
 
-export function expectedProfile(recipe: QuestionRecipe): 'CK' | 'AK' | 'R' {
+type Profile = 'CK' | 'AK' | 'R';
+
+export function expectedProfiles(recipe: QuestionRecipe): Profile[] {
+  if (recipe.kind === 'mcq') return [recipe.profile];
+  const maximum = Math.max(recipe.profile_split.CK, recipe.profile_split.AK, recipe.profile_split.R);
+  const preferred = expectedProfile(recipe);
+  const coDominant = (['CK', 'AK', 'R'] as const)
+    .filter((profile) => recipe.profile_split[profile] === maximum && profile !== preferred);
+  return [preferred, ...coDominant];
+}
+
+export function expectedProfile(recipe: QuestionRecipe): Profile {
   if (recipe.kind === 'mcq') return recipe.profile;
   const maximum = Math.max(recipe.profile_split.CK, recipe.profile_split.AK, recipe.profile_split.R);
   if (recipe.difficulty === 3 && recipe.profile_split.R === maximum) return 'R';
@@ -76,10 +87,11 @@ export function compareBlindEvaluation(args: {
     context_category: args.recipe.context_category,
     visual_type: args.recipe.visual_type,
   };
+  const acceptableProfiles = expectedProfiles(args.recipe);
   const matches = {
     difficulty: args.evaluation.difficulty === expected.difficulty,
     archetype: args.evaluation.archetype === expected.archetype,
-    profile: args.evaluation.profile === expected.profile,
+    profile: acceptableProfiles.includes(args.evaluation.profile),
     part_count: args.evaluation.part_count === expected.part_count,
     context_category: args.evaluation.context_category === expected.context_category,
     visual_type: args.evaluation.visual_type === expected.visual_type,
@@ -118,6 +130,7 @@ export function compareBlindEvaluation(args: {
       visual_presentation: prevalence(style.distributions.visual_combination, visualValue),
     },
     nearest_representative_pattern: nearest,
+    acceptable_profiles: acceptableProfiles,
     intended_control_matches: matches,
     exact_intended_control_match: Object.values(matches).every(Boolean),
   };

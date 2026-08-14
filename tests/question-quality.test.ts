@@ -59,4 +59,16 @@ describe('deterministic presentation quality', () => {
       readiness: 'pass', concerns: [],
     }, recipe)).toEqual([]);
   });
+
+  it('accepts either co-dominant profile for a structured recipe', () => {
+    const recipe = buildDefaultQuestionRecipe({
+      objectiveIds: ['M1.4.1'], kind: 'structured', difficulty: 2,
+    });
+    expect(blindReviewIssues({
+      question_id: 'candidate', difficulty: 2, archetype: 'multi-step-application', profile: 'R',
+      part_count: 2, context_category: 'none', visual_type: null,
+      exam_fidelity: 4, clarity: 4, visual_legibility: null, visual_necessity: null,
+      readiness: 'pass', concerns: [],
+    }, recipe)).toEqual([]);
+  });
 });

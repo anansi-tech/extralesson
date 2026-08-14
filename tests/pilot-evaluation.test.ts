@@ -4,24 +4,47 @@ import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-tar
 import {
   compareBlindEvaluation,
   expectedProfile,
+  expectedProfiles,
   summarizePilotComparisons,
 } from '@/lib/generation/pilot-evaluation';
-import { buildCorpusInformedQuestionRecipe } from '@/lib/generation/question-recipe';
+import {
+  buildCorpusInformedQuestionRecipe,
+  buildDefaultQuestionRecipe,
+} from '@/lib/generation/question-recipe';
 
 const targets = QuestionBankTargetsArtifactZ.parse(targetsJson);
 
 describe('blind pilot comparison', () => {
   it('uses the dominant structured demand, breaking a difficulty-2 tie toward AK', () => {
-    const d2 = buildCorpusInformedQuestionRecipe({
-      targets, topicCode: 'M1-MEAS', objectiveIds: ['M1.4.1'],
-      kind: 'structured', difficulty: 2, ordinal: 0, presentation: 'text',
+    const d2 = buildDefaultQuestionRecipe({
+      objectiveIds: ['M1.4.1'], kind: 'structured', difficulty: 2,
     });
-    const d3 = buildCorpusInformedQuestionRecipe({
-      targets, topicCode: 'M1-MEAS', objectiveIds: ['M1.4.1'],
-      kind: 'structured', difficulty: 3, ordinal: 0, presentation: 'text',
+    const d3 = buildDefaultQuestionRecipe({
+      objectiveIds: ['M1.4.1'], kind: 'structured', difficulty: 3,
     });
     expect(expectedProfile(d2)).toBe('AK');
+    expect(expectedProfiles(d2)).toEqual(['AK', 'R']);
     expect(expectedProfile(d3)).toBe('R');
+    expect(expectedProfiles(d3)).toEqual(['R', 'AK']);
+  });
+
+  it('accepts either co-dominant profile for a mixed structured item', () => {
+    const recipe = buildDefaultQuestionRecipe({
+      objectiveIds: ['M1.4.1'], kind: 'structured', difficulty: 2,
+    });
+    const evaluation = {
+      question_id: 'mixed-profile', difficulty: recipe.difficulty,
+      archetype: recipe.archetype, profile: 'R' as const,
+      part_count: recipe.part_count, context_category: recipe.context_category,
+      visual_type: recipe.visual_type, exam_fidelity: 5, clarity: 5,
+      visual_legibility: null, visual_necessity: null, readiness: 'pass' as const,
+      concerns: [],
+    };
+    const comparison = compareBlindEvaluation({
+      targets, topicCode: 'M1-MEAS', kind: 'structured', recipe, evaluation,
+    });
+    expect(comparison.acceptable_profiles).toEqual(['AK', 'R']);
+    expect(comparison.intended_control_matches.profile).toBe(true);
   });
   it('compares a blind judgment to hidden controls and real-paper distributions', () => {
     const recipe = buildCorpusInformedQuestionRecipe({
