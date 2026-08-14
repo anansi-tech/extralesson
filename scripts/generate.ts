@@ -15,6 +15,7 @@ import { model, MODEL_ID } from '@/lib/ai';
 import { dbConnect, Question, Topic } from '@/lib/db';
 import { QuestionDraftZ } from '@/lib/validation/question';
 import { answersEquivalent } from '@/lib/grade/equivalence';
+import { normalizeEscapedNewlines } from '@/lib/text';
 import { buildDraftPrompt, buildSolvePrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
 
 const ArgsZ = z.object({
@@ -150,6 +151,21 @@ async function main() {
         continue;
       }
       const draft = validated.data;
+      // Some responses double-escape newlines (literal "\n" text); normalize
+      // every prose field before the solve pass and insert.
+      draft.stem = normalizeEscapedNewlines(draft.stem);
+      draft.worked_solution = normalizeEscapedNewlines(draft.worked_solution);
+      draft.misconceptions = draft.misconceptions.map((m) => ({
+        trigger: m.trigger,
+        name: m.name,
+        remediation: normalizeEscapedNewlines(m.remediation),
+      }));
+      if (draft.kind === 'structured') {
+        draft.rubric = draft.rubric.map((r) => ({
+          ...r,
+          criterion: normalizeEscapedNewlines(r.criterion),
+        }));
+      }
       if (args.poison) {
         // Deterministically corrupt the draft's answer so the independent
         // solve pass must disagree — proves the rejection gate fires (§9.3).

@@ -22,7 +22,9 @@ export function renderMathHtml(text: string): string {
           return escapeHtml(seg);
         }
       }
-      return escapeHtml(seg);
+      // Real newlines become line breaks so worked solutions read as
+      // steps/paragraphs, like board work.
+      return escapeHtml(seg).replace(/\n/g, '<br />');
     })
     .join('');
 }
