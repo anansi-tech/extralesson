@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { dbConnect, Attempt, PracticeSession, Question, Student } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
+import { renderVisual } from '@/lib/visuals';
 import { loadStudyState } from '@/lib/study/state';
 import QuestionCard, { type CardQuestion } from './question-card';
 import type { ModuleNumber, ProfileMarks } from '@/lib/types';
@@ -143,24 +144,47 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   const question = await Question.findById(session.question_ids[answered]).lean<{
     _id: unknown;
     kind: 'mcq' | 'structured';
+    stimulus?: string;
     stem: string;
+    visual?: { template?: string; params?: unknown };
     options?: string[];
     marks: number;
-    rubric?: { code: string; profile: string; criterion: string; mark_value: number }[];
+    parts?: { label: string; prompt: string; marks: number }[];
+    rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string }[];
   } | null>();
   if (!question) notFound();
+
+  let visualHtml: string | undefined;
+  if (question.visual?.template) {
+    try {
+      visualHtml = renderVisual(question.visual as never);
+    } catch {
+      visualHtml = undefined;
+    }
+  }
 
   const card: CardQuestion = {
     sessionId: id,
     index: answered,
     total,
     kind: question.kind,
+    stimulusHtml: question.stimulus ? renderMathHtml(question.stimulus) : undefined,
     stemHtml: renderMathHtml(question.stem),
+    visualHtml,
+    parts: (question.parts ?? []).map((p) => ({
+      label: p.label,
+      marks: p.marks,
+      promptHtml: renderMathHtml(p.prompt),
+    })),
     optionsHtml: question.options?.map(renderMathHtml),
     marks: question.marks,
     rubricCodes:
-      question.rubric?.map((r) => ({ code: r.code, profile: r.profile, mark_value: r.mark_value })) ??
-      [],
+      question.rubric?.map((r) => ({
+        code: r.code,
+        profile: r.profile,
+        mark_value: r.mark_value,
+        part_label: r.part_label ?? 'a',
+      })) ?? [],
   };
 
   return (

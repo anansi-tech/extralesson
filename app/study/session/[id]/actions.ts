@@ -3,15 +3,16 @@
 import { z } from 'zod';
 import { dbConnect, Attempt, PracticeSession, Question } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
-import { markMcq, markStructured } from '@/lib/grade/mark';
+import { markMcq, markStructuredParts } from '@/lib/grade/mark';
 import { answersEquivalent } from '@/lib/grade/equivalence';
 import { renderMathHtml } from '@/lib/katex';
-import type { ProfileMarks, RubricItem } from '@/lib/types';
+import type { ProfileMarks, QuestionPart, RubricItem } from '@/lib/types';
 
 const SubmitZ = z.object({
   sessionId: z.string().regex(/^[a-f0-9]{24}$/),
   questionIndex: z.number().int().min(0),
-  answer: z.string().min(1).max(2000),
+  // mcq: single entry with label 'a' whose answer is the option index.
+  answers: z.array(z.object({ label: z.string().regex(/^[a-f]$/), answer: z.string().min(1).max(2000) })).min(1).max(6),
   working: z.string().max(10000).default(''),
   durationMs: z.number().int().min(0).max(60 * 60 * 1000).catch(0),
 });
@@ -20,7 +21,7 @@ export interface Feedback {
   correct: boolean;
   profile_marks: ProfileMarks;
   rubric_awarded: string[];
-  // misconception remediation when the miss matches one, else worked solution
+  partResults: { label: string; correct: boolean }[];
   feedbackTitle: string;
   feedbackHtml: string;
   isMisconception: boolean;
@@ -29,14 +30,14 @@ export interface Feedback {
 export async function submitAnswer(input: {
   sessionId: string;
   questionIndex: number;
-  answer: string;
+  answers: { label: string; answer: string }[];
   working?: string;
   durationMs?: number;
 }): Promise<Feedback | { error: string }> {
   const auth = await requireSession();
   const parsed = SubmitZ.safeParse({ working: '', durationMs: 0, ...input });
   if (!parsed.success) return { error: 'Invalid submission.' };
-  const { sessionId, questionIndex, answer, working, durationMs } = parsed.data;
+  const { sessionId, questionIndex, answers, working, durationMs } = parsed.data;
 
   await dbConnect();
   const session = await PracticeSession.findOne({
@@ -45,7 +46,6 @@ export async function submitAnswer(input: {
   }).lean<{ question_ids: unknown[] } | null>();
   if (!session) return { error: 'Session not found.' };
 
-  // One attempt per question, in order: the next unanswered index must match.
   const attemptCount = await Attempt.countDocuments({ session_id: sessionId });
   if (questionIndex !== attemptCount || questionIndex >= session.question_ids.length) {
     return { error: 'Out of sequence — reload the page.' };
@@ -57,21 +57,31 @@ export async function submitAnswer(input: {
     answer_key?: number;
     profile?: 'CK' | 'AK' | 'R';
     marks: number;
+    parts?: QuestionPart[];
     rubric?: RubricItem[];
-    final_answer?: string;
     worked_solution: string;
     misconceptions: { trigger: string; name: string; remediation: string }[];
   } | null>();
   if (!question) return { error: 'Question not found.' };
 
   let result;
-  let storedAnswer: string | number = answer;
+  let partResults: { label: string; correct: boolean }[];
+  let storedAnswer: string | number;
   if (question.kind === 'mcq') {
-    const idx = Number(answer);
+    const idx = Number(answers[0]?.answer);
     storedAnswer = idx;
     result = markMcq(question.profile!, question.marks, idx, question.answer_key!);
+    partResults = [{ label: 'a', correct: result.correct }];
   } else {
-    result = markStructured(question.rubric ?? [], question.final_answer ?? '', answer, working);
+    const parts = (question.parts ?? []).map((p) => ({ label: p.label, answer: p.answer }));
+    const inputs = answers.map((a) => ({ ...a, working }));
+    result = markStructuredParts(question.rubric ?? [], parts, inputs);
+    const inputByLabel = new Map(answers.map((a) => [a.label, a.answer]));
+    partResults = parts.map((p) => ({
+      label: p.label,
+      correct: answersEquivalent(inputByLabel.get(p.label) ?? '', p.answer),
+    }));
+    storedAnswer = answers.map((a) => `(${a.label}) ${a.answer}`).join('; ');
   }
 
   // Append-only: attempts are never mutated (§3.5).
@@ -87,15 +97,17 @@ export async function submitAnswer(input: {
     ts: new Date(),
   });
 
-  // Miss -> matching misconception remediation, else worked solution (§6.4).
+  // Miss -> matching misconception remediation, else worked solution.
   let feedbackTitle = 'Worked solution';
   let feedbackHtml = renderMathHtml(question.worked_solution);
   let isMisconception = false;
   if (!result.correct) {
-    const studentAnswerText =
-      question.kind === 'mcq' ? (question.options?.[Number(answer)] ?? String(answer)) : answer;
+    const wrongAnswers =
+      question.kind === 'mcq'
+        ? [question.options?.[Number(answers[0]?.answer)] ?? String(answers[0]?.answer)]
+        : partResults.filter((p) => !p.correct).map((p) => answers.find((a) => a.label === p.label)?.answer ?? '');
     const match = question.misconceptions.find((m) =>
-      answersEquivalent(m.trigger, studentAnswerText),
+      wrongAnswers.some((w) => answersEquivalent(m.trigger, w)),
     );
     if (match) {
       feedbackTitle = match.name;
@@ -108,6 +120,7 @@ export async function submitAnswer(input: {
     correct: result.correct,
     profile_marks: result.profile_marks,
     rubric_awarded: result.rubric_awarded,
+    partResults,
     feedbackTitle,
     feedbackHtml,
     isMisconception,

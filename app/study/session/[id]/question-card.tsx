@@ -9,10 +9,13 @@ export interface CardQuestion {
   index: number;
   total: number;
   kind: 'mcq' | 'structured';
+  stimulusHtml?: string;
   stemHtml: string;
+  visualHtml?: string;
+  parts: { label: string; promptHtml: string; marks: number }[];
   optionsHtml?: string[];
   marks: number;
-  rubricCodes: { code: string; profile: string; mark_value: number }[];
+  rubricCodes: { code: string; profile: string; mark_value: number; part_label: string }[];
 }
 
 const chipColor: Record<string, string> = {
@@ -24,7 +27,7 @@ const chipColor: Record<string, string> = {
 export default function QuestionCard({ question }: { question: CardQuestion }) {
   const router = useRouter();
   const [selected, setSelected] = useState<number | null>(null);
-  const [answer, setAnswer] = useState('');
+  const [partAnswers, setPartAnswers] = useState<Record<string, string>>({});
   const [working, setWorking] = useState('');
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [error, setError] = useState<string>();
@@ -33,21 +36,29 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
   useEffect(() => {
     setSelected(null);
-    setAnswer('');
+    setPartAnswers({});
     setWorking('');
     setFeedback(null);
     setError(undefined);
     startedAt.current = Date.now();
   }, [question.sessionId, question.index]);
 
+  const allPartsFilled =
+    question.kind === 'mcq'
+      ? selected !== null
+      : question.parts.every((p) => (partAnswers[p.label] ?? '').trim() !== '');
+
   const submit = () => {
-    const value = question.kind === 'mcq' ? String(selected) : answer.trim();
-    if (question.kind === 'mcq' ? selected === null : value === '') return;
+    if (!allPartsFilled) return;
+    const answers =
+      question.kind === 'mcq'
+        ? [{ label: 'a', answer: String(selected) }]
+        : question.parts.map((p) => ({ label: p.label, answer: partAnswers[p.label].trim() }));
     startTransition(async () => {
       const res = await submitAnswer({
         sessionId: question.sessionId,
         questionIndex: question.index,
-        answer: value,
+        answers,
         working,
         durationMs: Date.now() - startedAt.current,
       });
@@ -62,12 +73,26 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
   return (
     <article className="mt-4 border-[1.5px] border-ink bg-white p-5 shadow-[4px_4px_0_var(--ink)]">
+      {question.stimulusHtml && (
+        <div
+          className="mb-3 border-l-3 border-paper-deep pl-3 text-[15px]"
+          dangerouslySetInnerHTML={{ __html: question.stimulusHtml }}
+        />
+      )}
+
       <div className="flex items-baseline justify-between">
         <div className="text-lg" dangerouslySetInnerHTML={{ __html: question.stemHtml }} />
         <span className="ml-3 shrink-0 font-mono text-xs text-dim">
           [{question.marks} mark{question.marks === 1 ? '' : 's'}]
         </span>
       </div>
+
+      {question.visualHtml && (
+        <div
+          className="mt-3 border border-paper-deep bg-white p-2 [&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
+          dangerouslySetInnerHTML={{ __html: question.visualHtml }}
+        />
+      )}
 
       {question.kind === 'mcq' && question.optionsHtml && (
         <div className="mt-4 space-y-2">
@@ -88,7 +113,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       )}
 
       {question.kind === 'structured' && (
-        <div className="mt-4 space-y-3">
+        <div className="mt-4 space-y-4">
           <label className="block">
             <span className="font-mono text-[10px] uppercase tracking-widest text-dim">
               Your working (optional — it can earn method marks)
@@ -102,18 +127,38 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               placeholder="Show your steps…"
             />
           </label>
-          <label className="block">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-dim">
-              Final answer
-            </span>
-            <input
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              disabled={!!feedback}
-              className="mt-1 w-full border-[1.5px] border-ink p-3 font-mono text-sm"
-              placeholder="e.g. x = -1/3 or x = 2"
-            />
-          </label>
+          {question.parts.map((p) => {
+            const partFeedback = feedback?.partResults.find((r) => r.label === p.label);
+            return (
+              <div key={p.label}>
+                <div className="flex items-baseline gap-2 text-sm">
+                  <span className="font-mono text-xs font-semibold">({p.label})</span>
+                  <span dangerouslySetInnerHTML={{ __html: p.promptHtml }} />
+                  <span className="ml-auto shrink-0 font-mono text-[10px] text-dim">
+                    [{p.marks}]
+                  </span>
+                </div>
+                <div className="mt-1 flex items-center gap-2">
+                  <input
+                    value={partAnswers[p.label] ?? ''}
+                    onChange={(e) =>
+                      setPartAnswers((prev) => ({ ...prev, [p.label]: e.target.value }))
+                    }
+                    disabled={!!feedback}
+                    className="w-full border-[1.5px] border-ink p-2 font-mono text-sm"
+                    placeholder={`Answer to (${p.label})`}
+                  />
+                  {partFeedback && (
+                    <span
+                      className={`font-hand text-xl ${partFeedback.correct ? 'text-green-pen' : 'text-red-pen'}`}
+                    >
+                      {partFeedback.correct ? '✓' : '✗'}
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -122,7 +167,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       {!feedback ? (
         <button
           onClick={submit}
-          disabled={pending || (question.kind === 'mcq' ? selected === null : answer.trim() === '')}
+          disabled={pending || !allPartsFilled}
           className="mt-5 w-full bg-red-pen p-3 font-black text-white shadow-[3px_3px_0_var(--ink)] disabled:opacity-50"
         >
           {pending ? 'Marking…' : 'Submit answer'}
@@ -131,13 +176,15 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         <div className="mt-5">
           <div
             className={`flex items-baseline justify-between border-l-3 p-3 ${
-              feedback.correct
-                ? 'border-green-pen bg-[#E8F0E9]'
-                : 'border-red-pen bg-[#FDF1F0]'
+              feedback.correct ? 'border-green-pen bg-[#E8F0E9]' : 'border-red-pen bg-[#FDF1F0]'
             }`}
           >
             <b className={feedback.correct ? 'text-green-pen' : 'text-red-pen'}>
-              {feedback.correct ? 'Correct ✓' : feedback.isMisconception ? feedback.feedbackTitle : 'Not quite ✗'}
+              {feedback.correct
+                ? 'Correct ✓'
+                : feedback.isMisconception
+                  ? feedback.feedbackTitle
+                  : 'Not quite ✗'}
             </b>
             <span className="font-mono text-xs">
               {earned}/{question.marks}
@@ -155,7 +202,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                       got ? chipColor[r.profile] : 'bg-paper-deep text-dim line-through'
                     }`}
                   >
-                    {r.code} {got ? '✓' : '✗'}
+                    ({r.part_label}) {r.code} {got ? '✓' : '✗'}
                   </span>
                 );
               })}
@@ -164,7 +211,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
           <div className="mt-3">
             <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
-              {feedback.correct ? 'Worked solution' : feedback.isMisconception ? 'What went wrong' : 'Worked solution'}
+              {feedback.correct
+                ? 'Worked solution'
+                : feedback.isMisconception
+                  ? 'What went wrong'
+                  : 'Worked solution'}
             </div>
             <div
               className="mt-1 text-sm"

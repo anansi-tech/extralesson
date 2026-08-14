@@ -8,16 +8,29 @@ export interface ReviewQuestion {
   objective_ids: string[];
   module: number;
   kind: 'mcq' | 'structured';
+  archetype?: string;
+  representation?: string;
+  stimulusHtml?: string;
   stemHtml: string;
+  visualHtml?: string;
+  parts: { label: string; promptHtml: string; marks: number; answer: string }[];
   optionsHtml?: string[];
   answer_key?: number;
   profile?: string;
   difficulty: number;
   marks: number;
-  rubric?: { code: string; profile: string; criterionHtml: string; mark_value: number }[];
+  rubric?: {
+    code: string;
+    profile: string;
+    criterionHtml: string;
+    mark_value: number;
+    part_label: string;
+  }[];
   final_answer?: string;
   solutionHtml: string;
   misconceptions: { trigger: string; name: string; remediationHtml: string }[];
+  recipeJson?: string;
+  dedupScore?: number;
   editJson: string;
 }
 
@@ -82,10 +95,47 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
         <span>· {question.kind}</span>
         <span>· difficulty {question.difficulty}</span>
         <span>· {question.marks} mark{question.marks === 1 ? '' : 's'}</span>
+        {question.archetype && <span>· {question.archetype}</span>}
+        {question.representation && <span>· {question.representation}</span>}
         {question.kind === 'mcq' && question.profile && <Chip profile={question.profile} />}
       </div>
 
+      {question.recipeJson && (
+        <div className="mb-3 border border-dashed border-paper-deep p-2 font-mono text-[10px] text-dim">
+          RECIPE {question.recipeJson}
+          {question.dedupScore != null && ` · dedup ${question.dedupScore}`}
+        </div>
+      )}
+
+      {question.stimulusHtml && (
+        <div
+          className="mb-2 border-l-3 border-paper-deep pl-3 text-[15px]"
+          dangerouslySetInnerHTML={{ __html: question.stimulusHtml }}
+        />
+      )}
+
       <div className="text-lg" dangerouslySetInnerHTML={{ __html: question.stemHtml }} />
+
+      {question.visualHtml && (
+        <div
+          className="mt-3 border border-paper-deep bg-white p-2 [&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
+          dangerouslySetInnerHTML={{ __html: question.visualHtml }}
+        />
+      )}
+
+      {question.kind === 'structured' && question.parts.length > 0 && (
+        <ol className="mt-3 space-y-2">
+          {question.parts.map((p) => (
+            <li key={p.label} className="flex items-baseline gap-2 text-sm">
+              <span className="font-mono text-xs font-semibold">({p.label})</span>
+              <span dangerouslySetInnerHTML={{ __html: p.promptHtml }} />
+              <span className="ml-auto shrink-0 font-mono text-[10px] text-dim">
+                [{p.marks}] → {p.answer}
+              </span>
+            </li>
+          ))}
+        </ol>
+      )}
 
       {question.optionsHtml && (
         <ol className="mt-3 space-y-1">
@@ -111,6 +161,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
             {question.rubric.map((r) => (
               <li key={r.code} className="flex items-baseline gap-2 text-sm">
                 <Chip profile={r.profile} code={r.code} />
+                <span className="font-mono text-[10px] text-dim">({r.part_label})</span>
                 <span dangerouslySetInnerHTML={{ __html: r.criterionHtml }} />
                 <span className="ml-auto font-mono text-xs text-dim">{r.mark_value}</span>
               </li>

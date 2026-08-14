@@ -2,6 +2,7 @@ import 'katex/dist/katex.min.css';
 import { dbConnect, Question } from '@/lib/db';
 import { getCoverage, getNextDraftId } from '@/lib/admin/coverage';
 import { renderMathHtml } from '@/lib/katex';
+import { renderVisual } from '@/lib/visuals';
 import ReviewCard, { type ReviewQuestion } from './review-card';
 
 export const metadata = { title: 'Review queue — ExtraLesson admin' };
@@ -23,41 +24,78 @@ export default async function ReviewPage() {
         objective_ids: string[];
         module: number;
         kind: 'mcq' | 'structured';
+        stimulus?: string;
         stem: string;
+        visual?: { template?: string; params?: unknown };
+        archetype?: string;
+        representation?: string;
         options?: string[];
         answer_key?: number;
         profile?: string;
         difficulty: number;
         marks: number;
-        rubric?: { code: string; profile: string; criterion: string; mark_value: number }[];
+        parts?: { label: string; prompt: string; marks: number; answer: string }[];
+        rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string }[];
         final_answer?: string;
         worked_solution: string;
         misconceptions: { trigger: string; name: string; remediation: string }[];
+        gen_meta?: { recipe?: unknown; dedup_score?: number; prompt_version?: string };
       };
+      let visualHtml: string | undefined;
+      if (raw.visual?.template) {
+        try {
+          visualHtml = renderVisual(raw.visual as never);
+        } catch {
+          visualHtml = `<p class="text-red-pen">visual failed to render (template ${raw.visual.template})</p>`;
+        }
+      }
       question = {
         id: String(raw._id),
         objective_ids: raw.objective_ids,
         module: raw.module,
         kind: raw.kind,
+        archetype: raw.archetype,
+        representation: raw.representation,
+        stimulusHtml: raw.stimulus ? renderMathHtml(raw.stimulus) : undefined,
         stemHtml: renderMathHtml(raw.stem),
+        visualHtml,
+        parts: (raw.parts ?? []).map((p) => ({
+          label: p.label,
+          marks: p.marks,
+          answer: p.answer,
+          promptHtml: renderMathHtml(p.prompt),
+        })),
         optionsHtml: raw.options?.map(renderMathHtml),
         answer_key: raw.answer_key,
         profile: raw.profile,
         difficulty: raw.difficulty,
         marks: raw.marks,
-        rubric: raw.rubric?.map((r) => ({ ...r, criterionHtml: renderMathHtml(r.criterion) })),
+        rubric: raw.rubric?.map((r) => ({
+          code: r.code,
+          profile: r.profile,
+          mark_value: r.mark_value,
+          part_label: r.part_label ?? 'a',
+          criterionHtml: renderMathHtml(r.criterion),
+        })),
         final_answer: raw.final_answer,
         solutionHtml: renderMathHtml(raw.worked_solution),
         misconceptions: raw.misconceptions.map((m) => ({
           ...m,
           remediationHtml: renderMathHtml(m.remediation),
         })),
+        recipeJson: raw.gen_meta?.recipe ? JSON.stringify(raw.gen_meta.recipe) : undefined,
+        dedupScore: raw.gen_meta?.dedup_score,
         editJson: JSON.stringify(
           {
             kind: raw.kind,
             objective_ids: raw.objective_ids,
             module: raw.module,
+            stimulus: raw.stimulus,
             stem: raw.stem,
+            visual: raw.visual?.template ? raw.visual : undefined,
+            archetype: raw.archetype,
+            representation: raw.representation,
+            parts: raw.parts,
             ...(raw.kind === 'mcq'
               ? { options: raw.options, answer_key: raw.answer_key, profile: raw.profile }
               : { rubric: raw.rubric, final_answer: raw.final_answer }),
