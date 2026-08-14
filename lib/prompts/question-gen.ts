@@ -2,7 +2,7 @@ import type { Objective, QuestionKind } from '@/lib/types';
 
 // Generation prompts (ROUND_1 §4). Bump PROMPT_VERSION on any wording change —
 // it is recorded in gen_meta.prompt_version on every inserted question.
-export const PROMPT_VERSION = 'v1';
+export const PROMPT_VERSION = 'v2';
 
 const MCQ_EXEMPLAR = `{
   "kind": "mcq",
@@ -62,7 +62,7 @@ RULES:
 - Math must be typeset KaTeX-safe: inline math in $...$, escape backslashes correctly in JSON.
 - ${kind === 'mcq'
       ? 'Exactly 4 options. Distractors must each come from a plausible specific error. answer_key is the 0-based index of the correct option. Set "profile" to the single profile the item assesses. marks = 1.'
-      : 'Write a rubric of 2-6 criteria. Codes are CK1, CK2..., AK1..., R1... matching each criterion\'s profile. mark_values must sum to marks (2-9 marks total). final_answer is the concise final numeric/algebraic answer a student would type (e.g. "x = -1/3 or x = 2", "42.5", "$1,200").'}
+      : 'Write a rubric of 2-6 criteria. Codes are CK1, CK2..., AK1..., R1... matching each criterion\'s profile. mark_values must sum to marks (2-9 marks total). final_answer must contain ONLY the final value(s) — no sentences, no labels, no working. One value per required part/root, separated by "; ". Examples: "42.5" · "x = -1/3; x = 2" · "$70; $58".'}
 - misconceptions: 1-3 entries. Each trigger is a specific wrong final answer a student might give; name the error; remediation explains the fix in one or two sentences.
 - worked_solution: complete, correct, step-by-step, KaTeX-safe.
 
@@ -93,5 +93,5 @@ Return JSON: {"answer_index": <0-based index of the correct option>, "final_answ
 
 ${args.stem}
 
-Return JSON: {"final_answer": "<the concise final answer, e.g. 'x = -1/3 or x = 2' or '42.5'>"}`;
+Return JSON: {"final_answer": "..."} where final_answer contains ONLY the final value(s) — no working, no equation setup, no explanations, no (a)/(b) labels, no sentences. One value per required part/root, separated by "; ". Examples: "42.5" · "x = -1/3; x = 2" · "$70; $58".`;
 }

@@ -164,6 +164,8 @@ async function main() {
 
       // 3. Independent solve pass — fresh call, stem only
       let solved: boolean;
+      let draftAnswer: string;
+      let solveAnswer: string;
       if (draft.kind === 'mcq') {
         const { object: sol } = await generateObject({
           model,
@@ -171,6 +173,8 @@ async function main() {
           prompt: buildSolvePrompt({ stem: draft.stem, kind: 'mcq', options: draft.options }),
         });
         solved = sol.answer_index === draft.answer_key;
+        draftAnswer = `key=${draft.answer_key} (${draft.options[draft.answer_key]})`;
+        solveAnswer = `index=${sol.answer_index} (${draft.options[sol.answer_index] ?? '?'}) — "${sol.final_answer}"`;
       } else {
         const { object: sol } = await generateObject({
           model,
@@ -178,10 +182,16 @@ async function main() {
           prompt: buildSolvePrompt({ stem: draft.stem, kind: 'structured' }),
         });
         solved = answersEquivalent(sol.final_answer, draft.final_answer);
+        draftAnswer = draft.final_answer;
+        solveAnswer = sol.final_answer;
       }
       if (!solved) {
         rejected++;
+        // Always log the full pair verbatim so rejection quality stays
+        // inspectable at a glance.
         console.log(`  ✗ attempt ${attempts}: independent solve DISAGREED — auto-rejected`);
+        console.log(`      draft answer: ${JSON.stringify(draftAnswer)}`);
+        console.log(`      solve answer: ${JSON.stringify(solveAnswer)}`);
         continue;
       }
 
