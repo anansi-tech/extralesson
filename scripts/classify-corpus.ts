@@ -5,9 +5,10 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { z } from 'zod';
-import { generateObject, NoObjectGeneratedError } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
+import { generateObject, NoObjectGeneratedError, type LanguageModel } from 'ai';
+import sharp from 'sharp';
 import { createWorker, type Worker } from 'tesseract.js';
-import { model, MODEL_ID } from '@/lib/ai';
 import {
   buildClassificationArtifact,
   buildCorpusClassificationPrompt,
@@ -15,8 +16,10 @@ import {
   CORPUS_CLASSIFIER_VERSION,
   CorpusClassificationArtifactZ,
   extractPdfSignals,
+  flagUnknownObjectives,
   hasCompletePaperOneSequence,
   ModelPaperClassificationZ,
+  repairKnownClassificationAliases,
   type ClassifiedPaper,
   type ObjectiveCatalogEntry,
 } from '@/lib/generation/corpus-classification';
@@ -26,6 +29,12 @@ import { module2Topics } from '@/lib/seed/module2-topics';
 import { module3Topics } from '@/lib/seed/module3-topics';
 
 const DEFAULT_OUTPUT = 'design/research/question-corpus-classification.json';
+const DEFAULT_CLASSIFIER_MODEL = 'gpt-5.6-luna';
+
+const ClassifierEnvZ = z.object({
+  AI_API_KEY: z.string().min(1),
+  CORPUS_CLASSIFIER_MODEL: z.string().min(1).default(DEFAULT_CLASSIFIER_MODEL),
+});
 
 const ArgsZ = z.object({
   mode: z.enum(['audit', 'classify']),
@@ -112,25 +121,31 @@ async function writeArtifact(
   return artifact;
 }
 
-async function classifyPaper(prompt: string, examKey: string, paper: 1 | 2) {
+async function classifyPaper(
+  prompt: string,
+  examKey: string,
+  paper: 1 | 2,
+  classifierModel: LanguageModel,
+) {
   let lastError: unknown;
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const { object } = await generateObject({
-        model,
+      const { object, usage } = await generateObject({
+        model: classifierModel,
         schema: ModelPaperClassificationZ,
         prompt,
         maxOutputTokens: 20_000,
         providerOptions: { openai: { reasoningEffort: 'low' } },
+        experimental_repairText: async ({ text }) => repairKnownClassificationAliases(text),
       });
-      if (!object.questions.every((question) =>
-        question.objective_ids.every((id) => objectiveIds.has(id)))) {
-        throw new Error('returned an objective outside the 2027 catalog');
+      const removedObjectives = flagUnknownObjectives(object, objectiveIds);
+      if (removedObjectives > 0) {
+        console.error(`${examKey} removed ${removedObjectives} objective IDs outside the 2027 catalog`);
       }
       if (paper === 1 && !hasCompletePaperOneSequence(object)) {
         throw new Error('returned an incomplete Paper 1 question sequence');
       }
-      return object;
+      return { object, usage };
     } catch (error) {
       lastError = error;
       const errorName = error instanceof Error ? error.name : typeof error;
@@ -174,7 +189,6 @@ function extractionKind(nativeChars: number, ocrChars: number, totalChars: numbe
 
 async function main() {
   const args = parseArgs();
-  if (args.mode === 'classify' && !process.env.AI_API_KEY) throw new Error('AI_API_KEY is not set');
   const inventoryText = await readFile('design/research/question-corpus-inventory.json', 'utf8');
   const inventory = CorpusInventoryZ.parse(JSON.parse(inventoryText));
   const allEligible = inventory.entries.filter(
@@ -220,6 +234,15 @@ async function main() {
 
   const completed = await readExisting(args.output, args.restart, inventoryHash);
   const completedIds = new Set(completed.map((paper) => paper.corpus_entry_id));
+  if (selected.every((entry) => completedIds.has(entry.id))) {
+    const artifact = await writeArtifact(args.output, inventoryHash, allEligible.length, completed);
+    console.log(JSON.stringify(artifact.summary, null, 2));
+    return;
+  }
+
+  const classifierConfig = ClassifierEnvZ.parse(process.env);
+  const openai = createOpenAI({ apiKey: classifierConfig.AI_API_KEY });
+  const classifierModel = openai(classifierConfig.CORPUS_CLASSIFIER_MODEL);
   let ocrWorker: Worker | undefined;
 
   try {
@@ -239,15 +262,27 @@ async function main() {
       const signals = await extractPdfSignals(data, {
         ocrPage: async (png) => {
           ocrWorker ??= await createWorker('eng', 1, { cacheMethod: 'none' });
-          const result = await ocrWorker.recognize(Buffer.from(png));
-          return result.data.text;
+          const original = await ocrWorker.recognize(Buffer.from(png));
+          if (original.data.text.trim().length >= 80) return original.data.text;
+          const candidates = [original.data.text];
+          for (const threshold of [150, 180]) {
+            const prepared = await sharp(Buffer.from(png))
+              .grayscale()
+              .normalize()
+              .threshold(threshold)
+              .png()
+              .toBuffer();
+            const retried = await ocrWorker.recognize(prepared);
+            candidates.push(retried.data.text);
+          }
+          return candidates.sort((a, b) => b.length - a.length)[0];
         },
       });
       if (signals.text_chars < 1_000) {
         throw new Error(`${entry.exam_key} has insufficient readable text after OCR`);
       }
 
-      const object = await classifyPaper(
+      const { object, usage } = await classifyPaper(
         buildCorpusClassificationPrompt({
           paper: entry.paper,
           year: entry.year,
@@ -257,6 +292,7 @@ async function main() {
         }),
         entry.exam_key,
         entry.paper,
+        classifierModel,
       );
 
       const classified = ClassifiedPaperZ.parse({
@@ -270,14 +306,23 @@ async function main() {
         ocr_text_chars: signals.ocr_text_chars,
         embedded_images: signals.embedded_images,
         extraction: extractionKind(signals.native_text_chars, signals.ocr_text_chars, signals.text_chars),
-        classifier: { model: MODEL_ID, version: CORPUS_CLASSIFIER_VERSION },
+        classifier: {
+          model: classifierConfig.CORPUS_CLASSIFIER_MODEL,
+          version: CORPUS_CLASSIFIER_VERSION,
+        },
+        usage: {
+          input_tokens: usage.inputTokens ?? 0,
+          cached_input_tokens: usage.cachedInputTokens ?? 0,
+          output_tokens: usage.outputTokens ?? 0,
+          reasoning_tokens: usage.reasoningTokens ?? 0,
+        },
         classification: object,
       });
       completed.push(classified);
       completedIds.add(entry.id);
       const artifact = await writeArtifact(args.output, inventoryHash, allEligible.length, completed);
       console.error(
-        `[${index + 1}/${selected.length}] ${entry.exam_key} questions=${object.questions.length} total=${artifact.summary.classified_papers}`,
+        `[${index + 1}/${selected.length}] ${entry.exam_key} questions=${object.questions.length} total=${artifact.summary.classified_papers} input=${usage.inputTokens ?? 0} cached=${usage.cachedInputTokens ?? 0} output=${usage.outputTokens ?? 0}`,
       );
     }
   } finally {

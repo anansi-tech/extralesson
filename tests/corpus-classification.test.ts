@@ -3,8 +3,10 @@ import {
   buildClassificationArtifact,
   buildCorpusClassificationPrompt,
   ClassifiedPaperZ,
+  flagUnknownObjectives,
   hasCompletePaperOneSequence,
   ModelPaperClassificationZ,
+  repairKnownClassificationAliases,
   type ExtractedPdfSignals,
 } from '@/lib/generation/corpus-classification';
 
@@ -121,6 +123,48 @@ describe('corpus classification boundary', () => {
     expect(hasCompletePaperOneSequence({ ...complete, questions: complete.questions.slice(1) })).toBe(false);
   });
 
+  it('repairs the known topic-label alias without another model call', () => {
+    const repaired = repairKnownClassificationAliases(JSON.stringify({
+      questions: [{
+        archetype: 'translation',
+        confidence: 0.9,
+        review_flags: [],
+      }],
+    }));
+    expect(JSON.parse(repaired ?? '{}').questions[0]).toMatchObject({
+      archetype: 'interpretation',
+      confidence: 0.6,
+      review_flags: ['other'],
+    });
+    expect(repairKnownClassificationAliases('{')).toBeNull();
+  });
+
+  it('removes unknown objective IDs and flags the record for review', () => {
+    const classification = ModelPaperClassificationZ.parse({
+      questions: [{
+        question_number: 1,
+        objective_ids: ['M1.5.1', 'M1.9.99'],
+        archetype: 'direct-procedure',
+        command_verbs: ['solve'],
+        context_category: 'none',
+        part_count: 1,
+        marks: 1,
+        inferred_profile: 'AK',
+        difficulty: 1,
+        visual_types: [],
+        confidence: 0.9,
+        review_flags: [],
+      }],
+      review_flags: [],
+    });
+    expect(flagUnknownObjectives(classification, new Set(['M1.5.1']))).toBe(1);
+    expect(classification.questions[0]).toMatchObject({
+      objective_ids: ['M1.5.1'],
+      confidence: 0.6,
+      review_flags: ['objective-ambiguous'],
+    });
+  });
+
   it('builds a prompt that demands abstract output only', () => {
     const signals: ExtractedPdfSignals = {
       page_count: 1,
@@ -170,6 +214,12 @@ describe('corpus classification boundary', () => {
       embedded_images: 3,
       extraction: 'native-with-ocr',
       classifier: { model: 'test-model', version: 'v1' },
+      usage: {
+        input_tokens: 1_000,
+        cached_input_tokens: 400,
+        output_tokens: 200,
+        reasoning_tokens: 50,
+      },
       classification: {
         questions: [{
           question_number: 1,
@@ -201,6 +251,13 @@ describe('corpus classification boundary', () => {
     });
     expect(artifact.aggregates.by_objective).toEqual({ 'M2.4.3': 1 });
     expect(artifact.aggregates.by_visual_type).toEqual({ 'geometry-figure': 1 });
+    expect(artifact.usage).toEqual({
+      papers_with_usage: 1,
+      input_tokens: 1_000,
+      cached_input_tokens: 400,
+      output_tokens: 200,
+      reasoning_tokens: 50,
+    });
     expect(JSON.stringify(artifact)).not.toContain('source_text');
   });
 });

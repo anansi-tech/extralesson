@@ -37,6 +37,7 @@
     "eslint-config-next": "15.5.23",
     "mongodb-memory-server": "^11.2.0",
     "mupdf": "1.28.0",
+    "sharp": "0.34.5",
     "tailwindcss": "^4",
     "tesseract.js": "7.0.0",
     "tsx": "^4",
