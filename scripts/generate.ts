@@ -240,9 +240,14 @@ async function main() {
         ordinal: existing + inserted,
         presentation: args.presentation,
       });
+      const recipeObjectives = recipe.objective_ids.map((objectiveId) => {
+        const objective = topic.objectives.find((candidate) => candidate.id === objectiveId);
+        if (!objective) throw new Error(`Recipe objective ${objectiveId} is outside ${topic.code}`);
+        return objective;
+      });
       const prompt = buildDraftPrompt({
         topicTitle: topic.title,
-        objectives: [targetObjective],
+        objectives: recipeObjectives,
         recipe,
       });
 
@@ -400,7 +405,9 @@ async function main() {
 
       if (args.dryRun) {
         inserted++;
-        objectiveCounts.set(targetObjective.id, (objectiveCounts.get(targetObjective.id) ?? 0) + 1);
+        for (const objectiveId of recipe.objective_ids) {
+          objectiveCounts.set(objectiveId, (objectiveCounts.get(objectiveId) ?? 0) + 1);
+        }
         console.log(`  ✓ attempt ${attempts}: verified (dry-run, not inserted): ${draft.stem.slice(0, 70)}…`);
         continue;
       }
@@ -418,7 +425,9 @@ async function main() {
         },
       });
       inserted++;
-      objectiveCounts.set(targetObjective.id, (objectiveCounts.get(targetObjective.id) ?? 0) + 1);
+      for (const objectiveId of recipe.objective_ids) {
+        objectiveCounts.set(objectiveId, (objectiveCounts.get(objectiveId) ?? 0) + 1);
+      }
       console.log(`  ✓ attempt ${attempts}: inserted draft (${inserted}/${shortfall}): ${draft.stem.slice(0, 70)}…`);
     } catch (err) {
       rejected++;

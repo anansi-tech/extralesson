@@ -67,7 +67,7 @@ export const ContextCategoryZ = z.enum([
 ]);
 
 const RecipeBaseZ = z.object({
-  objective_ids: z.array(z.string().regex(OBJECTIVE_ID_RE)).min(1).max(2),
+  objective_ids: z.array(z.string().regex(OBJECTIVE_ID_RE)).min(1).max(12),
   difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
   archetype: QuestionArchetypeZ,
   command_verb: CommandVerbZ.nullable(),
@@ -86,13 +86,13 @@ const McqRecipeZ = RecipeBaseZ.extend({
 
 const StructuredRecipeZ = RecipeBaseZ.extend({
   kind: z.literal('structured'),
-  marks: z.number().int().min(2).max(9),
+  marks: z.number().int().min(2).max(15),
   profile_split: z.object({
     CK: z.number().int().min(0),
     AK: z.number().int().min(0),
     R: z.number().int().min(0),
   }),
-  part_count: z.number().int().min(1).max(3),
+  part_count: z.number().int().min(1).max(9),
 }).refine(
   (recipe) => {
     const { CK, AK, R } = recipe.profile_split;
@@ -304,6 +304,32 @@ export function buildDefaultQuestionRecipe(args: {
   return QuestionRecipeZ.parse({ ...common, ...byDifficulty[args.difficulty], kind: 'structured' });
 }
 
+export function structuredProfileSplit(
+  marks: number,
+  difficulty: 1 | 2 | 3,
+): { CK: number; AK: number; R: number } {
+  const weights = {
+    1: { CK: 0.4, AK: 0.5, R: 0.1 },
+    2: { CK: 0.3, AK: 0.4, R: 0.3 },
+    3: { CK: 0.2, AK: 0.4, R: 0.4 },
+  }[difficulty];
+  const exact = (['CK', 'AK', 'R'] as const).map((profile) => ({
+    profile,
+    count: Math.floor(marks * weights[profile]),
+    remainder: marks * weights[profile] - Math.floor(marks * weights[profile]),
+  }));
+  let remaining = marks - exact.reduce((sum, entry) => sum + entry.count, 0);
+  exact.sort((a, b) => b.remainder - a.remainder || (
+    difficulty === 3
+      ? ['R', 'AK', 'CK'].indexOf(a.profile) - ['R', 'AK', 'CK'].indexOf(b.profile)
+      : ['AK', 'CK', 'R'].indexOf(a.profile) - ['AK', 'CK', 'R'].indexOf(b.profile)
+  ));
+  for (let index = 0; remaining > 0; index++, remaining--) exact[index % exact.length].count++;
+  return Object.fromEntries(exact.map((entry) => [entry.profile, entry.count])) as {
+    CK: number; AK: number; R: number;
+  };
+}
+
 function isVisualPattern(pattern: { visual_types: string[] }): boolean {
   return pattern.visual_types.some((visualType) => RenderableVisualTypeZ.safeParse(visualType).success);
 }
@@ -386,8 +412,28 @@ export function buildCorpusInformedQuestionRecipe(args: {
     ? renderableVisuals[args.ordinal % renderableVisuals.length]
     : null;
 
+  const structuredMarks = args.kind === 'structured'
+    ? pattern.marks !== null && pattern.marks >= 2 && pattern.marks <= 15
+      ? pattern.marks
+      : fallback.marks
+    : null;
+  const structuredPatternControls = args.kind === 'structured' && structuredMarks !== null
+    ? {
+        objective_ids: pattern.objective_ids.length > 0
+          ? pattern.objective_ids.slice(0, 12)
+          : args.objectiveIds,
+        marks: structuredMarks,
+        part_count: Math.min(9, pattern.part_count),
+      }
+    : {};
+  const structuredProfile = structuredMarks !== null
+    ? { profile_split: structuredProfileSplit(structuredMarks, args.difficulty) }
+    : {};
+
   return QuestionRecipeZ.parse({
     ...fallback,
+    ...structuredPatternControls,
+    ...structuredProfile,
     archetype: usePatternDemand ? pattern.archetype : fallback.archetype,
     command_verb: usePatternDemand
       ? command === null ? null : command.success ? command.data : fallback.command_verb

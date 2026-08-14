@@ -9,6 +9,7 @@ import {
   pickLeastCoveredObjective,
   questionMatchesRecipe,
   QuestionRecipeZ,
+  structuredProfileSplit,
 } from '@/lib/generation/question-recipe';
 import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-targets';
 
@@ -51,6 +52,12 @@ describe('QuestionRecipeZ', () => {
         expect(CK + AK + R).toBe(recipe.marks);
       }
     }
+  });
+
+  it('scales CK/AK/R exactly across real-paper-sized structured questions', () => {
+    expect(structuredProfileSplit(15, 3)).toEqual({ CK: 3, AK: 6, R: 6 });
+    expect(Object.values(structuredProfileSplit(12, 2)).reduce((sum, marks) => sum + marks, 0))
+      .toBe(12);
   });
 
   it('rejects a structured profile split that does not sum to marks', () => {
@@ -213,6 +220,25 @@ describe('QuestionRecipeZ', () => {
     expect(hasObservedDifficulty({
       targets: bankTargets, topicCode: 'M3-VM2', kind: 'structured', difficulty: 3,
     })).toBe(true);
+  });
+
+  it('inherits observed Paper 2 marks, linked objectives, and part count', () => {
+    const recipe = buildCorpusInformedQuestionRecipe({
+      targets: bankTargets,
+      topicCode: 'M3-VM2',
+      objectiveIds: ['M3.4.1'],
+      kind: 'structured',
+      difficulty: 3,
+      ordinal: 0,
+      presentation: 'text',
+    });
+    expect(recipe.kind).toBe('structured');
+    expect(recipe.marks).toBeGreaterThanOrEqual(12);
+    expect(recipe.objective_ids.length).toBeGreaterThan(1);
+    if (recipe.kind === 'structured') {
+      expect(recipe.profile_split.CK + recipe.profile_split.AK + recipe.profile_split.R)
+        .toBe(recipe.marks);
+    }
   });
 
   it('rejects weak archetypes in demanding recipes', () => {

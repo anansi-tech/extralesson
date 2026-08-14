@@ -115,7 +115,7 @@ RULES:
 - DELIMITER CONVENTION (hard rule, every field — stem, options, rubric criteria, final_answer, worked_solution, misconception triggers and remediations): the $ sign is EXCLUSIVELY a math delimiter, always in balanced $...$ pairs. Currency is NEVER written with a bare $. Write currency as EC$ immediately followed by the amount (EC$12, EC$3.40) or spell out "dollars". Never put EC$ amounts inside $...$ math.
 - ${kind === 'mcq'
       ? 'Exactly 4 options. Distractors must each come from a plausible specific error. answer_key is the 0-based index of the correct option. marks = 1.'
-      : 'Write a rubric of 2-6 criteria. Codes are CK1, CK2..., AK1..., R1... matching each criterion\'s profile. mark_values must sum to the recipe marks and match its exact CK/AK/R totals. final_answer must contain ONLY the final value(s) — no sentences, no labels, no working. One value per required part/root, separated by "; ". Examples: "42.5" · "x = -1/3; x = 2" · "EC$70; EC$58".'}
+      : 'Write a rubric of 2-12 criteria. Codes are CK1, CK2..., AK1..., R1... matching each criterion\'s profile. A criterion may award more than one mark when it represents a substantial linked stage. mark_values must sum to the recipe marks and match its exact CK/AK/R totals. final_answer must contain ONLY the final value(s) — no sentences, no labels, no working. One value per required part/root, separated by "; ". Examples: "42.5" · "x = -1/3; x = 2" · "EC$70; EC$58".'}
 - misconceptions: 1-3 entries. Each trigger is a specific wrong final answer a student might give; name the error; remediation explains the fix in one or two sentences.
 - worked_solution: complete, correct, step-by-step, KaTeX-safe.
 
