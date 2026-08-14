@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`dataTable template > renders semantic HTML (snapshot) 1`] = `"<table><caption>Books borrowed from a school library</caption><thead><tr><th scope="col">Day</th><th scope="col">Fiction</th><th scope="col">Non-fiction</th></tr></thead><tbody><tr><th scope="row">Monday</th><td>12</td><td>8</td></tr><tr><th scope="row">Tuesday</th><td>9</td><td>11</td></tr><tr><th scope="row">Wednesday</th><td>15</td><td></td></tr></tbody></table>"`;
