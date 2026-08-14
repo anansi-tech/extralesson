@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kairo CXC — UI Concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF7EE;          /* exercise-book cream */
+    --paper-deep:#F4EDDE;
+    --ink:#1E2430;            /* blue-black ink */
+    --rule:#C9D6E8;           /* copybook ruled line */
+    --margin:#E4B8B4;         /* faded margin rule */
+    --red:#C1121F;            /* the examiner's pen (hunt red) */
+    --green:#2E7D5B;          /* mastery */
+    --dim:#7A8194;
+    --bg:#14100C;             /* presentation backdrop */
+    --disp:'Fraunces',serif;
+    --mono:'IBM Plex Mono',monospace;
+    --hand:'Caveat',cursive;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--paper);font-family:var(--disp);padding:48px 20px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1240px;margin:0 auto}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--red);font-weight:600}
+  h1{font-size:clamp(32px,5vw,56px);font-weight:900;letter-spacing:-.02em;margin:12px 0 6px}
+  .sub{color:#B9AE9C;max-width:640px;font-size:15px;margin-bottom:44px;font-weight:400}
+
+  .row{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;align-items:start}
+  @media(max-width:1100px){.row{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:640px){.row{grid-template-columns:1fr;max-width:400px;margin:0 auto}}
+
+  .label{margin-bottom:12px}
+  .label .t{font-size:17px;font-weight:800}
+  .label .d{font-family:var(--mono);font-size:10px;color:#B9AE9C;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+
+  /* phone frame + copybook page */
+  .phone{background:var(--paper);border-radius:30px;padding:12px 10px 16px;box-shadow:0 24px 60px rgba(0,0,0,.5);color:var(--ink);overflow:hidden;position:relative}
+  .notch{width:80px;height:20px;background:var(--bg);border-radius:11px;margin:0 auto 10px}
+  .page{position:relative;padding:10px 12px 14px 26px;
+    background:
+      linear-gradient(var(--paper) 0 0) padding-box,
+      repeating-linear-gradient(to bottom,transparent 0 27px,var(--rule) 27px 28px);
+    background-color:var(--paper)}
+  .page::before{content:'';position:absolute;top:0;bottom:0;left:18px;width:1.5px;background:var(--margin)}
+  .statusbar{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;color:var(--dim);padding:0 2px 8px}
+
+  .apphead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+  .apphead .logo{font-weight:900;font-size:15px}
+  .apphead .logo em{font-style:normal;color:var(--red)}
+  .apphead .subj{font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:.12em}
+
+  /* -- screen 1: home -- */
+  .gradecard{background:#fff;border:1.5px solid var(--ink);border-radius:14px;padding:16px 14px;text-align:center;box-shadow:3px 3px 0 var(--ink)}
+  .gradecard .pg{font-size:52px;font-weight:900;line-height:1;color:var(--red)}
+  .gradecard .pl{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-top:4px}
+  .gradecard .trend{font-family:var(--mono);font-size:10px;color:var(--green);font-weight:600;margin-top:6px}
+  .coverage{margin:14px 0 4px}
+  .coverage .cl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;color:var(--dim);letter-spacing:.08em;margin-bottom:5px}
+  .bar{height:9px;background:var(--paper-deep);border:1px solid var(--ink);border-radius:6px;overflow:hidden}
+  .bar i{display:block;height:100%;width:63%;background:var(--green)}
+  .cta{margin-top:16px;background:var(--red);color:#fff;border-radius:12px;padding:15px 14px;text-align:center;font-weight:800;font-size:15px;box-shadow:3px 3px 0 var(--ink)}
+  .cta small{display:block;font-family:var(--mono);font-weight:500;font-size:9px;letter-spacing:.14em;margin-top:3px;opacity:.85}
+  .streak{display:flex;justify-content:space-between;margin-top:14px;font-family:var(--mono);font-size:10px;color:var(--dim)}
+  .streak b{color:var(--ink)}
+
+  /* -- screen 2: examiner -- */
+  .q{font-size:12.5px;line-height:1.45;margin-bottom:10px}
+  .q b{font-weight:800}
+  .q .qm{font-family:var(--mono);font-size:9.5px;color:var(--dim)}
+  .work{background:#fff;border:1px dashed #B9C4D6;border-radius:10px;padding:10px 12px;position:relative;margin-bottom:10px}
+  .work .cap{font-family:var(--mono);font-size:8.5px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+  .hand{font-family:var(--hand);font-size:19px;line-height:1.5;color:#2A3550}
+  .tick{color:var(--red);font-family:var(--hand);font-weight:600;font-size:20px}
+  .markrow{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;padding:7px 2px;border-bottom:1px solid var(--paper-deep)}
+  .markrow:last-of-type{border-bottom:0}
+  .markrow .mp{color:var(--ink)}
+  .markrow .aw{font-family:var(--mono);font-size:10.5px;font-weight:600}
+  .aw.y{color:var(--green)} .aw.n{color:var(--red)}
+  .verdict{background:#FDF1F0;border-left:3px solid var(--red);border-radius:0 10px 10px 0;padding:10px 12px;margin-top:10px}
+  .verdict .vt{font-weight:800;font-size:12.5px;color:var(--red)}
+  .verdict .vm{font-size:11.5px;margin-top:3px;line-height:1.45}
+  .score-pill{position:absolute;top:-10px;right:10px;background:var(--red);color:#fff;font-family:var(--mono);font-size:11px;font-weight:600;border-radius:20px;padding:4px 10px;box-shadow:2px 2px 0 var(--ink)}
+
+  /* -- screen 3: mastery map -- */
+  .topic{margin-bottom:11px}
+  .topic .th{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+  .topic .th b{font-weight:800}
+  .topic .th span{font-family:var(--mono);font-size:9.5px;color:var(--dim)}
+  .tbar{height:8px;background:var(--paper-deep);border:1px solid var(--ink);border-radius:5px;overflow:hidden}
+  .tbar i{display:block;height:100%}
+  .g1{width:88%;background:var(--green)} .g2{width:74%;background:var(--green)}
+  .g3{width:52%;background:#D9A62E} .g4{width:31%;background:var(--red)} .g5{width:18%;background:var(--red)}
+  .weak{background:#fff;border:1.5px solid var(--ink);border-radius:12px;padding:11px 12px;margin-top:14px;box-shadow:3px 3px 0 var(--ink)}
+  .weak .wt{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);font-weight:600}
+  .weak .wm{font-size:12.5px;margin-top:4px;font-weight:600}
+  .weak .wa{font-size:11px;color:var(--dim);margin-top:2px}
+
+  /* -- screen 4: sponsor report (WhatsApp) -- */
+  .wa-bg{background:#E7E0D4;border-radius:14px;padding:12px 10px;min-height:430px}
+  .wa-head{font-family:var(--mono);font-size:9px;color:#6B7A72;text-align:center;margin-bottom:10px;letter-spacing:.08em}
+  .bubble{background:#FFFDF6;border-radius:12px;border-top-left-radius:4px;padding:12px 13px;max-width:94%;box-shadow:0 1px 2px rgba(0,0,0,.12);font-size:12px;line-height:1.5}
+  .bubble .bh{font-weight:900;font-size:13px}
+  .bubble .bh em{font-style:normal;color:var(--red)}
+  .bubble .sec{margin-top:9px}
+  .bubble .sec .sl{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .bubble .big{font-size:22px;font-weight:900;color:var(--red)}
+  .bubble .up{color:var(--green);font-weight:700}
+  .bubble .foot{font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:10px}
+  .wa-time{font-family:var(--mono);font-size:8.5px;color:#8A9590;text-align:right;margin:4px 6px 0 0}
+
+  .principles{margin-top:52px;border-top:1px solid #3A322A;padding-top:26px;display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  @media(max-width:900px){.principles{grid-template-columns:repeat(2,1fr)}}
+  .pr .pt{font-weight:800;font-size:14px;color:var(--paper)}
+  .pr .pd{font-size:12.5px;color:#B9AE9C;margin-top:4px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Kairo · CSEC Math Tutor · UI Concept</div>
+  <h1>The examiner's red pen</h1>
+  <p class="sub">Design language: the Caribbean exam copybook — ruled paper, margin line, and a teacher's red ink. Serious like the exam, warm like a good teacher. One number that moves: the predicted grade.</p>
+
+  <div class="row">
+
+    <!-- SCREEN 1: TODAY -->
+    <div>
+      <div class="label"><div class="t">Today</div><div class="d">Home · the number that moves</div></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="page">
+          <div class="statusbar"><span>16:42</span><span>KAIRO</span></div>
+          <div class="apphead"><div class="logo">kairo<em>.</em></div><div class="subj">CSEC MATH · JAN SITTING</div></div>
+          <div class="gradecard">
+            <div class="pg">III</div>
+            <div class="pl">Predicted grade</div>
+            <div class="trend">▲ ON TRACK FOR II BY DEC 8</div>
+          </div>
+          <div class="coverage">
+            <div class="cl"><span>SYLLABUS COVERED</span><span>63%</span></div>
+            <div class="bar"><i></i></div>
+          </div>
+          <div class="cta">Start today's 15 minutes<small>ALGEBRA · RELATIONS &amp; FUNCTIONS · 8 QUESTIONS</small></div>
+          <div class="streak"><span>STREAK <b>11 DAYS</b></span><span>66 DAYS TO EXAM</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: EXAMINER -->
+    <div>
+      <div class="label"><div class="t">The Examiner</div><div class="d">Hero screen · photo of real working, marked</div></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="page">
+          <div class="statusbar"><span>16:47</span><span>Q4 OF 8</span></div>
+          <div class="q"><b>4.</b> Solve for x: 3x² − 5x − 2 = 0 <span class="qm">[3 marks]</span></div>
+          <div class="work">
+            <span class="score-pill">2 / 3</span>
+            <div class="cap">Your working — photo</div>
+            <div class="hand">(3x + 1)(x − 2) = 0 <span class="tick">✓</span><br>3x + 1 = 0 &nbsp;→&nbsp; x = 1/3 <span class="tick" style="font-size:16px">✗ sign</span><br>x − 2 = 0 &nbsp;→&nbsp; x = 2 <span class="tick">✓</span></div>
+          </div>
+          <div class="markrow"><span class="mp">M1 — correct factorisation</span><span class="aw y">✓ AWARDED</span></div>
+          <div class="markrow"><span class="mp">M1 — both roots attempted</span><span class="aw y">✓ AWARDED</span></div>
+          <div class="markrow"><span class="mp">A1 — both roots correct</span><span class="aw n">✗ LOST</span></div>
+          <div class="verdict">
+            <div class="vt">Sign slip — a classic one.</div>
+            <div class="vm">3x + 1 = 0 gives x = <b>−1/3</b>, not 1/3. You'd lose this exact mark in Paper 2. Try one more like it?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: MASTERY -->
+    <div>
+      <div class="label"><div class="t">Mastery Map</div><div class="d">Syllabus graph · where the marks live</div></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="page">
+          <div class="statusbar"><span>16:51</span><span>SYLLABUS</span></div>
+          <div class="apphead"><div class="logo">Your map</div><div class="subj">10 TOPICS</div></div>
+          <div class="topic"><div class="th"><b>Computation</b><span>STRONG</span></div><div class="tbar"><i class="g1"></i></div></div>
+          <div class="topic"><div class="th"><b>Consumer Arithmetic</b><span>STRONG</span></div><div class="tbar"><i class="g2"></i></div></div>
+          <div class="topic"><div class="th"><b>Algebra</b><span>BUILDING</span></div><div class="tbar"><i class="g3"></i></div></div>
+          <div class="topic"><div class="th"><b>Geometry &amp; Trig</b><span>WEAK</span></div><div class="tbar"><i class="g4"></i></div></div>
+          <div class="topic"><div class="th"><b>Vectors &amp; Matrices</b><span>NOT STARTED</span></div><div class="tbar"><i class="g5"></i></div></div>
+          <div class="weak">
+            <div class="wt">Biggest grade lever right now</div>
+            <div class="wm">Geometry &amp; Trigonometry</div>
+            <div class="wa">Worth ~18 marks on Paper 2. Ten focused days moves your prediction to Grade II.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: SPONSOR -->
+    <div>
+      <div class="label"><div class="t">Sponsor Report</div><div class="d">WhatsApp · what Auntie sees weekly</div></div>
+      <div class="phone"><div class="notch"></div>
+        <div class="wa-bg">
+          <div class="wa-head">KAIRO REPORTS</div>
+          <div class="bubble">
+            <div class="bh">Keisha's week <em>— Week 9</em></div>
+            <div class="sec"><div class="sl">Predicted grade</div><div class="big">III → II borderline <span class="up">▲</span></div></div>
+            <div class="sec"><div class="sl">This week</div>5 sessions · 42 questions · Algebra accuracy <b class="up">up 22%</b></div>
+            <div class="sec"><div class="sl">Working on</div>Geometry &amp; Trig — her biggest remaining grade lever before the January sitting.</div>
+            <div class="sec"><div class="sl">From her examiner</div>"Careless sign errors are down from 6 to 1 this week. Real discipline showing."</div>
+            <div class="foot">Renews Dec 1 · $12/mo · Reply STOP to pause</div>
+          </div>
+          <div class="wa-time">Sun 6:00 PM ✓✓</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="principles">
+    <div class="pr"><div class="pt">One number that moves</div><div class="pd">Predicted grade is the product, the motivation, and the renewal argument. Every screen serves it.</div></div>
+    <div class="pr"><div class="pt">Paper is the interface</div><div class="pd">Students work by hand; they photograph working, the examiner marks it. No math-typing friction — the differentiator no quiz bank has.</div></div>
+    <div class="pr"><div class="pt">Marks, not points</div><div class="pd">M1/A1 language, mark schemes, "you'd lose this in Paper 2" — the app speaks examiner, because exam technique is what parents pay for.</div></div>
+    <div class="pr"><div class="pt">The payer sees the story</div><div class="pd">Auntie in Brooklyn gets a human-voiced weekly report in WhatsApp. She's the customer; the report is her product.</div></div>
+  </div>
+</div>
+</body>
+</html>

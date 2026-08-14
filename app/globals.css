@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* Copybook design tokens (ROUND_1 §6 UI) */
+:root {
+  --paper: #fbf7ee;
+  --paper-deep: #f1eada;
+  --ink: #1e2430;
+  --rule: #c9d6e8;
+  --margin: #e4b8b4;
+  --red: #c1121f;
+  --green: #2e7d5b;
+  --dim: #6e7687;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+  --color-ink: var(--ink);
+  --color-rule: var(--rule);
+  --color-margin: var(--margin);
+  --color-red-pen: var(--red);
+  --color-green-pen: var(--green);
+  --color-dim: var(--dim);
+  --font-display: var(--font-fraunces);
+  --font-mono: var(--font-plex-mono);
+  --font-hand: var(--font-caveat);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-fraunces), serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Ruled-paper background used across study/admin surfaces */
+.ruled {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 31px,
+    var(--rule) 31px 32px
+  );
+}

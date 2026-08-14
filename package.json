@@ -1,0 +1,40 @@
+{
+  "name": "extralesson",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "seed:topics": "tsx scripts/seed-topics.ts",
+    "seed:blueprints": "tsx scripts/seed-blueprints.ts",
+    "generate": "tsx scripts/generate.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^2",
+    "ai": "^5",
+    "katex": "^0.16.22",
+    "mongoose": "^8",
+    "next": "15.5.23",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "zod": "^3.25"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/katex": "^0.16",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^16",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.23",
+    "tailwindcss": "^4",
+    "tsx": "^4",
+    "typescript": "^5",
+    "vitest": "^3"
+  }
+}
