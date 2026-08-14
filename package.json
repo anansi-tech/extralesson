@@ -16,7 +16,8 @@
     "plan:bank": "tsx scripts/plan-question-bank.ts",
     "backfill:question-generation": "tsx scripts/backfill-question-generation.ts",
     "generate": "tsx scripts/generate.ts",
-    "evaluate:pilot": "tsx scripts/evaluate-question-pilot.ts"
+    "evaluate:pilot": "tsx scripts/evaluate-question-pilot.ts",
+    "calibrate:pilot": "tsx scripts/calibrate-pilot-evaluators.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.118",
