@@ -27,6 +27,7 @@ import {
   RecipePresentationZ,
 } from '@/lib/generation/question-recipe';
 import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-targets';
+import { repairQuestionOutput } from '@/lib/generation/question-output';
 
 const bankTargets = QuestionBankTargetsArtifactZ.parse(targetsJson);
 
@@ -212,6 +213,7 @@ async function main() {
         model,
         schema: args.kind === 'mcq' ? McqLooseZ : StructuredLooseZ,
         prompt,
+        experimental_repairText: async ({ text }) => repairQuestionOutput(text),
       });
       addUsage(draftUsage);
 
