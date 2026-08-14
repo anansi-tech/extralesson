@@ -1,0 +1,127 @@
+import { describe, expect, it } from 'vitest';
+import {
+  buildDefaultQuestionRecipe,
+  pickLeastCoveredObjective,
+  questionMatchesRecipe,
+  QuestionRecipeZ,
+} from '@/lib/generation/question-recipe';
+
+describe('QuestionRecipeZ', () => {
+  it('selects the least-covered objective with a deterministic tie break', () => {
+    const objectives = [{ id: 'M1.1.2' }, { id: 'M1.1.1' }, { id: 'M1.1.3' }];
+    const counts = new Map([['M1.1.1', 2], ['M1.1.2', 0], ['M1.1.3', 0]]);
+    expect(pickLeastCoveredObjective(objectives, counts)?.id).toBe('M1.1.2');
+    counts.set('M1.1.2', 1);
+    expect(pickLeastCoveredObjective(objectives, counts)?.id).toBe('M1.1.3');
+  });
+
+  it('builds a controlled MCQ recipe for each difficulty', () => {
+    const profiles = ['CK', 'AK', 'R'];
+    for (const difficulty of [1, 2, 3] as const) {
+      const recipe = buildDefaultQuestionRecipe({
+        objectiveIds: ['M2.3.4'],
+        kind: 'mcq',
+        difficulty,
+      });
+      expect(recipe.kind).toBe('mcq');
+      expect(recipe.marks).toBe(1);
+      expect(recipe.part_count).toBe(1);
+      if (recipe.kind === 'mcq') expect(recipe.profile).toBe(profiles[difficulty - 1]);
+    }
+  });
+
+  it('builds structured recipes whose profile marks sum to total marks', () => {
+    for (const difficulty of [1, 2, 3] as const) {
+      const recipe = buildDefaultQuestionRecipe({
+        objectiveIds: ['M1.5.10'],
+        kind: 'structured',
+        difficulty,
+      });
+      expect(recipe.kind).toBe('structured');
+      if (recipe.kind === 'structured') {
+        const { CK, AK, R } = recipe.profile_split;
+        expect(CK + AK + R).toBe(recipe.marks);
+      }
+    }
+  });
+
+  it('rejects a structured profile split that does not sum to marks', () => {
+    const recipe = buildDefaultQuestionRecipe({
+      objectiveIds: ['M3.2.1'],
+      kind: 'structured',
+      difficulty: 2,
+    });
+    expect(QuestionRecipeZ.safeParse({
+      ...recipe,
+      profile_split: { CK: 1, AK: 1, R: 1 },
+    }).success).toBe(false);
+  });
+
+  it('rejects objectives from different modules', () => {
+    const recipe = buildDefaultQuestionRecipe({
+      objectiveIds: ['M1.1.1'],
+      kind: 'mcq',
+      difficulty: 1,
+    });
+    expect(QuestionRecipeZ.safeParse({
+      ...recipe,
+      objective_ids: ['M1.1.1', 'M2.1.1'],
+    }).success).toBe(false);
+  });
+
+  it('detects generated output that misses an exact recipe control', () => {
+    const recipe = buildDefaultQuestionRecipe({
+      objectiveIds: ['M2.1.3'],
+      kind: 'mcq',
+      difficulty: 2,
+    });
+    const question = {
+      kind: 'mcq' as const,
+      objective_ids: ['M2.1.3'],
+      module: 2 as const,
+      stem: 'What is the median of the five values shown?',
+      options: ['2', '3', '4', '5'],
+      answer_key: 1,
+      profile: 'CK' as const,
+      difficulty: 2 as const,
+      marks: 1,
+      worked_solution: 'The middle value is 3.',
+      misconceptions: [],
+    };
+    expect(questionMatchesRecipe(question, recipe)).toBe(false);
+    expect(questionMatchesRecipe({ ...question, profile: 'AK' }, recipe)).toBe(true);
+  });
+
+  it('checks exact structured profile totals against the recipe', () => {
+    const recipe = buildDefaultQuestionRecipe({
+      objectiveIds: ['M1.5.10'],
+      kind: 'structured',
+      difficulty: 1,
+    });
+    const question = {
+      kind: 'structured' as const,
+      objective_ids: ['M1.5.10'],
+      module: 1 as const,
+      stem: 'Solve the equation $2x + 3 = 11$.',
+      difficulty: 1 as const,
+      marks: 3,
+      rubric: [
+        { code: 'CK1', profile: 'CK' as const, criterion: 'Selects inverse operations', mark_value: 1 },
+        { code: 'AK1', profile: 'AK' as const, criterion: 'Subtracts 3 correctly', mark_value: 1 },
+        { code: 'AK2', profile: 'AK' as const, criterion: 'Divides by 2 correctly', mark_value: 1 },
+      ],
+      final_answer: 'x = 4',
+      worked_solution: '$2x=8$, so $x=4$.',
+      misconceptions: [],
+    };
+    expect(questionMatchesRecipe(question, recipe)).toBe(true);
+    expect(questionMatchesRecipe({
+      ...question,
+      rubric: [
+        { code: 'CK1', profile: 'CK', criterion: 'Selects inverse operations', mark_value: 1 },
+        { code: 'R1', profile: 'R', criterion: 'Subtracts 3 correctly', mark_value: 1 },
+        { code: 'AK1', profile: 'AK', criterion: 'Divides by 2 correctly', mark_value: 1 },
+      ],
+    }, recipe)).toBe(false);
+  });
+});

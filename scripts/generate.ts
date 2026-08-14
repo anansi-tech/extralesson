@@ -17,6 +17,11 @@ import { QuestionDraftZ } from '@/lib/validation/question';
 import { answersEquivalent } from '@/lib/grade/equivalence';
 import { normalizeEscapedNewlines } from '@/lib/text';
 import { buildDraftPrompt, buildSolvePrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
+import {
+  buildDefaultQuestionRecipe,
+  pickLeastCoveredObjective,
+  questionMatchesRecipe,
+} from '@/lib/generation/question-recipe';
 
 const ArgsZ = z.object({
   topic: z.string().regex(/^M[123]-[A-Z0-9]+$/),
@@ -101,6 +106,20 @@ async function main() {
   if (!topic) throw new Error(`Topic ${args.topic} not found — run pnpm seed:topics first`);
   const topicObjectiveIds = new Set(topic.objectives.map((o) => o.id));
 
+  // Pick the least-covered objective so generation closes objective-level
+  // gaps instead of repeatedly asking the model to choose from the whole topic.
+  const existingObjectiveRows = await Question.find({
+    kind: args.kind,
+    difficulty: args.difficulty,
+    status: { $ne: 'retired' },
+    objective_ids: { $in: [...topicObjectiveIds] },
+  }).select('objective_ids').lean<{ objective_ids: string[] }[]>();
+  const objectiveCounts = new Map(topic.objectives.map((objective) => [objective.id, 0]));
+  for (const row of existingObjectiveRows) {
+    for (const id of row.objective_ids) {
+      if (objectiveCounts.has(id)) objectiveCounts.set(id, (objectiveCounts.get(id) ?? 0) + 1);
+    }
+  }
   const existing = await Question.countDocuments({
     kind: args.kind,
     difficulty: args.difficulty,
@@ -122,11 +141,17 @@ async function main() {
   while (inserted < shortfall && attempts < maxAttempts) {
     attempts++;
     try {
-      const prompt = buildDraftPrompt({
-        topicTitle: topic.title,
-        objectives: topic.objectives,
+      const targetObjective = pickLeastCoveredObjective(topic.objectives, objectiveCounts);
+      if (!targetObjective) throw new Error(`Topic ${args.topic} has no objectives`);
+      const recipe = buildDefaultQuestionRecipe({
+        objectiveIds: [targetObjective.id],
         kind: args.kind,
         difficulty: args.difficulty,
+      });
+      const prompt = buildDraftPrompt({
+        topicTitle: topic.title,
+        objectives: [targetObjective],
+        recipe,
       });
 
       // 1. Draft
@@ -151,6 +176,11 @@ async function main() {
         continue;
       }
       const draft = validated.data;
+      if (!questionMatchesRecipe(draft, recipe)) {
+        rejected++;
+        console.log(`  ✗ attempt ${attempts}: output did not match the requested question recipe`);
+        continue;
+      }
       // Some responses double-escape newlines (literal "\n" text); normalize
       // every prose field before the solve pass and insert.
       draft.stem = normalizeEscapedNewlines(draft.stem);
@@ -213,6 +243,7 @@ async function main() {
 
       if (args.dryRun) {
         inserted++;
+        objectiveCounts.set(targetObjective.id, (objectiveCounts.get(targetObjective.id) ?? 0) + 1);
         console.log(`  ✓ attempt ${attempts}: verified (dry-run, not inserted): ${draft.stem.slice(0, 70)}…`);
         continue;
       }
@@ -223,6 +254,7 @@ async function main() {
         gen_meta: { model: MODEL_ID, prompt_version: PROMPT_VERSION, verified: true, ts: new Date() },
       });
       inserted++;
+      objectiveCounts.set(targetObjective.id, (objectiveCounts.get(targetObjective.id) ?? 0) + 1);
       console.log(`  ✓ attempt ${attempts}: inserted draft (${inserted}/${shortfall}): ${draft.stem.slice(0, 70)}…`);
     } catch (err) {
       rejected++;

@@ -1,8 +1,9 @@
 import type { Objective, QuestionKind } from '@/lib/types';
+import type { QuestionRecipe } from '@/lib/generation/question-recipe';
 
 // Generation prompts (ROUND_1 §4). Bump PROMPT_VERSION on any wording change —
 // it is recorded in gen_meta.prompt_version on every inserted question.
-export const PROMPT_VERSION = 'v3';
+export const PROMPT_VERSION = 'v4';
 
 const MCQ_EXEMPLAR = `{
   "kind": "mcq",
@@ -38,32 +39,46 @@ const STRUCTURED_EXEMPLAR = `{
 export function buildDraftPrompt(args: {
   topicTitle: string;
   objectives: Objective[];
-  kind: QuestionKind;
-  difficulty: 1 | 2 | 3;
+  recipe: QuestionRecipe;
 }): string {
-  const { topicTitle, objectives, kind, difficulty } = args;
+  const { topicTitle, objectives, recipe } = args;
+  const kind: QuestionKind = recipe.kind;
   const objectiveBlock = objectives
     .map((o) => `- ${o.id}: ${o.text}${o.notes ? `\n  Notes: ${o.notes}` : ''}`)
     .join('\n');
+  const profileInstruction =
+    recipe.kind === 'mcq'
+      ? `PROFILE: ${recipe.profile}. Set the question's profile to exactly this value.`
+      : `PROFILE MARKS: CK ${recipe.profile_split.CK}, AK ${recipe.profile_split.AK}, R ${recipe.profile_split.R}. The rubric must award exactly these totals.`;
 
   return `You are writing an original practice question for CSEC Mathematics (CXC 05/G/SYLL 16, 2027 syllabus) in the style of ${kind === 'mcq' ? 'Paper 1 (multiple choice)' : 'Paper 2 (structured response)'}.
 
 TOPIC: ${topicTitle}
-SYLLABUS OBJECTIVES to assess (pick 1-2 and list their ids in objective_ids):
+SYLLABUS OBJECTIVES to assess (use exactly these ids in objective_ids):
 ${objectiveBlock}
 
-DIFFICULTY: ${difficulty} of 3 (1 = routine single-step, 2 = multi-step, 3 = demanding multi-concept).
+QUESTION RECIPE (follow every field exactly):
+- Difficulty: ${recipe.difficulty} of 3 (1 = routine single-step, 2 = multi-step, 3 = demanding multi-concept)
+- Marks: ${recipe.marks}
+- Archetype: ${recipe.archetype}
+- Primary command verb: ${recipe.command_verb}
+- Parts: ${recipe.part_count}
+- Representation: ${recipe.representation}
+- Context category: ${recipe.context_category}
+- ${profileInstruction}
+- Misconception families to target: ${recipe.misconception_families.length ? recipe.misconception_families.join(', ') : 'choose plausible errors implied by the mathematics'}
 
 MARK PROFILES (official CXC): every mark is CK (Conceptual Knowledge — recalling/recognising concepts), AK (Algorithmic Knowledge — carrying out procedures), or R (Reasoning — translating, justifying, multi-step problem solving).
 
 RULES:
 - The question must be ORIGINAL — written in exam style but never copied or near-copied from any CXC past paper.
+- Do not quote, reconstruct, paraphrase, or imitate a distinctive source question. The recipe contains abstract controls only.
 - Use Caribbean contexts naturally where a context is needed (EC dollars, island place names, cricket, market stalls) without being forced.
 - Math must be typeset KaTeX-safe: inline math in $...$, escape backslashes correctly in JSON.
 - DELIMITER CONVENTION (hard rule, every field — stem, options, rubric criteria, final_answer, worked_solution, misconception triggers and remediations): the $ sign is EXCLUSIVELY a math delimiter, always in balanced $...$ pairs. Currency is NEVER written with a bare $. Write currency as EC$ immediately followed by the amount (EC$12, EC$3.40) or spell out "dollars". Never put EC$ amounts inside $...$ math.
 - ${kind === 'mcq'
-      ? 'Exactly 4 options. Distractors must each come from a plausible specific error. answer_key is the 0-based index of the correct option. Set "profile" to the single profile the item assesses. marks = 1.'
-      : 'Write a rubric of 2-6 criteria. Codes are CK1, CK2..., AK1..., R1... matching each criterion\'s profile. mark_values must sum to marks (2-9 marks total). final_answer must contain ONLY the final value(s) — no sentences, no labels, no working. One value per required part/root, separated by "; ". Examples: "42.5" · "x = -1/3; x = 2" · "EC$70; EC$58".'}
+      ? 'Exactly 4 options. Distractors must each come from a plausible specific error. answer_key is the 0-based index of the correct option. marks = 1.'
+      : 'Write a rubric of 2-6 criteria. Codes are CK1, CK2..., AK1..., R1... matching each criterion\'s profile. mark_values must sum to the recipe marks and match its exact CK/AK/R totals. final_answer must contain ONLY the final value(s) — no sentences, no labels, no working. One value per required part/root, separated by "; ". Examples: "42.5" · "x = -1/3; x = 2" · "EC$70; EC$58".'}
 - misconceptions: 1-3 entries. Each trigger is a specific wrong final answer a student might give; name the error; remediation explains the fix in one or two sentences.
 - worked_solution: complete, correct, step-by-step, KaTeX-safe.
 
