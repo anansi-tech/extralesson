@@ -32,6 +32,9 @@ const QuestionSchema = new Schema({
   difficulty: { type: Number, enum: [1, 2, 3], required: true },
   marks: { type: Number, required: true },
   rubric: { type: [RubricItemSchema] }, // structured only
+  // structured only: canonical final answer, drives the §6.3 equivalence check
+  // and the pipeline's independent-solve comparison (mcq uses answer_key).
+  final_answer: { type: String },
   worked_solution: { type: String, required: true },
   misconceptions: { type: [MisconceptionSchema], default: [] },
   status: { type: String, enum: ['draft', 'approved', 'retired'], default: 'draft', required: true },

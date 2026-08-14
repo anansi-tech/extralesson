@@ -47,6 +47,9 @@ export const McqQuestionZ = QuestionBaseZ.extend({
 export const StructuredQuestionZ = QuestionBaseZ.extend({
   kind: z.literal('structured'),
   rubric: z.array(RubricItemZ).min(1),
+  // Canonical final answer for the typed-answer equivalence check (§6.3)
+  // and the pipeline's independent solve pass (§4.3).
+  final_answer: z.string().min(1),
 })
   .refine(moduleAgrees, { message: 'objective_ids must belong to module' })
   .refine((q) => q.rubric.reduce((s, r) => s + r.mark_value, 0) === q.marks, {

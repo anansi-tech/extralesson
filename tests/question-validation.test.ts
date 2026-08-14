@@ -13,6 +13,7 @@ const validStructured = {
     { code: 'AK1', profile: 'AK' as const, criterion: 'Correct factorisation', mark_value: 1 },
     { code: 'R1', profile: 'R' as const, criterion: 'Both roots stated correctly', mark_value: 1 },
   ],
+  final_answer: 'x = -1/3 or x = 2',
   worked_solution: '$(3x+1)(x-2)=0$ so $x=-\\frac{1}{3}$ or $x=2$.',
   misconceptions: [
     { trigger: 'x = 1/3', name: 'Sign slip', remediation: '$3x+1=0$ gives $x=-\\frac{1}{3}$.' },
