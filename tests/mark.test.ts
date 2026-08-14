@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { markMcq, markStructured } from '@/lib/grade/mark';
+import { markMcq, markStructured, markStructuredParts } from '@/lib/grade/mark';
 import type { RubricItem } from '@/lib/types';
 
 const rubric: RubricItem[] = [
@@ -52,5 +52,51 @@ describe('markStructured — documented heuristics', () => {
     const r = markStructured(rubric, 'x = 2', 'x = 5', '3x - 6 = 9\nx = 5');
     expect(r.rubric_awarded).toEqual(['CK1', 'AK1']);
     expect(r.profile_marks).toEqual({ CK: 1, AK: 2, R: 0 });
+  });
+});
+
+describe('markStructuredParts — per-part equivalence (R1.5)', () => {
+  const partRubric: RubricItem[] = [
+    { code: 'AK1', profile: 'AK', criterion: 'part a procedure', mark_value: 2, part_label: 'a' },
+    { code: 'CK1', profile: 'CK', criterion: 'part b concept', mark_value: 1, part_label: 'b' },
+    { code: 'R1', profile: 'R', criterion: 'part b conclusion', mark_value: 2, part_label: 'b' },
+  ];
+  const parts = [
+    { label: 'a', answer: 'x = 4' },
+    { label: 'b', answer: 'EC$24' },
+  ];
+
+  it('awards each part independently', () => {
+    const r = markStructuredParts(partRubric, parts, [
+      { label: 'a', answer: '4', working: '' },
+      { label: 'b', answer: '25', working: '' },
+    ]);
+    expect(r.correct).toBe(false); // part b wrong
+    expect(r.rubric_awarded).toEqual(['AK1']); // part a fully awarded
+    expect(r.profile_marks).toEqual({ CK: 0, AK: 2, R: 0 });
+  });
+
+  it('all parts correct awards the full rubric', () => {
+    const r = markStructuredParts(partRubric, parts, [
+      { label: 'a', answer: 'x = 4', working: '' },
+      { label: 'b', answer: '$24', working: '' },
+    ]);
+    expect(r.correct).toBe(true);
+    expect(r.profile_marks).toEqual({ CK: 1, AK: 2, R: 2 });
+  });
+
+  it('working earns CK within the missed part only, never R', () => {
+    const r = markStructuredParts(partRubric, parts, [
+      { label: 'a', answer: 'x = 9', working: '' },
+      { label: 'b', answer: '30', working: '3 × 8 = 30' },
+    ]);
+    expect(r.rubric_awarded).toEqual(['CK1']);
+    expect(r.profile_marks.R).toBe(0);
+  });
+
+  it('missing input for a part earns nothing for that part', () => {
+    const r = markStructuredParts(partRubric, parts, [{ label: 'a', answer: 'x = 4', working: '' }]);
+    expect(r.correct).toBe(false);
+    expect(r.rubric_awarded).toEqual(['AK1']);
   });
 });

@@ -25,6 +25,46 @@ export function markMcq(profile: 'CK' | 'AK' | 'R', marks: number, answerIndex: 
   return { correct, rubric_awarded: [], profile_marks };
 }
 
+// R1.5 §2: one input per part; per-part equivalence. Rubric rows are awarded
+// per part using the same documented heuristics as before, applied within
+// each part: a part's R rows require that part's answer to be correct.
+export interface PartInput {
+  label: string;
+  answer: string;
+  working: string;
+}
+
+export function markStructuredParts(
+  rubric: RubricItem[],
+  parts: { label: string; answer: string }[],
+  inputs: PartInput[],
+): MarkResult {
+  const inputByLabel = new Map(inputs.map((i) => [i.label, i]));
+  const profile_marks: ProfileMarks = { CK: 0, AK: 0, R: 0 };
+  const awarded: string[] = [];
+  let allCorrect = true;
+
+  for (const part of parts) {
+    const input = inputByLabel.get(part.label);
+    const partRubric = rubric.filter((r) => r.part_label === part.label);
+    const result = markStructured(
+      partRubric.length > 0
+        ? partRubric
+        : [{ code: 'R0', profile: 'R', criterion: 'answer', mark_value: 0, part_label: part.label }],
+      part.answer,
+      input?.answer ?? '',
+      input?.working ?? '',
+    );
+    if (!result.correct) allCorrect = false;
+    awarded.push(...result.rubric_awarded.filter((c) => c !== 'R0'));
+    profile_marks.CK += result.profile_marks.CK;
+    profile_marks.AK += result.profile_marks.AK;
+    profile_marks.R += result.profile_marks.R;
+  }
+
+  return { correct: allCorrect, rubric_awarded: awarded, profile_marks };
+}
+
 export function markStructured(
   rubric: RubricItem[],
   canonicalAnswer: string,
