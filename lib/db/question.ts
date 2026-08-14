@@ -49,6 +49,8 @@ const QuestionSchema = new Schema({
     ts: { type: Date, required: true },
     // Exact abstract controls used for reproducibility; null on legacy rows.
     recipe: { type: Schema.Types.Mixed, default: null },
+    // Blind cognitive/presentation gate evidence; null on pre-v6 rows.
+    review: { type: Schema.Types.Mixed, default: null },
   },
 });
 

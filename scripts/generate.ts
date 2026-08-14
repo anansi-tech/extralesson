@@ -13,7 +13,14 @@ import 'dotenv/config';
 import { z } from 'zod';
 import { generateObject, NoObjectGeneratedError } from 'ai';
 import targetsJson from '@/design/research/question-bank-targets.json';
-import { model, MODEL_ID } from '@/lib/ai';
+import {
+  escalationModel,
+  ESCALATION_MODEL_ID,
+  model,
+  MODEL_ID,
+  reviewModel,
+  REVIEW_MODEL_ID,
+} from '@/lib/ai';
 import { dbConnect, Question, Topic } from '@/lib/db';
 import { QuestionDraftZ } from '@/lib/validation/question';
 import { answersEquivalent } from '@/lib/grade/equivalence';
@@ -29,6 +36,12 @@ import {
 import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-targets';
 import { repairQuestionOutput } from '@/lib/generation/question-output';
 import { deterministicPresentationIssues } from '@/lib/generation/question-quality';
+import { blindReviewIssues } from '@/lib/generation/question-quality';
+import { BlindPilotEvaluationZ } from '@/lib/generation/pilot-evaluation';
+import {
+  buildBlindSingleReviewPrompt,
+  QUESTION_REVIEW_PROMPT_VERSION,
+} from '@/lib/prompts/question-review';
 
 const bankTargets = QuestionBankTargetsArtifactZ.parse(targetsJson);
 
@@ -271,7 +284,57 @@ async function main() {
         continue;
       }
 
-      // 3. Independent solve pass — fresh call, stem only
+      // 3. Blind cognitive/presentation review. Luna is the calibrated first
+      // pass; only a flag or hidden-control mismatch invokes Terra.
+      const reviewPrompt = buildBlindSingleReviewPrompt({
+        question_id: 'candidate',
+        kind: draft.kind,
+        stem: draft.stem,
+        options: draft.kind === 'mcq' ? draft.options : undefined,
+        marks: draft.marks,
+        visual: draft.visual,
+      });
+      const { object: primaryReview, usage: primaryReviewUsage } = await generateObject({
+        model: reviewModel,
+        schema: BlindPilotEvaluationZ,
+        prompt: reviewPrompt,
+        providerOptions: { openai: { reasoningEffort: 'low' } },
+      });
+      addUsage(primaryReviewUsage);
+      if (primaryReview.question_id !== 'candidate') throw new Error('reviewer returned wrong candidate id');
+      const primaryReviewIssues = blindReviewIssues(primaryReview, recipe);
+      let comparatorReview: z.infer<typeof BlindPilotEvaluationZ> | null = null;
+      let acceptedBy: 'primary' | 'comparator' = 'primary';
+      if (primaryReviewIssues.length > 0) {
+        const { object, usage } = await generateObject({
+          model: escalationModel,
+          schema: BlindPilotEvaluationZ,
+          prompt: reviewPrompt,
+          providerOptions: { openai: { reasoningEffort: 'low' } },
+        });
+        addUsage(usage);
+        if (object.question_id !== 'candidate') throw new Error('escalation reviewer returned wrong candidate id');
+        comparatorReview = object;
+        const comparatorIssues = blindReviewIssues(comparatorReview, recipe);
+        if (comparatorIssues.length > 0) {
+          rejected++;
+          console.log(
+            `  ✗ attempt ${attempts}: blind review rejected — ${REVIEW_MODEL_ID}=${primaryReviewIssues.join(',')}; ${ESCALATION_MODEL_ID}=${comparatorIssues.join(',')}`,
+          );
+          continue;
+        }
+        acceptedBy = 'comparator';
+      }
+      const reviewRecord = {
+        prompt_version: QUESTION_REVIEW_PROMPT_VERSION,
+        primary_model: REVIEW_MODEL_ID,
+        primary: primaryReview,
+        comparator_model: comparatorReview ? ESCALATION_MODEL_ID : null,
+        comparator: comparatorReview,
+        accepted_by: acceptedBy,
+      };
+
+      // 4. Independent solve pass — fresh call, stem only
       let solved: boolean;
       let draftAnswer: string;
       let solveAnswer: string;
@@ -327,6 +390,7 @@ async function main() {
           verified: true,
           ts: new Date(),
           recipe,
+          review: reviewRecord,
         },
       });
       inserted++;

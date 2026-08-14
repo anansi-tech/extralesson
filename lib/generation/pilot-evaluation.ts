@@ -44,8 +44,10 @@ export type BlindPilotEvaluation = z.infer<typeof BlindPilotEvaluationZ>;
 
 export function expectedProfile(recipe: QuestionRecipe): 'CK' | 'AK' | 'R' {
   if (recipe.kind === 'mcq') return recipe.profile;
-  if (recipe.profile_split.R > 0) return 'R';
-  if (recipe.profile_split.AK > 0) return 'AK';
+  const maximum = Math.max(recipe.profile_split.CK, recipe.profile_split.AK, recipe.profile_split.R);
+  if (recipe.difficulty === 3 && recipe.profile_split.R === maximum) return 'R';
+  if (recipe.profile_split.AK === maximum) return 'AK';
+  if (recipe.profile_split.R === maximum) return 'R';
   return 'CK';
 }
 

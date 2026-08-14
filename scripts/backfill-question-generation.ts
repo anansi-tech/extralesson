@@ -8,16 +8,21 @@ z.object({ MONGODB_URI: z.string().min(1) }).parse(process.env);
 
 async function main() {
   await dbConnect();
-  const [visuals, recipes] = await Promise.all([
+  const [visuals, recipes, reviews] = await Promise.all([
     Question.updateMany({ visual: { $exists: false } }, { $set: { visual: null } }),
     Question.updateMany(
       { 'gen_meta.recipe': { $exists: false } },
       { $set: { 'gen_meta.recipe': null } },
     ),
+    Question.updateMany(
+      { 'gen_meta.review': { $exists: false } },
+      { $set: { 'gen_meta.review': null } },
+    ),
   ]);
   console.log(
-    `Backfilled ${visuals.modifiedCount} visual fields and ${recipes.modifiedCount} recipe fields.`,
+    `Backfilled ${visuals.modifiedCount} visual fields, ${recipes.modifiedCount} recipe fields, and ${reviews.modifiedCount} review fields.`,
   );
+  process.exit(0);
 }
 
 main().catch((error) => {

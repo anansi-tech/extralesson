@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { deterministicPresentationIssues } from '@/lib/generation/question-quality';
+import { blindReviewIssues, deterministicPresentationIssues } from '@/lib/generation/question-quality';
+import { buildDefaultQuestionRecipe } from '@/lib/generation/question-recipe';
 import { QuestionVisualZ } from '@/lib/validation/question-visual';
 
 describe('deterministic presentation quality', () => {
@@ -31,5 +32,31 @@ describe('deterministic presentation quality', () => {
       ],
     });
     expect(deterministicPresentationIssues(visual)).toEqual([]);
+  });
+
+  it('rejects a blind review whose observed demand misses the recipe', () => {
+    const recipe = buildDefaultQuestionRecipe({
+      objectiveIds: ['M3.4.1'], kind: 'mcq', difficulty: 3,
+    });
+    const issues = blindReviewIssues({
+      question_id: 'candidate', difficulty: 1, archetype: 'direct-procedure', profile: 'AK',
+      part_count: 1, context_category: 'none', visual_type: null,
+      exam_fidelity: 5, clarity: 5, visual_legibility: null, visual_necessity: null,
+      readiness: 'pass', concerns: [],
+    }, recipe);
+    expect(issues).toContain('difficulty-mismatch');
+    expect(issues).toContain('profile-mismatch');
+  });
+
+  it('accepts a clean blind review that matches the hidden controls', () => {
+    const recipe = buildDefaultQuestionRecipe({
+      objectiveIds: ['M2.3.1'], kind: 'mcq', difficulty: 2,
+    });
+    expect(blindReviewIssues({
+      question_id: 'candidate', difficulty: 2, archetype: 'direct-procedure', profile: 'AK',
+      part_count: 1, context_category: 'none', visual_type: null,
+      exam_fidelity: 4, clarity: 4, visual_legibility: null, visual_necessity: null,
+      readiness: 'pass', concerns: [],
+    }, recipe)).toEqual([]);
   });
 });

@@ -19,6 +19,8 @@ import {
 } from '@/lib/generation/pilot-evaluation';
 import { QuestionRecipeZ } from '@/lib/generation/question-recipe';
 import { QuestionVisualZ } from '@/lib/validation/question-visual';
+import { buildBlindBatchReviewPrompt } from '@/lib/prompts/question-review';
+import { PROMPT_VERSION } from '@/lib/prompts/question-gen';
 
 const DEFAULT_OUTPUT = 'design/research/question-bank-pilot-evaluation.json';
 const DEFAULT_MODEL = 'gpt-5.6-luna';
@@ -32,6 +34,7 @@ const ArgsZ = z.object({
   since: z.string().datetime(),
   limit: z.coerce.number().int().min(1).max(12).default(6),
   output: z.string().min(1).default(DEFAULT_OUTPUT),
+  promptVersion: z.string().min(1).default(PROMPT_VERSION),
 }).strict();
 
 function parseArgs() {
@@ -40,7 +43,10 @@ function parseArgs() {
     const index = argv.indexOf(`--${flag}`);
     return index >= 0 ? argv[index + 1] : undefined;
   };
-  return ArgsZ.parse({ since: get('since'), limit: get('limit'), output: get('output') });
+  return ArgsZ.parse({
+    since: get('since'), limit: get('limit'), output: get('output'),
+    promptVersion: get('prompt-version'),
+  });
 }
 
 const StoredQuestionZ = z.object({
@@ -54,8 +60,8 @@ const StoredQuestionZ = z.object({
   gen_meta: z.object({ recipe: QuestionRecipeZ }),
 }).passthrough();
 
-function buildPrompt(questions: z.infer<typeof StoredQuestionZ>[]) {
-  const blindQuestions = questions.map((question) => ({
+function blindQuestions(questions: z.infer<typeof StoredQuestionZ>[]) {
+  return questions.map((question) => ({
     question_id: question._id,
     kind: question.kind,
     stem: question.stem,
@@ -63,29 +69,6 @@ function buildPrompt(questions: z.infer<typeof StoredQuestionZ>[]) {
     marks: question.marks,
     visual: question.visual,
   }));
-  return `Act as an independent CSEC Mathematics assessment reviewer. Evaluate each ORIGINAL practice question blindly for difficulty and exam-paper presentation.
-
-You are not given the author's intended difficulty, profile, archetype, recipe, answer, solution, source fingerprint, or generation model. Infer every judgment from the displayed question only.
-
-Scale definitions:
-- difficulty 1: routine single-step; 2: multi-step or meaningful interpretation; 3: demanding multi-concept/reasoning.
-- profile CK: recall/recognition; AK: carry out a procedure; R: translate, justify, or integrate reasoning. Choose the dominant demand.
-- exam_fidelity and clarity: 1 poor to 5 excellent.
-- visual_legibility and visual_necessity: 1 poor/decorative to 5 excellent/essential; use null when there is no visual.
-- readiness pass: could enter human content review unchanged; review: promising but needs editing; reject: materially misleading, ambiguous, malformed, or unlike the expected exam standard.
-
-Renderer facts needed for a fair presentation judgment:
-- diagram coordinates use a fixed 0–100 canvas and are not auto-zoomed;
-- plot coordinates are auto-scaled with equal x/y unit scale;
-- charts auto-scale their values;
-- set diagrams use fixed centered set circles.
-
-Use concerns sparingly and consistently. A visual is decorative when the stem repeats its decisive data or it does not materially support solving. A diagram has visual-scale-risk when its content occupies only a small fraction of its fixed canvas.
-
-Questions:
-${JSON.stringify(blindQuestions)}
-
-Return exactly one evaluation for each question_id, in the same order.`;
 }
 
 function topicForObjective(objectiveId: string) {
@@ -108,7 +91,7 @@ async function main() {
   await dbConnect();
   const raw = await Question.find({
     status: 'draft',
-    'gen_meta.prompt_version': 'v5',
+    'gen_meta.prompt_version': args.promptVersion,
     'gen_meta.ts': { $gte: new Date(args.since) },
   }).sort({ 'gen_meta.ts': 1 }).limit(args.limit).lean();
   const questions = z.array(StoredQuestionZ).length(args.limit).parse(raw);
@@ -117,7 +100,7 @@ async function main() {
   const { object, usage } = await generateObject({
     model: openai(env.PILOT_EVALUATOR_MODEL),
     schema: BlindPilotBatchZ,
-    prompt: buildPrompt(questions),
+    prompt: buildBlindBatchReviewPrompt(blindQuestions(questions)),
     maxOutputTokens: 8_000,
     providerOptions: { openai: { reasoningEffort: 'low' } },
   });

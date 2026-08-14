@@ -1,12 +1,28 @@
 import { describe, expect, it } from 'vitest';
 import targetsJson from '@/design/research/question-bank-targets.json';
 import { QuestionBankTargetsArtifactZ } from '@/lib/generation/question-bank-targets';
-import { compareBlindEvaluation, summarizePilotComparisons } from '@/lib/generation/pilot-evaluation';
+import {
+  compareBlindEvaluation,
+  expectedProfile,
+  summarizePilotComparisons,
+} from '@/lib/generation/pilot-evaluation';
 import { buildCorpusInformedQuestionRecipe } from '@/lib/generation/question-recipe';
 
 const targets = QuestionBankTargetsArtifactZ.parse(targetsJson);
 
 describe('blind pilot comparison', () => {
+  it('uses the dominant structured demand, breaking a difficulty-2 tie toward AK', () => {
+    const d2 = buildCorpusInformedQuestionRecipe({
+      targets, topicCode: 'M1-MEAS', objectiveIds: ['M1.4.1'],
+      kind: 'structured', difficulty: 2, ordinal: 0, presentation: 'text',
+    });
+    const d3 = buildCorpusInformedQuestionRecipe({
+      targets, topicCode: 'M1-MEAS', objectiveIds: ['M1.4.1'],
+      kind: 'structured', difficulty: 3, ordinal: 0, presentation: 'text',
+    });
+    expect(expectedProfile(d2)).toBe('AK');
+    expect(expectedProfile(d3)).toBe('R');
+  });
   it('compares a blind judgment to hidden controls and real-paper distributions', () => {
     const recipe = buildCorpusInformedQuestionRecipe({
       targets,
