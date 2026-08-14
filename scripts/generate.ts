@@ -36,6 +36,7 @@ const ArgsZ = z.object({
   count: z.coerce.number().int().min(1).max(50),
   kind: z.enum(['mcq', 'structured']),
   presentation: RecipePresentationZ,
+  maxAttempts: z.coerce.number().int().min(1).max(150).optional(),
   dryRun: z.boolean(),
   poison: z.boolean(),
 });
@@ -52,11 +53,12 @@ function parseArgs() {
     count: get('count'),
     kind: get('kind'),
     presentation: get('presentation') ?? 'auto',
+    maxAttempts: get('max-attempts'),
     dryRun: argv.includes('--dry-run'),
     poison: argv.includes('--poison'),
   });
   if (!parsed.success) {
-    console.error('Usage: pnpm generate -- --topic M1-ALG1 --difficulty 2 --count 10 --kind structured [--presentation auto|visual|text] [--dry-run]');
+    console.error('Usage: pnpm generate -- --topic M1-ALG1 --difficulty 2 --count 10 --kind structured [--presentation auto|visual|text] [--max-attempts N] [--dry-run]');
     console.error(parsed.error.flatten().fieldErrors);
     process.exit(1);
   }
@@ -102,6 +104,30 @@ const StructuredLooseZ = z.object({
 
 const McqSolveZ = z.object({ answer_index: z.number(), final_answer: z.string() });
 const StructuredSolveZ = z.object({ final_answer: z.string() });
+
+function closestIssues(issue: z.ZodIssue): z.ZodIssue[] {
+  if (issue.code !== z.ZodIssueCode.invalid_union) return [issue];
+  return issue.unionErrors
+    .map((error) => error.issues.flatMap(closestIssues))
+    .sort((a, b) => a.length - b.length)[0] ?? [issue];
+}
+
+function outputDiagnostics(raw: unknown, schema: typeof McqLooseZ | typeof StructuredLooseZ) {
+  const parsed = schema.safeParse(raw);
+  if (parsed.success) return '';
+  const visual = typeof raw === 'object' && raw !== null && 'visual' in raw
+    ? (raw as { visual?: unknown }).visual
+    : undefined;
+  const visualKind = typeof visual === 'object' && visual !== null
+    ? `visual=${String((visual as { format?: unknown }).format)}/${String((visual as { visual_type?: unknown }).visual_type)}; `
+    : '';
+  const issues = parsed.error.issues
+    .flatMap(closestIssues)
+    .slice(0, 8)
+    .map((issue) => `${issue.path.join('.') || '<root>'}: ${issue.message}`)
+    .join('; ');
+  return ` — ${visualKind}${issues}`;
+}
 
 async function main() {
   const args = parseArgs();
@@ -159,7 +185,7 @@ async function main() {
     usageTotals.outputTokens += usage.outputTokens ?? 0;
     usageTotals.reasoningTokens += usage.reasoningTokens ?? 0;
   };
-  const maxAttempts = shortfall * 3; // give up rather than loop forever
+  const maxAttempts = args.maxAttempts ?? shortfall * 3; // give up rather than loop forever
 
   while (inserted < shortfall && attempts < maxAttempts) {
     attempts++;
@@ -305,12 +331,10 @@ async function main() {
         if (err.text) {
           try {
             const raw: unknown = JSON.parse(err.text);
-            const parsed = (args.kind === 'mcq' ? McqLooseZ : StructuredLooseZ).safeParse(raw);
-            if (!parsed.success) {
-              diagnostics = ` — ${parsed.error.issues.slice(0, 6)
-                .map((issue) => `${issue.path.join('.') || '<root>'}: ${issue.message}`)
-                .join('; ')}`;
-            }
+            diagnostics = outputDiagnostics(
+              raw,
+              args.kind === 'mcq' ? McqLooseZ : StructuredLooseZ,
+            );
           } catch {
             diagnostics = ' — response was not valid JSON';
           }
