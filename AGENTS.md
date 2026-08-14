@@ -43,8 +43,16 @@ Instructions for any AI coding agent working in this repo.
 ```
 pnpm test
 grep -riE 'whatsapp|twilio|investigation|sba' app lib scripts                 # zero hits
+grep -riE 'tikz|jsxgraph|minhash|latex' app lib scripts                       # zero hits (say "KaTeX")
 grep -riwE 'vision|upload' app lib scripts                                    # zero hits (word-boundary:
                                                                               #  "division" in syllabus text
                                                                               #  is not a hit)
 grep -riE "from ['\"]stripe|require\(['\"]stripe" app lib scripts             # zero hits
 ```
+
+R1.5 specifics: the current spec is `ROUND_1_5_FINAL.md`. Visuals are ONLY the
+parametric templates in `lib/visuals/` (model emits `{template, params}`,
+never SVG); every visual is Zod-validated and numerically cross-checked in
+`lib/visuals/verify.ts` before the solve pass. Generation is recipe-driven
+from the target matrices (`lib/targets/`, `lib/generation/recipe.ts`). The
+dedup gate compares only against OUR approved bank — never external corpora.

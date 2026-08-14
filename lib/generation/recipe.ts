@@ -41,7 +41,7 @@ export interface ObjectiveCoverage {
 // Marks by difficulty for structured questions. Documented assumption
 // anchored on the 2027 blueprint (30 marks / 3 questions ≈ 10 per exam
 // question; bank items run smaller at low difficulty).
-const STRUCTURED_MARKS: Record<1 | 2 | 3, number> = { 1: 5, 2: 7, 3: 9 };
+export const STRUCTURED_MARKS: Record<1 | 2 | 3, number> = { 1: 5, 2: 7, 3: 9 };
 
 export function nextRecipe(
   matrix: Matrix,

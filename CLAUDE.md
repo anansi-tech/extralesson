@@ -1,8 +1,10 @@
 # CLAUDE.md — ExtraLesson
 
-AI-powered CSEC Mathematics tutoring for the Caribbean. Round 1 scope is defined in
-`ROUND_1_EXTRALESSON.md` — read it before any non-trivial change. Nothing outside that
-document exists yet; the photo-grading examiner engine is Round 2.
+AI-powered CSEC Mathematics tutoring for the Caribbean. The current spec is
+`ROUND_1_5_FINAL.md` (visuals, multi-part schema, target matrices) layered on
+`ROUND_1_EXTRALESSON.md` — read both before any non-trivial change. The
+photo-grading examiner engine is Round 2. `feat/question-bank-fingerprint` is
+a quarry, not a merge target — see the R1.5 branch policy.
 
 ## Ground truth
 
@@ -40,8 +42,15 @@ No code/imports/stubs for: WhatsApp/Twilio · parent reports · Stripe SDK/API/w
 SBA coaching · spaced repetition · streaks/gamification · CAPE or second subject ·
 in-app payments · Railway/cron · offline sync · native apps.
 
+R1.5 additions: no TikZ/KaTeX-server toolchains beyond the katex npm package ·
+no runtime drawing code (visuals are the 15 parametric SVG templates +
+dataTable HTML in `lib/visuals/` only) · no corpus inventory/classification/OCR
+pipeline in main · no similarity checks against external corpora · no (i)/(ii)
+sub-nesting · no image assets/CDN.
+
 Verification greps must return zero hits in `app/ lib/ scripts/`:
-`whatsapp`, `twilio`, `stripe` (imports), `vision`, `upload`, `investigation`, `sba`.
+`whatsapp`, `twilio`, `stripe` (imports), `vision`, `upload`, `investigation`, `sba`,
+`tikz`, `jsxgraph`, `minhash`, `latex` (write "KaTeX", never the other name).
 Use word-boundary matching for `vision`/`upload` — "division" in faithful syllabus
 text is not a violation. Spell out "school-based assessment" / "investigative
 question" in comments instead of the banned tokens.

@@ -17,7 +17,7 @@ import { deriveFinalAnswer, QuestionDraftZ } from '@/lib/validation/question';
 import { normalizeEscapedNewlines } from '@/lib/text';
 import { buildDraftPrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
 import { getCoverage } from '@/lib/admin/coverage';
-import { nextRecipe, type ObjectiveCoverage, type QuestionRecipe, type RecipeContext } from '@/lib/generation/recipe';
+import { nextRecipe, STRUCTURED_MARKS, type ObjectiveCoverage, type QuestionRecipe, type RecipeContext } from '@/lib/generation/recipe';
 import { independentSolve } from '@/lib/generation/solve';
 import { checkDuplicate } from '@/lib/generation/dedup';
 import { verifyQuestionVisual } from '@/lib/visuals/verify';
@@ -115,10 +115,14 @@ async function buildRecipe(args: ReturnType<typeof parseArgs>): Promise<{
     ? { ...matrix, topics: matrix.topics.filter((t) => t.code === args.topic) }
     : matrix;
   const picked = nextRecipe(scopedMatrix, objectivesByTopic);
-  const recipe = {
-    ...picked.recipe,
-    ...(args.kind ? { kind: args.kind, marks: args.kind === 'mcq' ? 1 : picked.recipe.marks } : {}),
-    ...(args.difficulty ? { difficulty: args.difficulty } : {}),
+  let recipe = picked.recipe;
+  if (args.kind) recipe = { ...recipe, kind: args.kind };
+  if (args.difficulty) recipe = { ...recipe, difficulty: args.difficulty };
+  // Overrides can change kind/difficulty after the deficit pick — marks must
+  // always be re-derived from the FINAL kind and difficulty.
+  recipe = {
+    ...recipe,
+    marks: recipe.kind === 'mcq' ? 1 : STRUCTURED_MARKS[recipe.difficulty],
   };
   const topicDoc = topics.find((t) => t.code === picked.context.topic_code)!;
   const wanted = new Set(recipe.objective_ids);
