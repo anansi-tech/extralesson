@@ -18,9 +18,9 @@ export interface ReviewQuestion {
   marks: number;
   visual: QuestionVisual | null;
   rubric?: { code: string; profile: string; criterionHtml: string; mark_value: number }[];
-  final_answer?: string;
+  finalAnswerHtml?: string;
   solutionHtml: string;
-  misconceptions: { trigger: string; name: string; remediationHtml: string }[];
+  misconceptions: { trigger: string; triggerHtml: string; name: string; remediationHtml: string }[];
   editJson: string;
 }
 
@@ -120,9 +120,10 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
               </li>
             ))}
           </ul>
-          {question.final_answer && (
+          {question.finalAnswerHtml && (
             <div className="mt-2 font-mono text-xs">
-              <span className="text-dim">FINAL ANSWER:</span> {question.final_answer}
+              <span className="text-dim">FINAL ANSWER:</span>{' '}
+              <span dangerouslySetInnerHTML={{ __html: question.finalAnswerHtml }} />
             </div>
           )}
         </div>
@@ -143,7 +144,10 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
           <ul className="mt-1 space-y-1">
             {question.misconceptions.map((m, i) => (
               <li key={i} className="border-l-3 border-red-pen bg-[#FDF1F0] p-2 text-sm">
-                <b>{m.name}</b> <span className="font-mono text-xs text-dim">({m.trigger})</span>
+                <b>{m.name}</b>{' '}
+                <span className="font-mono text-xs text-dim">
+                  (<span dangerouslySetInnerHTML={{ __html: m.triggerHtml }} />)
+                </span>
                 <div dangerouslySetInnerHTML={{ __html: m.remediationHtml }} />
               </li>
             ))}

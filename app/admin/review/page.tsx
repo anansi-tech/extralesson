@@ -50,10 +50,11 @@ export default async function ReviewPage() {
         marks: raw.marks,
         visual,
         rubric: raw.rubric?.map((r) => ({ ...r, criterionHtml: renderMathHtml(r.criterion) })),
-        final_answer: raw.final_answer,
+        finalAnswerHtml: raw.final_answer ? renderMathHtml(raw.final_answer) : undefined,
         solutionHtml: renderMathHtml(raw.worked_solution),
         misconceptions: raw.misconceptions.map((m) => ({
           ...m,
+          triggerHtml: renderMathHtml(m.trigger),
           remediationHtml: renderMathHtml(m.remediation),
         })),
         editJson: JSON.stringify(
