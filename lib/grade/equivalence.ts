@@ -25,8 +25,8 @@ function preClean(raw: string): string {
     .replace(/\\mapsto|\\rightarrow|\\to\b|↦|→/g, '->')
     .replace(/\\neq?\b|≠/g, '!=')
     .replace(/⁻¹/g, '^{-1}')
-    .replace(/[×·]/g, '*')
-    .replace(/÷/g, '/')
+    .replace(/[×·]|\\times|\\cdot/g, '*')
+    .replace(/÷|\\div\b/g, '/')
     .replace(/\^\s*\{?\s*\\?circ\s*\}?/g, '°') // KaTeX degrees: ^\circ, ^{\circ}
     .replace(/²/g, '^2') // unicode superscripts are exponents, not prose
     .replace(/³/g, '^3')
@@ -140,6 +140,7 @@ function closeEnough(a: number, b: number): boolean {
 function toMathExpr(s: string): string {
   return s
     .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '(($1)/($2))')
+    .replace(/\^\s*\{([^{}]+)\}/g, '^($1)') // 10^{-5}: mathjs wants parentheses
     .replace(/\\sqrt\{([^{}]+)\}/g, 'sqrt($1)')
     .replace(/√\s*\(?([\d.a-z]+)\)?/g, 'sqrt($1)')
     .replace(/\\pi|π/g, 'pi')

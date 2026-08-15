@@ -73,7 +73,7 @@ export function checkAnswerFormat(raw: string, format: AnswerFormat): FormatChec
     if (!SURD.test(value)) {
       return {
         ok: false,
-        feedback: 'The question asks for an answer in surd form, so it must contain a root such as $\\sqrt{2}$.',
+        feedback: 'Correct value, but the question asks for surd form, so leave a root such as $\\sqrt{2}$ in the answer rather than a decimal.',
       };
     }
     return { ok: true };
@@ -83,7 +83,7 @@ export function checkAnswerFormat(raw: string, format: AnswerFormat): FormatChec
     if (!STANDARD_FORM.test(value)) {
       return {
         ok: false,
-        feedback: 'The question asks for standard form: a number between 1 and 10 multiplied by a power of 10, such as $3.4 \\times 10^{5}$.',
+        feedback: 'Correct value, but the question asks for standard form: a number between 1 and 10 multiplied by a power of 10, such as $3.4 \\times 10^{5}$.',
       };
     }
     return { ok: true };
@@ -93,7 +93,7 @@ export function checkAnswerFormat(raw: string, format: AnswerFormat): FormatChec
     if (!FRACTION.test(value)) {
       return {
         ok: false,
-        feedback: 'The question asks for a fraction in its lowest terms.',
+        feedback: 'Correct value, but the question asks for a fraction in its lowest terms.',
       };
     }
     const [n, d] = value.split('/').map((x) => Number(x.trim()));
@@ -110,7 +110,7 @@ export function checkAnswerFormat(raw: string, format: AnswerFormat): FormatChec
     if (!/^-?\d+$/.test(value)) {
       return {
         ok: false,
-        feedback: 'The question asks for a whole number.',
+        feedback: 'Correct value, but the question asks for a whole number.',
       };
     }
     return { ok: true };
@@ -120,7 +120,7 @@ export function checkAnswerFormat(raw: string, format: AnswerFormat): FormatChec
     if (!whole.includes('=')) {
       return {
         ok: false,
-        feedback: 'The question asks for the answer as an equation, in the form it specifies.',
+        feedback: 'Correct value, but the question asks for the answer as an equation, in the form it specifies.',
       };
     }
     return { ok: true };
@@ -131,7 +131,7 @@ export function checkAnswerFormat(raw: string, format: AnswerFormat): FormatChec
     const want = Number(sf[1]);
     const got = significantFigures(value);
     if (got === null) {
-      return { ok: false, feedback: `The question asks for a number correct to ${want} significant figures.` };
+      return { ok: false, feedback: `Correct value, but the question asks for a number correct to ${want} significant figures.` };
     }
     if (got !== want) {
       return {
@@ -148,7 +148,7 @@ export function checkAnswerFormat(raw: string, format: AnswerFormat): FormatChec
     const got = decimalPlaces(value);
     if (want === 0) {
       if (!/^-?\d+$/.test(value)) {
-        return { ok: false, feedback: 'The question asks for an answer to the nearest whole number.' };
+        return { ok: false, feedback: 'Correct value, but the question asks for an answer to the nearest whole number.' };
       }
       return { ok: true };
     }

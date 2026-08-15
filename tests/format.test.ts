@@ -121,3 +121,26 @@ describe('valueLooksRight', () => {
     expect(valueLooksRight('obtuse', '1/3')).toBe(false);
   });
 });
+
+// R1.7 §B4 — this feedback is only ever reached when the value was right, so
+// it must say so first. "The question asks for standard form" alone reads as
+// "you got it wrong"; the student lost one mark for the form, not the question.
+describe('format feedback leads with what the student got right', () => {
+  const cases: [string, AnswerFormat][] = [
+    ['0.000045', 'standard_form'],
+    ['1.414', 'surd'],
+    ['4/8', 'lowest_terms'],
+    ['7.5', 'integer'],
+    ['12', 'equation_form'],
+    ['3.14159', 'sf:3'],
+    ['36.87', 'dp:1'],
+    ['0.5', 'exact'],
+  ];
+  for (const [answer, format] of cases) {
+    it(`says "Correct value" for ${format}`, () => {
+      const check = checkAnswerFormat(answer, format);
+      expect(check.ok).toBe(false);
+      expect(check.feedback).toMatch(/^Correct value/);
+    });
+  }
+});

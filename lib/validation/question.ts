@@ -73,6 +73,8 @@ export const RubricItemZ = z
     criterion: z.string().min(1),
     mark_value: z.number().int().min(1),
     part_label: z.string().regex(/^[a-j]$/),
+    // R1.7 §B4: the separate mark for the required form.
+    for_format: z.boolean().optional(),
   })
   .refine((r) => r.code.replace(/\d+$/, '') === r.profile, {
     message: 'rubric code prefix must match profile',
