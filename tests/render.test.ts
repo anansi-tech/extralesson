@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeEscapedNewlines } from '@/lib/text';
-import { renderMathHtml } from '@/lib/katex';
+import { renderAnswerHtml, renderMathHtml } from '@/lib/katex';
 
 describe('normalizeEscapedNewlines', () => {
   it('converts literal \\n sequences to real newlines', () => {
@@ -78,5 +78,57 @@ describe('renderMathHtml — currency vs math delimiters', () => {
   it('two EC$ amounts in one sentence do not pair into a math segment', () => {
     const html = renderMathHtml('Mangoes cost EC$5 and pineapples cost EC$8.');
     expect(html).toBe('Mangoes cost EC$5 and pineapples cost EC$8.');
+  });
+});
+
+describe('renderAnswerHtml — values-only answers carry no $ delimiters', () => {
+  it('typesets algebraic answers stored as bare source', () => {
+    for (const v of ['P=M^2-2M', 'r=\\sqrt[3]{\\frac{3V}{4\\pi}}', '\\frac{500\\pi}{3}', '(M-5)(M+3)=0']) {
+      // katex-html is the visually rendered tree; the raw source survives only
+      // inside the MathML <annotation> element, which is intended.
+      expect(renderAnswerHtml(v), v).toContain('katex-html');
+    }
+    expect(renderAnswerHtml('r=\\sqrt[3]{\\frac{3V}{4\\pi}}')).toContain('mroot');
+    expect(renderAnswerHtml('\\frac{500\\pi}{3}')).toContain('mfrac');
+    expect(renderAnswerHtml('P=M^2-2M')).toContain('msup');
+  });
+
+  it('leaves phrase answers as plain text', () => {
+    for (const v of ['obtuse angle', 'No', '5 pieces', 'claim rejected']) {
+      expect(renderAnswerHtml(v), v).not.toContain('katex');
+      expect(renderAnswerHtml(v), v).toBe(v);
+    }
+  });
+
+  it('keeps currency readable rather than typesetting it', () => {
+    expect(renderAnswerHtml('EC$51')).toBe('EC$51');
+  });
+
+  it('renders each value of a multi-part answer', () => {
+    const html = renderAnswerHtml('P=M^2-2M; (M-5)(M+3)=0; 5');
+    expect((html.match(/class="katex"/g) || []).length).toBe(3);
+    expect(html).toContain('; ');
+  });
+
+  it('falls back to verbatim text when the value is not valid math', () => {
+    expect(renderAnswerHtml('3 + \\notacommand{')).toContain('notacommand');
+  });
+
+  it('escapes HTML in phrase answers', () => {
+    expect(renderAnswerHtml('a < b')).toBe('a &lt; b');
+  });
+
+  it('typesets vectors and matrices', () => {
+    // The environment name (pmatrix) used to read as a prose word, so these
+    // were classified as text and displayed as raw source.
+    const html = renderAnswerHtml('\\begin{pmatrix}-3\\\\4\\end{pmatrix}');
+    expect(html).toContain('katex-html');
+    expect(html).toContain('mtable');
+  });
+
+  it('keeps the percent sign, which opens a comment in LaTeX', () => {
+    const html = renderAnswerHtml('12.5%');
+    expect(html).toContain('katex-html');
+    expect(html).toContain('%');
   });
 });

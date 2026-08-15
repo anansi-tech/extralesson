@@ -1,7 +1,7 @@
 import 'katex/dist/katex.min.css';
 import { dbConnect, Question } from '@/lib/db';
 import { getCoverage, getNextDraftId } from '@/lib/admin/coverage';
-import { renderMathHtml } from '@/lib/katex';
+import { renderAnswerHtml, renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
 import ReviewCard, { type ReviewQuestion } from './review-card';
 
@@ -62,8 +62,10 @@ export default async function ReviewPage() {
         parts: (raw.parts ?? []).map((p) => ({
           label: p.label,
           marks: p.marks,
-          answer: p.answer,
-          accept: p.accept,
+          answerHtml: renderAnswerHtml(p.answer),
+          acceptHtml: p.accept?.length
+            ? p.accept.map(renderAnswerHtml).join(' / ')
+            : undefined,
           promptHtml: renderMathHtml(p.prompt),
         })),
         optionsHtml: raw.options?.map(renderMathHtml),
@@ -78,11 +80,11 @@ export default async function ReviewPage() {
           part_label: r.part_label ?? 'a',
           criterionHtml: renderMathHtml(r.criterion),
         })),
-        final_answer: raw.final_answer,
+        finalAnswerHtml: raw.final_answer ? renderAnswerHtml(raw.final_answer) : undefined,
         solutionHtml: renderMathHtml(raw.worked_solution),
         misconceptions: raw.misconceptions.map((m) => ({
           nameHtml: renderMathHtml(m.name),
-          triggerHtml: renderMathHtml(m.trigger),
+          triggerHtml: renderAnswerHtml(m.trigger),
           remediationHtml: renderMathHtml(m.remediation),
         })),
         recipeJson: raw.gen_meta?.recipe ? JSON.stringify(raw.gen_meta.recipe) : undefined,

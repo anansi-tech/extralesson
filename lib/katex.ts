@@ -15,6 +15,47 @@ function escapeHtml(s: string): string {
 // Swap "EC$" for a sentinel before splitting on $...$, restore afterwards.
 const CURRENCY_SENTINEL = '\u0001';
 
+// Answer-shaped values — part answers, accept lists, final_answer, and
+// misconception triggers. The values-only convention means these hold a bare
+// value with no $ delimiters ("P=M^2-2M", "r=\sqrt[3]{\frac{3V}{4\pi}}"), so
+// renderMathHtml alone leaves them as raw source. Each ";"-separated value is
+// typeset when it is an expression and left as text when it is a phrase
+// ("obtuse angle", "No", "5 pieces", "EC$51").
+export function renderAnswerHtml(raw: string): string {
+  return raw
+    .split(';')
+    .map((value) => renderOneAnswer(value.trim()))
+    .filter((v) => v.length > 0)
+    .join('; ');
+}
+
+function renderOneAnswer(value: string): string {
+  if (value === '') return '';
+  // Already delimited, or carries currency: the prose renderer handles both.
+  if (/\$[^$]+\$/.test(value) || value.includes('EC$')) return renderMathHtml(value);
+  if (!looksLikeExpression(value)) return escapeHtml(value);
+  try {
+    // A bare % opens a comment in LaTeX and would swallow the rest of the
+    // line, so "12.5%" must be escaped before it reaches KaTeX.
+    return katex.renderToString(value.replace(/(^|[^\\])%/g, '$1\\%'), {
+      throwOnError: true,
+    });
+  } catch {
+    return escapeHtml(value); // not valid math after all — show it verbatim
+  }
+}
+
+// An expression carries math signals and no prose words. Backslash commands
+// are removed first so \frac and \sqrt don't read as words.
+function looksLikeExpression(value: string): boolean {
+  if (!/[\\^_=+\-*/]|\d/.test(value)) return false;
+  const letters = value
+    .replace(/\\(?:begin|end)\{[a-zA-Z*]+\}/g, '') // environments: pmatrix, cases
+    .replace(/\\[a-zA-Z]+/g, '') // commands: \frac, \sqrt, \pi
+    .replace(/[^a-zA-Z]+/g, ' ');
+  return !/[a-zA-Z]{3,}/.test(letters);
+}
+
 export function renderMathHtml(text: string): string {
   const restore = (s: string) => s.replace(new RegExp(CURRENCY_SENTINEL, 'g'), () => 'EC$');
   return text

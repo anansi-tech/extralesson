@@ -13,7 +13,7 @@ export interface ReviewQuestion {
   stimulusHtml?: string;
   stemHtml: string;
   visualHtml?: string;
-  parts: { label: string; promptHtml: string; marks: number; answer: string; accept?: string[] }[];
+  parts: { label: string; promptHtml: string; marks: number; answerHtml: string; acceptHtml?: string }[];
   optionsHtml?: string[];
   answer_key?: number;
   profile?: string;
@@ -26,7 +26,7 @@ export interface ReviewQuestion {
     mark_value: number;
     part_label: string;
   }[];
-  final_answer?: string;
+  finalAnswerHtml?: string;
   solutionHtml: string;
   misconceptions: { triggerHtml: string; nameHtml: string; remediationHtml: string }[];
   recipeJson?: string;
@@ -129,13 +129,27 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
       {question.kind === 'structured' && question.parts.length > 0 && (
         <ol className="mt-3 space-y-2">
           {question.parts.map((p) => (
-            <li key={p.label} className="flex items-baseline gap-2 text-sm">
-              <span className="font-mono text-xs font-semibold">({p.label})</span>
-              <span className="question-prose" dangerouslySetInnerHTML={{ __html: p.promptHtml }} />
-              <span className="ml-auto shrink-0 font-mono text-[10px] text-dim">
-                [{p.marks}] → {p.answer}
-                {p.accept?.length ? ` (accept: ${p.accept.join(' / ')})` : ''}
-              </span>
+            <li key={p.label} className="text-sm">
+              <div className="flex items-baseline gap-2">
+                <span className="font-mono text-xs font-semibold">({p.label})</span>
+                <span
+                  className="question-prose"
+                  dangerouslySetInnerHTML={{ __html: p.promptHtml }}
+                />
+                <span className="ml-auto shrink-0 font-mono text-[10px] text-dim">
+                  [{p.marks}]
+                </span>
+              </div>
+              <div className="mt-0.5 pl-7 text-xs text-dim">
+                <span className="font-mono">→ </span>
+                <span dangerouslySetInnerHTML={{ __html: p.answerHtml }} />
+                {p.acceptHtml && (
+                  <>
+                    <span className="font-mono"> · accept </span>
+                    <span dangerouslySetInnerHTML={{ __html: p.acceptHtml }} />
+                  </>
+                )}
+              </div>
             </li>
           ))}
         </ol>
@@ -171,9 +185,10 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
               </li>
             ))}
           </ul>
-          {question.final_answer && (
-            <div className="mt-2 font-mono text-xs">
-              <span className="text-dim">FINAL ANSWER:</span> {question.final_answer}
+          {question.finalAnswerHtml && (
+            <div className="mt-2 text-xs">
+              <span className="font-mono text-dim">FINAL ANSWER: </span>
+              <span dangerouslySetInnerHTML={{ __html: question.finalAnswerHtml }} />
             </div>
           )}
         </div>
