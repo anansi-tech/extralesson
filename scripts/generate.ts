@@ -31,6 +31,7 @@ const ArgsZ = z.object({
   topic: z.string().regex(/^M[123]-[A-Z0-9]+$/).optional(),
   kind: z.enum(['mcq', 'structured']).optional(),
   difficulty: z.coerce.number().pipe(z.union([z.literal(1), z.literal(2), z.literal(3)])).optional(),
+  module: z.coerce.number().pipe(z.union([z.literal(1), z.literal(2), z.literal(3)])).optional(),
   dryRun: z.boolean(),
   poison: z.boolean(),
 });
@@ -46,11 +47,12 @@ function parseArgs() {
     topic: get('topic'),
     kind: get('kind'),
     difficulty: get('difficulty'),
+    module: get('module'),
     dryRun: argv.includes('--dry-run'),
     poison: argv.includes('--poison'),
   });
   if (!parsed.success) {
-    console.error('Usage: pnpm generate -- --count 10 [--topic M1-ALG1] [--kind structured] [--difficulty 2] [--dry-run]');
+    console.error('Usage: pnpm generate -- --count 10 [--topic M1-ALG1] [--module 1] [--kind structured] [--difficulty 2] [--dry-run]');
     console.error(parsed.error.flatten().fieldErrors);
     process.exit(1);
   }
@@ -95,6 +97,7 @@ async function buildRecipe(args: ReturnType<typeof parseArgs>): Promise<{
     topic_code: args.topic,
     kind: args.kind,
     difficulty: args.difficulty,
+    module: args.module,
   });
   const topicDoc = topics.find((t) => t.code === context.topic_code)!;
   const wanted = new Set(recipe.objective_ids);
@@ -117,10 +120,24 @@ async function main() {
   let attempts = 0;
   const maxAttempts = args.count * 3;
 
+  // Acceptance per topic, and why drafts were lost. Reported at the end.
+  const byTopic = new Map<string, { attempts: number; inserted: number }>();
+  const byReason = new Map<string, number>();
+  const tally = (code: string) => {
+    const row = byTopic.get(code) ?? { attempts: 0, inserted: 0 };
+    byTopic.set(code, row);
+    return row;
+  };
+  const lost = (topic: string, reason: string) => {
+    byReason.set(reason, (byReason.get(reason) ?? 0) + 1);
+    void topic;
+  };
+
   while (inserted < args.count && attempts < maxAttempts) {
     attempts++;
     try {
       const { recipe, context, module, topicTitle, objectives } = await buildRecipe(args);
+      tally(context.topic_code).attempts++;
       const visualContract =
         recipe.representation === 'prose' ? '' : paramsDocFor(context.template_hints);
       // What this topic already holds, so the model writes something else. Read
@@ -188,6 +205,7 @@ async function main() {
       const validated = QuestionDraftZ.safeParse(candidate);
       if (!validated.success) {
         rejected++;
+        lost(context.topic_code, 'schema');
         const issue = validated.error.issues[0];
         console.log(`  ✗ Zod: ${issue?.path.join('.')}: ${issue?.message}`);
         continue;
@@ -203,6 +221,7 @@ async function main() {
         });
         if (!vres.ok) {
           rejected++;
+          lost(context.topic_code, 'visual-verify');
           console.log(`  ✗ visual verify: ${vres.issues.join(' | ')}`);
           continue;
         }
@@ -235,6 +254,7 @@ async function main() {
       // every contested part prints how it was settled.
       if (!solve.agrees) {
         rejected++;
+        lost(context.topic_code, 'solve-disagreed');
         console.log('  ✗ independent solve DISAGREED — auto-rejected');
         console.log(`      draft answer: ${JSON.stringify(solve.draftAnswer)}`);
         console.log(`      solve answer: ${JSON.stringify(solve.solveAnswer)}`);
@@ -250,12 +270,14 @@ async function main() {
       const dedup = await checkDuplicate(draft.stem, approvedStems);
       if (dedup.duplicate) {
         rejected++;
+        lost(context.topic_code, `dedup-${dedup.reason}`);
         console.log(`  ✗ dedup: ${dedup.reason} (score ${dedup.score})`);
         continue;
       }
 
       if (args.dryRun) {
         inserted++;
+        tally(context.topic_code).inserted++;
         console.log(`  ✓ verified (dry-run, not inserted): ${draft.stem.slice(0, 70)}…`);
         continue;
       }
@@ -273,10 +295,28 @@ async function main() {
         },
       });
       inserted++;
+      tally(context.topic_code).inserted++;
       console.log(`  ✓ inserted draft (${inserted}/${args.count}): ${draft.stem.slice(0, 70)}…`);
     } catch (err) {
       rejected++;
+      lost('?', 'error');
       console.log(`  ✗ error — ${err instanceof Error ? err.message : err}`);
+    }
+  }
+
+  // Per-topic acceptance: a topic well below the rest is a prompt/exemplar
+  // problem, not luck, and the run is the only place that shows it.
+  const rows = [...byTopic.entries()].sort((a, b) => a[0] < b[0] ? -1 : 1);
+  if (rows.length > 0) {
+    console.log('\nAcceptance by topic:');
+    for (const [code, t] of rows) {
+      const rate = t.attempts === 0 ? 0 : Math.round((t.inserted / t.attempts) * 100);
+      const flag = rate < 50 ? '  ← below 50%' : '';
+      console.log(`  ${code.padEnd(10)} ${String(t.inserted).padStart(3)}/${String(t.attempts).padStart(3)} attempts  ${String(rate).padStart(3)}%${flag}`);
+    }
+    const reasons = [...byReason.entries()].sort((a, b) => b[1] - a[1]);
+    if (reasons.length > 0) {
+      console.log(`Rejections: ${reasons.map(([r, n]) => `${r} ${n}`).join(' · ')}`);
     }
   }
 

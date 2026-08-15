@@ -58,6 +58,8 @@ export interface RecipeOverrides {
   topic_code?: string;
   kind?: 'mcq' | 'structured';
   difficulty?: 1 | 2 | 3;
+  /** Confine the deficit search to one module (bulk fill, module by module). */
+  module?: 1 | 2 | 3;
 }
 
 export function nextRecipe(
@@ -75,6 +77,9 @@ export function nextRecipe(
   const topicTargets: Record<string, number> = {};
   const topicActuals: Record<string, number> = {};
   for (const t of matrix.topics) {
+    // A module override narrows the search but never changes how it works: the
+    // largest remaining deficit inside the module still wins.
+    if (overrides.module && t.module !== overrides.module) continue;
     topicTargets[t.code] = kind === 'mcq' ? t.p1_target : t.p2_marks_target;
     topicActuals[t.code] = kind === 'mcq' ? t.p1_actual : t.p2_marks_actual;
   }
