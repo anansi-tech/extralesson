@@ -39,7 +39,13 @@ export interface PartInput {
 
 export function markStructuredParts(
   rubric: RubricItem[],
-  parts: { label: string; answer: string; accept?: string[]; answer_format?: AnswerFormat }[],
+  parts: {
+    label: string;
+    answer: string;
+    accept?: string[];
+    answer_format?: AnswerFormat;
+    response_mode?: string;
+  }[],
   inputs: PartInput[],
 ): MarkResult {
   const inputByLabel = new Map(inputs.map((i) => [i.label, i]));
@@ -49,6 +55,10 @@ export function markStructuredParts(
   let formatFeedback: string | undefined;
 
   for (const part of parts) {
+    // R1.6 §1: a "show that" or "explain" part is self-marked in the session,
+    // so it earns nothing here and cannot make the question wrong. Its marks
+    // are out of the denominator too (lib/study/state.ts).
+    if ((part.response_mode ?? 'answer') !== 'answer') continue;
     const input = inputByLabel.get(part.label);
     const partRubric = rubric.filter((r) => r.part_label === part.label);
     const result = markStructured(
