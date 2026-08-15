@@ -16,6 +16,11 @@ export interface Objective {
   id: string; // syllabus numbering, e.g. 'M1.5.10' (module.topic.objective)
   text: string;
   notes?: string;
+  // R1.6 §3: objectives ExtraLesson cannot assess — construction and drawing
+  // work that needs pencil, ruler and compasses. Absent means assessable.
+  // We state this coverage plainly rather than quietly scoring around it.
+  assessable?: false;
+  unassessable_reason?: string;
 }
 
 export interface RubricItem {

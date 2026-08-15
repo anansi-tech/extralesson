@@ -24,6 +24,8 @@ export const module3Topics: SeedTopic[] = [
         id: 'M3.1.3',
         text: 'Construct statistical diagrams.',
         notes: 'Line graphs, histograms with bars of equal width and frequency polygons.',
+        assessable: false as const,
+        unassessable_reason: 'Requires drawing a statistical diagram by hand.',
       },
       {
         id: 'M3.1.4',
@@ -44,6 +46,8 @@ export const module3Topics: SeedTopic[] = [
         id: 'M3.1.7',
         text: 'Draw cumulative frequency curve (Ogive).',
         notes: 'Appropriate scales for axes. Class boundaries as domain.',
+        assessable: false as const,
+        unassessable_reason: 'Requires drawing a cumulative frequency curve on a supplied grid.',
       },
       {
         id: 'M3.1.8',
@@ -76,6 +80,8 @@ export const module3Topics: SeedTopic[] = [
       {
         id: 'M3.2.1',
         text: 'Draw a graph to represent a linear inequality in two variables.',
+        assessable: false as const,
+        unassessable_reason: 'Requires drawing and shading a region on a supplied grid.',
       },
       {
         id: 'M3.2.2',
@@ -89,6 +95,8 @@ export const module3Topics: SeedTopic[] = [
         id: 'M3.2.4',
         text: 'Draw graphs of non-linear functions.',
         notes: 'y = ax^n where n = -1, -2 and +3 and a is a constant. Distance-time and speed-time.',
+        assessable: false as const,
+        unassessable_reason: 'Requires drawing a graph on a supplied grid.',
       },
       {
         id: 'M3.2.5',

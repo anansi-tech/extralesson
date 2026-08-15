@@ -5,6 +5,8 @@ const ObjectiveSchema = new Schema(
     id: { type: String, required: true }, // 'M1.5.10'
     text: { type: String, required: true },
     notes: { type: String },
+    assessable: { type: Boolean }, // R1.6 §3: absent/true = we can assess it
+    unassessable_reason: { type: String },
   },
   { _id: false },
 );

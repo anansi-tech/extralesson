@@ -59,3 +59,31 @@ describe('predictOverall — six-point scale from combined modules', () => {
     expect(predictOverall([]).overall_grade).toBe('VI');
   });
 });
+
+describe('predictModule — coverage honesty (R1.6 §4)', () => {
+  it('defaults to full coverage so existing behaviour is unchanged', () => {
+    expect(predictModule(1, 0.5).coverage).toBe(1);
+    expect(predictModule(1, 0.5).total_estimate).toBe(52);
+  });
+
+  it('records the share of marks the estimate rests on', () => {
+    const p = predictModule(2, 0.8, 0.93);
+    expect(p.coverage).toBeCloseTo(0.93);
+    // The estimate itself is still computed on what we measured — it is
+    // reported with its basis rather than silently scaled.
+    expect(p.total_estimate).toBe(predictModule(2, 0.8).total_estimate);
+  });
+
+  it('clamps coverage into 0..1', () => {
+    expect(predictModule(1, 0.5, 1.4).coverage).toBe(1);
+    expect(predictModule(1, 0.5, -0.2).coverage).toBe(0);
+  });
+
+  it('overall prediction reports the mean coverage of its modules', () => {
+    const overall = predictOverall([
+      predictModule(1, 0.6, 0.9),
+      predictModule(2, 0.6, 1.0),
+    ]);
+    expect(overall.coverage).toBeCloseTo(0.95);
+  });
+});

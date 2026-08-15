@@ -24,6 +24,8 @@ export const module2Topics: SeedTopic[] = [
         id: 'M2.1.3',
         text: 'Construct statistical diagrams.',
         notes: 'Pie charts and bar charts.',
+        assessable: false as const,
+        unassessable_reason: 'Requires drawing a statistical diagram by hand.',
       },
       {
         id: 'M2.1.4',
@@ -207,6 +209,8 @@ export const module2Topics: SeedTopic[] = [
       {
         id: 'M2.3.15',
         text: 'Draw the graph of a quadratic function.',
+        assessable: false as const,
+        unassessable_reason: 'Requires drawing a graph on a supplied grid.',
       },
       {
         id: 'M2.3.16',
@@ -250,16 +254,22 @@ export const module2Topics: SeedTopic[] = [
       {
         id: 'M2.4.2',
         text: 'Draw angles and line segments accurately using appropriate instruments.',
+        assessable: false as const,
+        unassessable_reason: 'Requires ruler-and-protractor construction on paper.',
       },
       {
         id: 'M2.4.3',
         text: 'Measure angles and line segments accurately using appropriate instruments.',
+        assessable: false as const,
+        unassessable_reason: 'Requires measuring with instruments on paper.',
       },
       {
         id: 'M2.4.4',
         text: 'Construct lines, angles, and polygons using appropriate instruments.',
         notes:
           'Parallel and perpendicular lines. Bisecting line segments and angles. Constructing a line perpendicular to another line, L, from a point that is not on the line, L. Triangles, quadrilaterals, regular and irregular polygons. Angles include 30, 45, 60, 90, 120 degrees and their combinations.',
+        assessable: false as const,
+        unassessable_reason: 'Requires ruler-and-compass construction on paper.',
       },
       {
         id: 'M2.4.5',

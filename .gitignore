@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# reference papers — read them, keep nothing in the repo (R1.6 source rule)
+design/reference/

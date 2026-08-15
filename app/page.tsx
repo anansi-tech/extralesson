@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './landing.css';
-import { LANDING, paymentLink } from '@/lib/landing-content';
+import { LANDING, landingCoverage, paymentLink } from '@/lib/landing-content';
 
 // Faithful port of design/extralesson-landing.html (ROUND_1 §7).
 // Copy changed only where exam facts changed: the old M1/A1 mark language is
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default function LandingPage() {
+  const coverage = landingCoverage();
   return (
     <div className="landing">
       <header className="hero">
@@ -176,6 +177,12 @@ export default function LandingPage() {
               </p>
             </div>
           </div>
+          <p className="honest">
+            Straight about what we don&rsquo;t do: ExtraLesson practises about {coverage.percent}%
+            of the marks in a CSEC Mathematics paper. Construction and drawing questions — roughly{' '}
+            {coverage.uncoveredMarks} marks — still need pencil, ruler and compasses, so those stay
+            on paper with past papers.
+          </p>
         </div>
       </section>
 

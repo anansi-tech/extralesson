@@ -35,6 +35,8 @@
 .landing h1 .pen { color: var(--red); }
 .landing .lede { font-size: clamp(16px, 2.4vw, 19px); max-width: 600px; color: #3a4152; margin-bottom: 26px; }
 .landing .lede b { font-weight: 700; }
+/* R1.6 §3: coverage stated plainly on the page, in the copybook's margin voice. */
+.landing .honest { margin-top: 26px; max-width: 640px; font-size: 14px; line-height: 1.5; color: #3a4152; border-left: 3px solid var(--margin); padding-left: 12px; }
 .landing .heronote { font-family: var(--mono); font-size: 11px; color: var(--dim); margin-top: 14px; letter-spacing: .05em; }
 
 .landing section { padding: 46px 0; }

@@ -12,6 +12,10 @@
 //   Below C we report 'U' (ungraded estimate).
 // - Overall six-point-scale bands are likewise assumptions: I ≥ 75,
 //   II ≥ 65, III ≥ 50, IV ≥ 35, V ≥ 20, VI below.
+// - R1.6 §4: the estimate is computed over the marks we can actually assess
+//   and reports that basis. Construction and drawing marks, and show_that /
+//   explain parts, are never extrapolated across — a strong student on the
+//   marks we test is not evidence about the marks we do not.
 
 export const PROJECT_NEUTRAL_FRACTION = 0.6;
 
@@ -30,9 +34,15 @@ export interface ModulePrediction {
   project_assumed: number; // Paper 3 project, of 20 — always the neutral assumption
   total_estimate: number; // of 100
   letter: ModuleLetter;
+  /** 0..1 share of this module's marks the estimate is based on (R1.6 §4). */
+  coverage: number;
 }
 
-export function predictModule(module: 1 | 2 | 3, mastery: number): ModulePrediction {
+export function predictModule(
+  module: 1 | 2 | 3,
+  mastery: number,
+  coverage = 1,
+): ModulePrediction {
   const m = Math.min(1, Math.max(0, mastery));
   const p1 = m * P1_WEIGHT;
   const p2 = m * P2_WEIGHT;
@@ -51,6 +61,7 @@ export function predictModule(module: 1 | 2 | 3, mastery: number): ModulePredict
     project_assumed: round1(project),
     total_estimate: round1(total),
     letter,
+    coverage: Math.min(1, Math.max(0, coverage)),
   };
 }
 
@@ -58,13 +69,15 @@ export interface OverallPrediction {
   modules: ModulePrediction[];
   overall_percent: number; // mean of module totals
   overall_grade: OverallGrade;
+  /** Mean coverage the estimate rests on; the UI must state it (R1.6 §4). */
+  coverage: number;
 }
 
 // Overall estimate: modules combined with equal weight (each module is 100
 // weighted marks of the 300 total, Assessment Grid A).
 export function predictOverall(modules: ModulePrediction[]): OverallPrediction {
   if (modules.length === 0) {
-    return { modules: [], overall_percent: 0, overall_grade: 'VI' };
+    return { modules: [], overall_percent: 0, overall_grade: 'VI', coverage: 1 };
   }
   const pct = modules.reduce((s, m) => s + m.total_estimate, 0) / modules.length;
   let grade: OverallGrade;
@@ -74,7 +87,8 @@ export function predictOverall(modules: ModulePrediction[]): OverallPrediction {
   else if (pct >= 35) grade = 'IV';
   else if (pct >= 20) grade = 'V';
   else grade = 'VI';
-  return { modules, overall_percent: round1(pct), overall_grade: grade };
+  const coverage = modules.reduce((s, m) => s + m.coverage, 0) / modules.length;
+  return { modules, overall_percent: round1(pct), overall_grade: grade, coverage };
 }
 
 function round1(n: number): number {

@@ -207,6 +207,8 @@ export const module1Topics: SeedTopic[] = [
         id: 'M1.3.6',
         text: 'Draw Venn diagrams to represent relationships among sets.',
         notes: 'Not more than 4 sets including the universal set.',
+        assessable: false as const,
+        unassessable_reason: 'Requires drawing a Venn diagram by hand.',
       },
       {
         id: 'M1.3.7',
@@ -386,6 +388,8 @@ export const module1Topics: SeedTopic[] = [
         text: 'Draw graphs of linear functions.',
         notes:
           'Concept of linear function, types of linear function (y = c; x = k; y = mx + c; where m, c and k are real numbers). For example, y = 0 (x-axis); x = 0 (y-axis).',
+        assessable: false as const,
+        unassessable_reason: 'Requires drawing a graph on a supplied grid.',
       },
       {
         id: 'M1.6.2',

@@ -1,6 +1,8 @@
 import { dbConnect, Student } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { loadStudyState } from '@/lib/study/state';
+import { coverageSentence } from '@/lib/targets/coverage';
+import Link from 'next/link';
 import { logout, startSession } from './actions';
 import type { ModuleNumber } from '@/lib/types';
 import type { MasteryBand } from '@/lib/mastery/config';
@@ -39,6 +41,9 @@ export default async function StudyDashboard({
 
   const state = await loadStudyState(auth.student_id, student.target_modules);
   const { prediction } = state;
+  // Stating what we cannot mark is a trust asset — it sits with the estimate it
+  // qualifies, not in a footnote (R1.6 §3).
+  const coverage = coverageSentence(state.coverage);
 
   return (
     <main className="ruled relative min-h-screen px-5 py-8">
@@ -89,6 +94,9 @@ export default async function StudyDashboard({
           <div className="mt-1 font-mono text-[9px] text-dim">
             Paper 3 project assumed at neutral carry-over — estimates move as you practise.
           </div>
+          <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-left text-[11px] leading-snug text-dim">
+            {coverage}
+          </p>
         </section>
 
         {error === 'no-questions' && (
@@ -105,6 +113,16 @@ export default async function StudyDashboard({
             </small>
           </button>
         </form>
+
+        <Link
+          href="/study/practice"
+          className="mt-3 block border-[1.5px] border-ink bg-white p-3 text-center font-mono text-[11px] uppercase tracking-widest shadow-[3px_3px_0_var(--ink)]"
+        >
+          Worked practice
+          <small className="block font-sans text-[10px] normal-case tracking-normal text-dim">
+            &ldquo;Show that&rdquo; and &ldquo;explain&rdquo; questions — you mark these yourself
+          </small>
+        </Link>
 
         {([1, 2, 3] as const)
           .filter((m) => student.target_modules.includes(m))

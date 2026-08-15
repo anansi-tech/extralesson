@@ -8,6 +8,7 @@ import {
   type AttemptScore,
 } from '@/lib/mastery/fold';
 import { predictModule, predictOverall, type OverallPrediction } from '@/lib/grade/predict';
+import { computeCoverage, type Coverage } from '@/lib/targets/coverage';
 import type { MasteryBand } from '@/lib/mastery/config';
 import type { ModuleNumber } from '@/lib/types';
 
@@ -31,6 +32,8 @@ export interface StudyState {
   prediction: OverallPrediction;
   topicWeightByPrefix: Map<string, number>;
   attemptedObjectives: Set<string>;
+  /** R1.6 §3: share of exam marks this product can assess. */
+  coverage: Coverage;
 }
 
 interface LeanTopic {
@@ -38,7 +41,7 @@ interface LeanTopic {
   title: string;
   module: ModuleNumber;
   order: number;
-  objectives: { id: string }[];
+  objectives: { id: string; text: string; assessable?: boolean; unassessable_reason?: string }[];
 }
 
 interface LeanBlueprint {
@@ -117,8 +120,10 @@ export function computeStudyState(
     }
   }
 
+  // Predict from the marks we can actually assess, not the whole paper (§4).
+  const coverage = computeCoverage(topics, blueprints);
   const prediction = predictOverall(
-    targetModules.map((m) => predictModule(m, modMastery[m])),
+    targetModules.map((m) => predictModule(m, modMastery[m], coverage.byModule[m])),
   );
 
   return {
@@ -128,6 +133,7 @@ export function computeStudyState(
     prediction,
     topicWeightByPrefix: weightByPrefix,
     attemptedObjectives: new Set(perObjective.keys()),
+    coverage,
   };
 }
 
