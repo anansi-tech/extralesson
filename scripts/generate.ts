@@ -22,6 +22,7 @@ import { independentSolve } from '@/lib/generation/solve';
 import { McqLooseZ, StructuredLooseZ } from '@/lib/generation/draft-schema';
 import { checkDuplicate } from '@/lib/generation/dedup';
 import { verifyQuestionVisual } from '@/lib/visuals/verify';
+import { lintCriteria } from '@/lib/prompts/mark-scheme';
 import { paramsDocFor } from '@/lib/visuals';
 import type { ModuleNumber } from '@/lib/types';
 
@@ -206,6 +207,15 @@ async function main() {
         if (vres.advisories.length > 0) {
           console.log(`  · visual note: ${vres.advisories.join(' | ')}`);
         }
+      }
+
+      // R1.7 §B3: rubric wording is advisory, never a gate — a criterion can be
+      // clumsy and still mark the right thing, and that call is the reviewer's.
+      const criterionIssues = draft.kind === 'structured' ? lintCriteria(draft.rubric) : [];
+      if (criterionIssues.length > 0) {
+        console.log(
+          `  · rubric note: ${criterionIssues.map((i) => `(${i.part_label}/${i.code}) ${i.issue}`).join(' | ')}`,
+        );
       }
 
       if (args.poison) {
