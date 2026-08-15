@@ -44,6 +44,12 @@ const PAD_B = 70;
 
 export const cumulativeFrequency: VisualTemplate<CumulativeFrequencyParams> = {
   name: 'cumulativeFrequency',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "x values must be strictly ascending",
+    "cumulative frequencies must never decrease",
+    "guide lines must fall inside the plotted data range",
+  ],
   paramsSchema: CumulativeFrequencyParamsZ,
 
   render(p) {

@@ -161,3 +161,11 @@ describe('answersEquivalentAny — mark-scheme accept lists', () => {
     expect(answersEquivalentAny('edge', 'edge')).toBe(true);
   });
 });
+
+describe('answersEquivalent — unicode superscripts (pilot round 3)', () => {
+  it('treats ² and ^2 as the same exponent', () => {
+    expect(answersEquivalent('P=M^2-2M', 'P = M² - 2M')).toBe(true);
+    expect(answersEquivalent('x²+3x', 'x^2 + 3x')).toBe(true);
+    expect(answersEquivalent('P=M^2-2M', 'P = M² + 2M')).toBe(false);
+  });
+});

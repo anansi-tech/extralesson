@@ -170,6 +170,12 @@ function renderSvg(p: PatternFigureParams): string {
 
 export const patternFigure: VisualTemplate<PatternFigureParams> = {
   name: 'patternFigure',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "figure_numbers must be consecutive and start at 1 or more",
+    "counts must strictly increase with CONSTANT SECOND DIFFERENCES (linear or quadratic growth)",
+    "counts must equal the number of dots/matchsticks actually drawn",
+  ],
   paramsSchema: PatternFigureParamsZ,
 
   render: renderSvg,

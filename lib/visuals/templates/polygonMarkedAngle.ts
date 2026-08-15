@@ -49,6 +49,12 @@ function dirDeg(from: [number, number], to: [number, number]): number {
 
 export const polygonMarkedAngle: VisualTemplate<PolygonMarkedAngleParams> = {
   name: 'polygonMarkedAngle',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "supply either no labels or exactly one per vertex",
+    "vertex indices must be within the polygon",
+    "interior angles must be strictly between 0 and 360, and if EVERY angle is numeric they must sum to (sides - 2) x 180",
+  ],
   paramsSchema: PolygonMarkedAngleParamsZ,
 
   render(p) {

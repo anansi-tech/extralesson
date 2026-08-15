@@ -122,6 +122,12 @@ function sideName(labels: string[], side: number): string {
 
 export const triangleLabeled: VisualTemplate<TriangleLabeledParams> = {
   name: 'triangleLabeled',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "angles must be strictly between 0 and 180",
+    "given angles must sum to at most 180, and to exactly 180 when all three are numeric",
+    "a right-angle mark must agree with a 90 value",
+  ],
   paramsSchema: TriangleLabeledParamsZ,
 
   render(p) {

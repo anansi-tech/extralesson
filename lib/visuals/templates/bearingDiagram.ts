@@ -86,6 +86,12 @@ function dirDeg(from: [number, number], to: [number, number]): number {
 
 export const bearingDiagram: VisualTemplate<BearingDiagramParams> = {
   name: 'bearingDiagram',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "bearings must be in [0, 360)",
+    "each leg's from/to must index a declared point and cannot be the same point",
+    "if a return bearing is also marked it must equal (forward + 180) mod 360",
+  ],
   paramsSchema: BearingDiagramParamsZ,
 
   render(p) {

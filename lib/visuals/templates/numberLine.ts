@@ -40,6 +40,12 @@ function xFor(v: number, min: number, max: number): number {
 
 export const numberLine: VisualTemplate<NumberLineParams> = {
   name: 'numberLine',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "min must be less than max and points must lie within [min, max]",
+    "keep (max - min) / step under ~60 so the ticks stay readable",
+    "an interval's from must be less than its to",
+  ],
   paramsSchema: NumberLineParamsZ,
 
   render(p) {

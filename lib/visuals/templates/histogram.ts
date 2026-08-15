@@ -26,6 +26,12 @@ const PAD_B = 70;
 
 export const histogram: VisualTemplate<HistogramParams> = {
   name: 'histogram',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "at least 3 classes",
+    "boundaries strictly ascending, with exactly one more boundary than frequencies",
+    "frequencies must be non-negative",
+  ],
   paramsSchema: HistogramParamsZ,
 
   render(p) {

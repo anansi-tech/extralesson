@@ -105,3 +105,25 @@ describe('visual verify gate — text cross-checks are advisory', () => {
     expect(result.issues.length).toBeGreaterThan(0);
   });
 });
+
+describe('template contract completeness', () => {
+  // A rule the model is never told is a rule it cannot follow, and every such
+  // rejection costs a full generation round-trip. New templates must document
+  // their invariants alongside verify().
+  it('every template declares its invariants', () => {
+    for (const n of Object.keys(TEMPLATES) as TemplateName[]) {
+      expect(TEMPLATES[n].rules?.length, n).toBeGreaterThan(0);
+    }
+  });
+
+  it('the generated contract carries both param limits and rules', () => {
+    const doc = paramsDocFor(['dataTable']);
+    expect(doc).toContain('<=40 chars'); // string caps were previously invisible
+    expect(doc).toContain('rules (violations auto-reject the draft)');
+    expect(doc).toContain('exactly as many cells as there are headers');
+
+    const grid = paramsDocFor(['coordinateGrid']);
+    expect(grid).toContain('span at most 20 units');
+    expect(grid).toContain('standard transformation');
+  });
+});

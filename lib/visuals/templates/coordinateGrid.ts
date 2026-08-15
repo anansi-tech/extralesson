@@ -131,6 +131,13 @@ function clipLine(
 
 export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
   name: 'coordinateGrid',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "x_range and y_range must be ascending and each span at most 20 units",
+    "every point and polygon vertex must lie inside the ranges",
+    "if you supply TWO polygons the second must be the image of the first under ONE standard transformation: translation, reflection in an axis or y = x, rotation of 90/180/270 about the origin, or enlargement from the origin",
+    "a line label written as y = mx + c must match that line's m and c",
+  ],
   paramsSchema: CoordinateGridParamsZ,
 
   render(p) {

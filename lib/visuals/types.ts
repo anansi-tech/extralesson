@@ -16,6 +16,13 @@ export interface VerifyContext {
 
 export interface VisualTemplate<P = unknown> {
   name: TemplateName;
+  /**
+   * Cross-field invariants enforced by verify(), written for the draft
+   * prompt. Kept beside verify() so the two cannot drift: a model that is
+   * never told a rule cannot comply with it, and every such rejection costs
+   * a full generation round-trip.
+   */
+  rules?: string[];
   // Input type is unknown: Zod defaults mean the accepted input is looser
   // than the parsed output P.
   paramsSchema: z.ZodType<P, z.ZodTypeDef, unknown>;

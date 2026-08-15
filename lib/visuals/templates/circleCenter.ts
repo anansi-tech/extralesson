@@ -58,6 +58,12 @@ function dirDeg(from: [number, number], to: [number, number]): number {
 
 export const circleCenter: VisualTemplate<CircleCenterParams> = {
   name: 'circleCenter',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "point bearings must be 0-360",
+    "angles and chords may only reference declared point labels",
+    "an angle at the centre must be twice the angle at the circumference on the same arc",
+  ],
   paramsSchema: CircleCenterParamsZ,
 
   render(p) {

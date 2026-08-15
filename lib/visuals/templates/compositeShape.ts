@@ -97,6 +97,12 @@ function dimensions(p: CompositeShapeParams): [string, number][] {
 
 export const compositeShape: VisualTemplate<CompositeShapeParams> = {
   name: 'compositeShape',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "every dimension must be positive",
+    "an inner rectangle must fit strictly inside the outer one",
+    "a cut rectangle must be strictly smaller than the main rectangle",
+  ],
   paramsSchema: CompositeShapeParamsZ,
 
   render(p) {

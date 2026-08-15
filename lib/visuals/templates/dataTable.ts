@@ -20,6 +20,11 @@ function cellText(raw: string): string {
 
 export const dataTable: VisualTemplate<DataTableParams> = {
   name: 'dataTable',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "every row must have exactly as many cells as there are headers",
+    "header cells must not be blank",
+  ],
   paramsSchema: DataTableParamsZ,
 
   render(p) {

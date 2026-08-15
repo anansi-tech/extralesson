@@ -31,6 +31,11 @@ const PAD_B = 70;
 
 export const barChart: VisualTemplate<BarChartParams> = {
   name: 'barChart',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "bar labels must be unique",
+    "choose y_step so the data spans at most ~20 gridlines",
+  ],
   paramsSchema: BarChartParamsZ,
 
   render(p) {

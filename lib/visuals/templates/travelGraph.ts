@@ -42,6 +42,12 @@ const PAD_B = 70;
 
 export const travelGraph: VisualTemplate<TravelGraphParams> = {
   name: 'travelGraph',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "t values strictly ascending, no negative values",
+    "a distance-time graph cannot jump vertically (no teleporting)",
+    "if the text states a constant speed, some segment's slope must match it",
+  ],
   paramsSchema: TravelGraphParamsZ,
 
   render(p) {

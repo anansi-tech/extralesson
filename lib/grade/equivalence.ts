@@ -22,6 +22,8 @@ function preClean(raw: string): string {
     .replace(/[×·]/g, '*')
     .replace(/÷/g, '/')
     .replace(/\^\s*\{?\s*\\?circ\s*\}?/g, '°') // KaTeX degrees: ^\circ, ^{\circ}
+    .replace(/²/g, '^2') // unicode superscripts are exponents, not prose
+    .replace(/³/g, '^3')
     .replace(/°/g, '')
     .replace(/\s+/g, ' ')
     .trim();

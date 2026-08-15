@@ -43,6 +43,11 @@ function valueLabel(mode: PieChartParams['mode'], value: number): string {
 
 export const pieChart: VisualTemplate<PieChartParams> = {
   name: 'pieChart',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "2-8 sectors with unique labels and positive values",
+    "in degrees mode the sectors must sum to exactly 360; in percent mode to exactly 100",
+  ],
   paramsSchema: PieChartParamsZ,
 
   render(p) {

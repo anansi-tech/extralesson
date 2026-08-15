@@ -26,8 +26,11 @@ function describe(schema: z.ZodTypeAny): string {
       const bounds = min != null || max != null ? ` (${min ?? 0}-${max ?? '∞'})` : '';
       return `${el}[]${bounds}`;
     }
-    case z.ZodFirstPartyTypeKind.ZodString:
-      return 'string';
+    case z.ZodFirstPartyTypeKind.ZodString: {
+      const checks = (def.checks as { kind: string; value?: number }[]) ?? [];
+      const max = checks.find((c) => c.kind === 'max')?.value;
+      return max != null ? `string (<=${max} chars)` : 'string';
+    }
     case z.ZodFirstPartyTypeKind.ZodNumber: {
       const checks = (def.checks as { kind: string; value?: number }[]) ?? [];
       const int = checks.some((c) => c.kind === 'int');

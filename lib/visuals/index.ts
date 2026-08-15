@@ -45,7 +45,11 @@ export interface StoredVisual {
 
 export function paramsDocFor(names: TemplateName[]): string {
   return names
-    .map((n) => `- ${n} params: ${zodDoc(TEMPLATES[n].paramsSchema)}`)
+    .map((n) => {
+      const t = TEMPLATES[n];
+      const rules = (t.rules ?? []).map((r) => `\n    · ${r}`).join('');
+      return `- ${n} params: ${zodDoc(t.paramsSchema)}${rules ? `\n  ${n} rules (violations auto-reject the draft):${rules}` : ''}`;
+    })
     .join('\n');
 }
 

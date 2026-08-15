@@ -50,6 +50,12 @@ function definedRegionValues(p: Venn2Params): string[] {
 
 export const venn2: VisualTemplate<Venn2Params> = {
   name: 'venn2',
+  // Invariants enforced by verify(); surfaced to the draft prompt.
+  rules: [
+    "set labels must be unique",
+    "a three-set diagram must supply all seven region values",
+    "numeric region values must be non-negative",
+  ],
   paramsSchema: Venn2ParamsZ,
 
   render(p) {
