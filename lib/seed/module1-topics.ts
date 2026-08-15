@@ -265,13 +265,13 @@ export const module1Topics: SeedTopic[] = [
         id: 'M1.4.8',
         text: 'Calculate the surface area of solids.',
         notes:
-          'Prisms including cubes and cylinders; right pyramids including cones; spheres. Surface area of sphere, A = 4*pi*r^2.',
+          'Prisms including cubes and cylinders; right pyramids including cones; spheres. Surface area of sphere, A = 4*pi*r^2. Drawing limit (R1.6 §6): we can only draw a cuboid, a cylinder and a triangular prism, so set solids we can show or describe the solid fully in words — never a prism with a sector cross-section drawn in perspective.',
       },
       {
         id: 'M1.4.9',
         text: 'Calculate the volume of solids.',
         notes:
-          'Prism including cube and cuboid, cylinder, right pyramid, cone and sphere. Volume of sphere, V = (4/3)*pi*r^3.',
+          'Prism including cube and cuboid, cylinder, right pyramid, cone and sphere. Volume of sphere, V = (4/3)*pi*r^3. Drawing limit (R1.6 §6): we can only draw a cuboid, a cylinder and a triangular prism, so set solids we can show or describe the solid fully in words — never a prism with a sector cross-section drawn in perspective.',
       },
       {
         id: 'M1.4.10',
