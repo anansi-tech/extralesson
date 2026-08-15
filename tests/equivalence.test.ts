@@ -204,6 +204,8 @@ describe('answersEquivalent — function notation is not a difference', () => {
     ['(2x+1)^2', 'gf(x)=4x^2+4x+1'],
     ['$f^{-1}:x\\to\\frac{x-1}{2}$; $ff^{-1}(x)=x$; $f^{-1}f(x)=x$', 'f⁻¹: x → (x - 1)/2; x; x'],
     ['fg\\ne gf', 'fg ≠ gf'],
+    ['$\\dfrac{x-1}{2}$', '(x - 1)/2'],
+    ['\\tfrac{3}{4}', '0.75'],
   ];
   for (const [a, b] of same) {
     it(`accepts ${a} = ${b}`, () => {
