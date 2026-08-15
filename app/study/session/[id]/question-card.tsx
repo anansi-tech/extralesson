@@ -186,11 +186,13 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             }`}
           >
             <b className={feedback.correct ? 'text-green-pen' : 'text-red-pen'}>
-              {feedback.correct
-                ? 'Correct ✓'
-                : feedback.isMisconception
-                  ? feedback.feedbackTitle
-                  : 'Not quite ✗'}
+              {feedback.correct ? (
+                'Correct ✓'
+              ) : feedback.isMisconception ? (
+                <span dangerouslySetInnerHTML={{ __html: feedback.feedbackTitleHtml }} />
+              ) : (
+                'Not quite ✗'
+              )}
             </b>
             <span className="font-mono text-xs">
               {earned}/{question.marks}

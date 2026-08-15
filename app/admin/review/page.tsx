@@ -81,7 +81,8 @@ export default async function ReviewPage() {
         final_answer: raw.final_answer,
         solutionHtml: renderMathHtml(raw.worked_solution),
         misconceptions: raw.misconceptions.map((m) => ({
-          ...m,
+          nameHtml: renderMathHtml(m.name),
+          triggerHtml: renderMathHtml(m.trigger),
           remediationHtml: renderMathHtml(m.remediation),
         })),
         recipeJson: raw.gen_meta?.recipe ? JSON.stringify(raw.gen_meta.recipe) : undefined,

@@ -22,7 +22,7 @@ export interface Feedback {
   profile_marks: ProfileMarks;
   rubric_awarded: string[];
   partResults: { label: string; correct: boolean }[];
-  feedbackTitle: string;
+  feedbackTitleHtml: string;
   feedbackHtml: string;
   isMisconception: boolean;
 }
@@ -102,7 +102,7 @@ export async function submitAnswer(input: {
   });
 
   // Miss -> matching misconception remediation, else worked solution.
-  let feedbackTitle = 'Worked solution';
+  let feedbackTitleHtml = 'Worked solution';
   let feedbackHtml = renderMathHtml(question.worked_solution);
   let isMisconception = false;
   if (!result.correct) {
@@ -114,7 +114,7 @@ export async function submitAnswer(input: {
       wrongAnswers.some((w) => answersEquivalentAny(w, m.trigger)),
     );
     if (match) {
-      feedbackTitle = match.name;
+      feedbackTitleHtml = renderMathHtml(match.name);
       feedbackHtml = renderMathHtml(match.remediation);
       isMisconception = true;
     }
@@ -125,7 +125,7 @@ export async function submitAnswer(input: {
     profile_marks: result.profile_marks,
     rubric_awarded: result.rubric_awarded,
     partResults,
-    feedbackTitle,
+    feedbackTitleHtml,
     feedbackHtml,
     isMisconception,
   };

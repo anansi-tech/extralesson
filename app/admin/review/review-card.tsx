@@ -28,7 +28,7 @@ export interface ReviewQuestion {
   }[];
   final_answer?: string;
   solutionHtml: string;
-  misconceptions: { trigger: string; name: string; remediationHtml: string }[];
+  misconceptions: { triggerHtml: string; nameHtml: string; remediationHtml: string }[];
   recipeJson?: string;
   dedupScore?: number;
   editJson: string;
@@ -197,7 +197,10 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
           <ul className="mt-1 space-y-1">
             {question.misconceptions.map((m, i) => (
               <li key={i} className="border-l-3 border-red-pen bg-[#FDF1F0] p-2 text-sm">
-                <b>{m.name}</b> <span className="font-mono text-xs text-dim">({m.trigger})</span>
+                <b dangerouslySetInnerHTML={{ __html: m.nameHtml }} />{' '}
+                <span className="text-xs text-dim">
+                  (<span dangerouslySetInnerHTML={{ __html: m.triggerHtml }} />)
+                </span>
                 <div className="question-prose" dangerouslySetInnerHTML={{ __html: m.remediationHtml }} />
               </li>
             ))}
