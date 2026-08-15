@@ -221,3 +221,52 @@ describe('compositeShape — rect-minus-rect (shaded region)', () => {
     expect(issues.some((i) => i.includes('strictly inside'))).toBe(false);
   });
 });
+
+// R1.6 §6 — "find the area of the shaded region" needs a shaded region.
+describe('compositeShape — shaded regions (R1.6 §6)', () => {
+  it('hatches only the semicircle on a rectangle-plus-semicircle', () => {
+    const plain = CompositeShapeParamsZ.parse({
+      kind: 'rect-plus-semicircle',
+      width: 8,
+      height: 5,
+      unit: 'cm',
+    });
+    const shaded = CompositeShapeParamsZ.parse({ ...plain, shaded: true });
+    expect(compositeShape.render(plain)).not.toContain('shapeHatch');
+    const svg = compositeShape.render(shaded);
+    expect(svg).toContain('pattern id="shapeHatch"');
+    expect(svg).toMatch(/<path d="M [\d.]+ [\d.]+ A .* Z" fill="url\(#shapeHatch\)"/);
+    expect(compositeShape.describe(shaded)).toContain('The semicircle is shaded.');
+  });
+
+  it('hatches the material left between the rectangles, not the hole', () => {
+    const shaded = CompositeShapeParamsZ.parse({
+      kind: 'rect-minus-rect',
+      outerWidth: 12,
+      outerHeight: 9,
+      innerWidth: 6,
+      innerHeight: 4,
+      unit: 'm',
+      shaded: true,
+    });
+    const svg = compositeShape.render(shaded);
+    // even-odd on a two-subpath outline is what leaves the hole clear
+    expect(svg).toContain('fill-rule="evenodd"');
+    expect(svg).toContain('fill="url(#shapeHatch)"');
+    expect(compositeShape.describe(shaded)).toContain('The region between the two rectangles is shaded.');
+  });
+
+  it('defaults to unshaded, so existing questions are untouched', () => {
+    const p = CompositeShapeParamsZ.parse({
+      kind: 'rect-minus-rect',
+      outerWidth: 12,
+      outerHeight: 9,
+      innerWidth: 6,
+      innerHeight: 4,
+      unit: 'm',
+    });
+    expect(p.shaded).toBe(false);
+    expect(compositeShape.render(p)).not.toContain('shapeHatch');
+    expect(compositeShape.describe(p)).not.toContain('shaded');
+  });
+});

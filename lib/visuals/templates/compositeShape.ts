@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { INK, line, pathArc, polar, polygon, round, svgOpen, text } from '../svg';
+import { hatchDefs, hatchFill, INK, line, pathArc, polar, polygon, round, svgOpen, text } from '../svg';
 import { valueStatedInText, type VisualTemplate } from '../types';
 
 // Compound plane figures and simple solids with dimension arrows. 3-D shapes
@@ -10,7 +10,14 @@ const PosZ = z.number().positive().max(100000);
 const UnitZ = z.enum(['cm', 'm', 'mm']);
 
 export const CompositeShapeParamsZ = z.discriminatedUnion('kind', [
-  z.object({ kind: z.literal('rect-plus-semicircle'), width: PosZ, height: PosZ, unit: UnitZ }),
+  z.object({
+    kind: z.literal('rect-plus-semicircle'),
+    width: PosZ,
+    height: PosZ,
+    unit: UnitZ,
+    // R1.6 §6: "find the area of the shaded region" needs the region shaded.
+    shaded: z.boolean().default(false),
+  }),
   z.object({
     kind: z.literal('rect-minus-rect'),
     outerWidth: PosZ,
@@ -18,6 +25,7 @@ export const CompositeShapeParamsZ = z.discriminatedUnion('kind', [
     innerWidth: PosZ,
     innerHeight: PosZ,
     unit: UnitZ,
+    shaded: z.boolean().default(false),
   }),
   z.object({ kind: z.literal('l-shape'), width: PosZ, height: PosZ, cutWidth: PosZ, cutHeight: PosZ, unit: UnitZ }),
   z.object({ kind: z.literal('cuboid'), length: PosZ, width: PosZ, height: PosZ, unit: UnitZ }),
@@ -102,12 +110,15 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
     "every dimension must be positive",
     "an inner rectangle must fit strictly inside the outer one",
     "a cut rectangle must be strictly smaller than the main rectangle",
+    "shaded: true hatches the region the question asks about — the semicircle on a rect-plus-semicircle, and the material left between the rectangles on a rect-minus-rect; set it whenever the question says \"shaded\"",
   ],
   paramsSchema: CompositeShapeParamsZ,
 
   render(p) {
     const parts: string[] = [svgOpen(W, H)];
     const u = p.unit;
+    const shaded = 'shaded' in p && p.shaded;
+    if (shaded) parts.push(hatchDefs('shapeHatch'));
 
     if (p.kind === 'rect-plus-semicircle') {
       const s = Math.min(420 / p.width, 280 / (p.height + p.width / 2));
@@ -120,6 +131,12 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
       parts.push(line(x0, yTop, x0, yBot));
       parts.push(line(x0 + rw, yTop, x0 + rw, yBot));
       parts.push(line(x0, yBot, x0 + rw, yBot));
+      if (shaded) {
+        // the half-disc only: the shaded region in "rectangle topped by a semicircle"
+        parts.push(
+          `<path d="M ${round(x0)} ${round(yTop)} A ${round(r)} ${round(r)} 0 0 1 ${round(x0 + rw)} ${round(yTop)} Z" fill="${hatchFill('shapeHatch')}" stroke="none" />`,
+        );
+      }
       parts.push(line(x0, yTop, x0 + rw, yTop, true)); // diameter (dashed)
       parts.push(pathArc(x0 + r, yTop, r, 180, 0)); // semicircle on top
       parts.push(dimH(x0, x0 + rw, yBot + 26, fmt(p.width, u)));
@@ -134,6 +151,15 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
       const ih = p.innerHeight * s;
       const ix = x0 + (ow - iw) / 2;
       const iy = y0 + (oh - ih) / 2;
+      if (shaded) {
+        // even-odd fill leaves the removed rectangle clear, so the hatch shows
+        // exactly the material whose area the question asks for
+        const outer = `M ${round(x0)} ${round(y0)} H ${round(x0 + ow)} V ${round(y0 + oh)} H ${round(x0)} Z`;
+        const inner = `M ${round(ix)} ${round(iy)} H ${round(ix + iw)} V ${round(iy + ih)} H ${round(ix)} Z`;
+        parts.push(
+          `<path d="${outer} ${inner}" fill-rule="evenodd" fill="${hatchFill('shapeHatch')}" stroke="none" />`,
+        );
+      }
       parts.push(polygon([[x0, y0], [x0 + ow, y0], [x0 + ow, y0 + oh], [x0, y0 + oh]], true));
       parts.push(polygon([[ix, iy], [ix + iw, iy], [ix + iw, iy + ih], [ix, iy + ih]], true));
       parts.push(dimH(x0, x0 + ow, y0 + oh + 26, fmt(p.outerWidth, u)));
@@ -248,9 +274,9 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
     const u = p.unit;
     switch (p.kind) {
       case 'rect-plus-semicircle':
-        return `Compound shape: a rectangle ${p.width} ${u} wide and ${p.height} ${u} high, with a semicircle of diameter ${p.width} ${u} on top of the rectangle (flat side shared with the rectangle's top edge).`;
+        return `Compound shape: a rectangle ${p.width} ${u} wide and ${p.height} ${u} high, with a semicircle of diameter ${p.width} ${u} on top of the rectangle (flat side shared with the rectangle's top edge).${p.shaded ? ' The semicircle is shaded.' : ''}`;
       case 'rect-minus-rect':
-        return `Compound shape: an outer rectangle ${p.outerWidth} ${u} by ${p.outerHeight} ${u} with an inner rectangle ${p.innerWidth} ${u} by ${p.innerHeight} ${u} removed from its centre.`;
+        return `Compound shape: an outer rectangle ${p.outerWidth} ${u} by ${p.outerHeight} ${u} with an inner rectangle ${p.innerWidth} ${u} by ${p.innerHeight} ${u} removed from its centre.${p.shaded ? ' The region between the two rectangles is shaded.' : ''}`;
       case 'l-shape':
         return `L-shaped figure: a rectangle ${p.width} ${u} wide and ${p.height} ${u} high with a rectangle ${p.cutWidth} ${u} wide and ${p.cutHeight} ${u} high removed from its top-right corner.`;
       case 'cuboid':

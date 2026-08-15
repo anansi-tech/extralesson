@@ -90,6 +90,16 @@ export function round(n: number): number {
 }
 
 // Nice tick positions between min and max inclusive.
+// 45° line hatch, the paper convention for a shaded region. Emit the defs once
+// per SVG and fill shapes with hatchFill(id).
+export function hatchDefs(id: string): string {
+  return `<defs><pattern id="${id}" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="${INK}" stroke-width="0.5" /></pattern></defs>`;
+}
+
+export function hatchFill(id: string): string {
+  return `url(#${id})`;
+}
+
 export function ticks(min: number, max: number, step: number): number[] {
   const out: number[] = [];
   const first = Math.ceil(min / step) * step;

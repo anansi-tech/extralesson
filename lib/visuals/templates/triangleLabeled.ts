@@ -34,6 +34,15 @@ export const TriangleLabeledParamsZ = z.object({
     .max(3)
     .default([]),
   rightAngleAt: z.number().int().min(0).max(2).optional(),
+  // R1.6 §6: "the shortest distance from the point to the line" — the
+  // perpendicular from one vertex to the opposite side, with its foot marked.
+  perpendicularFrom: z
+    .object({
+      vertex: z.number().int().min(0).max(2),
+      footLabel: z.string().min(1).max(4).default('N'),
+      label: z.string().max(12).optional(), // e.g. "h" or "12 cm"
+    })
+    .optional(),
 });
 
 export type TriangleLabeledParams = z.infer<typeof TriangleLabeledParamsZ>;
@@ -127,6 +136,7 @@ export const triangleLabeled: VisualTemplate<TriangleLabeledParams> = {
     "angles must be strictly between 0 and 180",
     "given angles must sum to at most 180, and to exactly 180 when all three are numeric",
     "a right-angle mark must agree with a 90 value",
+    "a perpendicular is dropped from a vertex to the side opposite it; the template places its foot, so the figure is true whatever angles were given",
   ],
   paramsSchema: TriangleLabeledParamsZ,
 
@@ -161,6 +171,40 @@ export const triangleLabeled: VisualTemplate<TriangleLabeledParams> = {
           false,
         ),
       );
+    }
+
+    // perpendicular from a vertex to the opposite side (shortest distance)
+    if (p.perpendicularFrom) {
+      const i = p.perpendicularFrom.vertex;
+      const a = v[(i + 1) % 3];
+      const b = v[(i + 2) % 3];
+      const [ex, ey] = unit(b[0] - a[0], b[1] - a[1]);
+      const t = (v[i][0] - a[0]) * ex + (v[i][1] - a[1]) * ey;
+      const foot: [number, number] = [a[0] + t * ex, a[1] + t * ey];
+      parts.push(line(v[i][0], v[i][1], foot[0], foot[1], true));
+      // right-angle mark at the foot, opening toward the vertex
+      const [fx, fy] = unit(v[i][0] - foot[0], v[i][1] - foot[1]);
+      const s2 = 12;
+      // open the square toward whichever end of the side is farther away, so it
+      // never runs off the end when the foot sits close to a vertex
+      const sign = Math.hypot(foot[0] - a[0], foot[1] - a[1]) > Math.hypot(foot[0] - b[0], foot[1] - b[1]) ? -1 : 1;
+      parts.push(
+        polygon(
+          [
+            [foot[0] + s2 * ex * sign, foot[1] + s2 * ey * sign],
+            [foot[0] + s2 * (ex * sign + fx), foot[1] + s2 * (ey * sign + fy)],
+            [foot[0] + s2 * fx, foot[1] + s2 * fy],
+          ],
+          false,
+        ),
+      );
+      const [ux, uy] = unit(foot[0] - cx, foot[1] - cy);
+      parts.push(text(foot[0] + 20 * ux, foot[1] + 20 * uy + 5, p.perpendicularFrom.footLabel, { size: 15, italic: true }));
+      if (p.perpendicularFrom.label) {
+        const mx = (v[i][0] + foot[0]) / 2;
+        const my = (v[i][1] + foot[1]) / 2;
+        parts.push(text(mx + 16, my + 4, p.perpendicularFrom.label, { size: 13, anchor: 'start' }));
+      }
     }
 
     // angle arcs + labels
@@ -217,6 +261,15 @@ export const triangleLabeled: VisualTemplate<TriangleLabeledParams> = {
     if (p.rightAngleAt !== undefined) {
       out.push(`There is a right angle at ${p.labels[p.rightAngleAt]}.`);
     }
+    if (p.perpendicularFrom) {
+      const i = p.perpendicularFrom.vertex;
+      const foot = p.perpendicularFrom.footLabel;
+      const opposite = sideName(p.labels, (i + 1) % 3);
+      const shown = p.perpendicularFrom.label ? ` and is marked ${p.perpendicularFrom.label}` : '';
+      out.push(
+        `A perpendicular is drawn from ${p.labels[i]} to ${opposite}, meeting it at ${foot}; ${p.labels[i]}${foot} is perpendicular to ${opposite}${shown}, so ${p.labels[i]}${foot} is the shortest distance from ${p.labels[i]} to ${opposite}.`,
+      );
+    }
     for (const s of p.sides) {
       const shown = s.variable ?? (s.value !== undefined ? `${s.value}${s.unit ? ` ${s.unit}` : ''}` : null);
       if (shown) out.push(`Side ${sideName(p.labels, s.side)} is marked ${shown}.`);
@@ -259,6 +312,11 @@ export const triangleLabeled: VisualTemplate<TriangleLabeledParams> = {
       }
     } else if (sum > 180 + 0.01) {
       issues.push(`triangleLabeled: given angles sum to ${round(sum)}°, which exceeds 180°`);
+    }
+    if (p.perpendicularFrom && p.labels.includes(p.perpendicularFrom.footLabel)) {
+      issues.push(
+        `triangleLabeled: the foot of the perpendicular reuses vertex label "${p.perpendicularFrom.footLabel}"`,
+      );
     }
     for (const s of p.sides) {
       if (s.value !== undefined && !valueStatedInText(s.value, context)) {

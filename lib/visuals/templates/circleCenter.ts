@@ -22,6 +22,10 @@ export const CircleCenterParamsZ = z.object({
   chords: z.array(z.object({ from: LabelZ, to: LabelZ })).max(4).default([]),
   diameter: z.object({ from: LabelZ, to: LabelZ }).optional(),
   tangentAt: LabelZ.optional(),
+  // R1.6 §6: two tangents drawn from a point outside the circle. The template
+  // places the external point at the intersection of the tangents, so the
+  // figure is always geometrically true whatever bearings the model chose.
+  externalPoint: z.object({ label: LabelZ, tangentTo: z.tuple([LabelZ, LabelZ]) }).optional(),
   angles: z
     .array(
       z.object({
@@ -56,6 +60,18 @@ function dirDeg(from: [number, number], to: [number, number]): number {
   return (Math.atan2(from[1] - to[1], to[0] - from[0]) * 180) / Math.PI;
 }
 
+// Where the tangents at two circumference points meet. They are parallel when
+// the points coincide or are diametrically opposite; verify() rejects that, and
+// render() draws nothing rather than a point at infinity.
+function tangentIntersection(b1: number, b2: number): [number, number] | null {
+  const between = ((((b2 - b1) % 360) + 360) % 360);
+  if (between < 1e-6 || Math.abs(between - 180) < 1e-6) return null; // same tangent, or parallel
+  const half = between / 2;
+  // A negative radius when the points are more than half a turn apart puts the
+  // meeting point on the far bisector, which is where it belongs.
+  return polar(CX, CY, R / Math.cos((half * Math.PI) / 180), polarDeg(b1 + half));
+}
+
 export const circleCenter: VisualTemplate<CircleCenterParams> = {
   name: 'circleCenter',
   // Invariants enforced by verify(); surfaced to the draft prompt.
@@ -63,6 +79,7 @@ export const circleCenter: VisualTemplate<CircleCenterParams> = {
     "point bearings must be 0-360",
     "angles and chords may only reference declared point labels",
     "an angle at the centre must be twice the angle at the circumference on the same arc",
+    "an externalPoint's two tangency points must be declared points that are neither identical nor diametrically opposite (parallel tangents never meet)",
   ],
   paramsSchema: CircleCenterParamsZ,
 
@@ -92,6 +109,24 @@ export const circleCenter: VisualTemplate<CircleCenterParams> = {
       const a = pos.get(p.diameter.from);
       const b = pos.get(p.diameter.to);
       if (a && b) parts.push(line(a[0], a[1], b[0], b[1]));
+    }
+
+    if (p.externalPoint) {
+      const [l1, l2] = p.externalPoint.tangentTo;
+      const t1 = p.points.find((q) => q.label === l1);
+      const t2 = p.points.find((q) => q.label === l2);
+      const meet = t1 && t2 ? tangentIntersection(t1.bearing, t2.bearing) : null;
+      if (meet && t1 && t2) {
+        pos.set(p.externalPoint.label, meet);
+        for (const t of [t1, t2]) {
+          const [tx, ty] = pos.get(t.label) as [number, number];
+          parts.push(line(tx, ty, meet[0], meet[1]));
+        }
+        // label the external point on the far side of the circle from O
+        const away = dirDeg([CX, CY], meet);
+        const [lx, ly] = polar(meet[0], meet[1], 20, away);
+        parts.push(text(lx, ly + 5, p.externalPoint.label, { size: 15, italic: true }));
+      }
     }
 
     if (p.tangentAt) {
@@ -147,6 +182,13 @@ export const circleCenter: VisualTemplate<CircleCenterParams> = {
     for (const ch of p.chords) out.push(`Chord ${ch.from}${ch.to} is drawn.`);
     if (p.diameter) out.push(`${p.diameter.from}${p.diameter.to} is a diameter.`);
     if (p.tangentAt) out.push(`A tangent touches the circle at ${p.tangentAt}.`);
+    if (p.externalPoint) {
+      const [t1, t2] = p.externalPoint.tangentTo;
+      const e = p.externalPoint.label;
+      out.push(
+        `The tangents at ${t1} and ${t2} meet at ${e}, a point outside the circle, so ${e}${t1} and ${e}${t2} are tangents, angle O${t1}${e} = angle O${t2}${e} = 90°, and ${e}${t1} = ${e}${t2}.`,
+      );
+    }
     for (const a of p.angles) {
       const shown = a.variable ?? (a.value !== undefined ? `${a.value}°` : null);
       if (!shown) continue;
@@ -158,10 +200,12 @@ export const circleCenter: VisualTemplate<CircleCenterParams> = {
 
   verify(p, context) {
     const issues: string[] = [];
-    const known = new Set<string>(['O', ...p.points.map((pt) => pt.label)]);
-    if (known.size !== p.points.length + 1) {
+    const onCircle = new Set<string>(['O', ...p.points.map((pt) => pt.label)]);
+    if (onCircle.size !== p.points.length + 1) {
       issues.push('circleCenter: duplicate point labels');
     }
+    // The external point is a legitimate vertex for an angle, so it counts as known.
+    const known = new Set<string>([...onCircle, ...(p.externalPoint ? [p.externalPoint.label] : [])]);
     for (const pt of p.points) {
       if (pt.bearing < 0 || pt.bearing > 360) {
         issues.push(`circleCenter: bearing ${pt.bearing} for ${pt.label} outside 0–360`);
@@ -171,11 +215,26 @@ export const circleCenter: VisualTemplate<CircleCenterParams> = {
       ...p.chords.flatMap((c) => [c.from, c.to]),
       ...(p.diameter ? [p.diameter.from, p.diameter.to] : []),
       ...(p.tangentAt ? [p.tangentAt] : []),
+      ...(p.externalPoint ? p.externalPoint.tangentTo : []),
       ...p.angles.flatMap((a) => [a.vertex, a.arc[0], a.arc[1]]),
     ];
     for (const r of refs) {
       if (!known.has(r)) issues.push(`circleCenter: reference to unknown point "${r}"`);
     }
+    if (p.externalPoint) {
+      const [l1, l2] = p.externalPoint.tangentTo;
+      if (onCircle.has(p.externalPoint.label)) {
+        issues.push(`circleCenter: external point "${p.externalPoint.label}" reuses a label on the circle`);
+      }
+      const t1 = p.points.find((q) => q.label === l1);
+      const t2 = p.points.find((q) => q.label === l2);
+      if (t1 && t2 && !tangentIntersection(t1.bearing, t2.bearing)) {
+        issues.push(
+          `circleCenter: tangents at ${l1} and ${l2} are parallel (bearings ${t1.bearing}° and ${t2.bearing}°), so they never meet at ${p.externalPoint.label}`,
+        );
+      }
+    }
+
     const arcKey = (a: [string, string]) => [...a].sort().join('|');
     for (const a of p.angles) {
       if (a.value === undefined) continue;

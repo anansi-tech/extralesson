@@ -210,3 +210,73 @@ describe('triangleLabeled — sine rule (two angles and a side)', () => {
     expect(triangleLabeled.verify(bad, badCtx).join(' ')).toContain('exceeds 180');
   });
 });
+
+// R1.6 §6 — non-right triangles for the sine/cosine rule, and the perpendicular
+// that answers "the shortest distance from the point to the line".
+describe('triangleLabeled — non-right configurations (R1.6 §6)', () => {
+  const ctx = {
+    stem: 'In triangle PQR, angle Q = 52 degrees, angle R = 47 degrees and QR = 14 m.',
+    partPrompts: ['Calculate PQ.', 'Calculate the shortest distance from P to QR.'],
+  };
+
+  const scalene = TriangleLabeledParamsZ.parse({
+    labels: ['P', 'Q', 'R'],
+    angles: [
+      { vertex: 1, value: 52 },
+      { vertex: 2, value: 47 },
+    ],
+    sides: [{ side: 1, value: 14, unit: 'm' }],
+  });
+
+  it('lays out a triangle with no right angle at all', () => {
+    expect(triangleLabeled.verify(scalene, ctx)).toEqual([]);
+    const svg = triangleLabeled.render(scalene);
+    expect(svg).toContain('52°');
+    expect(svg).toContain('47°');
+    // no right-angle square is drawn
+    expect(svg.match(/<polyline /g) ?? []).toHaveLength(0);
+  });
+
+  it('drops a perpendicular from a vertex to the opposite side and marks the foot', () => {
+    const withHeight = TriangleLabeledParamsZ.parse({
+      ...scalene,
+      perpendicularFrom: { vertex: 0, footLabel: 'N', label: 'h' },
+    });
+    const svg = triangleLabeled.render(withHeight);
+    expect(svg).toContain('>N<');
+    expect(svg).toContain('>h<');
+    expect(svg).toContain('stroke-dasharray'); // the perpendicular is dashed
+    expect(svg).toMatch(/<polyline /); // right-angle mark at the foot
+  });
+
+  it('states the perpendicular as the shortest distance, which is what the part asks for', () => {
+    const withHeight = TriangleLabeledParamsZ.parse({
+      ...scalene,
+      perpendicularFrom: { vertex: 0, footLabel: 'N' },
+    });
+    const text = triangleLabeled.describe(withHeight);
+    expect(text).toContain('perpendicular is drawn from P to QR');
+    expect(text).toContain('shortest distance from P to QR');
+  });
+
+  it('rejects a foot that reuses a vertex label', () => {
+    const clash = TriangleLabeledParamsZ.parse({
+      ...scalene,
+      perpendicularFrom: { vertex: 0, footLabel: 'Q' },
+    });
+    expect(triangleLabeled.verify(clash, ctx).join(' ')).toContain('reuses vertex label');
+  });
+
+  it('puts the foot on the opposite side, between its endpoints', () => {
+    const withHeight = TriangleLabeledParamsZ.parse({
+      ...scalene,
+      perpendicularFrom: { vertex: 0, footLabel: 'N' },
+    });
+    const svg = triangleLabeled.render(withHeight);
+    const dashed = svg.match(/<line x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="([\d.]+)"[^>]*stroke-dasharray/);
+    expect(dashed).not.toBeNull();
+    const footX = Number(dashed![3]);
+    expect(footX).toBeGreaterThan(60);
+    expect(footX).toBeLessThan(580);
+  });
+});

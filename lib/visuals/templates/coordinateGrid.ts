@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { INK, line, round, svgOpen, text } from '../svg';
+import { hatchDefs, hatchFill, INK, line, round, svgOpen, text } from '../svg';
 import type { VisualTemplate } from '../types';
 
 // Square-grid cartesian plane with labeled axes and integer gridlines.
@@ -494,14 +494,12 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     // shaded inequality regions, drawn UNDER the lines, curves, polygons and
     // points so every marker stays legible on top of the hatch
     if (p.regions.length > 0) {
-      parts.push(
-        `<defs><pattern id="regionHatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="${INK}" stroke-width="0.5" /></pattern></defs>`,
-      );
+      parts.push(hatchDefs('regionHatch'));
       for (const region of p.regions) {
         const poly = regionPolygon(region, xmin, xmax, ymin, ymax);
         if (poly.length < 3) continue; // empty region — draw nothing
         const d = poly.map((q) => `${round(X(q.x))},${round(Y(q.y))}`).join(' ');
-        parts.push(`<polygon points="${d}" fill="url(#regionHatch)" stroke="none" />`);
+        parts.push(`<polygon points="${d}" fill="${hatchFill('regionHatch')}" stroke="none" />`);
         if (region.label) {
           const cx = poly.reduce((s, q) => s + X(q.x), 0) / poly.length;
           const cy = poly.reduce((s, q) => s + Y(q.y), 0) / poly.length;
