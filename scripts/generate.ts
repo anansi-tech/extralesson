@@ -122,6 +122,18 @@ async function main() {
       const { recipe, context, module, topicTitle, objectives } = await buildRecipe(args);
       const visualContract =
         recipe.representation === 'prose' ? '' : paramsDocFor(context.template_hints);
+      // What this topic already holds, so the model writes something else. Read
+      // fresh each attempt: a draft inserted a moment ago counts.
+      const existingStems = (
+        await Question.find({
+          status: { $in: ['draft', 'approved'] },
+          objective_ids: { $in: recipe.objective_ids },
+        })
+          .select('stem')
+          .sort({ _id: -1 })
+          .limit(10)
+          .lean<{ stem: string }[]>()
+      ).map((q) => q.stem);
       console.log(
         `→ attempt ${attempts}: recipe ${recipe.kind} ${context.topic_code} d${recipe.difficulty} ${recipe.marks}mk ${recipe.archetype}/${recipe.representation} [${recipe.objective_ids.join(', ')}]`,
       );
@@ -130,7 +142,15 @@ async function main() {
       const { object: raw } = await generateObject({
         model,
         schema: recipe.kind === 'mcq' ? McqLooseZ : StructuredLooseZ,
-        prompt: buildDraftPrompt({ topicTitle, objectives, recipe, context, module, visualContract }),
+        prompt: buildDraftPrompt({
+          topicTitle,
+          objectives,
+          recipe,
+          context,
+          module,
+          visualContract,
+          existingStems,
+        }),
       });
 
       // Normalize prose fields, assemble candidate
