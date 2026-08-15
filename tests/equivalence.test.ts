@@ -224,3 +224,30 @@ describe('answersEquivalent — function notation is not a difference', () => {
     expect(answersEquivalent('3s = 2(s + 250)', '2s + 500')).toBe(false);
   });
 });
+
+// The --poison hook appends " + 999" to the last part's answer, and the gate
+// must always catch it. It once did not: the draft answer was a chain of
+// definitions the label-stripper could not parse, so the comparison fell
+// through to prose matching, where the solver's shorter answer looked like a
+// subset of the poisoned one. Both halves of that are pinned here.
+describe('answersEquivalent — appended garbage is never a qualifier', () => {
+  it('catches the poison on a chained-definition answer', () => {
+    expect(answersEquivalent('f^{-1}(f(x))=f(f^{-1}(x))=x + 999', 'x')).toBe(false);
+    expect(answersEquivalent('f^{-1}(f(x))=f(f^{-1}(x))=x', 'x')).toBe(true);
+  });
+
+  it('catches the poison on a word answer', () => {
+    expect(answersEquivalent('reflection in the line y = x + 999', 'reflection in the line y = x')).toBe(false);
+    expect(answersEquivalent('40° + 999', '40°')).toBe(false);
+    expect(answersEquivalent('grouped data uses class midpoints + 999', 'grouped data uses class midpoints')).toBe(false);
+  });
+
+  it('keeps accepting a qualifier that carries no value', () => {
+    expect(answersEquivalent('regular hexagon', 'hexagon')).toBe(true);
+    expect(answersEquivalent('obtuse angle', 'obtuse')).toBe(true);
+  });
+
+  it('treats two prose answers quoting different numbers as different', () => {
+    expect(answersEquivalent('the 5th term is largest', 'the 6th term is largest')).toBe(false);
+  });
+});
