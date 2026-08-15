@@ -314,3 +314,55 @@ describe('triangleLabeled — a triangle with no angles still gets drawn', () =>
     }
   });
 });
+
+// A review card showed a stem reading "On the map, AB = 4 cm" above a figure
+// with 4 cm printed on AC. Both were internally valid: the value appears in the
+// text, so the existing cross-check passed. A student reading the figure would
+// answer a different question from the one asked.
+describe('triangleLabeled — the figure may not contradict the stem', () => {
+  const ctx = (stem: string) => ({ stem, partPrompts: ['What is the actual distance from A to B?'] });
+  const mapStem = 'The labelled sketch refers to a triangular nature reserve. On the map, AB = 4 cm. The map scale is 1 cm represents 3 km.';
+
+  it('rejects a length placed on the wrong side', () => {
+    // side 2 joins C to A, but the question states AB
+    const wrong = TriangleLabeledParamsZ.parse({
+      labels: ['A', 'B', 'C'],
+      sides: [{ side: 2, value: 4, unit: 'cm' }],
+    });
+    const issues = triangleLabeled.verify(wrong, ctx(mapStem));
+    expect(issues.join(' ')).toContain('states AB = 4');
+    expect(issues.join(' ')).toContain('puts 4 on CA');
+  });
+
+  it('accepts the same length on the side the question names', () => {
+    const right = TriangleLabeledParamsZ.parse({
+      labels: ['A', 'B', 'C'],
+      sides: [{ side: 0, value: 4, unit: 'cm' }],
+    });
+    expect(triangleLabeled.verify(right, ctx(mapStem))).toEqual([]);
+  });
+
+  it('reads the pair in either order', () => {
+    const right = TriangleLabeledParamsZ.parse({
+      labels: ['P', 'Q', 'R'],
+      sides: [{ side: 0, value: 7, unit: 'm' }],
+    });
+    expect(triangleLabeled.verify(right, ctx('In triangle PQR, QP = 7 m.'))).toEqual([]);
+  });
+
+  it('says nothing when the text names no side, as a labelled sketch may', () => {
+    const p = TriangleLabeledParamsZ.parse({
+      labels: ['A', 'B', 'C'],
+      sides: [{ side: 1, value: 9, unit: 'cm' }],
+    });
+    expect(triangleLabeled.verify(p, ctx('The sketch shows a triangle of side 9 cm.'))).toEqual([]);
+  });
+
+  it('is not fooled by a different length elsewhere in the question', () => {
+    const p = TriangleLabeledParamsZ.parse({
+      labels: ['A', 'B', 'C'],
+      sides: [{ side: 0, value: 4, unit: 'cm' }, { side: 1, value: 6, unit: 'cm' }],
+    });
+    expect(triangleLabeled.verify(p, ctx('In triangle ABC, AB = 4 cm and BC = 6 cm.'))).toEqual([]);
+  });
+});

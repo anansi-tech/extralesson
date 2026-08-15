@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { line, pathArc, polar, polygon, round, svgOpen, text } from '../svg';
-import { valueStatedInText, type VisualTemplate } from '../types';
+import { valueStatedInText, type VerifyContext, type VisualTemplate } from '../types';
 
 // Triangle with vertex labels, optional side/angle labels, equal-side tick
 // marks and a right-angle mark. The TEMPLATE places the vertices — the model
@@ -131,6 +131,24 @@ function interiorArc(
   return { path: pathArc(cx, cy, r, start, start - m), midDeg: start - m / 2 };
 }
 
+// Side lengths the question text states against a named pair of vertices:
+// "AB = 4 cm", "PQ is 7 m", "the length of XY = 12".
+function statedSideLengths(
+  context: VerifyContext | undefined,
+): { from: string; to: string; value: number }[] {
+  if (!context) return [];
+  const text = [context.stimulus ?? '', context.stem, ...context.partPrompts].join(' ');
+  const out: { from: string; to: string; value: number }[] = [];
+  for (const m of text.matchAll(/\b([A-Z])\s*([A-Z])\b\s*(?:=|is|of)\s*\$?\s*(\d+(?:\.\d+)?)/g)) {
+    out.push({ from: m[1], to: m[2], value: Number(m[3]) });
+  }
+  return out;
+}
+
+function closeTo(a: number, b: number): boolean {
+  return Math.abs(a - b) < 1e-6;
+}
+
 function sideName(labels: string[], side: number): string {
   return `${labels[side]}${labels[(side + 1) % 3]}`;
 }
@@ -143,6 +161,7 @@ export const triangleLabeled: VisualTemplate<TriangleLabeledParams> = {
     "given angles must sum to at most 180, and to exactly 180 when all three are numeric",
     "a right-angle mark must agree with a 90 value",
     "a perpendicular is dropped from a vertex to the side opposite it; the template places its foot, so the figure is true whatever angles were given",
+    "side i joins labels[i] to labels[i+1]: with labels [A,B,C], side 0 is AB, side 1 is BC, side 2 is CA — a length the question states for AB must be on side 0",
   ],
   paramsSchema: TriangleLabeledParamsZ,
 
@@ -327,6 +346,29 @@ export const triangleLabeled: VisualTemplate<TriangleLabeledParams> = {
     for (const s of p.sides) {
       if (s.value !== undefined && !valueStatedInText(s.value, context)) {
         issues.push(`triangleLabeled: side length ${s.value} never appears in the question text`);
+      }
+    }
+
+    // The figure must not contradict the text. When the question says "AB = 4
+    // cm" the 4 has to sit on AB, not on CA: a reviewer reads the two as one
+    // statement, and a student reading the figure would answer a different
+    // question from the one asked. This is a contradiction, not a missing
+    // cross-reference, so it rejects rather than advises.
+    for (const stated of statedSideLengths(context)) {
+      const carrying = p.sides.filter((s) => s.value !== undefined && closeTo(s.value, stated.value));
+      if (carrying.length === 0) continue;
+      const named = new Set([stated.from, stated.to]);
+      const onNamedSide = carrying.some((s) => {
+        const ends = new Set([p.labels[s.side], p.labels[(s.side + 1) % 3]]);
+        return ends.size === named.size && [...ends].every((e) => named.has(e));
+      });
+      if (!onNamedSide) {
+        const where = carrying
+          .map((s) => sideName(p.labels, s.side))
+          .join(', ');
+        issues.push(
+          `triangleLabeled: the question states ${stated.from}${stated.to} = ${stated.value}, but the figure puts ${stated.value} on ${where}`,
+        );
       }
     }
     return issues;
