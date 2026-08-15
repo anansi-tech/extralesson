@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   computeMatrix,
   largestDeficit,
+  nextP1Profile,
+  P1_PROFILE_CYCLE,
+  P1_PROFILE_SPLIT,
   p1TargetForTopic,
   p2MarksTargetForTopic,
   P1_TOTAL,
@@ -217,5 +220,37 @@ describe('nextRecipe — a bank built from empty converges on the target shape',
 
     // more than one topic gets served
     expect(new Set(recipes.map((r) => r.objective_ids[0].slice(0, 4))).size).toBeGreaterThan(3);
+  });
+});
+
+// R1.7 §B5 — Paper 1 topic blocks climb CK -> AK -> R in the specimen key, and
+// a practice set that samples profiles independently loses that ramp.
+describe('nextP1Profile — topic blocks climb the cognitive ladder', () => {
+  it('opens a topic with a concept item and closes each block with reasoning', () => {
+    expect(nextP1Profile(0)).toBe('CK');
+    expect(nextP1Profile(1)).toBe('AK');
+    expect(nextP1Profile(2)).toBe('AK');
+    expect(nextP1Profile(3)).toBe('R');
+  });
+
+  it('never puts reasoning before the procedure inside a block', () => {
+    for (let i = 0; i < P1_PROFILE_CYCLE.length; i++) {
+      if (P1_PROFILE_CYCLE[i] === 'R') {
+        expect(P1_PROFILE_CYCLE.slice(0, i)).toContain('CK');
+      }
+    }
+  });
+
+  it('reproduces the seeded 6/8/6 split exactly over twenty items', () => {
+    const counts = { CK: 0, AK: 0, R: 0 };
+    for (let i = 0; i < 20; i++) counts[nextP1Profile(i)]++;
+    expect(counts).toEqual(P1_PROFILE_SPLIT);
+  });
+
+  it('keeps cycling as a topic fills, without drifting off the split', () => {
+    const counts = { CK: 0, AK: 0, R: 0 };
+    for (let i = 0; i < 100; i++) counts[nextP1Profile(i)]++;
+    expect(counts).toEqual({ CK: 30, AK: 40, R: 30 });
+    expect(nextP1Profile(100)).toBe(nextP1Profile(0));
   });
 });

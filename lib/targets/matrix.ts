@@ -16,6 +16,27 @@ export const P2_TOTAL = 240; // structured; coverage measured in rubric marks
 export const P1_PROFILE_SPLIT: Record<Profile, number> = { CK: 6, AK: 8, R: 6 };
 export const P2_PROFILE_SPLIT: Record<Profile, number> = { CK: 9, AK: 12, R: 9 };
 
+// R1.7 §B5 — Paper 1 items come in topic blocks of 2-4 that climb the cognitive
+// ladder: the concept first, the procedure(s) next, the reasoning last. The
+// specimen key shows the whole paper built this way, so a practice set sampled
+// profile-by-profile feels nothing like the exam and denies the student the
+// same ramp.
+//
+// This cycle is that shape and the seeded split at once: blocks of
+// CK-AK-AK-R, CK-AK-AK-R, CK-R give 3 CK, 4 AK, 3 R every ten items, which is
+// exactly the 6/8/6 per twenty that the blueprint asks for.
+export const P1_PROFILE_CYCLE: Profile[] = [
+  'CK', 'AK', 'AK', 'R',
+  'CK', 'AK', 'AK', 'R',
+  'CK', 'R',
+];
+
+/** The profile of the next Paper 1 item in a topic, given how many it already has. */
+export function nextP1Profile(existingItems: number): Profile {
+  const i = ((existingItems % P1_PROFILE_CYCLE.length) + P1_PROFILE_CYCLE.length) % P1_PROFILE_CYCLE.length;
+  return P1_PROFILE_CYCLE[i];
+}
+
 export const DIFFICULTY_TARGETS: Record<1 | 2 | 3, number> = { 1: 25, 2: 50, 3: 25 };
 
 export interface QuestionFacts {
