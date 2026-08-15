@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { computeCoverage, coverageSentence, FULL_PAPER_RAW_MARKS } from '@/lib/targets/coverage';
+import { paperShape } from '@/lib/exam/paper-shape';
 import { module1Topics } from '@/lib/seed/module1-topics';
 import { module2Topics } from '@/lib/seed/module2-topics';
 import { module3Topics } from '@/lib/seed/module3-topics';
@@ -38,7 +39,7 @@ describe('computeCoverage (R1.6 §3)', () => {
 
   it('states the gap plainly, in marks, without hedging', () => {
     const s = coverageSentence(coverage);
-    expect(s).toContain(`${coverage.percent}%`);
+    expect(s).toContain(`${coverage.displayPercent}%`);
     expect(s).toContain(`${coverage.uncoveredMarks} marks`);
     expect(s).toMatch(/pencil, ruler and compasses/);
   });
@@ -74,6 +75,52 @@ describe('unassessable objectives are excluded from generation, not just from th
         expect(o.unassessable_reason, `${o.id} has no reason`).toBeTruthy();
         expect(o.unassessable_reason!.length).toBeGreaterThan(15);
       }
+    }
+  });
+});
+
+// R1.7 §B1/§B6 — what we say about the paper, and about what we do not do.
+describe('coverage statement (R1.7)', () => {
+  it('rounds down to a number that does not claim false precision', () => {
+    expect(coverage.percent).toBe(91);
+    expect(coverage.displayPercent).toBe(90);
+    expect(coverageSentence(coverage)).toContain('about 90%');
+    expect(coverageSentence(coverage)).not.toContain('91%');
+  });
+
+  it('never rounds up past what we can show', () => {
+    const round = (f: number) => Math.floor((f * 100) / 5) * 5;
+    for (const f of [0.909, 0.94, 0.949, 0.96, 0.999]) {
+      expect(round(f) * 1).toBeLessThanOrEqual(f * 100);
+    }
+  });
+
+  it('names Paper 032, which we do not prepare anyone for', () => {
+    const s = coverageSentence(coverage);
+    expect(s).toContain('Paper 032');
+    expect(s).toContain('private candidates');
+  });
+});
+
+describe('paperShape (R1.7 §B1)', () => {
+  it('describes the 2027 paper as three module sections of three questions', () => {
+    const s = paperShape('modular-2027');
+    expect(s).toContain('three sections, one for each module');
+    expect(s).toContain('three questions in each');
+  });
+
+  it('never describes module sections to a January re-sit candidate', () => {
+    const s = paperShape('legacy-jan');
+    expect(s).toContain('old format');
+    expect(s).not.toMatch(/three sections|module sections(?!\.)/);
+    expect(s).toContain('no module sections');
+  });
+
+  it('matches the seeded blueprint: three modules, 30 marks each in Paper 2', () => {
+    for (const m of [1, 2, 3] as const) {
+      const bp = seedBlueprints.find((b) => b.paper === 'P2' && b.module === m)!;
+      const marks = bp.allocations.reduce((s, a) => s + (a.marks ?? 0), 0);
+      expect(marks, `module ${m}`).toBe(30); // 3 questions x 10 marks
     }
   });
 });

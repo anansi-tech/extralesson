@@ -2,6 +2,7 @@ import { dbConnect, Student } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { loadStudyState } from '@/lib/study/state';
 import { coverageSentence } from '@/lib/targets/coverage';
+import { paperShape } from '@/lib/exam/paper-shape';
 import Link from 'next/link';
 import { logout, startSession } from './actions';
 import type { ModuleNumber } from '@/lib/types';
@@ -95,8 +96,9 @@ export default async function StudyDashboard({
             Paper 3 project assumed at neutral carry-over — estimates move as you practise.
           </div>
           <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-left text-[11px] leading-snug text-dim">
-            {coverage}
+            {paperShape(student.syllabus_mode)}
           </p>
+          <p className="mt-2 text-left text-[11px] leading-snug text-dim">{coverage}</p>
         </section>
 
         {error === 'no-questions' && (
