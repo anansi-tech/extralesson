@@ -37,7 +37,7 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v10');
+    expect(PROMPT_VERSION).toBe('v11');
   });
 
   it('teaches hence-or-otherwise chaining with follow-through on structured drafts', () => {
@@ -77,6 +77,26 @@ describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
     expect(p).not.toContain('PAPER PATTERNS');
     expect(p).not.toContain('FUNCTION NOTATION');
     expect(p).not.toContain('SEQUENCE/PATTERN SHAPE');
+  });
+});
+
+describe('buildDraftPrompt — figures are sketches, not scale drawings', () => {
+  it('forbids measuring off a diagram, which our templates cannot support', () => {
+    const p = buildDraftPrompt({
+      topicTitle: 'Geometry',
+      objectives: [objective('Solve geometric problems using properties of triangles.')],
+      recipe: recipe({ representation: 'diagram' }),
+      context: { topic_code: 'M2-GEO1', template_hints: ['triangleLabeled'] },
+      module: 2,
+      visualContract: '',
+    });
+    expect(p).toContain('not drawn to scale');
+    expect(p).toContain('never ask the student to MEASURE');
+    expect(p).toContain('name the instruments');
+  });
+
+  it('says none of that when there is no figure to misdescribe', () => {
+    expect(prompt({ topic: 'M2-ALG2' })).not.toContain('not drawn to scale');
   });
 });
 
