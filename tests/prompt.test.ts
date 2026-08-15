@@ -37,7 +37,7 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v21');
+    expect(PROMPT_VERSION).toBe('v22');
   });
 
   it('teaches hence-or-otherwise chaining with follow-through on structured drafts', () => {
@@ -282,5 +282,17 @@ describe('buildDraftPrompt — documented errors reach the question that needs t
     });
     expect(p).toContain('Modal frequency given instead of the modal value');
     expect(p).not.toContain('Amount given instead of interest');
+  });
+});
+
+// Three M1-ALG1 drafts were lost to the same disagreement: the draft answered
+// {x : x >= 15} and an independent solver answered {x in N : x >= 15} for a
+// count of pairs. Neither is a slip — the question never said which.
+describe('buildDraftPrompt — a solution set has to say what it is a set of', () => {
+  it('requires the domain to be fixed in the question and carried into the answer', () => {
+    const p = prompt({ topic: 'M1-ALG1' });
+    expect(p).toContain('SOLUTION SET');
+    expect(p).toContain('whether it is a whole number');
+    expect(p).toContain('including 15.4 pairs');
   });
 });

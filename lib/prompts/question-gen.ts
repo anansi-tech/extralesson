@@ -9,7 +9,7 @@ import { misconceptionGuidance } from '@/lib/misconceptions';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v21';
+export const PROMPT_VERSION = 'v22';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -193,6 +193,7 @@ RULES:
       : `Rubric: 2-12 criteria; a criterion may award more than one mark for a substantial linked stage; mark_values sum to marks and each row names its part_label.
 ${MARK_SCHEME_CONVENTIONS}
 - Where a part carries an answer_format, the scheme marks the form as its own act: include exactly ONE further row for that part with "for_format": true, normally an R mark of 1, whose criterion names the form ("Expresses 'their' answer in standard form"). The other rows mark the value and the method, so a student with the right number in the wrong form keeps them.`}
+- A SOLUTION SET from a real-world quantity must fix its domain. Say in the question what the variable counts or measures and whether it is a whole number, and write the answer set with that domain: $\\{x \\in \\mathbb{N} : x \\ge 15\\}$ for a count of pairs, $\\{x \\in \\mathbb{R} : 0 \\le x \\le 12\\}$ for a distance. A bare $\\{x : x \\ge 15\\}$ is ambiguous — it claims every real number above 15 is an answer, including 15.4 pairs.
 - ACCURACY, as the real papers do it: when a part's answer does not terminate — it comes from trigonometry, a square root, ${'\u03c0'}, or a division that runs on — the part must SAY what accuracy it wants ("correct to 3 significant figures", or "to 1 decimal place" for an angle) and carry the matching answer_format ("sf:3", "dp:1"). When the answer is exact but has more than one accepted written form, say which form you want (exact, surd, standard form, lowest terms, ${'y = mx + c'}) and tag that instead. Never demand an accuracy the mathematics does not need.
 - misconceptions: 1-3 entries. Each trigger is a specific wrong final answer for one part; name the error; remediation explains the fix in one or two sentences.
 ${documentedErrors ? `\n${documentedErrors}\n` : ''}
