@@ -15,6 +15,16 @@ export interface CandidateQuestion {
   objective_ids: string[];
   module: ModuleNumber;
   kind: QuestionKind;
+  /** R1.6 §1: response modes present on this question's parts. */
+  response_modes?: string[];
+}
+
+// A question belongs in the auto-graded session only when every part can be
+// marked from a typed final answer. "Show that" states the answer in the stem,
+// so comparing against it would pass a student who wrote nothing — the exact
+// false confidence this product exists to prevent. Those go to worked practice.
+export function isAutoGradable(q: CandidateQuestion): boolean {
+  return (q.response_modes ?? ['answer']).every((m) => m === 'answer');
 }
 
 export interface BuildSessionArgs {
@@ -48,7 +58,7 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
   const m1Gated = targetModules.includes(1) && m1Mastery <= M1_PREREQ_THRESHOLD;
 
   const scored: Scored[] = candidates
-    .filter((c) => targetModules.includes(c.module))
+    .filter((c) => targetModules.includes(c.module) && isAutoGradable(c))
     .map((c) => {
       // Weakest objective drives the need; untouched objectives count as 0.
       const weakest = Math.min(...c.objective_ids.map((id) => perObjectiveMastery.get(id) ?? 0));

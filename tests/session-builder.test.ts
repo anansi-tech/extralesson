@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildSession, type CandidateQuestion } from '@/lib/session/builder';
+import { buildSession, isAutoGradable, type CandidateQuestion } from '@/lib/session/builder';
 import { M1_PREREQ_THRESHOLD } from '@/lib/mastery/config';
 
 function q(
@@ -166,5 +166,45 @@ describe('buildSession — kind blend and coverage', () => {
       topicWeightByPrefix: weights,
     });
     expect(picked).toHaveLength(1);
+  });
+});
+
+describe('buildSession — only auto-markable questions enter the graded pool (R1.6 §1)', () => {
+  const withModes = (id: string, modes: string[]): CandidateQuestion => ({
+    ...q(id, 1, 'M1.1.1', 'structured'),
+    response_modes: modes,
+  });
+
+  it('treats a question with no recorded modes as answerable, as before', () => {
+    expect(isAutoGradable(q('legacy', 1, 'M1.1.1'))).toBe(true);
+    expect(isAutoGradable(withModes('all-answer', ['answer', 'answer']))).toBe(true);
+  });
+
+  it('excludes a question when any part is show_that or explain', () => {
+    expect(isAutoGradable(withModes('mixed', ['answer', 'show_that']))).toBe(false);
+    expect(isAutoGradable(withModes('reasoned', ['explain']))).toBe(false);
+  });
+
+  it('never picks a show_that question even when it is the weakest-objective match', () => {
+    const picked = buildSession({
+      candidates: [withModes('show', ['show_that']), q('plain', 1, 'M1.5.1', 'structured')],
+      perObjectiveMastery: new Map([['M1.5.1', 0.9]]), // 'show' looks far more urgent
+      m1Mastery: 0,
+      targetModules: [1],
+      topicWeightByPrefix: weights,
+      size: 2,
+    });
+    expect(picked.map((p) => p.id)).toEqual(['plain']);
+  });
+
+  it('returns an empty session rather than a wrongly-marked one', () => {
+    const picked = buildSession({
+      candidates: [withModes('a', ['show_that']), withModes('b', ['explain'])],
+      perObjectiveMastery: new Map(),
+      m1Mastery: 0,
+      targetModules: [1],
+      topicWeightByPrefix: weights,
+    });
+    expect(picked).toEqual([]);
   });
 });

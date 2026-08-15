@@ -62,10 +62,14 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
   const query: Record<string, unknown> = { student_id: studentId };
   if (before) query.ts = { $lt: before };
   const attempts = await Attempt.find(query)
-    .populate('question_id', 'objective_ids marks')
+    .populate('question_id', 'objective_ids marks parts')
     .lean<
       {
-        question_id: { objective_ids: string[]; marks: number } | null;
+        question_id: {
+          objective_ids: string[];
+          marks: number;
+          parts?: { marks: number; response_mode?: string }[];
+        } | null;
         profile_marks: { CK: number; AK: number; R: number };
         ts: Date;
       }[]
@@ -73,7 +77,13 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
   return attempts
     .filter((a) => a.question_id)
     .map((a) => {
-      const marks = a.question_id!.marks || 1;
+      // Denominator counts only the marks we can actually assess (R1.6 §1/§4),
+      // so a question carrying a show_that part is scored out of the rest.
+      const parts = a.question_id!.parts ?? [];
+      const assessable = parts.length
+        ? parts.filter((p) => (p.response_mode ?? 'answer') === 'answer').reduce((s, p) => s + p.marks, 0)
+        : a.question_id!.marks;
+      const marks = assessable || a.question_id!.marks || 1;
       const earned = a.profile_marks.CK + a.profile_marks.AK + a.profile_marks.R;
       return {
         objective_ids: a.question_id!.objective_ids,

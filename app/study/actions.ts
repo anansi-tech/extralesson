@@ -17,8 +17,16 @@ export async function startSession(): Promise<void> {
 
   const state = await loadStudyState(auth.student_id, student.target_modules);
   const candidates = await Question.find({ status: 'approved' })
-    .select('objective_ids module kind')
-    .lean<{ _id: unknown; objective_ids: string[]; module: ModuleNumber; kind: 'mcq' | 'structured' }[]>();
+    .select('objective_ids module kind parts')
+    .lean<
+      {
+        _id: unknown;
+        objective_ids: string[];
+        module: ModuleNumber;
+        kind: 'mcq' | 'structured';
+        parts?: { response_mode?: string }[];
+      }[]
+    >();
 
   const picked = buildSession({
     candidates: candidates.map((c) => ({
@@ -26,6 +34,7 @@ export async function startSession(): Promise<void> {
       objective_ids: c.objective_ids,
       module: c.module,
       kind: c.kind,
+      response_modes: (c.parts ?? []).map((p) => p.response_mode ?? 'answer'),
     })),
     perObjectiveMastery: state.perObjective,
     m1Mastery: state.moduleMastery[1],
