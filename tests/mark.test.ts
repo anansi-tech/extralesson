@@ -204,3 +204,52 @@ describe('markStructuredParts — self-marked parts are left out of the marking'
     expect(res.profile_marks.AK).toBe(2);
   });
 });
+
+// R1.7 §B4 — the official scheme pays for the value and pays again for putting
+// it in the demanded form. A student who computes correctly and writes the
+// number plainly has lost one mark, not the question.
+describe('markStructured — a wrong form costs only the form mark', () => {
+  const rubric: RubricItem[] = [
+    { code: 'CK1', profile: 'CK', criterion: 'CAO $0.000045$', mark_value: 2, part_label: 'a' },
+    { code: 'AK1', profile: 'AK', criterion: 'Divides correctly', mark_value: 2, part_label: 'a' },
+    { code: 'R1', profile: 'R', criterion: "Expresses 'their' answer in standard form", mark_value: 1, part_label: 'a', for_format: true },
+  ];
+
+  it('keeps the value and method marks, withholds the form mark', () => {
+    const res = markStructured(rubric, '4.5 \\times 10^{-5}', '0.000045', '', undefined, 'standard_form');
+    expect(res.correct).toBe(false);
+    expect(res.rubric_awarded).toEqual(['CK1', 'AK1']);
+    expect(res.profile_marks).toEqual({ CK: 2, AK: 2, R: 0 });
+    expect(res.format_feedback).toMatch(/^Correct value/);
+  });
+
+  it('awards everything when the form is right too', () => {
+    const res = markStructured(rubric, '4.5 \\times 10^{-5}', '4.5 \\times 10^{-5}', '', undefined, 'standard_form');
+    expect(res.correct).toBe(true);
+    expect(res.rubric_awarded).toEqual(['CK1', 'AK1', 'R1']);
+    expect(res.profile_marks.R).toBe(1);
+  });
+
+  it('does not rescue a wrong value dressed in the right form', () => {
+    const res = markStructured(rubric, '4.5 \\times 10^{-5}', '5.4 \\times 10^{-5}', '', undefined, 'standard_form');
+    expect(res.correct).toBe(false);
+    expect(res.rubric_awarded).not.toContain('CK1');
+    expect(res.profile_marks).toEqual({ CK: 0, AK: 0, R: 0 });
+  });
+
+  it('falls back to the ordinary heuristics when no row marks the form', () => {
+    const plain: RubricItem[] = [
+      { code: 'CK1', profile: 'CK', criterion: 'CAO $0.000045$', mark_value: 2, part_label: 'a' },
+      { code: 'R1', profile: 'R', criterion: 'Interprets the result', mark_value: 1, part_label: 'a' },
+    ];
+    const res = markStructured(plain, '4.5 \\times 10^{-5}', '0.000045', '', undefined, 'standard_form');
+    expect(res.correct).toBe(false);
+    expect(res.rubric_awarded).toEqual(['CK1', 'R1']); // value was right; nothing marked the form
+  });
+
+  it('leaves questions without a required form exactly as they were', () => {
+    const res = markStructured(rubric, '4.5 \\times 10^{-5}', '0.000045', '');
+    expect(res.correct).toBe(true);
+    expect(res.format_feedback).toBeUndefined();
+  });
+});

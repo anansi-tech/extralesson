@@ -253,3 +253,19 @@ describe('answersEquivalent — appended garbage is never a qualifier', () => {
     expect(answersEquivalent('the 5th term is largest', 'the 6th term is largest')).toBe(false);
   });
 });
+
+// Standard form is written with \times and a braced exponent, and R1.7 §B4
+// marks the value separately from the form — so the value comparison has to
+// survive the notation before the form can be judged at all.
+describe('answersEquivalent — standard form', () => {
+  it('reads a standard-form answer as the number it is', () => {
+    expect(answersEquivalent('4.5 \\times 10^{-5}', '0.000045')).toBe(true);
+    expect(answersEquivalent('3.2 \\times 10^{4}', '32000')).toBe(true);
+    expect(answersEquivalent('6 \\cdot 10^{2}', '600')).toBe(true);
+  });
+
+  it('still separates two different numbers written the same way', () => {
+    expect(answersEquivalent('4.5 \\times 10^{-5}', '5.4 \\times 10^{-5}')).toBe(false);
+    expect(answersEquivalent('4.5 \\times 10^{-5}', '4.5 \\times 10^{5}')).toBe(false);
+  });
+});

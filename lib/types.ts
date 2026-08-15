@@ -28,7 +28,14 @@ export interface RubricItem {
   profile: Profile;
   criterion: string;
   mark_value: number;
-  part_label: string; // which part this criterion belongs to ('a'..'f')
+  part_label: string; // which part this criterion belongs to ('a'..'j')
+  /**
+   * R1.7 §B4: this row is the mark for expressing the answer in the required
+   * form. The official scheme awards it separately from the value, so a student
+   * with the right number in the wrong form keeps the value marks and loses
+   * only this one.
+   */
+  for_format?: boolean;
 }
 
 // R1.5 §2 — question structure

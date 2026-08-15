@@ -47,6 +47,7 @@ export const StructuredLooseZ = z.object({
       criterion: z.string(),
       mark_value: z.number(),
       part_label: z.string(),
+      for_format: z.boolean().nullish(),
     }),
   ),
   worked_solution: z.string(),

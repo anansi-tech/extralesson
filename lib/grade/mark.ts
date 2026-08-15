@@ -91,15 +91,18 @@ export function markStructured(
   answerFormat?: AnswerFormat,
 ): MarkResult {
   const equivalent = answersEquivalentAny(studentAnswer, canonicalAnswer, accept);
-  // A required form is part of the question: an equivalent value written the
-  // wrong way is not a correct answer, but the student should be told that it
-  // was the form and not the mathematics that lost the mark.
+  // A required form is part of the question, and the official scheme marks it
+  // as its own act: the value earns its marks, and expressing it in the demanded
+  // form earns a further one (R1.7 §B4). So a right value in the wrong form
+  // keeps everything except the rows written for the form.
   let format_feedback: string | undefined;
   let correct = equivalent;
+  let formOnlyMiss = false;
   if (equivalent && answerFormat) {
     const check = checkAnswerFormat(studentAnswer, answerFormat);
     if (!check.ok) {
       correct = false;
+      formOnlyMiss = true;
       format_feedback = check.feedback;
     }
   } else if (!equivalent && answerFormat && valueLooksRight(studentAnswer, canonicalAnswer)) {
@@ -110,6 +113,7 @@ export function markStructured(
   const hasWorkedStep = trimmed.includes('=') || trimmed.split('\n').filter((l) => l.trim()).length >= 2;
 
   const awarded = rubric.filter((r) => {
+    if (formOnlyMiss) return !r.for_format; // the mathematics was right
     if (correct) return true;
     if (r.profile === 'CK') return hasWorking;
     if (r.profile === 'AK') return hasWorkedStep;
