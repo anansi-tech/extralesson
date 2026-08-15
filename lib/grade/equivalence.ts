@@ -19,6 +19,7 @@ function preClean(raw: string): string {
     .replace(/\$+/g, '') // KaTeX delimiters and bare dollar signs
     .replace(/\b(ec|us|tt|bds|gy|j)\s*(?=\d)/g, '') // currency prefixes left after $ strip
     .replace(/\\text\{([^{}]*)\}/g, '$1') // \text{ and } wrappers carry no value
+    .replace(/\\[dt]frac\b/g, '\\frac') // display/inline fractions are one fraction
     .replace(/[−–]/g, '-') // unicode minus / en-dash
     // One spelling per relation, whichever notation the writer reached for.
     .replace(/\\mapsto|\\rightarrow|\\to\b|↦|→/g, '->')
