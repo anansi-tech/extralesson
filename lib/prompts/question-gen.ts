@@ -7,7 +7,7 @@ import { exemplarsFor } from './exemplars';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v14';
+export const PROMPT_VERSION = 'v15';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -159,6 +159,10 @@ ${partsSection}
 ${visualSection}
 ${bankSection ? `\n${bankSection}` : ''}
 ${patterns ? `\n${patterns}` : ''}
+
+FORMULAE SHEET (2027): the paper supplies, and the student may use without recalling: area and circumference of a circle including $C = \\pi d$; area of triangle, trapezium and parallelogram; volume of a prism, cylinder, right pyramid, right circular cone and sphere; curved surface area of a cylinder and a cone; total surface area of a cylinder, cone and sphere; Pythagoras' theorem; the trigonometric ratios, the sine rule and the cosine rule; simple interest and compound interest; the counting formula $n(A \\cup B) = n(A) + n(B) - n(A \\cap B)$; mean, median and the quadratic formula.
+- Assume every one of these is in front of the student. NEVER build a question whose difficulty is recalling one of them, and never award a mark for stating one: the marks are for SELECTING the right formula, substituting correctly, and interpreting the result.
+- This widens what is fair to ask. Compound interest, spheres and cones, and union counting are computation questions now, not memory questions.
 
 RULES:
 - The question must be ORIGINAL — written in exam style but never copied, reconstructed, paraphrased, or imitated from any CXC past paper. The recipe contains abstract controls only.
