@@ -254,3 +254,52 @@ describe('nextP1Profile — topic blocks climb the cognitive ladder', () => {
     expect(nextP1Profile(100)).toBe(nextP1Profile(0));
   });
 });
+
+// Bulk fill runs module by module, so the deficit search has to be confinable
+// to one module without changing how it chooses inside it.
+describe('nextRecipe — module override', () => {
+  const empty = computeMatrix(topics, seedBlueprints, []);
+
+  it('only ever returns topics from the requested module', () => {
+    for (const module of [1, 2, 3] as const) {
+      for (let i = 0; i < 12; i++) {
+        const { context } = nextRecipe(empty, objectivesByTopic, { module });
+        expect(context.topic_code.startsWith(`M${module}-`), context.topic_code).toBe(true);
+      }
+    }
+  });
+
+  it('still picks the largest deficit inside the module', () => {
+    const facts: QuestionFacts[] = [];
+    const first = nextRecipe(empty, objectivesByTopic, { module: 2, kind: 'structured' });
+    // fill that topic well past its target, and the search must move on
+    for (let i = 0; i < 40; i++) {
+      facts.push({
+        kind: 'structured',
+        module: 2,
+        topic_code: first.context.topic_code,
+        representation: 'prose',
+        archetype: 'multi-step-application',
+        difficulty: 2,
+        marks: 7,
+        rubric_profile_marks: { CK: 2, AK: 3, R: 2 },
+      });
+    }
+    const filled = computeMatrix(topics, seedBlueprints, facts);
+    const second = nextRecipe(filled, objectivesByTopic, { module: 2, kind: 'structured' });
+    expect(second.context.topic_code).not.toBe(first.context.topic_code);
+    expect(second.context.topic_code.startsWith('M2-')).toBe(true);
+  });
+
+  it('composes with the other overrides', () => {
+    const { recipe, context } = nextRecipe(empty, objectivesByTopic, {
+      module: 3,
+      kind: 'mcq',
+      difficulty: 3,
+    });
+    expect(context.topic_code.startsWith('M3-')).toBe(true);
+    expect(recipe.kind).toBe('mcq');
+    expect(recipe.difficulty).toBe(3);
+    expect(recipe.profile).toBeDefined(); // §B5 ramp still applies
+  });
+});
