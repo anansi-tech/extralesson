@@ -37,7 +37,7 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v14');
+    expect(PROMPT_VERSION).toBe('v15');
   });
 
   it('teaches hence-or-otherwise chaining with follow-through on structured drafts', () => {
@@ -189,5 +189,22 @@ describe('buildDraftPrompt — the model is shown what the topic already holds',
   it('says nothing at all when the topic is empty', () => {
     expect(withBank([])).not.toContain('ALREADY IN THE BANK');
     expect(withBank(['  '])).not.toContain('ALREADY IN THE BANK');
+  });
+});
+
+// R1.7 §B2 — the 2027 sheet supplies more than the legacy one, which changes
+// what a question may make hard.
+describe('buildDraftPrompt — the supplied formulae sheet', () => {
+  const p = () => prompt({ topic: 'M1-CONS' });
+
+  it('lists the formulae newly supplied in 2027', () => {
+    for (const f of ['compound interest', 'sphere', 'cone', 'Pythagoras', 'n(A \\cup B)', '\\pi d']) {
+      expect(p().toLowerCase()).toContain(f.toLowerCase());
+    }
+  });
+
+  it('forbids difficulty that rests on recalling them', () => {
+    expect(p()).toContain('NEVER build a question whose difficulty is recalling one of them');
+    expect(p()).toContain('never award a mark for stating one');
   });
 });
