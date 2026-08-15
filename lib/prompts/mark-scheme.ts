@@ -16,8 +16,11 @@ export const MARK_SCHEME_CONVENTIONS = `MARK-SCHEME LANGUAGE (the official schem
 - R marks attach to: forming an equation from words, choosing or justifying a method, stating a result in a required form, describing or interpreting a result, and reading correctly from a diagram or graph.
 - Each criterion names one creditable act, in the scheme's telegraphic register — "Substitutes into the compound-interest formula", "CAO 47.5", "Divides 'their' total by 8" — not a sentence about what the student understands.`;
 
-// The descriptors a criterion may open with or contain. Kept small on purpose:
-// a wide vocabulary is not a vocabulary.
+// Canonical descriptors, taught to the model as examples of the register. The
+// lint does NOT check membership of this list — see opensWithAnAct below. A
+// curated list of verbs is endless to maintain and says nothing: "lists",
+// "records", "tallies" and "determines" all name creditable acts and none of
+// them were on it, which had the lint flagging a quarter of sound rubric rows.
 export const CRITERION_VERBS = [
   'cao',
   'method',
@@ -70,6 +73,19 @@ export interface CriterionIssue {
 }
 
 const FOLLOW_THROUGH_RE = /["“]their["”]|follow[- ]through/i;
+
+// The scheme's register is one creditable ACT, written third-person singular:
+// "Substitutes into the formula", "Divides 'their' total by 8", "CAO 47.5".
+// That shape is checkable without curating a word list — which is the point,
+// since the shape is what the convention actually is.
+const SCHEME_IDIOMS = new Set(['cao', 'method', 'process', 'follow-through', 'ft']);
+
+function opensWithAnAct(text: string): boolean {
+  const first = text.trim().toLowerCase().split(/[\s,:]+/)[0]?.replace(/[^a-z-]/g, '') ?? '';
+  if (SCHEME_IDIOMS.has(first)) return true;
+  // third-person singular verb: ends in s, not a plural-looking noun phrase
+  return /^[a-z]{3,}s$/.test(first) && !first.endsWith('ss');
+}
 const STUDENT_STATE_RE = /\b(understand(?:s|ing)?|knows?|realis|realiz|appreciates?|is able to|grasps?)\b/i;
 
 /**
@@ -84,13 +100,11 @@ export function lintCriteria(
   for (const r of rubric) {
     const text = r.criterion.trim();
     const lower = text.toLowerCase();
-    const opensWithVerb = CRITERION_VERBS.some((v) => lower.startsWith(v));
-
-    if (!opensWithVerb) {
+    if (!opensWithAnAct(lower)) {
       issues.push({
         part_label: r.part_label,
         code: r.code,
-        issue: `criterion should open with a mark-scheme descriptor (${CRITERION_VERBS.slice(0, 6).join(', ')}, …): "${text.slice(0, 60)}"`,
+        issue: `criterion should name an act, in the scheme's register (${CRITERION_VERBS.slice(0, 5).join(', ')}, …): "${text.slice(0, 60)}"`,
       });
     }
     if (STUDENT_STATE_RE.test(text)) {
