@@ -2,6 +2,8 @@
 // ink strokes, no decorative color, serif labels, viewBox-scaled.
 
 export const INK = '#1E2430';
+// Paper, for haloing text over a grid. Matches --paper in the design tokens.
+export const PAPER = '#FBF7EE';
 export const FONT = 'Georgia, "Times New Roman", serif';
 
 export function esc(s: string): string {
@@ -43,12 +45,25 @@ export function text(
   x: number,
   y: number,
   label: string,
-  opts: { size?: number; anchor?: 'start' | 'middle' | 'end'; italic?: boolean } = {},
+  opts: {
+    size?: number;
+    anchor?: 'start' | 'middle' | 'end';
+    italic?: boolean;
+    /**
+     * Paint a paper-coloured outline behind the glyphs. On a ruled grid a bare
+     * label has gridlines, axes and tick numerals printing through it — which
+     * is how "f: y = 2x - 3" came to read as "y² = 2x³ - 3" on a review card.
+     */
+    halo?: boolean;
+  } = {},
 ): string {
-  const { size = 14, anchor = 'middle', italic = false } = opts;
+  const { size = 14, anchor = 'middle', italic = false, halo = false } = opts;
+  const paint = halo
+    ? ` stroke="${PAPER}" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke fill"`
+    : ' stroke="none"';
   return `<text x="${round(x)}" y="${round(y)}" font-size="${size}" text-anchor="${anchor}"${
     italic ? ' font-style="italic"' : ''
-  } fill="${INK}" stroke="none">${esc(svgPlainLabel(label))}</text>`;
+  } fill="${INK}"${paint}>${esc(svgPlainLabel(label))}</text>`;
 }
 
 export function line(x1: number, y1: number, x2: number, y2: number, dashed = false): string {
