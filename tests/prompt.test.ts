@@ -37,7 +37,7 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v13');
+    expect(PROMPT_VERSION).toBe('v14');
   });
 
   it('teaches hence-or-otherwise chaining with follow-through on structured drafts', () => {
@@ -106,6 +106,13 @@ describe('buildDraftPrompt — R1.6 §1/§2 part fields', () => {
     expect(p).toContain('"response_mode"');
     expect(p).toContain('"show_that"');
     expect(p).toContain('Never "construct"');
+  });
+
+  it('requires an accuracy on answers that do not terminate, as the papers do', () => {
+    const p = prompt({ topic: 'M2-GEO1' });
+    expect(p).toContain('correct to 3 significant figures');
+    expect(p).toContain('"sf:3"');
+    expect(p).toContain('Never demand an accuracy the mathematics does not need');
   });
 
   it('ties answer_format to wording that actually demands a form', () => {
