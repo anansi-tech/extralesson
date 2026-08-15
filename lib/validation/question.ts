@@ -34,6 +34,7 @@ export const TemplateNameZ = z.enum([
   'patternFigure',
   'numberLine',
   'bearingDiagram',
+  'vectorFigure',
   'dataTable',
 ]);
 
@@ -50,6 +51,7 @@ export const TEMPLATES_BY_REPRESENTATION: Record<Exclude<Representation, 'prose'
       'patternFigure',
       'numberLine',
       'bearingDiagram',
+      'vectorFigure',
     ],
     graph: ['coordinateGrid', 'travelGraph', 'cumulativeFrequency'],
     chart: ['barChart', 'pieChart', 'histogram'],

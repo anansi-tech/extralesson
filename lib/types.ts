@@ -56,6 +56,7 @@ export type TemplateName =
   | 'patternFigure'
   | 'numberLine'
   | 'bearingDiagram'
+  | 'vectorFigure'
   | 'dataTable';
 
 // How a part is answered, which decides whether we can auto-mark it (R1.6 §1).

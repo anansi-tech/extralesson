@@ -5,9 +5,9 @@ import { TEMPLATES } from '@/lib/visuals';
 import type { TemplateName } from '@/lib/types';
 
 describe('visual verify gate', () => {
-  it('registry contains all 16 templates with consistent names', () => {
+  it('registry contains all 17 templates with consistent names', () => {
     const names = Object.keys(TEMPLATES) as TemplateName[];
-    expect(names).toHaveLength(16);
+    expect(names).toHaveLength(17);
     for (const n of names) expect(TEMPLATES[n].name).toBe(n);
   });
 
@@ -16,7 +16,11 @@ describe('visual verify gate', () => {
       const doc = paramsDocFor([n]);
       expect(doc, n).toContain(n);
       expect(doc.length, n).toBeGreaterThan(30);
-      expect(doc, n).not.toContain('unknown');
+      // zodDoc emits the literal 'unknown' for a type it cannot describe.
+      // Scope the check to the params line: rules are prose and may legitimately
+      // discuss "an unknown" (pieChart sectors given as multiples of one).
+      const paramsLine = doc.split('\n')[0];
+      expect(paramsLine, n).not.toContain('unknown');
     }
   });
 

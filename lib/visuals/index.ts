@@ -16,6 +16,7 @@ import { pieChart } from './templates/pieChart';
 import { polygonMarkedAngle } from './templates/polygonMarkedAngle';
 import { travelGraph } from './templates/travelGraph';
 import { triangleLabeled } from './templates/triangleLabeled';
+import { vectorFigure } from './templates/vectorFigure';
 import { venn2 } from './templates/venn2';
 
 // R1.5 §3 — the 15 SVG templates + dataTable (semantic HTML).
@@ -35,6 +36,7 @@ export const TEMPLATES: Record<TemplateName, VisualTemplate<never>> = {
   patternFigure,
   numberLine,
   bearingDiagram,
+  vectorFigure,
   dataTable,
 } as Record<TemplateName, VisualTemplate<never>>;
 
