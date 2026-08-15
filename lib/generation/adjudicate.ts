@@ -52,7 +52,9 @@ ANSWER B: ${args.solveAnswer}
 
 Ignore differences of notation, labelling, ordering, wording and layout: $f^{-1}(x)=\\frac{x-1}{2}$, "x ↦ (x-1)/2" and "f: x → (x-1)/2" are the same answer, and so are "No" and "No, because fg(x) and gf(x) have different rules".
 
-Say they DIFFER — set same=false — when any value, sign, expression, root, unit or conclusion differs, when one answers a different question than the other, or when one states a mathematical claim the other contradicts. One answer being shorter is not a difference; being WRONG is. If you are unsure, say they differ.
+One answer carrying MORE than the other is not a difference: if A gives a value together with the reasoning or justification behind it and B gives the same value alone, they are the SAME answer, and the same holds with A and B swapped.
+
+Say they DIFFER — set same=false — when any value, sign, expression, root, unit or conclusion differs, when one answers a different question than the other, or when one states a mathematical claim the other contradicts. Being WRONG is a difference; being briefer is not. If you are unsure, say they differ.
 
 Return {"same": <boolean>, "reason": "<one short sentence>"}.`,
   });

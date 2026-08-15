@@ -19,6 +19,7 @@ import { buildDraftPrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
 import { getCoverage } from '@/lib/admin/coverage';
 import { nextRecipe, type ObjectiveCoverage, type QuestionRecipe, type RecipeContext } from '@/lib/generation/recipe';
 import { independentSolve } from '@/lib/generation/solve';
+import { McqLooseZ, StructuredLooseZ } from '@/lib/generation/draft-schema';
 import { checkDuplicate } from '@/lib/generation/dedup';
 import { verifyQuestionVisual } from '@/lib/visuals/verify';
 import { paramsDocFor } from '@/lib/visuals';
@@ -55,41 +56,6 @@ function parseArgs() {
   return parsed.data;
 }
 
-// Loose structural schemas for model output; the strict Zod boundary runs
-// afterwards (gate 1) so failures are logged, not thrown.
-const MisconceptionLooseZ = z.object({ trigger: z.string(), name: z.string(), remediation: z.string() });
-const PartLooseZ = z.object({ label: z.string(), prompt: z.string(), marks: z.number(), answer: z.string(), accept: z.array(z.string()).nullish() });
-const VisualLooseZ = z.object({ template: z.string(), params: z.record(z.unknown()) }).nullable();
-
-const McqLooseZ = z.object({
-  stimulus: z.string().nullable(),
-  stem: z.string(),
-  options: z.array(z.string()),
-  answer_key: z.number(),
-  profile: z.enum(['CK', 'AK', 'R']),
-  visual: VisualLooseZ,
-  parts: z.array(PartLooseZ),
-  worked_solution: z.string(),
-  misconceptions: z.array(MisconceptionLooseZ),
-});
-
-const StructuredLooseZ = z.object({
-  stimulus: z.string().nullable(),
-  stem: z.string(),
-  visual: VisualLooseZ,
-  parts: z.array(PartLooseZ),
-  rubric: z.array(
-    z.object({
-      code: z.string(),
-      profile: z.enum(['CK', 'AK', 'R']),
-      criterion: z.string(),
-      mark_value: z.number(),
-      part_label: z.string(),
-    }),
-  ),
-  worked_solution: z.string(),
-  misconceptions: z.array(MisconceptionLooseZ),
-});
 
 async function buildRecipe(args: ReturnType<typeof parseArgs>): Promise<{
   recipe: QuestionRecipe;
@@ -174,6 +140,8 @@ async function main() {
         prompt: clean(p.prompt),
         answer: clean(p.answer),
         accept: p.accept?.length ? p.accept.map(clean) : undefined,
+        response_mode: p.response_mode ?? 'answer',
+        answer_format: p.answer_format ?? undefined,
       }));
       const candidate = {
         ...raw,

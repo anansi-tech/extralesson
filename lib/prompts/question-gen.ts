@@ -178,7 +178,7 @@ export function buildSolvePrompt(args: {
   stem: string;
   kind: QuestionKind;
   options?: string[];
-  partPrompts?: { label: string; prompt: string }[];
+  partPrompts?: { label: string; prompt: string; mode?: string }[];
   visualText?: string;
 }): string {
   const visual = args.visualText ? `\nTHE QUESTION'S VISUAL, AS DATA:\n${args.visualText}\n` : '';
@@ -193,8 +193,15 @@ ${args.options!.map((o, i) => `${i}: ${o}`).join('\n')}
 
 Return JSON: {"answer_index": <0-based index of the correct option>, "final_answer": "<your computed answer>"}`;
   }
+  // Each part says what shape its answer takes. Without this the solver returns
+  // a bare value for a part that asked for a reason, and the gate then compares
+  // "5" against "five lines, one through each vertex" and calls them different.
+  const shape: Record<string, string> = {
+    show_that: '  [state the result your working reaches]',
+    explain: '  [give the reason, in one short sentence]',
+  };
   const parts = (args.partPrompts ?? [])
-    .map((p) => `(${p.label}) ${p.prompt}`)
+    .map((p) => `(${p.label}) ${p.prompt}${shape[p.mode ?? 'answer'] ?? ''}`)
     .join('\n');
   return `Solve this CSEC Mathematics question independently and completely.
 
@@ -203,6 +210,6 @@ ${visual}
 PARTS:
 ${parts}
 
-Return JSON: {"part_answers": [{"label": "a", "final_answer": "..."}, ...]} — one entry per part, in order. Each final_answer contains ONLY that part's final value(s) — no working, no equation setup, no explanations, no sentences, and no restatement of the value in another form. Examples: "42.5" · "x = -1/3; x = 2" · "EC$70".
+Return JSON: {"part_answers": [{"label": "a", "final_answer": "..."}, ...]} — one entry per part, in order. Unless the part is bracketed otherwise above, each final_answer contains ONLY that part's final value(s) — no working, no equation setup, no explanations, no sentences, and no restatement of the value in another form. Examples: "42.5" · "x = -1/3; x = 2" · "EC$70". Where a part is bracketed as asking for a reason or a stated result, answer in that shape instead, and include the value if the part asks for one as well.
 If a part asks whether something is true (yes/no, agree/disagree, is the claim correct), answer with the verdict word alone — "Yes" or "No" — without the supporting calculation.`;
 }
