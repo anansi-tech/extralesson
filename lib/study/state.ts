@@ -134,6 +134,7 @@ export function computeStudyState(
   const coverage = computeCoverage(topics, blueprints);
   const prediction = predictOverall(
     targetModules.map((m) => predictModule(m, modMastery[m], coverage.byModule[m])),
+    attemptRows.length,
   );
 
   return {
