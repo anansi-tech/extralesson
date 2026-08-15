@@ -16,6 +16,9 @@ import type { ModuleNumber, TemplateName } from '@/lib/types';
 export const metadata = { title: 'Worked practice — ExtraLesson' };
 export const dynamic = 'force-dynamic';
 
+// A question with any markable part belongs in the daily session, where its
+// self-marked parts are shown inline. This surface is for the rare question
+// that is self-marked end to end.
 const SELF_MARKED_MODES = ['show_that', 'explain'];
 
 interface LeanQuestion {
@@ -41,7 +44,7 @@ export default async function WorkedPracticePage() {
   const rows = await Question.find({
     status: 'approved',
     module: { $in: student.target_modules },
-    'parts.response_mode': { $in: SELF_MARKED_MODES },
+    'parts.response_mode': { $in: SELF_MARKED_MODES, $nin: ['answer'] },
   })
     .select('module marks stimulus stem visual parts worked_solution rubric')
     .limit(20)

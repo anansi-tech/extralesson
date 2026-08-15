@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildSession, isAutoGradable, type CandidateQuestion } from '@/lib/session/builder';
+import { buildSession, hasMarkableParts, type CandidateQuestion } from '@/lib/session/builder';
 import { M1_PREREQ_THRESHOLD } from '@/lib/mastery/config';
 
 function q(
@@ -169,35 +169,39 @@ describe('buildSession — kind blend and coverage', () => {
   });
 });
 
-describe('buildSession — only auto-markable questions enter the graded pool (R1.6 §1)', () => {
+describe('buildSession — a question enters the pool when it has anything to mark (R1.6 §1)', () => {
   const withModes = (id: string, modes: string[]): CandidateQuestion => ({
     ...q(id, 1, 'M1.1.1', 'structured'),
     response_modes: modes,
   });
 
   it('treats a question with no recorded modes as answerable, as before', () => {
-    expect(isAutoGradable(q('legacy', 1, 'M1.1.1'))).toBe(true);
-    expect(isAutoGradable(withModes('all-answer', ['answer', 'answer']))).toBe(true);
+    expect(hasMarkableParts(q('legacy', 1, 'M1.1.1'))).toBe(true);
+    expect(hasMarkableParts(withModes('all-answer', ['answer', 'answer']))).toBe(true);
   });
 
-  it('excludes a question when any part is show_that or explain', () => {
-    expect(isAutoGradable(withModes('mixed', ['answer', 'show_that']))).toBe(false);
-    expect(isAutoGradable(withModes('reasoned', ['explain']))).toBe(false);
+  it('keeps a mixed question: its marked parts are still worth practising', () => {
+    expect(hasMarkableParts(withModes('mixed', ['answer', 'show_that']))).toBe(true);
+    expect(hasMarkableParts(withModes('reasoned', ['answer', 'explain', 'answer']))).toBe(true);
   });
 
-  it('never picks a show_that question even when it is the weakest-objective match', () => {
+  it('drops a question with nothing to mark at all', () => {
+    expect(hasMarkableParts(withModes('all-prose', ['show_that', 'explain']))).toBe(false);
+  });
+
+  it('picks a mixed question over a plain one when its objective is weaker', () => {
     const picked = buildSession({
-      candidates: [withModes('show', ['show_that']), q('plain', 1, 'M1.5.1', 'structured')],
-      perObjectiveMastery: new Map([['M1.5.1', 0.9]]), // 'show' looks far more urgent
+      candidates: [withModes('mixed', ['answer', 'explain']), q('plain', 1, 'M1.5.1', 'structured')],
+      perObjectiveMastery: new Map([['M1.5.1', 0.9]]),
       m1Mastery: 0,
       targetModules: [1],
       topicWeightByPrefix: weights,
-      size: 2,
+      size: 1,
     });
-    expect(picked.map((p) => p.id)).toEqual(['plain']);
+    expect(picked.map((p) => p.id)).toEqual(['mixed']);
   });
 
-  it('returns an empty session rather than a wrongly-marked one', () => {
+  it('returns an empty session when nothing in the bank can be marked', () => {
     const picked = buildSession({
       candidates: [withModes('a', ['show_that']), withModes('b', ['explain'])],
       perObjectiveMastery: new Map(),

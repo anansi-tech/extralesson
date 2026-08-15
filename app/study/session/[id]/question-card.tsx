@@ -12,7 +12,7 @@ export interface CardQuestion {
   stimulusHtml?: string;
   stemHtml: string;
   visualHtml?: string;
-  parts: { label: string; promptHtml: string; marks: number }[];
+  parts: { label: string; promptHtml: string; marks: number; mode: string }[];
   optionsHtml?: string[];
   marks: number;
   rubricCodes: { code: string; profile: string; mark_value: number; part_label: string }[];
@@ -43,17 +43,21 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     startedAt.current = Date.now();
   }, [question.sessionId, question.index]);
 
+  // R1.6 §1: "show that" and "explain" parts are worked on paper and marked by
+  // the student against the solution — they are not typed in and never gate the
+  // submit button.
+  const markedParts = question.parts.filter((p) => p.mode === 'answer');
   const allPartsFilled =
     question.kind === 'mcq'
       ? selected !== null
-      : question.parts.every((p) => (partAnswers[p.label] ?? '').trim() !== '');
+      : markedParts.every((p) => (partAnswers[p.label] ?? '').trim() !== '');
 
   const submit = () => {
     if (!allPartsFilled) return;
     const answers =
       question.kind === 'mcq'
         ? [{ label: 'a', answer: String(selected) }]
-        : question.parts.map((p) => ({ label: p.label, answer: partAnswers[p.label].trim() }));
+        : markedParts.map((p) => ({ label: p.label, answer: partAnswers[p.label].trim() }));
     startTransition(async () => {
       const res = await submitAnswer({
         sessionId: question.sessionId,
@@ -144,24 +148,30 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                     [{p.marks}]
                   </span>
                 </div>
-                <div className="mt-1 flex items-center gap-2">
-                  <input
-                    value={partAnswers[p.label] ?? ''}
-                    onChange={(e) =>
-                      setPartAnswers((prev) => ({ ...prev, [p.label]: e.target.value }))
-                    }
-                    disabled={!!feedback}
-                    className="w-full border-[1.5px] border-ink p-2 font-mono text-sm"
-                    placeholder={`Answer to (${p.label})`}
-                  />
-                  {partFeedback && (
-                    <span
-                      className={`font-hand text-xl ${partFeedback.correct ? 'text-green-pen' : 'text-red-pen'}`}
-                    >
-                      {partFeedback.correct ? '✓' : '✗'}
-                    </span>
-                  )}
-                </div>
+                {p.mode === 'answer' ? (
+                  <div className="mt-1 flex items-center gap-2">
+                    <input
+                      value={partAnswers[p.label] ?? ''}
+                      onChange={(e) =>
+                        setPartAnswers((prev) => ({ ...prev, [p.label]: e.target.value }))
+                      }
+                      disabled={!!feedback}
+                      className="w-full border-[1.5px] border-ink p-2 font-mono text-sm"
+                      placeholder={`Answer to (${p.label})`}
+                    />
+                    {partFeedback && (
+                      <span
+                        className={`font-hand text-xl ${partFeedback.correct ? 'text-green-pen' : 'text-red-pen'}`}
+                      >
+                        {partFeedback.correct ? '✓' : '✗'}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <p className="mt-1 border-l-3 border-paper-deep bg-[#FFFDF6] py-1 pl-3 text-[13px] text-dim">
+                    Work this one on paper. {feedback ? 'Mark it yourself against the solution below' : 'It is not marked here'} — these marks are left out of your estimate.
+                  </p>
+                )}
               </div>
             );
           })}

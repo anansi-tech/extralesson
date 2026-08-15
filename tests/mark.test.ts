@@ -159,3 +159,48 @@ describe('format-aware marking (R1.6 §2)', () => {
     expect(r.format_feedback).toContain('1 decimal place');
   });
 });
+
+// R1.6 §1 — a question mixes marked and self-marked parts, as the real papers
+// do. The self-marked ones earn nothing, cost nothing, and cannot make the rest
+// of the question wrong.
+describe('markStructuredParts — self-marked parts are left out of the marking', () => {
+  const rubric: RubricItem[] = [
+    { code: 'AK1', profile: 'AK', criterion: 'Finds the interior angle', mark_value: 2, part_label: 'a' },
+    { code: 'R1', profile: 'R', criterion: 'Explains the symmetry', mark_value: 3, part_label: 'b' },
+    { code: 'AK2', profile: 'AK', criterion: 'Finds the exterior angle', mark_value: 2, part_label: 'c' },
+  ];
+  const parts = [
+    { label: 'a', answer: '108°', response_mode: 'answer' },
+    { label: 'b', answer: 'each line joins a vertex to the opposite midpoint', response_mode: 'explain' },
+    { label: 'c', answer: '72°', response_mode: 'answer' },
+  ];
+
+  it('marks every markable part correct without the student answering the prose one', () => {
+    const res = markStructuredParts(rubric, parts, [
+      { label: 'a', answer: '108', working: '' },
+      { label: 'c', answer: '72 degrees', working: '' },
+    ]);
+    expect(res.correct).toBe(true);
+    expect(res.profile_marks).toEqual({ CK: 0, AK: 4, R: 0 });
+    expect(res.rubric_awarded).toEqual(['AK1', 'AK2']);
+  });
+
+  it('never awards the reasoning row for a part it did not mark', () => {
+    const res = markStructuredParts(rubric, parts, [
+      { label: 'a', answer: '108°', working: '' },
+      { label: 'b', answer: 'because it looks symmetric', working: '' },
+      { label: 'c', answer: '72°', working: '' },
+    ]);
+    expect(res.rubric_awarded).not.toContain('R1');
+    expect(res.profile_marks.R).toBe(0);
+  });
+
+  it('still fails the question when a markable part is wrong', () => {
+    const res = markStructuredParts(rubric, parts, [
+      { label: 'a', answer: '120°', working: '' },
+      { label: 'c', answer: '72°', working: '' },
+    ]);
+    expect(res.correct).toBe(false);
+    expect(res.profile_marks.AK).toBe(2);
+  });
+});

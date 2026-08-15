@@ -19,12 +19,16 @@ export interface CandidateQuestion {
   response_modes?: string[];
 }
 
-// A question belongs in the auto-graded session only when every part can be
-// marked from a typed final answer. "Show that" states the answer in the stem,
-// so comparing against it would pass a student who wrote nothing — the exact
-// false confidence this product exists to prevent. Those go to worked practice.
-export function isAutoGradable(q: CandidateQuestion): boolean {
-  return (q.response_modes ?? ['answer']).every((m) => m === 'answer');
+// R1.6 §1 excludes PARTS, not questions. A "show that" part states its answer
+// in the stem, so marking it would pass a student who wrote nothing — but the
+// other parts of the same question are ordinary marked work, and real papers
+// mix them freely. Requiring every part to be markable emptied the pool: all
+// seven questions in a v12 batch carried a reason part, taking 45 markable
+// marks out of the session with the 18 unmarkable ones. So a question belongs
+// in the session when it has anything to mark; the rest is self-marked inline.
+export function hasMarkableParts(q: CandidateQuestion): boolean {
+  const modes = q.response_modes ?? ['answer'];
+  return modes.length === 0 || modes.some((m) => m === 'answer');
 }
 
 export interface BuildSessionArgs {
@@ -58,7 +62,7 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
   const m1Gated = targetModules.includes(1) && m1Mastery <= M1_PREREQ_THRESHOLD;
 
   const scored: Scored[] = candidates
-    .filter((c) => targetModules.includes(c.module) && isAutoGradable(c))
+    .filter((c) => targetModules.includes(c.module) && hasMarkableParts(c))
     .map((c) => {
       // Weakest objective drives the need; untouched objectives count as 0.
       const weakest = Math.min(...c.objective_ids.map((id) => perObjectiveMastery.get(id) ?? 0));

@@ -12,7 +12,9 @@ const SubmitZ = z.object({
   sessionId: z.string().regex(/^[a-f0-9]{24}$/),
   questionIndex: z.number().int().min(0),
   // mcq: single entry with label 'a' whose answer is the option index.
-  answers: z.array(z.object({ label: z.string().regex(/^[a-f]$/), answer: z.string().min(1).max(2000) })).min(1).max(6),
+  // a-j and up to 10: the part cap rose from 6 in R1.6 §5 and this schema did
+  // not follow, so a 7-part question could not be submitted at all.
+  answers: z.array(z.object({ label: z.string().regex(/^[a-j]$/), answer: z.string().min(1).max(2000) })).min(1).max(10),
   working: z.string().max(10000).default(''),
   durationMs: z.number().int().min(0).max(60 * 60 * 1000).catch(0),
 });
@@ -80,14 +82,17 @@ export async function submitAnswer(input: {
       answer: p.answer,
       accept: p.accept,
       answer_format: p.answer_format,
+      response_mode: p.response_mode,
     }));
     const inputs = answers.map((a) => ({ ...a, working }));
     result = markStructuredParts(question.rubric ?? [], parts, inputs);
     const inputByLabel = new Map(answers.map((a) => [a.label, a.answer]));
-    partResults = parts.map((p) => ({
-      label: p.label,
-      correct: answersEquivalentAny(inputByLabel.get(p.label) ?? '', p.answer, p.accept),
-    }));
+    partResults = parts
+      .filter((p) => (p.response_mode ?? 'answer') === 'answer')
+      .map((p) => ({
+        label: p.label,
+        correct: answersEquivalentAny(inputByLabel.get(p.label) ?? '', p.answer, p.accept),
+      }));
     storedAnswer = answers.map((a) => `(${a.label}) ${a.answer}`).join('; ');
   }
 
