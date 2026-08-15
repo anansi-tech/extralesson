@@ -37,7 +37,7 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v12');
+    expect(PROMPT_VERSION).toBe('v13');
   });
 
   it('teaches hence-or-otherwise chaining with follow-through on structured drafts', () => {
@@ -144,5 +144,43 @@ describe('buildSolvePrompt — the solver is told what shape each part wants', (
     const p = build('answer');
     expect(p).not.toContain('[give the reason');
     expect(p).toContain('ONLY that part’s final value(s)'.replace('’', "'"));
+  });
+});
+
+// A GEO1 batch produced four isosceles-triangle-and-symmetry questions that
+// differed only in the apex angle, and lost three attempts to the dedup gate.
+// The gate can only reject what has already been paid for.
+describe('buildDraftPrompt — the model is shown what the topic already holds', () => {
+  const withBank = (existingStems: string[]) =>
+    buildDraftPrompt({
+      topicTitle: 'Geometry',
+      objectives: [objective('Solve problems involving the properties of triangles.')],
+      recipe: recipe(),
+      context: context('M2-GEO1'),
+      module: 2,
+      visualContract: '',
+      existingStems,
+    });
+
+  it('lists existing stems and asks for something different in kind', () => {
+    const p = withBank([
+      'The labelled sketch shows isosceles triangle $PQR$, where $PQ = PR$ and $\\angle QPR = 40°$.',
+      'In triangle $ABC$, $AB = AC$ and $\\angle BAC = 52°$.',
+    ]);
+    expect(p).toContain('ALREADY IN THE BANK');
+    expect(p).toContain('isosceles triangle $PQR$');
+    expect(p).toContain('not just the numbers or the letters');
+  });
+
+  it('truncates long stems so the bank cannot crowd out the recipe', () => {
+    const long = `The diagram shows ${'a very long context sentence '.repeat(20)}`;
+    const p = withBank([long]);
+    const line = p.split('\n').find((l) => l.startsWith('- The diagram shows'))!;
+    expect(line.length).toBeLessThan(150);
+  });
+
+  it('says nothing at all when the topic is empty', () => {
+    expect(withBank([])).not.toContain('ALREADY IN THE BANK');
+    expect(withBank(['  '])).not.toContain('ALREADY IN THE BANK');
   });
 });

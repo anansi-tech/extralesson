@@ -7,7 +7,7 @@ import { exemplarsFor } from './exemplars';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v12';
+export const PROMPT_VERSION = 'v13';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -95,8 +95,20 @@ export function buildDraftPrompt(args: {
   module: 1 | 2 | 3;
   /** Per-template params documentation from lib/visuals (empty for prose). */
   visualContract: string;
+  /** Stems already in the bank for this topic, so the model can avoid them. */
+  existingStems?: string[];
 }): string {
   const { topicTitle, objectives, recipe, context, module, visualContract } = args;
+  // The dedup gate rejects a repeat only after we have paid to generate it, and
+  // it cannot see monotony that stops short of near-identical wording: one
+  // batch came back with four isosceles-triangle-and-symmetry questions that
+  // differed only in the apex angle. Showing the model the bank is the cheaper
+  // half of the job.
+  const existing = (args.existingStems ?? []).filter((s) => s.trim().length > 0);
+  const bankSection = existing.length
+    ? `ALREADY IN THE BANK for this topic — write something a student would not mistake for any of these. Change the figure or context, and change what is being asked, not just the numbers or the letters:
+${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 140)}`).join('\n')}`
+    : '';
   const patterns = paperPatterns(recipe, context, objectives);
   const kind = recipe.kind;
   const objectiveBlock = objectives
@@ -145,6 +157,7 @@ MARK PROFILES (official CXC): every mark is CK (Conceptual Knowledge — recalli
 ${partsSection}
 
 ${visualSection}
+${bankSection ? `\n${bankSection}` : ''}
 ${patterns ? `\n${patterns}` : ''}
 
 RULES:
