@@ -55,7 +55,11 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
       stimulus: draft.stimulus,
       stem: draft.stem,
       kind: 'structured',
-      partPrompts: draft.parts.map((p) => ({ label: p.label, prompt: p.prompt })),
+      partPrompts: draft.parts.map((p) => ({
+        label: p.label,
+        prompt: p.prompt,
+        mode: p.response_mode ?? 'answer',
+      })),
       visualText,
     }),
   });

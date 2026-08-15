@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildDraftPrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
+import { buildDraftPrompt, buildSolvePrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
 import type { QuestionRecipe, RecipeContext } from '@/lib/generation/recipe';
 import type { Objective } from '@/lib/types';
 
@@ -115,5 +115,34 @@ describe('buildDraftPrompt — R1.6 §1/§2 part fields', () => {
       expect(p).toContain(f);
     }
     expect(p).toContain('if you do not demand a form, omit the field');
+  });
+});
+
+// The first R1.6 batch returned 71 parts with response_mode defaulted and
+// answer_format never set, and the solve pass answered "5" to a part that asked
+// for a reason — so the gate compared a reason against a number.
+describe('buildSolvePrompt — the solver is told what shape each part wants', () => {
+  const build = (mode: string) =>
+    buildSolvePrompt({
+      stem: 'The diagram shows a regular pentagon.',
+      kind: 'structured',
+      partPrompts: [
+        { label: 'a', prompt: 'Calculate the interior angle.', mode: 'answer' },
+        { label: 'b', prompt: 'State how many lines of symmetry it has, and give a reason.', mode },
+      ],
+    });
+
+  it('asks for a reason where the part asks for one', () => {
+    expect(build('explain')).toContain('[give the reason, in one short sentence]');
+  });
+
+  it('asks a show_that part for the result its working reaches', () => {
+    expect(build('show_that')).toContain('[state the result your working reaches]');
+  });
+
+  it('leaves plain answer parts values-only, as before', () => {
+    const p = build('answer');
+    expect(p).not.toContain('[give the reason');
+    expect(p).toContain('ONLY that part’s final value(s)'.replace('’', "'"));
   });
 });
