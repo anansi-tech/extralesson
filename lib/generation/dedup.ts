@@ -9,9 +9,17 @@ import { createOpenAI } from '@ai-sdk/openai';
 export const DEDUP_COSINE_THRESHOLD = 0.93; // conservative: near-verbatim only
 const EMBEDDING_MODEL = 'text-embedding-3-small';
 
+// Lead-ins that carry no question identity. A stem of nothing but boilerplate
+// is contained in every other stem that opens the same way, which made one
+// approved question ("Use the information above to answer the parts below")
+// reject 25 consecutive drafts on the same recipe.
+const BOILERPLATE =
+  /\b(?:use|refer to|study)\s+(?:the\s+)?(?:information|table|graph|diagram|figure|sketch|chart|grid|data)(?:\s+(?:above|below|shown|provided))?\s+(?:to\s+)?(?:answer|and answer)\s+(?:the\s+)?(?:parts?|questions?|following)(?:\s+(?:below|that follow|which follow))?\b/g;
+
 export function normalizeStem(s: string): string {
   return s
     .toLowerCase()
+    .replace(BOILERPLATE, ' ')
     .replace(/\$[^$]*\$/g, ' _math_ ') // math content varies freely
     .replace(/\d+(\.\d+)?/g, ' _n_ ') // numbers vary freely
     .replace(/[^a-z_\s]/g, ' ')
