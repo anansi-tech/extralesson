@@ -265,7 +265,7 @@ describe('compositeShape — shaded regions (R1.6 §6)', () => {
       innerHeight: 4,
       unit: 'm',
     });
-    expect(p.shaded).toBe(false);
+    expect(p.kind === 'rect-minus-rect' && p.shaded).toBe(false);
     expect(compositeShape.render(p)).not.toContain('shapeHatch');
     expect(compositeShape.describe(p)).not.toContain('shaded');
   });

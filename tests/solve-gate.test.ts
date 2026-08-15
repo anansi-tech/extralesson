@@ -1,0 +1,145 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { QuestionDraft } from '@/lib/validation/question';
+
+// The independent-solve gate (R1.5 §5, amended by R1.6 §1). Both model calls
+// are stubbed: this test is about what the gate does with the answers, not
+// about the model.
+
+const calls: string[] = [];
+let solverParts: { label: string; final_answer: string }[] = [];
+let verdicts: { same: boolean; reason: string }[] = [];
+
+vi.mock('ai', () => ({
+  generateObject: vi.fn(async ({ prompt }: { prompt: string }) => {
+    if (prompt.startsWith('Two people answered')) {
+      calls.push('judge');
+      const next = verdicts.shift();
+      if (!next) throw new Error('unexpected adjudication call');
+      return { object: next };
+    }
+    calls.push('solve');
+    return { object: { part_answers: solverParts } };
+  }),
+}));
+vi.mock('@/lib/ai', () => ({ model: {}, MODEL_ID: 'test' }));
+
+const { independentSolve } = await import('@/lib/generation/solve');
+
+function draft(parts: QuestionDraft['parts']): QuestionDraft {
+  return {
+    kind: 'structured',
+    objective_ids: ['M2.3.11'],
+    module: 2,
+    stem: 'The functions $f$ and $g$ are defined for all real $x$.',
+    archetype: 'multi-step-application',
+    representation: 'prose',
+    difficulty: 3,
+    marks: parts.reduce((s, p) => s + p.marks, 0),
+    parts,
+    rubric: parts.map((p, i) => ({
+      code: `AK${i + 1}`,
+      profile: 'AK' as const,
+      criterion: 'Works the part',
+      mark_value: p.marks,
+      part_label: p.label,
+    })),
+    final_answer: parts.map((p) => p.answer).join('; '),
+    worked_solution: 'Step by step.',
+    misconceptions: [],
+  } as QuestionDraft;
+}
+
+const answerPart = (label: string, answer: string) => ({
+  label,
+  prompt: `Find part ${label}.`,
+  marks: 2,
+  answer,
+  response_mode: 'answer' as const,
+});
+
+beforeEach(() => {
+  calls.length = 0;
+  verdicts = [];
+});
+
+describe('independentSolve — mechanical agreement', () => {
+  it('accepts notation-different answers without asking anyone', async () => {
+    solverParts = [{ label: 'a', final_answer: 'x ↦ (x - 1)/2' }];
+    const out = await independentSolve(draft([answerPart('a', 'f^{-1}:x\\to \\frac{x-1}{2}')]));
+    expect(out.agrees).toBe(true);
+    expect(calls).toEqual(['solve']);
+    expect(out.notes).toEqual([]);
+  });
+
+  it('rejects when the solver answers a different number of parts', async () => {
+    solverParts = [{ label: 'a', final_answer: '4' }];
+    const out = await independentSolve(draft([answerPart('a', '4'), answerPart('b', '9')]));
+    expect(out.agrees).toBe(false);
+    expect(calls).toEqual(['solve']);
+  });
+});
+
+describe('independentSolve — parts we do not mark are not gated (R1.6 §1)', () => {
+  it('skips a show_that part instead of comparing its restated answer', async () => {
+    solverParts = [
+      { label: 'a', final_answer: '4' },
+      { label: 'b', final_answer: 'Expanding gives the stated result.' },
+    ];
+    const parts = [
+      answerPart('a', '4'),
+      { label: 'b', prompt: 'Show that $P = M^2 - 2M$.', marks: 3, answer: 'P = M^2 - 2M', response_mode: 'show_that' as const },
+    ];
+    const out = await independentSolve(draft(parts));
+    expect(out.agrees).toBe(true);
+    expect(calls).toEqual(['solve']); // no judge needed
+    expect(out.notes.join(' ')).toContain('show_that part — not gated');
+  });
+
+  it('skips an explain part, whose wording is free', async () => {
+    solverParts = [{ label: 'a', final_answer: 'The two composites have different rules.' }];
+    const parts = [
+      { label: 'a', prompt: 'Give a reason.', marks: 1, answer: 'fg(x) != gf(x) for x != -2, 0', response_mode: 'explain' as const },
+    ];
+    const out = await independentSolve(draft(parts));
+    expect(out.agrees).toBe(true);
+    expect(calls).toEqual(['solve']);
+  });
+});
+
+describe('independentSolve — adjudication settles what rules cannot', () => {
+  it('accepts a part the judge calls the same, and says so in the notes', async () => {
+    // Two correct answers to "solve, then say why they differ", worded freely:
+    // no string rule reconciles these, and none should have to.
+    solverParts = [{ label: 'a', final_answer: 'x=-2; x=0; fg(x) != gf(x) for x != -2, 0' }];
+    verdicts = [{ same: true, reason: 'Same roots and the same conclusion.' }];
+    const out = await independentSolve(
+      draft([answerPart('a', 'x=-2 or x=0; the composite functions have different rules')]),
+    );
+    expect(out.agrees).toBe(true);
+    expect(calls).toEqual(['solve', 'judge']);
+    expect(out.notes[0]).toContain('judged SAME');
+  });
+
+  it('still rejects when the judge finds a real difference', async () => {
+    solverParts = [{ label: 'a', final_answer: '7' }];
+    verdicts = [{ same: false, reason: 'The values 4 and 7 differ.' }];
+    const out = await independentSolve(draft([answerPart('a', '4')]));
+    expect(out.agrees).toBe(false);
+    expect(out.notes[0]).toContain('judged DIFFERENT');
+    expect(out.draftAnswer).toContain('(a) 4');
+    expect(out.solveAnswer).toContain('(a) 7');
+  });
+
+  it('asks only about the parts that failed mechanically', async () => {
+    solverParts = [
+      { label: 'a', final_answer: '2x^2 + 1' },
+      { label: 'b', final_answer: 'They are reflections in y = x.' },
+    ];
+    verdicts = [{ same: true, reason: 'Same geometric statement.' }];
+    const out = await independentSolve(
+      draft([answerPart('a', 'fg(x)=2x^2+1'), answerPart('b', 'each is the reflection of the other in the line y = x')]),
+    );
+    expect(out.agrees).toBe(true);
+    expect(calls.filter((c) => c === 'judge')).toHaveLength(1);
+  });
+});

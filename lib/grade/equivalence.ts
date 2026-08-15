@@ -18,7 +18,12 @@ function preClean(raw: string): string {
     .replace(/\\left|\\right|\\,|\\;/g, '')
     .replace(/\$+/g, '') // KaTeX delimiters and bare dollar signs
     .replace(/\b(ec|us|tt|bds|gy|j)\s*(?=\d)/g, '') // currency prefixes left after $ strip
+    .replace(/\\text\{([^{}]*)\}/g, '$1') // \text{ and } wrappers carry no value
     .replace(/[−–]/g, '-') // unicode minus / en-dash
+    // One spelling per relation, whichever notation the writer reached for.
+    .replace(/\\mapsto|\\rightarrow|\\to\b|↦|→/g, '->')
+    .replace(/\\neq?\b|≠/g, '!=')
+    .replace(/⁻¹/g, '^{-1}')
     .replace(/[×·]/g, '*')
     .replace(/÷/g, '/')
     .replace(/\^\s*\{?\s*\\?circ\s*\}?/g, '°') // KaTeX degrees: ^\circ, ^{\circ}
@@ -44,6 +49,20 @@ function splitParts(cleaned: string): string[] {
 // so an expression is never mistaken for a label.
 const LABEL_LIKE = /^[a-z][a-z\s_]{0,24}$/;
 
+// The other thing that stands in front of a value: a function being defined or
+// evaluated — "f(x)", "gf(4)", "f^{-1}(x)", "ff^{-1}(x)". These are names too,
+// and the answer is the right-hand side, exactly as with "cost = 5". Without
+// this, "gf(4) = 6" and "6" read as different answers.
+const DEFINITION_LHS = /^[a-z]{1,3}(\^\{?-1\}?)?(\([^()]{0,10}\))?(\^\{?-1\}?)?$/;
+
+// "f: x -> (x-1)/2" and "x ↦ (x-1)/2" define the same function as
+// "f(x) = (x-1)/2"; the value is what the variable maps to.
+function stripMapping(part: string): string {
+  const i = part.indexOf('->');
+  if (i < 0) return part;
+  return /^[a-z]$/.test(part.slice(0, i).trim()) ? part.slice(i + 2).trim() : part;
+}
+
 // Strip leading part labels ("(a)", "b)") and naming prefixes: for a part like
 // "small bag = 5" or "plantain: 10", the value is what follows the separator.
 // The left side is only discarded when it actually looks like a label —
@@ -54,10 +73,13 @@ function stripLabel(part: string): string {
   for (const sep of ['=', ':']) {
     const i = p.indexOf(sep);
     if (i < 0) continue;
-    if (LABEL_LIKE.test(p.slice(0, i).trim())) return p.slice(i + 1).trim();
+    const lhs = p.slice(0, i).trim();
+    if (LABEL_LIKE.test(lhs) || DEFINITION_LHS.test(lhs)) {
+      return stripMapping(p.slice(i + 1).trim());
+    }
     break;
   }
-  return p.trim();
+  return stripMapping(p.trim());
 }
 
 // Parse a number from common student notations: "0.5", "-1/3", "1 1/2",

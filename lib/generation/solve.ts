@@ -3,6 +3,7 @@ import { generateObject } from 'ai';
 import { model } from '@/lib/ai';
 import { buildSolvePrompt } from '@/lib/prompts/question-gen';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
+import { adjudicateAnswers } from './adjudicate';
 import { describeVisual, type StoredVisual } from '@/lib/visuals';
 import type { QuestionDraft } from '@/lib/validation/question';
 
@@ -20,6 +21,8 @@ export interface SolveOutcome {
   agrees: boolean;
   draftAnswer: string;
   solveAnswer: string;
+  /** How each contested part was settled — printed with every rejection. */
+  notes: string[];
 }
 
 export async function independentSolve(draft: QuestionDraft): Promise<SolveOutcome> {
@@ -41,6 +44,7 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
       agrees: sol.answer_index === draft.answer_key,
       draftAnswer: `key=${draft.answer_key} (${draft.options[draft.answer_key]})`,
       solveAnswer: `index=${sol.answer_index} (${draft.options[sol.answer_index] ?? '?'}) — "${sol.final_answer}"`,
+      notes: [],
     };
   }
 
@@ -57,17 +61,39 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   });
 
   const solByLabel = new Map(sol.part_answers.map((p) => [p.label.toLowerCase(), p.final_answer]));
-  // Per-part agreement: every part's solver answer must be equivalent.
-  const agrees =
-    sol.part_answers.length === draft.parts.length &&
-    draft.parts.every((p) => {
-      const s = solByLabel.get(p.label);
-      return s !== undefined && answersEquivalentAny(s, p.answer, p.accept);
+  const notes: string[] = [];
+  let agrees = sol.part_answers.length === draft.parts.length;
+
+  for (const p of draft.parts) {
+    if (!agrees) break;
+    // Parts we do not auto-mark are not auto-gated either: a "show that" states
+    // its own answer, and an "explain" part is prose the student self-marks in
+    // worked practice (R1.6 §1). Comparing them here rejects correct questions
+    // for rewording something no machine will ever mark.
+    if ((p.response_mode ?? 'answer') !== 'answer') {
+      notes.push(`(${p.label}) ${p.response_mode} part — not gated on answer equality`);
+      continue;
+    }
+    const s = solByLabel.get(p.label);
+    if (s === undefined) {
+      agrees = false;
+      break;
+    }
+    if (answersEquivalentAny(s, p.answer, p.accept)) continue;
+
+    const verdict = await adjudicateAnswers({
+      partPrompt: p.prompt,
+      draftAnswer: p.answer,
+      solveAnswer: s,
     });
+    notes.push(`(${p.label}) judged ${verdict.same ? 'SAME' : 'DIFFERENT'}: ${verdict.reason}`);
+    if (!verdict.same) agrees = false;
+  }
 
   return {
     agrees,
     draftAnswer: draft.parts.map((p) => `(${p.label}) ${p.answer}`).join(' '),
     solveAnswer: sol.part_answers.map((p) => `(${p.label}) ${p.final_answer}`).join(' '),
+    notes,
   };
 }
