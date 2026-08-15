@@ -39,3 +39,36 @@ describe('cosine', () => {
     expect(cosine([0, 0], [1, 1])).toBe(0);
   });
 });
+
+// One approved question whose entire stem was "Use the information above to
+// answer the parts below" rejected 25 consecutive drafts on the same recipe:
+// normalised, that sentence is 51 characters and is contained in every stem
+// that opens the same way. A lead-in is not what makes a question that question.
+describe('boilerplate lead-ins do not make two questions the same', () => {
+  const lead = 'Use the information above to answer the parts below.';
+
+  it('strips the lead-in, leaving nothing to match on', () => {
+    expect(normalizeStem(lead).trim()).toBe('');
+    expect(normalizeStem('Use the table to answer the questions below.').trim()).toBe('');
+    expect(normalizeStem('Refer to the diagram shown to answer the parts that follow.').trim()).toBe('');
+  });
+
+  it('no longer calls two unrelated questions duplicates', () => {
+    const a = `${lead} A refrigerator listed at EC$1800 is reduced by 15%, and a sales tax of 12.5% is added.`;
+    const b = `${lead} A vendor buys 24 mangoes for EC$60 and sells them at EC$4 each.`;
+    expect(stemContained(a, b)).toBe(false);
+    expect(stemContained(a, lead)).toBe(false);
+  });
+
+  it('still catches a question that really is the same one', () => {
+    const a = 'A refrigerator listed at EC$1800 is reduced by 15%. Find the sale price.';
+    const b = `${lead} A refrigerator listed at EC$2400 is reduced by 20%. Find the sale price.`;
+    expect(stemContained(a, b)).toBe(true);
+  });
+
+  it('keeps the rest of the stem intact', () => {
+    const n = normalizeStem(`${lead} A vendor buys 24 mangoes for EC$60.`);
+    expect(n).toContain('vendor buys');
+    expect(n).not.toContain('answer the parts');
+  });
+});

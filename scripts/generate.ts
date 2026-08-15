@@ -60,7 +60,10 @@ function parseArgs() {
 }
 
 
-async function buildRecipe(args: ReturnType<typeof parseArgs>): Promise<{
+async function buildRecipe(
+  args: ReturnType<typeof parseArgs>,
+  exhausted: ReadonlySet<string> = new Set(),
+): Promise<{
   recipe: QuestionRecipe;
   context: RecipeContext;
   module: ModuleNumber;
@@ -91,9 +94,14 @@ async function buildRecipe(args: ReturnType<typeof parseArgs>): Promise<{
     ]),
   );
 
+  // A topic set aside for this run keeps its deficit but stops being chosen.
+  const searchMatrix = exhausted.size
+    ? { ...matrix, topics: matrix.topics.filter((t) => !exhausted.has(t.code)) }
+    : matrix;
+
   // Overrides are inputs to the deficit search, never patches applied to its
   // output — every field of the returned recipe is internally consistent.
-  const { recipe, context } = nextRecipe(matrix, objectivesByTopic, {
+  const { recipe, context } = nextRecipe(searchMatrix, objectivesByTopic, {
     topic_code: args.topic,
     kind: args.kind,
     difficulty: args.difficulty,
@@ -122,6 +130,10 @@ async function main() {
 
   // Acceptance per topic, and why drafts were lost. Reported at the end.
   const byTopic = new Map<string, { attempts: number; inserted: number }>();
+  // Topics that keep returning duplicates are skipped for the rest of the run.
+  const DEDUP_STREAK_LIMIT = 3;
+  const dedupStreak = new Map<string, number>();
+  const exhausted = new Set<string>();
   const byReason = new Map<string, number>();
   const tally = (code: string) => {
     const row = byTopic.get(code) ?? { attempts: 0, inserted: 0 };
@@ -136,7 +148,7 @@ async function main() {
   while (inserted < args.count && attempts < maxAttempts) {
     attempts++;
     try {
-      const { recipe, context, module, topicTitle, objectives } = await buildRecipe(args);
+      const { recipe, context, module, topicTitle, objectives } = await buildRecipe(args, exhausted);
       tally(context.topic_code).attempts++;
       const visualContract =
         recipe.representation === 'prose' ? '' : paramsDocFor(context.template_hints);
@@ -295,16 +307,35 @@ async function main() {
       for (const n of solve.notes) console.log(`  · ${n}`);
 
       // Gate 4: internal dedup vs approved bank
+      // Compare on what identifies the question. When a stimulus carries the
+      // scenario, the stem is a lead-in and says nothing about what is asked.
       const approvedStems = (
-        await Question.find({ status: 'approved' }).select('stem').lean<{ stem: string }[]>()
-      ).map((q) => q.stem);
-      const dedup = await checkDuplicate(draft.stem, approvedStems);
+        await Question.find({ status: 'approved' })
+          .select('stem stimulus')
+          .lean<{ stem: string; stimulus?: string }[]>()
+      ).map((q) => [q.stimulus, q.stem].filter(Boolean).join(' '));
+      const dedup = await checkDuplicate(
+        [draft.stimulus, draft.stem].filter(Boolean).join(' '),
+        approvedStems,
+      );
       if (dedup.duplicate) {
         rejected++;
         lost(context.topic_code, `dedup-${dedup.reason}`);
         console.log(`  ✗ dedup: ${dedup.reason} (score ${dedup.score})`);
+        // The deficit search is deterministic, so a recipe that cannot clear
+        // dedup returns for every remaining attempt: one run spent 25 of 60 on
+        // a single M1-CONS recipe. Set the topic aside and fill elsewhere.
+        const streak = (dedupStreak.get(context.topic_code) ?? 0) + 1;
+        dedupStreak.set(context.topic_code, streak);
+        if (streak >= DEDUP_STREAK_LIMIT && !args.topic) {
+          exhausted.add(context.topic_code);
+          console.log(
+            `  · ${context.topic_code} set aside for this run — ${streak} duplicates in a row; it needs a new angle, not another attempt`,
+          );
+        }
         continue;
       }
+      dedupStreak.set(context.topic_code, 0);
 
       if (args.dryRun) {
         inserted++;
