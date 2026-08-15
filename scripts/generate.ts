@@ -170,6 +170,8 @@ async function main() {
         module,
         objective_ids: recipe.objective_ids,
         archetype: recipe.archetype,
+        // §B5: the recipe owns the cognitive level for Paper 1, not the model.
+        ...(recipe.profile ? { profile: recipe.profile } : {}),
         representation: recipe.representation,
         difficulty: recipe.difficulty,
         marks: recipe.marks,

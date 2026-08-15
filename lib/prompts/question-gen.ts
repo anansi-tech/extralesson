@@ -8,7 +8,7 @@ import { MARK_SCHEME_CONVENTIONS } from './mark-scheme';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v17';
+export const PROMPT_VERSION = 'v18';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -57,6 +57,13 @@ function paperPatterns(recipe: QuestionRecipe, context: RecipeContext, objective
 
   return blocks.join('\n\n');
 }
+
+// What each profile means at Paper 1 item level (R1.7 §B5).
+const PROFILE_DEMAND: Record<string, string> = {
+  CK: 'the item must test recognising or recalling a concept, definition, property or convention.',
+  AK: 'the item must require carrying out a procedure or computation.',
+  R: 'the item must require translating, comparing, justifying or working back from a result.',
+};
 
 function demandRequirements(recipe: QuestionRecipe): string {
   if (recipe.difficulty === 1) {
@@ -147,7 +154,11 @@ QUESTION RECIPE (follow every field exactly):
 - difficulty: ${recipe.difficulty} of 3
 - marks: ${recipe.marks}
 - archetype: ${recipe.archetype}
-- representation: ${recipe.representation}
+- representation: ${recipe.representation}${
+    recipe.profile
+      ? `\n- profile: ${recipe.profile} — ${PROFILE_DEMAND[recipe.profile]} Set "profile" to exactly this; it is the item's place in a topic block that climbs CK to AK to R, as the real Paper 1 does.`
+      : ''
+  }
 
 ARCHETYPE CONTRACT (hard requirement): ${ARCHETYPE_CONTRACTS[recipe.archetype]}
 
@@ -172,7 +183,7 @@ RULES:
 - Math is KaTeX-safe: inline math in $...$, escape backslashes correctly in JSON. Matrices are notation in stem/parts, never visuals.
 - DELIMITER CONVENTION (hard rule, every field): $ is EXCLUSIVELY a math delimiter, in balanced $...$ pairs. Currency is NEVER a bare $ — write EC$ followed by the amount (EC$12) or the word "dollars". Never put EC$ amounts inside $...$ math.
 - ${kind === 'mcq'
-      ? 'Exactly 4 options. Distractors must each come from a plausible specific error. answer_key is the 0-based index of the correct option. Set "profile" to the single profile the item assesses. marks = 1.'
+      ? 'Exactly 4 options. Distractors must each come from a plausible specific error. answer_key is the 0-based index of the correct option. marks = 1.'
       : `Rubric: 2-12 criteria; a criterion may award more than one mark for a substantial linked stage; mark_values sum to marks and each row names its part_label.
 ${MARK_SCHEME_CONVENTIONS}
 - Where a part carries an answer_format, the scheme marks the form as its own act: include exactly ONE further row for that part with "for_format": true, normally an R mark of 1, whose criterion names the form ("Expresses 'their' answer in standard form"). The other rows mark the value and the method, so a student with the right number in the wrong form keeps them.`}

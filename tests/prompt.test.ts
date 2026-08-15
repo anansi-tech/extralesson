@@ -37,7 +37,7 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v17');
+    expect(PROMPT_VERSION).toBe('v18');
   });
 
   it('teaches hence-or-otherwise chaining with follow-through on structured drafts', () => {
@@ -206,5 +206,34 @@ describe('buildDraftPrompt — the supplied formulae sheet', () => {
   it('forbids difficulty that rests on recalling them', () => {
     expect(p()).toContain('NEVER build a question whose difficulty is recalling one of them');
     expect(p()).toContain('never award a mark for stating one');
+  });
+});
+
+// R1.7 §B5 — the recipe fixes a Paper 1 item's cognitive level; the model is
+// told which, and what that level means for the item it writes.
+describe('buildDraftPrompt — Paper 1 profile is dictated, not chosen', () => {
+  const mcq = (profile?: 'CK' | 'AK' | 'R') =>
+    buildDraftPrompt({
+      topicTitle: 'Number Theory',
+      objectives: [objective('Identify prime and composite numbers.')],
+      recipe: recipe({ kind: 'mcq', marks: 1, difficulty: 1, profile }),
+      context: context('M1-NTC'),
+      module: 1,
+      visualContract: '',
+    });
+
+  it('states the profile and what it demands of the item', () => {
+    expect(mcq('CK')).toContain('profile: CK');
+    expect(mcq('CK')).toContain('recognising or recalling a concept');
+    expect(mcq('R')).toContain('translating, comparing, justifying');
+  });
+
+  it('no longer invites the model to pick the profile itself', () => {
+    expect(mcq('AK')).not.toContain('Set "profile" to the single profile the item assesses');
+    expect(mcq('AK')).toContain('Set "profile" to exactly this');
+  });
+
+  it('says nothing about profile on a structured recipe', () => {
+    expect(prompt({ topic: 'M2-ALG2' })).not.toContain('profile:');
   });
 });

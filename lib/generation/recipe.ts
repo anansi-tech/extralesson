@@ -1,5 +1,6 @@
 import {
   DIFFICULTY_TARGETS,
+  nextP1Profile,
   largestDeficit,
   MCQ_ARCHETYPE_TARGETS,
   P1_TOTAL,
@@ -13,7 +14,7 @@ import {
   MCQ_VISUAL_SHARE,
   type RepresentationTarget,
 } from '@/lib/targets/representation';
-import type { Archetype, Representation, TemplateName } from '@/lib/types';
+import type { Archetype, Profile, Representation, TemplateName } from '@/lib/types';
 
 // R1.5 §5 — the 6-field recipe. The generator computes the largest matrix
 // deficit and emits recipes; the model no longer free-chooses objectives.
@@ -24,6 +25,12 @@ export interface QuestionRecipe {
   marks: number;
   archetype: Archetype;
   representation: Representation;
+  /**
+   * Paper 1 only (R1.7 §B5): the cognitive level this item must assess. The
+   * recipe fixes it so a topic's items ramp CK -> AK -> R as the real paper's
+   * topic blocks do, instead of the model choosing one item at a time.
+   */
+  profile?: Profile;
 }
 
 // Extra context the prompt needs that is derived from the recipe (not part of
@@ -126,8 +133,11 @@ export function nextRecipe(
     throw new Error(`no objectives known for topic ${topic}`);
   }
 
+  // 7. Paper 1 profile: position in this topic's block (§B5).
+  const profile = kind === 'mcq' ? nextP1Profile(row.p1_actual) : undefined;
+
   return {
-    recipe: { objective_ids, kind, difficulty, marks, archetype, representation },
+    recipe: { objective_ids, kind, difficulty, marks, archetype, representation, profile },
     context: { topic_code: topic, template_hints },
   };
 }
