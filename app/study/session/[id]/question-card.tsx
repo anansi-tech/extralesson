@@ -199,6 +199,12 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             </span>
           </div>
 
+          {feedback.formatFeedback && (
+            <p className="mt-2 border-l-3 border-[#D9A62E] bg-[#FDF8EC] p-2 text-sm">
+              {feedback.formatFeedback}
+            </p>
+          )}
+
           {question.rubricCodes.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
               {question.rubricCodes.map((r) => {

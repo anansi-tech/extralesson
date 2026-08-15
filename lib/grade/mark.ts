@@ -1,5 +1,6 @@
 import { answersEquivalentAny } from './equivalence';
-import type { ProfileMarks, RubricItem } from '@/lib/types';
+import { checkAnswerFormat, valueLooksRight } from './format';
+import type { AnswerFormat, ProfileMarks, RubricItem } from '@/lib/types';
 
 // Round 1 marking (ROUND_1 §6.3): the final-answer equivalence check drives
 // accuracy marks; method-ish CK/AK marks come from SIMPLE, DOCUMENTED
@@ -16,6 +17,8 @@ export interface MarkResult {
   correct: boolean;
   rubric_awarded: string[];
   profile_marks: ProfileMarks;
+  /** Set when the value was right but the required FORM was not (R1.6 §2). */
+  format_feedback?: string;
 }
 
 export function markMcq(profile: 'CK' | 'AK' | 'R', marks: number, answerIndex: number, answerKey: number): MarkResult {
@@ -36,13 +39,14 @@ export interface PartInput {
 
 export function markStructuredParts(
   rubric: RubricItem[],
-  parts: { label: string; answer: string; accept?: string[] }[],
+  parts: { label: string; answer: string; accept?: string[]; answer_format?: AnswerFormat }[],
   inputs: PartInput[],
 ): MarkResult {
   const inputByLabel = new Map(inputs.map((i) => [i.label, i]));
   const profile_marks: ProfileMarks = { CK: 0, AK: 0, R: 0 };
   const awarded: string[] = [];
   let allCorrect = true;
+  let formatFeedback: string | undefined;
 
   for (const part of parts) {
     const input = inputByLabel.get(part.label);
@@ -55,15 +59,17 @@ export function markStructuredParts(
       input?.answer ?? '',
       input?.working ?? '',
       part.accept,
+      part.answer_format,
     );
     if (!result.correct) allCorrect = false;
+    if (result.format_feedback && !formatFeedback) formatFeedback = result.format_feedback;
     awarded.push(...result.rubric_awarded.filter((c) => c !== 'R0'));
     profile_marks.CK += result.profile_marks.CK;
     profile_marks.AK += result.profile_marks.AK;
     profile_marks.R += result.profile_marks.R;
   }
 
-  return { correct: allCorrect, rubric_awarded: awarded, profile_marks };
+  return { correct: allCorrect, rubric_awarded: awarded, profile_marks, format_feedback: formatFeedback };
 }
 
 export function markStructured(
@@ -72,8 +78,23 @@ export function markStructured(
   studentAnswer: string,
   working: string,
   accept?: string[],
+  answerFormat?: AnswerFormat,
 ): MarkResult {
-  const correct = answersEquivalentAny(studentAnswer, canonicalAnswer, accept);
+  const equivalent = answersEquivalentAny(studentAnswer, canonicalAnswer, accept);
+  // A required form is part of the question: an equivalent value written the
+  // wrong way is not a correct answer, but the student should be told that it
+  // was the form and not the mathematics that lost the mark.
+  let format_feedback: string | undefined;
+  let correct = equivalent;
+  if (equivalent && answerFormat) {
+    const check = checkAnswerFormat(studentAnswer, answerFormat);
+    if (!check.ok) {
+      correct = false;
+      format_feedback = check.feedback;
+    }
+  } else if (!equivalent && answerFormat && valueLooksRight(studentAnswer, canonicalAnswer)) {
+    format_feedback = checkAnswerFormat(studentAnswer, answerFormat).feedback;
+  }
   const trimmed = working.trim();
   const hasWorking = trimmed.length > 0;
   const hasWorkedStep = trimmed.includes('=') || trimmed.split('\n').filter((l) => l.trim()).length >= 2;
@@ -88,5 +109,5 @@ export function markStructured(
   const profile_marks: ProfileMarks = { CK: 0, AK: 0, R: 0 };
   for (const r of awarded) profile_marks[r.profile] += r.mark_value;
 
-  return { correct, rubric_awarded: awarded.map((r) => r.code), profile_marks };
+  return { correct, rubric_awarded: awarded.map((r) => r.code), profile_marks, format_feedback };
 }

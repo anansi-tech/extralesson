@@ -124,3 +124,38 @@ describe('mark-scheme accept lists', () => {
     expect(r.correct).toBe(false);
   });
 });
+
+describe('format-aware marking (R1.6 §2)', () => {
+  const rubric: RubricItem[] = [
+    { code: 'AK1', profile: 'AK', criterion: 'value', mark_value: 2, part_label: 'a' },
+  ];
+
+  it('marks an equivalent value in the wrong form incorrect, and says so', () => {
+    const parts = [{ label: 'a', answer: '1/3', answer_format: 'exact' as const }];
+    const r = markStructuredParts(rubric, parts, [{ label: 'a', answer: '0.333', working: '' }]);
+    expect(r.correct).toBe(false);
+    expect(r.format_feedback).toContain('EXACT');
+    // The mathematics was not wrong, so it must not read as a maths error.
+    expect(r.format_feedback).toContain('Correct value');
+  });
+
+  it('accepts the same value written in the required form', () => {
+    const parts = [{ label: 'a', answer: '1/3', answer_format: 'exact' as const }];
+    const r = markStructuredParts(rubric, parts, [{ label: 'a', answer: '1/3', working: '' }]);
+    expect(r.correct).toBe(true);
+    expect(r.format_feedback).toBeUndefined();
+  });
+
+  it('leaves marking unchanged when no format is required', () => {
+    const parts = [{ label: 'a', answer: '1/3' }];
+    const r = markStructuredParts(rubric, parts, [{ label: 'a', answer: '0.333', working: '' }]);
+    expect(r.correct).toBe(true); // permissive equivalence, as before
+  });
+
+  it('explains the form even when the value is also wrong-ish but close', () => {
+    const parts = [{ label: 'a', answer: '36.9', answer_format: 'dp:1' as const }];
+    const r = markStructuredParts(rubric, parts, [{ label: 'a', answer: '36.87', working: '' }]);
+    expect(r.correct).toBe(false);
+    expect(r.format_feedback).toContain('1 decimal place');
+  });
+});

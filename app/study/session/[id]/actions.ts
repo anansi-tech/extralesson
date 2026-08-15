@@ -25,6 +25,8 @@ export interface Feedback {
   feedbackTitleHtml: string;
   feedbackHtml: string;
   isMisconception: boolean;
+  /** Right value, wrong required form (R1.6 §2). */
+  formatFeedback?: string;
 }
 
 export async function submitAnswer(input: {
@@ -77,6 +79,7 @@ export async function submitAnswer(input: {
       label: p.label,
       answer: p.answer,
       accept: p.accept,
+      answer_format: p.answer_format,
     }));
     const inputs = answers.map((a) => ({ ...a, working }));
     result = markStructuredParts(question.rubric ?? [], parts, inputs);
@@ -128,5 +131,6 @@ export async function submitAnswer(input: {
     feedbackTitleHtml,
     feedbackHtml,
     isMisconception,
+    formatFeedback: 'format_feedback' in result ? result.format_feedback : undefined,
   };
 }
