@@ -3,6 +3,19 @@ import type { Representation, ResponseMode, TemplateName } from '@/lib/types';
 
 // Boundary validation for questions (R1.5 §2). Every question write —
 // generation pipeline output, admin edits — passes through here.
+//
+// A model asked for an optional field returns it as null, not by omitting it:
+// structured output fills every declared key. So at this boundary an optional
+// field means "null or absent", and .optional() alone rejects half of what
+// arrives. R1.7 shipped for_format as .optional() and every structured draft
+// generated afterwards failed on rubric rows that simply had no form mark.
+const optional = <T extends z.ZodTypeAny>(schema: T) =>
+  schema.nullish().transform((v) => (v === null ? undefined : v));
+
+// Same reason, for a field that has a default: .default() fires on undefined
+// and not on null, so the null has to become undefined before it is reached.
+const defaulted = <T extends z.ZodTypeAny>(schema: T, fallback: z.infer<T>) =>
+  z.preprocess((v) => v ?? undefined, schema.default(fallback));
 
 export const OBJECTIVE_ID_RE = /^M[123]\.\d+\.\d+$/;
 
@@ -74,7 +87,7 @@ export const RubricItemZ = z
     mark_value: z.number().int().min(1),
     part_label: z.string().regex(/^[a-j]$/),
     // R1.7 §B4: the separate mark for the required form.
-    for_format: z.boolean().optional(),
+    for_format: optional(z.boolean()),
   })
   .refine((r) => r.code.replace(/\d+$/, '') === r.profile, {
     message: 'rubric code prefix must match profile',
@@ -117,11 +130,11 @@ export const PartZ = z.object({
   // Mark-scheme accept list: alternative correct forms of THIS part's answer
   // (real schemes write "edge (accept: line segment)"). Grading and the solve
   // gate treat any listed form as correct.
-  accept: z.array(z.string().min(1)).max(4).optional(),
+  accept: optional(z.array(z.string().min(1)).max(4)),
   // R1.6 §1: only 'answer' parts can be auto-marked.
-  response_mode: ResponseModeZ.default('answer'),
+  response_mode: defaulted(ResponseModeZ, 'answer'),
   // R1.6 §2: set whenever the stem demands a particular form.
-  answer_format: AnswerFormatZ.optional(),
+  answer_format: optional(AnswerFormatZ),
 }).transform((p) => ({ ...p, response_mode: modeFromWording(p.prompt, p.response_mode) }));
 
 const PART_LABELS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
