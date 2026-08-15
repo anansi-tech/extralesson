@@ -37,7 +37,7 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v18');
+    expect(PROMPT_VERSION).toBe('v19');
   });
 
   it('teaches hence-or-otherwise chaining with follow-through on structured drafts', () => {
@@ -235,5 +235,36 @@ describe('buildDraftPrompt — Paper 1 profile is dictated, not chosen', () => {
 
   it('says nothing about profile on a structured recipe', () => {
     expect(prompt({ topic: 'M2-ALG2' })).not.toContain('profile:');
+  });
+});
+
+// R1.7 Part D — a misconception a model invents is a plausible guess; these are
+// what candidates actually did, so the prompt offers them where they fit.
+describe('buildDraftPrompt — documented errors reach the question that needs them', () => {
+  it('offers the consumer-arithmetic errors on a consumer-arithmetic recipe', () => {
+    const p = buildDraftPrompt({
+      topicTitle: 'Consumer Arithmetic',
+      objectives: [objective('Solve problems involving compound interest.')],
+      recipe: recipe({ objective_ids: ['M1.2.4'] }),
+      context: context('M1-CONS'),
+      module: 1,
+      visualContract: '',
+    });
+    expect(p).toContain('DOCUMENTED ERRORS');
+    expect(p).toContain('Simple interest used for compound interest');
+    expect(p).not.toContain('Range given as an interval');
+  });
+
+  it('offers the statistics errors on a statistics recipe', () => {
+    const p = buildDraftPrompt({
+      topicTitle: 'Statistics',
+      objectives: [objective('Determine the mode of a data set.')],
+      recipe: recipe({ objective_ids: ['M2.1.10'] }),
+      context: context('M2-STAT1'),
+      module: 2,
+      visualContract: '',
+    });
+    expect(p).toContain('Modal frequency given instead of the modal value');
+    expect(p).not.toContain('Amount given instead of interest');
   });
 });
