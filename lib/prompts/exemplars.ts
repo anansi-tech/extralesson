@@ -21,10 +21,10 @@ const M1_STRUCTURED = `{
     { "label": "c", "prompt": "A customer needs 6 litres of juice. How many large bottles must they buy?", "marks": 2, "answer": "8" }
   ],
   "rubric": [
-    { "code": "CK1", "profile": "CK", "criterion": "Translates the comparison into an equation in one variable", "mark_value": 2, "part_label": "a" },
-    { "code": "AK1", "profile": "AK", "criterion": "Expands and collects terms correctly", "mark_value": 2, "part_label": "b" },
-    { "code": "AK2", "profile": "AK", "criterion": "Solves to $s = 500$", "mark_value": 1, "part_label": "b" },
-    { "code": "R1", "profile": "R", "criterion": "Uses the large-bottle capacity (750 ml) and rounds up to whole bottles", "mark_value": 2, "part_label": "c" }
+    { "code": "CK1", "profile": "CK", "criterion": "Forms an equation in one variable from the comparison", "mark_value": 2, "part_label": "a" },
+    { "code": "AK1", "profile": "AK", "criterion": "Expands the bracket and collects like terms", "mark_value": 2, "part_label": "b" },
+    { "code": "AK2", "profile": "AK", "criterion": "CAO $s = 500$", "mark_value": 1, "part_label": "b" },
+    { "code": "R1", "profile": "R", "criterion": "Divides by \\"their\\" large-bottle capacity and rounds up to whole bottles", "mark_value": 2, "part_label": "c" }
   ],
   "final_answer": "3s = 2(s + 250); 500 ml; 8",
   "worked_solution": "(a) $3s = 2(s + 250)$. (b) $3s = 2s + 500$, so $s = 500$ ml. (c) Large bottle $= 750$ ml; $6000 \\\\div 750 = 8$ bottles.",
@@ -74,10 +74,10 @@ const M2_STRUCTURED = `{
     { "label": "c", "prompt": "State ONE reason your answer to (b) is an estimate.", "marks": 1, "answer": "grouped data uses class midpoints, not actual values", "accept": ["the actual values within each class are unknown"], "response_mode": "explain" }
   ],
   "rubric": [
-    { "code": "CK1", "profile": "CK", "criterion": "Identifies the modal class from frequencies", "mark_value": 1, "part_label": "a" },
-    { "code": "AK1", "profile": "AK", "criterion": "Uses midpoints and computes $\\\\sum fx$", "mark_value": 2, "part_label": "b" },
-    { "code": "AK2", "profile": "AK", "criterion": "Divides by 30 to reach $9.17$", "mark_value": 2, "part_label": "b" },
-    { "code": "R1", "profile": "R", "criterion": "Explains the midpoint assumption", "mark_value": 1, "part_label": "c" }
+    { "code": "CK1", "profile": "CK", "criterion": "Identifies the modal class from the frequencies", "mark_value": 1, "part_label": "a" },
+    { "code": "AK1", "profile": "AK", "criterion": "Uses class midpoints to compute $\\\\sum fx$", "mark_value": 2, "part_label": "b" },
+    { "code": "AK2", "profile": "AK", "criterion": "Divides \\"their\\" $\\\\sum fx$ by 30, CAO $9.17$", "mark_value": 2, "part_label": "b" },
+    { "code": "R1", "profile": "R", "criterion": "Explains that midpoints stand in for the actual values", "mark_value": 1, "part_label": "c" }
   ],
   "final_answer": "5-9; 9.17; grouped data uses class midpoints, not actual values",
   "worked_solution": "(a) Highest frequency 10 → class $5$-$9$. (b) Midpoints 2, 7, 12, 17: $\\\\sum fx = 6(2)+10(7)+9(12)+5(17) = 275$; mean $\\\\approx 275 \\\\div 30 = 9.17$. (c) Individual values are unknown within classes.",
