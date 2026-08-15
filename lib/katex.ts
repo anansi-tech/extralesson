@@ -28,9 +28,12 @@ export function renderMathHtml(text: string): string {
           return escapeHtml(restore(seg));
         }
       }
-      // Real newlines become line breaks so worked solutions read as
-      // steps/paragraphs, like board work.
-      return escapeHtml(restore(seg)).replace(/\n/g, '<br />');
+      // Authored whitespace is preserved as-is, NOT rewritten into markup:
+      // callers render this inside `.question-prose` (white-space: pre-wrap),
+      // so line breaks between steps and the double space at a sentence
+      // boundary both survive. KaTeX resets white-space internally, so math
+      // is unaffected.
+      return escapeHtml(restore(seg));
     })
     .join('');
 }

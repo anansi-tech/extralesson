@@ -34,6 +34,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Question prose rendered by renderMathHtml. Authored line breaks and
+   sentence spacing are meaningful (worked solutions read as board work), so
+   they are preserved here rather than transformed into markup. KaTeX sets
+   white-space: nowrap on .katex, so inline math is unaffected. */
+.question-prose {
+  white-space: pre-wrap;
+}
+
 /* Ruled-paper background used across study/admin surfaces */
 .ruled {
   background-image: repeating-linear-gradient(

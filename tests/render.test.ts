@@ -25,17 +25,27 @@ describe('normalizeEscapedNewlines', () => {
 });
 
 describe('renderMathHtml — multi-line worked solution', () => {
-  it('renders newlines as line breaks around KaTeX segments (snapshot)', () => {
+  // Whitespace is preserved verbatim, not rewritten into markup: callers
+  // render inside `.question-prose` (white-space: pre-wrap).
+  it('preserves newlines around KaTeX segments (snapshot)', () => {
     const fixture = normalizeEscapedNewlines(
       'Let $x$ be the cost of one mango.\\n\\nThen $3x + 2(x - 2) = 31$.\\nSo $5x = 35$, giving $x = 7$.',
     );
     const html = renderMathHtml(fixture);
-    expect(html).toContain('<br />');
+    expect(html).toContain('\n\n');
+    expect(html).not.toContain('<br />');
     expect(html).toMatchSnapshot();
   });
 
-  it('escapes HTML in text segments and keeps breaks', () => {
-    expect(renderMathHtml('a < b\nnext')).toBe('a &lt; b<br />next');
+  it('escapes HTML in text segments and keeps newlines', () => {
+    expect(renderMathHtml('a < b\nnext')).toBe('a &lt; b\nnext');
+  });
+
+  it('preserves the double space that separates two sentences', () => {
+    // A sentence ending in a number followed by one starting with a decimal
+    // needs its authored gap to stay readable ("EC$140.  0.15 x 140 = 21").
+    const html = renderMathHtml('costs EC$140.  $0.15 \\times 140 = 21$ follows.');
+    expect(html).toContain('EC$140.  ');
   });
 });
 

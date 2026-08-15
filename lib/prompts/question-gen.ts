@@ -5,7 +5,7 @@ import { exemplarsFor } from './exemplars';
 // Generation prompts (R1.5 §5): recipe + style spec Part A + 2 module-matched
 // exemplars + visual-template contract. Bump PROMPT_VERSION on any wording
 // change — it is recorded in gen_meta.prompt_version on every insert.
-export const PROMPT_VERSION = 'v6';
+export const PROMPT_VERSION = 'v7';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -125,7 +125,7 @@ RULES:
       ? 'Exactly 4 options. Distractors must each come from a plausible specific error. answer_key is the 0-based index of the correct option. Set "profile" to the single profile the item assesses. marks = 1.'
       : 'Rubric: 2-12 criteria; a criterion may award more than one mark for a substantial linked stage; mark_values sum to marks and each row names its part_label.'}
 - misconceptions: 1-3 entries. Each trigger is a specific wrong final answer for one part; name the error; remediation explains the fix in one or two sentences.
-- worked_solution: complete, correct, step-by-step for every part, KaTeX-safe.
+- worked_solution: complete, correct, step-by-step for every part, KaTeX-safe. Separate parts with a blank line. Never begin a sentence with a numeral or a bare expression — join steps with words or a colon, so write "Discount $= 15\\%$ of EC$140, so $0.15 \\times 140 = 21$" or "…, giving $0.15 \\times 140 = 21$", NEVER "…of EC$140. $0.15 \\times 140 = 21$" (a full stop followed by a decimal reads as one mangled number).
 
 EXEMPLARS (style and JSON shape only — do not reuse their content):
 ${exemplarsFor(module, kind)}

@@ -109,12 +109,15 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
 
       {question.stimulusHtml && (
         <div
-          className="mb-2 border-l-3 border-paper-deep pl-3 text-[15px]"
+          className="question-prose mb-2 border-l-3 border-paper-deep pl-3 text-[15px]"
           dangerouslySetInnerHTML={{ __html: question.stimulusHtml }}
         />
       )}
 
-      <div className="text-lg" dangerouslySetInnerHTML={{ __html: question.stemHtml }} />
+      <div
+        className="question-prose text-lg"
+        dangerouslySetInnerHTML={{ __html: question.stemHtml }}
+      />
 
       {question.visualHtml && (
         <div
@@ -128,7 +131,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
           {question.parts.map((p) => (
             <li key={p.label} className="flex items-baseline gap-2 text-sm">
               <span className="font-mono text-xs font-semibold">({p.label})</span>
-              <span dangerouslySetInnerHTML={{ __html: p.promptHtml }} />
+              <span className="question-prose" dangerouslySetInnerHTML={{ __html: p.promptHtml }} />
               <span className="ml-auto shrink-0 font-mono text-[10px] text-dim">
                 [{p.marks}] → {p.answer}
                 {p.accept?.length ? ` (accept: ${p.accept.join(' / ')})` : ''}
@@ -180,7 +183,10 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
         <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
           Worked solution
         </div>
-        <div className="mt-1 text-sm" dangerouslySetInnerHTML={{ __html: question.solutionHtml }} />
+        <div
+          className="question-prose mt-1 text-sm"
+          dangerouslySetInnerHTML={{ __html: question.solutionHtml }}
+        />
       </div>
 
       {question.misconceptions.length > 0 && (
@@ -192,7 +198,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
             {question.misconceptions.map((m, i) => (
               <li key={i} className="border-l-3 border-red-pen bg-[#FDF1F0] p-2 text-sm">
                 <b>{m.name}</b> <span className="font-mono text-xs text-dim">({m.trigger})</span>
-                <div dangerouslySetInnerHTML={{ __html: m.remediationHtml }} />
+                <div className="question-prose" dangerouslySetInnerHTML={{ __html: m.remediationHtml }} />
               </li>
             ))}
           </ul>

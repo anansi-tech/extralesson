@@ -75,13 +75,16 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     <article className="mt-4 border-[1.5px] border-ink bg-white p-5 shadow-[4px_4px_0_var(--ink)]">
       {question.stimulusHtml && (
         <div
-          className="mb-3 border-l-3 border-paper-deep pl-3 text-[15px]"
+          className="question-prose mb-3 border-l-3 border-paper-deep pl-3 text-[15px]"
           dangerouslySetInnerHTML={{ __html: question.stimulusHtml }}
         />
       )}
 
       <div className="flex items-baseline justify-between">
-        <div className="text-lg" dangerouslySetInnerHTML={{ __html: question.stemHtml }} />
+        <div
+          className="question-prose text-lg"
+          dangerouslySetInnerHTML={{ __html: question.stemHtml }}
+        />
         <span className="ml-3 shrink-0 font-mono text-xs text-dim">
           [{question.marks} mark{question.marks === 1 ? '' : 's'}]
         </span>
@@ -133,7 +136,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               <div key={p.label}>
                 <div className="flex items-baseline gap-2 text-sm">
                   <span className="font-mono text-xs font-semibold">({p.label})</span>
-                  <span dangerouslySetInnerHTML={{ __html: p.promptHtml }} />
+                  <span
+                    className="question-prose"
+                    dangerouslySetInnerHTML={{ __html: p.promptHtml }}
+                  />
                   <span className="ml-auto shrink-0 font-mono text-[10px] text-dim">
                     [{p.marks}]
                   </span>
@@ -218,7 +224,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                   : 'Worked solution'}
             </div>
             <div
-              className="mt-1 text-sm"
+              className="question-prose mt-1 text-sm"
               dangerouslySetInnerHTML={{ __html: feedback.feedbackHtml }}
             />
           </div>

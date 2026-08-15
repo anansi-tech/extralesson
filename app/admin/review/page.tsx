@@ -147,11 +147,14 @@ export default async function ReviewPage() {
           </h2>
           <div className="mt-2 grid gap-x-8 gap-y-1 sm:grid-cols-2">
             {matrix.topics.map((t) => (
-              <div key={`p1-${t.code}`} className="flex items-baseline justify-between text-sm">
-                <span>
+              <div
+                key={`p1-${t.code}`}
+                className="flex items-baseline justify-between gap-3 text-sm"
+              >
+                <span className="min-w-0">
                   <span className="font-mono text-xs text-dim">{t.code}</span> {t.title}
                 </span>
-                <span className="font-mono text-xs">
+                <span className="shrink-0 whitespace-nowrap font-mono text-xs">
                   <b className={t.p1_actual >= t.p1_target ? 'text-green-pen' : 'text-ink'}>
                     {t.p1_actual}
                   </b>
@@ -168,11 +171,14 @@ export default async function ReviewPage() {
           </h2>
           <div className="mt-2 grid gap-x-8 gap-y-1 sm:grid-cols-2">
             {matrix.topics.map((t) => (
-              <div key={`p2-${t.code}`} className="flex items-baseline justify-between text-sm">
-                <span>
+              <div
+                key={`p2-${t.code}`}
+                className="flex items-baseline justify-between gap-3 text-sm"
+              >
+                <span className="min-w-0">
                   <span className="font-mono text-xs text-dim">{t.code}</span> {t.title}
                 </span>
-                <span className="font-mono text-xs">
+                <span className="shrink-0 whitespace-nowrap font-mono text-xs">
                   <b
                     className={
                       t.p2_marks_actual >= t.p2_marks_target ? 'text-green-pen' : 'text-ink'
