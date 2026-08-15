@@ -16,7 +16,19 @@ export interface FormatCheck {
   feedback?: string;
 }
 
-const FRACTION = /^-?\d+\s*\/\s*\d+$/;
+// A fraction reaches us written either way — "3/4" from a student typing, and
+// \frac{3}{4} from a canonical answer written in KaTeX. They are one object,
+// and a form check that only knows the first marks a correct answer wrong.
+function asFraction(raw: string): [number, number] | null {
+  const v = value_(raw);
+  const katex = v.match(/^(-?)\\[dt]?frac\s*\{\s*(-?\d+)\s*\}\s*\{\s*(-?\d+)\s*\}$/);
+  if (katex) {
+    const sign = katex[1] === '-' ? -1 : 1;
+    return [sign * Number(katex[2]), Number(katex[3])];
+  }
+  const ascii = v.match(/^(-?\d+)\s*\/\s*(-?\d+)$/);
+  return ascii ? [Number(ascii[1]), Number(ascii[2])] : null;
+}
 const SURD = /(?:√|\\sqrt)/;
 const STANDARD_FORM = /^-?\d(?:\.\d+)?\s*(?:×|x|\*|\\times)\s*10\s*(?:\^|\*\*)\s*\{?-?\d+\}?$/i;
 const DECIMAL = /^-?\d+\.\d+$/;
@@ -90,13 +102,14 @@ export function checkAnswerFormat(raw: string, format: AnswerFormat): FormatChec
   }
 
   if (format === 'lowest_terms') {
-    if (!FRACTION.test(value)) {
+    const frac = asFraction(raw);
+    if (!frac) {
       return {
         ok: false,
         feedback: 'Correct value, but the question asks for a fraction in its lowest terms.',
       };
     }
-    const [n, d] = value.split('/').map((x) => Number(x.trim()));
+    const [n, d] = frac;
     if (Math.abs(gcd(n, d)) !== 1) {
       return {
         ok: false,

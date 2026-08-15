@@ -50,9 +50,28 @@ grep -riwE 'vision|upload' app lib scripts                                    # 
 grep -riE "from ['\"]stripe|require\(['\"]stripe" app lib scripts             # zero hits
 ```
 
-R1.5 specifics: the current spec is `ROUND_1_5_FINAL.md`. Visuals are ONLY the
+Current specs: `ROUND_1_6_PAPER_FIDELITY.md` and `SPECIMEN_FINDINGS_AND_R1_7.md`, layered on `ROUND_1_5_FINAL.md`. Visuals are ONLY the
 parametric templates in `lib/visuals/` (model emits `{template, params}`,
 never SVG); every visual is Zod-validated and numerically cross-checked in
 `lib/visuals/verify.ts` before the solve pass. Generation is recipe-driven
 from the target matrices (`lib/targets/`, `lib/generation/recipe.ts`). The
 dedup gate compares only against OUR approved bank — never external corpora.
+
+## Prompt assets — where the style spec actually lives
+
+The style spec, exemplars and mark-scheme conventions live in `lib/prompts/`
+(`question-gen.ts`, `exemplars.ts`, `mark-scheme.ts`). **That is the source of
+truth.** Specs from R1.5 onward refer to a `design/STYLE_SPEC_AND_EXEMPLARS.md`
+Part A/A6 — no such document exists, and none should be created: it would drift
+from the prompt that is actually sent. Read a reference to it as a reference to
+these files, and land the change there.
+
+## Standing rule — every answer_format ships with a round-trip test
+
+A new `AnswerFormat` is not done until a test proves that an answer written
+CORRECTLY in that form marks correct, end to end through `markStructured`. The
+negative case is not enough on its own: `standard_form` shipped in R1.6 with
+tests that only proved a badly-formed answer was rejected, and the fact that a
+well-formed `4.5 \times 10^{-5}` never even compared equal to its own value —
+the canonicalizer knew neither `\times` nor braced exponents — stayed invisible
+until R1.7. See `tests/format.test.ts` ("round trip").
