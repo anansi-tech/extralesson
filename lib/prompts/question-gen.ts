@@ -5,7 +5,7 @@ import { exemplarsFor } from './exemplars';
 // Generation prompts (R1.5 §5): recipe + style spec Part A + 2 module-matched
 // exemplars + visual-template contract. Bump PROMPT_VERSION on any wording
 // change — it is recorded in gen_meta.prompt_version on every insert.
-export const PROMPT_VERSION = 'v9';
+export const PROMPT_VERSION = 'v10';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -29,6 +29,31 @@ const ARCHETYPE_CONTRACTS: Record<QuestionRecipe['archetype'], string> = {
   'complete-the-table':
     'The student must extend a pattern or relation into missing table entries, then use the completed table; pair the question with a patternFigure or dataTable visual.',
 };
+
+// R1.6 §7 — patterns that recur in every real Paper 2. They are prompt-side
+// weighting, not schema: each block is emitted only where it actually applies,
+// so a number-theory recipe is not told about function notation.
+const RFG_TOPICS = new Set(['M2-RFG1', 'M3-RFG2']);
+
+function paperPatterns(recipe: QuestionRecipe, context: RecipeContext, objectives: Objective[]): string {
+  if (recipe.kind === 'mcq') return '';
+  const blocks: string[] = [
+    `PAPER PATTERNS (use where they fit the mathematics — never as decoration):
+- "Hence, or otherwise, ..." chains a later part onto an earlier result and is standard in Paper 2. Where you use it, the rubric must allow follow-through: word the later part's criteria so they award marks for correct method applied to the student's own earlier value, not only to the official one.
+- "Give a reason for your answer" is routine on geometry, circle-theorem, and comparison parts. Any part that asks for a reason, an explanation, or a justification carries "response_mode": "explain".`,
+  ];
+
+  if (RFG_TOPICS.has(context.topic_code)) {
+    blocks.push(`FUNCTION NOTATION (hard requirement for this topic): use the notation the papers use, not $f(x) = \\ldots$ alone. Include the mapping form $f: x \\to \\ldots$, and make at least one part use a composite ($fg(x)$ or $gf(x)$) or the inverse ($f^{-1}(x)$).`);
+  }
+
+  const sequenceWork = objectives.some((o) => /sequence|pattern/i.test(`${o.text} ${o.notes ?? ''}`));
+  if (sequenceWork) {
+    blocks.push(`SEQUENCE/PATTERN SHAPE: the papers run these as draw the next figure -> complete the missing table rows -> give the rule for the nth term -> a reverse or justification part. We do not set drawing work, so START at the table: complete-the-table part(s), then the general rule, then a reverse part (given a term or a total, find n) or a justification part.`);
+  }
+
+  return blocks.join('\n\n');
+}
 
 function demandRequirements(recipe: QuestionRecipe): string {
   if (recipe.difficulty === 1) {
@@ -70,6 +95,7 @@ export function buildDraftPrompt(args: {
   visualContract: string;
 }): string {
   const { topicTitle, objectives, recipe, context, module, visualContract } = args;
+  const patterns = paperPatterns(recipe, context, objectives);
   const kind = recipe.kind;
   const objectiveBlock = objectives
     .map((o) => `- ${o.id}: ${o.text}${o.notes ? `\n  Notes: ${o.notes}` : ''}`)
@@ -90,6 +116,8 @@ ${visualContract}
     kind === 'mcq'
       ? 'PARTS: exactly one part, label "a", marks 1, whose "answer" is the correct option text.'
       : `PARTS (hard requirement): ${partCountGuidance(recipe.marks)} flat parts labeled "a", "b", ... (never (i)/(ii) nesting). Part marks sum to ${recipe.marks}. Each part's "answer" contains ONLY that part's final value (values-only convention). Later parts build on earlier results where natural. "final_answer" must be the parts' answers joined with "; ".
+- Every part carries "response_mode": "answer" when the student types a final value, "show_that" when the stem states the result and the part asks for the derivation, or "explain" when the part asks for a reason or justification. Never "construct" — we do not set drawing, plotting, or ruler-and-compasses work. Whichever mode you choose, "answer" still holds the value or the reason, because the mark scheme is built from it.
+- Set "answer_format" on a part ONLY when its wording demands a particular form: "exact", "surd" ($a\\sqrt{b}$), "standard_form", "lowest_terms", "integer", "equation_form" (an answer of the form $y = mx + c$), "sf:N" (N significant figures) or "dp:N" (N decimal places). If you write "correct to 2 decimal places" or "in exact form" into a part, that part must carry the matching answer_format; if you do not demand a form, omit the field.
 - When a part asks the student to NAME, STATE, CLASSIFY, or JUDGE something (including yes/no verdicts), "answer" must be the shortest standard form — the syllabus term, or the bare verdict word — and every other wording an examiner would accept goes in that part's "accept" array (a mark scheme's "accept:" list — e.g. answer "edge", accept ["line segment where two faces meet"]). Omit "accept" for numeric/algebraic answers unless a genuinely different correct form exists.`;
 
   return `You are writing an original practice question for CSEC Mathematics (CXC 05/G/SYLL 16, 2027 syllabus) in the style of ${kind === 'mcq' ? 'Paper 1 (multiple choice)' : 'Paper 2 (structured response)'}.
@@ -114,6 +142,7 @@ MARK PROFILES (official CXC): every mark is CK (Conceptual Knowledge — recalli
 ${partsSection}
 
 ${visualSection}
+${patterns ? `\n${patterns}` : ''}
 
 RULES:
 - The question must be ORIGINAL — written in exam style but never copied, reconstructed, paraphrased, or imitated from any CXC past paper. The recipe contains abstract controls only.

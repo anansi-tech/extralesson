@@ -16,7 +16,7 @@ const M1_STRUCTURED = `{
   "difficulty": 2,
   "marks": 7,
   "parts": [
-    { "label": "a", "prompt": "Let the small bottle hold $s$ ml. Write an equation in $s$.", "marks": 2, "answer": "3s = 2(s + 250)" },
+    { "label": "a", "prompt": "Let the small bottle hold $s$ ml. Write an equation in $s$.", "marks": 2, "answer": "3s = 2(s + 250)", "response_mode": "answer", "answer_format": "equation_form" },
     { "label": "b", "prompt": "Solve your equation to find the capacity of the small bottle.", "marks": 3, "answer": "500 ml" },
     { "label": "c", "prompt": "A customer needs 6 litres of juice. How many large bottles must they buy?", "marks": 2, "answer": "8" }
   ],
@@ -71,7 +71,7 @@ const M2_STRUCTURED = `{
   "parts": [
     { "label": "a", "prompt": "State the modal class.", "marks": 1, "answer": "5-9" },
     { "label": "b", "prompt": "Calculate an estimate of the mean number of wickets.", "marks": 4, "answer": "9.17" },
-    { "label": "c", "prompt": "State ONE reason your answer to (b) is an estimate.", "marks": 1, "answer": "grouped data uses class midpoints, not actual values", "accept": ["the actual values within each class are unknown"] }
+    { "label": "c", "prompt": "State ONE reason your answer to (b) is an estimate.", "marks": 1, "answer": "grouped data uses class midpoints, not actual values", "accept": ["the actual values within each class are unknown"], "response_mode": "explain" }
   ],
   "rubric": [
     { "code": "CK1", "profile": "CK", "criterion": "Identifies the modal class from frequencies", "mark_value": 1, "part_label": "a" },
