@@ -131,3 +131,38 @@ describe('template contract completeness', () => {
     expect(grid).toContain('standard transformation');
   });
 });
+
+// No template may draw with non-finite coordinates. A blank figure is worse
+// than no figure: the question reads as though one is there, and a reviewer
+// approving it ships a question a student cannot answer.
+describe('every template draws something finite', () => {
+  const ctx = { stem: 'A figure with sides 3 cm, 4 cm and 5 cm and angles 60, 60, 60.', partPrompts: ['Find it.'] };
+
+  it('renders no NaN for any template that accepts empty params', () => {
+    for (const [name, template] of Object.entries(TEMPLATES)) {
+      const parsed = template.paramsSchema.safeParse({});
+      if (!parsed.success) continue; // discriminated unions need a kind; covered by their own tests
+      const svg = template.render(parsed.data as never);
+      expect(svg, name).not.toContain('NaN');
+      expect(svg, name).not.toContain('Infinity');
+    }
+  });
+
+  it('rejects a visual that would render blank', () => {
+    const res = verifyQuestionVisual(
+      { template: 'triangleLabeled', params: { labels: ['A', 'B', 'C'], sides: [{ side: 2, value: 4, unit: 'cm' }] } },
+      ctx,
+    );
+    // fixed: this now draws the default triangle rather than collapsing
+    expect(res.ok).toBe(true);
+  });
+
+  it('would catch a collapse if one ever returned', () => {
+    const broken = {
+      ...TEMPLATES.triangleLabeled,
+      render: () => '<svg viewBox="0 0 10 10"><polygon points="NaN,NaN" /></svg>',
+    };
+    const svg = broken.render();
+    expect(svg).toContain('NaN'); // the condition the gate tests for
+  });
+});

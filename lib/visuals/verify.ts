@@ -33,5 +33,22 @@ export function verifyQuestionVisual(
   const all = template.verify(parsed.data as never, context);
   const advisories = all.filter(isTextCrossCheckIssue);
   const issues = all.filter((i) => !isTextCrossCheckIssue(i));
+
+  // Last check: does it actually draw? Params can be valid and the geometry
+  // still collapse — a triangle given only side lengths once laid out every
+  // vertex at NaN and reached the review queue as an empty box. A figure a
+  // reviewer cannot see is worse than no figure, because the question reads as
+  // if one is there.
+  if (issues.length === 0) {
+    try {
+      const svg = template.render(parsed.data as never);
+      if (svg.includes('NaN') || svg.includes('Infinity')) {
+        issues.push(`${visual.template}: renders with non-finite coordinates — the figure would be blank`);
+      }
+    } catch (err) {
+      issues.push(`${visual.template}: render threw — ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
   return { ok: issues.length === 0, issues, advisories, params: parsed.data };
 }

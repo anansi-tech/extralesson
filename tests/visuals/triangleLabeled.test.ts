@@ -280,3 +280,37 @@ describe('triangleLabeled — non-right configurations (R1.6 §6)', () => {
     expect(footX).toBeLessThan(580);
   });
 });
+
+// A review card showed an empty box where a triangle should be. The params were
+// valid — three vertex labels and one side length, which is exactly what a
+// scale-drawing question gives — but with no angles at all the layout read past
+// the end of its two-entry share table and every vertex came out NaN.
+describe('triangleLabeled — a triangle with no angles still gets drawn', () => {
+  it('draws the default scalene triangle when only sides are given', () => {
+    const p = TriangleLabeledParamsZ.parse({
+      labels: ['A', 'B', 'C'],
+      sides: [{ side: 2, value: 4, unit: 'cm' }],
+    });
+    const svg = triangleLabeled.render(p);
+    expect(svg).not.toContain('NaN');
+    const poly = svg.match(/<polygon points="([^"]+)"/)![1];
+    for (const n of poly.split(/[ ,]/).map(Number)) expect(Number.isFinite(n)).toBe(true);
+    expect(svg).toContain('>A<');
+    expect(svg).toContain('4 cm');
+  });
+
+  it('draws nothing degenerate for any number of supplied angles', () => {
+    const cases = [
+      {},
+      { angles: [{ vertex: 0, value: 90 }] },
+      { angles: [{ vertex: 0, value: 50 }, { vertex: 1, value: 60 }] },
+      { angles: [{ vertex: 0, value: 50 }, { vertex: 1, value: 60 }, { vertex: 2, value: 70 }] },
+      { rightAngleAt: 1 },
+      { equalTicks: [{ side: 0, count: 1 }, { side: 1, count: 1 }] },
+    ];
+    for (const c of cases) {
+      const svg = triangleLabeled.render(TriangleLabeledParamsZ.parse(c));
+      expect(svg, JSON.stringify(c)).not.toContain('NaN');
+    }
+  });
+});

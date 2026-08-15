@@ -68,13 +68,19 @@ function layoutAngles(p: TriangleLabeledParams): [number, number, number] {
   if (missing.length === 0) {
     return Math.abs(sum - 180) < 0.01 ? (given as [number, number, number]) : DEFAULT_ANGLES;
   }
+  // Nothing given at all — a labelled sketch with only side lengths, which the
+  // scale-drawing questions ask for. Draw the default scalene triangle: the
+  // shares table below covers one or two unknown angles, and a third would have
+  // read past its end and made every vertex NaN, rendering an empty box.
+  if (missing.length === 3) return DEFAULT_ANGLES;
   const remaining = 180 - sum;
   if (remaining < 2) return DEFAULT_ANGLES; // degenerate — verify() flags it
   const shares = missing.length === 1 ? [1] : [0.58, 0.42]; // unequal → scalene look
   missing.forEach((idx, k) => {
     given[idx] = remaining * shares[k];
   });
-  return given as [number, number, number];
+  const out = given as [number, number, number];
+  return out.every((a) => Number.isFinite(a) && a > 0 && a < 180) ? out : DEFAULT_ANGLES;
 }
 
 // Screen positions of vertices 0 (apex), 1 (bottom-left), 2 (bottom-right).
