@@ -214,14 +214,34 @@ async function main() {
         // Every issue, with its path: a top-level refine reports an empty path
         // and "Invalid input", which is unactionable on its own — one run lost
         // 48 attempts to a single unreadable cause.
+        // Say what arrived, not only that it was wrong: "answer_format: Invalid"
+        // does not tell you which value the model chose.
+        const at = (path: PropertyKey[]) =>
+          path.reduce<unknown>((v, k) => (v == null ? v : (v as Record<PropertyKey, unknown>)[k]), candidate);
         console.log(
           `  ✗ Zod: ${validated.error.issues
-            .map((i) => `${i.path.length ? i.path.join('.') : '<root>'}: ${i.message}`)
+            .map((i) => {
+              const where = i.path.length ? i.path.join('.') : '<root>';
+              const got = i.path.length ? JSON.stringify(at(i.path))?.slice(0, 60) : undefined;
+              return `${where}: ${i.message}${got === undefined ? '' : ` (got ${got})`}`;
+            })
             .join(' | ')}`,
         );
         continue;
       }
       const draft = validated.data;
+
+      // A dropped answer_format is not a rejection, but it is drift worth seeing.
+      const droppedFormats = (candidate.parts ?? [])
+        .map((p, i) => ({ raw: p.answer_format, kept: draft.parts[i]?.answer_format, label: p.label }))
+        .filter((f) => f.raw && !f.kept);
+      if (droppedFormats.length > 0) {
+        console.log(
+          `  · format note: unsupported answer_format dropped — ${droppedFormats
+            .map((f) => `(${f.label}) ${JSON.stringify(f.raw)}`)
+            .join(', ')}`,
+        );
+      }
 
       // Gate 2: visual verify (auto-reject before the solve pass, §3)
       if (draft.visual) {

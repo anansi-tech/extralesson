@@ -245,9 +245,17 @@ describe('QuestionDraftZ — response_mode and answer_format (R1.6)', () => {
     }
   });
 
-  it('rejects an unknown answer_format', () => {
-    expect(QuestionDraftZ.safeParse(withPart({ answer_format: 'nearest_cent' })).success).toBe(false);
-    expect(QuestionDraftZ.safeParse(withPart({ answer_format: 'sf:' })).success).toBe(false);
+  // Policy changed in R1.7: an unknown format is dropped rather than fatal.
+  // "nearest_cent" and "set_builder_notation" are real demands we have no
+  // checker for, and discarding a sound question over its label cost seven
+  // attempts on one topic in a live run.
+  it('drops an unknown answer_format but keeps the question', () => {
+    for (const f of ['nearest_cent', 'sf:']) {
+      const parsed = QuestionDraftZ.safeParse(withPart({ answer_format: f }));
+      expect(parsed.success, f).toBe(true);
+      const q = parsed.success ? parsed.data : null;
+      expect(q && 'parts' in q ? q.parts[0].answer_format : 'unset', f).toBeUndefined();
+    }
   });
 });
 
@@ -281,5 +289,38 @@ describe('response_mode is read from the wording, not just the label', () => {
   it('never weakens a mode the model set deliberately', () => {
     expect(part('Calculate the area.', 'explain').response_mode).toBe('explain');
     expect(part('Find $x$.', 'show_that').response_mode).toBe('show_that');
+  });
+});
+
+// A generation run lost seven attempts on one topic because the model tagged an
+// inequality answer "set_builder_notation" — a real demand we have no checker
+// for. The question was fine; only the label was unknown.
+describe('answer_format we do not recognise drops out, and the question survives', () => {
+  const part = (answer_format: unknown) =>
+    PartZ.parse({ label: 'a', prompt: 'Solve the inequality.', marks: 2, answer: 'x > 3', answer_format });
+
+  it('keeps every format we can actually mark', () => {
+    for (const f of ['exact', 'standard_form', 'lowest_terms', 'integer', 'surd', 'equation_form', 'sf:3', 'dp:1']) {
+      expect(part(f).answer_format, f).toBe(f);
+    }
+  });
+
+  it('drops a value we have no checker for rather than failing the part', () => {
+    for (const f of ['set_builder_notation', 'ratio', 'bearing', 'sf:three', 'dp', '']) {
+      expect(part(f).answer_format, f).toBeUndefined();
+    }
+  });
+
+  it('leaves the part otherwise intact, so the demand still reaches the student', () => {
+    const p = PartZ.parse({
+      label: 'a',
+      prompt: 'Write the solution set in set-builder notation.',
+      marks: 2,
+      answer: '\\{x : x > 3\\}',
+      answer_format: 'set_builder_notation',
+    });
+    expect(p.answer_format).toBeUndefined();
+    expect(p.prompt).toContain('set-builder notation');
+    expect(p.answer).toBe('\\{x : x > 3\\}');
   });
 });

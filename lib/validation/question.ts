@@ -134,7 +134,17 @@ export const PartZ = z.object({
   // R1.6 §1: only 'answer' parts can be auto-marked.
   response_mode: defaulted(ResponseModeZ, 'answer'),
   // R1.6 §2: set whenever the stem demands a particular form.
-  answer_format: optional(AnswerFormatZ),
+  //
+  // A value we do not recognise drops out rather than failing the question. The
+  // model reaches for real demands we have no checker for — one run lost seven
+  // attempts to "set_builder_notation" — and the demand still reaches the
+  // student through the part's wording, which is where they read it. Losing a
+  // whole question over the label would be the expensive way to be strict.
+  // Generation reports what it dropped, so the drift stays visible.
+  answer_format: z.preprocess(
+    (v) => (AnswerFormatZ.safeParse(v).success ? v : undefined),
+    AnswerFormatZ.optional(),
+  ),
 }).transform((p) => ({ ...p, response_mode: modeFromWording(p.prompt, p.response_mode) }));
 
 const PART_LABELS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
