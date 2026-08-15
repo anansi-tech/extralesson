@@ -50,6 +50,29 @@ export const CoordinateGridParamsZ = z.object({
     )
     .max(3)
     .default([]),
+  // Shaded solution regions for systems of linear inequalities. Each
+  // constraint is a*x + b*y <= c ('le') or a*x + b*y >= c ('ge'), which
+  // covers y <= mx + k (a = -m, b = 1, c = k) and x >= k (a = 1, b = 0)
+  // alike. The shaded set is where EVERY constraint of the region holds.
+  regions: z
+    .array(
+      z.object({
+        constraints: z
+          .array(
+            z.object({
+              a: z.number().min(-50).max(50),
+              b: z.number().min(-50).max(50),
+              c: z.number().min(-500).max(500),
+              op: z.enum(['le', 'ge']),
+            }),
+          )
+          .min(1)
+          .max(5),
+        label: z.string().max(40).optional(),
+      }),
+    )
+    .max(2)
+    .default([]),
 });
 
 export type CoordinateGridParams = z.infer<typeof CoordinateGridParamsZ>;
@@ -226,6 +249,101 @@ function clipLine(
   return best;
 }
 
+type Region = CoordinateGridParams['regions'][number];
+type Constraint = Region['constraints'][number];
+
+// Sutherland–Hodgman: clip a convex polygon against the half-plane
+// a*x + b*y <= c. 'ge' constraints are negated into that form by the caller.
+function clipHalfPlane(poly: Pt[], a: number, b: number, c: number): Pt[] {
+  const EPS = 1e-9;
+  const at = (q: Pt) => a * q.x + b * q.y - c;
+  const out: Pt[] = [];
+  for (let i = 0; i < poly.length; i++) {
+    const cur = poly[i];
+    const prev = poly[(i + poly.length - 1) % poly.length];
+    const dc = at(cur);
+    const dp = at(prev);
+    const cross = (): Pt => {
+      const t = dp / (dp - dc);
+      return { x: prev.x + t * (cur.x - prev.x), y: prev.y + t * (cur.y - prev.y) };
+    };
+    if (dc <= EPS) {
+      if (dp > EPS) out.push(cross());
+      out.push(cur);
+    } else if (dp <= EPS) {
+      out.push(cross());
+    }
+  }
+  return out;
+}
+
+// The satisfying set of a region, clipped to the visible window. Fewer than
+// three vertices (or a sliver of no area) means the constraints have no
+// common ground on screen.
+function regionPolygon(
+  region: Region,
+  xmin: number,
+  xmax: number,
+  ymin: number,
+  ymax: number,
+): Pt[] {
+  let poly: Pt[] = [
+    { x: xmin, y: ymin },
+    { x: xmax, y: ymin },
+    { x: xmax, y: ymax },
+    { x: xmin, y: ymax },
+  ];
+  for (const k of region.constraints) {
+    if (k.a === 0 && k.b === 0) continue; // degenerate — verify() flags it
+    const s = k.op === 'ge' ? -1 : 1;
+    poly = clipHalfPlane(poly, s * k.a, s * k.b, s * k.c);
+    if (poly.length === 0) return [];
+  }
+  // Drop vertices the clipping duplicated at shared boundaries.
+  const dedup: Pt[] = [];
+  for (const q of poly) {
+    const last = dedup[dedup.length - 1];
+    if (!last || Math.abs(last.x - q.x) > TOL || Math.abs(last.y - q.y) > TOL) dedup.push(q);
+  }
+  while (
+    dedup.length > 1 &&
+    Math.abs(dedup[0].x - dedup[dedup.length - 1].x) <= TOL &&
+    Math.abs(dedup[0].y - dedup[dedup.length - 1].y) <= TOL
+  ) {
+    dedup.pop();
+  }
+  if (dedup.length < 3) return [];
+  let area2 = 0;
+  for (let i = 0; i < dedup.length; i++) {
+    const q = dedup[i];
+    const r = dedup[(i + 1) % dedup.length];
+    area2 += q.x * r.y - r.x * q.y;
+  }
+  return Math.abs(area2) / 2 < 1e-6 ? [] : dedup;
+}
+
+// "2x + 1", "-x", "5" — the right-hand side of y <op> mx + k.
+function rhsText(m: number, k: number): string {
+  if (m === 0) return String(round(k));
+  const ms = m === 1 ? 'x' : m === -1 ? '-x' : `${round(m)}x`;
+  if (k === 0) return ms;
+  return k > 0 ? `${ms} + ${round(k)}` : `${ms} - ${round(-k)}`;
+}
+
+// A constraint in the form a student reads: "y <= 2x + 1", "x >= 0".
+function fmtConstraint(k: Constraint): string {
+  const sym = k.op === 'le' ? '<=' : '>=';
+  const flipped = k.op === 'le' ? '>=' : '<=';
+  if (k.b !== 0) {
+    // Divide by b; dividing by a negative reverses the inequality.
+    return `y ${k.b > 0 ? sym : flipped} ${rhsText(-k.a / k.b, k.c / k.b)}`;
+  }
+  if (k.a !== 0) {
+    return `x ${k.a > 0 ? sym : flipped} ${round(k.c / k.a)}`;
+  }
+  return `0 ${sym} ${round(k.c)}`;
+}
+
 type Curve = CoordinateGridParams['curves'][number];
 
 // Stated features are exact algebraic claims, but a question may quote them to
@@ -316,6 +434,10 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     "curves are quadratics y = ax^2 + bx + c and need a non-zero a; use lines for straight graphs",
     "a curve label written as y = ax^2 + bx + c must match that curve's a, b and c",
     "any root, turning point, y-intercept or axis of symmetry STATED in the question text must be true of a drawn curve",
+    "a region shades where ALL of its constraints hold; each constraint is a*x + b*y <= c (op 'le') or a*x + b*y >= c (op 'ge') — write y <= mx + k as a = -m, b = 1, c = k, and x >= k as a = 1, b = 0, c = k",
+    "a region constraint must have a or b non-zero — a = b = 0 constrains nothing",
+    "a region's constraints must be satisfiable together somewhere inside x_range x y_range; mutually exclusive constraints shade nothing",
+    "draw the boundary of each inequality as a line in `lines` as well, so the student can see it",
   ],
   paramsSchema: CoordinateGridParamsZ,
 
@@ -369,6 +491,24 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
       if (gy !== 0) parts.push(text(labelX, Y(gy) + 3, String(gy), { size: 9, anchor: 'end' }));
     }
     if (hasXAxis && hasYAxis) parts.push(text(X(0) - 5, Y(0) + 14, 'O', { size: 10, anchor: 'end' }));
+    // shaded inequality regions, drawn UNDER the lines, curves, polygons and
+    // points so every marker stays legible on top of the hatch
+    if (p.regions.length > 0) {
+      parts.push(
+        `<defs><pattern id="regionHatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="${INK}" stroke-width="0.5" /></pattern></defs>`,
+      );
+      for (const region of p.regions) {
+        const poly = regionPolygon(region, xmin, xmax, ymin, ymax);
+        if (poly.length < 3) continue; // empty region — draw nothing
+        const d = poly.map((q) => `${round(X(q.x))},${round(Y(q.y))}`).join(' ');
+        parts.push(`<polygon points="${d}" fill="url(#regionHatch)" stroke="none" />`);
+        if (region.label) {
+          const cx = poly.reduce((s, q) => s + X(q.x), 0) / poly.length;
+          const cy = poly.reduce((s, q) => s + Y(q.y), 0) / poly.length;
+          parts.push(text(cx, cy + 4, region.label, { size: 13 }));
+        }
+      }
+    }
     // straight lines y = mx + c across the visible window
     for (const ln of p.lines) {
       const seg = clipLine(ln.m, ln.c, xmin, xmax, ymin, ymax);
@@ -448,6 +588,13 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
         `Parabola ${fmtQuadratic(cv.a, cv.b, cv.c)} (${shape})${dom}${cv.label ? ` labeled "${cv.label}"` : ''}.`,
       );
     }
+    p.regions.forEach((region, i) => {
+      const conds = region.constraints.map(fmtConstraint).join(' and ');
+      const named = region.label ? ` labelled "${region.label}"` : '';
+      bits.push(
+        `Shaded region${p.regions.length > 1 ? ` ${i + 1}` : ''}${named}: the region where ${conds}.`,
+      );
+    });
     return bits.join(' ');
   },
 
@@ -517,6 +664,23 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
         }
       }
     }
+    p.regions.forEach((region, i) => {
+      let degenerate = false;
+      region.constraints.forEach((k, j) => {
+        if (k.a === 0 && k.b === 0) {
+          degenerate = true;
+          issues.push(
+            `coordinateGrid: region ${i + 1} constraint ${j + 1} has a = 0 and b = 0, which constrains nothing`,
+          );
+        }
+      });
+      if (degenerate) return;
+      if (regionPolygon(region, xmin, xmax, ymin, ymax).length < 3) {
+        issues.push(
+          `coordinateGrid: region ${i + 1} constraints (${region.constraints.map(fmtConstraint).join(', ')}) are not satisfiable together anywhere in the visible range`,
+        );
+      }
+    });
     issues.push(...statedFeatureIssues(p.curves, context));
     return issues;
   },

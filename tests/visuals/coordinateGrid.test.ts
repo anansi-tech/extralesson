@@ -239,3 +239,142 @@ describe('coordinateGrid — features stated in the question must be true', () =
     ).toEqual([]);
   });
 });
+
+// ---- shaded regions for systems of linear inequalities (ORIGINAL fixture
+// data only) ----
+
+describe('coordinateGrid — shaded inequality regions', () => {
+  const plain = { stem: 'The graph shows a shaded region.', partPrompts: [] };
+
+  // y <= 2x + 1  ->  -2x + y <= 1 ; x >= 0 ; y >= 0
+  const feasible = CoordinateGridParamsZ.parse({
+    x_range: [-2, 8],
+    y_range: [-2, 8],
+    regions: [
+      {
+        constraints: [
+          { a: -2, b: 1, c: 1, op: 'le' },
+          { a: 1, b: 0, c: 0, op: 'ge' },
+          { a: 0, b: 1, c: 0, op: 'ge' },
+        ],
+        label: 'R',
+      },
+    ],
+    lines: [{ m: 2, c: 1, label: 'y = 2x + 1' }],
+  });
+
+  it('renders the region as a hatched polygon under the markers (snapshot)', () => {
+    const svg = coordinateGrid.render(feasible);
+    expect(svg).toContain('regionHatch');
+    expect(svg).toContain('fill="url(#regionHatch)"');
+    expect(svg).toContain('R');
+    // No colour beyond ink/white/hatch.
+    expect(svg).not.toMatch(/fill="#(?!1E2430)/);
+    // The region is drawn before the boundary line, so markers stay on top.
+    expect(svg.indexOf('url(#regionHatch)')).toBeLessThan(svg.lastIndexOf('<line'));
+    expect(svg).toMatchSnapshot();
+  });
+
+  it('emits no region markup at all when there are no regions', () => {
+    const svg = coordinateGrid.render(params);
+    expect(svg).not.toContain('regionHatch');
+  });
+
+  it('clips the region to the window, giving a bounded polygon', () => {
+    const svg = coordinateGrid.render(feasible);
+    const hatched = svg.match(/<polygon points="([^"]+)" fill="url\(#regionHatch\)"/);
+    expect(hatched).not.toBeNull();
+    const vertices = (hatched as RegExpMatchArray)[1].split(' ');
+    // x >= 0, y >= 0, y <= 2x + 1 over [-2,8]x[-2,8] is the pentagon
+    // (0,0), (8,0), (8,8), (3.5,8), (0,1) — y = 2x + 1 meets the y-axis at 1,
+    // above the x-axis, so the left edge is a genuine segment.
+    expect(vertices.length).toBe(5);
+  });
+
+  it('draws nothing for an empty region but still renders the grid', () => {
+    const empty = CoordinateGridParamsZ.parse({
+      x_range: [-4, 4],
+      y_range: [-4, 4],
+      regions: [
+        {
+          constraints: [
+            { a: 1, b: 0, c: 3, op: 'ge' },
+            { a: 1, b: 0, c: -3, op: 'le' },
+          ],
+        },
+      ],
+    });
+    const svg = coordinateGrid.render(empty);
+    expect(svg).toContain('<svg');
+    expect(svg).not.toContain('fill="url(#regionHatch)"');
+  });
+
+  it('describe() states every constraint in readable form', () => {
+    const d = coordinateGrid.describe(feasible);
+    expect(d).toContain('y <= 2x + 1');
+    expect(d).toContain('x >= 0');
+    expect(d).toContain('y >= 0');
+    expect(d).toContain('labelled "R"');
+  });
+
+  it('describe() reverses the inequality when b is negative', () => {
+    // -y <= -4  is  y >= 4.
+    const flipped = CoordinateGridParamsZ.parse({
+      x_range: [-2, 8],
+      y_range: [0, 8],
+      regions: [{ constraints: [{ a: 0, b: -1, c: -4, op: 'le' }] }],
+    });
+    expect(coordinateGrid.describe(flipped)).toContain('y >= 4');
+  });
+
+  it('verify passes on a satisfiable region', () => {
+    expect(coordinateGrid.verify(feasible, plain)).toEqual([]);
+  });
+
+  it('verify rejects mutually unsatisfiable constraints', () => {
+    const bad = CoordinateGridParamsZ.parse({
+      x_range: [-4, 4],
+      y_range: [-4, 4],
+      regions: [
+        {
+          constraints: [
+            { a: 0, b: 1, c: 3, op: 'ge' },
+            { a: 0, b: 1, c: 1, op: 'le' },
+          ],
+        },
+      ],
+    });
+    expect(coordinateGrid.verify(bad, plain).join(' ')).toContain('not satisfiable together');
+  });
+
+  it('verify rejects a region that misses the visible window entirely', () => {
+    const bad = CoordinateGridParamsZ.parse({
+      x_range: [0, 6],
+      y_range: [0, 6],
+      regions: [{ constraints: [{ a: 1, b: 0, c: 20, op: 'ge' }] }],
+    });
+    expect(coordinateGrid.verify(bad, plain).join(' ')).toContain('not satisfiable together');
+  });
+
+  it('verify rejects a degenerate constraint with a = 0 and b = 0', () => {
+    const bad = CoordinateGridParamsZ.parse({
+      x_range: [-4, 4],
+      y_range: [-4, 4],
+      regions: [{ constraints: [{ a: 0, b: 0, c: 5, op: 'le' }] }],
+    });
+    expect(coordinateGrid.verify(bad, plain).join(' ')).toContain('a = 0 and b = 0');
+  });
+
+  it('accepts two regions and leaves the existing checks intact', () => {
+    const two = CoordinateGridParamsZ.parse({
+      ...feasible,
+      regions: [
+        feasible.regions[0],
+        { constraints: [{ a: 1, b: 1, c: 6, op: 'le' }], label: 'S' },
+      ],
+    });
+    expect(coordinateGrid.verify(two, plain)).toEqual([]);
+    const svg = coordinateGrid.render(two);
+    expect((svg.match(/fill="url\(#regionHatch\)"/g) ?? []).length).toBe(2);
+  });
+});
