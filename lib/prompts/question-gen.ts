@@ -2,13 +2,14 @@ import type { Objective, QuestionKind } from '@/lib/types';
 import type { QuestionRecipe, RecipeContext } from '@/lib/generation/recipe';
 import { exemplarsFor } from './exemplars';
 import { MARK_SCHEME_CONVENTIONS } from './mark-scheme';
+import { misconceptionGuidance } from '@/lib/misconceptions';
 
 // Generation prompts (R1.5 §5): recipe + style spec Part A + 2 module-matched
 // exemplars + visual-template contract. Bump PROMPT_VERSION on any wording
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v18';
+export const PROMPT_VERSION = 'v19';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -118,6 +119,7 @@ export function buildDraftPrompt(args: {
 ${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 140)}`).join('\n')}`
     : '';
   const patterns = paperPatterns(recipe, context, objectives);
+  const documentedErrors = misconceptionGuidance(recipe.objective_ids);
   const kind = recipe.kind;
   const objectiveBlock = objectives
     .map((o) => `- ${o.id}: ${o.text}${o.notes ? `\n  Notes: ${o.notes}` : ''}`)
@@ -189,6 +191,7 @@ ${MARK_SCHEME_CONVENTIONS}
 - Where a part carries an answer_format, the scheme marks the form as its own act: include exactly ONE further row for that part with "for_format": true, normally an R mark of 1, whose criterion names the form ("Expresses 'their' answer in standard form"). The other rows mark the value and the method, so a student with the right number in the wrong form keeps them.`}
 - ACCURACY, as the real papers do it: when a part's answer does not terminate — it comes from trigonometry, a square root, ${'\u03c0'}, or a division that runs on — the part must SAY what accuracy it wants ("correct to 3 significant figures", or "to 1 decimal place" for an angle) and carry the matching answer_format ("sf:3", "dp:1"). When the answer is exact but has more than one accepted written form, say which form you want (exact, surd, standard form, lowest terms, ${'y = mx + c'}) and tag that instead. Never demand an accuracy the mathematics does not need.
 - misconceptions: 1-3 entries. Each trigger is a specific wrong final answer for one part; name the error; remediation explains the fix in one or two sentences.
+${documentedErrors ? `\n${documentedErrors}\n` : ''}
 - worked_solution: complete, correct, step-by-step for every part, KaTeX-safe. Separate parts with a blank line. Never begin a sentence with a numeral or a bare expression — join steps with words or a colon, so write "Discount $= 15\\%$ of EC$140, so $0.15 \\times 140 = 21$" or "…, giving $0.15 \\times 140 = 21$", NEVER "…of EC$140. $0.15 \\times 140 = 21$" (a full stop followed by a decimal reads as one mangled number).
 
 EXEMPLARS (style and JSON shape only — do not reuse their content):
