@@ -100,13 +100,25 @@ async function buildRecipe(args: ReturnType<typeof parseArgs>): Promise<{
 }> {
   const { matrix, objectiveApproved } = await getCoverage();
   const topics = await Topic.find().lean<
-    { code: string; title: string; module: ModuleNumber; order: number; objectives: { id: string; text: string; notes?: string }[] }[]
+    {
+      code: string;
+      title: string;
+      module: ModuleNumber;
+      order: number;
+      objectives: { id: string; text: string; notes?: string; assessable?: boolean }[];
+    }[]
   >();
 
+  // R1.6 §3: an objective we told students we cannot assess must not be
+  // generated against either. Construction and measurement objectives ask for
+  // ruler-and-protractor work on paper, and a question written to them can only
+  // fake it — by asking the student to measure a figure that is not to scale.
   const objectivesByTopic = new Map<string, ObjectiveCoverage[]>(
     topics.map((t) => [
       t.code,
-      t.objectives.map((o) => ({ id: o.id, approved: objectiveApproved.get(o.id) ?? 0 })),
+      t.objectives
+        .filter((o) => o.assessable !== false)
+        .map((o) => ({ id: o.id, approved: objectiveApproved.get(o.id) ?? 0 })),
     ]),
   );
 

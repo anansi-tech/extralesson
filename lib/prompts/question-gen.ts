@@ -5,7 +5,7 @@ import { exemplarsFor } from './exemplars';
 // Generation prompts (R1.5 §5): recipe + style spec Part A + 2 module-matched
 // exemplars + visual-template contract. Bump PROMPT_VERSION on any wording
 // change — it is recorded in gen_meta.prompt_version on every insert.
-export const PROMPT_VERSION = 'v10';
+export const PROMPT_VERSION = 'v11';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -110,7 +110,8 @@ ${visualContract}
 - Every value shown in the visual must be consistent with the question's mathematics — the params are numerically cross-checked and any inconsistency auto-rejects the draft.
 - Values the student must READ from a chart/table live only in the visual; values GIVEN in prose (angles, lengths) must appear in both the text and the visual, identically.
 - Labels inside visual params are plain display text: "U", "PQ", "90°" — never "$U$" or KaTeX commands.
-- Never emit SVG, HTML, drawing instructions, or coordinates outside the template params.`;
+- Never emit SVG, HTML, drawing instructions, or coordinates outside the template params.
+- The figure is a LABELLED SKETCH, not a scale drawing — exactly as in the real papers, where diagrams are marked "not drawn to scale". Never describe it as accurately drawn or to scale, and never ask the student to MEASURE a length or an angle from it, or to name the instruments they would use: every value they need must be stated in the text or labelled on the figure.`;
 
   const partsSection =
     kind === 'mcq'
