@@ -39,17 +39,23 @@ function splitParts(cleaned: string): string[] {
     .filter((p) => p.length > 0);
 }
 
-// Strip leading part labels ("(a)", "b)") and naming prefixes: for a part
-// like "small bag = 5" or "plantain: 10", the value is what follows the last
-// '=' or ':'. Applied to both sides, so genuine equations ("y = 2x + 3")
-// reduce consistently to their right-hand side.
+// A name standing in front of a value: "P", "x", "cost of one pineapple".
+// Deliberately excludes anything with digits, operators, braces or backslashes
+// so an expression is never mistaken for a label.
+const LABEL_LIKE = /^[a-z][a-z\s_]{0,24}$/;
+
+// Strip leading part labels ("(a)", "b)") and naming prefixes: for a part like
+// "small bag = 5" or "plantain: 10", the value is what follows the separator.
+// The left side is only discarded when it actually looks like a label —
+// otherwise "matrix = -PR" would throw away the matrix and keep the
+// restatement, and "3s = 2(s + 250)" would lose half the equation.
 function stripLabel(part: string): string {
-  let p = part.trim().replace(/^\(?[a-z]\)[\s.:]*/, '');
-  const eq = p.lastIndexOf('=');
-  if (eq >= 0) p = p.slice(eq + 1);
-  else {
-    const colon = p.lastIndexOf(':');
-    if (colon >= 0) p = p.slice(colon + 1);
+  const p = part.trim().replace(/^\(?[a-z]\)[\s.:]*/, '');
+  for (const sep of ['=', ':']) {
+    const i = p.indexOf(sep);
+    if (i < 0) continue;
+    if (LABEL_LIKE.test(p.slice(0, i).trim())) return p.slice(i + 1).trim();
+    break;
   }
   return p.trim();
 }
@@ -112,12 +118,20 @@ function toMathExpr(s: string): string {
     .replace(/\\/g, '');
 }
 
+// "a = b" becomes "(a) - (b)", so two forms of one equation ("3s = 2(s + 250)"
+// and "3s = 2s + 500") reduce to the same expression.
+function asDifference(expr: string): string {
+  const sides = expr.split('=');
+  return sides.length === 2 ? `(${sides[0]}) - (${sides[1]})` : expr;
+}
+
 // Canonical comparison via mathjs: evaluate both (constants like "2*sqrt(2)"
 // vs "2.828"), else simplify the difference of two algebraic forms to 0.
 // Returns null when mathjs can't decide.
 function mathEquivalent(a: string, b: string): boolean | null {
-  const ea = toMathExpr(a);
-  const eb = toMathExpr(b);
+  const bothEquations = a.includes('=') && b.includes('=');
+  const ea = toMathExpr(bothEquations ? asDifference(a) : a);
+  const eb = toMathExpr(bothEquations ? asDifference(b) : b);
   try {
     const va = evaluate(ea);
     const vb = evaluate(eb);

@@ -5,7 +5,7 @@ import { exemplarsFor } from './exemplars';
 // Generation prompts (R1.5 §5): recipe + style spec Part A + 2 module-matched
 // exemplars + visual-template contract. Bump PROMPT_VERSION on any wording
 // change — it is recorded in gen_meta.prompt_version on every insert.
-export const PROMPT_VERSION = 'v8';
+export const PROMPT_VERSION = 'v9';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -90,7 +90,7 @@ ${visualContract}
     kind === 'mcq'
       ? 'PARTS: exactly one part, label "a", marks 1, whose "answer" is the correct option text.'
       : `PARTS (hard requirement): ${partCountGuidance(recipe.marks)} flat parts labeled "a", "b", ... (never (i)/(ii) nesting). Part marks sum to ${recipe.marks}. Each part's "answer" contains ONLY that part's final value (values-only convention). Later parts build on earlier results where natural. "final_answer" must be the parts' answers joined with "; ".
-- When a part asks the student to NAME, STATE, or CLASSIFY something, "answer" must be the standard syllabus term, and every other wording an examiner would accept goes in that part's "accept" array (a mark scheme's "accept:" list — e.g. answer "edge", accept ["line segment where two faces meet"]). Omit "accept" for numeric/algebraic answers unless a genuinely different correct form exists.`;
+- When a part asks the student to NAME, STATE, CLASSIFY, or JUDGE something (including yes/no verdicts), "answer" must be the shortest standard form — the syllabus term, or the bare verdict word — and every other wording an examiner would accept goes in that part's "accept" array (a mark scheme's "accept:" list — e.g. answer "edge", accept ["line segment where two faces meet"]). Omit "accept" for numeric/algebraic answers unless a genuinely different correct form exists.`;
 
   return `You are writing an original practice question for CSEC Mathematics (CXC 05/G/SYLL 16, 2027 syllabus) in the style of ${kind === 'mcq' ? 'Paper 1 (multiple choice)' : 'Paper 2 (structured response)'}.
 
@@ -173,5 +173,6 @@ ${visual}
 PARTS:
 ${parts}
 
-Return JSON: {"part_answers": [{"label": "a", "final_answer": "..."}, ...]} — one entry per part, in order. Each final_answer contains ONLY that part's final value(s) — no working, no equation setup, no explanations, no sentences. Examples: "42.5" · "x = -1/3; x = 2" · "EC$70".`;
+Return JSON: {"part_answers": [{"label": "a", "final_answer": "..."}, ...]} — one entry per part, in order. Each final_answer contains ONLY that part's final value(s) — no working, no equation setup, no explanations, no sentences, and no restatement of the value in another form. Examples: "42.5" · "x = -1/3; x = 2" · "EC$70".
+If a part asks whether something is true (yes/no, agree/disagree, is the claim correct), answer with the verdict word alone — "Yes" or "No" — without the supporting calculation.`;
 }

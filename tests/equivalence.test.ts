@@ -169,3 +169,24 @@ describe('answersEquivalent — unicode superscripts (pilot round 3)', () => {
     expect(answersEquivalent('P=M^2-2M', 'P = M² + 2M')).toBe(false);
   });
 });
+
+describe('answersEquivalent — label stripping only strips actual labels', () => {
+  it('keeps the value when the left side is an expression, not a label', () => {
+    // The solver restated a vector as "matrix = -PR"; the matrix is the answer.
+    const canonical = '$\\begin{pmatrix}-6\\\\0\\end{pmatrix}$';
+    const candidate = '\\(\\begin{pmatrix}-6\\\\0\\end{pmatrix}=-\\overrightarrow{PR}\\)';
+    expect(answersEquivalent(candidate, canonical)).toBe(true);
+  });
+
+  it('still strips genuine name prefixes', () => {
+    expect(answersEquivalent('C=3n+2', '3n + 2')).toBe(true);
+    expect(answersEquivalent('P = M(M - 2)', 'M(M-2)')).toBe(true);
+    expect(answersEquivalent('cost of one pineapple: 8', '8')).toBe(true);
+    expect(answersEquivalent('x = -1/3', '-1/3')).toBe(true);
+  });
+
+  it('compares two forms of one equation by their difference', () => {
+    expect(answersEquivalent('3s = 2s + 500', '3s = 2(s + 250)')).toBe(true);
+    expect(answersEquivalent('3s = 2s + 400', '3s = 2(s + 250)')).toBe(false);
+  });
+});

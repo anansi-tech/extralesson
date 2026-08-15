@@ -8,7 +8,7 @@ import type { VisualTemplate } from '../types';
 export const DataTableParamsZ = z.object({
   caption: z.string().max(80).optional(),
   headers: z.array(z.string().min(1).max(40)).min(1).max(12),
-  rows: z.array(z.array(z.string().max(40)).min(1).max(12)).min(1).max(15),
+  rows: z.array(z.array(z.string().max(60)).min(1).max(12)).min(1).max(15),
   row_header_column: z.boolean().default(false),
 });
 
