@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { deriveFinalAnswer, QuestionDraftZ } from '@/lib/validation/question';
+import { deriveFinalAnswer, PartZ, QuestionDraftZ } from '@/lib/validation/question';
 
 const validStructured = {
   kind: 'structured' as const,
@@ -248,5 +248,38 @@ describe('QuestionDraftZ — response_mode and answer_format (R1.6)', () => {
   it('rejects an unknown answer_format', () => {
     expect(QuestionDraftZ.safeParse(withPart({ answer_format: 'nearest_cent' })).success).toBe(false);
     expect(QuestionDraftZ.safeParse(withPart({ answer_format: 'sf:' })).success).toBe(false);
+  });
+});
+
+// R1.6 §1 — a part's mode is a property of what it asks. The first R1.6 batch
+// came back with every part labelled 'answer', including ones reading "Explain
+// why…"; auto-marking a "Show that" part would pass a student who copied the
+// result out of the stem and wrote nothing.
+describe('response_mode is read from the wording, not just the label', () => {
+  const part = (prompt: string, response_mode?: 'answer' | 'show_that' | 'explain') =>
+    PartZ.parse({ label: 'a', prompt, marks: 2, answer: '5', ...(response_mode ? { response_mode } : {}) });
+
+  it('recognises a show-that part however the model labelled it', () => {
+    expect(part('Show that $P = M^2 - 2M$.').response_mode).toBe('show_that');
+    expect(part('Prove that the triangles are congruent.').response_mode).toBe('show_that');
+    expect(part('(b) Show that the interior angle is $108°$.', 'answer').response_mode).toBe('show_that');
+  });
+
+  it('recognises a part that asks for a reason', () => {
+    expect(part('Explain why the hexagon has rotational symmetry of order 6.').response_mode).toBe('explain');
+    expect(part('Give a reason for your answer.').response_mode).toBe('explain');
+    expect(part('State ONE reason your answer to (b) is an estimate.').response_mode).toBe('explain');
+    expect(part('Justify your conclusion.').response_mode).toBe('explain');
+  });
+
+  it('leaves an ordinary part alone', () => {
+    expect(part('Calculate the area of the shaded region.').response_mode).toBe('answer');
+    expect(part('Show your working and state the value of $x$.').response_mode).toBe('answer');
+    expect(part('Find the value of $fg(3)$.').response_mode).toBe('answer');
+  });
+
+  it('never weakens a mode the model set deliberately', () => {
+    expect(part('Calculate the area.', 'explain').response_mode).toBe('explain');
+    expect(part('Find $x$.', 'show_that').response_mode).toBe('show_that');
   });
 });
