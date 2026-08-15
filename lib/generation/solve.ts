@@ -66,27 +66,27 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
 
   for (const p of draft.parts) {
     if (!agrees) break;
-    // Parts we do not auto-mark are not auto-gated either: a "show that" states
-    // its own answer, and an "explain" part is prose the student self-marks in
-    // worked practice (R1.6 §1). Comparing them here rejects correct questions
-    // for rewording something no machine will ever mark.
-    if ((p.response_mode ?? 'answer') !== 'answer') {
-      notes.push(`(${p.label}) ${p.response_mode} part — not gated on answer equality`);
-      continue;
-    }
     const s = solByLabel.get(p.label);
     if (s === undefined) {
       agrees = false;
       break;
     }
-    if (answersEquivalentAny(s, p.answer, p.accept)) continue;
+    // String equality settles values. It cannot settle the prose that a
+    // "show that" derivation or an "explain" reason answers with — but those
+    // are shown to students in worked practice, so they are checked too, by
+    // the reader rather than by the rules (R1.6 §1).
+    const mode = p.response_mode ?? 'answer';
+    if (mode === 'answer' && answersEquivalentAny(s, p.answer, p.accept)) continue;
 
     const verdict = await adjudicateAnswers({
       partPrompt: p.prompt,
       draftAnswer: p.answer,
       solveAnswer: s,
+      mode,
     });
-    notes.push(`(${p.label}) judged ${verdict.same ? 'SAME' : 'DIFFERENT'}: ${verdict.reason}`);
+    notes.push(
+      `(${p.label}) ${mode === 'answer' ? '' : `${mode} — `}judged ${verdict.same ? 'SAME' : 'DIFFERENT'}: ${verdict.reason}`,
+    );
     if (!verdict.same) agrees = false;
   }
 

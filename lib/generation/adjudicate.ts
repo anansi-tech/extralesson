@@ -25,10 +25,19 @@ export interface Verdict {
   reason: string;
 }
 
+const FRAMING: Record<string, string> = {
+  answer: 'Both should be the final answer to the part.',
+  show_that:
+    'The part states the result and asks for the derivation, so both should end at that same stated result. Say they differ if B reaches a different result, or reports that the stated result is wrong.',
+  explain:
+    'The part asks for a reason, so both are reasons. Two correct reasons worded differently are the same answer; a reason that rests on different mathematics is not.',
+};
+
 export async function adjudicateAnswers(args: {
   partPrompt: string;
   draftAnswer: string;
   solveAnswer: string;
+  mode?: string;
 }): Promise<Verdict> {
   const { object } = await generateObject({
     model,
@@ -36,6 +45,7 @@ export async function adjudicateAnswers(args: {
     prompt: `Two people answered the same CSEC Mathematics question part independently. Decide whether they gave the SAME answer.
 
 QUESTION PART: ${args.partPrompt}
+${FRAMING[args.mode ?? 'answer'] ?? FRAMING.answer}
 
 ANSWER A: ${args.draftAnswer}
 ANSWER B: ${args.solveAnswer}

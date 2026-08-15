@@ -53,7 +53,10 @@ const LABEL_LIKE = /^[a-z][a-z\s_]{0,24}$/;
 // evaluated — "f(x)", "gf(4)", "f^{-1}(x)", "ff^{-1}(x)". These are names too,
 // and the answer is the right-hand side, exactly as with "cost = 5". Without
 // this, "gf(4) = 6" and "6" read as different answers.
-const DEFINITION_LHS = /^[a-z]{1,3}(\^\{?-1\}?)?(\([^()]{0,10}\))?(\^\{?-1\}?)?$/;
+// A chain of function-name atoms — each a single letter, optionally inverted —
+// with an optional argument list: "f", "gf(4)", "f^{-1}(x)", "ff^{-1}(x)",
+// "f^{-1}(f(x))".
+const DEFINITION_LHS = /^(?:[a-z](?:\^\{?-1\}?)?){1,4}(?:\((?:[^()]|\([^()]*\)){0,16}\))?$/;
 
 // "f: x -> (x-1)/2" and "x ↦ (x-1)/2" define the same function as
 // "f(x) = (x-1)/2"; the value is what the variable maps to.
@@ -75,7 +78,9 @@ function stripLabel(part: string): string {
     if (i < 0) continue;
     const lhs = p.slice(0, i).trim();
     if (LABEL_LIKE.test(lhs) || DEFINITION_LHS.test(lhs)) {
-      return stripMapping(p.slice(i + 1).trim());
+      // Recurse: "f^{-1}(f(x)) = f(f^{-1}(x)) = x" is a chain of definitions
+      // and the answer is what the chain ends at.
+      return stripLabel(stripMapping(p.slice(i + 1).trim()));
     }
     break;
   }
@@ -201,6 +206,13 @@ function wordsEquivalent(a: string, b: string): boolean {
   const tb = contentTokens(b);
   if (ta.length === 0 || tb.length === 0) return false;
   if ([...ta].sort().join(' ') === [...tb].sort().join(' ')) return true;
+
+  // Two prose answers quoting different numbers are different answers. Without
+  // this, the rules below treat any extra token as a harmless qualifier, and
+  // an answer with a wrong value appended reads as a superset of the right one
+  // — which is how a deliberately poisoned draft once passed this gate.
+  const numbers = (t: string[]) => t.filter((x) => /\d/.test(x)).sort().join(' ');
+  if (numbers(ta) !== numbers(tb)) return false;
 
   const setA = new Set(ta);
   const setB = new Set(tb);

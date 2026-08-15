@@ -79,8 +79,8 @@ describe('independentSolve — mechanical agreement', () => {
   });
 });
 
-describe('independentSolve — parts we do not mark are not gated (R1.6 §1)', () => {
-  it('skips a show_that part instead of comparing its restated answer', async () => {
+describe('independentSolve — prose parts are judged, never string-matched (R1.6 §1)', () => {
+  it('sends a show_that part to the judge instead of comparing its restated answer', async () => {
     solverParts = [
       { label: 'a', final_answer: '4' },
       { label: 'b', final_answer: 'Expanding gives the stated result.' },
@@ -89,20 +89,33 @@ describe('independentSolve — parts we do not mark are not gated (R1.6 §1)', (
       answerPart('a', '4'),
       { label: 'b', prompt: 'Show that $P = M^2 - 2M$.', marks: 3, answer: 'P = M^2 - 2M', response_mode: 'show_that' as const },
     ];
+    verdicts = [{ same: true, reason: 'The derivation ends at the stated result.' }];
     const out = await independentSolve(draft(parts));
     expect(out.agrees).toBe(true);
-    expect(calls).toEqual(['solve']); // no judge needed
-    expect(out.notes.join(' ')).toContain('show_that part — not gated');
+    expect(calls).toEqual(['solve', 'judge']);
+    expect(out.notes.join(' ')).toContain('show_that — judged SAME');
   });
 
-  it('skips an explain part, whose wording is free', async () => {
+  it('accepts a differently worded reason, which the rules could never settle', async () => {
     solverParts = [{ label: 'a', final_answer: 'The two composites have different rules.' }];
     const parts = [
       { label: 'a', prompt: 'Give a reason.', marks: 1, answer: 'fg(x) != gf(x) for x != -2, 0', response_mode: 'explain' as const },
     ];
+    verdicts = [{ same: true, reason: 'Same reason, worded differently.' }];
     const out = await independentSolve(draft(parts));
     expect(out.agrees).toBe(true);
-    expect(calls).toEqual(['solve']);
+    expect(calls).toEqual(['solve', 'judge']);
+  });
+
+  it('rejects a show_that part whose stated result the solver contradicts', async () => {
+    solverParts = [{ label: 'a', final_answer: 'P = M^2 - 3M, so the stated result is wrong.' }];
+    verdicts = [{ same: false, reason: 'B derives a different expression.' }];
+    const parts = [
+      { label: 'a', prompt: 'Show that $P = M^2 - 2M$.', marks: 3, answer: 'P = M^2 - 2M', response_mode: 'show_that' as const },
+    ];
+    const out = await independentSolve(draft(parts));
+    expect(out.agrees).toBe(false);
+    expect(out.notes.join(' ')).toContain('judged DIFFERENT');
   });
 });
 
