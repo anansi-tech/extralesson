@@ -26,7 +26,7 @@ const baseDraft: QuestionDraft = {
   },
   difficulty: 1,
   marks: 2,
-  parts: [{ label: 'a', prompt: 'Find angle $C$.', marks: 2, answer: '40°' }],
+  parts: [{ label: 'a', prompt: 'Find angle $C$.', marks: 2, answer: '40°', response_mode: 'answer' as const }],
   rubric: [
     { code: 'AK1', profile: 'AK', criterion: 'Angle sum of a triangle', mark_value: 2, part_label: 'a' },
   ],

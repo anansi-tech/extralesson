@@ -13,11 +13,18 @@ const RubricItemSchema = new Schema(
 
 const PartSchema = new Schema(
   {
-    label: { type: String, required: true }, // 'a'..'f', flat
+    label: { type: String, required: true }, // 'a'..'j', flat
     prompt: { type: String, required: true },
     marks: { type: Number, required: true },
     answer: { type: String, required: true }, // values-only convention
     accept: { type: [String], default: undefined }, // mark-scheme alternatives
+    // R1.6: 'answer' parts are auto-marked; show_that/explain go to worked practice.
+    response_mode: {
+      type: String,
+      enum: ['answer', 'show_that', 'explain', 'construct'],
+      default: 'answer',
+    },
+    answer_format: { type: String }, // 'exact' | 'sf:3' | 'dp:1' | ...
   },
   { _id: false },
 );

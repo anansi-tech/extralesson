@@ -70,7 +70,7 @@ export const RubricItemZ = z
     profile: z.enum(['CK', 'AK', 'R']),
     criterion: z.string().min(1),
     mark_value: z.number().int().min(1),
-    part_label: z.string().regex(/^[a-f]$/),
+    part_label: z.string().regex(/^[a-j]$/),
   })
   .refine((r) => r.code.replace(/\d+$/, '') === r.profile, {
     message: 'rubric code prefix must match profile',
@@ -82,8 +82,16 @@ export const MisconceptionZ = z.object({
   remediation: z.string().min(1),
 });
 
+export const ResponseModeZ = z.enum(['answer', 'show_that', 'explain', 'construct']);
+
+// 'sf:N' / 'dp:N' carry a precision; the rest are bare tags.
+export const AnswerFormatZ = z.union([
+  z.enum(['exact', 'standard_form', 'lowest_terms', 'integer', 'surd', 'equation_form']),
+  z.string().regex(/^(sf|dp):\d$/),
+]);
+
 export const PartZ = z.object({
-  label: z.string().regex(/^[a-f]$/),
+  label: z.string().regex(/^[a-j]$/),
   prompt: z.string().min(1),
   marks: z.number().int().min(1),
   answer: z.string().min(1), // values-only convention
@@ -91,9 +99,13 @@ export const PartZ = z.object({
   // (real schemes write "edge (accept: line segment)"). Grading and the solve
   // gate treat any listed form as correct.
   accept: z.array(z.string().min(1)).max(4).optional(),
+  // R1.6 §1: only 'answer' parts can be auto-marked.
+  response_mode: ResponseModeZ.default('answer'),
+  // R1.6 §2: set whenever the stem demands a particular form.
+  answer_format: AnswerFormatZ.optional(),
 });
 
-const PART_LABELS = ['a', 'b', 'c', 'd', 'e', 'f'];
+const PART_LABELS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 
 const QuestionBaseZ = z.object({
   objective_ids: z.array(z.string().regex(OBJECTIVE_ID_RE)).min(1),
@@ -169,7 +181,7 @@ export const McqQuestionZ = QuestionBaseZ.extend({
 
 export const StructuredQuestionZ = QuestionBaseZ.extend({
   kind: z.literal('structured'),
-  parts: z.array(PartZ).min(1).max(6), // flat labels 'a'..'f'; no nesting
+  parts: z.array(PartZ).min(1).max(10), // flat labels 'a'..'j'; no nesting (R1.6 §5)
   rubric: z.array(RubricItemZ).min(1),
   // Derived: "; "-joined part answers (kept for grading/back-compat).
   final_answer: z.string().min(1),
@@ -198,6 +210,15 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
           code: 'custom',
           path: ['rubric', i, 'part_label'],
           message: `part_label '${r.part_label}' is not one of the question's parts`,
+        });
+      }
+    }
+    for (const [i, part] of q.parts.entries()) {
+      if (part.response_mode === 'construct') {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['parts', i, 'response_mode'],
+          message: 'construct parts are out of scope and must not be generated',
         });
       }
     }

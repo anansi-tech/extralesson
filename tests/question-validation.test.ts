@@ -12,8 +12,8 @@ const validStructured = {
   difficulty: 2 as const,
   marks: 3,
   parts: [
-    { label: 'a', prompt: 'Factorise the expression.', marks: 2, answer: '(3x + 1)(x - 2)' },
-    { label: 'b', prompt: 'State both roots.', marks: 1, answer: 'x = -1/3; x = 2' },
+    { label: 'a', prompt: 'Factorise the expression.', marks: 2, answer: '(3x + 1)(x - 2)', response_mode: 'answer' as const },
+    { label: 'b', prompt: 'State both roots.', marks: 1, answer: 'x = -1/3; x = 2', response_mode: 'answer' as const },
   ],
   rubric: [
     { code: 'CK1', profile: 'CK' as const, criterion: 'Recognises factorisable quadratic', mark_value: 1, part_label: 'a' },
@@ -39,7 +39,7 @@ const validMcq = {
   representation: 'prose' as const,
   difficulty: 1 as const,
   marks: 1,
-  parts: [{ label: 'a', prompt: 'Select the median.', marks: 1, answer: '9' }],
+  parts: [{ label: 'a', prompt: 'Select the median.', marks: 1, answer: '9', response_mode: 'answer' as const }],
   worked_solution: 'Ordered already; middle value is 9.',
   misconceptions: [],
 };
@@ -80,13 +80,26 @@ describe('QuestionDraftZ — structured (R1.5)', () => {
     expect(QuestionDraftZ.safeParse(q).success).toBe(false);
   });
 
-  it('rejects more than 6 parts', () => {
-    const q = {
+  it('accepts up to 10 parts and rejects an eleventh (R1.6 §5)', () => {
+    const build = (labels: string) => ({
       ...validStructured,
-      marks: 7,
-      parts: 'abcdefg'.split('').map((l) => ({ label: l, prompt: 'p', marks: 1, answer: '1' })),
-    };
-    expect(QuestionDraftZ.safeParse(q).success).toBe(false);
+      marks: labels.length,
+      parts: labels.split('').map((l) => ({
+        label: l,
+        prompt: 'p',
+        marks: 1,
+        answer: '1',
+        response_mode: 'answer' as const,
+      })),
+      rubric: [
+        { code: 'AK1', profile: 'AK' as const, criterion: 'c', mark_value: labels.length, part_label: 'a' },
+      ],
+      final_answer: labels.split('').map(() => '1').join('; '),
+    });
+    // Real papers flatten to 7-8 items routinely.
+    expect(QuestionDraftZ.safeParse(build('abcdefgh')).success).toBe(true);
+    expect(QuestionDraftZ.safeParse(build('abcdefghij')).success).toBe(true);
+    expect(QuestionDraftZ.safeParse(build('abcdefghijk')).success).toBe(false);
   });
 
   it('rejects final_answer that is not the joined part answers', () => {
@@ -106,7 +119,7 @@ describe('QuestionDraftZ — structured (R1.5)', () => {
     const q = {
       ...validStructured,
       rubric: [{ code: 'AK1', profile: 'CK', criterion: 'x', mark_value: 3, part_label: 'a' }],
-      parts: [{ label: 'a', prompt: 'p', marks: 3, answer: '1' }],
+      parts: [{ label: 'a', prompt: 'p', marks: 3, answer: '1', response_mode: 'answer' as const }],
       final_answer: '1',
     };
     expect(QuestionDraftZ.safeParse(q).success).toBe(false);
@@ -161,7 +174,7 @@ describe('QuestionDraftZ — mcq (R1.5)', () => {
       ...validMcq,
       parts: [
         validMcq.parts[0],
-        { label: 'b', prompt: 'p', marks: 1, answer: '1' },
+        { label: 'b', prompt: 'p', marks: 1, answer: '1', response_mode: 'answer' as const },
       ],
     };
     expect(QuestionDraftZ.safeParse(q).success).toBe(false);
@@ -190,5 +203,50 @@ describe('QuestionDraftZ — mcq (R1.5)', () => {
     expect(QuestionDraftZ.safeParse(noArchetype).success).toBe(false);
     const { representation: _r, ...noRep } = validMcq;
     expect(QuestionDraftZ.safeParse(noRep).success).toBe(false);
+  });
+});
+
+describe('QuestionDraftZ — response_mode and answer_format (R1.6)', () => {
+  const withPart = (over: Record<string, unknown>) => ({
+    ...validStructured,
+    marks: 3,
+    parts: [
+      { ...validStructured.parts[0], ...over },
+      validStructured.parts[1],
+    ],
+  });
+
+  it('defaults response_mode to answer', () => {
+    const { response_mode: _drop, ...bare } = validStructured.parts[0];
+    const res = QuestionDraftZ.safeParse({
+      ...validStructured,
+      parts: [bare, validStructured.parts[1]],
+    });
+    expect(res.success).toBe(true);
+    if (res.success && res.data.kind === 'structured') {
+      expect(res.data.parts[0].response_mode).toBe('answer');
+    }
+  });
+
+  it('accepts show_that and explain parts', () => {
+    for (const mode of ['show_that', 'explain'] as const) {
+      expect(QuestionDraftZ.safeParse(withPart({ response_mode: mode })).success, mode).toBe(true);
+    }
+  });
+
+  it('rejects construct parts, which are out of scope', () => {
+    const res = QuestionDraftZ.safeParse(withPart({ response_mode: 'construct' }));
+    expect(res.success).toBe(false);
+  });
+
+  it('accepts every answer_format tag, including precision forms', () => {
+    for (const f of ['exact', 'standard_form', 'lowest_terms', 'integer', 'surd', 'equation_form', 'sf:3', 'dp:1']) {
+      expect(QuestionDraftZ.safeParse(withPart({ answer_format: f })).success, f).toBe(true);
+    }
+  });
+
+  it('rejects an unknown answer_format', () => {
+    expect(QuestionDraftZ.safeParse(withPart({ answer_format: 'nearest_cent' })).success).toBe(false);
+    expect(QuestionDraftZ.safeParse(withPart({ answer_format: 'sf:' })).success).toBe(false);
   });
 });

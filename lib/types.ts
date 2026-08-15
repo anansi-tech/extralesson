@@ -58,12 +58,32 @@ export type TemplateName =
   | 'bearingDiagram'
   | 'dataTable';
 
+// How a part is answered, which decides whether we can auto-mark it (R1.6 §1).
+// Real papers repeatedly state the answer and ask for the derivation
+// ("show that x = 5"); comparing a final answer the question already gave away
+// is not assessment, so only 'answer' parts are auto-graded.
+export type ResponseMode = 'answer' | 'show_that' | 'explain' | 'construct';
+
+// The form an answer must take when the form is the thing being tested
+// (R1.6 §2). 'sf:N' / 'dp:N' carry their precision, e.g. 'sf:3', 'dp:1'.
+export type AnswerFormat =
+  | 'exact'
+  | 'standard_form'
+  | 'lowest_terms'
+  | 'integer'
+  | `sf:${number}`
+  | `dp:${number}`
+  | 'surd'
+  | 'equation_form';
+
 export interface QuestionPart {
-  label: string; // flat 'a'..'f' — no (i)/(ii) nesting
+  label: string; // flat 'a'..'j' — no (i)/(ii) nesting
   prompt: string;
   marks: number;
   answer: string; // values-only convention
   accept?: string[]; // mark-scheme alternatives ("edge — accept: line segment")
+  response_mode: ResponseMode;
+  answer_format?: AnswerFormat;
 }
 
 export interface Misconception {
