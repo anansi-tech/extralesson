@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Representation, TemplateName } from '@/lib/types';
+import type { Representation, ResponseMode, TemplateName } from '@/lib/types';
 
 // Boundary validation for questions (R1.5 §2). Every question write —
 // generation pipeline output, admin edits — passes through here.
@@ -92,6 +92,21 @@ export const AnswerFormatZ = z.union([
   z.string().regex(/^(sf|dp):\d$/),
 ]);
 
+// A part's response mode is a property of what it ASKS, so we read it from the
+// wording rather than trusting the label. A "Show that" part carries its answer
+// in the stem: auto-marked, it would pass a student who typed the given result
+// and wrote no working — the R1.6 §1 failure. Only ever strengthens the model's
+// label, never weakens it.
+const SHOW_THAT_RE = /^\s*(?:\(?[a-j]\)?[\s.:]*)?(?:show|prove|verify|deduce)\s+that\b/i;
+const EXPLAIN_RE = /^\s*(?:\(?[a-j]\)?[\s.:]*)?(?:explain|justify|give\s+(?:a|one|two)?\s*reasons?|state\s+(?:a|one)\s+reason|why\b|comment\s+on)/i;
+
+export function modeFromWording(prompt: string, declared: ResponseMode): ResponseMode {
+  if (declared !== 'answer') return declared;
+  if (SHOW_THAT_RE.test(prompt)) return 'show_that';
+  if (EXPLAIN_RE.test(prompt)) return 'explain';
+  return declared;
+}
+
 export const PartZ = z.object({
   label: z.string().regex(/^[a-j]$/),
   prompt: z.string().min(1),
@@ -105,7 +120,7 @@ export const PartZ = z.object({
   response_mode: ResponseModeZ.default('answer'),
   // R1.6 §2: set whenever the stem demands a particular form.
   answer_format: AnswerFormatZ.optional(),
-});
+}).transform((p) => ({ ...p, response_mode: modeFromWording(p.prompt, p.response_mode) }));
 
 const PART_LABELS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 

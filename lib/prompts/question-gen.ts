@@ -4,8 +4,10 @@ import { exemplarsFor } from './exemplars';
 
 // Generation prompts (R1.5 §5): recipe + style spec Part A + 2 module-matched
 // exemplars + visual-template contract. Bump PROMPT_VERSION on any wording
-// change — it is recorded in gen_meta.prompt_version on every insert.
-export const PROMPT_VERSION = 'v11';
+// change — it is recorded in gen_meta.prompt_version on every insert — and on
+// any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
+// since that is what makes older drafts unlike newer ones.
+export const PROMPT_VERSION = 'v12';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
