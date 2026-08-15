@@ -20,12 +20,12 @@ export const LANDING = {
 
 // R1.6 §3 — coverage stated up front, computed from the same syllabus seeds and
 // blueprint the mastery map uses, so marketing cannot drift from the product.
-export function landingCoverage(): { percent: number; uncoveredMarks: number } {
-  const { percent, uncoveredMarks } = computeCoverage(
+export function landingCoverage(): { displayPercent: number; uncoveredMarks: number } {
+  const { displayPercent, uncoveredMarks } = computeCoverage(
     [...module1Topics, ...module2Topics, ...module3Topics],
     seedBlueprints,
   );
-  return { percent, uncoveredMarks };
+  return { displayPercent, uncoveredMarks };
 }
 
 export function paymentLink(): string {

@@ -178,10 +178,10 @@ export default function LandingPage() {
             </div>
           </div>
           <p className="honest">
-            Straight about what we don&rsquo;t do: ExtraLesson practises about {coverage.percent}%
+            Straight about what we don&rsquo;t do: ExtraLesson practises about {coverage.displayPercent}%
             of the marks in a CSEC Mathematics paper. Construction and drawing questions — roughly{' '}
             {coverage.uncoveredMarks} marks — still need pencil, ruler and compasses, so those stay
-            on paper with past papers.
+            on paper with past papers. We do not prepare private candidates for Paper 032.
           </p>
         </div>
       </section>

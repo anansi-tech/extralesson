@@ -26,6 +26,11 @@ export interface Coverage {
   /** 0..1 — share of exam marks we can assess, blueprint-weighted. */
   fraction: number;
   percent: number;
+  /**
+   * What we SAY. An estimate built from a proxy does not deserve a precise
+   * number, and rounding down never claims coverage we cannot show.
+   */
+  displayPercent: number;
   /** Approximate raw marks per full paper that we cannot assess. */
   uncoveredMarks: number;
   byModule: Record<ModuleNumber, number>;
@@ -88,6 +93,7 @@ export function computeCoverage(topics: TopicLike[], blueprints: BlueprintLike[]
   return {
     fraction,
     percent: Math.round(fraction * 100),
+    displayPercent: Math.floor((fraction * 100) / 5) * 5,
     uncoveredMarks: Math.round((1 - fraction) * FULL_PAPER_RAW_MARKS),
     byModule,
     topics: rows,
@@ -97,5 +103,5 @@ export function computeCoverage(topics: TopicLike[], blueprints: BlueprintLike[]
 // The sentence shown to students on the mastery map and beside the predicted
 // grade, and echoed on the landing page. Stating coverage is a trust asset.
 export function coverageSentence(coverage: Coverage): string {
-  return `ExtraLesson practises about ${coverage.percent}% of the marks in a CSEC Mathematics paper. Construction and drawing questions — roughly ${coverage.uncoveredMarks} marks — still need pencil, ruler and compasses, so practise those on paper with past papers.`;
+  return `ExtraLesson practises about ${coverage.displayPercent}% of the marks in a CSEC Mathematics paper. Construction and drawing questions — roughly ${coverage.uncoveredMarks} marks — still need pencil, ruler and compasses, so practise those on paper with past papers. We do not prepare you for Paper 032, the alternative to the school-based assessment that private candidates sit.`;
 }
