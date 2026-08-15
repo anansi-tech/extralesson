@@ -35,8 +35,8 @@ function renderOneAnswer(value: string): string {
   if (/\$[^$]+\$/.test(value) || value.includes('EC$')) return renderMathHtml(value);
   if (!looksLikeExpression(value)) return escapeHtml(value);
   try {
-    // A bare % opens a comment in LaTeX and would swallow the rest of the
-    // line, so "12.5%" must be escaped before it reaches KaTeX.
+    // A bare % opens a comment in KaTeX's input syntax and would swallow the
+    // rest of the line, so "12.5%" must be escaped before it is parsed.
     return katex.renderToString(value.replace(/(^|[^\\])%/g, '$1\\%'), {
       throwOnError: true,
     });

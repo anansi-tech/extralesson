@@ -126,7 +126,7 @@ describe('renderAnswerHtml — values-only answers carry no $ delimiters', () =>
     expect(html).toContain('mtable');
   });
 
-  it('keeps the percent sign, which opens a comment in LaTeX', () => {
+  it('keeps the percent sign, which opens a comment in KaTeX input', () => {
     const html = renderAnswerHtml('12.5%');
     expect(html).toContain('katex-html');
     expect(html).toContain('%');

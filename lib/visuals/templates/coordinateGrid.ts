@@ -5,7 +5,7 @@ import type { VisualTemplate } from '../types';
 // Square-grid cartesian plane with labeled axes and integer gridlines.
 // Carries labeled points, polygons (including pre/post transformation
 // overlays — the image polygon drawn dashed with primed labels), and
-// straight lines given as y = mx + c.
+// straight lines given as y = mx + c, and quadratic curves y = ax^2 + bx + c.
 const CoordZ = z.number().min(-50).max(50);
 
 export const CoordinateGridParamsZ = z.object({
@@ -34,6 +34,21 @@ export const CoordinateGridParamsZ = z.object({
       }),
     )
     .max(4)
+    .default([]),
+  // Quadratic curves y = ax^2 + bx + c, drawn as a smooth sampled path.
+  // `domain` restricts the x values plotted (a table of values drawn over
+  // -2 <= x <= 4, say); omit it to draw across the whole window.
+  curves: z
+    .array(
+      z.object({
+        a: z.number().min(-20).max(20),
+        b: z.number().min(-50).max(50),
+        c: z.number().min(-100).max(100),
+        label: z.string().max(24).optional(),
+        domain: z.tuple([CoordZ, CoordZ]).optional(),
+      }),
+    )
+    .max(3)
     .default([]),
 });
 
@@ -88,6 +103,88 @@ export function parseLineLabel(label: string): { m: number; c: number } | null {
   return { m, c };
 }
 
+// Parse a label of the form "y = x^2 - 2x - 3" / "y = -2x²+5" / "y = x^2".
+export function parseQuadraticLabel(
+  label: string,
+): { a: number; b: number; c: number } | null {
+  const s = label.replace(/[\s$]/g, '').replace(/²/g, '^2');
+  const match = s.match(
+    /^y=(-?\d*(?:\.\d+)?)x\^2([+-]\d*(?:\.\d+)?)?x?([+-]\d+(?:\.\d+)?)?$/,
+  );
+  if (!match) return null;
+  const [, aRaw, bRaw, cRaw] = match;
+  const coeff = (raw: string | undefined, fallback: number): number =>
+    raw === undefined ? fallback : raw === '' || raw === '+' ? 1 : raw === '-' ? -1 : Number(raw);
+  // "y=x^2-3" has no x term: the middle group only holds b when an "x" follows.
+  const hasXTerm = /x\^2[+-]\d*(?:\.\d+)?x/.test(s);
+  return {
+    a: coeff(aRaw, 1),
+    b: hasXTerm ? coeff(bRaw, 0) : 0,
+    c: Number(hasXTerm ? (cRaw ?? 0) : (bRaw ?? cRaw ?? 0)),
+  };
+}
+
+// Features of y = ax^2 + bx + c, used for the question-text cross-checks.
+function vertexOf(a: number, b: number, c: number): { x: number; y: number } {
+  const x = -b / (2 * a);
+  return { x, y: a * x * x + b * x + c };
+}
+
+function rootsOf(a: number, b: number, c: number): number[] {
+  const disc = b * b - 4 * a * c;
+  if (disc < 0) return [];
+  const s = Math.sqrt(disc);
+  return disc === 0 ? [-b / (2 * a)] : [(-b - s) / (2 * a), (-b + s) / (2 * a)];
+}
+
+function fmtQuadratic(a: number, b: number, c: number): string {
+  const as = a === 1 ? '' : a === -1 ? '-' : String(a);
+  const bs = b === 0 ? '' : b === 1 ? ' + x' : b === -1 ? ' - x' : b > 0 ? ` + ${b}x` : ` - ${-b}x`;
+  const cs = c === 0 ? '' : c > 0 ? ` + ${c}` : ` - ${-c}`;
+  return `y = ${as}x^2${bs}${cs}`;
+}
+
+// Sample the parabola across the drawn domain, splitting into the contiguous
+// runs that lie inside the window and interpolating the exact edge crossings —
+// a curve may leave the top of the grid and re-enter further along.
+function sampleCurve(
+  a: number,
+  b: number,
+  c: number,
+  xlo: number,
+  xhi: number,
+  ymin: number,
+  ymax: number,
+): [number, number][][] {
+  const SAMPLES = 240;
+  const at = (x: number) => a * x * x + b * x + c;
+  const runs: [number, number][][] = [];
+  let run: [number, number][] = [];
+  let prev: { x: number; y: number; inside: boolean } | null = null;
+  for (let i = 0; i <= SAMPLES; i++) {
+    const x = xlo + ((xhi - xlo) * i) / SAMPLES;
+    const y = at(x);
+    const inside = y >= ymin && y <= ymax;
+    if (inside) {
+      if (prev && !prev.inside) {
+        const edge = prev.y < ymin ? ymin : ymax;
+        const t = (edge - prev.y) / (y - prev.y);
+        run.push([prev.x + t * (x - prev.x), edge]);
+      }
+      run.push([x, y]);
+    } else if (prev?.inside) {
+      const edge = y < ymin ? ymin : ymax;
+      const t = (edge - prev.y) / (y - prev.y);
+      run.push([prev.x + t * (x - prev.x), edge]);
+      runs.push(run);
+      run = [];
+    }
+    prev = { x, y, inside };
+  }
+  if (run.length > 1) runs.push(run);
+  return runs.filter((r) => r.length > 1);
+}
+
 function fmtLine(m: number, c: number): string {
   if (m === 0) return `y = ${c}`;
   const ms = m === 1 ? '' : m === -1 ? '-' : String(m);
@@ -129,6 +226,85 @@ function clipLine(
   return best;
 }
 
+type Curve = CoordinateGridParams['curves'][number];
+
+// Stated features are exact algebraic claims, but a question may quote them to
+// one decimal place, so allow for that rounding rather than 0.01.
+const FEATURE_TOL = 0.06;
+
+// When the question TEXT asserts a root, turning point, y-intercept, or axis of
+// symmetry, it must be true of a drawn curve — the same consistency rule the
+// line labels get, applied to what the prose claims. Only explicit assertions
+// match: "find the turning point" states nothing and is never checked.
+function statedFeatureIssues(
+  curves: Curve[],
+  context: { stimulus?: string; stem: string; partPrompts: string[] },
+): string[] {
+  if (curves.length === 0) return [];
+  const text = [context.stimulus ?? '', context.stem, ...context.partPrompts].join(' ');
+  const issues: string[] = [];
+  const near = (a: number, b: number) => Math.abs(a - b) <= FEATURE_TOL;
+  const anyCurve = (holds: (cv: Curve) => boolean) => curves.some(holds);
+
+  const turning = text.match(
+    /(?:turning point|minimum point|maximum point|vertex)\s*(?:is|at|of the curve is)?\s*\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/i,
+  );
+  if (turning) {
+    const [tx, ty] = [Number(turning[1]), Number(turning[2])];
+    if (!anyCurve((cv) => {
+      const v = vertexOf(cv.a, cv.b, cv.c);
+      return near(v.x, tx) && near(v.y, ty);
+    })) {
+      issues.push(
+        `coordinateGrid: the question states a turning point of (${tx}, ${ty}), which no drawn curve has`,
+      );
+    }
+  }
+
+  const axis = text.match(/axis of symmetry\s*(?:is|:|=)?\s*x\s*=\s*(-?\d+(?:\.\d+)?)/i);
+  if (axis) {
+    const ax = Number(axis[1]);
+    if (!anyCurve((cv) => near(vertexOf(cv.a, cv.b, cv.c).x, ax))) {
+      issues.push(
+        `coordinateGrid: the question states an axis of symmetry x = ${ax}, which no drawn curve has`,
+      );
+    }
+  }
+
+  const yInt =
+    text.match(/y[-\s]?intercept\s*(?:is|=|of)\s*(-?\d+(?:\.\d+)?)/i) ??
+    text.match(/(?:cuts|crosses|meets)\s+the\s+y[-\s]?axis\s+at\s*\(?\s*0\s*,\s*(-?\d+(?:\.\d+)?)\s*\)?/i);
+  if (yInt) {
+    const yv = Number(yInt[1]);
+    if (!anyCurve((cv) => near(cv.c, yv))) {
+      issues.push(
+        `coordinateGrid: the question states a y-intercept of ${yv}, which no drawn curve has`,
+      );
+    }
+  }
+
+  const rootPair =
+    text.match(
+      /(?:roots|solutions|zeros)\s*(?:are|:|=)?\s*x\s*=\s*(-?\d+(?:\.\d+)?)\s*(?:and|,|or)\s*x\s*=\s*(-?\d+(?:\.\d+)?)/i,
+    ) ??
+    text.match(
+      /(?:cuts|crosses|meets)\s+the\s+x[-\s]?axis\s+(?:at|where)\s*x?\s*=?\s*(-?\d+(?:\.\d+)?)\s*(?:and|,|or)\s*x?\s*=?\s*(-?\d+(?:\.\d+)?)/i,
+    );
+  if (rootPair) {
+    const stated = [Number(rootPair[1]), Number(rootPair[2])];
+    if (!anyCurve((cv) => {
+      const r = rootsOf(cv.a, cv.b, cv.c);
+      return stated.every((s) => r.some((v) => near(v, s)));
+    })) {
+      issues.push(
+        `coordinateGrid: the question states roots x = ${stated[0]} and x = ${stated[1]}, which no drawn curve has`,
+      );
+    }
+  }
+
+  return issues;
+}
+
 export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
   name: 'coordinateGrid',
   // Invariants enforced by verify(); surfaced to the draft prompt.
@@ -137,6 +313,9 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     "every point and polygon vertex must lie inside the ranges",
     "if you supply TWO polygons the second must be the image of the first under ONE standard transformation: translation, reflection in an axis or y = x, rotation of 90/180/270 about the origin, or enlargement from the origin",
     "a line label written as y = mx + c must match that line's m and c",
+    "curves are quadratics y = ax^2 + bx + c and need a non-zero a; use lines for straight graphs",
+    "a curve label written as y = ax^2 + bx + c must match that curve's a, b and c",
+    "any root, turning point, y-intercept or axis of symmetry STATED in the question text must be true of a drawn curve",
   ],
   paramsSchema: CoordinateGridParamsZ,
 
@@ -202,6 +381,22 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
         parts.push(text(mx + 10, my - 8, ln.label, { size: 12, anchor: 'start' }));
       }
     }
+    // quadratic curves, sampled smoothly and clipped to the window
+    for (const cv of p.curves) {
+      const xlo = Math.max(xmin, cv.domain ? Math.min(...cv.domain) : xmin);
+      const xhi = Math.min(xmax, cv.domain ? Math.max(...cv.domain) : xmax);
+      if (xhi <= xlo) continue;
+      const runs = sampleCurve(cv.a, cv.b, cv.c, xlo, xhi, ymin, ymax);
+      for (const run of runs) {
+        const d = run.map((pt) => `${round(X(pt[0]))},${round(Y(pt[1]))}`).join(' ');
+        parts.push(`<polyline points="${d}" />`);
+      }
+      if (cv.label && runs.length > 0) {
+        const longest = runs.reduce((best, r) => (r.length > best.length ? r : best), runs[0]);
+        const mid = longest[Math.floor(longest.length / 2)];
+        parts.push(text(X(mid[0]) + 10, Y(mid[1]) - 8, cv.label, { size: 12, anchor: 'start' }));
+      }
+    }
     // polygons (image polygon drawn dashed for transformation overlays)
     for (const poly of p.polygons) {
       const px = poly.vertices.map((v) => [X(v.x), Y(v.y)] as [number, number]);
@@ -244,10 +439,19 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     for (const ln of p.lines) {
       bits.push(`Straight line ${fmtLine(ln.m, ln.c)}${ln.label ? ` labeled "${ln.label}"` : ''}.`);
     }
+    // Equation only, as for lines: the solver does its own algebra rather than
+    // being handed the roots or turning point it is being asked to find.
+    for (const cv of p.curves) {
+      const shape = cv.a > 0 ? 'opening upward' : 'opening downward';
+      const dom = cv.domain ? ` drawn for ${Math.min(...cv.domain)} <= x <= ${Math.max(...cv.domain)}` : '';
+      bits.push(
+        `Parabola ${fmtQuadratic(cv.a, cv.b, cv.c)} (${shape})${dom}${cv.label ? ` labeled "${cv.label}"` : ''}.`,
+      );
+    }
     return bits.join(' ');
   },
 
-  verify(p) {
+  verify(p, context) {
     const issues: string[] = [];
     const [xmin, xmax] = p.x_range;
     const [ymin, ymax] = p.y_range;
@@ -289,6 +493,31 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
         );
       }
     }
+    for (const cv of p.curves) {
+      if (cv.a === 0) {
+        issues.push(
+          'coordinateGrid: a curve with a = 0 is a straight line — put it in lines instead',
+        );
+        continue;
+      }
+      if (cv.domain && Math.min(...cv.domain) >= Math.max(...cv.domain)) {
+        issues.push('coordinateGrid: curve domain must be ascending');
+      }
+      if (cv.label) {
+        const parsed = parseQuadraticLabel(cv.label);
+        if (
+          parsed &&
+          (Math.abs(parsed.a - cv.a) > TOL ||
+            Math.abs(parsed.b - cv.b) > TOL ||
+            Math.abs(parsed.c - cv.c) > TOL)
+        ) {
+          issues.push(
+            `coordinateGrid: curve label "${cv.label}" does not match the drawn curve ${fmtQuadratic(cv.a, cv.b, cv.c)}`,
+          );
+        }
+      }
+    }
+    issues.push(...statedFeatureIssues(p.curves, context));
     return issues;
   },
 };
