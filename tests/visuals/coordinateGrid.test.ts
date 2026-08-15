@@ -378,3 +378,76 @@ describe('coordinateGrid — shaded inequality regions', () => {
     expect((svg.match(/fill="url\(#regionHatch\)"/g) ?? []).length).toBe(2);
   });
 });
+
+// A review card showed "f: y = 2x - 3" reading as "y² = 2x³ - 3": the label sat
+// at the midpoint of the drawn line, which for a line crossing the window is
+// essentially the origin, among the axis tick numerals — and nothing was drawn
+// behind the glyphs. The window was 6 units wide by 15 tall, which with equal
+// unit scales can only be drawn as a narrow column.
+describe('coordinateGrid — labels stay readable, windows stay usable', () => {
+  const reviewed = CoordinateGridParamsZ.parse({
+    x_range: [-3, 3],
+    y_range: [-5, 10],
+    lines: [{ m: 2, c: -3, label: 'f: y = 2x - 3' }],
+    curves: [{ a: 1, b: 0, c: 1, label: 'g: y = x^2 + 1', domain: [-3, 3] }],
+  });
+  const svg = coordinateGrid.render(reviewed);
+  const labels = [...svg.matchAll(/<text x="([\d.]+)" y="([\d.]+)"[^>]*>([^<]*)<\/text>/g)].map(
+    (m) => ({ x: Number(m[1]), y: Number(m[2]), t: m[3] }),
+  );
+  const [cw, ch] = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/)!.slice(1).map(Number);
+
+  it('paints paper behind every label drawn over the grid', () => {
+    expect(svg).toContain('paint-order="stroke fill"');
+    // "x^2" is displayed as x², so match the labels as the reader sees them
+    const drawn = labels.map((l) => l.t);
+    expect(drawn).toContain('f: y = 2x - 3');
+    expect(drawn.some((t) => t.startsWith('g: y = x'))).toBe(true);
+    expect(svg).toMatch(/<text[^>]*paint-order="stroke fill"[^>]*>f: y = 2x - 3<\/text>/);
+  });
+
+  it('keeps function labels away from the crowded middle', () => {
+    const axisX = labels.find((l) => l.t === 'x')!;
+    const fn = labels.filter((l) => l.t.startsWith('f:') || l.t.startsWith('g:'));
+    expect(fn).toHaveLength(2);
+    for (const l of fn) {
+      // not sitting on the origin, where the tick numerals live
+      const nearOrigin = Math.abs(l.x - cw / 2) < 40 && Math.abs(l.y - axisX.y) < 40;
+      expect(nearOrigin, `${l.t} sits on the origin`).toBe(false);
+    }
+  });
+
+  it('keeps every label inside the canvas', () => {
+    for (const l of labels) {
+      expect(l.x, l.t).toBeGreaterThanOrEqual(0);
+      expect(l.x, l.t).toBeLessThanOrEqual(cw);
+      expect(l.y, l.t).toBeGreaterThanOrEqual(0);
+      expect(l.y, l.t).toBeLessThanOrEqual(ch);
+    }
+  });
+
+  it('widens a lopsided window instead of drawing a column', () => {
+    expect(ch / cw).toBeLessThan(1.6);
+    // the plot fills the canvas rather than floating in empty margins
+    expect(cw).toBeLessThan(640);
+  });
+
+  it('only ever shows more of the plane, never less', () => {
+    // every feature of the original window is still on the canvas
+    expect(coordinateGrid.describe(reviewed)).toContain('-3 <= x <= 3');
+    const tickValues = labels.filter((l) => /^-?\d+$/.test(l.t)).map((l) => Number(l.t));
+    for (const v of [-3, 3, -5, 10]) expect(tickValues).toContain(v);
+  });
+
+  it('leaves a balanced window alone', () => {
+    const square = CoordinateGridParamsZ.parse({
+      x_range: [-5, 5],
+      y_range: [-5, 5],
+      lines: [{ m: 1, c: 0, label: 'y = x' }],
+    });
+    const s = coordinateGrid.render(square);
+    const ticks = [...s.matchAll(/>(-?\d+)<\/text>/g)].map((m) => Number(m[1]));
+    expect(Math.min(...ticks)).toBe(-5);
+    expect(Math.max(...ticks)).toBe(5);
+  });
+});

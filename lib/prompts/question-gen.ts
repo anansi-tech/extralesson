@@ -9,7 +9,7 @@ import { misconceptionGuidance } from '@/lib/misconceptions';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v19';
+export const PROMPT_VERSION = 'v20';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -135,7 +135,11 @@ ${visualContract}
 - Values the student must READ from a chart/table live only in the visual; values GIVEN in prose (angles, lengths) must appear in both the text and the visual, identically.
 - Labels inside visual params are plain display text: "U", "PQ", "90°" — never "$U$" or KaTeX commands.
 - Never emit SVG, HTML, drawing instructions, or coordinates outside the template params.
-- The figure is a LABELLED SKETCH, not a scale drawing — exactly as in the real papers, where diagrams are marked "not drawn to scale". Never describe it as accurately drawn or to scale, and never ask the student to MEASURE a length or an angle from it, or to name the instruments they would use: every value they need must be stated in the text or labelled on the figure.`;
+${
+  recipe.representation === 'graph'
+    ? `- This is a GRAPH ON A GRID, and it IS to scale — that is what the grid is for. Reading a value, an intercept, a gradient or a turning point off it is fair and expected, exactly as in the real papers. Do not write "not drawn to scale" on it. Still never ask the student to measure with an instrument.`
+    : `- The figure is a LABELLED SKETCH, not a scale drawing — exactly as in the real papers, where diagrams are marked "not drawn to scale". Never describe it as accurately drawn or to scale, and never ask the student to MEASURE a length or an angle from it, or to name the instruments they would use: every value they need must be stated in the text or labelled on the figure.`
+}`;
 
   const partsSection =
     kind === 'mcq'

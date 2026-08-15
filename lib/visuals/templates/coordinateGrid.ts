@@ -80,6 +80,53 @@ export type CoordinateGridParams = z.infer<typeof CoordinateGridParamsZ>;
 const W = 640;
 const PAD = 45;
 const MAX_PLOT_H = 400;
+// Unit scales stay equal — a parabola or a gradient drawn on unequal axes lies —
+// so a lopsided window can only be drawn as a narrow column inside a fixed
+// canvas. Widening the short axis symmetrically shows MORE of the plane, which
+// can never hide a feature the question refers to, and lets the figure fill the
+// page the way a printed grid does.
+const MAX_ASPECT = 1.6;
+
+// Where a curve or line label goes. The midpoint of a drawn run is the most
+// crowded part of a graph — for a line through the middle of the window it is
+// almost exactly the origin, on top of the axes and their tick numerals. The
+// end of the run is empty by comparison, so labels ride there, pushed clear of
+// the curve and clamped inside the canvas.
+function labelAtEnd(
+  pts: [number, number][],
+  canvasW: number,
+  canvasH: number,
+): { x: number; y: number; anchor: 'start' | 'end' } {
+  const end = pts[pts.length - 1];
+  const prev = pts[Math.max(0, pts.length - 2)];
+  const dx = end[0] - prev[0];
+  const dy = end[1] - prev[1];
+  const len = Math.hypot(dx, dy) || 1;
+  // perpendicular, upward on screen, so the label sits off the stroke
+  const nx = (-dy / len) * 12;
+  const ny = (dx / len) * 12 - 4;
+  const toRight = end[0] > canvasW / 2;
+  const anchor: 'start' | 'end' = toRight ? 'end' : 'start';
+  const x = Math.min(canvasW - 6, Math.max(6, end[0] + nx + (toRight ? -6 : 6)));
+  const y = Math.min(canvasH - 6, Math.max(14, end[1] + ny));
+  return { x, y, anchor };
+}
+
+function balanceWindow(
+  [xmin, xmax]: [number, number],
+  [ymin, ymax]: [number, number],
+): { xmin: number; xmax: number; ymin: number; ymax: number } {
+  let [a, b, c, d] = [xmin, xmax, ymin, ymax];
+  const grow = (lo: number, hi: number, want: number): [number, number] => {
+    const extra = (want - (hi - lo)) / 2;
+    return [Math.floor(lo - extra), Math.ceil(hi + extra)];
+  };
+  const spanX = b - a;
+  const spanY = d - c;
+  if (spanY > spanX * MAX_ASPECT) [a, b] = grow(a, b, spanY / MAX_ASPECT);
+  else if (spanX > spanY * MAX_ASPECT) [c, d] = grow(c, d, spanX / MAX_ASPECT);
+  return { xmin: a, xmax: b, ymin: c, ymax: d };
+}
 const TOL = 0.01;
 
 type Pt = { x: number; y: number };
@@ -442,20 +489,23 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
   paramsSchema: CoordinateGridParamsZ,
 
   render(p) {
-    const [xmin, xmax] = p.x_range;
-    const [ymin, ymax] = p.y_range;
+    const { xmin, xmax, ymin, ymax } = balanceWindow(
+      p.x_range as [number, number],
+      p.y_range as [number, number],
+    );
     const spanX = Math.max(1, xmax - xmin);
     const spanY = Math.max(1, ymax - ymin);
     const u = Math.min((W - 2 * PAD) / spanX, MAX_PLOT_H / spanY);
     const gridW = spanX * u;
     const gridH = spanY * u;
-    const ox = (W - gridW) / 2;
+    const canvasW = Math.round(Math.min(W, gridW + 2 * PAD));
+    const ox = (canvasW - gridW) / 2;
     const oy = PAD;
     const H = Math.round(gridH + 2 * PAD);
     const X = (v: number) => ox + (v - xmin) * u;
     const Y = (v: number) => oy + (ymax - v) * u;
 
-    const parts: string[] = [svgOpen(W, H)];
+    const parts: string[] = [svgOpen(canvasW, H)];
     // integer gridlines, step 1
     for (let gx = xmin; gx <= xmax; gx++) {
       parts.push(
@@ -473,7 +523,7 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
       const y = Y(0);
       parts.push(line(ox - 8, y, ox + gridW + 12, y));
       parts.push(`<polygon points="${round(ox + gridW + 18)},${round(y)} ${round(ox + gridW + 10)},${round(y - 4)} ${round(ox + gridW + 10)},${round(y + 4)}" fill="${INK}" />`);
-      parts.push(text(ox + gridW + 28, y + 4, 'x', { italic: true }));
+      parts.push(text(Math.min(ox + gridW + 28, canvasW - 8), y + 4, 'x', { italic: true }));
     }
     if (hasYAxis) {
       const x = X(0);
@@ -503,7 +553,7 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
         if (region.label) {
           const cx = poly.reduce((s, q) => s + X(q.x), 0) / poly.length;
           const cy = poly.reduce((s, q) => s + Y(q.y), 0) / poly.length;
-          parts.push(text(cx, cy + 4, region.label, { size: 13 }));
+          parts.push(text(cx, cy + 4, region.label, { size: 13, halo: true }));
         }
       }
     }
@@ -514,9 +564,15 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
       const [[x1, y1], [x2, y2]] = seg;
       parts.push(line(X(x1), Y(y1), X(x2), Y(y2)));
       if (ln.label) {
-        const mx = (X(x1) + X(x2)) / 2;
-        const my = (Y(y1) + Y(y2)) / 2;
-        parts.push(text(mx + 10, my - 8, ln.label, { size: 12, anchor: 'start' }));
+        const spot = labelAtEnd(
+          [
+            [X(x1), Y(y1)],
+            [X(x2), Y(y2)],
+          ],
+          canvasW,
+          H,
+        );
+        parts.push(text(spot.x, spot.y, ln.label, { size: 12, anchor: spot.anchor, halo: true }));
       }
     }
     // quadratic curves, sampled smoothly and clipped to the window
@@ -531,8 +587,12 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
       }
       if (cv.label && runs.length > 0) {
         const longest = runs.reduce((best, r) => (r.length > best.length ? r : best), runs[0]);
-        const mid = longest[Math.floor(longest.length / 2)];
-        parts.push(text(X(mid[0]) + 10, Y(mid[1]) - 8, cv.label, { size: 12, anchor: 'start' }));
+        const spot = labelAtEnd(
+          longest.map((pt) => [X(pt[0]), Y(pt[1])] as [number, number]),
+          canvasW,
+          H,
+        );
+        parts.push(text(spot.x, spot.y, cv.label, { size: 12, anchor: spot.anchor, halo: true }));
       }
     }
     // polygons (image polygon drawn dashed for transformation overlays)
@@ -548,14 +608,18 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
           const dx = px[i][0] - cx;
           const dy = px[i][1] - cy;
           const len = Math.hypot(dx, dy) || 1;
-          parts.push(text(px[i][0] + (dx / len) * 14, px[i][1] + (dy / len) * 14 + 4, lab, { size: 12 }));
+          parts.push(
+            text(px[i][0] + (dx / len) * 14, px[i][1] + (dy / len) * 14 + 4, lab, { size: 12, halo: true }),
+          );
         });
       }
     }
     // labeled points
     for (const pt of p.points) {
       parts.push(`<circle cx="${round(X(pt.x))}" cy="${round(Y(pt.y))}" r="3.5" fill="${INK}" />`);
-      if (pt.label) parts.push(text(X(pt.x) + 8, Y(pt.y) - 8, pt.label, { size: 12, anchor: 'start' }));
+      if (pt.label) {
+        parts.push(text(X(pt.x) + 8, Y(pt.y) - 8, pt.label, { size: 12, anchor: 'start', halo: true }));
+      }
     }
     parts.push('</svg>');
     return parts.join('');

@@ -37,7 +37,7 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v19');
+    expect(PROMPT_VERSION).toBe('v20');
   });
 
   it('teaches hence-or-otherwise chaining with follow-through on structured drafts', () => {
@@ -97,6 +97,22 @@ describe('buildDraftPrompt — figures are sketches, not scale drawings', () => 
 
   it('says none of that when there is no figure to misdescribe', () => {
     expect(prompt({ topic: 'M2-ALG2' })).not.toContain('not drawn to scale');
+  });
+
+  it('tells the truth about a graph: the grid IS to scale', () => {
+    const p = buildDraftPrompt({
+      topicTitle: 'Relations, Functions and Graphs',
+      objectives: [objective('Draw and interpret graphs of quadratic functions.')],
+      recipe: recipe({ representation: 'graph' }),
+      context: { topic_code: 'M2-RFG1', template_hints: ['coordinateGrid'] },
+      module: 2,
+      visualContract: '',
+    });
+    expect(p).toContain('IS to scale');
+    expect(p).toContain('Reading a value, an intercept, a gradient or a turning point off it is fair');
+    // It names the phrase only to forbid it; what must be absent is the sketch rule.
+    expect(p).toContain('Do not write "not drawn to scale" on it');
+    expect(p).not.toContain('LABELLED SKETCH');
   });
 });
 
