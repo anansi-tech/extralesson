@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { checkAnswerFormat, valueLooksRight } from '@/lib/grade/format';
-import type { AnswerFormat } from '@/lib/types';
+import { markStructured } from '@/lib/grade/mark';
+import type { AnswerFormat, RubricItem } from '@/lib/types';
 
 const ok = (v: string, f: AnswerFormat) => checkAnswerFormat(v, f).ok;
 
@@ -143,4 +144,52 @@ describe('format feedback leads with what the student got right', () => {
       expect(check.feedback).toMatch(/^Correct value/);
     });
   }
+});
+
+// STANDING RULE (AGENTS.md): every answer_format proves that an answer written
+// CORRECTLY in that form marks CORRECT, end to end. Rejection tests alone hid
+// the fact that standard form could never be marked right at all — the value
+// comparison failed before the format check was ever consulted.
+describe('round trip — a correctly formatted answer marks correct', () => {
+  const rubric: RubricItem[] = [
+    { code: 'CK1', profile: 'CK', criterion: 'CAO', mark_value: 2, part_label: 'a' },
+    { code: 'R1', profile: 'R', criterion: "Expresses 'their' answer in the required form", mark_value: 1, part_label: 'a', for_format: true },
+  ];
+
+  // [format, canonical answer, what a student writes correctly, an equivalent
+  //  value in the WRONG form]
+  const cases: [AnswerFormat, string, string, string][] = [
+    ['exact', '\\frac{3}{8}', '\\frac{3}{8}', '0.375'],
+    ['surd', '3\\sqrt{2}', '3\\sqrt{2}', '4.243'],
+    ['standard_form', '4.5 \\times 10^{-5}', '4.5 \\times 10^{-5}', '0.000045'],
+    ['standard_form', '3.2 \\times 10^{4}', '3.2 \\times 10^{4}', '32000'],
+    ['lowest_terms', '\\frac{3}{4}', '\\frac{3}{4}', '\\frac{6}{8}'],
+    ['integer', '47', '47', '47.2'],
+    ['equation_form', 'y = 2x + 5', 'y = 2x + 5', '2x + 5'],
+    ['sf:3', '12.7', '12.7', '12.68'],
+    ['dp:1', '36.9', '36.9', '36.87'],
+  ];
+
+  for (const [format, canonical, wellFormed, wrongForm] of cases) {
+    it(`${format}: "${wellFormed}" earns every mark`, () => {
+      const res = markStructured(rubric, canonical, wellFormed, '', undefined, format);
+      expect(res.correct, `${format} rejected its own canonical form`).toBe(true);
+      expect(res.rubric_awarded).toEqual(['CK1', 'R1']);
+      expect(res.format_feedback).toBeUndefined();
+    });
+
+    it(`${format}: "${wrongForm}" keeps the value marks and loses the form mark`, () => {
+      const res = markStructured(rubric, canonical, wrongForm, '', undefined, format);
+      expect(res.correct).toBe(false);
+      expect(res.rubric_awarded).toEqual(['CK1']);
+      expect(res.format_feedback).toMatch(/^Correct value/);
+    });
+  }
+
+  it('covers every format the schema allows', () => {
+    const covered = new Set(cases.map(([f]) => String(f).replace(/:\d+$/, ':N')));
+    for (const f of ['exact', 'standard_form', 'lowest_terms', 'integer', 'surd', 'equation_form', 'sf:N', 'dp:N']) {
+      expect(covered.has(f), `no round-trip case for ${f}`).toBe(true);
+    }
+  });
 });
