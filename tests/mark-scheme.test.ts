@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { isFollowThrough, lintCriteria, MARK_SCHEME_CONVENTIONS } from '@/lib/prompts/mark-scheme';
+import {
+  CRITERION_VERBS,
+  isFollowThrough,
+  lintCriteria,
+  MARK_SCHEME_CONVENTIONS,
+} from '@/lib/prompts/mark-scheme';
 import { exemplarsFor } from '@/lib/prompts/exemplars';
 
 // R1.7 §B3 / Part C — the official scheme writes criteria in a small, consistent
@@ -79,6 +84,50 @@ describe('the descriptor list is a vocabulary, not a loophole', () => {
   it('still refuses a criterion that only claims the student understood', () => {
     for (const c of ['Shows understanding of the angle sum', 'Knows the compound-interest formula']) {
       expect(lintCriteria([row(c)]).map((i) => i.issue).join(' '), c).toContain('state of mind');
+    }
+  });
+});
+
+// The lint flagged 45 of 191 rubric rows in a real batch, and the openers it
+// rejected were "lists", "records", "completes", "tallies", "determines" —
+// every one of them naming a creditable act. The rule was wrong, not the
+// criteria: a curated verb list is endless to maintain and checks nothing that
+// matters. What the convention actually says is one act, third-person singular.
+describe('lintCriteria checks the register, not a word list', () => {
+  it('accepts any verb that names an act, listed or not', () => {
+    for (const c of [
+      'Lists the factors of 24',
+      'Records the tally for each class',
+      'Completes the cumulative-frequency column',
+      'Tallies the responses',
+      'Determines the gradient from two points',
+      'Interchanges x and y',
+      'Rewrites the equation in the form y = mx + c',
+    ]) {
+      expect(lintCriteria([row(c)]), c).toEqual([]);
+    }
+  });
+
+  it('keeps rejecting what the convention is actually against', () => {
+    const bad = [
+      ['Frequency table completed correctly', 'act'],
+      ['The correct final value', 'act'],
+      ['Student understands the angle sum', 'state of mind'],
+    ] as const;
+    for (const [c, kind] of bad) {
+      expect(lintCriteria([row(c)]).length, `${c} (${kind})`).toBeGreaterThan(0);
+    }
+  });
+
+  it('still keeps the canonical descriptors for the prompt to teach', () => {
+    expect(CRITERION_VERBS).toContain('cao');
+    expect(CRITERION_VERBS).toContain('substitutes');
+    expect(MARK_SCHEME_CONVENTIONS).toContain('CAO');
+  });
+
+  it('accepts the scheme idioms that are not verbs at all', () => {
+    for (const c of ['CAO $47.50$', 'Method mark for dividing by 8', 'Follow-through from (b)']) {
+      expect(lintCriteria([row(c)]), c).toEqual([]);
     }
   });
 });
