@@ -36,11 +36,13 @@ const baseDraft: QuestionDraft = {
 } as QuestionDraft;
 
 const agree = async (): Promise<SolveOutcome> => ({
+  notes: [],
   agrees: true,
   draftAnswer: '(a) 40°',
   solveAnswer: '(a) 40°',
 });
 const disagree = async (): Promise<SolveOutcome> => ({
+  notes: [],
   agrees: false,
   draftAnswer: '(a) 40°',
   solveAnswer: '(a) 50°',

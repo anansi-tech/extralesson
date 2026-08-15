@@ -178,6 +178,7 @@ describe('circleCenter — tangent and alternate segment', () => {
 // R1.6 §6 — tangents drawn from a point outside the circle (two of the three
 // papers correlated use this configuration).
 describe('circleCenter — external point (R1.6 §6)', () => {
+  const ctx = { stem: 'VS and VT are tangents to the circle, centre O.', partPrompts: ['Find angle SVT.'] };
   const external = CircleCenterParamsZ.parse({
     points: [
       { label: 'S', bearing: 120, radius: true },
@@ -219,7 +220,7 @@ describe('circleCenter — external point (R1.6 §6)', () => {
       ],
       externalPoint: { label: 'V', tangentTo: ['S', 'T'] },
     });
-    expect(circleCenter.verify(parallel, undefined).join(' ')).toContain('parallel');
+    expect(circleCenter.verify(parallel, ctx).join(' ')).toContain('parallel');
     expect(circleCenter.render(parallel)).not.toContain('>V<');
   });
 
@@ -231,7 +232,7 @@ describe('circleCenter — external point (R1.6 §6)', () => {
       ],
       externalPoint: { label: 'S', tangentTo: ['S', 'T'] },
     });
-    expect(circleCenter.verify(clash, undefined).join(' ')).toContain('reuses a label');
+    expect(circleCenter.verify(clash, ctx).join(' ')).toContain('reuses a label');
   });
 
   it('lets an angle be marked at the external point', () => {
@@ -243,7 +244,7 @@ describe('circleCenter — external point (R1.6 §6)', () => {
       externalPoint: { label: 'V', tangentTo: ['S', 'T'] },
       angles: [{ vertex: 'V', arc: ['S', 'T'], variable: 'y°' }],
     });
-    expect(circleCenter.verify(withAngle, undefined)).toEqual([]);
+    expect(circleCenter.verify(withAngle, ctx)).toEqual([]);
     expect(circleCenter.render(withAngle)).toContain('y°');
   });
 
@@ -262,7 +263,7 @@ describe('circleCenter — external point (R1.6 §6)', () => {
       ],
       angles: [{ vertex: 'C', arc: ['A', 'B'], variable: 'x°' }],
     });
-    expect(circleCenter.verify(alt, undefined)).toEqual([]);
+    expect(circleCenter.verify(alt, ctx)).toEqual([]);
     expect(circleCenter.describe(alt)).toContain('A tangent touches the circle at A.');
   });
 });

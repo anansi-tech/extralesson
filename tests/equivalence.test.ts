@@ -190,3 +190,37 @@ describe('answersEquivalent — label stripping only strips actual labels', () =
     expect(answersEquivalent('3s = 2s + 400', '3s = 2(s + 250)')).toBe(false);
   });
 });
+
+// Regression: the M2-RFG1 batch rejected seven straight drafts whose answers
+// were right, because a function's answer IS notation and one object has many
+// correct renderings. Pairs below are taken from that run's own pair logging.
+describe('answersEquivalent — function notation is not a difference', () => {
+  const same: [string, string][] = [
+    ['f^{-1}:x\\to \\frac{x-1}{2}', 'x ↦ (x - 1)/2'],
+    ['\\frac{x-1}{2}', 'f^{-1}(x)=\\frac{x-1}{2}'],
+    ['2x^2+1', 'fg(x)=2x^2+1'],
+    ['x', 'ff^{-1}(x)=x'],
+    ['gf(4)=6, fg(4)=3', '6; 3'],
+    ['(2x+1)^2', 'gf(x)=4x^2+4x+1'],
+    ['$f^{-1}:x\\to\\frac{x-1}{2}$; $ff^{-1}(x)=x$; $f^{-1}f(x)=x$', 'f⁻¹: x → (x - 1)/2; x; x'],
+    ['fg\\ne gf', 'fg ≠ gf'],
+  ];
+  for (const [a, b] of same) {
+    it(`accepts ${a} = ${b}`, () => {
+      expect(answersEquivalent(a, b)).toBe(true);
+      expect(answersEquivalent(b, a)).toBe(true);
+    });
+  }
+
+  it('still rejects a genuinely different function', () => {
+    expect(answersEquivalent('f^{-1}(x)=\\frac{x-1}{2}', 'x ↦ (x + 1)/2')).toBe(false);
+    expect(answersEquivalent('fg(x)=2x^2+1', 'fg(x)=2x^2-1')).toBe(false);
+    expect(answersEquivalent('gf(4)=6', '6.5')).toBe(false);
+  });
+
+  it('does not mistake an equation for a labelled value', () => {
+    // "3s = 2(s+250)" has no label to strip: the equation is the answer.
+    expect(answersEquivalent('3s = 2(s + 250)', '3s = 2s + 500')).toBe(true);
+    expect(answersEquivalent('3s = 2(s + 250)', '2s + 500')).toBe(false);
+  });
+});

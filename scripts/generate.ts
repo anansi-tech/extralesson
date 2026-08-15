@@ -219,13 +219,17 @@ async function main() {
 
       // Gate 3: independent solve
       const solve = await independentSolve(draft);
+      // Pair logging is permanent: every rejection prints both answers, and
+      // every contested part prints how it was settled.
       if (!solve.agrees) {
         rejected++;
         console.log('  ✗ independent solve DISAGREED — auto-rejected');
         console.log(`      draft answer: ${JSON.stringify(solve.draftAnswer)}`);
         console.log(`      solve answer: ${JSON.stringify(solve.solveAnswer)}`);
+        for (const n of solve.notes) console.log(`      ${n}`);
         continue;
       }
+      for (const n of solve.notes) console.log(`  · ${n}`);
 
       // Gate 4: internal dedup vs approved bank
       const approvedStems = (
