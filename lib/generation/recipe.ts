@@ -43,14 +43,26 @@ export interface ObjectiveCoverage {
 // question; bank items run smaller at low difficulty).
 export const STRUCTURED_MARKS: Record<1 | 2 | 3, number> = { 1: 5, 2: 7, 3: 9 };
 
+// CLI overrides. These CONSTRAIN the deficit search — they are never applied
+// to a finished recipe. Every downstream field (representation, archetype,
+// difficulty, marks) is derived from the constrained values, so a recipe can
+// never mix a choice made for one kind with tables belonging to another.
+export interface RecipeOverrides {
+  topic_code?: string;
+  kind?: 'mcq' | 'structured';
+  difficulty?: 1 | 2 | 3;
+}
+
 export function nextRecipe(
   matrix: Matrix,
   objectivesByTopic: Map<string, ObjectiveCoverage[]>,
+  overrides: RecipeOverrides = {},
 ): { recipe: QuestionRecipe; context: RecipeContext } {
   // 1. Paper: larger proportional shortfall wins (tie → P2, the bigger bank).
   const p1Shortfall = (P1_TOTAL - matrix.p1_actual_total) / P1_TOTAL;
   const p2Shortfall = (P2_TOTAL - matrix.p2_actual_total) / P2_TOTAL;
-  const kind: 'mcq' | 'structured' = p1Shortfall > p2Shortfall ? 'mcq' : 'structured';
+  const kind: 'mcq' | 'structured' =
+    overrides.kind ?? (p1Shortfall > p2Shortfall ? 'mcq' : 'structured');
 
   // 2. Topic: largest deficit vs the paper's blueprint-derived targets.
   const topicTargets: Record<string, number> = {};
@@ -59,8 +71,9 @@ export function nextRecipe(
     topicTargets[t.code] = kind === 'mcq' ? t.p1_target : t.p2_marks_target;
     topicActuals[t.code] = kind === 'mcq' ? t.p1_actual : t.p2_marks_actual;
   }
-  const topic = largestDeficit(topicTargets, topicActuals);
-  const row = matrix.topics.find((t) => t.code === topic)!;
+  const topic = overrides.topic_code ?? largestDeficit(topicTargets, topicActuals);
+  const row = matrix.topics.find((t) => t.code === topic);
+  if (!row) throw new Error(`unknown topic ${topic}`);
 
   // 3. Representation: topic targets minus topic actuals. For MCQs, respect
   //    the global 37% visual share: unbiased topics only get prose recipes
@@ -94,12 +107,14 @@ export function nextRecipe(
   );
 
   // 5. Difficulty: 25/50/25 target minus actuals for this kind.
-  const difficulty = Number(
-    largestDeficit(
-      DIFFICULTY_TARGETS as unknown as Record<string, number>,
-      matrix.difficulty_actuals[kind] as unknown as Record<string, number>,
-    ),
-  ) as 1 | 2 | 3;
+  const difficulty =
+    overrides.difficulty ??
+    (Number(
+      largestDeficit(
+        DIFFICULTY_TARGETS as unknown as Record<string, number>,
+        matrix.difficulty_actuals[kind] as unknown as Record<string, number>,
+      ),
+    ) as 1 | 2 | 3);
 
   // 6. Marks and objectives (least-approved first; §4 floors).
   const marks = kind === 'mcq' ? 1 : STRUCTURED_MARKS[difficulty];

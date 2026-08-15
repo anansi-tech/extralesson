@@ -8,7 +8,7 @@ import {
   P2_TOTAL,
   type QuestionFacts,
 } from '@/lib/targets/matrix';
-import { nextRecipe, type ObjectiveCoverage } from '@/lib/generation/recipe';
+import { nextRecipe, STRUCTURED_MARKS, type ObjectiveCoverage } from '@/lib/generation/recipe';
 import { REPRESENTATION_TARGETS } from '@/lib/targets/representation';
 import { seedBlueprints } from '@/lib/seed/blueprints';
 import { module1Topics } from '@/lib/seed/module1-topics';
@@ -126,5 +126,96 @@ describe('nextRecipe — deficit-driven', () => {
     skewed.set(code, objs);
     const { recipe } = nextRecipe(computeMatrix(topics, seedBlueprints, []), skewed);
     expect(recipe.objective_ids[0]).toBe(objs[3].id);
+  });
+});
+
+describe('nextRecipe — overrides constrain the search, never patch its output', () => {
+  // Regression: overrides used to be applied AFTER the deficit pick, so a
+  // `--kind structured` run kept the archetype/difficulty chosen from the MCQ
+  // tables. Every field must be derived from the constrained values.
+  const emptyMatrix = () => computeMatrix(topics, seedBlueprints, []);
+
+  it('a kind override picks the archetype from that kind\'s table', () => {
+    // P1 is emptier, so an unconstrained pick would be mcq -> direct-procedure.
+    const m = computeMatrix(topics, seedBlueprints, Array.from({ length: 40 }, () => fact({})));
+    expect(nextRecipe(m, objectivesByTopic).recipe.kind).toBe('mcq');
+
+    const forced = nextRecipe(m, objectivesByTopic, { kind: 'structured' }).recipe;
+    expect(forced.kind).toBe('structured');
+    // The 40 banked questions are all multi-step, so the largest STRUCTURED
+    // deficit is justification (11%). The old bug returned 'direct-procedure'
+    // — the MCQ table's top entry — for every structured run.
+    expect(forced.archetype).toBe('justification');
+    expect(forced.marks).toBe(STRUCTURED_MARKS[forced.difficulty]);
+  });
+
+  it('a difficulty override drives marks', () => {
+    const r = nextRecipe(emptyMatrix(), objectivesByTopic, {
+      kind: 'structured',
+      difficulty: 3,
+    }).recipe;
+    expect(r.difficulty).toBe(3);
+    expect(r.marks).toBe(STRUCTURED_MARKS[3]);
+  });
+
+  it('a topic override selects that topic and its representation targets', () => {
+    const { recipe, context } = nextRecipe(emptyMatrix(), objectivesByTopic, {
+      topic_code: 'M1-SETS',
+      kind: 'structured',
+    });
+    expect(context.topic_code).toBe('M1-SETS');
+    expect(recipe.objective_ids[0].startsWith('M1.3.')).toBe(true);
+    const reps = REPRESENTATION_TARGETS['M1-SETS'].map((r) => r.representation);
+    expect(reps).toContain(recipe.representation);
+  });
+
+  it('an unknown topic override is rejected, not silently ignored', () => {
+    expect(() =>
+      nextRecipe(emptyMatrix(), objectivesByTopic, { topic_code: 'M9-NOPE' }),
+    ).toThrow(/unknown topic/);
+  });
+});
+
+describe('nextRecipe — a bank built from empty converges on the target shape', () => {
+  it('60 consecutive recipes track the archetype and difficulty targets', () => {
+    // Feed each recipe back in as a fact, exactly as the pipeline does.
+    const facts: QuestionFacts[] = [];
+    const recipes = [];
+    for (let i = 0; i < 60; i++) {
+      const m = computeMatrix(topics, seedBlueprints, facts);
+      const { recipe, context } = nextRecipe(m, objectivesByTopic);
+      recipes.push(recipe);
+      const profile = recipe.kind === 'mcq' ? { CK: 1, AK: 0, R: 0 } : { CK: 2, AK: 3, R: 2 };
+      facts.push({
+        kind: recipe.kind,
+        module: Number(context.topic_code[1]) as 1 | 2 | 3,
+        topic_code: context.topic_code,
+        representation: recipe.representation,
+        archetype: recipe.archetype,
+        difficulty: recipe.difficulty,
+        marks: recipe.marks,
+        rubric_profile_marks: profile,
+      });
+    }
+
+    const structured = recipes.filter((r) => r.kind === 'structured');
+    const mcq = recipes.filter((r) => r.kind === 'mcq');
+    expect(structured.length).toBeGreaterThan(10);
+    expect(mcq.length).toBeGreaterThan(10);
+
+    // multi-step-application is 67% of the structured target — it must dominate,
+    // and direct-procedure (2%) must be rare rather than the default.
+    const multiStep = structured.filter((r) => r.archetype === 'multi-step-application').length;
+    const directProc = structured.filter((r) => r.archetype === 'direct-procedure').length;
+    expect(multiStep / structured.length).toBeGreaterThan(0.4);
+    expect(directProc / structured.length).toBeLessThan(0.15);
+
+    // all three difficulties appear, rather than everything landing on d2
+    for (const d of [1, 2, 3] as const) {
+      expect(recipes.some((r) => r.difficulty === d), `difficulty ${d}`).toBe(true);
+    }
+
+    // more than one topic gets served
+    expect(new Set(recipes.map((r) => r.objective_ids[0].slice(0, 4))).size).toBeGreaterThan(3);
   });
 });

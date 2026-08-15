@@ -17,7 +17,7 @@ import { deriveFinalAnswer, QuestionDraftZ } from '@/lib/validation/question';
 import { normalizeEscapedNewlines } from '@/lib/text';
 import { buildDraftPrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
 import { getCoverage } from '@/lib/admin/coverage';
-import { nextRecipe, STRUCTURED_MARKS, type ObjectiveCoverage, type QuestionRecipe, type RecipeContext } from '@/lib/generation/recipe';
+import { nextRecipe, type ObjectiveCoverage, type QuestionRecipe, type RecipeContext } from '@/lib/generation/recipe';
 import { independentSolve } from '@/lib/generation/solve';
 import { checkDuplicate } from '@/lib/generation/dedup';
 import { verifyQuestionVisual } from '@/lib/visuals/verify';
@@ -110,25 +110,18 @@ async function buildRecipe(args: ReturnType<typeof parseArgs>): Promise<{
     ]),
   );
 
-  // Overrides narrow the deficit search (§5): restrict the matrix view.
-  const scopedMatrix = args.topic
-    ? { ...matrix, topics: matrix.topics.filter((t) => t.code === args.topic) }
-    : matrix;
-  const picked = nextRecipe(scopedMatrix, objectivesByTopic);
-  let recipe = picked.recipe;
-  if (args.kind) recipe = { ...recipe, kind: args.kind };
-  if (args.difficulty) recipe = { ...recipe, difficulty: args.difficulty };
-  // Overrides can change kind/difficulty after the deficit pick — marks must
-  // always be re-derived from the FINAL kind and difficulty.
-  recipe = {
-    ...recipe,
-    marks: recipe.kind === 'mcq' ? 1 : STRUCTURED_MARKS[recipe.difficulty],
-  };
-  const topicDoc = topics.find((t) => t.code === picked.context.topic_code)!;
+  // Overrides are inputs to the deficit search, never patches applied to its
+  // output — every field of the returned recipe is internally consistent.
+  const { recipe, context } = nextRecipe(matrix, objectivesByTopic, {
+    topic_code: args.topic,
+    kind: args.kind,
+    difficulty: args.difficulty,
+  });
+  const topicDoc = topics.find((t) => t.code === context.topic_code)!;
   const wanted = new Set(recipe.objective_ids);
   return {
     recipe,
-    context: picked.context,
+    context,
     module: topicDoc.module,
     topicTitle: topicDoc.title,
     objectives: topicDoc.objectives.filter((o) => wanted.has(o.id)),
