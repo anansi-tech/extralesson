@@ -67,7 +67,20 @@ export default async function StudyDashboard({
         </header>
 
         <section className="mt-6 border-[1.5px] border-ink bg-white p-5 text-center shadow-[3px_3px_0_var(--ink)]">
-          {student.syllabus_mode === 'legacy-jan' ? (
+          {!prediction.estimable ? (
+            // A cold account's arithmetic is U/U/U and an overall VI, which
+            // reads as a verdict when it means we have not seen them work yet.
+            <>
+              <div className="text-5xl font-black text-dim">&mdash;</div>
+              <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-dim">
+                Not yet estimated
+              </div>
+              <p className="mt-2 text-[11px] leading-snug text-dim">
+                Finish one session and your predicted grade appears here. It moves with every
+                session after that.
+              </p>
+            </>
+          ) : student.syllabus_mode === 'legacy-jan' ? (
             // Jan sitting awards an overall grade only — no per-module letters (§6.6).
             <>
               <div className="text-5xl font-black text-red-pen">{prediction.overall_grade}</div>
@@ -80,7 +93,7 @@ export default async function StudyDashboard({
               <div className="flex justify-center gap-6">
                 {prediction.modules.map((m) => (
                   <div key={m.module}>
-                    <div className="text-4xl font-black text-red-pen">{m.letter}</div>
+                    <div className="text-4xl font-black text-red-pen">{m.letter ?? '—'}</div>
                     <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
                       M{m.module} est.
                     </div>
@@ -92,9 +105,11 @@ export default async function StudyDashboard({
               </div>
             </>
           )}
-          <div className="mt-1 font-mono text-[9px] text-dim">
-            Paper 3 project assumed at neutral carry-over — estimates move as you practise.
-          </div>
+          {prediction.estimable && (
+            <div className="mt-1 font-mono text-[9px] text-dim">
+              Paper 3 project assumed at neutral carry-over — estimates move as you practise.
+            </div>
+          )}
           <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-left text-[11px] leading-snug text-dim">
             {paperShape(student.syllabus_mode)}
           </p>

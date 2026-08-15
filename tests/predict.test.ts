@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { MIN_ATTEMPTS_FOR_PREDICTION } from '@/lib/mastery/config';
+import { SESSION_SIZE } from '@/lib/session/builder';
 import {
   predictModule,
   predictOverall,
@@ -36,27 +38,32 @@ describe('predictModule — honest arithmetic', () => {
   });
 });
 
+// Attempts behind an estimate. Named so each test says what evidence it assumes.
+const ENOUGH = MIN_ATTEMPTS_FOR_PREDICTION;
+
 describe('predictOverall — six-point scale from combined modules', () => {
   it('averages module totals and maps to I-VI bands', () => {
     const mods = [predictModule(1, 1), predictModule(2, 1), predictModule(3, 1)];
-    const overall = predictOverall(mods);
+    const overall = predictOverall(mods, ENOUGH);
     expect(overall.overall_percent).toBe(92);
     expect(overall.overall_grade).toBe('I');
   });
 
   it('mid mastery lands mid-scale', () => {
     const mods = [predictModule(1, 0.5), predictModule(2, 0.5), predictModule(3, 0.5)];
-    expect(predictOverall(mods).overall_grade).toBe('III');
+    expect(predictOverall(mods, ENOUGH).overall_grade).toBe('III');
   });
 
   it('handles a subset of target modules (modular sitting)', () => {
-    const overall = predictOverall([predictModule(1, 0.9)]);
+    const overall = predictOverall([predictModule(1, 0.9)], ENOUGH);
     expect(overall.modules).toHaveLength(1);
     expect(overall.overall_percent).toBe(predictModule(1, 0.9).total_estimate);
   });
 
-  it('empty input degrades to VI', () => {
-    expect(predictOverall([]).overall_grade).toBe('VI');
+  it('states no grade at all for a student with no modules', () => {
+    const overall = predictOverall([], ENOUGH);
+    expect(overall.overall_grade).toBeNull();
+    expect(overall.estimable).toBe(false);
   });
 });
 
@@ -80,10 +87,49 @@ describe('predictModule — coverage honesty (R1.6 §4)', () => {
   });
 
   it('overall prediction reports the mean coverage of its modules', () => {
-    const overall = predictOverall([
-      predictModule(1, 0.6, 0.9),
-      predictModule(2, 0.6, 1.0),
-    ]);
+    const overall = predictOverall(
+      [predictModule(1, 0.6, 0.9), predictModule(2, 0.6, 1.0)],
+      ENOUGH,
+    );
     expect(overall.coverage).toBeCloseTo(0.95);
+  });
+});
+
+// A cold account has zero mastery, and the arithmetic on zero mastery is U/U/U
+// with an overall VI. That reads as a verdict on the student when what it means
+// is that we have never seen them work.
+describe('predictOverall — no grade before there is evidence for one', () => {
+  const mods = () => [predictModule(1, 0), predictModule(2, 0), predictModule(3, 0)];
+
+  it('states no grade at all on a cold account', () => {
+    const overall = predictOverall(mods(), 0);
+    expect(overall.overall_grade).toBeNull();
+    expect(overall.estimable).toBe(false);
+    expect(overall.attempts).toBe(0);
+  });
+
+  it('withholds the module letters too, not just the overall', () => {
+    for (const m of predictOverall(mods(), 3).modules) expect(m.letter).toBeNull();
+  });
+
+  it('holds back right up to the threshold, then speaks', () => {
+    expect(predictOverall(mods(), MIN_ATTEMPTS_FOR_PREDICTION - 1).overall_grade).toBeNull();
+    const enough = predictOverall(mods(), MIN_ATTEMPTS_FOR_PREDICTION);
+    expect(enough.estimable).toBe(true);
+    expect(enough.overall_grade).toBe('VI'); // the project carry-over alone is 12%
+    expect(enough.modules.every((m) => m.letter !== null)).toBe(true);
+  });
+
+  it('keeps computing the arithmetic while withholding the claim', () => {
+    // Suppression is about what we SAY, not about losing the numbers: the
+    // mastery map and the deltas still need them.
+    const cold = predictOverall([predictModule(1, 0.8)], 2);
+    expect(cold.overall_percent).toBe(predictModule(1, 0.8).total_estimate);
+    expect(cold.modules[0].total_estimate).toBeGreaterThan(0);
+    expect(cold.modules[0].letter).toBeNull();
+  });
+
+  it('the threshold is one completed session', () => {
+    expect(MIN_ATTEMPTS_FOR_PREDICTION).toBe(SESSION_SIZE);
   });
 });

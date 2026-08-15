@@ -17,6 +17,8 @@
 //   explain parts, are never extrapolated across — a strong student on the
 //   marks we test is not evidence about the marks we do not.
 
+import { MIN_ATTEMPTS_FOR_PREDICTION } from '@/lib/mastery/config';
+
 export const PROJECT_NEUTRAL_FRACTION = 0.6;
 
 const P1_WEIGHT = 30;
@@ -33,7 +35,8 @@ export interface ModulePrediction {
   p2_estimate: number; // of 50
   project_assumed: number; // Paper 3 project, of 20 — always the neutral assumption
   total_estimate: number; // of 100
-  letter: ModuleLetter;
+  /** null until there is enough work to estimate from — see predictOverall. */
+  letter: ModuleLetter | null;
   /** 0..1 share of this module's marks the estimate is based on (R1.6 §4). */
   coverage: number;
 }
@@ -68,16 +71,37 @@ export function predictModule(
 export interface OverallPrediction {
   modules: ModulePrediction[];
   overall_percent: number; // mean of module totals
-  overall_grade: OverallGrade;
+  /**
+   * null when the student has not done enough work to estimate from. Nullable
+   * on purpose: a flag beside a letter is easy to read past, and printing "U"
+   * or "VI" at a student who has answered nothing is a verdict we have not
+   * earned. Every surface must decide what to show instead.
+   */
+  overall_grade: OverallGrade | null;
+  /** Attempts this rests on, and whether that was enough to state a grade. */
+  attempts: number;
+  estimable: boolean;
   /** Mean coverage the estimate rests on; the UI must state it (R1.6 §4). */
   coverage: number;
 }
 
 // Overall estimate: modules combined with equal weight (each module is 100
 // weighted marks of the 300 total, Assessment Grid A).
-export function predictOverall(modules: ModulePrediction[]): OverallPrediction {
+export function predictOverall(
+  modules: ModulePrediction[],
+  attempts: number,
+): OverallPrediction {
+  const estimable = attempts >= MIN_ATTEMPTS_FOR_PREDICTION;
+  const withheld = (ms: ModulePrediction[]) => ms.map((m) => ({ ...m, letter: null }));
   if (modules.length === 0) {
-    return { modules: [], overall_percent: 0, overall_grade: 'VI', coverage: 1 };
+    return {
+      modules: [],
+      overall_percent: 0,
+      overall_grade: null,
+      attempts,
+      estimable: false,
+      coverage: 1,
+    };
   }
   const pct = modules.reduce((s, m) => s + m.total_estimate, 0) / modules.length;
   let grade: OverallGrade;
@@ -88,7 +112,16 @@ export function predictOverall(modules: ModulePrediction[]): OverallPrediction {
   else if (pct >= 20) grade = 'V';
   else grade = 'VI';
   const coverage = modules.reduce((s, m) => s + m.coverage, 0) / modules.length;
-  return { modules, overall_percent: round1(pct), overall_grade: grade, coverage };
+  // The arithmetic is still computed and still honest; what we withhold is the
+  // CLAIM, until there is enough work behind it to make one.
+  return {
+    modules: estimable ? modules : withheld(modules),
+    overall_percent: round1(pct),
+    overall_grade: estimable ? grade : null,
+    attempts,
+    estimable,
+    coverage,
+  };
 }
 
 function round1(n: number): number {
