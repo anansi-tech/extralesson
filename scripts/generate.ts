@@ -13,7 +13,7 @@ import { z } from 'zod';
 import { generateObject } from 'ai';
 import { model, MODEL_ID } from '@/lib/ai';
 import { dbConnect, Question, Topic } from '@/lib/db';
-import { deriveFinalAnswer, QuestionDraftZ } from '@/lib/validation/question';
+import { deriveFinalAnswer, McqQuestionZ, StructuredQuestionZ } from '@/lib/validation/question';
 import { normalizeEscapedNewlines } from '@/lib/text';
 import { buildDraftPrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
 import { getCoverage } from '@/lib/admin/coverage';
@@ -201,13 +201,24 @@ async function main() {
         ...(recipe.kind === 'structured' ? { final_answer: deriveFinalAnswer(parts) } : {}),
       };
 
-      // Gate 1: Zod
-      const validated = QuestionDraftZ.safeParse(candidate);
+      // Gate 1: Zod. Validate against the branch the recipe asked for, not the
+      // union: a failed union reports one root issue reading "Invalid input"
+      // and buries every branch's real complaint, which cost one run 48
+      // attempts against an unreadable message.
+      const validated = (recipe.kind === 'mcq' ? McqQuestionZ : StructuredQuestionZ).safeParse(
+        candidate,
+      );
       if (!validated.success) {
         rejected++;
         lost(context.topic_code, 'schema');
-        const issue = validated.error.issues[0];
-        console.log(`  ✗ Zod: ${issue?.path.join('.')}: ${issue?.message}`);
+        // Every issue, with its path: a top-level refine reports an empty path
+        // and "Invalid input", which is unactionable on its own — one run lost
+        // 48 attempts to a single unreadable cause.
+        console.log(
+          `  ✗ Zod: ${validated.error.issues
+            .map((i) => `${i.path.length ? i.path.join('.') : '<root>'}: ${i.message}`)
+            .join(' | ')}`,
+        );
         continue;
       }
       const draft = validated.data;
