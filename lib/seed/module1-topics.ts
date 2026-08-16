@@ -264,12 +264,14 @@ export const module1Topics: SeedTopic[] = [
       {
         id: 'M1.4.8',
         text: 'Calculate the surface area of solids.',
+        partial_reason: 'We set the solids we can draw and describe the rest in words; a prism with a sector cross-section needs paper.',
         notes:
           'Prisms including cubes and cylinders; right pyramids including cones; spheres. Surface area of sphere, A = 4*pi*r^2. Drawing limit (R1.6 §6): we can only draw a cuboid, a cylinder and a triangular prism, so set solids we can show or describe the solid fully in words — never a prism with a sector cross-section drawn in perspective.',
       },
       {
         id: 'M1.4.9',
         text: 'Calculate the volume of solids.',
+        partial_reason: 'We set the solids we can draw and describe the rest in words; a prism with a sector cross-section needs paper.',
         notes:
           'Prism including cube and cuboid, cylinder, right pyramid, cone and sphere. Volume of sphere, V = (4/3)*pi*r^3. Drawing limit (R1.6 §6): we can only draw a cuboid, a cylinder and a triangular prism, so set solids we can show or describe the solid fully in words — never a prism with a sector cross-section drawn in perspective.',
       },
@@ -388,8 +390,7 @@ export const module1Topics: SeedTopic[] = [
         text: 'Draw graphs of linear functions.',
         notes:
           'Concept of linear function, types of linear function (y = c; x = k; y = mx + c; where m, c and k are real numbers). For example, y = 0 (x-axis); x = 0 (y-axis).',
-        assessable: false as const,
-        unassessable_reason: 'Requires drawing a graph on a supplied grid.',
+        partial_reason: 'We supply the graph and assess reading it; the marks for plotting one need paper.',
       },
       {
         id: 'M1.6.2',

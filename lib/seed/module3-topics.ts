@@ -80,8 +80,7 @@ export const module3Topics: SeedTopic[] = [
       {
         id: 'M3.2.1',
         text: 'Draw a graph to represent a linear inequality in two variables.',
-        assessable: false as const,
-        unassessable_reason: 'Requires drawing and shading a region on a supplied grid.',
+        partial_reason: 'We supply the shaded grid and assess reading it; the marks for drawing and shading need paper.',
       },
       {
         id: 'M3.2.2',

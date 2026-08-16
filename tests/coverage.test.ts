@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { computeCoverage, coverageSentence, FULL_PAPER_RAW_MARKS } from '@/lib/targets/coverage';
+import {
+  computeCoverage,
+  coverageSentence,
+  displayFigure,
+  FULL_PAPER_RAW_MARKS,
+} from '@/lib/targets/coverage';
 import { paperShape } from '@/lib/exam/paper-shape';
 import { module1Topics } from '@/lib/seed/module1-topics';
 import { module2Topics } from '@/lib/seed/module2-topics';
@@ -41,7 +46,7 @@ describe('computeCoverage (R1.6 §3)', () => {
     const s = coverageSentence(coverage);
     expect(s).toContain(`${coverage.displayPercent}%`);
     expect(s).toContain(`${coverage.uncoveredMarks} marks`);
-    expect(s).toMatch(/pencil, ruler and compasses/);
+    expect(s).toMatch(/ruler and compasses/);
   });
 });
 
@@ -63,9 +68,18 @@ describe('unassessable objectives are excluded from generation, not just from th
     }
   });
 
-  it('keeps the construction and measurement objectives out of the pool', () => {
-    for (const id of ['M2.4.2', 'M2.4.3', 'M2.4.4', 'M1.3.6', 'M1.6.1']) {
+  // R1.7: "draw a graph" objectives came back in — we supply the graph and
+  // assess reading it, which is a genuine half of what they test. What stays
+  // out is instrument work: ruler, protractor and compasses on paper.
+  it('keeps the instrument objectives out of the pool', () => {
+    for (const id of ['M2.4.2', 'M2.4.3', 'M2.4.4']) {
       expect(assessableIds.has(id), `${id} must not be generated against`).toBe(false);
+    }
+  });
+
+  it('generates against the graph objectives it covers in part', () => {
+    for (const id of ['M1.6.1', 'M3.2.1']) {
+      expect(assessableIds.has(id), `${id} should be generated against`).toBe(true);
     }
   });
 
@@ -82,10 +96,39 @@ describe('unassessable objectives are excluded from generation, not just from th
 // R1.7 §B1/§B6 — what we say about the paper, and about what we do not do.
 describe('coverage statement (R1.7)', () => {
   it('rounds down to a number that does not claim false precision', () => {
-    expect(coverage.percent).toBe(91);
+    expect(coverage.percent).toBe(93);
     expect(coverage.displayPercent).toBe(90);
     expect(coverageSentence(coverage)).toContain('about 90%');
-    expect(coverageSentence(coverage)).not.toContain('91%');
+    expect(coverageSentence(coverage)).not.toContain('93%');
+  });
+
+  // A claim about coverage should lag the truth, never lead it. Untagging two
+  // objectives moved the arithmetic from 91% to 93%, and the printed figure did
+  // not move at all — which is the point.
+  it('will not step up until the arithmetic is clear of the next figure', () => {
+    expect(displayFigure(91)).toBe(90);
+    expect(displayFigure(93)).toBe(90);
+    expect(displayFigure(95)).toBe(90); // level with it is not past it
+    expect(displayFigure(95.9)).toBe(90);
+    expect(displayFigure(96)).toBe(95);
+    expect(displayFigure(100)).toBe(95); // never claims all of it
+  });
+
+  it('says what partial coverage means, so the number cannot erase the caveat', () => {
+    expect(coverage.partialCount).toBeGreaterThan(0);
+    const s = coverageSentence(coverage);
+    expect(s).toContain('reading and interpreting, not drawing');
+    expect(s).toContain('not covered at all'); // the instrument work
+  });
+
+  it('names the objectives it covers only in part', () => {
+    const partial = coverage.topics.flatMap((t) => t.partial.map((p) => p.id));
+    expect(partial).toContain('M1.6.1');
+    expect(partial).toContain('M3.2.1');
+    expect(partial).toContain('M1.4.8');
+    for (const p of coverage.topics.flatMap((t) => t.partial)) {
+      expect(p.reason.length, p.id).toBeGreaterThan(20);
+    }
   });
 
   it('never rounds up past what we can show', () => {

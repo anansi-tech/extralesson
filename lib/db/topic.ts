@@ -7,6 +7,10 @@ const ObjectiveSchema = new Schema(
     notes: { type: String },
     assessable: { type: Boolean }, // R1.6 §3: absent/true = we can assess it
     unassessable_reason: { type: String },
+    // R1.7: covered in part — we assess reading it, not producing it. Absent
+    // means fully covered, which is correct for every objective written before
+    // this field existed.
+    partial_reason: { type: String },
   },
   { _id: false },
 );

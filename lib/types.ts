@@ -21,6 +21,14 @@ export interface Objective {
   // We state this coverage plainly rather than quietly scoring around it.
   assessable?: false;
   unassessable_reason?: string;
+  /**
+   * R1.7: we assess a genuine half of this objective and not the other. The
+   * papers award marks for producing a graph or a solid and for reading one;
+   * we can mark the reading. Counted as covered, disclosed as partial — the
+   * coverage sentence says both, so a rising number cannot quietly erase the
+   * caveat that earned it.
+   */
+  partial_reason?: string;
 }
 
 export interface RubricItem {

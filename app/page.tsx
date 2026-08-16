@@ -179,9 +179,10 @@ export default function LandingPage() {
           </div>
           <p className="honest">
             Straight about what we don&rsquo;t do: ExtraLesson practises about {coverage.displayPercent}%
-            of the marks in a CSEC Mathematics paper. Construction and drawing questions — roughly{' '}
-            {coverage.uncoveredMarks} marks — still need pencil, ruler and compasses, so those stay
-            on paper with past papers. We do not prepare private candidates for Paper 032.
+            of the marks in a CSEC Mathematics paper. On a few graph and solid questions we cover
+            reading and interpreting, not drawing. Construction with ruler and compasses — roughly{' '}
+            {coverage.uncoveredMarks} marks — we do not cover at all, so that stays on paper with
+            past papers. We do not prepare private candidates for Paper 032.
           </p>
         </div>
       </section>
