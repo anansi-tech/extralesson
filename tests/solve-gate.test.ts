@@ -8,6 +8,7 @@ import type { QuestionDraft } from '@/lib/validation/question';
 const calls: string[] = [];
 let solverParts: { label: string; final_answer: string }[] = [];
 let verdicts: { same: boolean; reason: string }[] = [];
+let figureCheck: { verdict: string; note: string } | undefined;
 
 vi.mock('ai', () => ({
   generateObject: vi.fn(async ({ prompt }: { prompt: string }) => {
@@ -18,7 +19,7 @@ vi.mock('ai', () => ({
       return { object: next };
     }
     calls.push('solve');
-    return { object: { part_answers: solverParts } };
+    return { object: { part_answers: solverParts, ...(figureCheck ? { figure_check: figureCheck } : {}) } };
   }),
 }));
 vi.mock('@/lib/ai', () => ({ model: {}, MODEL_ID: 'test' }));
@@ -60,6 +61,7 @@ const answerPart = (label: string, answer: string) => ({
 beforeEach(() => {
   calls.length = 0;
   verdicts = [];
+  figureCheck = undefined;
 });
 
 describe('independentSolve — mechanical agreement', () => {
@@ -154,5 +156,51 @@ describe('independentSolve — adjudication settles what rules cannot', () => {
     );
     expect(out.agrees).toBe(true);
     expect(calls.filter((c) => c === 'judge')).toHaveLength(1);
+  });
+});
+
+// R1.7: three distinct figure/question mismatches have reached a review queue —
+// a length labelled on the wrong side, a figure that rendered blank, a sketch
+// asked to show coordinates. Each got its own rule afterwards, which does not
+// scale to the ones nobody has thought of. The solve pass already sees the
+// figure as text, so it is asked one more question.
+describe('independentSolve — the figure is read against the question', () => {
+  const withVisual = (parts: QuestionDraft['parts']): QuestionDraft => ({
+    ...draft(parts),
+    representation: 'diagram',
+    visual: { template: 'triangleLabeled', params: { labels: ['A', 'B', 'C'] } },
+  });
+
+  it('rejects a draft whose figure contradicts its question', async () => {
+    solverParts = [{ label: 'a', final_answer: '4' }];
+    figureCheck = { verdict: 'contradicts', note: 'The stem says AB = 4 cm but the figure marks CA.' };
+    const out = await independentSolve(withVisual([answerPart('a', '4')]));
+    expect(out.agrees).toBe(false);
+    expect(out.notes.join(' ')).toContain('figure contradicts');
+    expect(out.notes.join(' ')).toContain('AB = 4');
+  });
+
+  it('reports an under-determined figure without rejecting it', async () => {
+    solverParts = [{ label: 'a', final_answer: '4' }];
+    figureCheck = { verdict: 'under_determined', note: 'The angle at B is not marked.' };
+    const out = await independentSolve(withVisual([answerPart('a', '4')]));
+    expect(out.agrees).toBe(true);
+    expect(out.notes.join(' ')).toContain('figure under-determined');
+  });
+
+  it('says nothing when the figure and the question agree', async () => {
+    solverParts = [{ label: 'a', final_answer: '4' }];
+    figureCheck = { verdict: 'consistent', note: '' };
+    const out = await independentSolve(withVisual([answerPart('a', '4')]));
+    expect(out.agrees).toBe(true);
+    expect(out.notes).toEqual([]);
+  });
+
+  it('still rejects on the answers even when the figure is fine', async () => {
+    solverParts = [{ label: 'a', final_answer: '9' }];
+    figureCheck = { verdict: 'consistent', note: '' };
+    verdicts = [{ same: false, reason: '4 and 9 differ.' }];
+    const out = await independentSolve(withVisual([answerPart('a', '4')]));
+    expect(out.agrees).toBe(false);
   });
 });

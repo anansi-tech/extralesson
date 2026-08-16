@@ -243,6 +243,15 @@ Return JSON: {"answer_index": <0-based index of the correct option>, "final_answ
     show_that: '  [state the result your working reaches]',
     explain: '  [give the reason, in one short sentence]',
   };
+  const figureCheck = args.visualText
+    ? `
+BEFORE SOLVING, look at the figure as described against the question.
+- "contradicts": the figure states something the question denies, or the other way round — a length on the wrong side, a point where the question puts it elsewhere, a shape whose arrangement disagrees with stated coordinates, a value that differs. Say which.
+- "under_determined": the figure is missing something the question needs you to read off it, so the parts cannot be answered from what is shown.
+- "consistent": neither of those.
+Judge only the figure against the words. A figure that is a plain sketch of what the words describe is consistent, even if it adds nothing.
+`
+    : '';
   const parts = (args.partPrompts ?? [])
     .map((p) => `(${p.label}) ${p.prompt}${shape[p.mode ?? 'answer'] ?? ''}`)
     .join('\n');
@@ -252,7 +261,8 @@ ${stimulus}${args.stem}
 ${visual}
 PARTS:
 ${parts}
+${figureCheck}
 
-Return JSON: {"part_answers": [{"label": "a", "final_answer": "..."}, ...]} — one entry per part, in order. Unless the part is bracketed otherwise above, each final_answer contains ONLY that part's final value(s) — no working, no equation setup, no explanations, no sentences, and no restatement of the value in another form. Examples: "42.5" · "x = -1/3; x = 2" · "EC$70". Where a part is bracketed as asking for a reason or a stated result, answer in that shape instead, and include the value if the part asks for one as well.
+${args.visualText ? 'Return JSON: {"figure_check": {"verdict": "consistent" | "contradicts" | "under_determined", "note": "<one short sentence; empty when consistent>"}, "part_answers": [...]}' : 'Return JSON: {"part_answers": [{"label": "a", "final_answer": "..."}, ...]}'} — one entry per part, in order. Unless the part is bracketed otherwise above, each final_answer contains ONLY that part's final value(s) — no working, no equation setup, no explanations, no sentences, and no restatement of the value in another form. Examples: "42.5" · "x = -1/3; x = 2" · "EC$70". Where a part is bracketed as asking for a reason or a stated result, answer in that shape instead, and include the value if the part asks for one as well.
 If a part asks whether something is true (yes/no, agree/disagree, is the claim correct), answer with the verdict word alone — "Yes" or "No" — without the supporting calculation.`;
 }

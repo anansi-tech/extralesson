@@ -306,6 +306,7 @@ async function main() {
       }
       for (const n of solve.notes) console.log(`  · ${n}`);
 
+
       // Gate 4: internal dedup vs approved bank
       // Compare on what identifies the question. When a stimulus carries the
       // scenario, the stem is a lead-in and says nothing about what is asked.
