@@ -19,7 +19,7 @@ const SubmitZ = z.object({
   answers: z
     .array(
       z.object({
-        label: z.string().regex(/^[a-j]\.[a-z0-9][a-z0-9.\-]{0,11}$/i),
+        label: z.string().regex(/^[a-j]\.[a-z0-9][a-z0-9._\-]{0,29}$/i),
         answer: z.string().min(1).max(2000),
       }),
     )

@@ -37,7 +37,7 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v26');
+    expect(PROMPT_VERSION).toBe('v27');
   });
 
   it('teaches hence-or-otherwise chaining with follow-through on structured drafts', () => {
