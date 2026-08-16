@@ -20,7 +20,8 @@ export interface NamedPoint {
 
 // "A(1,1)", "A = (1, 1)", "C' = (6,1)", "$B'(4,-3)$" — a coordinate written
 // against a name, which is how every CSEC question states one.
-const NAMED_COORDINATE = /([A-Z])(')?\s*(?:=\s*)?\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/g;
+const NAMED_COORDINATE =
+  /([A-Z])('{1,2}|_\d)?\s*(?:=\s*)?\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/g;
 
 export function questionText(context: VerifyContext): string {
   return [context.stimulus ?? '', context.stem, ...context.partPrompts].join(' ');

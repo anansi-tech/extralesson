@@ -9,7 +9,8 @@ import { namedPoints, resolvePoints } from '../points';
 // straight lines given as y = mx + c, and quadratic curves y = ax^2 + bx + c.
 const CoordZ = z.number().min(-50).max(50);
 
-const NameZ = z.string().regex(/^[A-Z]'?$/);
+// A, A', A'', A_1 — every way the papers name an image point.
+const NameZ = z.string().regex(/^[A-Z](?:'{1,2}|_\d)?$/);
 
 export const CoordinateGridParamsZ = z.object({
   // Omit both ranges when `named` supplies the geometry: the window is then

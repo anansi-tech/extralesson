@@ -102,14 +102,18 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     }),
   });
 
-  const solByLabel = new Map(sol.part_answers.map((p) => [p.label.toLowerCase(), p.final_answer]));
+  // "(a)", "a)", " A " and "a" are one label. The prompt asks for the bare
+  // letter, and a run was lost entirely to the model echoing the parenthesised
+  // form from the parts list — a formatting difference is not a disagreement.
+  const bareLabel = (l: string) => l.trim().toLowerCase().replace(/^\(?([a-j])\)?[.:]?$/, '$1');
+  const solByLabel = new Map(sol.part_answers.map((p) => [bareLabel(p.label), p.final_answer]));
   const figure = figureNotes(sol.figure_check);
   const notes: string[] = [...figure.notes];
   let agrees = sol.part_answers.length === draft.parts.length && !figure.contradicts;
 
   for (const p of draft.parts) {
     if (!agrees) break;
-    const s = solByLabel.get(p.label);
+    const s = solByLabel.get(bareLabel(p.label));
     if (s === undefined) {
       agrees = false;
       break;
