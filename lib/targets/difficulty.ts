@@ -25,27 +25,6 @@
 // prompt told it to. Steering by that number would have optimised the
 // signposting and left the difficulty where it was.
 
-/**
- * Wording by which a part says it rests on an earlier result.
- *
- * Kept for ONE job: deriving depends_on for questions written before the field
- * existed. It must not be used to measure a question going forward — see
- * chainDepth.
- */
-const DEPENDENCY_CUES = [
-  /\bhence\b/i,
-  /\busing your (?:answer|result|value|graph)/i,
-  /\bfrom (?:your )?(?:part )?\(?[a-j]\)?(?:\s*\(?[ivx]+\)?)?/i,
-  /\byour answer (?:to|from|in)\b/i,
-  /\bthis (?:value|result|answer|amount|total)\b/i,
-  /\bthe value found\b/i,
-  /\bpart \(?[a-j]\)?/i,
-];
-
-export function dependsOnEarlier(text: string): boolean {
-  return DEPENDENCY_CUES.some((cue) => cue.test(text));
-}
-
 export interface RubricRowLike {
   mark_value: number;
   criterion?: string;
