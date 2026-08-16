@@ -176,6 +176,15 @@ export const SlotZ = z.object({
     AnswerFormatZ.optional(),
   ),
   rubric_codes: z.array(z.string()).default([]),
+  // Which earlier slots' results this slot uses, as "part.slot" refs.
+  //
+  // Declared rather than inferred. Chain depth is the property that makes a
+  // paper question hard without making it longer, and reading it out of the
+  // wording only works while the wording announces it — which the real papers
+  // do not do: "hence" appears once or twice in a whole paper. Measuring
+  // prose would have collapsed the moment we stopped mandating the word,
+  // while the dependency it stood for was unchanged.
+  depends_on: defaulted(z.array(z.string().regex(SLOT_REF_RE)).max(6), []),
 });
 
 /**
@@ -333,6 +342,31 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
           path: ['rubric', i, 'slot_ref'],
           message: `slot_ref '${r.slot_ref}' is not one of the question's slots`,
         });
+      }
+    }
+    // A declared dependency must point at a real slot that comes EARLIER: a
+    // chain that runs backwards is not a chain, and one that names a slot the
+    // question does not have would inflate the depth we steer generation by.
+    const order = q.parts.flatMap((p) => p.slots.map((s) => `${p.label}.${s.label}`));
+    for (const [i, part] of q.parts.entries()) {
+      for (const [j, slot] of part.slots.entries()) {
+        const self = `${part.label}.${slot.label}`;
+        for (const ref of slot.depends_on) {
+          const at = order.indexOf(ref);
+          if (at === -1) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['parts', i, 'slots', j, 'depends_on'],
+              message: `depends_on '${ref}' is not one of the question's slots`,
+            });
+          } else if (at >= order.indexOf(self)) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['parts', i, 'slots', j, 'depends_on'],
+              message: `depends_on '${ref}' does not come before '${self}'`,
+            });
+          }
+        }
       }
     }
     for (const [i, part] of q.parts.entries()) {

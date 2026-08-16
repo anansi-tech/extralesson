@@ -23,6 +23,11 @@ const SlotLooseZ = z.object({
   response_mode: z.enum(['answer', 'show_that', 'explain', 'construct']).nullish(),
   answer_format: z.string().nullish(),
   rubric_codes: z.array(z.string()).nullish(),
+  // The chain, declared. A field the strict schema wants but this one omits
+  // cannot be emitted at all: the model only ever sees THIS shape, so the
+  // first v32 batch came back with every slot independent and a chain depth of
+  // 1 across questions that plainly chained.
+  depends_on: z.array(z.string()).nullish(),
 });
 
 export const PartLooseZ = z.object({
