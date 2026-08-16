@@ -88,7 +88,7 @@ describe('QuestionDraftZ — structured (R1.5)', () => {
         label: l,
         prompt: 'p',
         marks: 1,
-        answer: '1',
+        slots: [{ label: 'i', answer: '1' }],
         response_mode: 'answer' as const,
       })),
       rubric: [
@@ -271,7 +271,12 @@ describe('QuestionDraftZ — response_mode and answer_format (R1.6)', () => {
 // result out of the stem and wrote nothing.
 describe('response_mode is read from the wording, not just the label', () => {
   const part = (prompt: string, response_mode?: 'answer' | 'show_that' | 'explain') =>
-    PartZ.parse({ label: 'a', prompt, marks: 2, answer: '5', ...(response_mode ? { response_mode } : {}) });
+    PartZ.parse({
+      label: 'a',
+      prompt,
+      marks: 2,
+      slots: [{ label: 'i', answer: '5', ...(response_mode ? { response_mode } : {}) }],
+    });
 
   it('recognises a show-that part however the model labelled it', () => {
     expect(part('Show that $P = M^2 - 2M$.').slots[0].response_mode).toBe('show_that');
@@ -322,8 +327,7 @@ describe('answer_format we do not recognise drops out, and the question survives
       label: 'a',
       prompt: 'Write the solution set in set-builder notation.',
       marks: 2,
-      answer: '\\{x : x > 3\\}',
-      answer_format: 'set_builder_notation',
+      slots: [{ label: 'i', answer: '\\{x : x > 3\\}', answer_format: 'set_builder_notation' }],
     });
     expect(p.slots[0].answer_format).toBeUndefined();
     expect(p.prompt).toContain('set-builder notation');

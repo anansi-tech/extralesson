@@ -16,7 +16,6 @@ import { dbConnect, Question } from '@/lib/db';
 import {
   actsPerMark,
   chainDepth,
-  dependsOnEarlier,
   summarise,
   type QuestionShapeLike,
 } from '@/lib/targets/difficulty';

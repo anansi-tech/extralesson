@@ -125,34 +125,6 @@ describe('slots — marking is per slot', () => {
   });
 });
 
-describe('slots — a question written the old way still works', () => {
-  const legacy = {
-    ...transformation,
-    marks: 2,
-    parts: [{ label: 'a', prompt: 'Find $x$.', marks: 2, answer: '4', response_mode: 'answer' }],
-    rubric: [{ code: 'AK1', profile: 'AK' as const, criterion: 'CAO 4', mark_value: 2, part_label: 'a' }],
-    final_answer: '4',
-  };
-
-  it('lifts a one-answer part into a single slot', () => {
-    const parsed = QuestionDraftZ.safeParse(legacy);
-    expect(parsed.success, JSON.stringify(parsed.error?.issues?.[0])).toBe(true);
-    const q = parsed.success ? parsed.data : null;
-    const parts = q && 'parts' in q ? q.parts : [];
-    expect(parts[0].slots).toHaveLength(1);
-    expect(parts[0].slots[0]).toMatchObject({ label: 'i', answer: '4', response_mode: 'answer' });
-  });
-
-  it('points its rubric row at that slot, and keeps part_label for every existing reader', () => {
-    const q = QuestionDraftZ.parse(legacy) as Extract<ReturnType<typeof QuestionDraftZ.parse>, { kind: 'structured' }>;
-    expect(q.rubric[0].slot_ref).toBe('a.i');
-    expect(q.rubric[0].part_label).toBe('a');
-  });
-});
-
-// A dry run rejected two of three drafts because the slot label pattern refused
-// the keys the model naturally writes for "several named things at once", and
-// the solver answered per part where we had asked per slot.
 describe('slot labels are the words they name', () => {
   const withLabel = (label: string) =>
     QuestionDraftZ.safeParse({

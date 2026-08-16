@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { actsPerMark, chainDepth, dependsOnEarlier, summarise } from '@/lib/targets/difficulty';
+import { actsPerMark, chainDepth, summarise } from '@/lib/targets/difficulty';
 
 // Difficulty is measured, not asserted: `difficulty` is a label the generator
 // gives itself, and a self-assigned label cannot be wrong.
@@ -90,14 +90,6 @@ describe('chainDepth — how far a result has to travel', () => {
 
   it('is 0 when there is nothing answerable at all', () => {
     expect(chainDepth({ marks: 0, parts: [] })).toBe(0);
-  });
-});
-
-describe('dependsOnEarlier — kept only for the one-off backfill', () => {
-  it('recognises the wording a question uses when it does announce itself', () => {
-    expect(dependsOnEarlier('Hence, calculate the mean.')).toBe(true);
-    expect(dependsOnEarlier('Using your answer to part (a), find the total.')).toBe(true);
-    expect(dependsOnEarlier('Calculate the area of the trapezium.')).toBe(false);
   });
 });
 

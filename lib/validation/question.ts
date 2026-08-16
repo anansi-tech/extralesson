@@ -96,10 +96,10 @@ export const RubricItemZ = z
     (raw) => {
       if (!raw || typeof raw !== 'object') return raw;
       const r = raw as Record<string, unknown>;
-      // A row written against a part addresses that part's only slot.
-      const slot_ref = r.slot_ref ?? (r.part_label ? `${r.part_label}.i` : undefined);
-      const part_label = r.part_label ?? String(slot_ref ?? '').split('.')[0];
-      return { ...r, slot_ref, part_label };
+      // part_label is derived from the slot the row is earned by, and kept,
+      // because the review card, the matrices and the grader all read it.
+      const part_label = r.part_label ?? String(r.slot_ref ?? '').split('.')[0];
+      return { ...r, part_label };
     },
     z.object({
       code: z.string().regex(/^(CK|AK|R)\d+$/, 'rubric code must be CK/AK/R + number'),
@@ -208,19 +208,8 @@ export function clozeGapCount(statement: string): number {
   return statement.split(CLOZE_GAP).length - 1;
 }
 
-export const PartZ = z.preprocess(
-  (raw) => {
-    if (!raw || typeof raw !== 'object') return raw;
-    const p = raw as Record<string, unknown>;
-    if (Array.isArray(p.slots) && p.slots.length > 0) return p;
-    const { answer, accept, response_mode, answer_format, ...rest } = p;
-    return {
-      ...rest,
-      slots: [{ label: 'i', answer, accept, response_mode, answer_format }],
-    };
-  },
-  z
-    .object({
+export const PartZ = z
+  .object({
       label: z.string().regex(/^[a-j]$/),
       prompt: z.string().min(1),
       marks: z.number().int().min(1),
@@ -255,8 +244,7 @@ export const PartZ = z.preprocess(
         // instruction when the slot carries no prompt of its own.
         response_mode: modeFromWording(slot.prompt ?? part.prompt, slot.response_mode),
       })),
-    })),
-);
+  }));
 
 const PART_LABELS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 
