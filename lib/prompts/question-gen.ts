@@ -188,7 +188,7 @@ RULES:
 - The question must be ORIGINAL — written in exam style but never copied, reconstructed, paraphrased, or imitated from any CXC past paper. The recipe contains abstract controls only.
 - Use Caribbean contexts naturally where a context is needed (EC dollars, island place names, cricket, market stalls) without being forced.
 - An optional "stimulus" carries shared context for the parts; keep the stem short when a stimulus is present.
-- Math is KaTeX-safe: inline math in $...$, escape backslashes correctly in JSON. Matrices are notation in stem/parts, never visuals.
+- Math is KaTeX-safe: inline math in $...$ (never \\( ... \\)), and a column vector or matrix already carries its own brackets — never put parentheses around one, escape backslashes correctly in JSON. Matrices are notation in stem/parts, never visuals.
 - DELIMITER CONVENTION (hard rule, every field): $ is EXCLUSIVELY a math delimiter, in balanced $...$ pairs. Currency is NEVER a bare $ — write EC$ followed by the amount (EC$12) or the word "dollars". Never put EC$ amounts inside $...$ math.
 - ${kind === 'mcq'
       ? 'Exactly 4 options. Distractors must each come from a plausible specific error. answer_key is the 0-based index of the correct option. marks = 1.'
