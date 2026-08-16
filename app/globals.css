@@ -53,9 +53,16 @@ body {
   font-size: 1.08em;
 }
 
-.question-prose .katex .mord,
-.question-prose .katex .mbin {
+.katex .mord,
+.katex .mbin {
   -webkit-text-stroke: 0.018em currentColor;
+}
+
+/* A superscript sets at ~70%, so a minus inside one — tan⁻¹, 10⁻⁵ — is thinner
+   again than the body minus and needs proportionally more. */
+.katex .msupsub .mord,
+.katex .msupsub .mbin {
+  -webkit-text-stroke: 0.03em currentColor;
 }
 
 /* "Not drawn to scale", printed under every schematic figure exactly as CXC

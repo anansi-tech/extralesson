@@ -29,7 +29,11 @@ export function renderAnswerHtml(raw: string): string {
     .join('; ');
 }
 
-function renderOneAnswer(value: string): string {
+function renderOneAnswer(raw: string): string {
+  // \( ... \) is LaTeX's other inline delimiter; KaTeX's parser rejects it, so
+  // an answer written that way used to fall through to verbatim text and show
+  // the student \begin{pmatrix}.
+  const value = raw.replace(/\\[()]/g, '$').trim();
   if (value === '') return '';
   // Already delimited, or carries currency: the prose renderer handles both.
   if (/\$[^$]+\$/.test(value) || value.includes('EC$')) return renderMathHtml(value);
@@ -63,9 +67,14 @@ export function renderMathHtml(text: string): string {
     // \( ... \) is LaTeX's other inline delimiter and models reach for it
     // freely; unrecognised, it reaches the student as raw source.
     .replace(/\\[()]/g, '$')
-    // A column vector already carries its brackets, so an author's parentheses
-    // around one render as ((6 -8)).
-    .replace(/\(\s*(\$\\begin\{[bp]matrix\}[\s\S]*?\\end\{[bp]matrix\}\$)\s*\)/g, '$1')
+    // Math that already carries brackets — a column vector, a coordinate pair —
+    // renders as ((7, 1)) when an author wraps it in parentheses as well.
+    .replace(/\(\s*(\$[^$]+\$)\s*\)/g, (whole, math: string) => {
+      const inner = math.slice(1, -1).trim();
+      const bracketed =
+        /^\\begin\{[bp]matrix\}/.test(inner) || (inner.startsWith('(') && inner.endsWith(')'));
+      return bracketed ? math : whole;
+    })
     .split(/(\$[^$]+\$)/g)
     .map((seg) => {
       if (seg.startsWith('$') && seg.endsWith('$') && seg.length > 2) {
