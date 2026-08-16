@@ -90,6 +90,12 @@ const QuestionSchema = new Schema({
     enum: ['prose', 'diagram', 'graph', 'table', 'chart', 'venn'],
     default: 'prose',
   },
+  // R1.8 §2: a whole Paper 2 question, or a short practice item. Both are
+  // wanted — a drill item between paper questions is genuinely useful — but a
+  // session and a matrix have to be able to tell them apart, and marks alone
+  // cannot: a 9-mark drill item and a 9-mark paper question differ in whether
+  // the parts go anywhere, not in size.
+  shape: { type: String, enum: ['paper', 'drill'], default: 'drill' },
   options: { type: [String] }, // mcq: exactly 4
   answer_key: { type: Number }, // mcq
   profile: { type: String, enum: ['CK', 'AK', 'R'] }, // mcq: single profile per item

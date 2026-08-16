@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { CONTEXT_CATEGORIES } from '@/lib/generation/contexts';
+import { SLOT_LABEL_RE, SLOT_REF_RE } from '@/lib/notation';
 import type { Representation, ResponseMode, TemplateName } from '@/lib/types';
 
 // Boundary validation for questions (R1.5 §2). Every question write —
@@ -106,7 +107,7 @@ export const RubricItemZ = z
       // R1.8 Part 1: rows are earned by a slot. part_label is derived from it
       // and kept, because the review card, the matrices and the grader all read
       // it and none of them need to know about slots.
-      slot_ref: z.string().regex(/^[a-j]\.[a-z0-9][a-z0-9._\-'′]{0,29}$/i),
+      slot_ref: z.string().regex(SLOT_REF_RE),
       part_label: z.string().regex(/^[a-j]$/),
       for_format: optional(z.boolean()),
     }),
@@ -149,7 +150,7 @@ export const SlotZ = z.object({
   // 'i'..'x' for sub-parts, 'r5.S' for a table cell, and descriptive keys for
   // the several-named-things case — which are as long as the words they name:
   // 'centre', 'modal_class', 'semi_interquartile_range'.
-  label: z.string().regex(/^[a-z0-9][a-z0-9._\-'′]{0,29}$/i),
+  label: z.string().regex(SLOT_LABEL_RE),
   prompt: optional(z.string().min(1)),
   answer: z.string().min(1), // values-only convention
   // Mark-scheme accept list: alternative correct forms of THIS part's answer
