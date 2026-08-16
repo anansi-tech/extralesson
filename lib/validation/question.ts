@@ -53,6 +53,12 @@ export const TemplateNameZ = z.enum([
 
 // Which templates satisfy which representation (R1.5 §2: visual must be
 // type-consistent). Matrices are NOT visuals — KaTeX notation in stem/parts.
+/** A grid drawn from question-named points, without axes — a schematic. */
+export function isNamedSketch(params: Record<string, unknown> | undefined): boolean {
+  const named = params?.named as { sketch?: boolean } | undefined;
+  return Boolean(named) && named?.sketch !== false;
+}
+
 export const TEMPLATES_BY_REPRESENTATION: Record<Exclude<Representation, 'prose'>, TemplateName[]> =
   {
     diagram: [
@@ -167,7 +173,10 @@ const moduleAgrees = (q: { module: number; objective_ids: string[] }) =>
   q.objective_ids.every((id) => id.startsWith(`M${q.module}.`));
 
 function checkVisualConsistency(
-  q: { representation: Representation; visual?: { template: TemplateName } },
+  q: {
+    representation: Representation;
+    visual?: { template: TemplateName; params?: Record<string, unknown> };
+  },
   ctx: z.RefinementCtx,
 ) {
   if (q.representation === 'prose') {
@@ -184,7 +193,15 @@ function checkVisualConsistency(
     });
     return;
   }
-  if (!TEMPLATES_BY_REPRESENTATION[q.representation].includes(q.visual.template)) {
+  // A coordinateGrid whose points are named by the question and drawn in
+  // sketch mode has no axes, gridlines or scale: it IS a diagram, and calling
+  // it a graph would misreport the bank's composition. A plotted grid the
+  // student reads values off is a graph, as before.
+  const namedSketch =
+    q.visual.template === 'coordinateGrid' &&
+    isNamedSketch(q.visual.params);
+  const allowed = TEMPLATES_BY_REPRESENTATION[q.representation];
+  if (!allowed.includes(q.visual.template) && !(q.representation === 'diagram' && namedSketch)) {
     ctx.addIssue({
       code: 'custom',
       path: ['visual', 'template'],

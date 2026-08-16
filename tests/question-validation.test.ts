@@ -324,3 +324,47 @@ describe('answer_format we do not recognise drops out, and the question survives
     expect(p.answer).toBe('\\{x : x > 3\\}');
   });
 });
+
+// A named grid in sketch mode has no axes, gridlines or scale numbers: it is a
+// schematic, and a run lost nine of twelve attempts because the template hints
+// offered it for a diagram while the boundary called it a graph.
+describe('a named sketch counts as a diagram', () => {
+  const withVisual = (representation: string, params: Record<string, unknown>) => ({
+    kind: 'mcq' as const,
+    module: 3 as const,
+    objective_ids: ['M3.3.2'],
+    archetype: 'direct-procedure' as const,
+    representation,
+    difficulty: 1 as const,
+    marks: 1,
+    stem: "Triangle $ABC$ has $A(1,1)$, $B(3,1)$ and $C(2,3)$, and maps to $A'(5,-1)$.",
+    options: ['a', 'b', 'c', 'd'],
+    answer_key: 0,
+    profile: 'AK' as const,
+    visual: { template: 'coordinateGrid', params },
+    parts: [{ label: 'a', prompt: 'Select the vector.', marks: 1, answer: 'a' }],
+    final_answer: 'a',
+    worked_solution: 'The vector is $(4,-2)$.',
+    misconceptions: [],
+  });
+
+  const sketch = { named: { polygons: [{ points: ['A', 'B', 'C'] }] } };
+  const plotted = { x_range: [-5, 8], y_range: [-3, 6], points: [{ x: 1, y: 1, label: 'A' }] };
+
+  it('accepts a named sketch declared as a diagram', () => {
+    expect(QuestionDraftZ.safeParse(withVisual('diagram', sketch)).success).toBe(true);
+  });
+
+  it('still accepts it declared as a graph', () => {
+    expect(QuestionDraftZ.safeParse(withVisual('graph', sketch)).success).toBe(true);
+  });
+
+  it('refuses a plotted grid called a diagram — that one really is a graph', () => {
+    expect(QuestionDraftZ.safeParse(withVisual('diagram', plotted)).success).toBe(false);
+  });
+
+  it('refuses sketch: false under diagram, since the axes are the point', () => {
+    const explicit = { named: { polygons: [{ points: ['A', 'B', 'C'] }], sketch: false } };
+    expect(QuestionDraftZ.safeParse(withVisual('diagram', explicit)).success).toBe(false);
+  });
+});
