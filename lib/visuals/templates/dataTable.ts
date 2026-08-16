@@ -33,6 +33,13 @@ export const DataTableParamsZ = z.object({
   headers: z.array(z.string().min(1).max(40)).min(1).max(12),
   rows: z.array(z.array(CellZ).min(1).max(12)).min(1).max(15),
   row_header_column: z.boolean().default(false),
+  /**
+   * R1.8 §4.4 — a two-way (contingency) table: the last row totals each column,
+   * the last column totals each row, or both. Declaring it is what lets verify()
+   * check the arithmetic; a table whose margins do not add up is a question
+   * nobody can answer, and it reads as correct until a student tries.
+   */
+  totals: z.enum(['row', 'column', 'both']).optional(),
 });
 
 export type DataTableParams = z.infer<typeof DataTableParamsZ>;
@@ -68,6 +75,7 @@ export const dataTable: VisualTemplate<DataTableParams> = {
     "a cell the student fills is {\"slots\": [\"b.r5S\"]} rather than text, and every slot it names must be a slot of this question",
     "a scaffolded cell adds \"template\" with {} where each slot goes — \"({} x {}) + {} + {} = {}\" — which is how the paper walks a candidate from the arithmetic to the rule",
     "a final row in terms of n is written as answerable cells like any other row",
+    "a two-way (contingency) table sets \"totals\" to \"row\", \"column\" or \"both\" — its margins are then checked, and every printed total must equal the sum of the printed cells it totals",
   ],
   paramsSchema: DataTableParamsZ,
 
@@ -105,12 +113,20 @@ export const dataTable: VisualTemplate<DataTableParams> = {
         : `to be completed (slot ${named})`;
     };
     void context;
+    const margins =
+      p.totals === 'both'
+        ? ' The last row and the last column are totals.'
+        : p.totals === 'row'
+          ? ' The last column totals each row.'
+          : p.totals === 'column'
+            ? ' The last row totals each column.'
+            : '';
     const rows = p.rows
       .map((row, i) => `Row ${i + 1}: ${row.map(v).join(' | ')}`)
       .join('. ');
     return `Table${p.caption ? ` captioned "${p.caption}"` : ''} with columns ${p.headers.join(
       ' | ',
-    )}${p.row_header_column ? ' (first column is a row header)' : ''}. ${rows}.`;
+    )}${p.row_header_column ? ' (first column is a row header)' : ''}.${margins} ${rows}.`;
   },
 
   verify(p, context) {
@@ -151,6 +167,72 @@ export const dataTable: VisualTemplate<DataTableParams> = {
         }
       });
     });
+
+    issues.push(...totalsIssues(p));
     return issues;
   },
 };
+
+/** A printed number, or null when the cell is answerable, blank or wordy. */
+function numericCell(cell: Cell | undefined): number | null {
+  if (cell === undefined || isAnswerCell(cell)) return null;
+  const text = cell.replace(/[\s,$]/g, '');
+  if (text === '' || !/^-?\d+(\.\d+)?$/.test(text)) return null;
+  return Number(text);
+}
+
+/**
+ * A two-way table's margins must add up. Only fully printed lines are checked:
+ * where a cell is the student's to fill we do not know the value, and a gate
+ * that guessed would reject good questions.
+ */
+function totalsIssues(p: DataTableParams): string[] {
+  if (!p.totals) return [];
+  const issues: string[] = [];
+  const firstDataCol = p.row_header_column ? 1 : 0;
+  const wantsRowTotals = p.totals === 'row' || p.totals === 'both';
+  const wantsColumnTotals = p.totals === 'column' || p.totals === 'both';
+  const lastRow = p.rows.length - 1;
+  const lastCol = p.headers.length - 1;
+  const near = (a: number, b: number) => Math.abs(a - b) < 0.005;
+
+  if (wantsRowTotals && lastCol > firstDataCol) {
+    p.rows.forEach((row, i) => {
+      if (wantsColumnTotals && i === lastRow) return; // the grand total, checked below
+      const total = numericCell(row[lastCol]);
+      const cells = row.slice(firstDataCol, lastCol).map(numericCell);
+      if (total === null || cells.some((c) => c === null)) return;
+      const sum = (cells as number[]).reduce((s, c) => s + c, 0);
+      if (!near(sum, total)) {
+        issues.push(`dataTable: row ${i + 1} totals ${total} but its cells sum to ${sum}`);
+      }
+    });
+  }
+
+  if (wantsColumnTotals && lastRow > 0) {
+    for (let j = firstDataCol; j <= lastCol; j++) {
+      if (wantsRowTotals && j === lastCol) continue;
+      const total = numericCell(p.rows[lastRow]?.[j]);
+      const cells = p.rows.slice(0, lastRow).map((row) => numericCell(row[j]));
+      if (total === null || cells.some((c) => c === null)) continue;
+      const sum = (cells as number[]).reduce((s, c) => s + c, 0);
+      if (!near(sum, total)) {
+        issues.push(`dataTable: column ${j + 1} totals ${total} but its cells sum to ${sum}`);
+      }
+    }
+  }
+
+  // The corner cell must agree with both margins, or the table has two
+  // different grand totals and the question depends on which one is read.
+  if (p.totals === 'both' && lastRow > 0 && lastCol > firstDataCol) {
+    const grand = numericCell(p.rows[lastRow]?.[lastCol]);
+    const rowTotals = p.rows.slice(0, lastRow).map((row) => numericCell(row[lastCol]));
+    if (grand !== null && rowTotals.length && rowTotals.every((c) => c !== null)) {
+      const sum = (rowTotals as number[]).reduce((s, c) => s + c, 0);
+      if (!near(sum, grand)) {
+        issues.push(`dataTable: the grand total is ${grand} but the row totals sum to ${sum}`);
+      }
+    }
+  }
+  return issues;
+}

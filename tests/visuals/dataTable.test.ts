@@ -61,3 +61,81 @@ describe('dataTable template', () => {
     expect(dataTable.verify(tall, { stem: 'x', partPrompts: [] }).length).toBeGreaterThan(0);
   });
 });
+
+// R1.8 §4.4 — the two-way (contingency) table. It is structurally the table we
+// already had; what it needs is the check that its margins add up, because an
+// inconsistent one reads as correct right up until a student tries to answer it.
+describe('dataTable — two-way tables', () => {
+  const context = { stem: 'x', partPrompts: [], slotRefs: ['a.i'] };
+  const table = (over: Record<string, unknown> = {}) =>
+    DataTableParamsZ.parse({
+      headers: ['Group', 'Walks', 'Rides', 'Total'],
+      row_header_column: true,
+      totals: 'both',
+      rows: [
+        ['Boys', '12', '8', '20'],
+        ['Girls', '9', '11', '20'],
+        ['Total', '21', '19', '40'],
+      ],
+      ...over,
+    });
+
+  it('accepts a table whose rows, columns and grand total agree', () => {
+    expect(dataTable.verify(table(), context)).toEqual([]);
+  });
+
+  it('catches a row total that does not match its own cells', () => {
+    const bad = table({
+      rows: [
+        ['Boys', '12', '8', '21'],
+        ['Girls', '9', '11', '20'],
+        ['Total', '21', '19', '40'],
+      ],
+    });
+    expect(dataTable.verify(bad, context).join(' ')).toContain('row 1 totals 21');
+  });
+
+  it('catches a column total that does not match its own cells', () => {
+    const bad = table({
+      rows: [
+        ['Boys', '12', '8', '20'],
+        ['Girls', '9', '11', '20'],
+        ['Total', '22', '19', '40'],
+      ],
+    });
+    expect(dataTable.verify(bad, context).join(' ')).toContain('column 2 totals 22');
+  });
+
+  it('catches a grand total that disagrees with the margins', () => {
+    const bad = table({
+      rows: [
+        ['Boys', '12', '8', '20'],
+        ['Girls', '9', '11', '20'],
+        ['Total', '21', '19', '41'],
+      ],
+    });
+    expect(dataTable.verify(bad, context).join(' ')).toContain('grand total is 41');
+  });
+
+  it('says nothing about a line the student is being asked to complete', () => {
+    const withGap = table({
+      rows: [
+        ['Boys', '12', { slots: ['a.i'] }, '20'],
+        ['Girls', '9', '11', '20'],
+        ['Total', '21', '19', '40'],
+      ],
+    });
+    // Row 1 and column 3 both run through the gap and cannot be checked; the
+    // rest of the table still can, and does.
+    expect(dataTable.verify(withGap, context)).toEqual([]);
+  });
+
+  it('checks nothing at all unless the table says it has totals', () => {
+    const plain = table({ totals: undefined, rows: [['Boys', '12', '8', '99']] });
+    expect(dataTable.verify(plain, context)).toEqual([]);
+  });
+
+  it('tells the solver which margins are totals', () => {
+    expect(dataTable.describe(table(), context)).toContain('last row and the last column are totals');
+  });
+});
