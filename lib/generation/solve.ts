@@ -95,9 +95,9 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
       kind: 'structured',
       partPrompts: draft.parts.flatMap((p) =>
         p.slots.map((slot) => ({
-          // The solver answers slot by slot, addressed the way the paper
-          // addresses them: (a)(i), (a)(ii), (b).
-          label: p.slots.length === 1 ? p.label : `${p.label}${slot.label}`,
+          // Addressed by the slot's own reference, so a key cannot be read as
+          // "the whole of part (a)" and answered once for several slots.
+          label: p.slots.length === 1 ? p.label : `${p.label}.${slot.label}`,
           prompt: slot.prompt ? `${p.prompt} ${slot.prompt}` : p.prompt,
           mode: slot.response_mode ?? 'answer',
         })),
@@ -109,13 +109,19 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   // "(a)", "a)", " A " and "a" are one label. The prompt asks for the bare
   // letter, and a run was lost entirely to the model echoing the parenthesised
   // form from the parts list — a formatting difference is not a disagreement.
-  const bareLabel = (l: string) => l.trim().toLowerCase().replace(/^\(?([a-j])\)?[.:]?$/, '$1');
+  // "(a)", "a)", " A " and "a" are one label; "a.ii" and "(a)(ii)" are one slot.
+  const bareLabel = (l: string) =>
+    l
+      .trim()
+      .toLowerCase()
+      .replace(/[()\[\]]/g, '')
+      .replace(/^([a-j])[.:]?$/, '$1');
   const solByLabel = new Map(sol.part_answers.map((p) => [bareLabel(p.label), p.final_answer]));
   const figure = figureNotes(sol.figure_check);
   const notes: string[] = [...figure.notes];
   const askable = draft.parts.flatMap((p) =>
     p.slots.map((slot) => ({
-      ref: p.slots.length === 1 ? p.label : `${p.label}${slot.label}`,
+      ref: p.slots.length === 1 ? p.label : `${p.label}.${slot.label}`,
       prompt: slot.prompt ?? p.prompt,
       slot,
     })),

@@ -10,7 +10,7 @@ import { contextGuidance } from '@/lib/generation/contexts';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v26';
+export const PROMPT_VERSION = 'v27';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -271,7 +271,7 @@ Judge only the figure against the words. A figure that is a plain sketch of what
 `
     : '';
   const parts = (args.partPrompts ?? [])
-    .map((p) => `(${p.label}) ${p.prompt}${shape[p.mode ?? 'answer'] ?? ''}`)
+    .map((p) => `[${p.label}] ${p.prompt}${shape[p.mode ?? 'answer'] ?? ''}`)
     .join('\n');
   return `Solve this CSEC Mathematics question independently and completely.
 
@@ -281,6 +281,6 @@ PARTS:
 ${parts}
 ${figureCheck}
 
-Return JSON: {${args.visualText ? '"figure_check": {"verdict": "consistent" | "contradicts" | "under_determined", "note": "<one short sentence; empty when consistent>"}, ' : ''}"part_answers": [{"label": "a", "final_answer": "..."}, ...]} — one entry per part, in order, and the label is the bare letter: "a", not "(a)". Unless the part is bracketed otherwise above, each final_answer contains ONLY that part's final value(s) — no working, no equation setup, no explanations, no sentences, and no restatement of the value in another form. Examples: "42.5" · "x = -1/3; x = 2" · "EC$70". Where a part is bracketed as asking for a reason or a stated result, answer in that shape instead, and include the value if the part asks for one as well.
+Return JSON: {${args.visualText ? '"figure_check": {"verdict": "consistent" | "contradicts" | "under_determined", "note": "<one short sentence; empty when consistent>"}, ' : ''}"part_answers": [{"label": "a", "final_answer": "..."}, ...]} — EXACTLY ONE ENTRY PER BRACKETED KEY above, in order, and "label" is that key copied verbatim: "a.ii", not "(a)(ii)" and not "a". A key asking for two things in one line does not exist: every answerable thing has its own key. Unless the part is bracketed otherwise above, each final_answer contains ONLY that part's final value(s) — no working, no equation setup, no explanations, no sentences, and no restatement of the value in another form. Examples: "42.5" · "x = -1/3; x = 2" · "EC$70". Where a part is bracketed as asking for a reason or a stated result, answer in that shape instead, and include the value if the part asks for one as well.
 If a part asks whether something is true (yes/no, agree/disagree, is the claim correct), answer with the verdict word alone — "Yes" or "No" — without the supporting calculation.`;
 }

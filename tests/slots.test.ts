@@ -149,3 +149,28 @@ describe('slots — a question written the old way still works', () => {
     expect(q.rubric[0].part_label).toBe('a');
   });
 });
+
+// A dry run rejected two of three drafts because the slot label pattern refused
+// the keys the model naturally writes for "several named things at once", and
+// the solver answered per part where we had asked per slot.
+describe('slot labels are the words they name', () => {
+  const withLabel = (label: string) =>
+    QuestionDraftZ.safeParse({
+      ...transformation,
+      marks: 1,
+      parts: [{ label: 'a', prompt: 'State each measure.', marks: 1, slots: [{ label, answer: '4', rubric_codes: ['CK1'] }] }],
+      rubric: [{ code: 'CK1', profile: 'CK' as const, criterion: 'CAO 4', mark_value: 1, slot_ref: `a.${label}` }],
+      final_answer: '4',
+    }).success;
+
+  it('accepts the descriptive keys a statistics question needs', () => {
+    for (const l of ['modal_class', 'interquartile_range', 'semi_interquartile_range', 'centre', 'i', 'ii', 'r5.S']) {
+      expect(withLabel(l), l).toBe(true);
+    }
+  });
+
+  it('still refuses a label that is prose rather than a key', () => {
+    expect(withLabel('the modal class of the distribution shown above')).toBe(false);
+    expect(withLabel('has spaces')).toBe(false);
+  });
+});
