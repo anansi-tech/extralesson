@@ -255,13 +255,17 @@ const QuestionBaseZ = z.object({
   stem: z.string().min(10),
   visual: VisualZ.optional(),
   archetype: ArchetypeZ,
+  // R1.8 §2. Declared here because Zod STRIPS what it does not know: the
+  // pipeline set shape on the candidate, validation dropped it silently, and
+  // every paper-shaped question reached the database as a drill item. Same
+  // class as the depends_on bug, pointing the other way.
+  shape: defaulted(z.enum(['paper', 'drill']), 'drill'),
   representation: RepresentationZ,
   difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
   marks: z.number().int().min(1),
   worked_solution: z.string().min(1),
   misconceptions: z.array(MisconceptionZ).default([]),
-  // R1.8 Part 0: where the question is set. Absent on questions written before
-  // the field existed; the backfill classifies those from their own text.
+  // R1.8 Part 0: where the question is set, so monotony is measurable.
   context_category: optional(z.enum(CONTEXT_CATEGORIES)),
 });
 
