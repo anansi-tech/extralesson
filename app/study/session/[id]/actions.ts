@@ -7,6 +7,7 @@ import { markMcq, markStructuredParts } from '@/lib/grade/mark';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { renderMathHtml } from '@/lib/katex';
 import type { ProfileMarks, QuestionPart, RubricItem } from '@/lib/types';
+import { SLOT_REF_RE } from '@/lib/notation';
 
 const SubmitZ = z.object({
   sessionId: z.string().regex(/^[a-f0-9]{24}$/),
@@ -19,7 +20,7 @@ const SubmitZ = z.object({
   answers: z
     .array(
       z.object({
-        label: z.string().regex(/^[a-j]\.[a-z0-9][a-z0-9._\-'′]{0,29}$/i),
+        label: z.string().regex(SLOT_REF_RE),
         answer: z.string().min(1).max(2000),
       }),
     )

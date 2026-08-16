@@ -215,7 +215,22 @@ describe('slot labels — a prime is part of the name', () => {
     expect(QuestionDraftZ.safeParse(imageVertices(["P''", "Q''"])).success).toBe(true);
   });
 
+  it('accepts the typographic prime as well as the apostrophe', () => {
+    // Both appear in the papers, sometimes within one paper.
+    expect(QuestionDraftZ.safeParse(imageVertices(['A\u2032', 'B\u2033'])).success).toBe(true);
+  });
+
+  it('accepts an indexed name, as a line or a term carries', () => {
+    expect(QuestionDraftZ.safeParse(imageVertices(['L1', 'L\u2082'])).success).toBe(true);
+  });
+
+  it('accepts a Greek letter, which is how an angle is named', () => {
+    expect(QuestionDraftZ.safeParse(imageVertices(['\u03b8', '\u03c6'])).success).toBe(true);
+  });
+
   it('still rejects a label that is not a name at all', () => {
     expect(QuestionDraftZ.safeParse(imageVertices(['a b'])).success).toBe(false);
+    expect(QuestionDraftZ.safeParse(imageVertices(['$x$'])).success).toBe(false);
+    expect(QuestionDraftZ.safeParse(imageVertices(['(i)'])).success).toBe(false);
   });
 });
