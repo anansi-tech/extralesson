@@ -165,3 +165,45 @@ describe('renderMathHtml — matrix brackets and the other delimiter', () => {
     expect(html).toContain('EC$120');
   });
 });
+
+// Screenshot round two: a column vector written \(...\) reached the review card
+// as raw source in the part answer, the final answer and a misconception name;
+// and a coordinate pair wrapped in an author's parentheses read as ((7, 1)).
+describe('renderAnswerHtml — the other delimiter, and brackets drawn twice', () => {
+  it('renders a column vector written with \\( \\)', () => {
+    const html = renderAnswerHtml('\\(\\begin{pmatrix}4\\\\3\\end{pmatrix}\\)');
+    expect(html).toContain('katex');
+    // KaTeX keeps the source in <annotation>; what must be gone is the
+    // delimiter it cannot parse, and the escaped-text fallback.
+    expect(html).not.toContain('\\(');
+    expect(html).not.toContain('&#x5C;');
+  });
+
+  it('renders each value of a multi-value answer that way', () => {
+    const html = renderAnswerHtml('\\(\\begin{pmatrix}4\\\\3\\end{pmatrix}\\); 36.9°; (11, 4)');
+    expect(html).toContain('katex');
+    expect(html).not.toContain('\\(');
+    expect(html.replace(/<[^>]*>/g, '')).toContain('36.9');
+  });
+
+  it('drops parentheses an author put around a coordinate pair', () => {
+    const text = renderMathHtml('Adds to the wrong point ($(7, 1)$)').replace(/<[^>]*>/g, '');
+    expect(text).not.toContain('((');
+    expect(text).not.toContain('))');
+  });
+
+  it('leaves a parenthetical aside alone', () => {
+    const text = renderMathHtml('The point $(2, 3)$ lies on the line (see the diagram).').replace(/<[^>]*>/g, '');
+    expect(text).toContain('(see the diagram)');
+  });
+
+  it('leaves parentheses that are doing real work', () => {
+    const text = renderMathHtml('Solve $2x + 1 = 7$ (show your working).').replace(/<[^>]*>/g, '');
+    expect(text).toContain('(show your working)');
+  });
+
+  it('still keeps EC$ and percentages intact', () => {
+    expect(renderAnswerHtml('EC$70')).toContain('EC$70');
+    expect(renderAnswerHtml('12.5%')).toContain('katex');
+  });
+});
