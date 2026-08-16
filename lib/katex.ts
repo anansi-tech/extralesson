@@ -30,9 +30,9 @@ export function renderAnswerHtml(raw: string): string {
 }
 
 function renderOneAnswer(raw: string): string {
-  // \( ... \) is LaTeX's other inline delimiter; KaTeX's parser rejects it, so
-  // an answer written that way used to fall through to verbatim text and show
-  // the student \begin{pmatrix}.
+  // \( ... \) is the other inline math delimiter; KaTeX's parser rejects it,
+  // so an answer written that way used to fall through to verbatim text and
+  // show the student \begin{pmatrix}.
   const value = raw.replace(/\\[()]/g, '$').trim();
   if (value === '') return '';
   // Already delimited, or carries currency: the prose renderer handles both.
@@ -93,7 +93,7 @@ function renderDisplayMath(body: string): string {
 function renderInline(text: string, restore: (s: string) => string): string {
   return text
     .replace(/EC\$/g, CURRENCY_SENTINEL)
-    // \( ... \) is LaTeX's other inline delimiter and models reach for it
+    // \( ... \) is the other inline math delimiter and models reach for it
     // freely; unrecognised, it reaches the student as raw source.
     .replace(/\\[()]/g, '$')
     // Math that already carries brackets — a column vector, a coordinate pair —
