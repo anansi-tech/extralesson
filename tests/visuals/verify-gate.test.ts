@@ -166,3 +166,58 @@ describe('every template draws something finite', () => {
     expect(svg).toContain('NaN'); // the condition the gate tests for
   });
 });
+
+// A transformation question stated A(1,1), B(3,1), C(2,3) — C is the apex —
+// and drew it with triangleLabeled, which always puts labels[0] on top. The
+// figure showed a different triangle from the one the question was about, and
+// every gate passed it: the params were valid, the values appeared in the text,
+// and it rendered.
+describe('a sketch may not be asked to show coordinates', () => {
+  const ctx = (stem: string) => ({ stem, partPrompts: ['Determine the translation vector.'] });
+  const transformation =
+    'Triangle $ABC$, where $A(1,1)$, $B(3,1)$ and $C(2,3)$, is translated to triangle $A\'B\'C\'$ where $A\'=(5,-1)$.';
+
+  it('rejects a self-placing template when the question fixes the points', () => {
+    const res = verifyQuestionVisual(
+      { template: 'triangleLabeled', params: { labels: ['A', 'B', 'C'] } },
+      ctx(transformation),
+    );
+    expect(res.ok).toBe(false);
+    expect(res.issues.join(' ')).toContain('needs coordinateGrid');
+    expect(res.issues.join(' ')).toContain('A, B, C');
+  });
+
+  it('accepts the same question drawn on a grid', () => {
+    const res = verifyQuestionVisual(
+      {
+        template: 'coordinateGrid',
+        params: {
+          x_range: [-2, 10],
+          y_range: [-3, 6],
+          polygons: [
+            { vertices: [{ x: 1, y: 1 }, { x: 3, y: 1 }, { x: 2, y: 3 }], labels: ['A', 'B', 'C'] },
+            { vertices: [{ x: 5, y: -1 }, { x: 7, y: -1 }, { x: 6, y: 1 }], labels: ["A'", "B'", "C'"], dashed: true },
+          ],
+        },
+      },
+      ctx(transformation),
+    );
+    expect(res.issues.filter((i) => i.includes('coordinateGrid:'))).toEqual([]);
+  });
+
+  it('leaves a labelled sketch alone when the text fixes no points it draws', () => {
+    const res = verifyQuestionVisual(
+      { template: 'triangleLabeled', params: { labels: ['A', 'B', 'C'], sides: [{ side: 0, value: 6, unit: 'cm' }] } },
+      ctx('In triangle $ABC$, $AB = 6$ cm and angle $B$ is obtuse.'),
+    );
+    expect(res.ok).toBe(true);
+  });
+
+  it('tolerates a single named point, where a sketch claims nothing', () => {
+    const res = verifyQuestionVisual(
+      { template: 'triangleLabeled', params: { labels: ['A', 'B', 'C'] } },
+      ctx('The logo $ABC$ is translated so that $B(4,3)$ maps to $B\'(1,8)$.'),
+    );
+    expect(res.ok).toBe(true);
+  });
+});
