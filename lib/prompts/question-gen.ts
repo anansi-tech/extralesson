@@ -9,7 +9,7 @@ import { misconceptionGuidance } from '@/lib/misconceptions';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v22';
+export const PROMPT_VERSION = 'v23';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -131,6 +131,7 @@ ${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 140)}`).join('\n')}`
       : `VISUAL (hard requirement): representation "${recipe.representation}". Emit "visual" as {"template": <name>, "params": <object>} using ONE of these templates: ${context.template_hints.join(', ')}.
 ${visualContract}
 - The stem or stimulus must explicitly refer to the visual.
+- If the question states COORDINATES for any point it also draws — $A(1,1)$, $C' = (6,1)$ — the visual must be coordinateGrid, with the shape in "polygons" and the image polygon dashed. Every other template places its own points by its own layout: a triangle whose coordinates make C the apex will be drawn with A on top, and the figure will describe a different triangle from the one the question is about.
 - Every value shown in the visual must be consistent with the question's mathematics — the params are numerically cross-checked and any inconsistency auto-rejects the draft.
 - Values the student must READ from a chart/table live only in the visual; values GIVEN in prose (angles, lengths) must appear in both the text and the visual, identically.
 - Labels inside visual params are plain display text: "U", "PQ", "90°" — never "$U$" or KaTeX commands.
