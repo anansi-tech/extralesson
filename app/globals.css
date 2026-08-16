@@ -42,6 +42,22 @@ body {
   white-space: pre-wrap;
 }
 
+/* KaTeX sets a minus as U+2212: a one-pixel horizontal stroke that washes out
+   against warm paper at body size, so "-3" reads as "3" at a glance — the one
+   character in a maths answer that must never be missed. Math is set slightly
+   larger than the prose around it (KaTeX's own recommendation is 1.21em for
+   display; this is the inline equivalent), and the stroke is thickened just
+   enough to survive antialiasing without looking bold. */
+.question-prose .katex,
+.katex-inline {
+  font-size: 1.08em;
+}
+
+.question-prose .katex .mord,
+.question-prose .katex .mbin {
+  -webkit-text-stroke: 0.018em currentColor;
+}
+
 /* "Not drawn to scale", printed under every schematic figure exactly as CXC
    prints it in a paper's instructions. Quiet: it is a convention, not a
    warning. */

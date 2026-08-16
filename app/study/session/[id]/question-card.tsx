@@ -242,7 +242,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                   : 'Worked solution'}
             </div>
             <div
-              className="question-prose mt-1 text-sm"
+              className="question-prose mt-1 text-[15px]"
               dangerouslySetInnerHTML={{ __html: feedback.feedbackHtml }}
             />
           </div>

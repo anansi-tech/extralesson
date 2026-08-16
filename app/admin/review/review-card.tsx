@@ -199,7 +199,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
           Worked solution
         </div>
         <div
-          className="question-prose mt-1 text-sm"
+          className="question-prose mt-1 text-[15px]"
           dangerouslySetInnerHTML={{ __html: question.solutionHtml }}
         />
       </div>
