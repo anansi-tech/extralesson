@@ -1,85 +1,114 @@
-// Same-commit backfill for R1.8 Part 0's context_category.
+// Tag the settings of questions written before the setting ledger existed.
 //
-// Every question written before the field existed still HAS a setting — it is
-// just not recorded, so the ledger cannot see it and the first paper-shaped
-// batch would be told the bank has used nothing. Classify from the question's
-// own words, and leave anything ambiguous unset rather than guessing: an
-// unclassified question is honest, a wrongly classified one poisons the ledger.
+// R1.8 Part 0 measures whether the bank is monotonous by counting how often it
+// reaches for the same setting. 33 questions predate context_category, and an
+// untagged question is invisible to that count — it neither shows a skew nor
+// clears one, so a quarter of the P1 distribution was simply unknown.
 //
-// Idempotent. Run: pnpm tsx scripts/backfill-context-category.ts [--yes]
+// The rules below are keyword rules over the stem, and their known weakness is
+// the fallback: a question whose actor is not in the isBare() list is called
+// bare, which inflates the very share we are trying to measure. That is
+// acceptable HERE and only here — this runs once over 33 questions and every
+// assignment was read before it was applied. It is not a classifier to reach
+// for again on unread data.
+//
+// Previews by default; --yes applies.
+// Run: pnpm tsx scripts/backfill-context-category.ts [--yes]
 import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
 import type { ContextCategory } from '@/lib/types';
 
+// Ordered: the first match wins, so the more specific setting is listed first.
+//
+// Every alternative is wrapped in its own group so the word boundaries bind to
+// all of them. Written as /\bcement|roofing\b/ the boundaries anchor only the
+// first and last alternative, and the rest match INSIDE longer words: the first
+// draft of this filed a vector question under construction because "cement" is
+// in "displacement".
+const word = (...alternatives: string[]) => new RegExp(`\\b(?:${alternatives.join('|')})\\b`, 'i');
+
 const RULES: [ContextCategory, RegExp][] = [
-  ['banking', /\b(interest|loan|mortgage|deposit|hire[- ]purchase|exchange rate|currency|US\$|savings account|instalment)\b/i],
-  ['wages', /\b(salary|wage|paid|pay|earnings|overtime|fortnight|commission|income tax|deduction)\b/i],
-  ['retail', /\b(shop|store|stall|vendor|market|sells?|sold|discount|mark(?:ed)?[- ]up|sale price|customer|retail)\b/i],
-  ['transport', /\b(journey|bus|taxi|ferry|car|driver|speed|km\/h|fare|travel|route|timetable|fuel)\b/i],
-  ['agriculture', /\b(farm|crop|plant(?:ed|ing)?|harvest|livestock|goat|cow|banana|mango|yam|field of)\b/i],
-  ['fishing', /\b(fisher|boat|catch of|net|seine|lobster|snapper)\b/i],
-  ['construction', /\b(tile|paving|pave|fence|fencing|wall|builder|cement|concrete|roof|floor of the room|patio)\b/i],
-  ['household', /\b(tank|kitchen|recipe|bill|appliance|garden|room|bedroom|water usage|electricity)\b/i],
-  ['school', /\b(school|class|student|pupil|teacher|examination|homework|library|fair)\b/i],
-  ['sport', /\b(cricket|football|netball|athletic|match|team|score|tournament|race)\b/i],
-  ['events', /\b(festival|concert|fete|carnival|party|catering|ticket sales)\b/i],
-  ['tourism', /\b(hotel|tourist|visitor|resort|beach|tour|cruise)\b/i],
-  ['health', /\b(clinic|patient|dosage|medicine|nurse|nutrition|calorie|blood)\b/i],
-  ['environment', /\b(rainfall|recycl|conservation|solar|energy|pollution|temperature record)\b/i],
-  ['manufacturing', /\b(factory|production|packaging|machine|assembly|batch of)\b/i],
+  ['fishing', word('fisher(?:man|men)?', 'fishing', 'trawler', 'fish market')],
+  ['environment', word('nature (?:trail|reserve)', 'marine (?:reserve|laboratory)', 'seawater', 'rainfall', 'watershed', 'conservation', 'wildlife')],
+  ['construction', word('surveyor', 'scaffold', 'flagpole', 'guy wire', 'builder', 'mason', 'cement', 'roofing', 'foundation')],
+  ['transport', word('coastguard', 'jetty', 'marina', 'courier', 'delivery', 'bus', 'taxi', 'ferry', 'journey', 'distance-time')],
+  ['manufacturing', word('craft (?:worker|club)', 'workshop', 'factory', 'assembles')],
+  ['school', word('school', 'classroom', 'student', 'youth camp', 'canteen')],
+  ['retail', word('shop', 'store', 'stall', 'vendor', 'sachets', 'discount', 'sale price', 'sells')],
+  ['agriculture', word('farmer', 'farm', 'crop', 'harvest', 'garden', 'plantation', 'livestock')],
+  ['household', word('household', 'kitchen', 'water tank', 'electricity bill', 'rent')],
+  ['sport', word('cricket', 'football', 'athlete', 'race', 'tournament')],
+  ['tourism', word('tourist', 'hotel', 'resort', 'excursion', 'visitor')],
+  ['health', word('clinic', 'patient', 'nurse', 'dosage', 'blood')],
+  ['wages', word('wage', 'salary', 'overtime', 'hourly rate')],
+  ['banking', word('interest rate', 'principal', 'loan', 'savings account', 'compound interest')],
+  ['events', word('fair', 'festival', 'concert', 'carnival', 'fund-?raiser')],
 ];
 
-// Bare mathematics: either almost no prose at all, or prose whose SUBJECT is a
-// mathematical object rather than a person doing something. "The diagram shows
-// a circle with centre O" has no setting; "A vendor buys 24 mangoes" has one.
-const MATH_OBJECT =
-  /\b(diagram|graph|grid|circle|triangle|quadrilateral|polygon|function|matrix|sequence|expression|equation|inequality|integer|factor|vector|number line|set of)\b/i;
-const AGENT =
-  /\b(buys?|bought|sells?|sold|earns?|paid|pays?|travels?|works?|records?|surveys?|plans?|stands?|owns?|rents?|hires?|orders?|visits?|invests?)\b/i;
-
-function looksContextFree(text: string): boolean {
-  const words = text
-    .replace(/\$[^$]*\$/g, ' ')
-    .replace(/[^a-zA-Z\s]/g, ' ')
-    .split(/\s+/)
-    .filter((w) => w.length > 3);
-  if (words.length <= 8) return true;
-  return MATH_OBJECT.test(text) && !AGENT.test(text);
+/**
+ * A stem with no setting at all: pure symbols, named shapes, functions,
+ * matrices, a lettered figure. This is the paper's most common Paper 1 item
+ * and it must be recognised positively, not as "no rule matched".
+ *
+ * It recognises a setting by its ACTOR, from a list, so an actor the list does
+ * not know reads as bare. Every assignment this made was reviewed by eye
+ * before being applied; on unreviewed data the error would be silent.
+ */
+function isBare(text: string): boolean {
+  // Up to two words may sit between the article and the actor, so "a craft
+  // club" and "a school-supply retailer" read as settings rather than as bare
+  // symbolic work.
+  return !/\b(?:a|an|the)\s+(?:[a-z-]+\s+){0,2}(?:shop|worker|club|company|group|team|farmer|driver|owner|operator|retailer|service|laboratory|camp|centre|school|stall|vendor|surveyor|courier)\b/i.test(
+    text,
+  );
 }
 
-function classify(text: string): ContextCategory | undefined {
-  for (const [category, re] of RULES) if (re.test(text)) return category;
-  return looksContextFree(text) ? 'none' : undefined;
+export function categorise(text: string): ContextCategory | null {
+  for (const [category, pattern] of RULES) {
+    if (pattern.test(text)) return category;
+  }
+  return isBare(text) ? 'none' : null;
 }
 
 async function main() {
   const apply = process.argv.includes('--yes');
   await dbConnect();
-  const qs = await Question.find({ context_category: { $exists: false } })
-    .select('stem stimulus parts options')
-    .lean<{ _id: unknown; stem: string; stimulus?: string; parts?: { prompt: string }[]; options?: string[] }[]>();
 
-  const counts: Record<string, number> = {};
-  let unset = 0;
+  const qs = await Question.find({ context_category: { $exists: false } }).lean<
+    { _id: unknown; kind: string; status: string; stimulus?: string; stem: string }[]
+  >();
+
+  const unplaced: string[] = [];
+  const counts = new Map<string, number>();
+
   for (const q of qs) {
-    const text = [q.stimulus ?? '', q.stem, ...(q.parts ?? []).map((p) => p.prompt), ...(q.options ?? [])].join(' ');
-    const category = classify(text);
+    const text = `${q.stimulus ?? ''} ${q.stem}`;
+    const category = categorise(text);
+    const line = `${String(q._id).slice(-6)} [${q.kind}] ${text.replace(/\s+/g, ' ').slice(0, 96)}`;
     if (!category) {
-      unset++;
+      unplaced.push(line);
       continue;
     }
-    counts[category] = (counts[category] ?? 0) + 1;
+    counts.set(category, (counts.get(category) ?? 0) + 1);
+    console.log(`  ${category.padEnd(14)} ${line}`);
     if (apply) await Question.updateOne({ _id: q._id }, { $set: { context_category: category } });
   }
 
-  console.log(`${qs.length} question(s) without a setting recorded.`);
-  for (const [c, n] of Object.entries(counts).sort((a, b) => b[1] - a[1])) console.log(`  ${c.padEnd(15)} ${n}`);
-  console.log(`  ${'(left unset)'.padEnd(15)} ${unset}`);
-  console.log(apply ? 'applied' : 'preview only — re-run with --yes');
+  console.log(`\n${qs.length} untagged: ${qs.length - unplaced.length} placed, ${unplaced.length} not.`);
+  for (const [c, n] of [...counts].sort((a, b) => b[1] - a[1])) console.log(`  ${c.padEnd(14)} ${n}`);
+  if (unplaced.length) {
+    console.log('\nNo rule placed these — left untagged rather than guessed:');
+    for (const line of unplaced) console.log(`  ${line}`);
+  }
+  console.log(apply ? '\napplied' : '\npreview only — re-run with --yes');
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: categorise() is imported by its tests, and a unit
+// test must not open a database connection as a side effect of an import.
+if (process.argv[1]?.endsWith('backfill-context-category.ts')) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
