@@ -22,6 +22,17 @@ export const CompositeShapeParamsZ = z.discriminatedUnion('kind', [
   // EACH end. rect-plus-semicircle caps one end and cannot express it, and the
   // shape carries a perimeter question the one-ended version does not — the two
   // half-circumferences make a whole one.
+  // A sector: two radii and the arc between them, the figure behind every
+  // "length of arc AB" and "area of the shaded sector". circleCenter draws the
+  // circle THEOREMS — chords, tangents, angles subtended — and has no sector,
+  // so this mensuration item had no figure at all.
+  z.object({
+    kind: z.literal('sector'),
+    radius: PosZ,
+    angle: z.number().min(1).max(359), // the angle at the centre, in degrees
+    unit: UnitZ,
+    shaded: z.boolean().default(false),
+  }),
   z.object({
     kind: z.literal('stadium'),
     length: PosZ, // the straight section
@@ -118,6 +129,8 @@ function dimensions(p: CompositeShapeParams): [string, number][] {
       return [['width', p.width], ['height', p.height]];
     case 'stadium':
       return [['length', p.length], ['width', p.width]];
+    case 'sector':
+      return [['radius', p.radius], ['angle', p.angle]];
     case 'rect-minus-rect':
       return [
         ['outer width', p.outerWidth],
@@ -242,6 +255,35 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
     const u = p.unit;
     const shaded = 'shaded' in p && p.shaded;
     if (shaded) parts.push(hatchDefs('shapeHatch'));
+
+    if (p.kind === 'sector') {
+      const r = 150; // the sector is a labelled sketch, drawn at one size
+      const cx = W / 2;
+      const cy = H / 2 + r / 3;
+      // Drawn from the positive x-direction, opening anticlockwise, so the
+      // marked angle reads the way a protractor would.
+      const a0 = 0;
+      const a1 = (p.angle * Math.PI) / 180;
+      const [x1, y1] = [cx + r * Math.cos(a0), cy - r * Math.sin(a0)];
+      const [x2, y2] = [cx + r * Math.cos(a1), cy - r * Math.sin(a1)];
+      const large = p.angle > 180 ? 1 : 0;
+      const d = `M ${round(cx)} ${round(cy)} L ${round(x1)} ${round(y1)} A ${round(r)} ${round(r)} 0 ${large} 0 ${round(x2)} ${round(y2)} Z`;
+      if (shaded) parts.push(`<path d="${d}" fill="${hatchFill('shapeHatch')}" stroke="none" />`);
+      parts.push(`<path d="${d}" fill="none" />`);
+      // The angle at the centre, and one radius labelled: what the question needs.
+      parts.push(pathArc(cx, cy, 34, 0, p.angle));
+      const mid = (a1 / 2);
+      parts.push(
+        text(cx + 56 * Math.cos(mid), cy - 56 * Math.sin(mid) + 4, `${round(p.angle)}°`, {
+          size: 13,
+          halo: true,
+        }),
+      );
+      parts.push(text((cx + x1) / 2, cy + 18, fmt(p.radius, u), { size: 13, halo: true }));
+      parts.push(text(cx - 12, cy + 16, 'O', { size: 13, italic: true }));
+      parts.push('</svg>');
+      return parts.join('');
+    }
 
     if (p.kind === 'stadium') {
       const s = Math.min(360 / (p.length + p.width), 240 / p.width);
@@ -462,6 +504,8 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
   describe(p) {
     const u = p.unit;
     switch (p.kind) {
+      case 'sector':
+        return `A sector of a circle, centre O, with radius ${p.radius} ${u} and an angle of ${p.angle}° at the centre. The two straight edges are radii and the curved edge is the arc.${p.shaded ? ' The sector is shaded.' : ''}`;
       case 'stadium':
         return `Compound shape: a rectangle ${p.length} ${u} long with a semicircle of diameter ${p.width} ${u} on EACH end (the shape of a running track). The two semicircular ends together make one full circle of diameter ${p.width} ${u}.${p.shaded ? ' The region is shaded.' : ''}`;
       case 'rect-plus-semicircle':

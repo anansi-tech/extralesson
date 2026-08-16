@@ -11,7 +11,7 @@ import { flavourGuidance } from '@/lib/generation/territories';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v33';
+export const PROMPT_VERSION = 'v34';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -226,6 +226,7 @@ RULES:
 - Use Caribbean contexts naturally where a context is needed, drawn from across the region rather than one corner of it, and without being forced.
 - An optional "stimulus" carries shared context for the parts; keep the stem short when a stimulus is present.
 - Math is KaTeX-safe: inline math in $...$ (never \\( ... \\)), and a column vector or matrix already carries its own brackets — never put parentheses around one, escape backslashes correctly in JSON. Matrices are notation in stem/parts, never visuals.
+- AN UNDERLINED DIGIT is written \\underline{2} inside maths — $3\\underline{2}01_4$ — and works the same in a stem, a slot statement, a figure label and a table cell. It is not decoration: "state the value of the underlined digit in $3\\underline{2}01_4$" is a place-value question in base 4, and without the underline there is nothing to point at.
 - MONEY (hard rule, every field): write it as an ESCAPED dollar sign — \$85, \$1 250, \$17 400 — with NO country prefix. The papers are territory-neutral: sixteen countries sit the same paper, and across every one of them money is a bare dollar sign. Never EC$, J$ or BB$; a prefix belongs only in a question ABOUT currency conversion, where naming the currencies is the point. The escape is what keeps $ free to mean "start of maths": inside $...$ it is a delimiter, everywhere else money is written \$.
 - THOUSANDS are grouped with a SPACE, not a comma: 17 400, 1 250, 12 500. The papers do this without exception.
 - ${kind === 'mcq'

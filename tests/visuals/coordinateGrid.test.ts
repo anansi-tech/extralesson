@@ -52,6 +52,7 @@ describe('coordinateGrid template', () => {
           vertices: [{ x: -1, y: 1 }, { x: -1, y: 3 }, { x: -4, y: 1 }],
           labels: ['A′', 'B′', 'C′'],
           dashed: true,
+          shaded: false,
         },
       ],
     };
@@ -63,7 +64,7 @@ describe('coordinateGrid template', () => {
       ...params,
       polygons: [
         params.polygons[0],
-        { vertices: [{ x: 2, y: 5 }, { x: 4, y: 4 }, { x: 0, y: 0 }], dashed: true },
+        { vertices: [{ x: 2, y: 5 }, { x: 4, y: 4 }, { x: 0, y: 0 }], dashed: true, shaded: false },
       ],
     };
     const issues = coordinateGrid.verify(bad, context);
@@ -510,5 +511,60 @@ describe('coordinateGrid — a line label keeps off the axes', () => {
       partPrompts: [],
     });
     expect(out).toContain('y = x');
+  });
+});
+
+// May/June sweep — the transformation figure the papers actually print. An
+// object and its images is three shapes routinely and four occasionally, each
+// named as a WHOLE shape ("Quadrilateral P"), with the one under discussion
+// shaded. A cap of two polygons and vertex-only labels could not draw it.
+describe('coordinateGrid — several named shapes, one of them shaded', () => {
+  const figure = CoordinateGridParamsZ.parse({
+    x_range: [-5, 9],
+    y_range: [-2, 9],
+    polygons: [
+      { vertices: [{ x: 1, y: 1 }, { x: 4, y: 1 }, { x: 4, y: 3 }, { x: 1, y: 3 }], name: 'P', shaded: true },
+      { vertices: [{ x: 5, y: 5 }, { x: 8, y: 5 }, { x: 8, y: 7 }, { x: 5, y: 7 }], name: 'Q' },
+      { vertices: [{ x: -4, y: 1 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: -4, y: 3 }], name: 'R', dashed: true },
+    ],
+  });
+
+  it('draws all three shapes and names each one', () => {
+    const svg = coordinateGrid.render(figure);
+    expect((svg.match(/<polygon /g) ?? []).length).toBeGreaterThanOrEqual(3);
+    for (const name of ['P', 'Q', 'R']) expect(svg).toContain(`>${name}<`);
+    expect(svg).not.toMatch(/NaN|Infinity/);
+  });
+
+  it('fills only the shape the question is about', () => {
+    const svg = coordinateGrid.render(figure);
+    expect((svg.match(/fill="#D8D2C6"/g) ?? []).length).toBe(1);
+  });
+
+  it('accepts a fourth shape, which the papers occasionally set', () => {
+    const four = CoordinateGridParamsZ.safeParse({
+      ...figure,
+      polygons: [
+        ...figure.polygons,
+        { vertices: [{ x: 0, y: 5 }, { x: 2, y: 5 }, { x: 2, y: 8 }], name: 'S' },
+      ],
+    });
+    expect(four.success).toBe(true);
+  });
+
+  it('keeps naming the CORNERS separate from naming the shape', () => {
+    const corners = CoordinateGridParamsZ.parse({
+      x_range: [-1, 6],
+      y_range: [-1, 6],
+      polygons: [
+        {
+          vertices: [{ x: 1, y: 1 }, { x: 4, y: 1 }, { x: 1, y: 4 }],
+          labels: ['A', 'B', 'C'],
+          name: 'T',
+        },
+      ],
+    });
+    const svg = coordinateGrid.render(corners);
+    for (const l of ['A', 'B', 'C', 'T']) expect(svg).toContain(`>${l}<`);
   });
 });

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeEscapedNewlines } from '@/lib/text';
+import { svgPlainLabel } from '@/lib/visuals/svg';
 import { renderAnswerHtml, renderMathHtml } from '@/lib/katex';
 
 describe('normalizeEscapedNewlines', () => {
@@ -302,5 +303,27 @@ describe('renderAnswerHtml — quantities joined by a word are prose', () => {
     const html = renderAnswerHtml('14 m by 6 m; 98.1 m^2; 17');
     expect(html).toContain('14 m by 6 m'); // prose
     expect(html).toContain('katex'); // and maths beside it
+  });
+});
+
+// A place-value question in base n asks for "the value of the UNDERLINED
+// digit", so the underline carries the question. One authored form,
+// \underline{}, has to survive every path a question is rendered through.
+describe('an underlined digit survives every rendering path', () => {
+  it('renders as a real underline in prose, where KaTeX runs', () => {
+    const html = renderMathHtml('State the value of the underlined digit in $3\\underline{2}01_4$.');
+    expect(html).toContain('accentunder');
+  });
+
+  it('becomes a combining low line in a figure label or table cell, not the word', () => {
+    // svgPlainLabel strips backslashes, so an unhandled \underline{2} would
+    // read "underline2" and silently lose the question.
+    const out = svgPlainLabel('$3\\underline{2}01_4$');
+    expect(out).not.toContain('underline');
+    expect(out).toBe('32\u033201\u2084');
+  });
+
+  it('underlines every character of a multi-digit group', () => {
+    expect(svgPlainLabel('$\\underline{35}$')).toBe('3̲5̲');
   });
 });
