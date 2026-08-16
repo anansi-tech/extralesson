@@ -31,6 +31,26 @@ export const CompositeShapeParamsZ = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('cuboid'), length: PosZ, width: PosZ, height: PosZ, unit: UnitZ }),
   z.object({ kind: z.literal('cylinder'), radius: PosZ, height: PosZ, unit: UnitZ }),
   z.object({ kind: z.literal('triangular-prism'), base: PosZ, height: PosZ, length: PosZ, unit: UnitZ }),
+  // R1.8 §4.3: the 2024 gold-bar shape — a prism whose cross-section is a
+  // trapezium, drawn in perspective with that face shaded.
+  z.object({
+    kind: z.literal('trapezoidal-prism'),
+    parallelA: PosZ,
+    parallelB: PosZ,
+    depth: PosZ,
+    length: PosZ,
+    unit: UnitZ,
+    shaded: z.boolean().default(true),
+  }),
+  // R1.8 §4.6: on the 2027 formulae sheet, and a formula is put on the sheet
+  // because it will be examined.
+  z.object({ kind: z.literal('cone'), radius: PosZ, height: PosZ, slant: PosZ.optional(), unit: UnitZ }),
+  z.object({ kind: z.literal('sphere'), radius: PosZ, unit: UnitZ }),
+  z.object({ kind: z.literal('hemisphere'), radius: PosZ, unit: UnitZ }),
+  // A cone sitting on a cylinder, and a cylinder capped by a hemisphere: the
+  // composite solids a volume question is built from.
+  z.object({ kind: z.literal('cone-on-cylinder'), radius: PosZ, coneHeight: PosZ, cylinderHeight: PosZ, unit: UnitZ }),
+  z.object({ kind: z.literal('cylinder-plus-hemisphere'), radius: PosZ, height: PosZ, unit: UnitZ }),
 ]);
 
 export type CompositeShapeParams = z.infer<typeof CompositeShapeParamsZ>;
@@ -100,7 +120,95 @@ function dimensions(p: CompositeShapeParams): [string, number][] {
       return [['radius', p.radius], ['height', p.height]];
     case 'triangular-prism':
       return [['base', p.base], ['height', p.height], ['length', p.length]];
+    case 'trapezoidal-prism':
+      return [['parallel side a', p.parallelA], ['parallel side b', p.parallelB], ['depth', p.depth], ['length', p.length]];
+    case 'cone':
+      return p.slant
+        ? [['radius', p.radius], ['height', p.height], ['slant height', p.slant]]
+        : [['radius', p.radius], ['height', p.height]];
+    case 'sphere':
+    case 'hemisphere':
+      return [['radius', p.radius]];
+    case 'cone-on-cylinder':
+      return [['radius', p.radius], ['cone height', p.coneHeight], ['cylinder height', p.cylinderHeight]];
+    case 'cylinder-plus-hemisphere':
+      return [['radius', p.radius], ['height', p.height]];
   }
+}
+
+// R1.8 §4.6 — the round solids the 2027 formulae sheet supplies. Drawn the way
+// the papers draw them: an ellipse for a circular base seen in perspective,
+// the hidden half of that ellipse dashed, and every stated dimension labelled.
+type RoundSolid = Extract<
+  CompositeShapeParams,
+  { kind: 'cone' | 'sphere' | 'hemisphere' | 'cone-on-cylinder' | 'cylinder-plus-hemisphere' }
+>;
+
+function roundSolid(p: RoundSolid, u: string): string[] {
+  const out: string[] = [];
+  const cx = W / 2;
+  const ellipse = (ex: number, ey: number, rx: number, ry: number, hiddenDashed = true) => {
+    out.push(`<path d="M ${round(ex - rx)} ${round(ey)} A ${round(rx)} ${round(ry)} 0 0 0 ${round(ex + rx)} ${round(ey)}" />`);
+    out.push(
+      `<path d="M ${round(ex - rx)} ${round(ey)} A ${round(rx)} ${round(ry)} 0 0 1 ${round(ex + rx)} ${round(ey)}"${hiddenDashed ? ' stroke-dasharray="6 4"' : ''} />`,
+    );
+  };
+
+  if (p.kind === 'sphere' || p.kind === 'hemisphere') {
+    const r = Math.min(150, 150);
+    const cy = H / 2;
+    if (p.kind === 'sphere') {
+      out.push(`<circle cx="${round(cx)}" cy="${round(cy)}" r="${round(r)}" />`);
+      ellipse(cx, cy, r, r * 0.28); // the equator, to read it as a ball
+    } else {
+      out.push(`<path d="M ${round(cx - r)} ${round(cy)} A ${round(r)} ${round(r)} 0 0 1 ${round(cx + r)} ${round(cy)}" />`);
+      ellipse(cx, cy, r, r * 0.28);
+    }
+    out.push(line(cx, cy, cx + r, cy));
+    out.push(arrowHead(cx + r, cy, 0));
+    out.push(text(cx + r / 2, cy - 10, fmt(p.radius, u), { size: 13 }));
+    return out;
+  }
+
+  // cone, cone-on-cylinder, cylinder-plus-hemisphere all stack around one axis
+  const radius = p.radius;
+  const coneH = p.kind === 'cone' ? p.height : p.kind === 'cone-on-cylinder' ? p.coneHeight : 0;
+  const cylH = p.kind === 'cone-on-cylinder' ? p.cylinderHeight : p.kind === 'cylinder-plus-hemisphere' ? p.height : 0;
+  const hemiH = p.kind === 'cylinder-plus-hemisphere' ? radius : 0;
+  const total = coneH + cylH + hemiH;
+  const s = Math.min(150 / radius, 300 / Math.max(total, 1));
+  const rx = radius * s;
+  const ry = rx * 0.3;
+  const top = (H - (total * s + ry)) / 2;
+  let y = top;
+
+  if (coneH > 0) {
+    const apex = y;
+    y += coneH * s;
+    out.push(line(cx - rx, y, cx, apex));
+    out.push(line(cx + rx, y, cx, apex));
+    ellipse(cx, y, rx, ry, cylH === 0); // the base ellipse, hidden half dashed
+    out.push(dimV(cx + rx + 34, apex, y, fmt(coneH, u), 'right'));
+    if (p.kind === 'cone' && p.slant) {
+      out.push(text((cx + (cx + rx)) / 2 + 12, (apex + y) / 2, fmt(p.slant, u), { size: 13, anchor: 'start' }));
+    }
+  }
+  if (cylH > 0) {
+    const yTop = y;
+    y += cylH * s;
+    out.push(line(cx - rx, yTop, cx - rx, y));
+    out.push(line(cx + rx, yTop, cx + rx, y));
+    ellipse(cx, y, rx, ry, hemiH === 0);
+    out.push(dimV(cx - rx - 30, yTop, y, fmt(cylH, u)));
+  }
+  if (hemiH > 0) {
+    out.push(`<path d="M ${round(cx - rx)} ${round(y)} A ${round(rx)} ${round(rx)} 0 0 0 ${round(cx + rx)} ${round(y)}" />`);
+    y += hemiH * s;
+  }
+  out.push(line(cx, y - ry, cx + rx, y - ry));
+  out.push(arrowHead(cx + rx, y - ry, 0));
+  out.push(text(cx + rx / 2, y - ry - 10, fmt(radius, u), { size: 13 }));
+  return out;
 }
 
 export const compositeShape: VisualTemplate<CompositeShapeParams> = {
@@ -110,6 +218,8 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
     "every dimension must be positive",
     "an inner rectangle must fit strictly inside the outer one",
     "a cut rectangle must be strictly smaller than the main rectangle",
+    "a trapezoidal prism needs parallel sides of different lengths, and its cross-section shades by default because the question asks for that area",
+    "a cone's slant height, when stated, must be the hypotenuse of its radius and perpendicular height",
     "shaded: true hatches the region the question asks about — the semicircle on a rect-plus-semicircle, and the material left between the rectangles on a rect-minus-rect; set it whenever the question says \"shaded\"",
   ],
   paramsSchema: CompositeShapeParamsZ,
@@ -233,6 +343,46 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
       parts.push(arrowHead(cx + rx, yT, 0));
       parts.push(text(cx + rx / 2, yT - 10, fmt(p.radius, u), { size: 13 }));
       parts.push(dimV(cx + rx + 30, yT, yB, fmt(p.height, u), 'right'));
+    } else if (p.kind === 'trapezoidal-prism') {
+      // R1.8 §4.3 — a prism whose cross-section is a trapezium, drawn in the
+      // oblique projection the rest of this template uses, with that face
+      // shaded because the question asks for its area.
+      const ox0 = p.length * OB_COS;
+      const oy0 = p.length * OB_SIN;
+      const wide = Math.max(p.parallelA, p.parallelB);
+      const s = Math.min(400 / (wide + ox0), 240 / (p.depth + oy0));
+      const a = p.parallelA * s; // bottom parallel side
+      const b = p.parallelB * s; // top parallel side
+      const d = p.depth * s;
+      const ox = ox0 * s;
+      const oy = oy0 * s;
+      const x0 = (W - (a + ox)) / 2;
+      const yB = (H - (d + oy)) / 2 + d + oy;
+      // front trapezium: bottom-left, bottom-right, top-right, top-left
+      const F: [number, number][] = [
+        [x0, yB],
+        [x0 + a, yB],
+        [x0 + a - (a - b) / 2, yB - d],
+        [x0 + (a - b) / 2, yB - d],
+      ];
+      const back = F.map(([x, y]) => [x + ox, y - oy] as [number, number]);
+      if (p.shaded) {
+        parts.push(hatchDefs('shapeHatch'));
+        parts.push(
+          `<polygon points="${F.map((q) => `${round(q[0])},${round(q[1])}`).join(' ')}" fill="${hatchFill('shapeHatch')}" stroke="none" />`,
+        );
+      }
+      // hidden back edges first, then the visible solid
+      parts.push(polygon(back, true));
+      parts.push(polygon(F, true));
+      for (let i = 0; i < 4; i++) parts.push(line(F[i][0], F[i][1], back[i][0], back[i][1]));
+      parts.push(dimH(x0, x0 + a, yB + 26, fmt(p.parallelA, u)));
+      parts.push(dimV(x0 - 26, yB - d, yB, fmt(p.depth, u)));
+      parts.push(
+        dimSeg(F[1][0] + 12, F[1][1] + 8, back[1][0] + 12, back[1][1] + 8, fmt(p.length, u), 14, 14, 'start'),
+      );
+    } else if (p.kind === 'cone' || p.kind === 'cone-on-cylinder' || p.kind === 'cylinder-plus-hemisphere' || p.kind === 'sphere' || p.kind === 'hemisphere') {
+      parts.push(...roundSolid(p, u));
     } else {
       // triangular-prism
       const ox0 = p.length * OB_COS;
@@ -285,6 +435,18 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
         return `Cylinder of radius ${p.radius} ${u} and height ${p.height} ${u}.`;
       case 'triangular-prism':
         return `Triangular prism of length ${p.length} ${u}; its triangular cross-section has base ${p.base} ${u} and perpendicular height ${p.height} ${u}.`;
+      case 'trapezoidal-prism':
+        return `Prism of length ${p.length} ${u} whose cross-section is a trapezium with parallel sides ${p.parallelA} ${u} and ${p.parallelB} ${u}, ${p.depth} ${u} apart${p.shaded ? '; that cross-section is shaded' : ''}.`;
+      case 'cone':
+        return `Right circular cone of base radius ${p.radius} ${u} and perpendicular height ${p.height} ${u}${p.slant ? `, slant height ${p.slant} ${u}` : ''}.`;
+      case 'sphere':
+        return `Sphere of radius ${p.radius} ${u}.`;
+      case 'hemisphere':
+        return `Hemisphere of radius ${p.radius} ${u}, flat face uppermost.`;
+      case 'cone-on-cylinder':
+        return `Solid of radius ${p.radius} ${u}: a cone of perpendicular height ${p.coneHeight} ${u} standing on a cylinder of height ${p.cylinderHeight} ${u}.`;
+      case 'cylinder-plus-hemisphere':
+        return `Solid of radius ${p.radius} ${u}: a cylinder of height ${p.height} ${u} closed by a hemisphere of the same radius.`;
     }
   },
 
@@ -305,6 +467,19 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
     if (p.kind === 'l-shape') {
       if (p.cutWidth >= p.width || p.cutHeight >= p.height) {
         issues.push('compositeShape: cut rectangle must be strictly smaller than the main rectangle');
+      }
+    }
+    if (p.kind === 'trapezoidal-prism' && p.parallelA === p.parallelB) {
+      issues.push('compositeShape: a trapezium needs parallel sides of different lengths — equal ones make it a rectangle');
+    }
+    // A cone's slant height is the hypotenuse of radius and height; a stated
+    // one that disagrees would have the candidate compute a wrong surface area.
+    if (p.kind === 'cone' && p.slant) {
+      const expected = Math.sqrt(p.radius * p.radius + p.height * p.height);
+      if (Math.abs(expected - p.slant) > 0.05 * Math.max(1, expected)) {
+        issues.push(
+          `compositeShape: slant height ${p.slant} disagrees with radius ${p.radius} and height ${p.height} (expected about ${Math.round(expected * 100) / 100})`,
+        );
       }
     }
     return issues;
