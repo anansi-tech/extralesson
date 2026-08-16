@@ -207,3 +207,58 @@ describe('renderAnswerHtml — the other delimiter, and brackets drawn twice', (
     expect(renderAnswerHtml('12.5%')).toContain('katex');
   });
 });
+
+// A worked solution set a frequency table as \[ \begin{array}...\end{array} \]
+// and the whole block reached the student as raw source: we handled $ ... $ and
+// \( ... \), never the display form.
+describe('renderMathHtml — display math', () => {
+  const solution = [
+    'The frequencies are shown below.',
+    '',
+    '\\[',
+    '\\begin{array}{c|ccccc}',
+    '\\text{Number of containers} & 0 & 1 & 2 & 3 & 4 \\\\\\hline',
+    '\\text{Frequency} & 4 & 8 & 10 & 5 & 3',
+    '\\end{array}',
+    '\\]',
+    '',
+    'The total is $4 + 8 + 10 + 5 + 3 = 30$ visitors.',
+  ].join('\n');
+
+  it('renders a display block in display mode', () => {
+    const html = renderMathHtml(solution);
+    expect(html).toContain('katex-display');
+    expect(html).not.toContain('\\[');
+    expect(html).not.toContain('\\]');
+  });
+
+  it('renders the array as a table rather than printing its source', () => {
+    // KaTeX sets each word in its own span, so collapse the gaps tag-stripping
+    // leaves behind before looking for the words.
+    const visible = renderMathHtml(solution)
+      .replace(/<annotation[^>]*>[\s\S]*?<\/annotation>/g, '')
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ');
+    expect(visible).toContain('Number of containers');
+    expect(visible).not.toContain('\\begin{array}');
+    expect(visible).not.toContain('\\hline');
+  });
+
+  it('still renders the inline math around it', () => {
+    expect((renderMathHtml(solution).match(/class="katex/g) ?? []).length).toBeGreaterThan(1);
+  });
+
+  it('shows an invalid display block rather than swallowing it', () => {
+    const html = renderMathHtml('Before \\[ \\begin{nonsense} \\] after');
+    expect(html).toContain('Before');
+    expect(html).toContain('after');
+  });
+
+  it('leaves everything already fixed alone', () => {
+    expect(renderMathHtml('The price is EC$120 and $x = 3$.')).toContain('EC$120');
+    expect(renderMathHtml('Adds to the wrong point ($(7, 1)$)').replace(/<[^>]*>/g, '')).not.toContain('((');
+    expect(renderMathHtml('The vector is \\(\\begin{pmatrix}6\\\\-8\\end{pmatrix}\\).')).toContain('katex');
+    // authored whitespace still survives for .question-prose
+    expect(renderMathHtml('Step one.\n\nStep two.')).toContain('\n\n');
+  });
+});

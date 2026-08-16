@@ -62,6 +62,28 @@ function looksLikeExpression(value: string): boolean {
 
 export function renderMathHtml(text: string): string {
   const restore = (s: string) => s.replace(new RegExp(CURRENCY_SENTINEL, 'g'), () => 'EC$');
+  // \[ ... \] is display math, and a worked solution reaches for it to set a
+  // table of values as an array. Split those out first and render them in
+  // display mode; everything else goes through the inline pipeline below.
+  return text
+    .split(/(\\\[[\s\S]*?\\\])/g)
+    .map((block) =>
+      block.startsWith('\\[') && block.endsWith('\\]')
+        ? renderDisplayMath(block.slice(2, -2))
+        : renderInline(block, restore),
+    )
+    .join('');
+}
+
+function renderDisplayMath(body: string): string {
+  try {
+    return katex.renderToString(body.trim(), { displayMode: true, throwOnError: true });
+  } catch {
+    return escapeHtml(body); // not valid math — show it rather than lose it
+  }
+}
+
+function renderInline(text: string, restore: (s: string) => string): string {
   return text
     .replace(/EC\$/g, CURRENCY_SENTINEL)
     // \( ... \) is LaTeX's other inline delimiter and models reach for it
