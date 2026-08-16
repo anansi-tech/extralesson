@@ -37,6 +37,13 @@ const DERIVED: Record<string, string> = {
   syllabus_mode: 'display-only, set by the caller',
 };
 
+/**
+ * DERIVED entries that are NOT fields of a question document — they live on the
+ * stored row or the request, so the strict question schema is not where they
+ * would be declared.
+ */
+const NOT_ON_THE_QUESTION = new Set(['status', 'gen_meta', 'syllabus_mode']);
+
 /** The element schema of an array field on an object schema. */
 function elementOf(schema: z.ZodTypeAny, field: string): z.ZodTypeAny {
   const obj = unwrap(schema);
@@ -108,6 +115,22 @@ describe('schema drift — the model can emit every field we validate', () => {
     const looseSlot = keysOf(elementOf(PartLooseZ, 'slots'));
     expect(looseSlot).toContain('depends_on');
     expect(keysOf(PartLooseZ)).toContain('statement');
+  });
+
+  // The mirror of the depends_on bug, and it bit within an hour of the first
+  // test being written: Zod strips what it does not declare, so `shape` — set
+  // by the pipeline from the recipe — was dropped during validation and every
+  // paper-shaped question reached the database as a drill item. Nothing errored
+  // there either. A field the pipeline sets must be DECLARED, or it is lost.
+  it('declares every pipeline-set field, so validation cannot silently drop it', () => {
+    const strict = new Set([...keysOf(StructuredQuestionZ), ...keysOf(McqQuestionZ)]);
+    const pipelineSet = Object.keys(DERIVED).filter((f) => !NOT_ON_THE_QUESTION.has(f));
+    const dropped = pipelineSet.filter((f) => !strict.has(f));
+    expect(
+      dropped,
+      `these fields are set by the pipeline but not declared in the strict schema, ` +
+        `so Zod strips them before they reach the database: ${dropped.join(', ')}`,
+    ).toEqual([]);
   });
 
   it('DERIVED explains itself: every entry carries a non-empty reason', () => {
