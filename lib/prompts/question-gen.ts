@@ -4,13 +4,14 @@ import { exemplarsFor } from './exemplars';
 import { MARK_SCHEME_CONVENTIONS } from './mark-scheme';
 import { misconceptionGuidance } from '@/lib/misconceptions';
 import { contextGuidance } from '@/lib/generation/contexts';
+import { territoryGuidance } from '@/lib/generation/territories';
 
 // Generation prompts (R1.5 §5): recipe + style spec Part A + 2 module-matched
 // exemplars + visual-template contract. Bump PROMPT_VERSION on any wording
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v27';
+export const PROMPT_VERSION = 'v28';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -126,6 +127,7 @@ ${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 140)}`).join('\n')}`
   const patterns = paperPatterns(recipe, context, objectives);
   const documentedErrors = misconceptionGuidance(recipe.objective_ids);
   const setting = contextGuidance(args.recentContexts ?? [], args.contextFree ?? false);
+  const territory = args.contextFree ? '' : territoryGuidance(args.existingStems ?? []);
   const kind = recipe.kind;
   const objectiveBlock = objectives
     .map((o) => `- ${o.id}: ${o.text}${o.notes ? `\n  Notes: ${o.notes}` : ''}`)
@@ -188,7 +190,8 @@ ${demandRequirements(recipe)}
 MARK PROFILES (official CXC): every mark is CK (Conceptual Knowledge — recalling/recognising concepts), AK (Algorithmic Knowledge — carrying out procedures), or R (Reasoning — translating, justifying, multi-step problem solving). Aim for a sensible CK/AK/R blend for the difficulty; rubric codes are CK1, AK1, R1... and each rubric row carries the "part_label" it marks.
 
 ${setting}
-
+${territory ? `${territory}
+` : ''}
 ${partsSection}
 
 ${visualSection}
@@ -201,10 +204,10 @@ FORMULAE SHEET (2027): the paper supplies, and the student may use without recal
 
 RULES:
 - The question must be ORIGINAL — written in exam style but never copied, reconstructed, paraphrased, or imitated from any CXC past paper. The recipe contains abstract controls only.
-- Use Caribbean contexts naturally where a context is needed (EC dollars, island place names, cricket, market stalls) without being forced.
+- Use Caribbean contexts naturally where a context is needed, drawn from across the region rather than one corner of it, and without being forced.
 - An optional "stimulus" carries shared context for the parts; keep the stem short when a stimulus is present.
 - Math is KaTeX-safe: inline math in $...$ (never \\( ... \\)), and a column vector or matrix already carries its own brackets — never put parentheses around one, escape backslashes correctly in JSON. Matrices are notation in stem/parts, never visuals.
-- DELIMITER CONVENTION (hard rule, every field): $ is EXCLUSIVELY a math delimiter, in balanced $...$ pairs. Currency is NEVER a bare $ — write EC$ followed by the amount (EC$12) or the word "dollars". Never put EC$ amounts inside $...$ math.
+- DELIMITER CONVENTION (hard rule, every field): $ is EXCLUSIVELY a math delimiter, in balanced $...$ pairs. Currency is NEVER a bare $ — write the territory's prefix immediately before the amount (J$1250, TT$48, EC$12, BZ$90) or use the word "dollars". Never put a currency amount inside $...$ math.
 - ${kind === 'mcq'
       ? `Exactly 4 options. answer_key is the 0-based index of the correct option. marks = 1.
 - DISTRACTOR FAMILIES: each wrong option comes from a specific error a candidate makes, and where the answer is an EXPRESSION the wrong options must be near-miss FORMS, not merely near-miss values — the right coefficient with the wrong exponent, the right exponent with the wrong coefficient, indices added where they should multiply, a sign carried the wrong way. An option nobody would arrive at teaches nothing and gives the answer away.

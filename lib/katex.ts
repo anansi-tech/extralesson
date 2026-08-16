@@ -13,7 +13,12 @@ function escapeHtml(s: string): string {
 
 // The $ in a currency marker like "EC$12" must never act as a math delimiter.
 // Swap "EC$" for a sentinel before splitting on $...$, restore afterwards.
-const CURRENCY_SENTINEL = '\u0001';
+// A currency amount is a 1-3 letter prefix immediately before a digit: J$1250,
+// TT$48, EC$12, US$1,200. The digit lookahead is what keeps "$P$ and $Q$" safe
+// — a capital letter before a closing math delimiter is not money.
+const CURRENCY_OPEN = '\u0001';
+const CURRENCY_CLOSE = '\u0002';
+const CURRENCY = /\b([A-Z]{1,3})\$(?=\s*\d)/g;
 
 // Answer-shaped values — part answers, accept lists, final_answer, and
 // misconception triggers. The values-only convention means these hold a bare
@@ -36,7 +41,11 @@ function renderOneAnswer(raw: string): string {
   const value = raw.replace(/\\[()]/g, '$').trim();
   if (value === '') return '';
   // Already delimited, or carries currency: the prose renderer handles both.
-  if (/\$[^$]+\$/.test(value) || value.includes('EC$')) return renderMathHtml(value);
+  if (/\$[^$]+\$/.test(value) || CURRENCY.test(value)) {
+    CURRENCY.lastIndex = 0; // the regex is global; a stateful test would skip
+    return renderMathHtml(value);
+  }
+  CURRENCY.lastIndex = 0;
   if (!looksLikeExpression(value)) return escapeHtml(value);
   try {
     // A bare % opens a comment in KaTeX's input syntax and would swallow the
@@ -68,7 +77,8 @@ function looksLikeExpression(value: string): boolean {
 }
 
 export function renderMathHtml(text: string): string {
-  const restore = (s: string) => s.replace(new RegExp(CURRENCY_SENTINEL, 'g'), () => 'EC$');
+  const restore = (s: string) =>
+    s.replace(new RegExp(`${CURRENCY_OPEN}([A-Z]{1,3})${CURRENCY_CLOSE}`, 'g'), (_m, code: string) => `${code}$`);
   // \[ ... \] is display math, and a worked solution reaches for it to set a
   // table of values as an array. Split those out first and render them in
   // display mode; everything else goes through the inline pipeline below.
@@ -92,7 +102,7 @@ function renderDisplayMath(body: string): string {
 
 function renderInline(text: string, restore: (s: string) => string): string {
   return text
-    .replace(/EC\$/g, CURRENCY_SENTINEL)
+    .replace(CURRENCY, (_m, code: string) => `${CURRENCY_OPEN}${code}${CURRENCY_CLOSE}`)
     // \( ... \) is the other inline math delimiter and models reach for it
     // freely; unrecognised, it reaches the student as raw source.
     .replace(/\\[()]/g, '$')
