@@ -47,7 +47,9 @@ function applyScripts(text: string, marker: '^' | '_', table: Record<string, str
 
 export function svgPlainLabel(raw: string): string {
   const cleaned = raw
-    .replace(/EC\$/g, 'EC¤')
+    // Any territory's currency prefix, not EC$ alone: a figure label reading
+    // "J80" instead of "J$80" is wrong money.
+    .replace(/\b([A-Z]{1,3})\$(?=\s*\d)/g, '$1¤')
     .replaceAll('$', '')
     .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '$1/$2')
     .replace(/\\sqrt\{([^{}]+)\}/g, '√$1')
@@ -59,7 +61,7 @@ export function svgPlainLabel(raw: string): string {
     .replace(/\\times/g, '×')
     .replace(/\\vec\{([^{}]+)\}/g, '$1⃗')
     .replace(/\\/g, '')
-    .replaceAll('EC¤', 'EC$');
+    .replace(/([A-Z]{1,3})¤/g, '$1$$');
 
   const scripted = applyScripts(applyScripts(cleaned, '^', SUPERSCRIPT), '_', SUBSCRIPT);
   // Any braces still standing belonged to a script we could not convert.

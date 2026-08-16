@@ -11,7 +11,7 @@ import { territoryGuidance } from '@/lib/generation/territories';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v28';
+export const PROMPT_VERSION = 'v29';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -145,6 +145,7 @@ ${visualContract}
 - Values the student must READ from a chart/table live only in the visual; values GIVEN in prose (angles, lengths) must appear in both the text and the visual, identically.
 - Labels inside visual params are plain display text: "U", "PQ", "90°" — never "$U$" or KaTeX commands.
 - Never emit SVG, HTML, drawing instructions, or coordinates outside the template params.
+- A dataTable cell may be ANSWERED rather than printed: write {"slots": ["b.r9W"]} in place of the text, and the student fills it. Add "template" with {} for each gap when the paper scaffolds the working — {"slots": ["b.i1","b.i2","b.i3"], "template": "({} × {}) + {} ="} — which is how a sequence question walks a candidate from the arithmetic to the rule in terms of n. Every slot a cell names must be a slot of one of this question's parts, and a final row in terms of n is written the same way.
 ${
   recipe.representation === 'graph'
     ? `- This is a GRAPH ON A GRID, and it IS to scale — that is what the grid is for. Reading a value, an intercept, a gradient or a turning point off it is fair and expected, exactly as in the real papers. Do not write "not drawn to scale" on it. Still never ask the student to measure with an instrument.`

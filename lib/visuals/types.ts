@@ -12,6 +12,12 @@ export interface VerifyContext {
   stimulus?: string;
   stem: string;
   partPrompts: string[];
+  /**
+   * Every slot the question has, as 'part.slot'. A completable table cell
+   * points at one of these, and a cell pointing anywhere else asks for an
+   * answer nothing marks (R1.8 Part 3).
+   */
+  slotRefs?: string[];
 }
 
 export interface VisualTemplate<P = unknown> {

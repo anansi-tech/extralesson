@@ -18,7 +18,7 @@ interface LeanDraft {
   _id: unknown;
   stem: string;
   stimulus?: string;
-  parts?: { prompt: string }[];
+  parts?: { label: string; prompt: string; slots?: { label: string; prompt?: string }[] }[];
   visual: StoredVisual;
   objective_ids: string[];
 }
@@ -36,7 +36,8 @@ async function main() {
     const res = verifyQuestionVisual(q.visual, {
       stimulus: q.stimulus,
       stem: q.stem,
-      partPrompts: (q.parts ?? []).map((p) => p.prompt),
+      partPrompts: (q.parts ?? []).flatMap((p) => [p.prompt, ...(p.slots ?? []).map((s) => s.prompt ?? '')]),
+      slotRefs: (q.parts ?? []).flatMap((p) => (p.slots ?? []).map((s) => `${p.label}.${s.label}`)),
     });
     if (res.ok) continue;
     failed.push({ id: String(q._id), issues: res.issues });
