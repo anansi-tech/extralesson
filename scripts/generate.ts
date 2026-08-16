@@ -288,7 +288,8 @@ async function main() {
         const vres = verifyQuestionVisual(draft.visual as never, {
           stimulus: draft.stimulus,
           stem: draft.stem,
-          partPrompts: draft.parts.map((p) => p.prompt),
+          partPrompts: draft.parts.flatMap((p) => [p.prompt, ...p.slots.map((s) => s.prompt ?? '')]),
+          slotRefs: draft.parts.flatMap((p) => p.slots.map((s) => `${p.label}.${s.label}`)),
         });
         if (!vres.ok) {
           rejected++;

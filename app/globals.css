@@ -78,6 +78,15 @@ body {
   color: #6b7280;
 }
 
+/* A table cell the student fills (R1.8 Part 3): the paper prints a ruled gap,
+   wide enough to write in and unmistakably empty. */
+.cell-blank {
+  display: inline-block;
+  min-width: 3.5em;
+  border-bottom: 1px dotted var(--ink);
+  margin: 0 2px;
+}
+
 /* Ruled-paper background used across study/admin surfaces */
 .ruled {
   background-image: repeating-linear-gradient(
