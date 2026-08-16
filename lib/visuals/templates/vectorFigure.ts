@@ -161,6 +161,7 @@ function tickMarks(pos: Map<string, Pt>, seg: { from: string; to: string }): str
 
 export const vectorFigure: VisualTemplate<VectorFigureParams> = {
   name: 'vectorFigure',
+  placesOwnPoints: true,
   // Invariants enforced by verify(); surfaced to the draft prompt.
   rules: [
     'the template places the vertices — never supply coordinates, only labels: 3 for a triangle, 4 for a parallelogram or a quadrilateral',

@@ -44,7 +44,11 @@ export default async function ReviewPage() {
       let visualHtml: string | undefined;
       if (raw.visual?.template) {
         try {
-          visualHtml = renderVisual(raw.visual as never);
+          visualHtml = renderVisual(raw.visual as never, {
+            stimulus: raw.stimulus,
+            stem: raw.stem,
+            partPrompts: (raw.parts ?? []).map((p) => p.prompt),
+          });
         } catch {
           visualHtml = `<p class="text-red-pen">visual failed to render (template ${raw.visual.template})</p>`;
         }

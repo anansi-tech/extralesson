@@ -77,6 +77,7 @@ const SLOT_WORDS: Record<z.infer<typeof SlotZ>, string> = {
 
 export const parallelTransversal: VisualTemplate<ParallelTransversalParams> = {
   name: 'parallelTransversal',
+  placesOwnPoints: true,
   // Invariants enforced by verify(); surfaced to the draft prompt.
   rules: [
     "angles may only reference declared transversals",

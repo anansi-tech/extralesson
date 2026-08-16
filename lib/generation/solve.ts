@@ -56,7 +56,14 @@ function figureNotes(check?: { verdict: string; note: string }): {
 }
 
 export async function independentSolve(draft: QuestionDraft): Promise<SolveOutcome> {
-  const visualText = draft.visual ? describeVisual(draft.visual as StoredVisual) : undefined;
+  const questionContext = {
+    stimulus: draft.stimulus,
+    stem: draft.stem,
+    partPrompts: (draft.kind === 'structured' ? draft.parts : []).map((p) => p.prompt),
+  };
+  const visualText = draft.visual
+    ? describeVisual(draft.visual as StoredVisual, questionContext)
+    : undefined;
 
   if (draft.kind === 'mcq') {
     const { object: sol } = await generateObject({

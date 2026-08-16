@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { hatchDefs, hatchFill, INK, line, round, svgOpen, text } from '../svg';
-import type { VisualTemplate } from '../types';
+import type { VerifyContext, VisualTemplate } from '../types';
+import { namedPoints, resolvePoints } from '../points';
 
 // Square-grid cartesian plane with labeled axes and integer gridlines.
 // Carries labeled points, polygons (including pre/post transformation
@@ -8,9 +9,30 @@ import type { VisualTemplate } from '../types';
 // straight lines given as y = mx + c, and quadratic curves y = ax^2 + bx + c.
 const CoordZ = z.number().min(-50).max(50);
 
+const NameZ = z.string().regex(/^[A-Z]'?$/);
+
 export const CoordinateGridParamsZ = z.object({
-  x_range: z.tuple([z.number().int().min(-50).max(50), z.number().int().min(-50).max(50)]),
-  y_range: z.tuple([z.number().int().min(-50).max(50), z.number().int().min(-50).max(50)]),
+  // Omit both ranges when `named` supplies the geometry: the window is then
+  // derived from the points the question states.
+  x_range: z.tuple([z.number().int().min(-50).max(50), z.number().int().min(-50).max(50)]).optional(),
+  y_range: z.tuple([z.number().int().min(-50).max(50), z.number().int().min(-50).max(50)]).optional(),
+  /**
+   * Points the QUESTION names, referenced by label. Their coordinates live in
+   * the question text and nowhere else, so the figure cannot disagree with it.
+   * `sketch` (the default) draws the shape without axes, gridlines or scale
+   * numbers — relative position true by construction, presented as the
+   * schematic the papers print.
+   */
+  named: z
+    .object({
+      polygons: z
+        .array(z.object({ points: z.array(NameZ).min(3).max(6), dashed: z.boolean().default(false) }))
+        .max(3)
+        .default([]),
+      points: z.array(NameZ).max(8).default([]),
+      sketch: z.boolean().default(true),
+    })
+    .optional(),
   points: z
     .array(z.object({ x: CoordZ, y: CoordZ, label: z.string().max(12).optional() }))
     .max(10)
@@ -110,6 +132,44 @@ function labelAtEnd(
   const x = Math.min(canvasW - 6, Math.max(6, end[0] + nx + (toRight ? -6 : 6)));
   const y = Math.min(canvasH - 6, Math.max(14, end[1] + ny));
   return { x, y, anchor };
+}
+
+// The shapes a `named` block refers to, resolved from the question's own
+// coordinates. Everything here is derived; nothing is stored twice.
+interface ResolvedFigure {
+  polygons: { vertices: [number, number][]; labels: string[]; dashed: boolean }[];
+  points: { x: number; y: number; label: string }[];
+}
+
+function resolveFigure(
+  named: NonNullable<CoordinateGridParams['named']>,
+  context: VerifyContext | undefined,
+): ResolvedFigure {
+  const polygons = named.polygons.map((poly) => {
+    const { points } = resolvePoints(poly.points, context);
+    return {
+      vertices: points.map((pt) => [pt.x, pt.y] as [number, number]),
+      labels: points.map((pt) => pt.label),
+      dashed: poly.dashed,
+    };
+  });
+  const points = resolvePoints(named.points, context).points.map((pt) => ({
+    x: pt.x,
+    y: pt.y,
+    label: pt.label,
+  }));
+  return { polygons: polygons.filter((poly) => poly.vertices.length >= 3), points };
+}
+
+// A window that holds every resolved point with a margin, in whole units.
+function windowFor(figure: ResolvedFigure): { x: [number, number]; y: [number, number] } {
+  const xs = [...figure.polygons.flatMap((p) => p.vertices.map((v) => v[0])), ...figure.points.map((p) => p.x)];
+  const ys = [...figure.polygons.flatMap((p) => p.vertices.map((v) => v[1])), ...figure.points.map((p) => p.y)];
+  if (xs.length === 0) return { x: [-5, 5], y: [-5, 5] };
+  return {
+    x: [Math.floor(Math.min(...xs)) - 1, Math.ceil(Math.max(...xs)) + 1],
+    y: [Math.floor(Math.min(...ys)) - 1, Math.ceil(Math.max(...ys)) + 1],
+  };
 }
 
 function balanceWindow(
@@ -488,10 +548,15 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
   ],
   paramsSchema: CoordinateGridParamsZ,
 
-  render(p) {
+  render(p, context) {
+    const figure = p.named ? resolveFigure(p.named, context) : undefined;
+    const derived = figure ? windowFor(figure) : undefined;
+    // A `named` figure is a sketch unless the question is about the grid
+    // itself; a sketch shows the shape and its labels, and nothing to measure.
+    const sketch = (p.named?.sketch ?? false) && figure !== undefined;
     const { xmin, xmax, ymin, ymax } = balanceWindow(
-      p.x_range as [number, number],
-      p.y_range as [number, number],
+      (derived?.x ?? p.x_range ?? [-5, 5]) as [number, number],
+      (derived?.y ?? p.y_range ?? [-5, 5]) as [number, number],
     );
     const spanX = Math.max(1, xmax - xmin);
     const spanY = Math.max(1, ymax - ymin);
@@ -506,6 +571,11 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     const Y = (v: number) => oy + (ymax - v) * u;
 
     const parts: string[] = [svgOpen(canvasW, H)];
+    // A sketch keeps the geometry and drops the apparatus: no gridlines, axes,
+    // arrows or scale numbers. What survives is the shape, drawn from the
+    // question's own coordinates, and the labels — which is what CXC prints
+    // when a transformation question is not set on a supplied grid.
+    if (!sketch) {
     // integer gridlines, step 1
     for (let gx = xmin; gx <= xmax; gx++) {
       parts.push(
@@ -541,6 +611,28 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
       if (gy !== 0) parts.push(text(labelX, Y(gy) + 3, String(gy), { size: 9, anchor: 'end' }));
     }
     if (hasXAxis && hasYAxis) parts.push(text(X(0) - 5, Y(0) + 14, 'O', { size: 10, anchor: 'end' }));
+    }
+
+    // shapes referenced from the question, drawn from its coordinates
+    for (const poly of figure?.polygons ?? []) {
+      const px = poly.vertices.map(([x, y]) => [X(x), Y(y)] as [number, number]);
+      const d = px.map((pt) => `${round(pt[0])},${round(pt[1])}`).join(' ');
+      parts.push(`<polygon points="${d}"${poly.dashed ? ' stroke-dasharray="6 4"' : ''} />`);
+      const cx = px.reduce((sum, pt) => sum + pt[0], 0) / px.length;
+      const cy = px.reduce((sum, pt) => sum + pt[1], 0) / px.length;
+      poly.labels.forEach((lab, i) => {
+        const dx = px[i][0] - cx;
+        const dy = px[i][1] - cy;
+        const len = Math.hypot(dx, dy) || 1;
+        parts.push(
+          text(px[i][0] + (dx / len) * 16, px[i][1] + (dy / len) * 16 + 4, lab, { size: 13, halo: true }),
+        );
+      });
+    }
+    for (const pt of figure?.points ?? []) {
+      parts.push(`<circle cx="${round(X(pt.x))}" cy="${round(Y(pt.y))}" r="3" fill="${INK}" stroke="none" />`);
+      parts.push(text(X(pt.x) + 8, Y(pt.y) - 8, pt.label, { size: 13, anchor: 'start', halo: true }));
+    }
     // shaded inequality regions, drawn UNDER the lines, curves, polygons and
     // points so every marker stays legible on top of the hatch
     if (p.regions.length > 0) {
@@ -625,10 +717,23 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     return parts.join('');
   },
 
-  describe(p) {
+  describe(p, context) {
+    const figure = p.named ? resolveFigure(p.named, context) : undefined;
+    const win = figure ? windowFor(figure) : { x: p.x_range ?? [-5, 5], y: p.y_range ?? [-5, 5] };
+    const sketch = (p.named?.sketch ?? false) && figure !== undefined;
     const bits: string[] = [
-      `Cartesian grid with x from ${p.x_range[0]} to ${p.x_range[1]} and y from ${p.y_range[0]} to ${p.y_range[1]}, gridlines every 1 unit.`,
+      sketch
+        ? 'Schematic sketch on a plane, without axes or gridlines: the shape is drawn from the coordinates the question states, so relative position is exact but nothing is to be measured.'
+        : `Cartesian grid with x from ${win.x[0]} to ${win.x[1]} and y from ${win.y[0]} to ${win.y[1]}, gridlines every 1 unit.`,
     ];
+    for (const poly of figure?.polygons ?? []) {
+      bits.push(
+        `${poly.dashed ? 'Image shape' : 'Shape'} ${poly.labels.join('')} drawn through ${poly.labels
+          .map((l, i) => `${l}(${poly.vertices[i][0]}, ${poly.vertices[i][1]})`)
+          .join(', ')}.`,
+      );
+    }
+    for (const pt of figure?.points ?? []) bits.push(`Point ${pt.label} at (${pt.x}, ${pt.y}).`);
     for (const pt of p.points) {
       bits.push(`Point${pt.label ? ` ${pt.label}` : ''} at (${pt.x}, ${pt.y}).`);
     }
@@ -662,8 +767,35 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
 
   verify(p, context) {
     const issues: string[] = [];
-    const [xmin, xmax] = p.x_range;
-    const [ymin, ymax] = p.y_range;
+
+    // A `named` figure carries no coordinates of its own — that is the point —
+    // so what there is to check is whether the question states the ones it
+    // references.
+    if (p.named) {
+      const referenced = [...p.named.polygons.flatMap((poly) => poly.points), ...p.named.points];
+      const { missing } = resolvePoints(referenced, context);
+      if (missing.length > 0) {
+        issues.push(
+          `coordinateGrid: the figure references ${missing.join(', ')}, but the question states no coordinates for ${missing.length === 1 ? 'it' : 'them'}`,
+        );
+      }
+      const stated = namedPoints(context);
+      for (const poly of p.named.polygons) {
+        if (poly.points.filter((l) => stated.has(l)).length < 3) {
+          issues.push(`coordinateGrid: shape ${poly.points.join('')} needs at least three points the question names`);
+        }
+      }
+      if (referenced.length === 0) {
+        issues.push('coordinateGrid: named block references no points at all');
+      }
+      return issues;
+    }
+
+    const [xmin, xmax] = p.x_range ?? [-5, 5];
+    const [ymin, ymax] = p.y_range ?? [-5, 5];
+    if (!p.x_range || !p.y_range) {
+      issues.push('coordinateGrid: x_range and y_range are required unless the figure uses named points');
+    }
     if (xmin >= xmax) issues.push('coordinateGrid: x_range must be ascending');
     if (ymin >= ymax) issues.push('coordinateGrid: y_range must be ascending');
     if (xmax - xmin > 20) issues.push('coordinateGrid: x_range span exceeds 20');

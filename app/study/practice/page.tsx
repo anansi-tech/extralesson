@@ -56,7 +56,13 @@ export default async function WorkedPracticePage() {
     marks: q.marks,
     stimulusHtml: q.stimulus ? renderMathHtml(q.stimulus) : undefined,
     stemHtml: renderMathHtml(q.stem),
-    visualHtml: q.visual?.template ? renderVisual(q.visual as StoredVisual) : undefined,
+    visualHtml: q.visual?.template
+      ? renderVisual(q.visual as StoredVisual, {
+          stimulus: q.stimulus,
+          stem: q.stem,
+          partPrompts: (q.parts ?? []).map((p) => p.prompt),
+        })
+      : undefined,
     parts: (q.parts ?? []).map((p) => ({
       label: p.label,
       promptHtml: renderMathHtml(p.prompt),

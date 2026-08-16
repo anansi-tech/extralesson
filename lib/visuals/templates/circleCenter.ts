@@ -74,6 +74,7 @@ function tangentIntersection(b1: number, b2: number): [number, number] | null {
 
 export const circleCenter: VisualTemplate<CircleCenterParams> = {
   name: 'circleCenter',
+  placesOwnPoints: true,
   // Invariants enforced by verify(); surfaced to the draft prompt.
   rules: [
     "point bearings must be 0-360",

@@ -86,6 +86,7 @@ function dirDeg(from: [number, number], to: [number, number]): number {
 
 export const bearingDiagram: VisualTemplate<BearingDiagramParams> = {
   name: 'bearingDiagram',
+  placesOwnPoints: true,
   // Invariants enforced by verify(); surfaced to the draft prompt.
   rules: [
     "bearings must be in [0, 360)",
