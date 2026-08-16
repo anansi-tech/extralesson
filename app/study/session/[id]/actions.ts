@@ -21,7 +21,10 @@ const SubmitZ = z.object({
     .array(
       z.object({
         label: z.string().regex(SLOT_REF_RE),
-        answer: z.string().min(1).max(2000),
+        // Empty is a legitimate answer: a candidate leaves a blank and hands
+        // the paper in, and a blank is marked wrong. Requiring a character here
+        // would reject the whole submission over one unanswered slot (§2).
+        answer: z.string().max(2000),
       }),
     )
     .min(1)

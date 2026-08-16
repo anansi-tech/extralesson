@@ -253,3 +253,50 @@ describe('markStructured — a wrong form costs only the form mark', () => {
     expect(res.format_feedback).toBeUndefined();
   });
 });
+
+// R1.8 §2 — a paper-shaped question can be the whole session, so being stuck on
+// one slot must not cost the student every mark they did earn. A candidate
+// leaves a blank and hands the paper in; the examiner marks the blank wrong.
+describe('marking a question handed in with blanks', () => {
+  const parts = [
+    {
+      label: 'a',
+      marks: 2,
+      slots: [
+        { label: 'i', answer: '5x(x + 3)', rubric_codes: ['AK1'] },
+        { label: 'ii', answer: '900', rubric_codes: ['AK2'] },
+      ],
+    },
+    {
+      label: 'b',
+      marks: 1,
+      slots: [{ label: 'i', answer: '180', rubric_codes: ['AK3'] }],
+    },
+  ];
+  const rubric: RubricItem[] = [
+    { code: 'AK1', profile: 'AK', criterion: 'factorises', mark_value: 1, slot_ref: 'a.i', part_label: 'a' },
+    { code: 'AK2', profile: 'AK', criterion: 'evaluates', mark_value: 1, slot_ref: 'a.ii', part_label: 'a' },
+    { code: 'AK3', profile: 'AK', criterion: 'finds the deposit', mark_value: 1, slot_ref: 'b.i', part_label: 'b' },
+  ];
+
+  it('awards the slots that were answered and nothing for the blank', () => {
+    const res = markStructuredParts(rubric, parts, [
+      { ref: 'a.i', answer: '5x(x + 3)' },
+      { ref: 'a.ii', answer: '900' },
+      { ref: 'b.i', answer: '' },
+    ]);
+    expect(res.rubric_awarded).toEqual(['AK1', 'AK2']);
+    expect(res.profile_marks.AK).toBe(2);
+  });
+
+  it('never marks a blank correct, whatever the expected answer is', () => {
+    for (const answer of ['0', 'yes', '', 'x']) {
+      const res = markStructuredParts(
+        [{ code: 'AK1', profile: 'AK', criterion: 'c', mark_value: 1, slot_ref: 'a.i', part_label: 'a' }],
+        [{ label: 'a', marks: 1, slots: [{ label: 'i', answer, rubric_codes: ['AK1'] }] }],
+        [{ ref: 'a.i', answer: '   ' }],
+      );
+      expect(res.rubric_awarded, `expected ${answer}`).toEqual([]);
+    }
+  });
+});

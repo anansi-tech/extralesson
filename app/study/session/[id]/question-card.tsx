@@ -52,17 +52,26 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // on paper and self-marked, so they are not typed in and never gate submit —
   // and a part may hold both kinds at once.
   const markedSlots = question.parts.flatMap((p) => p.slots.filter((s) => s.mode === 'answer'));
-  const allPartsFilled =
+  // R1.8 §2 — ONE filled slot is enough to hand the question in, because a
+  // paper-shaped question can now be the whole session. Requiring every slot
+  // was harmless when a session was eight fragments and being stuck cost you
+  // one of them; with a 12-mark question it means a student who can do (a),
+  // (b) and (c) but not (d) submits nothing, is marked on nothing, and leaves
+  // no attempt behind to move their mastery. A candidate leaves a blank and
+  // hands the paper in, and the examiner marks the blank wrong — which is
+  // exactly what an empty answer already scores here.
+  const canSubmit =
     question.kind === 'mcq'
       ? selected !== null
-      : markedSlots.every((s) => (partAnswers[s.ref] ?? '').trim() !== '');
+      : markedSlots.some((s) => (partAnswers[s.ref] ?? '').trim() !== '');
+  const blanks = markedSlots.filter((s) => (partAnswers[s.ref] ?? '').trim() === '').length;
 
   const submit = () => {
-    if (!allPartsFilled) return;
+    if (!canSubmit) return;
     const answers =
       question.kind === 'mcq'
         ? [{ label: 'a', answer: String(selected) }]
-        : markedSlots.map((s) => ({ label: s.ref, answer: partAnswers[s.ref].trim() }));
+        : markedSlots.map((s) => ({ label: s.ref, answer: (partAnswers[s.ref] ?? '').trim() }));
     startTransition(async () => {
       const res = await submitAnswer({
         sessionId: question.sessionId,
@@ -211,10 +220,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       {!feedback ? (
         <button
           onClick={submit}
-          disabled={pending || !allPartsFilled}
+          disabled={pending || !canSubmit}
           className="mt-5 w-full bg-red-pen p-3 font-black text-white shadow-[3px_3px_0_var(--ink)] disabled:opacity-50"
         >
-          {pending ? 'Marking…' : 'Submit answer'}
+          {pending
+            ? 'Marking…'
+            : blanks > 0 && question.kind === 'structured'
+              ? `Submit answer (${blanks} left blank)`
+              : 'Submit answer'}
         </button>
       ) : (
         <div className="mt-5">
