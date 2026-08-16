@@ -21,6 +21,7 @@ import { nextRecipe, type ObjectiveCoverage, type QuestionRecipe, type RecipeCon
 import { independentSolve } from '@/lib/generation/solve';
 import { McqLooseZ, StructuredLooseZ } from '@/lib/generation/draft-schema';
 import { checkDuplicate } from '@/lib/generation/dedup';
+import { CONTEXT_FREE_MCQ_SHARE } from '@/lib/generation/contexts';
 import { verifyQuestionVisual } from '@/lib/visuals/verify';
 import { lintCriteria } from '@/lib/prompts/mark-scheme';
 import { paramsDocFor } from '@/lib/visuals';
@@ -154,16 +155,27 @@ async function main() {
         recipe.representation === 'prose' ? '' : paramsDocFor(context.template_hints);
       // What this topic already holds, so the model writes something else. Read
       // fresh each attempt: a draft inserted a moment ago counts.
-      const existingStems = (
-        await Question.find({
-          status: { $in: ['draft', 'approved'] },
-          objective_ids: { $in: recipe.objective_ids },
-        })
-          .select('stem')
-          .sort({ _id: -1 })
-          .limit(10)
-          .lean<{ stem: string }[]>()
-      ).map((q) => q.stem);
+      const recent = await Question.find({
+        status: { $in: ['draft', 'approved'] },
+        objective_ids: { $in: recipe.objective_ids },
+      })
+        .select('stem context_category')
+        .sort({ _id: -1 })
+        .limit(10)
+        .lean<{ stem: string; context_category?: string }[]>();
+      const existingStems = recent.map((q) => q.stem);
+
+      // R1.8 Part 0: the papers write most Paper 1 items as bare symbolic work.
+      // Aim for half, measured against what this paper already holds rather
+      // than by coin flip, so the share converges instead of drifting.
+      let contextFree = false;
+      if (recipe.kind === 'mcq') {
+        const [bare, all] = await Promise.all([
+          Question.countDocuments({ kind: 'mcq', status: { $in: ['draft', 'approved'] }, context_category: 'none' }),
+          Question.countDocuments({ kind: 'mcq', status: { $in: ['draft', 'approved'] } }),
+        ]);
+        contextFree = all === 0 || bare / all < CONTEXT_FREE_MCQ_SHARE;
+      }
       console.log(
         `→ attempt ${attempts}: recipe ${recipe.kind} ${context.topic_code} d${recipe.difficulty} ${recipe.marks}mk ${recipe.archetype}/${recipe.representation} [${recipe.objective_ids.join(', ')}]`,
       );
@@ -180,6 +192,8 @@ async function main() {
           module,
           visualContract,
           existingStems,
+          recentContexts: recent,
+          contextFree,
         }),
       });
 

@@ -24,6 +24,7 @@ export const PartLooseZ = z.object({
 export const VisualLooseZ = z.object({ template: z.string(), params: z.record(z.unknown()) }).nullable();
 
 export const McqLooseZ = z.object({
+  context_category: z.string().nullish(),
   stimulus: z.string().nullable(),
   stem: z.string(),
   options: z.array(z.string()),
@@ -36,6 +37,7 @@ export const McqLooseZ = z.object({
 });
 
 export const StructuredLooseZ = z.object({
+  context_category: z.string().nullish(),
   stimulus: z.string().nullable(),
   stem: z.string(),
   visual: VisualLooseZ,

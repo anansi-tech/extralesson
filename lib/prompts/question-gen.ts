@@ -3,13 +3,14 @@ import type { QuestionRecipe, RecipeContext } from '@/lib/generation/recipe';
 import { exemplarsFor } from './exemplars';
 import { MARK_SCHEME_CONVENTIONS } from './mark-scheme';
 import { misconceptionGuidance } from '@/lib/misconceptions';
+import { contextGuidance } from '@/lib/generation/contexts';
 
 // Generation prompts (R1.5 §5): recipe + style spec Part A + 2 module-matched
 // exemplars + visual-template contract. Bump PROMPT_VERSION on any wording
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v24';
+export const PROMPT_VERSION = 'v25';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -106,6 +107,10 @@ export function buildDraftPrompt(args: {
   visualContract: string;
   /** Stems already in the bank for this topic, so the model can avoid them. */
   existingStems?: string[];
+  /** Recent questions on this topic, for the setting ledger (R1.8 Part 0). */
+  recentContexts?: { context_category?: string }[];
+  /** True when this Paper 1 item should be bare symbolic work. */
+  contextFree?: boolean;
 }): string {
   const { topicTitle, objectives, recipe, context, module, visualContract } = args;
   // The dedup gate rejects a repeat only after we have paid to generate it, and
@@ -120,6 +125,7 @@ ${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 140)}`).join('\n')}`
     : '';
   const patterns = paperPatterns(recipe, context, objectives);
   const documentedErrors = misconceptionGuidance(recipe.objective_ids);
+  const setting = contextGuidance(args.recentContexts ?? [], args.contextFree ?? false);
   const kind = recipe.kind;
   const objectiveBlock = objectives
     .map((o) => `- ${o.id}: ${o.text}${o.notes ? `\n  Notes: ${o.notes}` : ''}`)
@@ -174,6 +180,8 @@ ${demandRequirements(recipe)}
 
 MARK PROFILES (official CXC): every mark is CK (Conceptual Knowledge — recalling/recognising concepts), AK (Algorithmic Knowledge — carrying out procedures), or R (Reasoning — translating, justifying, multi-step problem solving). Aim for a sensible CK/AK/R blend for the difficulty; rubric codes are CK1, AK1, R1... and each rubric row carries the "part_label" it marks.
 
+${setting}
+
 ${partsSection}
 
 ${visualSection}
@@ -191,7 +199,9 @@ RULES:
 - Math is KaTeX-safe: inline math in $...$ (never \\( ... \\)), and a column vector or matrix already carries its own brackets — never put parentheses around one, escape backslashes correctly in JSON. Matrices are notation in stem/parts, never visuals.
 - DELIMITER CONVENTION (hard rule, every field): $ is EXCLUSIVELY a math delimiter, in balanced $...$ pairs. Currency is NEVER a bare $ — write EC$ followed by the amount (EC$12) or the word "dollars". Never put EC$ amounts inside $...$ math.
 - ${kind === 'mcq'
-      ? 'Exactly 4 options. Distractors must each come from a plausible specific error. answer_key is the 0-based index of the correct option. marks = 1.'
+      ? `Exactly 4 options. answer_key is the 0-based index of the correct option. marks = 1.
+- DISTRACTOR FAMILIES: each wrong option comes from a specific error a candidate makes, and where the answer is an EXPRESSION the wrong options must be near-miss FORMS, not merely near-miss values — the right coefficient with the wrong exponent, the right exponent with the wrong coefficient, indices added where they should multiply, a sign carried the wrong way. An option nobody would arrive at teaches nothing and gives the answer away.
+- ITEM SHAPES the real Paper 1 uses constantly, beyond direct calculation: a DEFINED OPERATION (state how a*b behaves on two examples, ask what it is in general); a TRUE-STATEMENT item over sets or number properties; a UNIT CONVERSION across a scale that must be applied twice; a CURRENCY CONVERSION; a HIRE-PURCHASE versus cash comparison; asking for a value that CANNOT be in a domain. Reach for these as readily as for a calculation.`
       : `Rubric: 2-12 criteria; a criterion may award more than one mark for a substantial linked stage; mark_values sum to marks and each row names its part_label.
 ${MARK_SCHEME_CONVENTIONS}
 - Where a part carries an answer_format, the scheme marks the form as its own act: include exactly ONE further row for that part with "for_format": true, normally an R mark of 1, whose criterion names the form ("Expresses 'their' answer in standard form"). The other rows mark the value and the method, so a student with the right number in the wrong form keeps them.`}
