@@ -82,7 +82,7 @@ export function verifyQuestionVisual(
   // if one is there.
   if (issues.length === 0) {
     try {
-      const svg = template.render(parsed.data as never);
+      const svg = template.render(parsed.data as never, context);
       if (svg.includes('NaN') || svg.includes('Infinity')) {
         issues.push(`${visual.template}: renders with non-finite coordinates — the figure would be blank`);
       }

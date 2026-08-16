@@ -157,7 +157,11 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   let visualHtml: string | undefined;
   if (question.visual?.template) {
     try {
-      visualHtml = renderVisual(question.visual as never);
+      visualHtml = renderVisual(question.visual as never, {
+        stimulus: question.stimulus,
+        stem: question.stem,
+        partPrompts: (question.parts ?? []).map((p) => p.prompt),
+      });
     } catch {
       visualHtml = undefined;
     }

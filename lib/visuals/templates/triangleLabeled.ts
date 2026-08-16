@@ -155,6 +155,7 @@ function sideName(labels: string[], side: number): string {
 
 export const triangleLabeled: VisualTemplate<TriangleLabeledParams> = {
   name: 'triangleLabeled',
+  placesOwnPoints: true,
   // Invariants enforced by verify(); surfaced to the draft prompt.
   rules: [
     "angles must be strictly between 0 and 180",

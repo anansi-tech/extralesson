@@ -49,7 +49,10 @@ export function paramsDocFor(names: TemplateName[]): string {
   return names
     .map((n) => {
       const t = TEMPLATES[n];
-      const rules = (t.rules ?? []).map((r) => `\n    · ${r}`).join('');
+      const positional = t.placesOwnPoints
+        ? '\n    · this template PLACES ITS OWN POINTS: label order decides where each one is drawn. Use it only for a question that states no positions — angles, side lengths and relationships. A question naming coordinates needs coordinateGrid with a "named" block.'
+        : '';
+      const rules = positional + (t.rules ?? []).map((r) => `\n    · ${r}`).join('');
       return `- ${n} params: ${zodDoc(t.paramsSchema)}${rules ? `\n  ${n} rules (violations auto-reject the draft):${rules}` : ''}`;
     })
     .join('\n');
@@ -75,18 +78,24 @@ const DRAWN_TO_SCALE = new Set<TemplateName>([
  * what our sketch templates already are, since they place their own vertices
  * and a student should not measure anything off them.
  */
-export function renderVisual(visual: StoredVisual): string {
+export function renderVisual(visual: StoredVisual, context?: VerifyContext): string {
   const t = TEMPLATES[visual.template];
   const params = t.paramsSchema.parse(visual.params);
-  const svg = t.render(params as never);
-  if (DRAWN_TO_SCALE.has(visual.template)) return svg;
+  const svg = t.render(params as never, context);
+  // A coordinateGrid in sketch mode has no axes to be read against, so it
+  // carries the caption like any other schematic.
+  const isSketch =
+    visual.template === 'coordinateGrid' &&
+    (visual.params as { named?: { sketch?: boolean } })?.named?.sketch !== false &&
+    Boolean((visual.params as { named?: unknown })?.named);
+  if (DRAWN_TO_SCALE.has(visual.template) && !isSketch) return svg;
   return `${svg}<p class="figure-note">Not drawn to scale</p>`;
 }
 
-export function describeVisual(visual: StoredVisual): string {
+export function describeVisual(visual: StoredVisual, context?: VerifyContext): string {
   const t = TEMPLATES[visual.template];
   const params = t.paramsSchema.parse(visual.params);
-  return t.describe(params as never);
+  return t.describe(params as never, context);
 }
 
 export type { VerifyContext };

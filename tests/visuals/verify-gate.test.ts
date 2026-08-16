@@ -267,3 +267,36 @@ describe('schematic figures declare themselves', () => {
     expect(table).not.toContain('Not drawn to scale');
   });
 });
+
+// The gate keys on the figure and the question, never on the question's kind.
+// An MCQ that names three points is exactly as unable to show them on a sketch
+// as a structured question is.
+describe('the coordinate rule does not care whether the question is an MCQ', () => {
+  const transformationStem =
+    "Triangle $PQR$ has $P(-5,4)$, $Q(-1,8)$ and $R(4,-7)$. It is translated so that $P'(2,-1)$.";
+
+  it('rejects a sketch on an MCQ, one part and all', () => {
+    const res = verifyQuestionVisual(
+      { template: 'triangleLabeled', params: { labels: ['P', 'Q', 'R'] } },
+      { stem: transformationStem, partPrompts: ['Select the translation vector.'] },
+    );
+    expect(res.ok).toBe(false);
+    expect(res.issues.join(' ')).toContain('needs coordinateGrid');
+  });
+
+  it('rejects it identically when the question is structured', () => {
+    const res = verifyQuestionVisual(
+      { template: 'triangleLabeled', params: { labels: ['P', 'Q', 'R'] } },
+      { stem: transformationStem, partPrompts: ['Find the vector.', 'Find the image of R.'] },
+    );
+    expect(res.ok).toBe(false);
+  });
+
+  it('accepts the MCQ once the figure references the question instead', () => {
+    const res = verifyQuestionVisual(
+      { template: 'coordinateGrid', params: { named: { polygons: [{ points: ['P', 'Q', 'R'] }] } } },
+      { stem: transformationStem, partPrompts: ['Select the translation vector.'] },
+    );
+    expect(res.ok).toBe(true);
+  });
+});

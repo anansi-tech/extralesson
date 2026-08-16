@@ -49,6 +49,7 @@ function dirDeg(from: [number, number], to: [number, number]): number {
 
 export const polygonMarkedAngle: VisualTemplate<PolygonMarkedAngleParams> = {
   name: 'polygonMarkedAngle',
+  placesOwnPoints: true,
   // Invariants enforced by verify(); surfaced to the draft prompt.
   rules: [
     "supply either no labels or exactly one per vertex",

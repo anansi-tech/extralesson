@@ -17,6 +17,14 @@ export interface VerifyContext {
 export interface VisualTemplate<P = unknown> {
   name: TemplateName;
   /**
+   * True when the template decides where its points go — triangleLabeled puts
+   * labels[0] at the apex, circleCenter spaces points by bearing. Such a figure
+   * can show angles, lengths and relationships, and can never show a position
+   * the question states: the two are authored separately and will disagree.
+   * Surfaced in the draft contract so the model is told, not merely caught.
+   */
+  placesOwnPoints?: boolean;
+  /**
    * Cross-field invariants enforced by verify(), written for the draft
    * prompt. Kept beside verify() so the two cannot drift: a model that is
    * never told a rule cannot comply with it, and every such rejection costs
@@ -26,10 +34,16 @@ export interface VisualTemplate<P = unknown> {
   // Input type is unknown: Zod defaults mean the accepted input is looser
   // than the parsed output P.
   paramsSchema: z.ZodType<P, z.ZodTypeDef, unknown>;
-  /** SVG string (semantic HTML for dataTable). Black-line exam aesthetic. */
-  render(params: P): string;
+  /**
+   * SVG string (semantic HTML for dataTable). Black-line exam aesthetic.
+   *
+   * The context carries the question a figure belongs to, for templates whose
+   * geometry is REFERENCED from it rather than restated in params. Templates
+   * that hold all their own data ignore it.
+   */
+  render(params: P, context?: VerifyContext): string;
   /** TEXT rendering of the visual for the independent solve pass (§5). */
-  describe(params: P): string;
+  describe(params: P, context?: VerifyContext): string;
   /**
    * Numeric cross-checks (§3 integrity rule): intrinsic consistency (angle
    * sums, monotonic cumulative data, ...) plus given-value/text agreement.
