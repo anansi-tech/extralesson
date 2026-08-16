@@ -204,3 +204,24 @@ describe('independentSolve — the figure is read against the question', () => {
     expect(out.agrees).toBe(false);
   });
 });
+
+// A whole regeneration run — twelve attempts, nothing inserted — was lost to
+// the solver echoing the parts list's "(a)" as its label while every answer
+// matched. The prompt now shows the bare-letter form, and the lookup treats
+// label formatting as presentation rather than data.
+describe('independentSolve — a part label is a letter, however it is written', () => {
+  for (const label of ['(a)', 'a)', ' A ', 'a.']) {
+    it(`matches a part answered as "${label}"`, async () => {
+      solverParts = [{ label, final_answer: '4' }];
+      const out = await independentSolve(draft([answerPart('a', '4')]));
+      expect(out.agrees).toBe(true);
+      expect(calls).toEqual(['solve']);
+    });
+  }
+
+  it('still notices a part the solver never answered', async () => {
+    solverParts = [{ label: '(a)', final_answer: '4' }, { label: '(zz)', final_answer: '9' }];
+    const out = await independentSolve(draft([answerPart('a', '4'), answerPart('b', '9')]));
+    expect(out.agrees).toBe(false);
+  });
+});

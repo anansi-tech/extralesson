@@ -105,3 +105,26 @@ describe('the gate now has nothing left to catch', () => {
     expect(doc).toContain('needs coordinateGrid with a "named" block');
   });
 });
+
+// The papers write an image point as A', A'' or A_1, and a generation run was
+// rejected for using the forms it had been shown in its own exemplars.
+describe('image points are named the way the papers name them', () => {
+  const ctx2 = {
+    stem: "Triangle $ABC$ with $A(1,1)$, $B(3,1)$, $C(2,3)$ maps to $A'(5,-1)$, $B''(7,-1)$ and $A_1(2,2)$.",
+    partPrompts: [],
+  };
+
+  it('reads primes, double primes and subscripts', () => {
+    const found = namedPoints(ctx2);
+    expect(found.get("A'")).toEqual({ label: "A'", x: 5, y: -1 });
+    expect(found.get("B''")).toEqual({ label: "B''", x: 7, y: -1 });
+    expect(found.get('A_1')).toEqual({ label: 'A_1', x: 2, y: 2 });
+  });
+
+  it('accepts all of them as figure references', () => {
+    const parsed = CoordinateGridParamsZ.safeParse({
+      named: { polygons: [{ points: ['A', "B''", 'A_1'] }] },
+    });
+    expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
+  });
+});
