@@ -55,6 +55,8 @@ interface LeanBlueprint {
 export interface AttemptRow {
   objective_ids: string[];
   score: number;
+  /** Assessable marks this attempt covered — the evidence it is worth (§2). */
+  marks: number;
   ts: number;
 }
 
@@ -94,6 +96,7 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
       return {
         objective_ids: a.question_id!.objective_ids,
         score: Math.min(1, earned / marks),
+        marks,
         ts: new Date(a.ts).getTime(),
       };
     });
@@ -140,7 +143,7 @@ export function computeStudyState(
   const coverage = computeCoverage(topics, blueprints);
   const prediction = predictOverall(
     targetModules.map((m) => predictModule(m, modMastery[m], coverage.byModule[m])),
-    attemptRows.length,
+    attemptRows.reduce((sum, a) => sum + a.marks, 0),
   );
 
   return {

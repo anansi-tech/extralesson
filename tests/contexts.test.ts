@@ -62,8 +62,8 @@ describe('buildDraftPrompt — Part 0 item shapes and distractors', () => {
     const p = buildDraftPrompt({
       topicTitle: 'Algebra',
       objectives: [{ id: 'M1.5.1', text: 'Use the laws of indices.' }],
-      recipe: { objective_ids: ['M1.5.1'], kind: 'mcq', difficulty: 2, marks: 1, archetype: 'direct-procedure', representation: 'prose', profile: 'AK' },
-      context: { topic_code: 'M1-ALG1', template_hints: [] },
+      recipe: { objective_ids: ['M1.5.1'], kind: 'mcq', difficulty: 2, marks: 1, archetype: 'direct-procedure', representation: 'prose', profile: 'AK', shape: 'drill' },
+      context: { topic_code: 'M1-ALG1', topic_codes: ['M1-ALG1'], template_hints: [] },
       module: 1,
       visualContract: '',
       contextFree: true,

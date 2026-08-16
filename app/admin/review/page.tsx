@@ -3,6 +3,7 @@ import { dbConnect, Question } from '@/lib/db';
 import { getCoverage, getNextDraftId } from '@/lib/admin/coverage';
 import { renderAnswerHtml, renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
+import { P2_MARKS_TOTAL } from '@/lib/targets/matrix';
 import ReviewCard, { type ReviewQuestion } from './review-card';
 
 export const metadata = { title: 'Review queue — ExtraLesson admin' };
@@ -184,7 +185,8 @@ export default async function ReviewPage() {
 
         <section className="mt-8">
           <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
-            P2 matrix — {matrix.p2_actual_total}/240 structured · coverage in rubric marks
+            P2 matrix — {matrix.p2_marks_actual_total}/{P2_MARKS_TOTAL} rubric marks ·{' '}
+            {matrix.p2_actual_total} structured questions
           </h2>
           <div className="mt-2 grid gap-x-8 gap-y-1 sm:grid-cols-2">
             {matrix.topics.map((t) => (

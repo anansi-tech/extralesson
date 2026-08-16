@@ -35,8 +35,8 @@ const M1_STRUCTURED = `{
 
 const M1_MCQ = `{
   "kind": "mcq",
-  "stem": "A shirt priced at EC$60 is sold at a 15% discount. What is the sale price?",
-  "options": ["EC$51", "EC$45", "EC$9", "EC$69"],
+  "stem": "A shirt priced at \\$60 is sold at a 15% discount. What is the sale price?",
+  "options": ["\\$51", "\\$45", "\\$9", "\\$69"],
   "answer_key": 0,
   "profile": "AK",
   "archetype": "direct-procedure",
@@ -44,10 +44,10 @@ const M1_MCQ = `{
   "visual": null,
   "difficulty": 1,
   "marks": 1,
-  "parts": [{ "label": "a", "prompt": "Select the sale price.", "marks": 1, "slots": [{ "label": "i", "answer": "EC$51" }] }],
-  "worked_solution": "Discount $= 0.15 \\\\times 60 = 9$; sale price $= 60 - 9 = 51$, so EC$51.",
+  "parts": [{ "label": "a", "prompt": "Select the sale price.", "marks": 1, "slots": [{ "label": "i", "answer": "\\$51" }] }],
+  "worked_solution": "Discount $= 0.15 \\\\times 60 = 9$; sale price $= 60 - 9 = 51$, so \\$51.",
   "misconceptions": [
-    { "trigger": "EC$9", "name": "Discount instead of price", "remediation": "EC$9 is the discount amount. Subtract it from EC$60 to get the sale price." }
+    { "trigger": "\\$9", "name": "Discount instead of price", "remediation": "\\$9 is the discount amount. Subtract it from \\$60 to get the sale price." }
   ]
 }`;
 

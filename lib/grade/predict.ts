@@ -17,7 +17,7 @@
 //   explain parts, are never extrapolated across — a strong student on the
 //   marks we test is not evidence about the marks we do not.
 
-import { MIN_ATTEMPTS_FOR_PREDICTION } from '@/lib/mastery/config';
+import { MIN_MARKS_FOR_PREDICTION } from '@/lib/mastery/config';
 
 export const PROJECT_NEUTRAL_FRACTION = 0.6;
 
@@ -78,8 +78,8 @@ export interface OverallPrediction {
    * earned. Every surface must decide what to show instead.
    */
   overall_grade: OverallGrade | null;
-  /** Attempts this rests on, and whether that was enough to state a grade. */
-  attempts: number;
+  /** Assessable marks this rests on, and whether that was enough (§2). */
+  marks_attempted: number;
   estimable: boolean;
   /** Mean coverage the estimate rests on; the UI must state it (R1.6 §4). */
   coverage: number;
@@ -89,16 +89,16 @@ export interface OverallPrediction {
 // weighted marks of the 300 total, Assessment Grid A).
 export function predictOverall(
   modules: ModulePrediction[],
-  attempts: number,
+  marksAttempted: number,
 ): OverallPrediction {
-  const estimable = attempts >= MIN_ATTEMPTS_FOR_PREDICTION;
+  const estimable = marksAttempted >= MIN_MARKS_FOR_PREDICTION;
   const withheld = (ms: ModulePrediction[]) => ms.map((m) => ({ ...m, letter: null }));
   if (modules.length === 0) {
     return {
       modules: [],
       overall_percent: 0,
       overall_grade: null,
-      attempts,
+      marks_attempted: marksAttempted,
       estimable: false,
       coverage: 1,
     };
@@ -118,7 +118,7 @@ export function predictOverall(
     modules: estimable ? modules : withheld(modules),
     overall_percent: round1(pct),
     overall_grade: estimable ? grade : null,
-    attempts,
+    marks_attempted: marksAttempted,
     estimable,
     coverage,
   };

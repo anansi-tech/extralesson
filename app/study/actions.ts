@@ -17,13 +17,14 @@ export async function startSession(): Promise<void> {
 
   const state = await loadStudyState(auth.student_id, student.target_modules);
   const candidates = await Question.find({ status: 'approved' })
-    .select('objective_ids module kind parts')
+    .select('objective_ids module kind marks parts')
     .lean<
       {
         _id: unknown;
         objective_ids: string[];
         module: ModuleNumber;
         kind: 'mcq' | 'structured';
+        marks: number;
         parts?: { slots?: { response_mode?: string }[] }[];
       }[]
     >();
@@ -34,6 +35,7 @@ export async function startSession(): Promise<void> {
       objective_ids: c.objective_ids,
       module: c.module,
       kind: c.kind,
+      marks: c.marks,
       response_modes: (c.parts ?? []).flatMap((p) =>
         (p.slots ?? []).map((slot) => slot.response_mode ?? 'answer'),
       ),

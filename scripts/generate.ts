@@ -108,14 +108,20 @@ async function buildRecipe(
     difficulty: args.difficulty,
     module: args.module,
   });
-  const topicDoc = topics.find((t) => t.code === context.topic_code)!;
+  // A paper-shaped recipe draws objectives from two or three topics of one
+  // module, so the prompt's topic line and objective block are assembled from
+  // every topic the recipe names, primary first.
+  const topicDocs = context.topic_codes
+    .map((code) => topics.find((t) => t.code === code))
+    .filter((t): t is (typeof topics)[number] => Boolean(t));
+  const primary = topicDocs[0];
   const wanted = new Set(recipe.objective_ids);
   return {
     recipe,
     context,
-    module: topicDoc.module,
-    topicTitle: topicDoc.title,
-    objectives: topicDoc.objectives.filter((o) => wanted.has(o.id)),
+    module: primary.module,
+    topicTitle: topicDocs.map((t) => t.title).join(' + '),
+    objectives: topicDocs.flatMap((t) => t.objectives.filter((o) => wanted.has(o.id))),
   };
 }
 

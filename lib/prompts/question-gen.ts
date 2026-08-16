@@ -11,7 +11,7 @@ import { flavourGuidance } from '@/lib/generation/territories';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v30';
+export const PROMPT_VERSION = 'v31';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -155,7 +155,7 @@ ${
   const partsSection =
     kind === 'mcq'
       ? 'PARTS: exactly one part, label "a", marks 1, whose "answer" is the correct option text.'
-      : `PARTS (hard requirement): ${partCountGuidance(recipe.marks)} lettered parts "a", "b", ... whose marks sum to ${recipe.marks}. A part is ONE INSTRUCTION and the SLOTS it governs, exactly as the papers print it:
+      : `PARTS (hard requirement): ${partCountGuidance(recipe.marks, recipe.shape)} lettered parts "a", "b", ... whose marks sum to ${recipe.marks}. A part is ONE INSTRUCTION and the SLOTS it governs, exactly as the papers print it:
   {"label": "a", "prompt": "Factorize, completely, EACH of the following.", "marks": 3,
    "slots": [{"label": "i", "prompt": "$xy^2 - x^2y$", "answer": "xy(y - x)", "rubric_codes": ["AK1"]},
              {"label": "ii", "prompt": "$3x^2 + x - 10$", "answer": "(3x - 5)(x + 2)", "rubric_codes": ["AK2"]}]}
@@ -167,9 +167,23 @@ ${
 - Set "answer_format" on a SLOT ONLY when its wording demands a particular form: "exact", "surd" ($a\\sqrt{b}$), "standard_form", "lowest_terms", "integer", "equation_form" (an answer of the form $y = mx + c$), "sf:N" (N significant figures) or "dp:N" (N decimal places). If you write "correct to 2 decimal places" or "in exact form" into a part, that part must carry the matching answer_format; if you do not demand a form, omit the field. Use ONLY the values listed — they are the forms we can mark. If the form you want is not there (set-builder notation, a ratio, a bearing), write the demand into the part's wording, where the student reads it, and leave answer_format unset.
 - When a part asks the student to NAME, STATE, CLASSIFY, or JUDGE something (including yes/no verdicts), "answer" must be the shortest standard form — the syllabus term, or the bare verdict word — and every other wording an examiner would accept goes in that part's "accept" array (a mark scheme's "accept:" list — e.g. answer "edge", accept ["line segment where two faces meet"]). Omit "accept" for numeric/algebraic answers unless a genuinely different correct form exists.`;
 
+  // R1.8 §2 — the shape of the thing, stated before the recipe fields, because
+  // a model told only "10 marks, 3 parts" writes three unrelated fragments
+  // stapled together rather than one question that goes somewhere.
+  const shapeSection =
+    recipe.shape === 'drill'
+      ? ''
+      : `QUESTION SHAPE — this is a WHOLE Paper 2 question, not a fragment:
+- It is worth ${recipe.marks} marks and it develops. The papers open a question with something a candidate can do immediately, then build on it: a computation that becomes an applied context, a formula rearranged and then used, a figure measured and then reasoned about.
+- Its objectives span ${context.topic_codes.length} topics of the same module (listed above). Do NOT write ${context.topic_codes.length} separate questions under one number — the later parts must USE what the earlier parts produced, so a student who got part (a) right is genuinely further along in part (b).
+- Where a part follows from an earlier result, say "Hence" or "Hence, or otherwise" exactly as the papers do, and let the rubric award the later part on the student's own earlier value (follow-through) rather than only on ours.
+- One shared setting, introduced once in the stimulus, carries the whole question. Do not restart the scenario at every part.
+
+`;
+
   return `You are writing an original practice question for CSEC Mathematics (CXC 05/G/SYLL 16, 2027 syllabus) in the style of ${kind === 'mcq' ? 'Paper 1 (multiple choice)' : 'Paper 2 (structured response)'}.
 
-TOPIC: ${topicTitle}
+${shapeSection}TOPIC: ${topicTitle}
 SYLLABUS OBJECTIVES to assess (use exactly these ids in objective_ids):
 ${objectiveBlock}
 
@@ -221,7 +235,7 @@ ${MARK_SCHEME_CONVENTIONS}
 - ACCURACY, as the real papers do it: when a part's answer does not terminate — it comes from trigonometry, a square root, ${'\u03c0'}, or a division that runs on — the part must SAY what accuracy it wants ("correct to 3 significant figures", or "to 1 decimal place" for an angle) and carry the matching answer_format ("sf:3", "dp:1"). When the answer is exact but has more than one accepted written form, say which form you want (exact, surd, standard form, lowest terms, ${'y = mx + c'}) and tag that instead. Never demand an accuracy the mathematics does not need.
 - misconceptions: 1-3 entries. Each trigger is a specific wrong final answer for one part; name the error; remediation explains the fix in one or two sentences.
 ${documentedErrors ? `\n${documentedErrors}\n` : ''}
-- worked_solution: complete, correct, step-by-step for every part, KaTeX-safe. Separate parts with a blank line. Never begin a sentence with a numeral or a bare expression — join steps with words or a colon, so write "Discount $= 15\\%$ of EC$140, so $0.15 \\times 140 = 21$" or "…, giving $0.15 \\times 140 = 21$", NEVER "…of EC$140. $0.15 \\times 140 = 21$" (a full stop followed by a decimal reads as one mangled number).
+- worked_solution: complete, correct, step-by-step for every part, KaTeX-safe. Separate parts with a blank line. Never begin a sentence with a numeral or a bare expression — join steps with words or a colon, so write "Discount $= 15\\%$ of \\$140, so $0.15 \\times 140 = 21$" or "…, giving $0.15 \\times 140 = 21$", NEVER "…of \\$140. $0.15 \\times 140 = 21$" (a full stop followed by a decimal reads as one mangled number).
 
 EXEMPLARS (style and JSON shape only — do not reuse their content):
 ${exemplarsFor(module, kind)}
@@ -229,8 +243,11 @@ ${exemplarsFor(module, kind)}
 Return the question as JSON matching the exemplar shape.`;
 }
 
-function partCountGuidance(marks: number): string {
-  // Corpus part-count fingerprint: median 4 parts, a third at 5-6 (§4).
+function partCountGuidance(marks: number, shape: 'paper' | 'drill'): string {
+  // A paper-shaped question is 2-4 LETTERED parts; the depth the corpus shows
+  // lives in the sub-parts under them, which are slots now (R1.8 §2). A drill
+  // item keeps the flat fingerprint: median 4 parts, a third at 5-6 (§4).
+  if (shape === 'paper') return marks >= 12 ? '3-4' : '2-4';
   if (marks <= 5) return '2-3';
   if (marks <= 7) return '3-4';
   return '4-6';
@@ -286,6 +303,6 @@ PARTS:
 ${parts}
 ${figureCheck}
 
-Return JSON: {${args.visualText ? '"figure_check": {"verdict": "consistent" | "contradicts" | "under_determined", "note": "<one short sentence; empty when consistent>"}, ' : ''}"part_answers": [{"label": "a", "final_answer": "..."}, ...]} — EXACTLY ONE ENTRY PER BRACKETED KEY above, in order, and "label" is that key copied verbatim: "a.ii", not "(a)(ii)" and not "a". A key asking for two things in one line does not exist: every answerable thing has its own key. Unless the part is bracketed otherwise above, each final_answer contains ONLY that part's final value(s) — no working, no equation setup, no explanations, no sentences, and no restatement of the value in another form. Examples: "42.5" · "x = -1/3; x = 2" · "EC$70". Where a part is bracketed as asking for a reason or a stated result, answer in that shape instead, and include the value if the part asks for one as well.
+Return JSON: {${args.visualText ? '"figure_check": {"verdict": "consistent" | "contradicts" | "under_determined", "note": "<one short sentence; empty when consistent>"}, ' : ''}"part_answers": [{"label": "a", "final_answer": "..."}, ...]} — EXACTLY ONE ENTRY PER BRACKETED KEY above, in order, and "label" is that key copied verbatim: "a.ii", not "(a)(ii)" and not "a". A key asking for two things in one line does not exist: every answerable thing has its own key. Unless the part is bracketed otherwise above, each final_answer contains ONLY that part's final value(s) — no working, no equation setup, no explanations, no sentences, and no restatement of the value in another form. Examples: "42.5" · "x = -1/3; x = 2" · "\\$70". Where a part is bracketed as asking for a reason or a stated result, answer in that shape instead, and include the value if the part asks for one as well.
 If a part asks whether something is true (yes/no, agree/disagree, is the claim correct), answer with the verdict word alone — "Yes" or "No" — without the supporting calculation.`;
 }

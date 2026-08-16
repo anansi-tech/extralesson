@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MIN_ATTEMPTS_FOR_PREDICTION } from '@/lib/mastery/config';
-import { SESSION_SIZE } from '@/lib/session/builder';
+import { MIN_MARKS_FOR_PREDICTION } from '@/lib/mastery/config';
 import {
   predictModule,
   predictOverall,
@@ -39,7 +38,7 @@ describe('predictModule — honest arithmetic', () => {
 });
 
 // Attempts behind an estimate. Named so each test says what evidence it assumes.
-const ENOUGH = MIN_ATTEMPTS_FOR_PREDICTION;
+const ENOUGH = MIN_MARKS_FOR_PREDICTION;
 
 describe('predictOverall — six-point scale from combined modules', () => {
   it('averages module totals and maps to I-VI bands', () => {
@@ -105,7 +104,7 @@ describe('predictOverall — no grade before there is evidence for one', () => {
     const overall = predictOverall(mods(), 0);
     expect(overall.overall_grade).toBeNull();
     expect(overall.estimable).toBe(false);
-    expect(overall.attempts).toBe(0);
+    expect(overall.marks_attempted).toBe(0);
   });
 
   it('withholds the module letters too, not just the overall', () => {
@@ -113,8 +112,8 @@ describe('predictOverall — no grade before there is evidence for one', () => {
   });
 
   it('holds back right up to the threshold, then speaks', () => {
-    expect(predictOverall(mods(), MIN_ATTEMPTS_FOR_PREDICTION - 1).overall_grade).toBeNull();
-    const enough = predictOverall(mods(), MIN_ATTEMPTS_FOR_PREDICTION);
+    expect(predictOverall(mods(), MIN_MARKS_FOR_PREDICTION - 1).overall_grade).toBeNull();
+    const enough = predictOverall(mods(), MIN_MARKS_FOR_PREDICTION);
     expect(enough.estimable).toBe(true);
     expect(enough.overall_grade).toBe('VI'); // the project carry-over alone is 12%
     expect(enough.modules.every((m) => m.letter !== null)).toBe(true);
@@ -129,7 +128,10 @@ describe('predictOverall — no grade before there is evidence for one', () => {
     expect(cold.modules[0].letter).toBeNull();
   });
 
-  it('the threshold is one completed session', () => {
-    expect(MIN_ATTEMPTS_FOR_PREDICTION).toBe(SESSION_SIZE);
+  // R1.8 §2 — the gate is marks of evidence, deliberately decoupled from
+  // session size: a session is now one or two paper-shaped questions, and
+  // "one completed session" would state a grade off a single question.
+  it('asks for more evidence than any single question can carry', () => {
+    expect(MIN_MARKS_FOR_PREDICTION).toBeGreaterThan(12);
   });
 });
