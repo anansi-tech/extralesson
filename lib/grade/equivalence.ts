@@ -1,4 +1,5 @@
 import { evaluate, rationalize, simplify } from 'mathjs';
+import { normaliseDigitGroups, stripMoney } from '@/lib/money';
 
 // Final-answer equivalence check (ROUND_1 §6.3 and §4.3).
 // Deliberately simple, documented heuristics — no LLM grading in Round 1.
@@ -12,13 +13,13 @@ import { evaluate, rationalize, simplify } from 'mathjs';
 // Normalize: trim, lowercase, strip KaTeX/currency dressing, unify minus
 // signs and multiplication symbols, collapse whitespace.
 function preClean(raw: string): string {
-  return raw
+  // Money and thousands grouping are understood in lib/money.ts, nowhere else:
+  // the J$80 bug came from currency logic living in three places at once.
+  return normaliseDigitGroups(stripMoney(raw))
     .trim()
     .toLowerCase()
     .replace(/\\left|\\right|\\,|\\;/g, '')
     .replace(/\$+/g, '') // KaTeX delimiters and bare dollar signs
-    // currency prefixes left behind once the $ is stripped, across the region
-    .replace(/\b(ec|us|tt|bb|bds|bz|ky|gy|g|j|b)\s*(?=\d)/g, '')
     .replace(/\\text\{([^{}]*)\}/g, '$1') // \text{ and } wrappers carry no value
     .replace(/\\[dt]frac\b/g, '\\frac') // display/inline fractions are one fraction
     .replace(/[−–]/g, '-') // unicode minus / en-dash
@@ -93,7 +94,7 @@ function stripLabel(part: string): string {
 // "50%", "$1,200", "EC$70", "\frac{1}{4}". Returns null when not cleanly
 // numeric.
 export function parseNumeric(raw: string): number | null {
-  let s = preClean(raw).replace(/,/g, '');
+  let s = normaliseDigitGroups(preClean(raw)).replace(/,/g, '');
   const eq = s.lastIndexOf('=');
   if (eq >= 0) s = s.slice(eq + 1).trim();
   let percent = false;

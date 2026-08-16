@@ -1,6 +1,8 @@
 // Shared SVG helpers for the visual templates. Black-line exam aesthetic:
 // ink strokes, no decorative color, serif labels, viewBox-scaled.
 
+import { protectMoney, restoreMoney } from '@/lib/money';
+
 export const INK = '#1E2430';
 // Paper, for haloing text over a grid. Matches --paper in the design tokens.
 export const PAPER = '#FBF7EE';
@@ -46,10 +48,7 @@ function applyScripts(text: string, marker: '^' | '_', table: Record<string, str
 }
 
 export function svgPlainLabel(raw: string): string {
-  const cleaned = raw
-    // Any territory's currency prefix, not EC$ alone: a figure label reading
-    // "J80" instead of "J$80" is wrong money.
-    .replace(/\b([A-Z]{1,3})\$(?=\s*\d)/g, '$1¤')
+  const cleaned = protectMoney(raw)
     .replaceAll('$', '')
     .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '$1/$2')
     .replace(/\\sqrt\{([^{}]+)\}/g, '√$1')
@@ -60,10 +59,10 @@ export function svgPlainLabel(raw: string): string {
     .replace(/\\parallel/g, '∥')
     .replace(/\\times/g, '×')
     .replace(/\\vec\{([^{}]+)\}/g, '$1⃗')
-    .replace(/\\/g, '')
-    .replace(/([A-Z]{1,3})¤/g, '$1$$');
+    .replace(/\\/g, '');
+  const withMoney = restoreMoney(cleaned);
 
-  const scripted = applyScripts(applyScripts(cleaned, '^', SUPERSCRIPT), '_', SUBSCRIPT);
+  const scripted = applyScripts(applyScripts(withMoney, '^', SUPERSCRIPT), '_', SUBSCRIPT);
   // Any braces still standing belonged to a script we could not convert.
   return scripted.replace(/[{}]/g, '').trim();
 }

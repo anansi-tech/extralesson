@@ -43,16 +43,17 @@ describe('renderMathHtml — multi-line worked solution', () => {
 
   it('preserves the double space that separates two sentences', () => {
     // A sentence ending in a number followed by one starting with a decimal
-    // needs its authored gap to stay readable ("EC$140.  0.15 x 140 = 21").
-    const html = renderMathHtml('costs EC$140.  $0.15 \\times 140 = 21$ follows.');
-    expect(html).toContain('EC$140.  ');
+    // needs its authored gap to stay readable ("\\$140.  0.15 x 140 = 21").
+    const html = renderMathHtml('costs \\$140.  $0.15 \\times 140 = 21$ follows.');
+    expect(html).toContain('$140.  ');
   });
 });
 
-describe('renderMathHtml — currency vs math delimiters', () => {
-  it('renders EC$ currency literally, never as a math delimiter', () => {
-    const html = renderMathHtml('The ticket costs EC$12.');
-    expect(html).toBe('The ticket costs EC$12.');
+describe('renderMathHtml — money vs math delimiters', () => {
+  it('renders escaped money literally, never as a math delimiter', () => {
+    const html = renderMathHtml('The ticket costs \\$12.');
+    // stored escaped, rendered bare — the segmenter never sees a naked $
+    expect(html).toBe('The ticket costs $12.');
     expect(html).not.toContain('katex');
   });
 
@@ -64,20 +65,20 @@ describe('renderMathHtml — currency vs math delimiters', () => {
 
   it('mixed sentence: currency stays prose, math renders, no prose swallowed', () => {
     const html = renderMathHtml(
-      'A covered-stand ticket costs EC$12 more than a grass-bank ticket at $x$ dollars, so four cost $4(x+12)$ — that is EC$104.',
+      'A covered-stand ticket costs \\$12 more than a grass-bank ticket at $x$ dollars, so four cost $4(x+12)$ — that is \\$104.',
     );
     // Currency literal on both sides of the math
-    expect(html).toContain('EC$12 more than a grass-bank ticket');
-    expect(html).toContain('that is EC$104.');
+    expect(html).toContain('$12 more than a grass-bank ticket');
+    expect(html).toContain('that is $104.');
     // Two math segments rendered
     expect((html.match(/class="katex"/g) || []).length).toBe(2);
     // No sentinel characters leak
     expect(html).not.toContain('\u0001');
   });
 
-  it('two EC$ amounts in one sentence do not pair into a math segment', () => {
-    const html = renderMathHtml('Mangoes cost EC$5 and pineapples cost EC$8.');
-    expect(html).toBe('Mangoes cost EC$5 and pineapples cost EC$8.');
+  it('two amounts in one sentence do not pair into a math segment', () => {
+    const html = renderMathHtml('Mangoes cost \\$5 and pineapples cost \\$8.');
+    expect(html).toBe('Mangoes cost $5 and pineapples cost $8.');
   });
 });
 
@@ -100,8 +101,8 @@ describe('renderAnswerHtml — values-only answers carry no $ delimiters', () =>
     }
   });
 
-  it('keeps currency readable rather than typesetting it', () => {
-    expect(renderAnswerHtml('EC$51')).toBe('EC$51');
+  it('keeps money readable rather than typesetting it', () => {
+    expect(renderAnswerHtml('\\$51')).toBe('$51');
   });
 
   it('renders each value of a multi-part answer', () => {
@@ -160,9 +161,9 @@ describe('renderMathHtml — matrix brackets and the other delimiter', () => {
     expect(text).toContain('(see the diagram)');
   });
 
-  it('still keeps EC$ out of the maths', () => {
-    const html = renderMathHtml('The price is EC$120 and $x = 3$.');
-    expect(html).toContain('EC$120');
+  it('still keeps money out of the maths', () => {
+    const html = renderMathHtml('The price is \\$120 and $x = 3$.');
+    expect(html).toContain('$120');
   });
 });
 
@@ -203,7 +204,7 @@ describe('renderAnswerHtml — the other delimiter, and brackets drawn twice', (
   });
 
   it('still keeps EC$ and percentages intact', () => {
-    expect(renderAnswerHtml('EC$70')).toContain('EC$70');
+    expect(renderAnswerHtml('\\$70')).toContain('$70');
     expect(renderAnswerHtml('12.5%')).toContain('katex');
   });
 });
@@ -255,7 +256,7 @@ describe('renderMathHtml — display math', () => {
   });
 
   it('leaves everything already fixed alone', () => {
-    expect(renderMathHtml('The price is EC$120 and $x = 3$.')).toContain('EC$120');
+    expect(renderMathHtml('The price is \\$120 and $x = 3$.')).toContain('$120');
     expect(renderMathHtml('Adds to the wrong point ($(7, 1)$)').replace(/<[^>]*>/g, '')).not.toContain('((');
     expect(renderMathHtml('The vector is \\(\\begin{pmatrix}6\\\\-8\\end{pmatrix}\\).')).toContain('katex');
     // authored whitespace still survives for .question-prose
@@ -280,8 +281,8 @@ describe('renderAnswerHtml — quantities joined by a word are prose', () => {
   });
 
   it('handles the other connectors the same way', () => {
-    for (const v of ['3 to 4', '1 and 2', 'EC$24 per km']) {
-      expect(visible(v)).toContain(v.replace('EC$24', 'EC$24'));
+    for (const v of ['3 to 4', '1 and 2', '\\$24 per km']) {
+      expect(visible(v)).toContain(v.replace('\\$24', '$24'));
     }
   });
 

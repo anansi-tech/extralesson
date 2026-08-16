@@ -1,4 +1,5 @@
 import katex from 'katex';
+import { protectMoney, restoreMoney } from '@/lib/money';
 
 // Render a KaTeX-safe string (inline math delimited by $...$) to HTML.
 // Server-side only; output is injected with dangerouslySetInnerHTML and the
@@ -13,12 +14,9 @@ function escapeHtml(s: string): string {
 
 // The $ in a currency marker like "EC$12" must never act as a math delimiter.
 // Swap "EC$" for a sentinel before splitting on $...$, restore afterwards.
-// A currency amount is a 1-3 letter prefix immediately before a digit: J$1250,
-// TT$48, EC$12, US$1,200. The digit lookahead is what keeps "$P$ and $Q$" safe
-// — a capital letter before a closing math delimiter is not money.
-const CURRENCY_OPEN = '\u0001';
-const CURRENCY_CLOSE = '\u0002';
-const CURRENCY = /\b([A-Z]{1,3})\$(?=\s*\d)/g;
+// Money is understood in exactly one place: lib/money.ts. Content stores an
+// escaped \$ and the renderer emits a bare $, so the segmenter below never
+// meets a dollar sign it could mistake for a delimiter.
 
 // Answer-shaped values — part answers, accept lists, final_answer, and
 // misconception triggers. The values-only convention means these hold a bare
@@ -41,11 +39,8 @@ function renderOneAnswer(raw: string): string {
   const value = raw.replace(/\\[()]/g, '$').trim();
   if (value === '') return '';
   // Already delimited, or carries currency: the prose renderer handles both.
-  if (/\$[^$]+\$/.test(value) || CURRENCY.test(value)) {
-    CURRENCY.lastIndex = 0; // the regex is global; a stateful test would skip
-    return renderMathHtml(value);
-  }
-  CURRENCY.lastIndex = 0;
+  // Already delimited, or carries money: the prose renderer handles both.
+  if (/\$[^$]+\$/.test(value) || /\\\$/.test(value)) return renderMathHtml(value);
   if (!looksLikeExpression(value)) return escapeHtml(value);
   try {
     // A bare % opens a comment in KaTeX's input syntax and would swallow the
@@ -77,8 +72,6 @@ function looksLikeExpression(value: string): boolean {
 }
 
 export function renderMathHtml(text: string): string {
-  const restore = (s: string) =>
-    s.replace(new RegExp(`${CURRENCY_OPEN}([A-Z]{1,3})${CURRENCY_CLOSE}`, 'g'), (_m, code: string) => `${code}$`);
   // \[ ... \] is display math, and a worked solution reaches for it to set a
   // table of values as an array. Split those out first and render them in
   // display mode; everything else goes through the inline pipeline below.
@@ -87,7 +80,7 @@ export function renderMathHtml(text: string): string {
     .map((block) =>
       block.startsWith('\\[') && block.endsWith('\\]')
         ? renderDisplayMath(block.slice(2, -2))
-        : renderInline(block, restore),
+        : renderInline(block),
     )
     .join('');
 }
@@ -100,9 +93,10 @@ function renderDisplayMath(body: string): string {
   }
 }
 
-function renderInline(text: string, restore: (s: string) => string): string {
-  return text
-    .replace(CURRENCY, (_m, code: string) => `${CURRENCY_OPEN}${code}${CURRENCY_CLOSE}`)
+function renderInline(text: string): string {
+  // Money first: an escaped \$ becomes a sentinel, so the segmentation below
+  // cannot mistake it for a delimiter, and it comes back as a bare $ at the end.
+  return protectMoney(text)
     // \( ... \) is the other inline math delimiter and models reach for it
     // freely; unrecognised, it reaches the student as raw source.
     .replace(/\\[()]/g, '$')
@@ -118,9 +112,9 @@ function renderInline(text: string, restore: (s: string) => string): string {
     .map((seg) => {
       if (seg.startsWith('$') && seg.endsWith('$') && seg.length > 2) {
         try {
-          return katex.renderToString(restore(seg.slice(1, -1)), { throwOnError: false });
+          return katex.renderToString(restoreMoney(seg.slice(1, -1)), { throwOnError: false });
         } catch {
-          return escapeHtml(restore(seg));
+          return escapeHtml(restoreMoney(seg));
         }
       }
       // Authored whitespace is preserved as-is, NOT rewritten into markup:
@@ -128,7 +122,7 @@ function renderInline(text: string, restore: (s: string) => string): string {
       // so line breaks between steps and the double space at a sentence
       // boundary both survive. KaTeX resets white-space internally, so math
       // is unaffected.
-      return escapeHtml(restore(seg));
+      return escapeHtml(restoreMoney(seg));
     })
     .join('');
 }

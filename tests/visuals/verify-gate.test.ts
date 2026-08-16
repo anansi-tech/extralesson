@@ -263,7 +263,7 @@ describe('schematic figures declare themselves', () => {
   it('leaves a data table alone — it is not a figure', () => {
     const table = renderVisual({
       template: 'dataTable',
-      params: { headers: ['Item', 'Price'], rows: [['Bag', 'EC$80']] },
+      params: { headers: ['Item', 'Price'], rows: [['Bag', '\\$80']] },
     });
     expect(table).not.toContain('Not drawn to scale');
   });
@@ -329,7 +329,7 @@ describe('svgPlainLabel — exponents and indices', () => {
     expect(svgPlainLabel('\\frac{1}{2}x')).toBe('1/2x');
     expect(svgPlainLabel('\\sqrt{2}')).toBe('√2');
     expect(svgPlainLabel('3 \\times 4')).toBe('3 × 4');
-    expect(svgPlainLabel('EC$50')).toBe('EC$50');
+    expect(svgPlainLabel('\\$50')).toBe('$50');
     expect(svgPlainLabel('\\vec{AB}')).toBe('AB⃗');
   });
 });

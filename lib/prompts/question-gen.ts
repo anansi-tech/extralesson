@@ -4,14 +4,14 @@ import { exemplarsFor } from './exemplars';
 import { MARK_SCHEME_CONVENTIONS } from './mark-scheme';
 import { misconceptionGuidance } from '@/lib/misconceptions';
 import { contextGuidance } from '@/lib/generation/contexts';
-import { territoryGuidance } from '@/lib/generation/territories';
+import { flavourGuidance } from '@/lib/generation/territories';
 
 // Generation prompts (R1.5 §5): recipe + style spec Part A + 2 module-matched
 // exemplars + visual-template contract. Bump PROMPT_VERSION on any wording
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v29';
+export const PROMPT_VERSION = 'v30';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -127,7 +127,7 @@ ${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 140)}`).join('\n')}`
   const patterns = paperPatterns(recipe, context, objectives);
   const documentedErrors = misconceptionGuidance(recipe.objective_ids);
   const setting = contextGuidance(args.recentContexts ?? [], args.contextFree ?? false);
-  const territory = args.contextFree ? '' : territoryGuidance(args.existingStems ?? []);
+  const territory = args.contextFree ? '' : flavourGuidance(args.existingStems ?? [], undefined);
   const kind = recipe.kind;
   const objectiveBlock = objectives
     .map((o) => `- ${o.id}: ${o.text}${o.notes ? `\n  Notes: ${o.notes}` : ''}`)
@@ -208,7 +208,8 @@ RULES:
 - Use Caribbean contexts naturally where a context is needed, drawn from across the region rather than one corner of it, and without being forced.
 - An optional "stimulus" carries shared context for the parts; keep the stem short when a stimulus is present.
 - Math is KaTeX-safe: inline math in $...$ (never \\( ... \\)), and a column vector or matrix already carries its own brackets — never put parentheses around one, escape backslashes correctly in JSON. Matrices are notation in stem/parts, never visuals.
-- DELIMITER CONVENTION (hard rule, every field): $ is EXCLUSIVELY a math delimiter, in balanced $...$ pairs. Currency is NEVER a bare $ — write the territory's prefix immediately before the amount (J$1250, TT$48, EC$12, BZ$90) or use the word "dollars". Never put a currency amount inside $...$ math.
+- MONEY (hard rule, every field): write it as an ESCAPED dollar sign — \$85, \$1 250, \$17 400 — with NO country prefix. The papers are territory-neutral: sixteen countries sit the same paper, and across every one of them money is a bare dollar sign. Never EC$, J$ or BB$; a prefix belongs only in a question ABOUT currency conversion, where naming the currencies is the point. The escape is what keeps $ free to mean "start of maths": inside $...$ it is a delimiter, everywhere else money is written \$.
+- THOUSANDS are grouped with a SPACE, not a comma: 17 400, 1 250, 12 500. The papers do this without exception.
 - ${kind === 'mcq'
       ? `Exactly 4 options. answer_key is the 0-based index of the correct option. marks = 1.
 - DISTRACTOR FAMILIES: each wrong option comes from a specific error a candidate makes, and where the answer is an EXPRESSION the wrong options must be near-miss FORMS, not merely near-miss values — the right coefficient with the wrong exponent, the right exponent with the wrong coefficient, indices added where they should multiply, a sign carried the wrong way. An option nobody would arrive at teaches nothing and gives the answer away.

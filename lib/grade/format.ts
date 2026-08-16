@@ -1,4 +1,5 @@
 import { parseNumeric } from './equivalence';
+import { normaliseDigitGroups, stripMoney } from '@/lib/money';
 import type { AnswerFormat } from '@/lib/types';
 
 // R1.6 §2 — format-aware marking.
@@ -36,7 +37,10 @@ const DECIMAL = /^-?\d+\.\d+$/;
 // Surface tidy-up only. Kept separate from label stripping because
 // equation_form is a claim about the whole expression, including its "=".
 function clean(raw: string): string {
-  return raw.trim().replace(/\$/g, '').replace(/\s+/g, ' ').trim();
+  // Money and thousands grouping are understood in lib/money.ts. A student may
+  // write 17 400 or 17,400; the papers write the first and neither is a
+  // mathematical error, so the form check sees the same number either way.
+  return normaliseDigitGroups(stripMoney(raw)).trim().replace(/\s+/g, ' ').trim();
 }
 
 // "x = 3.14" states a value of 3.14: the label is not part of the number whose
