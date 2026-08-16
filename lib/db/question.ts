@@ -26,6 +26,10 @@ const SlotSchema = new Schema(
     },
     answer_format: { type: String }, // 'exact' | 'sf:3' | 'dp:1' | ...
     rubric_codes: { type: [String], default: [] },
+    // Earlier slot refs whose results this slot uses. Declared, not inferred:
+    // chain depth is measured from this graph, and the papers chain constantly
+    // without ever saying so in the wording.
+    depends_on: { type: [String], default: [] },
   },
   { _id: false },
 );

@@ -11,7 +11,7 @@ import { flavourGuidance } from '@/lib/generation/territories';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v31';
+export const PROMPT_VERSION = 'v32';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -45,7 +45,7 @@ function paperPatterns(recipe: QuestionRecipe, context: RecipeContext, objective
   if (recipe.kind === 'mcq') return '';
   const blocks: string[] = [
     `PAPER PATTERNS (use where they fit the mathematics — never as decoration):
-- "Hence, or otherwise, ..." chains a later part onto an earlier result and is standard in Paper 2. Where you use it, the rubric must allow follow-through: word the later part's criteria so they award marks for correct method applied to the student's own earlier value, not only to the official one.
+- CHAINING is structural, not verbal. A later slot must USE an earlier slot's result, and you record that in its "depends_on" — but write the instruction the way the papers write it, which is WITHOUT announcing it. Measured across six papers and the 2027 specimen, "hence" appears once or twice in an ENTIRE paper: a part simply asks for the next thing, and the candidate sees that the previous answer is what it needs. Reserve "Hence, or otherwise" for at most one part in a question, and only where the alternative route is genuinely worth offering. Wherever a slot depends on an earlier one, its rubric must allow follow-through: award correct method applied to the student's own earlier value, not only to ours.
 - "Give a reason for your answer" is routine on geometry, circle-theorem, and comparison parts. Any part that asks for a reason, an explanation, or a justification carries "response_mode": "explain".`,
   ];
 
@@ -162,7 +162,10 @@ ${
 - A part that asks ONE thing has ONE slot labelled "i" and no slot prompt: the part instruction says it all.
 - Slot labels are "i", "ii", "iii" for sub-parts as printed, or a descriptive key where the paper asks for several named things at once: "Describe fully the single transformation" becomes slots "type", "centre", "factor", each separately answerable and separately marked.
 - Each slot answer contains ONLY that slot final value (values-only convention). Later slots and parts build on earlier results where natural. "final_answer" is every slot answer joined with "; ", in order.
+- NEVER NAME THE METHOD. Write "Calculate the distance AC", not "Use the cosine rule to calculate AC"; "Determine the number of terms", not "Use the formula for the sum of an arithmetic series". Across every paper measured, the method is named ZERO times — choosing it IS the assessment, and naming it hands the student the mark you meant to test.
 - "rubric_codes" on a slot lists the rubric rows that slot earns, and every rubric row carries "slot_ref" as "part.slot" (for example "a.ii").
+- "depends_on" on a slot lists the EARLIER slot refs whose results it uses — ["a.i"], or [] when it needs nothing before it. A real Paper 2 question is a chain: something the candidate can do immediately, then a second thing that needs the first, then a third that needs the second. Aim for a chain at least THREE slots long in a paper-shaped question. Every ref must be a slot of this question that comes before the one declaring it.
+- ONE RUBRIC ROW PER MARK. A mark scheme credits one act per mark, so a 3-mark part carries three rows, each naming a different creditable act, not one row worth 3. A row worth several marks cannot give a student partial credit for the steps they did get right.
 - Every SLOT carries "response_mode": "answer" when the student types a final value, "show_that" when the stem states the result and the slot asks for the derivation, or "explain" when it asks for a reason or justification. A part may mix them: a computed value in one slot and the reason for it in the next. Never "construct" — we do not set drawing, plotting, or ruler-and-compasses work. Whichever mode you choose, "answer" still holds the value or the reason, because the mark scheme is built from it.
 - Set "answer_format" on a SLOT ONLY when its wording demands a particular form: "exact", "surd" ($a\\sqrt{b}$), "standard_form", "lowest_terms", "integer", "equation_form" (an answer of the form $y = mx + c$), "sf:N" (N significant figures) or "dp:N" (N decimal places). If you write "correct to 2 decimal places" or "in exact form" into a part, that part must carry the matching answer_format; if you do not demand a form, omit the field. Use ONLY the values listed — they are the forms we can mark. If the form you want is not there (set-builder notation, a ratio, a bearing), write the demand into the part's wording, where the student reads it, and leave answer_format unset.
 - When a part asks the student to NAME, STATE, CLASSIFY, or JUDGE something (including yes/no verdicts), "answer" must be the shortest standard form — the syllabus term, or the bare verdict word — and every other wording an examiner would accept goes in that part's "accept" array (a mark scheme's "accept:" list — e.g. answer "edge", accept ["line segment where two faces meet"]). Omit "accept" for numeric/algebraic answers unless a genuinely different correct form exists.`;
@@ -176,7 +179,7 @@ ${
       : `QUESTION SHAPE — this is a WHOLE Paper 2 question, not a fragment:
 - It is worth ${recipe.marks} marks and it develops. The papers open a question with something a candidate can do immediately, then build on it: a computation that becomes an applied context, a formula rearranged and then used, a figure measured and then reasoned about.
 - Its objectives span ${context.topic_codes.length} topics of the same module (listed above). Do NOT write ${context.topic_codes.length} separate questions under one number — the later parts must USE what the earlier parts produced, so a student who got part (a) right is genuinely further along in part (b).
-- Where a part follows from an earlier result, say "Hence" or "Hence, or otherwise" exactly as the papers do, and let the rubric award the later part on the student's own earlier value (follow-through) rather than only on ours.
+- Later parts must USE the earlier ones — record it in "depends_on" and let the rubric award follow-through — but do not signpost it. The papers almost never write "hence"; they ask for the next thing and let the candidate see what it rests on.
 - One shared setting, introduced once in the stimulus, carries the whole question. Do not restart the scenario at every part.
 
 `;

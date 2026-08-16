@@ -151,9 +151,11 @@ describe('nextRecipe — overrides constrain the search, never patch its output'
     const forced = nextRecipe(m, objectivesByTopic, { kind: 'structured' }).recipe;
     expect(forced.kind).toBe('structured');
     // The 40 banked questions are all multi-step, so the largest STRUCTURED
-    // deficit is justification (11%). The old bug returned 'direct-procedure'
-    // — the MCQ table's top entry — for every structured run.
-    expect(forced.archetype).toBe('justification');
+    // deficit is reverse-reasoning — 22% since it was calibrated against the
+    // papers, up from the 9% that made justification the answer here. The old
+    // bug returned 'direct-procedure', the MCQ table's top entry, for every
+    // structured run.
+    expect(forced.archetype).toBe('reverse-reasoning');
     expect(forced.marks).toBe(PAPER_MARKS[forced.difficulty]);
   });
 

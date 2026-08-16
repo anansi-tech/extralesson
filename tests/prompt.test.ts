@@ -42,14 +42,27 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v31');
+    expect(PROMPT_VERSION).toBe('v32');
   });
 
-  it('teaches hence-or-otherwise chaining with follow-through on structured drafts', () => {
+  it('teaches chaining as structure with follow-through, and restrains the signposting', () => {
     const p = prompt({ topic: 'M2-ALG2' });
-    expect(p).toContain('Hence, or otherwise');
+    expect(p).toContain('depends_on');
     expect(p).toContain('follow-through');
     expect(p).toContain("student's own earlier value");
+    // Measured: "hence" appears once or twice in a WHOLE paper, and our bank
+    // said it in 72% of questions because this prompt told it to.
+    expect(p).toContain('appears once or twice in an ENTIRE paper');
+  });
+
+  it('forbids naming the method, which the papers never do', () => {
+    const p = prompt({ topic: 'M2-GEO1' });
+    expect(p).toContain('NEVER NAME THE METHOD');
+    expect(p).toContain('choosing it IS the assessment');
+  });
+
+  it('asks for one rubric row per mark, as a mark scheme credits one act per mark', () => {
+    expect(prompt({ topic: 'M2-ALG2' })).toContain('ONE RUBRIC ROW PER MARK');
   });
 
   it('pairs a request for a reason with response_mode explain', () => {

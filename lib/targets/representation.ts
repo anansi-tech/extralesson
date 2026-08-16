@@ -119,11 +119,18 @@ export const REPRESENTATION_TARGETS: Record<string, RepresentationTarget[]> = {
 // split is a documented assumption from the corpus aggregate (single-part
 // questions skew to direct procedures; concept-recognition folds into
 // direct-procedure since the R1.5 enum dropped it).
+// R1.8 follow-up — reverse-reasoning raised from 9%, measured rather than
+// chosen. Counting its signatures ("given that ... find", "show that",
+// "determine the value of") across the five text-layer Paper 2s and the 2027
+// specimen gives 3, 6, 5, 6, 7 and 7 per paper — a mean of 5.7 in a paper of
+// roughly 30 sub-parts, so about one sub-part in five works backwards from a
+// stated result. At 9% we were setting it about half as often as the papers do.
+// The share comes out of multi-step-application, which was carrying it.
 export const STRUCTURED_ARCHETYPE_TARGETS: Record<string, number> = {
-  'multi-step-application': 67,
+  'multi-step-application': 54,
+  'reverse-reasoning': 22,
   justification: 11,
   interpretation: 11,
-  'reverse-reasoning': 9,
   'direct-procedure': 2,
 };
 
