@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { circle, line, polygon, round, svgOpen, text, ticks } from '../svg';
+import { circle, line, meshDefs, meshRect, plotMark, polygon, round, svgOpen, text, ticks } from '../svg';
 import type { VisualTemplate } from '../types';
 
 // Cumulative frequency curve (ogive): a polyline through
@@ -12,6 +12,8 @@ export const CumulativeFrequencyParamsZ = z.object({
   y_label: z.string().max(40).optional(),
   x_step: z.number().positive().max(1000),
   y_step: z.number().positive().max(1000),
+  // R1.8 §4.2: draw the plotted crosses without the curve through them.
+  points_only: z.boolean().default(false),
   points: z
     .array(
       z.object({
@@ -66,6 +68,11 @@ export const cumulativeFrequency: VisualTemplate<CumulativeFrequencyParams> = {
     const yFor = (v: number) => PAD_T + plotH - (v / yMax) * plotH;
 
     if (p.title) parts.push(text(W / 2, 24, p.title, { size: 15 }));
+    // The paper's mesh, under everything: reading "how many took at most 32
+    // minutes" off an unruled plot is guesswork.
+    const meshStep = plotW / Math.max(1, (xMax - xMin) / p.x_step);
+    parts.push(meshDefs('cfMesh', meshStep));
+    parts.push(meshRect('cfMesh', PAD_L, PAD_T, plotW, plotH));
     // axes
     parts.push(line(PAD_L, PAD_T, PAD_L, PAD_T + plotH));
     parts.push(line(PAD_L, PAD_T + plotH, PAD_L + plotW, PAD_T + plotH));
@@ -87,9 +94,15 @@ export const cumulativeFrequency: VisualTemplate<CumulativeFrequencyParams> = {
       parts.push(line(gx, gy, gx, PAD_T + plotH, true));
       parts.push(text(PAD_L + 6, gy - 5, g.label, { size: 11, anchor: 'start' }));
     }
-    // the ogive itself, with hollow point markers
-    parts.push(polygon(p.points.map((pt) => [xFor(pt.x), yFor(pt.cf)] as [number, number]), false));
-    for (const pt of p.points) parts.push(circle(xFor(pt.x), yFor(pt.cf), 3));
+    // R1.8 §4.2: a paper sometimes prints the plotted crosses and leaves the
+    // curve to the candidate. Everything downstream — medians, quartiles,
+    // "how many below" — is still answerable from the points.
+    if (!p.points_only) {
+      parts.push(polygon(p.points.map((pt) => [xFor(pt.x), yFor(pt.cf)] as [number, number]), false));
+      for (const pt of p.points) parts.push(circle(xFor(pt.x), yFor(pt.cf), 3));
+    } else {
+      for (const pt of p.points) parts.push(plotMark(xFor(pt.x), yFor(pt.cf), 'cross'));
+    }
     if (p.y_label) {
       parts.push(
         `<text x="16" y="${round(PAD_T + plotH / 2)}" font-size="12" text-anchor="middle" fill="#1E2430" stroke="none" transform="rotate(-90 16 ${round(PAD_T + plotH / 2)})">${p.y_label}</text>`,
