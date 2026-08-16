@@ -234,3 +234,59 @@ describe('slot labels — a prime is part of the name', () => {
     expect(QuestionDraftZ.safeParse(imageVertices(['(i)'])).success).toBe(false);
   });
 });
+
+// A statement the student completes in place. The papers set this repeatedly —
+// "The regular octagon has {} lines of symmetry and rotational symmetry of
+// order {}." — and it is one item, not the two questions it would otherwise be
+// split into: reading the sentence as a whole is part of the work.
+describe('cloze parts — a statement completed in place', () => {
+  const cloze = (statement: string, slots: string[]) => ({
+    ...transformation,
+    marks: slots.length,
+    final_answer: slots.join('; '),
+    parts: [
+      {
+        label: 'a',
+        prompt: 'Complete the statement below.',
+        marks: slots.length,
+        statement,
+        slots: slots.map((answer, i) => ({
+          label: ['i', 'ii', 'iii'][i],
+          answer,
+          rubric_codes: [`CK${i + 1}`],
+        })),
+      },
+    ],
+    rubric: slots.map((_, i) => ({
+      code: `CK${i + 1}`,
+      profile: 'CK' as const,
+      criterion: `States the value in gap ${i + 1}`,
+      mark_value: 1,
+      slot_ref: `a.${['i', 'ii', 'iii'][i]}`,
+    })),
+  });
+
+  it('accepts a statement with one gap per slot', () => {
+    const res = QuestionDraftZ.safeParse(
+      cloze('The regular octagon has {} lines of symmetry and rotational symmetry of order {}.', ['8', '8']),
+    );
+    expect(res.success, JSON.stringify(res.error?.issues)).toBe(true);
+  });
+
+  it('rejects a statement with more gaps than slots', () => {
+    const res = QuestionDraftZ.safeParse(cloze('It has {} lines and order {}.', ['8']));
+    expect(res.success).toBe(false);
+    expect(JSON.stringify(res.error?.issues)).toContain('2 gap(s) for 1 slot(s)');
+  });
+
+  it('rejects a statement with no gap at all, which nobody can complete', () => {
+    const res = QuestionDraftZ.safeParse(cloze('The regular octagon has 8 lines of symmetry.', ['8']));
+    expect(res.success).toBe(false);
+    expect(JSON.stringify(res.error?.issues)).toContain('at least one {} gap');
+  });
+
+  it('leaves an ordinary part alone: statement is optional', () => {
+    const res = QuestionDraftZ.safeParse(transformation);
+    expect(res.success).toBe(true);
+  });
+});

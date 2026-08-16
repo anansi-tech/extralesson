@@ -153,6 +153,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
       label: string;
       prompt: string;
       marks: number;
+      statement?: string;
       slots?: { label: string; prompt?: string; response_mode?: string }[];
     }[];
     rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string }[];
@@ -187,6 +188,12 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
       label: p.label,
       marks: p.marks,
       promptHtml: renderMathHtml(p.prompt),
+      // A cloze statement is rendered as the prose BETWEEN its gaps: KaTeX has
+      // to run on each piece separately, or the split would cut a math span in
+      // half. n gaps give n+1 pieces, and the inputs go between them.
+      statementHtml: p.statement
+        ? p.statement.split('{}').map((piece: string) => renderMathHtml(piece))
+        : undefined,
       slots: (p.slots ?? []).map((slot) => ({
         ref: `${p.label}.${slot.label}`,
         label: slot.label,

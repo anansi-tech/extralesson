@@ -16,6 +16,8 @@ export interface ReviewQuestion {
   parts: {
     label: string;
     promptHtml: string;
+    /** Cloze prose split on its gaps; the reviewer sees the answers in place. */
+    statementHtml?: string[];
     marks: number;
     slots: { label: string; promptHtml?: string; answerHtml: string; acceptHtml?: string }[];
   }[];
@@ -145,7 +147,24 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
                   [{p.marks}]
                 </span>
               </div>
-              {p.slots.map((slot) => (
+              {/* A cloze part reads as the sentence it is, with each answer
+                  shown where the student would write it. */}
+              {p.statementHtml && (
+                <div className="mt-0.5 pl-7 text-xs">
+                  {p.statementHtml.map((piece, i) => (
+                    <span key={i}>
+                      <span className="question-prose" dangerouslySetInnerHTML={{ __html: piece }} />
+                      {i < p.slots.length && (
+                        <span
+                          className="mx-1 border-b border-ink px-1 font-mono"
+                          dangerouslySetInnerHTML={{ __html: p.slots[i].answerHtml }}
+                        />
+                      )}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {!p.statementHtml && p.slots.map((slot) => (
               <div key={slot.label} className="mt-0.5 pl-7 text-xs text-dim">
                 {p.slots.length > 1 && <span className="font-mono text-[10px]">({slot.label}) </span>}
                 {slot.promptHtml && (

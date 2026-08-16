@@ -11,7 +11,7 @@ import { flavourGuidance } from '@/lib/generation/territories';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v32';
+export const PROMPT_VERSION = 'v33';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -164,6 +164,7 @@ ${
 - Each slot answer contains ONLY that slot final value (values-only convention). Later slots and parts build on earlier results where natural. "final_answer" is every slot answer joined with "; ", in order.
 - NEVER NAME THE METHOD. Write "Calculate the distance AC", not "Use the cosine rule to calculate AC"; "Determine the number of terms", not "Use the formula for the sum of an arithmetic series". Across every paper measured, the method is named ZERO times — choosing it IS the assessment, and naming it hands the student the mark you meant to test.
 - "rubric_codes" on a slot lists the rubric rows that slot earns, and every rubric row carries "slot_ref" as "part.slot" (for example "a.ii").
+- A part may instead be a STATEMENT THE STUDENT COMPLETES IN PLACE: set "statement" to the sentence with {} where each answer goes, one gap per slot in order, and keep the part's prompt as the instruction ("Complete the statement below."). The papers set this repeatedly — "The regular octagon has {} lines of symmetry and rotational symmetry of order {}." — and it is ONE item rather than the two questions it would otherwise split into, because reading the sentence whole is part of the work. Use it where the answers belong to one statement; do not use it as a way to bundle unrelated asks.
 - "depends_on" on a slot lists the EARLIER slot refs whose results it uses — ["a.i"], or [] when it needs nothing before it. A real Paper 2 question is a chain: something the candidate can do immediately, then a second thing that needs the first, then a third that needs the second. Aim for a chain at least THREE slots long in a paper-shaped question. Every ref must be a slot of this question that comes before the one declaring it.
 - ONE RUBRIC ROW PER MARK. A mark scheme credits one act per mark, so a 3-mark part carries three rows, each naming a different creditable act, not one row worth 3. A row worth several marks cannot give a student partial credit for the steps they did get right.
 - Every SLOT carries "response_mode": "answer" when the student types a final value, "show_that" when the stem states the result and the slot asks for the derivation, or "explain" when it asks for a reason or justification. A part may mix them: a computed value in one slot and the reason for it in the next. Never "construct" — we do not set drawing, plotting, or ruler-and-compasses work. Whichever mode you choose, "answer" still holds the value or the reason, because the mark scheme is built from it.

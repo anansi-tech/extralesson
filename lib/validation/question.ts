@@ -193,6 +193,21 @@ export const SlotZ = z.object({
  * question already in the bank stays valid and reviewable without being
  * rewritten. That is the whole reason to make this change at 123 approved.
  */
+/**
+ * A sentence the student completes in place, with {} where each answer goes.
+ *
+ * The papers set this repeatedly — "The regular octagon has {} lines of
+ * symmetry and rotational symmetry of order {}." — and it is a different item
+ * from the two questions it would otherwise be split into: the sentence is the
+ * context, and reading it as one statement is part of the work. We already had
+ * this for a table cell; prose needed it too.
+ */
+const CLOZE_GAP = '{}';
+
+export function clozeGapCount(statement: string): number {
+  return statement.split(CLOZE_GAP).length - 1;
+}
+
 export const PartZ = z.preprocess(
   (raw) => {
     if (!raw || typeof raw !== 'object') return raw;
@@ -210,6 +225,27 @@ export const PartZ = z.preprocess(
       prompt: z.string().min(1),
       marks: z.number().int().min(1),
       slots: z.array(SlotZ).min(1).max(8),
+      // A statement the student completes in place; {} marks each gap, one per
+      // slot, in order. The part's prompt still says what to do ("Complete the
+      // statement below"), exactly as the papers print it.
+      statement: optional(z.string().min(1).max(300)),
+    })
+    .superRefine((part, ctx) => {
+      if (part.statement === undefined) return;
+      const gaps = clozeGapCount(part.statement);
+      if (gaps === 0) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['statement'],
+          message: 'a statement to complete must contain at least one {} gap',
+        });
+      } else if (gaps !== part.slots.length) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['statement'],
+          message: `statement has ${gaps} gap(s) for ${part.slots.length} slot(s)`,
+        });
+      }
     })
     .transform((part) => ({
       ...part,

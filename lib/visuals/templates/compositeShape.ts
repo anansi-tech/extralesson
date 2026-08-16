@@ -18,6 +18,17 @@ export const CompositeShapeParamsZ = z.discriminatedUnion('kind', [
     // R1.6 §6: "find the area of the shaded region" needs the region shaded.
     shaded: z.boolean().default(false),
   }),
+  // The running track / belt / capsule: a rectangle capped by a semicircle at
+  // EACH end. rect-plus-semicircle caps one end and cannot express it, and the
+  // shape carries a perimeter question the one-ended version does not — the two
+  // half-circumferences make a whole one.
+  z.object({
+    kind: z.literal('stadium'),
+    length: PosZ, // the straight section
+    width: PosZ, // the diameter of each semicircular end
+    unit: UnitZ,
+    shaded: z.boolean().default(false),
+  }),
   z.object({
     kind: z.literal('rect-minus-rect'),
     outerWidth: PosZ,
@@ -105,6 +116,8 @@ function dimensions(p: CompositeShapeParams): [string, number][] {
   switch (p.kind) {
     case 'rect-plus-semicircle':
       return [['width', p.width], ['height', p.height]];
+    case 'stadium':
+      return [['length', p.length], ['width', p.width]];
     case 'rect-minus-rect':
       return [
         ['outer width', p.outerWidth],
@@ -229,6 +242,32 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
     const u = p.unit;
     const shaded = 'shaded' in p && p.shaded;
     if (shaded) parts.push(hatchDefs('shapeHatch'));
+
+    if (p.kind === 'stadium') {
+      const s = Math.min(360 / (p.length + p.width), 240 / p.width);
+      const rw = p.length * s;
+      const r = (p.width * s) / 2;
+      const x0 = (W - rw) / 2;
+      const yTop = (H - 2 * r) / 2;
+      const yBot = yTop + 2 * r;
+      if (shaded) {
+        parts.push(
+          `<path d="M ${round(x0)} ${round(yTop)} L ${round(x0 + rw)} ${round(yTop)} A ${round(r)} ${round(r)} 0 0 1 ${round(x0 + rw)} ${round(yBot)} L ${round(x0)} ${round(yBot)} A ${round(r)} ${round(r)} 0 0 1 ${round(x0)} ${round(yTop)} Z" fill="${hatchFill('shapeHatch')}" stroke="none" />`,
+        );
+      }
+      // One outline: two straights and two semicircular ends.
+      parts.push(
+        `<path d="M ${round(x0)} ${round(yTop)} L ${round(x0 + rw)} ${round(yTop)} A ${round(r)} ${round(r)} 0 0 1 ${round(x0 + rw)} ${round(yBot)} L ${round(x0)} ${round(yBot)} A ${round(r)} ${round(r)} 0 0 1 ${round(x0)} ${round(yTop)} Z" fill="none" />`,
+      );
+      // The straight section and the end diameter, dimensioned with the arrowed
+      // lines the papers draw rather than a bare label beside the edge.
+      parts.push(line(x0, yTop, x0, yBot, true));
+      parts.push(line(x0 + rw, yTop, x0 + rw, yBot, true));
+      parts.push(dimH(x0, x0 + rw, yTop - 16, fmt(p.length, u), true));
+      parts.push(dimV(x0 + 26, yTop, yBot, fmt(p.width, u), 'right'));
+      parts.push('</svg>');
+      return parts.join('');
+    }
 
     if (p.kind === 'rect-plus-semicircle') {
       const s = Math.min(420 / p.width, 280 / (p.height + p.width / 2));
@@ -423,6 +462,8 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
   describe(p) {
     const u = p.unit;
     switch (p.kind) {
+      case 'stadium':
+        return `Compound shape: a rectangle ${p.length} ${u} long with a semicircle of diameter ${p.width} ${u} on EACH end (the shape of a running track). The two semicircular ends together make one full circle of diameter ${p.width} ${u}.${p.shaded ? ' The region is shaded.' : ''}`;
       case 'rect-plus-semicircle':
         return `Compound shape: a rectangle ${p.width} ${u} wide and ${p.height} ${u} high, with a semicircle of diameter ${p.width} ${u} on top of the rectangle (flat side shared with the rectangle's top edge).${p.shaded ? ' The semicircle is shaded.' : ''}`;
       case 'rect-minus-rect':

@@ -325,3 +325,48 @@ describe('compositeShape — prisms in perspective and round solids', () => {
     expect(issues.join(' ')).toContain('different lengths');
   });
 });
+
+// January 2026 Q6: a running belt on a treadmill — a rectangle with a
+// semicircular end at BOTH ends. rect-plus-semicircle caps one end, and the
+// perimeter question this shape carries needs the other: the two half
+// circumferences make one whole circle.
+describe('compositeShape — stadium', () => {
+  const params = CompositeShapeParamsZ.parse({
+    kind: 'stadium',
+    length: 2.1,
+    width: 0.7,
+    unit: 'm',
+  });
+  const context = {
+    stem: 'The belt is 2.1 m long between the ends, and each semicircular end has a diameter of 0.7 m.',
+    partPrompts: ['Calculate the length of the belt.'],
+  };
+
+  it('renders one closed outline with two arcs (snapshot)', () => {
+    const svg = compositeShape.render(params);
+    expect(svg).toContain('<svg');
+    expect(svg).not.toMatch(/NaN|Infinity/);
+    expect(svg).toMatchSnapshot();
+  });
+
+  it('tells the solver the ends make a whole circle, which is the insight', () => {
+    const d = compositeShape.describe(params);
+    expect(d).toContain('EACH end');
+    expect(d).toContain('one full circle');
+  });
+
+  it('accepts dimensions the question states', () => {
+    expect(compositeShape.verify(params, context)).toEqual([]);
+  });
+
+  it('rejects a dimension the student is never told', () => {
+    expect(
+      compositeShape.verify(params, { stem: 'A belt revolves around a board.', partPrompts: [] }).join(' '),
+    ).toContain('2.1');
+  });
+
+  it('shades the whole region when asked', () => {
+    const shaded = CompositeShapeParamsZ.parse({ ...params, shaded: true });
+    expect(compositeShape.render(shaded)).toContain('shapeHatch');
+  });
+});

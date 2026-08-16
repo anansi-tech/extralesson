@@ -209,6 +209,7 @@ async function main() {
         label: p.label,
         prompt: clean(p.prompt),
         marks: p.marks,
+        ...(p.statement ? { statement: clean(p.statement) } : {}),
         slots: (p.slots?.length
           ? p.slots
           : [{ label: 'i', answer: p.answer ?? '', accept: p.accept, response_mode: p.response_mode, answer_format: p.answer_format }]
