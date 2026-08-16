@@ -17,8 +17,36 @@ export function esc(s: string): string {
 // SVG <text> does not run through KaTeX. Convert the small supported math
 // subset of a label to readable Unicode. (Carried from the research branch —
 // renderer-agnostic utility.)
+// Figure labels are plain SVG text, so an exponent has to be written with the
+// characters unicode provides rather than with markup. Converted only when
+// EVERY character of the script has a form: a caret is honest, and a
+// half-converted "x^a⁺b" would be worse than either.
+const SUPERSCRIPT: Record<string, string> = {
+  '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
+  '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
+  '+': '⁺', '-': '⁻', '=': '⁼', '(': '⁽', ')': '⁾', n: 'ⁿ', i: 'ⁱ',
+};
+const SUBSCRIPT: Record<string, string> = {
+  '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
+  '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉',
+  '+': '₊', '-': '₋', '=': '₌', '(': '₍', ')': '₎', n: 'ₙ',
+};
+
+function toScript(body: string, table: Record<string, string>): string | null {
+  const out = [...body].map((ch) => table[ch]);
+  return out.every(Boolean) ? out.join('') : null;
+}
+
+function applyScripts(text: string, marker: '^' | '_', table: Record<string, string>): string {
+  const pattern = new RegExp(`\\${marker}(?:\\{([^{}]+)\\}|([^\\s{}^_]))`, 'g');
+  return text.replace(pattern, (whole, braced?: string, single?: string) => {
+    const converted = toScript(braced ?? single ?? '', table);
+    return converted ?? whole;
+  });
+}
+
 export function svgPlainLabel(raw: string): string {
-  return raw
+  const cleaned = raw
     .replace(/EC\$/g, 'EC¤')
     .replaceAll('$', '')
     .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '$1/$2')
@@ -30,11 +58,12 @@ export function svgPlainLabel(raw: string): string {
     .replace(/\\parallel/g, '∥')
     .replace(/\\times/g, '×')
     .replace(/\\vec\{([^{}]+)\}/g, '$1⃗')
-    .replace(/_\{([^{}]+)\}/g, '_$1')
-    .replace(/[{}]/g, '')
     .replace(/\\/g, '')
-    .replaceAll('EC¤', 'EC$')
-    .trim();
+    .replaceAll('EC¤', 'EC$');
+
+  const scripted = applyScripts(applyScripts(cleaned, '^', SUPERSCRIPT), '_', SUBSCRIPT);
+  // Any braces still standing belonged to a script we could not convert.
+  return scripted.replace(/[{}]/g, '').trim();
 }
 
 export function svgOpen(width: number, height: number): string {
