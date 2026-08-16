@@ -27,7 +27,14 @@ export const CoordinateGridParamsZ = z.object({
   named: z
     .object({
       polygons: z
-        .array(z.object({ points: z.array(NameZ).min(3).max(6), dashed: z.boolean().default(false) }))
+        .array(
+          z.object({
+            points: z.array(NameZ).min(3).max(10),
+            dashed: z.boolean().default(false),
+            shaded: z.boolean().default(false),
+            name: z.string().min(1).max(6).optional(),
+          }),
+        )
         .max(3)
         .default([]),
       points: z.array(NameZ).max(8).default([]),
@@ -41,12 +48,24 @@ export const CoordinateGridParamsZ = z.object({
   polygons: z
     .array(
       z.object({
-        vertices: z.array(z.object({ x: CoordZ, y: CoordZ })).min(3).max(8),
-        labels: z.array(z.string().min(1).max(6)).max(8).optional(),
+        vertices: z.array(z.object({ x: CoordZ, y: CoordZ })).min(3).max(10),
+        /** Per-VERTEX labels, in order: A, B, C round the shape. */
+        labels: z.array(z.string().min(1).max(6)).max(10).optional(),
+        /**
+         * A name for the WHOLE shape, set inside it — the papers letter a
+         * shape P, Q, R and then ask about "Quadrilateral P". Distinct from
+         * `labels`, which name the corners.
+         */
+        name: z.string().min(1).max(6).optional(),
         dashed: z.boolean().default(false),
+        /** Filled, as the papers shade the one shape a question is about. */
+        shaded: z.boolean().default(false),
       }),
     )
-    .max(2)
+    // A transformation question shows an object and its images: three shapes
+    // is routine and four occurs, so a cap of two could not draw the figure
+    // these questions are built on.
+    .max(4)
     .default([]),
   lines: z
     .array(
@@ -166,7 +185,7 @@ function labelAtEnd(
 // The shapes a `named` block refers to, resolved from the question's own
 // coordinates. Everything here is derived; nothing is stored twice.
 interface ResolvedFigure {
-  polygons: { vertices: [number, number][]; labels: string[]; dashed: boolean }[];
+  polygons: { vertices: [number, number][]; labels: string[]; dashed: boolean; shaded: boolean; name?: string }[];
   points: { x: number; y: number; label: string }[];
 }
 
@@ -180,6 +199,8 @@ function resolveFigure(
       vertices: points.map((pt) => [pt.x, pt.y] as [number, number]),
       labels: points.map((pt) => pt.label),
       dashed: poly.dashed,
+      shaded: poly.shaded,
+      name: poly.name,
     };
   });
   const points = resolvePoints(named.points, context).points.map((pt) => ({
@@ -188,6 +209,24 @@ function resolveFigure(
     label: pt.label,
   }));
   return { polygons: polygons.filter((poly) => poly.vertices.length >= 3), points };
+}
+
+/**
+ * A shape's own outline: shaded where the question is about that shape, dashed
+ * where it is the image in a transformation overlay.
+ */
+function polygonSvg(points: [number, number][], dashed: boolean, shaded: boolean): string {
+  const d = points.map((pt) => `${round(pt[0])},${round(pt[1])}`).join(' ');
+  const fill = shaded ? ' fill="#D8D2C6"' : '';
+  return `<polygon points="${d}"${fill}${dashed ? ' stroke-dasharray="6 4"' : ''} />`;
+}
+
+/** The name of a whole shape, set at its middle where the papers put it. */
+function shapeName(points: [number, number][], name: string | undefined): string {
+  if (!name) return '';
+  const cx = points.reduce((s, pt) => s + pt[0], 0) / points.length;
+  const cy = points.reduce((s, pt) => s + pt[1], 0) / points.length;
+  return text(cx, cy + 4, name, { size: 14, italic: true, halo: true });
 }
 
 // A window that holds every resolved point with a margin, in whole units.
@@ -659,8 +698,8 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     // shapes referenced from the question, drawn from its coordinates
     for (const poly of figure?.polygons ?? []) {
       const px = poly.vertices.map(([x, y]) => [X(x), Y(y)] as [number, number]);
-      const d = px.map((pt) => `${round(pt[0])},${round(pt[1])}`).join(' ');
-      parts.push(`<polygon points="${d}"${poly.dashed ? ' stroke-dasharray="6 4"' : ''} />`);
+      parts.push(polygonSvg(px, poly.dashed, poly.shaded));
+      parts.push(shapeName(px, poly.name));
       const cx = px.reduce((sum, pt) => sum + pt[0], 0) / px.length;
       const cy = px.reduce((sum, pt) => sum + pt[1], 0) / px.length;
       poly.labels.forEach((lab, i) => {
@@ -740,8 +779,8 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     // polygons (image polygon drawn dashed for transformation overlays)
     for (const poly of p.polygons) {
       const px = poly.vertices.map((v) => [X(v.x), Y(v.y)] as [number, number]);
-      const d = px.map((pt) => `${round(pt[0])},${round(pt[1])}`).join(' ');
-      parts.push(`<polygon points="${d}"${poly.dashed ? ' stroke-dasharray="6 4"' : ''} />`);
+      parts.push(polygonSvg(px, poly.dashed, poly.shaded));
+      parts.push(shapeName(px, poly.name));
       if (poly.labels) {
         const cx = px.reduce((s, pt) => s + pt[0], 0) / px.length;
         const cy = px.reduce((s, pt) => s + pt[1], 0) / px.length;

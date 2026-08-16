@@ -80,3 +80,58 @@ describe('travelGraph template', () => {
     expect(issues.some((i) => i.includes('negative'))).toBe(true);
   });
 });
+
+// The papers letter the straight sections I, II, III and then ask about one of
+// them — "during Stage IV the car travels at ... with acceleration ..." — which
+// is a cloze statement over a graph. Without named stages it cannot be posed.
+describe('travelGraph — named stages', () => {
+  const staged = TravelGraphParamsZ.parse({
+    mode: 'speed-time',
+    t_label: 'Time',
+    t_unit: 'seconds',
+    v_label: 'Velocity',
+    v_unit: 'm/s',
+    points: [
+      { t: 0, v: 0 },
+      { t: 10, v: 20 },
+      { t: 25, v: 20 },
+      { t: 40, v: 45 },
+      { t: 55, v: 45 },
+      { t: 70, v: 0 },
+    ],
+    stages: ['I', 'II', 'III', 'IV', 'V'],
+  });
+
+  it('draws one label per straight section', () => {
+    const svg = travelGraph.render(staged);
+    for (const name of ['I', 'II', 'III', 'IV', 'V']) {
+      expect(svg).toContain(`>${name}<`);
+    }
+    expect(svg).not.toMatch(/NaN|Infinity/);
+  });
+
+  it('tells the solver which points each stage runs between', () => {
+    const d = travelGraph.describe(staged);
+    expect(d).toContain('III (from (25, 20) to (40, 45))');
+    expect(d).toContain('IV (from (40, 45) to (55, 45))');
+  });
+
+  it('rejects more stage names than there are sections', () => {
+    const bad = TravelGraphParamsZ.parse({
+      ...staged,
+      points: [
+        { t: 0, v: 0 },
+        { t: 10, v: 20 },
+      ],
+      stages: ['I', 'II', 'III'],
+    });
+    expect(travelGraph.verify(bad, { stem: 'x', partPrompts: [] }).join(' ')).toContain(
+      '3 stage name(s) for 1 straight section(s)',
+    );
+  });
+
+  it('says nothing about stages when none are named', () => {
+    const plain = TravelGraphParamsZ.parse({ ...staged, stages: [] });
+    expect(travelGraph.describe(plain)).not.toContain('labelled');
+  });
+});

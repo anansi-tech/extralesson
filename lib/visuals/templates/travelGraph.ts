@@ -29,6 +29,14 @@ export const TravelGraphParamsZ = z.object({
     )
     .max(4)
     .default([]),
+  /**
+   * Names for the STAGES of the journey — the papers label them I, II, III
+   * above each straight section. Entry i names the segment from points[i] to
+   * points[i+1]. Without them a question cannot say "during Stage IV", which is
+   * how the papers pose the acceleration-and-speed item, and which is a cloze
+   * statement over a graph.
+   */
+  stages: z.array(z.string().min(1).max(12)).max(9).default([]),
 });
 
 export type TravelGraphParams = z.infer<typeof TravelGraphParamsZ>;
@@ -86,6 +94,18 @@ export const travelGraph: VisualTemplate<TravelGraphParams> = {
     }
     // the journey itself
     parts.push(polygon(p.points.map((pt) => [X(pt.t), Y(pt.v)] as [number, number]), false));
+    // Stage names, set above the middle of each straight section the way the
+    // papers letter them, so a question can name the stage it is asking about.
+    p.stages.forEach((name, i) => {
+      const a = p.points[i];
+      const b = p.points[i + 1];
+      if (!a || !b) return;
+      const mx = (X(a.t) + X(b.t)) / 2;
+      const my = (Y(a.v) + Y(b.v)) / 2;
+      // Above the segment, and below it where the segment climbs to the top.
+      const above = my > PAD_T + 26;
+      parts.push(text(mx, my + (above ? -12 : 20), name, { size: 12, halo: true }));
+    });
     // axis captions with units
     parts.push(text(PAD_L + plotW / 2, H - 20, `${p.t_label} (${p.t_unit})`, { size: 13 }));
     const yCap = `${p.v_label} (${p.v_unit})`;
@@ -104,10 +124,28 @@ export const travelGraph: VisualTemplate<TravelGraphParams> = {
           .map((g) => `(${g.t}, ${g.v})${g.label ? ` labeled ${g.label}` : ''}`)
           .join('; ')}.`
       : '';
-    return `${kind} graph. Horizontal axis: ${p.t_label} (${p.t_unit}); vertical axis: ${p.v_label} (${p.v_unit}). The journey is a series of straight-line segments through the points ${pts}.${guides}`;
+    const stages = p.stages.length
+      ? ` The straight sections are labelled ${p.stages
+          .map((name, i) => {
+            const a = p.points[i];
+            const b = p.points[i + 1];
+            return a && b
+              ? `${name} (from (${a.t}, ${a.v}) to (${b.t}, ${b.v}))`
+              : name;
+          })
+          .join(', ')}.`
+      : '';
+    return `${kind} graph. Horizontal axis: ${p.t_label} (${p.t_unit}); vertical axis: ${p.v_label} (${p.v_unit}). The journey is a series of straight-line segments through the points ${pts}.${stages}${guides}`;
   },
 
   verify(p, context) {
+    if (p.stages.length > p.points.length - 1) {
+      // Naming more stages than there are sections leaves a name attached to
+      // nothing, and a question that asks about it cannot be answered.
+      return [
+        `travelGraph: ${p.stages.length} stage name(s) for ${p.points.length - 1} straight section(s)`,
+      ];
+    }
     const issues: string[] = [];
     for (let i = 1; i < p.points.length; i++) {
       const dt = p.points[i].t - p.points[i - 1].t;

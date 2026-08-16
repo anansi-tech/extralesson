@@ -370,3 +370,52 @@ describe('compositeShape — stadium', () => {
     expect(compositeShape.render(shaded)).toContain('shapeHatch');
   });
 });
+
+// May/June sweep — "the length of arc AB" and "the area of the shaded sector"
+// recur across the papers, and had no figure: circleCenter draws the circle
+// THEOREMS (chords, tangents, subtended angles), not a sector.
+describe('compositeShape — sector', () => {
+  const params = CompositeShapeParamsZ.parse({
+    kind: 'sector',
+    radius: 7,
+    angle: 120,
+    unit: 'cm',
+    shaded: true,
+  });
+  const context = {
+    stem: 'The sector has radius 7 cm and the angle at the centre is 120°.',
+    partPrompts: ['Calculate the length of the arc.'],
+  };
+
+  it('renders a closed sector with the angle and radius marked', () => {
+    const svg = compositeShape.render(params);
+    expect(svg).toContain('120°');
+    expect(svg).toContain('7 cm');
+    expect(svg).not.toMatch(/NaN|Infinity/);
+  });
+
+  it('tells the solver the edges are two radii and an arc', () => {
+    const d = compositeShape.describe(params);
+    expect(d).toContain('radius 7 cm');
+    expect(d).toContain('120° at the centre');
+    expect(d).toContain('curved edge is the arc');
+  });
+
+  it('accepts values the question states', () => {
+    expect(compositeShape.verify(params, context)).toEqual([]);
+  });
+
+  it('rejects a radius the student is never told', () => {
+    expect(
+      compositeShape.verify(params, { stem: 'A sector of a circle is shown.', partPrompts: [] }).join(' '),
+    ).toContain('7');
+  });
+
+  it('sweeps a reflex angle the long way round', () => {
+    // The large-arc flag is what makes 300 degrees look like 300 rather than 60.
+    const reflex = CompositeShapeParamsZ.parse({ ...params, angle: 300 });
+    expect(compositeShape.render(reflex)).toMatch(/A 150 150 0 1 0/);
+    const minor = CompositeShapeParamsZ.parse({ ...params, angle: 60 });
+    expect(compositeShape.render(minor)).toMatch(/A 150 150 0 0 0/);
+  });
+});

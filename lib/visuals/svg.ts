@@ -47,12 +47,27 @@ function applyScripts(text: string, marker: '^' | '_', table: Record<string, str
   });
 }
 
+/**
+ * Combining low line: underlines the character BEFORE it, with no markup at
+ * all, so one authored form (\underline{}) works in KaTeX prose, in SVG text
+ * and in an HTML table cell alike.
+ */
+const COMBINING_LOW_LINE = '\u0332';
+
 export function svgPlainLabel(raw: string): string {
   const cleaned = protectMoney(raw)
     .replaceAll('$', '')
     .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '$1/$2')
     .replace(/\\sqrt\{([^{}]+)\}/g, '√$1')
     .replace(/\\text\{([^{}]*)\}/g, '$1')
+    // \underline{2} -> 2 with a combining low line. A place-value question in
+    // base n asks for "the value of the UNDERLINED digit", so the underline is
+    // the question, not decoration: dropping it here would leave a figure or a
+    // table cell that cannot be answered. Handled before backslashes are
+    // stripped, which would otherwise turn it into the word "underline".
+    .replace(/\\underline\{([^{}]*)\}/g, (_m, inner: string) =>
+      [...inner].map((ch) => `${ch}${COMBINING_LOW_LINE}`).join(''),
+    )
     .replace(/\^\{?\\circ\}?/g, '°')
     .replace(/\\angle/g, '∠')
     .replace(/\\perp/g, '⊥')
