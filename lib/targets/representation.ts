@@ -28,7 +28,7 @@ export const REPRESENTATION_TARGETS: Record<string, RepresentationTarget[]> = {
   ],
   // M1.3 Sets (n=3, low-n): venn-dominant (documented judgment on low n)
   'M1-SETS': [
-    { representation: 'venn', share: 70, template_hints: ['venn2'] },
+    { representation: 'venn', share: 70, template_hints: ['vennDiagram'] },
     { representation: 'prose', share: 30, template_hints: [] },
   ],
   // M1.4 Measurement (n=26): visuals ~96 (measurement 42 / geometry 34 / graph 15)
@@ -72,7 +72,7 @@ export const REPRESENTATION_TARGETS: Record<string, RepresentationTarget[]> = {
     {
       representation: 'diagram',
       share: 79,
-      template_hints: ['triangleLabeled', 'parallelTransversal', 'quadrilateralLabeled', 'polygonMarkedAngle', 'circleCenter', 'compositeShape'],
+      template_hints: ['triangleLabeled', 'compoundTriangle', 'parallelTransversal', 'quadrilateralLabeled', 'polygonMarkedAngle', 'circleCenter', 'compositeShape'],
     },
     { representation: 'prose', share: 21, template_hints: [] },
   ],

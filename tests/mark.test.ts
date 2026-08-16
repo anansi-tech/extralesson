@@ -261,16 +261,14 @@ describe('marking a question handed in with blanks', () => {
   const parts = [
     {
       label: 'a',
-      marks: 2,
       slots: [
-        { label: 'i', answer: '5x(x + 3)', rubric_codes: ['AK1'] },
-        { label: 'ii', answer: '900', rubric_codes: ['AK2'] },
+        { label: 'i', answer: '5x(x + 3)' },
+        { label: 'ii', answer: '900' },
       ],
     },
     {
       label: 'b',
-      marks: 1,
-      slots: [{ label: 'i', answer: '180', rubric_codes: ['AK3'] }],
+      slots: [{ label: 'i', answer: '180' }],
     },
   ];
   const rubric: RubricItem[] = [
@@ -281,9 +279,9 @@ describe('marking a question handed in with blanks', () => {
 
   it('awards the slots that were answered and nothing for the blank', () => {
     const res = markStructuredParts(rubric, parts, [
-      { ref: 'a.i', answer: '5x(x + 3)' },
-      { ref: 'a.ii', answer: '900' },
-      { ref: 'b.i', answer: '' },
+      { ref: 'a.i', answer: '5x(x + 3)', working: '' },
+      { ref: 'a.ii', answer: '900', working: '' },
+      { ref: 'b.i', answer: '', working: '' },
     ]);
     expect(res.rubric_awarded).toEqual(['AK1', 'AK2']);
     expect(res.profile_marks.AK).toBe(2);
@@ -293,8 +291,8 @@ describe('marking a question handed in with blanks', () => {
     for (const answer of ['0', 'yes', '', 'x']) {
       const res = markStructuredParts(
         [{ code: 'AK1', profile: 'AK', criterion: 'c', mark_value: 1, slot_ref: 'a.i', part_label: 'a' }],
-        [{ label: 'a', marks: 1, slots: [{ label: 'i', answer, rubric_codes: ['AK1'] }] }],
-        [{ ref: 'a.i', answer: '   ' }],
+        [{ label: 'a', slots: [{ label: 'i', answer }] }],
+        [{ ref: 'a.i', answer: '   ', working: '' }],
       );
       expect(res.rubric_awarded, `expected ${answer}`).toEqual([]);
     }

@@ -5,6 +5,7 @@ import { barChart } from './templates/barChart';
 import { bearingDiagram } from './templates/bearingDiagram';
 import { circleCenter } from './templates/circleCenter';
 import { compositeShape } from './templates/compositeShape';
+import { compoundTriangle } from './templates/compoundTriangle';
 import { coordinateGrid } from './templates/coordinateGrid';
 import { cumulativeFrequency } from './templates/cumulativeFrequency';
 import { dataTable } from './templates/dataTable';
@@ -18,11 +19,12 @@ import { quadrilateralLabeled } from './templates/quadrilateralLabeled';
 import { travelGraph } from './templates/travelGraph';
 import { triangleLabeled } from './templates/triangleLabeled';
 import { vectorFigure } from './templates/vectorFigure';
-import { venn2 } from './templates/venn2';
+import { vennDiagram } from './templates/vennDiagram';
 
 // R1.5 §3 — the 15 SVG templates + dataTable (semantic HTML).
 export const TEMPLATES: Record<TemplateName, VisualTemplate<never>> = {
   triangleLabeled,
+  compoundTriangle,
   circleCenter,
   parallelTransversal,
   polygonMarkedAngle,
@@ -33,7 +35,7 @@ export const TEMPLATES: Record<TemplateName, VisualTemplate<never>> = {
   pieChart,
   histogram,
   cumulativeFrequency,
-  venn2,
+  vennDiagram,
   compositeShape,
   patternFigure,
   numberLine,
