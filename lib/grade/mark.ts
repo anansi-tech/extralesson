@@ -28,58 +28,75 @@ export function markMcq(profile: 'CK' | 'AK' | 'R', marks: number, answerIndex: 
   return { correct, rubric_awarded: [], profile_marks };
 }
 
-// R1.5 §2: one input per part; per-part equivalence. Rubric rows are awarded
-// per part using the same documented heuristics as before, applied within
-// each part: a part's R rows require that part's answer to be correct.
-export interface PartInput {
-  label: string;
+// R1.8 Part 1: the unit of marking is the SLOT. One input per slot, addressed
+// as 'part.slot'; rubric rows are earned by the slot named in slot_ref. A part
+// may mix an auto-marked value with a reason the student self-marks, and only
+// the reason is skipped — under R1.6 an explain sub-part exiled its whole part.
+export interface SlotInput {
+  /** 'a.i' — the part label and the slot label. */
+  ref: string;
   answer: string;
   working: string;
 }
 
+export interface MarkableSlot {
+  label: string;
+  answer: string;
+  accept?: string[];
+  // Widened to string because 'sf:N' / 'dp:N' carry a precision and infer as
+  // string at the Zod boundary, which has already validated the shape.
+  answer_format?: string;
+  response_mode?: string;
+}
+
 export function markStructuredParts(
   rubric: RubricItem[],
-  parts: {
-    label: string;
-    answer: string;
-    accept?: string[];
-    answer_format?: AnswerFormat;
-    response_mode?: string;
-  }[],
-  inputs: PartInput[],
+  parts: { label: string; slots: MarkableSlot[] }[],
+  inputs: SlotInput[],
 ): MarkResult {
-  const inputByLabel = new Map(inputs.map((i) => [i.label, i]));
+  const inputByRef = new Map(inputs.map((i) => [i.ref, i]));
   const profile_marks: ProfileMarks = { CK: 0, AK: 0, R: 0 };
   const awarded: string[] = [];
   let allCorrect = true;
   let formatFeedback: string | undefined;
 
   for (const part of parts) {
-    // R1.6 §1: a "show that" or "explain" part is self-marked in the session,
-    // so it earns nothing here and cannot make the question wrong. Its marks
-    // are out of the denominator too (lib/study/state.ts).
-    if ((part.response_mode ?? 'answer') !== 'answer') continue;
-    const input = inputByLabel.get(part.label);
-    const partRubric = rubric.filter((r) => r.part_label === part.label);
-    const result = markStructured(
-      partRubric.length > 0
-        ? partRubric
-        : [{ code: 'R0', profile: 'R', criterion: 'answer', mark_value: 0, part_label: part.label }],
-      part.answer,
-      input?.answer ?? '',
-      input?.working ?? '',
-      part.accept,
-      part.answer_format,
-    );
-    if (!result.correct) allCorrect = false;
-    if (result.format_feedback && !formatFeedback) formatFeedback = result.format_feedback;
-    awarded.push(...result.rubric_awarded.filter((c) => c !== 'R0'));
-    profile_marks.CK += result.profile_marks.CK;
-    profile_marks.AK += result.profile_marks.AK;
-    profile_marks.R += result.profile_marks.R;
+    for (const slot of part.slots) {
+      const ref = `${part.label}.${slot.label}`;
+      // Self-marked work earns nothing here, costs nothing, and is out of the
+      // denominator too (lib/study/state.ts).
+      if ((slot.response_mode ?? 'answer') !== 'answer') continue;
+      const input = inputByRef.get(ref);
+      const slotRubric = rubric.filter((r) => r.slot_ref === ref);
+      const result = markStructured(
+        slotRubric.length > 0
+          ? slotRubric
+          : [{ code: 'R0', profile: 'R', criterion: 'answer', mark_value: 0, slot_ref: ref, part_label: part.label }],
+        slot.answer,
+        input?.answer ?? '',
+        input?.working ?? '',
+        slot.accept,
+        slot.answer_format as AnswerFormat | undefined,
+      );
+      if (!result.correct) allCorrect = false;
+      if (result.format_feedback && !formatFeedback) formatFeedback = result.format_feedback;
+      awarded.push(...result.rubric_awarded.filter((c) => c !== 'R0'));
+      profile_marks.CK += result.profile_marks.CK;
+      profile_marks.AK += result.profile_marks.AK;
+      profile_marks.R += result.profile_marks.R;
+    }
   }
 
   return { correct: allCorrect, rubric_awarded: awarded, profile_marks, format_feedback: formatFeedback };
+}
+
+/** The slots a student is asked to type an answer into. */
+export function markableSlots(
+  parts: { label: string; slots: { label: string; response_mode?: string }[] }[],
+): string[] {
+  return parts.flatMap((p) =>
+    p.slots.filter((s) => (s.response_mode ?? 'answer') === 'answer').map((s) => `${p.label}.${s.label}`),
+  );
 }
 
 export function markStructured(

@@ -57,7 +57,10 @@ export interface RubricItem {
   profile: Profile;
   criterion: string;
   mark_value: number;
-  part_label: string; // which part this criterion belongs to ('a'..'j')
+  /** 'part.slot' — the slot this row is earned by (R1.8 Part 1). */
+  slot_ref: string;
+  /** Derived from slot_ref; kept because every existing reader uses it. */
+  part_label: string;
   /**
    * R1.7 §B4: this row is the mark for expressing the answer in the required
    * form. The official scheme awards it separately from the value, so a student
@@ -118,14 +121,35 @@ export type AnswerFormat =
   | 'surd'
   | 'equation_form';
 
-export interface QuestionPart {
-  label: string; // flat 'a'..'j' — no (i)/(ii) nesting
-  prompt: string;
-  marks: number;
-  answer: string; // values-only convention
-  accept?: string[]; // mark-scheme alternatives ("edge — accept: line segment")
-  response_mode: ResponseMode;
+/**
+ * R1.8 Part 1 — an answerable slot inside a lettered part.
+ *
+ * The papers put several answerable things under one instruction: "Factorize
+ * completely EACH of the following: (i) … (ii) …", a table row with three cells
+ * to fill, "describe fully the transformation" wanting type, centre and factor.
+ * A part that holds one answer can only render those as unrelated parts, losing
+ * the instruction that governs them.
+ */
+export interface Slot {
+  /** 'i' | 'ii' | a cell key like 'r5.S' | a descriptor key like 'centre'. */
+  label: string;
+  /** Omitted when the part's instruction says it all (table cells, EACH-of). */
+  prompt?: string;
+  answer: string;
+  accept?: string[];
   answer_format?: AnswerFormat;
+  response_mode: ResponseMode;
+  /** Rubric rows this slot earns. */
+  rubric_codes: string[];
+}
+
+export interface QuestionPart {
+  label: string; // the lettered part, 'a'..'j', as printed
+  /** The instruction governing this part's slots. */
+  prompt: string;
+  /** Sums over the rubric rows its slots earn. */
+  marks: number;
+  slots: Slot[];
 }
 
 export interface Misconception {

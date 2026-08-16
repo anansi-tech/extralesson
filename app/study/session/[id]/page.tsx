@@ -149,7 +149,12 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
     visual?: { template?: string; params?: unknown };
     options?: string[];
     marks: number;
-    parts?: { label: string; prompt: string; marks: number; response_mode?: string }[];
+    parts?: {
+      label: string;
+      prompt: string;
+      marks: number;
+      slots?: { label: string; prompt?: string; response_mode?: string }[];
+    }[];
     rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string }[];
   } | null>();
   if (!question) notFound();
@@ -160,7 +165,10 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
       visualHtml = renderVisual(question.visual as never, {
         stimulus: question.stimulus,
         stem: question.stem,
-        partPrompts: (question.parts ?? []).map((p) => p.prompt),
+        partPrompts: (question.parts ?? []).flatMap((p) => [
+          p.prompt,
+          ...(p.slots ?? []).map((slot) => slot.prompt ?? ''),
+        ]),
       });
     } catch {
       visualHtml = undefined;
@@ -179,7 +187,12 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
       label: p.label,
       marks: p.marks,
       promptHtml: renderMathHtml(p.prompt),
-      mode: p.response_mode ?? 'answer',
+      slots: (p.slots ?? []).map((slot) => ({
+        ref: `${p.label}.${slot.label}`,
+        label: slot.label,
+        promptHtml: slot.prompt ? renderMathHtml(slot.prompt) : undefined,
+        mode: slot.response_mode ?? 'answer',
+      })),
     })),
     optionsHtml: question.options?.map(renderMathHtml),
     marks: question.marks,

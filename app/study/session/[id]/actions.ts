@@ -14,7 +14,17 @@ const SubmitZ = z.object({
   // mcq: single entry with label 'a' whose answer is the option index.
   // a-j and up to 10: the part cap rose from 6 in R1.6 §5 and this schema did
   // not follow, so a 7-part question could not be submitted at all.
-  answers: z.array(z.object({ label: z.string().regex(/^[a-j]$/), answer: z.string().min(1).max(2000) })).min(1).max(10),
+  // R1.8: answers are addressed by slot — 'a.i', 'b.r5.S' — up to 8 slots
+  // across 10 lettered parts.
+  answers: z
+    .array(
+      z.object({
+        label: z.string().regex(/^[a-j]\.[a-z0-9][a-z0-9.\-]{0,11}$/i),
+        answer: z.string().min(1).max(2000),
+      }),
+    )
+    .min(1)
+    .max(40),
   working: z.string().max(10000).default(''),
   durationMs: z.number().int().min(0).max(60 * 60 * 1000).catch(0),
 });
@@ -77,22 +87,22 @@ export async function submitAnswer(input: {
     result = markMcq(question.profile!, question.marks, idx, question.answer_key!);
     partResults = [{ label: 'a', correct: result.correct }];
   } else {
-    const parts = (question.parts ?? []).map((p) => ({
-      label: p.label,
-      answer: p.answer,
-      accept: p.accept,
-      answer_format: p.answer_format,
-      response_mode: p.response_mode,
-    }));
-    const inputs = answers.map((a) => ({ ...a, working }));
+    const parts = question.parts ?? [];
+    const inputs = answers.map((a) => ({ ref: a.label, answer: a.answer, working }));
     result = markStructuredParts(question.rubric ?? [], parts, inputs);
-    const inputByLabel = new Map(answers.map((a) => [a.label, a.answer]));
-    partResults = parts
-      .filter((p) => (p.response_mode ?? 'answer') === 'answer')
-      .map((p) => ({
-        label: p.label,
-        correct: answersEquivalentAny(inputByLabel.get(p.label) ?? '', p.answer, p.accept),
-      }));
+    const inputByRef = new Map(answers.map((a) => [a.label, a.answer]));
+    partResults = parts.flatMap((p) =>
+      p.slots
+        .filter((slot) => (slot.response_mode ?? 'answer') === 'answer')
+        .map((slot) => ({
+          label: `${p.label}.${slot.label}`,
+          correct: answersEquivalentAny(
+            inputByRef.get(`${p.label}.${slot.label}`) ?? '',
+            slot.answer,
+            slot.accept,
+          ),
+        })),
+    );
     storedAnswer = answers.map((a) => `(${a.label}) ${a.answer}`).join('; ');
   }
 

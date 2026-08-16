@@ -152,8 +152,8 @@ describe('format feedback leads with what the student got right', () => {
 // comparison failed before the format check was ever consulted.
 describe('round trip — a correctly formatted answer marks correct', () => {
   const rubric: RubricItem[] = [
-    { code: 'CK1', profile: 'CK', criterion: 'CAO', mark_value: 2, part_label: 'a' },
-    { code: 'R1', profile: 'R', criterion: "Expresses 'their' answer in the required form", mark_value: 1, part_label: 'a', for_format: true },
+    { code: 'CK1', profile: 'CK', criterion: 'CAO', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
+    { code: 'R1', profile: 'R', criterion: "Expresses 'their' answer in the required form", mark_value: 1, slot_ref: 'a.i', part_label: 'a', for_format: true },
   ];
 
   // [format, canonical answer, what a student writes correctly, an equivalent

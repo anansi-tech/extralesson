@@ -16,15 +16,15 @@ const M1_STRUCTURED = `{
   "difficulty": 2,
   "marks": 7,
   "parts": [
-    { "label": "a", "prompt": "Let the small bottle hold $s$ ml. Write an equation in $s$.", "marks": 2, "answer": "3s = 2(s + 250)", "response_mode": "answer", "answer_format": "equation_form" },
-    { "label": "b", "prompt": "Solve your equation to find the capacity of the small bottle.", "marks": 3, "answer": "500 ml" },
-    { "label": "c", "prompt": "A customer needs 6 litres of juice. How many large bottles must they buy?", "marks": 2, "answer": "8" }
+    { "label": "a", "prompt": "Let the small bottle hold $s$ ml. Write an equation in $s$.", "marks": 2, "slots": [{ "label": "i", "answer": "3s = 2(s + 250)", "response_mode": "answer", "answer_format": "equation_form" }] },
+    { "label": "b", "prompt": "Solve your equation to find the capacity of the small bottle.", "marks": 3, "slots": [{ "label": "i", "answer": "500 ml" }] },
+    { "label": "c", "prompt": "A customer needs 6 litres of juice. How many large bottles must they buy?", "marks": 2, "slots": [{ "label": "i", "answer": "8" }] }
   ],
   "rubric": [
-    { "code": "CK1", "profile": "CK", "criterion": "Forms an equation in one variable from the comparison", "mark_value": 2, "part_label": "a" },
-    { "code": "AK1", "profile": "AK", "criterion": "Expands the bracket and collects like terms", "mark_value": 2, "part_label": "b" },
-    { "code": "AK2", "profile": "AK", "criterion": "CAO $s = 500$", "mark_value": 1, "part_label": "b" },
-    { "code": "R1", "profile": "R", "criterion": "Divides by \\"their\\" large-bottle capacity and rounds up to whole bottles", "mark_value": 2, "part_label": "c" }
+    { "code": "CK1", "profile": "CK", "criterion": "Forms an equation in one variable from the comparison", "mark_value": 2, "slot_ref": "a.i" },
+    { "code": "AK1", "profile": "AK", "criterion": "Expands the bracket and collects like terms", "mark_value": 2, "slot_ref": "b.i" },
+    { "code": "AK2", "profile": "AK", "criterion": "CAO $s = 500$", "mark_value": 1, "slot_ref": "b.i" },
+    { "code": "R1", "profile": "R", "criterion": "Divides by \\"their\\" large-bottle capacity and rounds up to whole bottles", "mark_value": 2, "slot_ref": "c.i" }
   ],
   "final_answer": "3s = 2(s + 250); 500 ml; 8",
   "worked_solution": "(a) $3s = 2(s + 250)$. (b) $3s = 2s + 500$, so $s = 500$ ml. (c) Large bottle $= 750$ ml; $6000 \\\\div 750 = 8$ bottles.",
@@ -44,7 +44,7 @@ const M1_MCQ = `{
   "visual": null,
   "difficulty": 1,
   "marks": 1,
-  "parts": [{ "label": "a", "prompt": "Select the sale price.", "marks": 1, "answer": "EC$51" }],
+  "parts": [{ "label": "a", "prompt": "Select the sale price.", "marks": 1, "slots": [{ "label": "i", "answer": "EC$51" }] }],
   "worked_solution": "Discount $= 0.15 \\\\times 60 = 9$; sale price $= 60 - 9 = 51$, so EC$51.",
   "misconceptions": [
     { "trigger": "EC$9", "name": "Discount instead of price", "remediation": "EC$9 is the discount amount. Subtract it from EC$60 to get the sale price." }
@@ -69,15 +69,15 @@ const M2_STRUCTURED = `{
   "difficulty": 2,
   "marks": 6,
   "parts": [
-    { "label": "a", "prompt": "State the modal class.", "marks": 1, "answer": "5-9" },
-    { "label": "b", "prompt": "Calculate an estimate of the mean number of wickets.", "marks": 4, "answer": "9.17" },
-    { "label": "c", "prompt": "State ONE reason your answer to (b) is an estimate.", "marks": 1, "answer": "grouped data uses class midpoints, not actual values", "accept": ["the actual values within each class are unknown"], "response_mode": "explain" }
+    { "label": "a", "prompt": "State the modal class.", "marks": 1, "slots": [{ "label": "i", "answer": "5-9" }] },
+    { "label": "b", "prompt": "Calculate an estimate of the mean number of wickets.", "marks": 4, "slots": [{ "label": "i", "answer": "9.17" }] },
+    { "label": "c", "prompt": "State ONE reason your answer to (b) is an estimate.", "marks": 1, "slots": [{ "label": "i", "answer": "grouped data uses class midpoints, not actual values", "accept": ["the actual values within each class are unknown"], "response_mode": "explain" }] }
   ],
   "rubric": [
-    { "code": "CK1", "profile": "CK", "criterion": "Identifies the modal class from the frequencies", "mark_value": 1, "part_label": "a" },
-    { "code": "AK1", "profile": "AK", "criterion": "Uses class midpoints to compute $\\\\sum fx$", "mark_value": 2, "part_label": "b" },
-    { "code": "AK2", "profile": "AK", "criterion": "Divides \\"their\\" $\\\\sum fx$ by 30, CAO $9.17$", "mark_value": 2, "part_label": "b" },
-    { "code": "R1", "profile": "R", "criterion": "Explains that midpoints stand in for the actual values", "mark_value": 1, "part_label": "c" }
+    { "code": "CK1", "profile": "CK", "criterion": "Identifies the modal class from the frequencies", "mark_value": 1, "slot_ref": "a.i" },
+    { "code": "AK1", "profile": "AK", "criterion": "Uses class midpoints to compute $\\\\sum fx$", "mark_value": 2, "slot_ref": "b.i" },
+    { "code": "AK2", "profile": "AK", "criterion": "Divides \\"their\\" $\\\\sum fx$ by 30, CAO $9.17$", "mark_value": 2, "slot_ref": "b.i" },
+    { "code": "R1", "profile": "R", "criterion": "Explains that midpoints stand in for the actual values", "mark_value": 1, "slot_ref": "c.i" }
   ],
   "final_answer": "5-9; 9.17; grouped data uses class midpoints, not actual values",
   "worked_solution": "(a) Highest frequency 10 → class $5$-$9$. (b) Midpoints 2, 7, 12, 17: $\\\\sum fx = 6(2)+10(7)+9(12)+5(17) = 275$; mean $\\\\approx 275 \\\\div 30 = 9.17$. (c) Individual values are unknown within classes.",
@@ -97,7 +97,7 @@ const M2_MCQ = `{
   "visual": null,
   "difficulty": 1,
   "marks": 1,
-  "parts": [{ "label": "a", "prompt": "Select the intercept.", "marks": 1, "answer": "(0, -3)" }],
+  "parts": [{ "label": "a", "prompt": "Select the intercept.", "marks": 1, "slots": [{ "label": "i", "answer": "(0, -3)" }] }],
   "worked_solution": "At the $y$-axis $x = 0$, so $y = -3$: the point is $(0, -3)$.",
   "misconceptions": [
     { "trigger": "(-3, 0)", "name": "Axis swap", "remediation": "The $y$-intercept has $x = 0$; $(-3, 0)$ lies on the $x$-axis." }
@@ -114,15 +114,15 @@ const M3_STRUCTURED = `{
   "difficulty": 3,
   "marks": 9,
   "parts": [
-    { "label": "a", "prompt": "Show that angle $PQR = 90°$.", "marks": 2, "answer": "180 - 150 + 60 = 90" },
-    { "label": "b", "prompt": "Calculate the distance $PR$.", "marks": 3, "answer": "10 km" },
-    { "label": "c", "prompt": "Calculate the bearing of $R$ from $P$, to the nearest degree.", "marks": 4, "answer": "097°" }
+    { "label": "a", "prompt": "Show that angle $PQR = 90°$.", "marks": 2, "slots": [{ "label": "i", "answer": "180 - 150 + 60 = 90" }] },
+    { "label": "b", "prompt": "Calculate the distance $PR$.", "marks": 3, "slots": [{ "label": "i", "answer": "10 km" }] },
+    { "label": "c", "prompt": "Calculate the bearing of $R$ from $P$, to the nearest degree.", "marks": 4, "slots": [{ "label": "i", "answer": "097°" }] }
   ],
   "rubric": [
-    { "code": "R1", "profile": "R", "criterion": "Uses co-interior/alternate angles on the north lines to justify $90°$", "mark_value": 2, "part_label": "a" },
-    { "code": "AK1", "profile": "AK", "criterion": "Applies Pythagoras: $PR^2 = 8^2 + 6^2$", "mark_value": 3, "part_label": "b" },
-    { "code": "AK2", "profile": "AK", "criterion": "Finds angle $QPR = \\\\tan^{-1}(6/8) \\\\approx 36.9°$", "mark_value": 2, "part_label": "c" },
-    { "code": "R2", "profile": "R", "criterion": "Adds to the initial bearing: $060 + 37 = 097°$", "mark_value": 2, "part_label": "c" }
+    { "code": "R1", "profile": "R", "criterion": "Uses co-interior/alternate angles on the north lines to justify $90°$", "mark_value": 2, "slot_ref": "a.i" },
+    { "code": "AK1", "profile": "AK", "criterion": "Applies Pythagoras: $PR^2 = 8^2 + 6^2$", "mark_value": 3, "slot_ref": "b.i" },
+    { "code": "AK2", "profile": "AK", "criterion": "Finds angle $QPR = \\\\tan^{-1}(6/8) \\\\approx 36.9°$", "mark_value": 2, "slot_ref": "c.i" },
+    { "code": "R2", "profile": "R", "criterion": "Adds to the initial bearing: $060 + 37 = 097°$", "mark_value": 2, "slot_ref": "c.i" }
   ],
   "final_answer": "180 - 150 + 60 = 90; 10 km; 097°",
   "worked_solution": "(a) The north lines at $P$ and $Q$ are parallel: the angle between $QP$ produced and the second leg is $180° - 150° + 60° = 90°$. (b) $PR = \\\\sqrt{8^2 + 6^2} = 10$ km. (c) $\\\\angle QPR = \\\\tan^{-1}(6/8) = 36.87°$, bearing $= 060° + 37° = 097°$.",
@@ -142,7 +142,7 @@ const M3_MCQ = `{
   "visual": null,
   "difficulty": 1,
   "marks": 1,
-  "parts": [{ "label": "a", "prompt": "Select the image point.", "marks": 1, "answer": "(4, 3)" }],
+  "parts": [{ "label": "a", "prompt": "Select the image point.", "marks": 1, "slots": [{ "label": "i", "answer": "(4, 3)" }] }],
   "worked_solution": "$(1 + 3, 5 - 2) = (4, 3)$.",
   "misconceptions": [
     { "trigger": "(-2, 7)", "name": "Subtracted the vector", "remediation": "A translation ADDS the vector components: $(1+3, 5+(-2))$." }

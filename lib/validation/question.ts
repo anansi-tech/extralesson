@@ -87,15 +87,28 @@ export const VisualZ = z.object({
 });
 
 export const RubricItemZ = z
-  .object({
-    code: z.string().regex(/^(CK|AK|R)\d+$/, 'rubric code must be CK/AK/R + number'),
-    profile: z.enum(['CK', 'AK', 'R']),
-    criterion: z.string().min(1),
-    mark_value: z.number().int().min(1),
-    part_label: z.string().regex(/^[a-j]$/),
-    // R1.7 §B4: the separate mark for the required form.
-    for_format: optional(z.boolean()),
-  })
+  .preprocess(
+    (raw) => {
+      if (!raw || typeof raw !== 'object') return raw;
+      const r = raw as Record<string, unknown>;
+      // A row written against a part addresses that part's only slot.
+      const slot_ref = r.slot_ref ?? (r.part_label ? `${r.part_label}.i` : undefined);
+      const part_label = r.part_label ?? String(slot_ref ?? '').split('.')[0];
+      return { ...r, slot_ref, part_label };
+    },
+    z.object({
+      code: z.string().regex(/^(CK|AK|R)\d+$/, 'rubric code must be CK/AK/R + number'),
+      profile: z.enum(['CK', 'AK', 'R']),
+      criterion: z.string().min(1),
+      mark_value: z.number().int().min(1),
+      // R1.8 Part 1: rows are earned by a slot. part_label is derived from it
+      // and kept, because the review card, the matrices and the grader all read
+      // it and none of them need to know about slots.
+      slot_ref: z.string().regex(/^[a-j]\.[a-z0-9][a-z0-9.\-]{0,11}$/i),
+      part_label: z.string().regex(/^[a-j]$/),
+      for_format: optional(z.boolean()),
+    }),
+  )
   .refine((r) => r.code.replace(/\d+$/, '') === r.profile, {
     message: 'rubric code prefix must match profile',
   });
@@ -129,16 +142,19 @@ export function modeFromWording(prompt: string, declared: ResponseMode): Respons
   return declared;
 }
 
-export const PartZ = z.object({
-  label: z.string().regex(/^[a-j]$/),
-  prompt: z.string().min(1),
-  marks: z.number().int().min(1),
+// R1.8 Part 1 — an answerable slot inside a lettered part.
+export const SlotZ = z.object({
+  // 'i'..'x' for sub-parts, 'r5.S' for a table cell, 'centre' for a descriptor.
+  label: z.string().regex(/^[a-z0-9][a-z0-9.\-]{0,11}$/i),
+  prompt: optional(z.string().min(1)),
   answer: z.string().min(1), // values-only convention
   // Mark-scheme accept list: alternative correct forms of THIS part's answer
   // (real schemes write "edge (accept: line segment)"). Grading and the solve
   // gate treat any listed form as correct.
   accept: optional(z.array(z.string().min(1)).max(4)),
-  // R1.6 §1: only 'answer' parts can be auto-marked.
+  // R1.6 §1, moved to the slot in R1.8: a part may mix an auto-marked value
+  // with a reason the student self-marks, and only the reason leaves the
+  // graded pool.
   response_mode: defaulted(ResponseModeZ, 'answer'),
   // R1.6 §2: set whenever the stem demands a particular form.
   //
@@ -152,7 +168,43 @@ export const PartZ = z.object({
     (v) => (AnswerFormatZ.safeParse(v).success ? v : undefined),
     AnswerFormatZ.optional(),
   ),
-}).transform((p) => ({ ...p, response_mode: modeFromWording(p.prompt, p.response_mode) }));
+  rubric_codes: z.array(z.string()).default([]),
+});
+
+/**
+ * A part is an instruction plus the slots it governs. A part written the old
+ * way — one answer on the part itself — lifts into a single slot here, so every
+ * question already in the bank stays valid and reviewable without being
+ * rewritten. That is the whole reason to make this change at 123 approved.
+ */
+export const PartZ = z.preprocess(
+  (raw) => {
+    if (!raw || typeof raw !== 'object') return raw;
+    const p = raw as Record<string, unknown>;
+    if (Array.isArray(p.slots) && p.slots.length > 0) return p;
+    const { answer, accept, response_mode, answer_format, ...rest } = p;
+    return {
+      ...rest,
+      slots: [{ label: 'i', answer, accept, response_mode, answer_format }],
+    };
+  },
+  z
+    .object({
+      label: z.string().regex(/^[a-j]$/),
+      prompt: z.string().min(1),
+      marks: z.number().int().min(1),
+      slots: z.array(SlotZ).min(1).max(8),
+    })
+    .transform((part) => ({
+      ...part,
+      slots: part.slots.map((slot) => ({
+        ...slot,
+        // A slot's mode comes from what IT asks, falling back to the part's
+        // instruction when the slot carries no prompt of its own.
+        response_mode: modeFromWording(slot.prompt ?? part.prompt, slot.response_mode),
+      })),
+    })),
+);
 
 const PART_LABELS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 
@@ -266,26 +318,32 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
         message: 'part marks must sum to marks',
       });
     }
-    const labels = new Set(q.parts.map((p) => p.label));
+    const slotRefs = new Set(q.parts.flatMap((p) => p.slots.map((s) => `${p.label}.${s.label}`)));
     for (const [i, r] of q.rubric.entries()) {
-      if (!labels.has(r.part_label)) {
+      if (!slotRefs.has(r.slot_ref)) {
         ctx.addIssue({
           code: 'custom',
-          path: ['rubric', i, 'part_label'],
-          message: `part_label '${r.part_label}' is not one of the question's parts`,
+          path: ['rubric', i, 'slot_ref'],
+          message: `slot_ref '${r.slot_ref}' is not one of the question's slots`,
         });
       }
     }
     for (const [i, part] of q.parts.entries()) {
-      if (part.response_mode === 'construct') {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['parts', i, 'response_mode'],
-          message: 'construct parts are out of scope and must not be generated',
-        });
+      for (const [j, slot] of part.slots.entries()) {
+        if (slot.response_mode === 'construct') {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['parts', i, 'slots', j, 'response_mode'],
+            message: 'construct slots are out of scope and must not be generated',
+          });
+        }
+      }
+      const dupes = new Set(part.slots.map((s) => s.label));
+      if (dupes.size !== part.slots.length) {
+        ctx.addIssue({ code: 'custom', path: ['parts', i, 'slots'], message: 'slot labels must be unique within a part' });
       }
     }
-    const derived = q.parts.map((p) => p.answer).join('; ');
+    const derived = q.parts.flatMap((p) => p.slots.map((s) => s.answer)).join('; ');
     if (q.final_answer !== derived) {
       ctx.addIssue({
         code: 'custom',
@@ -303,6 +361,6 @@ export type StructuredDraft = z.infer<typeof StructuredQuestionZ>;
 
 // Derive final_answer from parts — generation uses this so the stored value
 // can never drift from the parts.
-export function deriveFinalAnswer(parts: { answer: string }[]): string {
-  return parts.map((p) => p.answer).join('; ');
+export function deriveFinalAnswer(parts: { slots: { answer: string }[] }[]): string {
+  return parts.flatMap((p) => p.slots.map((s) => s.answer)).join('; ');
 }

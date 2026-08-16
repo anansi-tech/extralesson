@@ -26,14 +26,14 @@ const baseDraft: QuestionDraft = {
   },
   difficulty: 1,
   marks: 2,
-  parts: [{ label: 'a', prompt: 'Find angle $C$.', marks: 2, answer: '40°', response_mode: 'answer' as const }],
+  parts: [{ label: 'a', prompt: 'Find angle $C$.', marks: 2, slots: [{ label: 'i', answer: '40°', response_mode: 'answer' as const }] }],
   rubric: [
-    { code: 'AK1', profile: 'AK', criterion: 'Angle sum of a triangle', mark_value: 2, part_label: 'a' },
+    { code: 'AK1', profile: 'AK', criterion: 'Angle sum of a triangle', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
   ],
   final_answer: '40°',
   worked_solution: '$180 - 60 - 80 = 40°$.',
   misconceptions: [],
-} as QuestionDraft;
+} as unknown as QuestionDraft;
 
 const agree = async (): Promise<SolveOutcome> => ({
   notes: [],
@@ -74,7 +74,7 @@ describe('approvalGate — Edit→Approve re-runs the gates', () => {
           ],
         },
       },
-    } as QuestionDraft;
+    } as unknown as QuestionDraft;
     let solveCalled = false;
     const res = await approvalGate(broken, async () => {
       solveCalled = true;
@@ -91,7 +91,7 @@ describe('approvalGate — Edit→Approve re-runs the gates', () => {
       representation: 'prose',
       visual: undefined,
       stem: 'Two angles of a triangle measure $60°$ and $80°$. Find the third.',
-    } as QuestionDraft;
+    } as unknown as QuestionDraft;
     expect((await approvalGate(prose, agree)).ok).toBe(true);
     expect((await approvalGate(prose, disagree)).ok).toBe(false);
   });

@@ -20,7 +20,7 @@ describe('draft schema — the model can return every field the prompt asks for'
   });
 
   it('still accepts a part that omits them, so older prompts keep working', () => {
-    const part = PartLooseZ.parse({ label: 'a', prompt: 'Find $x$.', marks: 2, answer: '4' });
+    const part = PartLooseZ.parse({ label: 'a', prompt: 'Find $x$.', marks: 2, slots: [{ label: 'i', answer: '4' }] });
     expect(part.response_mode ?? 'answer').toBe('answer');
   });
 
@@ -30,14 +30,14 @@ describe('draft schema — the model can return every field the prompt asks for'
       stem: 'The diagram shows a regular pentagon $ABCDE$.',
       visual: null,
       parts: [
-        { label: 'a', prompt: 'State the sum of the interior angles.', marks: 2, answer: '540°', response_mode: 'answer' as const },
-        { label: 'b', prompt: 'Explain why it has five lines of symmetry.', marks: 3, answer: 'each passes through a vertex and the midpoint of the opposite side', response_mode: 'explain' as const },
-        { label: 'c', prompt: 'Give the exterior angle.', marks: 2, answer: '72°', response_mode: 'answer' as const, answer_format: 'dp:1' as const },
+        { label: 'a', prompt: 'State the sum of the interior angles.', marks: 2, slots: [{ label: 'i', answer: '540°', response_mode: 'answer' as const }] },
+        { label: 'b', prompt: 'Explain why it has five lines of symmetry.', marks: 3, slots: [{ label: 'i', answer: 'each passes through a vertex and the midpoint of the opposite side', response_mode: 'explain' as const }] },
+        { label: 'c', prompt: 'Give the exterior angle.', marks: 2, slots: [{ label: 'i', answer: '72°', response_mode: 'answer' as const, answer_format: 'dp:1' as const }] },
       ],
       rubric: [
-        { code: 'CK1', profile: 'CK' as const, criterion: 'Uses the angle sum', mark_value: 2, part_label: 'a' },
-        { code: 'R1', profile: 'R' as const, criterion: 'Explains the symmetry', mark_value: 3, part_label: 'b' },
-        { code: 'AK1', profile: 'AK' as const, criterion: 'Computes the exterior angle', mark_value: 2, part_label: 'c' },
+        { code: 'CK1', profile: 'CK' as const, criterion: 'Uses the angle sum', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
+        { code: 'R1', profile: 'R' as const, criterion: 'Explains the symmetry', mark_value: 3, slot_ref: 'b.i', part_label: 'b' },
+        { code: 'AK1', profile: 'AK' as const, criterion: 'Computes the exterior angle', mark_value: 2, slot_ref: 'c.i', part_label: 'c' },
       ],
       worked_solution: 'Interior angles sum to $540°$.\n\nEach line of symmetry joins a vertex to the opposite midpoint.\n\nThe exterior angle is $72°$.',
       misconceptions: [{ trigger: '360°', name: 'Uses the exterior-angle sum', remediation: 'The interior sum is $(n-2)\\times 180°$.' }],
@@ -57,8 +57,8 @@ describe('draft schema — the model can return every field the prompt asks for'
       visual: undefined,
       final_answer: '540°; each passes through a vertex and the midpoint of the opposite side; 72°',
     });
-    expect(strict.parts.map((p) => p.response_mode)).toEqual(['answer', 'explain', 'answer']);
-    expect(strict.parts[2].answer_format).toBe('dp:1');
+    expect(strict.parts.map((p) => p.slots[0].response_mode)).toEqual(['answer', 'explain', 'answer']);
+    expect(strict.parts[2].slots[0].answer_format).toBe('dp:1');
   });
 });
 
@@ -77,12 +77,12 @@ describe('the strict boundary treats null as absent, because that is how it arri
     marks: 4,
     stem: 'A line passes through $(0, 3)$ and $(2, 7)$.',
     parts: [
-      { label: 'a', prompt: 'Find the gradient.', marks: 2, answer: '2', accept: null, answer_format: null, response_mode: null },
-      { label: 'b', prompt: 'Write the equation of the line.', marks: 2, answer: 'y = 2x + 3', accept: null, answer_format: null, response_mode: null },
+      { label: 'a', prompt: 'Find the gradient.', marks: 2, slots: [{ label: 'i', answer: '2', accept: null, answer_format: null, response_mode: null }] },
+      { label: 'b', prompt: 'Write the equation of the line.', marks: 2, slots: [{ label: 'i', answer: 'y = 2x + 3', accept: null, answer_format: null, response_mode: null }] },
     ],
     rubric: [
-      { code: 'AK1', profile: 'AK' as const, criterion: 'Computes the gradient', mark_value: 2, part_label: 'a', for_format: null },
-      { code: 'R1', profile: 'R' as const, criterion: 'Forms the equation of the line', mark_value: 2, part_label: 'b', for_format: null },
+      { code: 'AK1', profile: 'AK' as const, criterion: 'Computes the gradient', mark_value: 2, slot_ref: 'a.i', part_label: 'a', for_format: null },
+      { code: 'R1', profile: 'R' as const, criterion: 'Forms the equation of the line', mark_value: 2, slot_ref: 'b.i', part_label: 'b', for_format: null },
     ],
     final_answer: '2; y = 2x + 3',
     worked_solution: 'Gradient is $2$.\n\nThe line is $y = 2x + 3$.',
@@ -99,9 +99,9 @@ describe('the strict boundary treats null as absent, because that is how it arri
     const structured = q as Extract<typeof q, { kind: 'structured' }>;
     for (const r of structured.rubric) expect(r.for_format).toBeUndefined();
     for (const p of structured.parts) {
-      expect(p.accept).toBeUndefined();
-      expect(p.answer_format).toBeUndefined();
-      expect(p.response_mode).toBe('answer');
+      expect(p.slots[0].accept).toBeUndefined();
+      expect(p.slots[0].answer_format).toBeUndefined();
+      expect(p.slots[0].response_mode).toBe('answer');
     }
   });
 
@@ -109,7 +109,11 @@ describe('the strict boundary treats null as absent, because that is how it arri
     const q = QuestionDraftZ.parse({
       ...draftWithNulls,
       parts: [
-        { ...draftWithNulls.parts[0], answer_format: 'sf:3', accept: ['2.00'] },
+        {
+          ...draftWithNulls.parts[0],
+          // the values live on the slot now, where the marking reads them
+          slots: [{ ...draftWithNulls.parts[0].slots[0], answer_format: 'sf:3', accept: ['2.00'] }],
+        },
         draftWithNulls.parts[1],
       ],
       rubric: [
@@ -118,8 +122,8 @@ describe('the strict boundary treats null as absent, because that is how it arri
       ],
     });
     const structured = q as Extract<typeof q, { kind: 'structured' }>;
-    expect(structured.parts[0].answer_format).toBe('sf:3');
-    expect(structured.parts[0].accept).toEqual(['2.00']);
+    expect(structured.parts[0].slots[0].answer_format).toBe('sf:3');
+    expect(structured.parts[0].slots[0].accept).toEqual(['2.00']);
     expect(structured.rubric[0].for_format).toBe(true);
   });
 });

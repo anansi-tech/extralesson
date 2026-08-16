@@ -12,11 +12,25 @@ import { z } from 'zod';
 
 export const MisconceptionLooseZ = z.object({ trigger: z.string(), name: z.string(), remediation: z.string() });
 
+// R1.8 Part 1: a part is an instruction plus the slots it governs. The single
+// -answer shape is still accepted so a prompt that has not caught up, or a
+// question written before slots existed, still parses.
+const SlotLooseZ = z.object({
+  label: z.string(),
+  prompt: z.string().nullish(),
+  answer: z.string(),
+  accept: z.array(z.string()).nullish(),
+  response_mode: z.enum(['answer', 'show_that', 'explain', 'construct']).nullish(),
+  answer_format: z.string().nullish(),
+  rubric_codes: z.array(z.string()).nullish(),
+});
+
 export const PartLooseZ = z.object({
   label: z.string(),
   prompt: z.string(),
   marks: z.number(),
-  answer: z.string(),
+  slots: z.array(SlotLooseZ).nullish(),
+  answer: z.string().nullish(),
   accept: z.array(z.string()).nullish(),
   response_mode: z.enum(['answer', 'show_that', 'explain', 'construct']).nullish(),
   answer_format: z.string().nullish(),
@@ -48,7 +62,8 @@ export const StructuredLooseZ = z.object({
       profile: z.enum(['CK', 'AK', 'R']),
       criterion: z.string(),
       mark_value: z.number(),
-      part_label: z.string(),
+      slot_ref: z.string().nullish(),
+      part_label: z.string().nullish(),
       for_format: z.boolean().nullish(),
     }),
   ),
