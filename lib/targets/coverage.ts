@@ -20,6 +20,8 @@ export interface TopicCoverage {
   total: number;
   /** Objectives we cannot assess, with the reason, for the UI to list. */
   excluded: { id: string; text: string; reason: string }[];
+  /** Objectives we assess in part — reading one, not producing one. */
+  partial: { id: string; text: string; reason: string }[];
 }
 
 export interface Coverage {
@@ -33,6 +35,8 @@ export interface Coverage {
   displayPercent: number;
   /** Approximate raw marks per full paper that we cannot assess. */
   uncoveredMarks: number;
+  /** Objectives covered in part, across every topic. */
+  partialCount: number;
   byModule: Record<ModuleNumber, number>;
   topics: TopicCoverage[];
 }
@@ -42,7 +46,13 @@ export interface Coverage {
 interface TopicLike {
   code: string;
   module: ModuleNumber;
-  objectives: { id: string; text: string; assessable?: boolean; unassessable_reason?: string }[];
+  objectives: {
+    id: string;
+    text: string;
+    assessable?: boolean;
+    unassessable_reason?: string;
+    partial_reason?: string;
+  }[];
 }
 
 interface BlueprintLike {
@@ -62,12 +72,16 @@ export function computeCoverage(topics: TopicLike[], blueprints: BlueprintLike[]
     const excluded = t.objectives
       .filter((o) => o.assessable === false)
       .map((o) => ({ id: o.id, text: o.text, reason: o.unassessable_reason ?? 'Not assessable.' }));
+    const partial = t.objectives
+      .filter((o) => o.assessable !== false && o.partial_reason)
+      .map((o) => ({ id: o.id, text: o.text, reason: o.partial_reason! }));
     return {
       code: t.code,
       module: t.module,
       assessable: t.objectives.length - excluded.length,
       total: t.objectives.length,
       excluded,
+      partial,
     };
   });
 
@@ -90,18 +104,31 @@ export function computeCoverage(topics: TopicLike[], blueprints: BlueprintLike[]
   }
 
   const fraction = den === 0 ? 1 : num / den;
+  const partialCount = rows.reduce((n, r) => n + r.partial.length, 0);
   return {
     fraction,
     percent: Math.round(fraction * 100),
-    displayPercent: Math.floor((fraction * 100) / 5) * 5,
+    displayPercent: displayFigure(fraction * 100),
     uncoveredMarks: Math.round((1 - fraction) * FULL_PAPER_RAW_MARKS),
+    partialCount,
     byModule,
     topics: rows,
   };
 }
 
+// The figure we print. Rounds down to a multiple of 5, and will not step up to
+// the next one until the arithmetic is clear of it by a point — a coverage
+// claim should lag the truth, never lead it, and under-claiming costs nothing.
+export function displayFigure(percent: number): number {
+  return Math.max(0, Math.floor((percent - 1) / 5) * 5);
+}
+
 // The sentence shown to students on the mastery map and beside the predicted
 // grade, and echoed on the landing page. Stating coverage is a trust asset.
 export function coverageSentence(coverage: Coverage): string {
-  return `ExtraLesson practises about ${coverage.displayPercent}% of the marks in a CSEC Mathematics paper. Construction and drawing questions — roughly ${coverage.uncoveredMarks} marks — still need pencil, ruler and compasses, so practise those on paper with past papers. We do not prepare you for Paper 032, the alternative to the school-based assessment that private candidates sit.`;
+  const partial =
+    coverage.partialCount > 0
+      ? ` On a few graph and solid questions we cover reading and interpreting, not drawing — you still need to practise producing those on paper.`
+      : '';
+  return `ExtraLesson practises about ${coverage.displayPercent}% of the marks in a CSEC Mathematics paper.${partial} Construction questions with ruler and compasses — roughly ${coverage.uncoveredMarks} marks — are not covered at all, so practise those with past papers. We do not prepare you for Paper 032, the alternative to the school-based assessment that private candidates sit.`;
 }
