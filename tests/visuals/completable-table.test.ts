@@ -87,10 +87,10 @@ describe('a table whose cells can be answered', () => {
   it('leaves an ordinary printed table exactly as it was', () => {
     const plain = DataTableParamsZ.parse({
       headers: ['Item', 'Price'],
-      rows: [['Bag', 'J$80']],
+      rows: [['Bag', '\\$80']],
     });
     const html = dataTable.render(plain);
     expect(html).not.toContain('cell-blank');
-    expect(html).toContain('J$80');
+    expect(html).toContain('$80');
   });
 });
