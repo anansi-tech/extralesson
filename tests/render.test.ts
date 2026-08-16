@@ -262,3 +262,44 @@ describe('renderMathHtml — display math', () => {
     expect(renderMathHtml('Step one.\n\nStep two.')).toContain('\n\n');
   });
 });
+
+// A part answer stored as "14 m by 6 m" was typeset as maths and rendered
+// "14mby6m": the prose test allows any value whose longest word is under three
+// letters, and "by" and "m" both are.
+describe('renderAnswerHtml — quantities joined by a word are prose', () => {
+  const visible = (v: string) =>
+    renderAnswerHtml(v)
+      .replace(/<annotation[^>]*>[\s\S]*?<\/annotation>/g, '')
+      .replace(/<[^>]*>/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  it('keeps the spaces in a dimensions answer', () => {
+    expect(visible('14 m by 6 m')).toBe('14 m by 6 m');
+    expect(renderAnswerHtml('14 m by 6 m')).not.toContain('katex');
+  });
+
+  it('handles the other connectors the same way', () => {
+    for (const v of ['3 to 4', '1 and 2', 'EC$24 per km']) {
+      expect(visible(v)).toContain(v.replace('EC$24', 'EC$24'));
+    }
+  });
+
+  it('still typesets real mathematics, spaces and all', () => {
+    for (const v of ['y = 2x + 5', '98.1 m^2', '4.5 \\times 10^{-5}', '\\frac{3}{8}', '12.5%', '-1/3']) {
+      expect(renderAnswerHtml(v), v).toContain('katex');
+    }
+  });
+
+  it('keeps a superscript a superscript', () => {
+    // the case a blanket "unit words are prose" rule would have broken
+    expect(renderAnswerHtml('98.1 m^2')).toContain('katex');
+    expect(visible('98.1 m^2')).toContain('98.1');
+  });
+
+  it('renders each value of a multi-value answer on its own terms', () => {
+    const html = renderAnswerHtml('14 m by 6 m; 98.1 m^2; 17');
+    expect(html).toContain('14 m by 6 m'); // prose
+    expect(html).toContain('katex'); // and maths beside it
+  });
+});
