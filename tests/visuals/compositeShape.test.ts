@@ -270,3 +270,58 @@ describe('compositeShape — shaded regions (R1.6 §6)', () => {
     expect(compositeShape.describe(p)).not.toContain('shaded');
   });
 });
+
+// R1.8 §4.3 and §4.6 — the solids the papers draw and the 2027 sheet supplies.
+// R1.6 deferred perspective solids with a non-standard cross-section; a 2024
+// question set exactly that, and cone and sphere formulae were added to the
+// sheet because they will be examined.
+describe('compositeShape — prisms in perspective and round solids', () => {
+  const solids = [
+    { kind: 'trapezoidal-prism', parallelA: 31.2, parallelB: 18, depth: 8.72, length: 20, unit: 'cm' },
+    { kind: 'cone', radius: 7, height: 24, slant: 25, unit: 'cm' },
+    { kind: 'sphere', radius: 6, unit: 'cm' },
+    { kind: 'hemisphere', radius: 6, unit: 'cm' },
+    { kind: 'cone-on-cylinder', radius: 5, coneHeight: 12, cylinderHeight: 20, unit: 'cm' },
+    { kind: 'cylinder-plus-hemisphere', radius: 4, height: 15, unit: 'cm' },
+  ] as const;
+
+  it('draws every one of them with finite geometry', () => {
+    for (const params of solids) {
+      const svg = compositeShape.render(CompositeShapeParamsZ.parse(params));
+      expect(svg, params.kind).not.toContain('NaN');
+      expect((svg.match(/<(line|path|polygon|circle)/g) ?? []).length, params.kind).toBeGreaterThan(3);
+    }
+  });
+
+  it('shades the trapezoidal cross-section, because that is the area asked for', () => {
+    const svg = compositeShape.render(CompositeShapeParamsZ.parse(solids[0]));
+    expect(svg).toContain('shapeHatch');
+    const plain = compositeShape.render(CompositeShapeParamsZ.parse({ ...solids[0], shaded: false }));
+    expect(plain).not.toContain('shapeHatch');
+  });
+
+  it('tells the solver what each solid is, with its dimensions', () => {
+    const ctx = { stem: 'A solid of radius 7 cm, height 24 cm, slant height 25 cm.', partPrompts: [] };
+    expect(compositeShape.describe(CompositeShapeParamsZ.parse(solids[1]))).toContain('slant height 25 cm');
+    expect(compositeShape.verify(CompositeShapeParamsZ.parse(solids[1]), ctx)).toEqual([]);
+  });
+
+  it('rejects a slant height that contradicts the radius and height', () => {
+    const bad = CompositeShapeParamsZ.parse({ kind: 'cone', radius: 7, height: 24, slant: 30, unit: 'cm' });
+    const issues = compositeShape.verify(bad, { stem: 'radius 7 cm, height 24 cm, slant 30 cm', partPrompts: [] });
+    expect(issues.join(' ')).toContain('slant height 30 disagrees');
+  });
+
+  it('rejects a trapezium whose parallel sides are equal — that is a rectangle', () => {
+    const bad = CompositeShapeParamsZ.parse({
+      kind: 'trapezoidal-prism',
+      parallelA: 20,
+      parallelB: 20,
+      depth: 8,
+      length: 30,
+      unit: 'cm',
+    });
+    const issues = compositeShape.verify(bad, { stem: '20 cm, 20 cm, 8 cm, 30 cm', partPrompts: [] });
+    expect(issues.join(' ')).toContain('different lengths');
+  });
+});
