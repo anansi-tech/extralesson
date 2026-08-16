@@ -19,7 +19,7 @@ const CellZ = z.union([
      * The slots that fill this cell's blanks, in order. One slot for an
      * ordinary blank cell; several when the cell is scaffolded.
      */
-    slots: z.array(z.string().regex(/^[a-j]\.[a-z0-9][a-z0-9._\-]{0,29}$/i)).min(1).max(6),
+    slots: z.array(z.string().regex(/^[a-j]\.[a-z0-9][a-z0-9._\-'′]{0,29}$/i)).min(1).max(6),
     /**
      * The printed skeleton, with {} where each slot goes: "({} × {}) + {} = {}".
      * Omit for a plain blank cell.

@@ -174,3 +174,48 @@ describe('slot labels are the words they name', () => {
     expect(withLabel('has spaces')).toBe(false);
   });
 });
+
+// R1.8 — the image of $P$ is called $P'$, and that name IS the natural slot
+// key. The label charset forbade the prime, so two of the three schema
+// rejections in the first paper-shaped batch were the model doing exactly what
+// the prompt asks of it; both topics involved fell below 50% acceptance on that
+// alone.
+describe('slot labels — a prime is part of the name', () => {
+  const imageVertices = (labels: string[]) => ({
+    ...transformation,
+    marks: labels.length,
+    final_answer: labels.map((_, i) => `(${i + 1}, ${i + 2})`).join('; '),
+    parts: [
+      {
+        label: 'a',
+        prompt: 'State the coordinates of the image of each vertex.',
+        marks: labels.length,
+        slots: labels.map((label, i) => ({
+          label,
+          answer: `(${i + 1}, ${i + 2})`,
+          rubric_codes: [`AK${i + 1}`],
+        })),
+      },
+    ],
+    rubric: labels.map((label, i) => ({
+      code: `AK${i + 1}`,
+      profile: 'AK' as const,
+      criterion: `Gives the image vertex (${i + 1}, ${i + 2})`,
+      mark_value: 1,
+      slot_ref: `a.${label}`,
+    })),
+  });
+
+  it('accepts image-vertex slot labels', () => {
+    const res = QuestionDraftZ.safeParse(imageVertices(["P'", "Q'", "R'"]));
+    expect(res.success, JSON.stringify(res.error?.issues)).toBe(true);
+  });
+
+  it('accepts a double prime, which a second transformation produces', () => {
+    expect(QuestionDraftZ.safeParse(imageVertices(["P''", "Q''"])).success).toBe(true);
+  });
+
+  it('still rejects a label that is not a name at all', () => {
+    expect(QuestionDraftZ.safeParse(imageVertices(['a b'])).success).toBe(false);
+  });
+});
