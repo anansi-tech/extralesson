@@ -12,7 +12,7 @@ import {
   type QuestionFacts,
 } from '@/lib/targets/matrix';
 import { nextRecipe, STRUCTURED_MARKS, type ObjectiveCoverage } from '@/lib/generation/recipe';
-import { REPRESENTATION_TARGETS } from '@/lib/targets/representation';
+import { GRID_BIASED_OBJECTIVES, REPRESENTATION_TARGETS } from '@/lib/targets/representation';
 import { seedBlueprints } from '@/lib/seed/blueprints';
 import { module1Topics } from '@/lib/seed/module1-topics';
 import { module2Topics } from '@/lib/seed/module2-topics';
@@ -301,5 +301,70 @@ describe('nextRecipe — module override', () => {
     expect(recipe.kind).toBe('mcq');
     expect(recipe.difficulty).toBe(3);
     expect(recipe.profile).toBeDefined(); // §B5 ramp still applies
+  });
+});
+
+// Transformation work is coordinate work: an object and its image, a
+// translation vector, a described transformation. A labelled sketch cannot
+// place those points, so the search weights 'graph' up for those objectives —
+// weighting, not gating, because a gate that rejects true questions teaches the
+// model to avoid the shapes rather than to be correct.
+describe('nextRecipe — coordinate work is biased toward the grid', () => {
+  const empty = computeMatrix(topics, seedBlueprints, []);
+
+  it('sends a transformation objective to a graph', () => {
+    const onlyTransformations = new Map(objectivesByTopic);
+    onlyTransformations.set(
+      'M3-GEO2',
+      ['M3.3.2', 'M3.3.3', 'M3.3.4'].map((id) => ({ id, approved: 0 })),
+    );
+    const { recipe, context } = nextRecipe(empty, onlyTransformations, {
+      topic_code: 'M3-GEO2',
+      kind: 'structured',
+    });
+    expect(recipe.objective_ids.some((id) => GRID_BIASED_OBJECTIVES.has(id))).toBe(true);
+    expect(recipe.representation).toBe('graph');
+    expect(context.template_hints).toContain('coordinateGrid');
+  });
+
+  it('leaves circle-theorem work on a diagram', () => {
+    const circlesFirst = new Map(objectivesByTopic);
+    circlesFirst.set('M3-GEO2', [
+      { id: 'M3.3.1', approved: 0 },
+      { id: 'M3.3.7', approved: 0 },
+    ]);
+    const { recipe } = nextRecipe(empty, circlesFirst, {
+      topic_code: 'M3-GEO2',
+      kind: 'structured',
+    });
+    expect(recipe.representation).toBe('diagram');
+  });
+
+  it('is a bias, not a rule: a large graph surplus still wins the argument', () => {
+    const graphHeavy = computeMatrix(
+      topics,
+      seedBlueprints,
+      Array.from({ length: 30 }, () => ({
+        kind: 'structured' as const,
+        module: 3 as const,
+        topic_code: 'M3-GEO2',
+        representation: 'graph' as const,
+        archetype: 'multi-step-application' as const,
+        difficulty: 2 as const,
+        marks: 7,
+        rubric_profile_marks: { CK: 2, AK: 3, R: 2 },
+      })),
+    );
+    const onlyTransformations = new Map(objectivesByTopic);
+    onlyTransformations.set('M3-GEO2', [{ id: 'M3.3.2', approved: 0 }]);
+    const { recipe } = nextRecipe(graphHeavy, onlyTransformations, {
+      topic_code: 'M3-GEO2',
+      kind: 'structured',
+    });
+    expect(recipe.representation).toBe('diagram');
+  });
+
+  it('still lets a diagram recipe reach for the grid when it needs one', () => {
+    expect(REPRESENTATION_TARGETS['M3-GEO2'][0].template_hints).toContain('coordinateGrid');
   });
 });

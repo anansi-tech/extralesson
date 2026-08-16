@@ -221,3 +221,49 @@ describe('a sketch may not be asked to show coordinates', () => {
     expect(res.ok).toBe(true);
   });
 });
+
+// CXC prints "not drawn to scale" in the instructions of every paper. Our
+// sketch templates place their own vertices, so saying it is both authentic and
+// true — and it tells a student not to measure what cannot be measured.
+describe('schematic figures declare themselves', () => {
+  it('captions a sketch', () => {
+    for (const template of ['triangleLabeled', 'circleCenter', 'bearingDiagram', 'compositeShape'] as const) {
+      const params = TEMPLATES[template].paramsSchema.safeParse(
+        template === 'compositeShape' ? { kind: 'l-shape', width: 8, height: 6, cutWidth: 3, cutHeight: 2, unit: 'cm' } : {},
+      );
+      if (!params.success) continue;
+      const html = renderVisual({ template, params: params.data as Record<string, unknown> });
+      expect(html, template).toContain('Not drawn to scale');
+    }
+  });
+
+  it('says nothing of the kind on a figure that IS to scale', () => {
+    const grid = renderVisual({
+      template: 'coordinateGrid',
+      params: { x_range: [-5, 5], y_range: [-5, 5], lines: [{ m: 1, c: 0 }] },
+    });
+    expect(grid).not.toContain('Not drawn to scale');
+
+    const chart = renderVisual({
+      template: 'barChart',
+      params: {
+        y_step: 1,
+        x_label: 'Team',
+        y_label: 'Goals',
+        bars: [
+          { label: 'A', value: 3 },
+          { label: 'B', value: 5 },
+        ],
+      },
+    });
+    expect(chart).not.toContain('Not drawn to scale');
+  });
+
+  it('leaves a data table alone — it is not a figure', () => {
+    const table = renderVisual({
+      template: 'dataTable',
+      params: { headers: ['Item', 'Price'], rows: [['Bag', 'EC$80']] },
+    });
+    expect(table).not.toContain('Not drawn to scale');
+  });
+});
