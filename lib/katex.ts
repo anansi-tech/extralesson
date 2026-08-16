@@ -60,6 +60,12 @@ export function renderMathHtml(text: string): string {
   const restore = (s: string) => s.replace(new RegExp(CURRENCY_SENTINEL, 'g'), () => 'EC$');
   return text
     .replace(/EC\$/g, CURRENCY_SENTINEL)
+    // \( ... \) is LaTeX's other inline delimiter and models reach for it
+    // freely; unrecognised, it reaches the student as raw source.
+    .replace(/\\[()]/g, '$')
+    // A column vector already carries its brackets, so an author's parentheses
+    // around one render as ((6 -8)).
+    .replace(/\(\s*(\$\\begin\{[bp]matrix\}[\s\S]*?\\end\{[bp]matrix\}\$)\s*\)/g, '$1')
     .split(/(\$[^$]+\$)/g)
     .map((seg) => {
       if (seg.startsWith('$') && seg.endsWith('$') && seg.length > 2) {

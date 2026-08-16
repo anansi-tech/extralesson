@@ -132,3 +132,36 @@ describe('renderAnswerHtml — values-only answers carry no $ delimiters', () =>
     expect(html).toContain('%');
   });
 });
+
+// A misconception name read "Used the opposite direction ((6 -8))": the author
+// wrapped a column vector in parentheses it already draws for itself. And the
+// other inline delimiter, \( \), reached the student as raw source.
+describe('renderMathHtml — matrix brackets and the other delimiter', () => {
+  it('drops parentheses an author put around a column vector', () => {
+    const html = renderMathHtml('Used the opposite direction ($\\begin{pmatrix}6\\\\-8\\end{pmatrix}$)');
+    const text = html.replace(/<[^>]*>/g, '');
+    expect(text).not.toContain('((');
+    expect(text).not.toContain('))');
+    expect(html).toContain('katex');
+  });
+
+  it('renders \\( ... \\) instead of printing it', () => {
+    const html = renderMathHtml('The vector is \\(\\begin{pmatrix}6\\\\-8\\end{pmatrix}\\).');
+    expect(html).toContain('katex');
+    // KaTeX keeps the source in <annotation>, so check the delimiters are gone
+    // rather than the source text.
+    expect(html).not.toContain('\\(');
+    expect(html).not.toContain('\\)');
+  });
+
+  it('leaves ordinary parentheses alone', () => {
+    const html = renderMathHtml('The point $(2, 3)$ lies on the line (see the diagram).');
+    const text = html.replace(/<[^>]*>/g, '');
+    expect(text).toContain('(see the diagram)');
+  });
+
+  it('still keeps EC$ out of the maths', () => {
+    const html = renderMathHtml('The price is EC$120 and $x = 3$.');
+    expect(html).toContain('EC$120');
+  });
+});
