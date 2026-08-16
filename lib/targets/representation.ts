@@ -104,7 +104,7 @@ export const REPRESENTATION_TARGETS: Record<string, RepresentationTarget[]> = {
     {
       representation: 'diagram',
       share: 85,
-      template_hints: ['triangleLabeled', 'circleCenter', 'bearingDiagram', 'compositeShape'],
+      template_hints: ['triangleLabeled', 'circleCenter', 'bearingDiagram', 'compositeShape', 'coordinateGrid'],
     },
     { representation: 'graph', share: 15, template_hints: ['coordinateGrid'] },
   ],
@@ -147,3 +147,22 @@ export const MCQ_VISUAL_BIAS_TOPICS = new Set([
   'M3-RFG2',
   'M3-GEO2',
 ]);
+
+
+// Objectives whose work lives on a coordinate plane: an object and its image, a
+// translation vector, a described transformation. A labelled sketch cannot
+// place those points, and a question that states them needs a grid — so the
+// representation search weights 'graph' up for these rather than forbidding
+// anything, which would only teach the model to avoid the shapes.
+export const GRID_BIASED_OBJECTIVES = new Set([
+  'M3.3.2', // translations as vectors
+  'M3.3.3', // image of an object, or the object given the image
+  'M3.3.4', // relationship between object and image
+  'M3.3.5', // describe a transformation from object and image
+  'M3.3.6', // combination of transformations
+]);
+
+// Enough to lead a diagram-heavy topic on an empty bank (M3-GEO2 is 85/15), and
+// no more: every plotted question raises the graph actual, so the lead erodes
+// and a real surplus hands the next recipe back to the sketches.
+export const GRID_BIAS = 80;

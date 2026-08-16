@@ -10,6 +10,8 @@ import {
   type Matrix,
 } from '@/lib/targets/matrix';
 import {
+  GRID_BIAS,
+  GRID_BIASED_OBJECTIVES,
   MCQ_VISUAL_BIAS_TOPICS,
   MCQ_VISUAL_SHARE,
   type RepresentationTarget,
@@ -87,7 +89,32 @@ export function nextRecipe(
   const row = matrix.topics.find((t) => t.code === topic);
   if (!row) throw new Error(`unknown topic ${topic}`);
 
-  // 3. Representation: topic targets minus topic actuals. For MCQs, respect
+  // 3. Difficulty: 25/50/25 target minus actuals for this kind. Settled before
+  //    the objectives because it decides how many of them a recipe carries.
+  const difficulty =
+    overrides.difficulty ??
+    (Number(
+      largestDeficit(
+        DIFFICULTY_TARGETS as unknown as Record<string, number>,
+        matrix.difficulty_actuals[kind] as unknown as Record<string, number>,
+      ),
+    ) as 1 | 2 | 3);
+
+  // 4. Objectives (least-approved first; §4 floors). Chosen before the
+  //    representation because coordinate work has to be plotted, and a recipe
+  //    field must be derived from its inputs rather than patched afterwards.
+  const objectives = [...(objectivesByTopic.get(topic) ?? [])].sort(
+    (a, b) => a.approved - b.approved || (a.id < b.id ? -1 : 1),
+  );
+  const objective_ids = objectives
+    .slice(0, kind === 'structured' && difficulty >= 2 ? 2 : 1)
+    .map((o) => o.id);
+  if (objective_ids.length === 0) {
+    throw new Error(`no objectives known for topic ${topic}`);
+  }
+  const gridBiased = objective_ids.some((id) => GRID_BIASED_OBJECTIVES.has(id));
+
+  // 5. Representation: topic targets minus topic actuals. For MCQs, respect
   //    the global 37% visual share: unbiased topics only get prose recipes
   //    once the global visual share is exceeded.
   const repTargets: RepresentationTarget[] = REPRESENTATION_TARGETS[topic] ?? [
@@ -95,6 +122,11 @@ export function nextRecipe(
   ];
   const repTargetRecord: Record<string, number> = {};
   for (const r of repTargets) repTargetRecord[r.representation] = r.share;
+  // Weighting, not gating: 'graph' becomes the likely choice for coordinate
+  // work while a genuine surplus can still send the recipe elsewhere.
+  if (gridBiased && repTargetRecord.graph !== undefined) {
+    repTargetRecord.graph += GRID_BIAS;
+  }
   let representation = largestDeficit(
     repTargetRecord,
     row.representation_actuals as Record<string, number>,
@@ -109,7 +141,7 @@ export function nextRecipe(
   const template_hints =
     repTargets.find((r) => r.representation === representation)?.template_hints ?? [];
 
-  // 4. Archetype: global per-kind targets minus actuals.
+  // 6. Archetype: global per-kind targets minus actuals.
   const archetype = largestDeficit(
     (kind === 'mcq' ? MCQ_ARCHETYPE_TARGETS : STRUCTURED_ARCHETYPE_TARGETS) as Record<
       Archetype,
@@ -118,25 +150,9 @@ export function nextRecipe(
     matrix.archetype_actuals[kind],
   );
 
-  // 5. Difficulty: 25/50/25 target minus actuals for this kind.
-  const difficulty =
-    overrides.difficulty ??
-    (Number(
-      largestDeficit(
-        DIFFICULTY_TARGETS as unknown as Record<string, number>,
-        matrix.difficulty_actuals[kind] as unknown as Record<string, number>,
-      ),
-    ) as 1 | 2 | 3);
 
-  // 6. Marks and objectives (least-approved first; §4 floors).
+  // Marks follow the settled difficulty.
   const marks = kind === 'mcq' ? 1 : STRUCTURED_MARKS[difficulty];
-  const objectives = [...(objectivesByTopic.get(topic) ?? [])].sort(
-    (a, b) => a.approved - b.approved || (a.id < b.id ? -1 : 1),
-  );
-  const objective_ids = objectives.slice(0, kind === 'structured' && difficulty >= 2 ? 2 : 1).map((o) => o.id);
-  if (objective_ids.length === 0) {
-    throw new Error(`no objectives known for topic ${topic}`);
-  }
 
   // 7. Paper 1 profile: position in this topic's block (§B5).
   const profile = kind === 'mcq' ? nextP1Profile(row.p1_actual) : undefined;

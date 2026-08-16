@@ -42,6 +42,19 @@ body {
   white-space: pre-wrap;
 }
 
+/* "Not drawn to scale", printed under every schematic figure exactly as CXC
+   prints it in a paper's instructions. Quiet: it is a convention, not a
+   warning. */
+.figure-note {
+  margin-top: 4px;
+  text-align: center;
+  font-family: var(--font-mono, ui-monospace), monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
 /* Ruled-paper background used across study/admin surfaces */
 .ruled {
   background-image: repeating-linear-gradient(
