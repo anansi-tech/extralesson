@@ -13,10 +13,15 @@ const recipe = (over: Partial<QuestionRecipe> = {}): QuestionRecipe => ({
   marks: 7,
   archetype: 'multi-step-application',
   representation: 'prose',
+  shape: 'drill',
   ...over,
 });
 
-const context = (topic_code: string): RecipeContext => ({ topic_code, template_hints: [] });
+const context = (topic_code: string, topic_codes?: string[]): RecipeContext => ({
+  topic_code,
+  topic_codes: topic_codes ?? [topic_code],
+  template_hints: [],
+});
 
 const objective = (text: string): Objective => ({ id: 'M2.3.1', text });
 
@@ -37,7 +42,7 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v30');
+    expect(PROMPT_VERSION).toBe('v31');
   });
 
   it('teaches hence-or-otherwise chaining with follow-through on structured drafts', () => {
@@ -86,7 +91,7 @@ describe('buildDraftPrompt — figures are sketches, not scale drawings', () => 
       topicTitle: 'Geometry',
       objectives: [objective('Solve geometric problems using properties of triangles.')],
       recipe: recipe({ representation: 'diagram' }),
-      context: { topic_code: 'M2-GEO1', template_hints: ['triangleLabeled'] },
+      context: { topic_code: 'M2-GEO1', topic_codes: ['M2-GEO1'], template_hints: ['triangleLabeled'] },
       module: 2,
       visualContract: '',
     });
@@ -104,7 +109,7 @@ describe('buildDraftPrompt — figures are sketches, not scale drawings', () => 
       topicTitle: 'Relations, Functions and Graphs',
       objectives: [objective('Draw and interpret graphs of quadratic functions.')],
       recipe: recipe({ representation: 'graph' }),
-      context: { topic_code: 'M2-RFG1', template_hints: ['coordinateGrid'] },
+      context: { topic_code: 'M2-RFG1', topic_codes: ['M3-REL1'], template_hints: ['coordinateGrid'] },
       module: 2,
       visualContract: '',
     });

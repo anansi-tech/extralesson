@@ -25,7 +25,12 @@ export const M1_PREREQ_THRESHOLD = 0.5;
 // have never seen them work. Below this many attempts the UI states that there
 // is no estimate yet instead of printing the arithmetic.
 //
-// One completed session (SESSION_SIZE questions). Kept here rather than in the
-// session builder because it is a claim about evidence, not about sessions;
-// a test asserts the two stay equal.
-export const MIN_ATTEMPTS_FOR_PREDICTION = 8;
+// Measured in assessable MARKS, not questions (R1.8 §2). It was eight
+// questions, which was one session of the old shape; once a session is one or
+// two paper-shaped questions, the same rule in the same unit would state a
+// grade off a single question. Marks is the unit the evidence was always in:
+// eight mixed questions of the old bank carried roughly this many.
+//
+// Kept here rather than in the session builder because it is a claim about
+// evidence, not about sessions — the two are deliberately no longer equal.
+export const MIN_MARKS_FOR_PREDICTION = 35;

@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { buildSession, hasMarkableParts, type CandidateQuestion } from '@/lib/session/builder';
+import {
+  buildSession,
+  estimatedMinutes,
+  hasMarkableParts,
+  SESSION_MINUTES,
+  type CandidateQuestion,
+} from '@/lib/session/builder';
 import { M1_PREREQ_THRESHOLD } from '@/lib/mastery/config';
 
 function q(
@@ -7,8 +13,9 @@ function q(
   module: 1 | 2 | 3,
   objective: string,
   kind: 'mcq' | 'structured' = 'mcq',
+  marks = kind === 'mcq' ? 1 : 3,
 ): CandidateQuestion {
-  return { id, module, objective_ids: [objective], kind };
+  return { id, module, objective_ids: [objective], kind, marks };
 }
 
 const weights = new Map([
@@ -33,7 +40,7 @@ describe('buildSession — M1 prerequisite ordering', () => {
       m1Mastery: 0,
       targetModules: [1, 2, 3],
       topicWeightByPrefix: weights,
-      size: 4,
+      minutes: 6,
     });
     expect(picked.slice(0, 2).every((p) => p.module === 1)).toBe(true);
   });
@@ -51,7 +58,7 @@ describe('buildSession — M1 prerequisite ordering', () => {
       m1Mastery: M1_PREREQ_THRESHOLD + 0.2,
       targetModules: [1, 2, 3],
       topicWeightByPrefix: weights,
-      size: 2,
+      minutes: 3,
     });
     // Weakest, blueprint-heaviest objectives first: M2.3.1 then M3.1.1
     expect(picked[0].id).toBe('m2a');
@@ -73,7 +80,7 @@ describe('buildSession — weakest-first within target modules', () => {
       m1Mastery: 0.6,
       targetModules: [1],
       topicWeightByPrefix: weights,
-      size: 3,
+      minutes: 4.5,
     });
     expect(picked.map((p) => p.id)).toEqual(['weak', 'mid', 'strong']);
   });
@@ -86,7 +93,7 @@ describe('buildSession — weakest-first within target modules', () => {
       m1Mastery: 0,
       targetModules: [2],
       topicWeightByPrefix: weights,
-      size: 8,
+      minutes: 12,
     });
     expect(picked.map((p) => p.id)).toEqual(['m2']);
   });
@@ -99,14 +106,17 @@ describe('buildSession — weakest-first within target modules', () => {
       m1Mastery: 1,
       targetModules: [2, 3],
       topicWeightByPrefix: weights,
-      size: 2,
+      minutes: 3,
     });
     expect(picked[0].id).toBe('heavy');
   });
 });
 
 describe('buildSession — kind blend and coverage', () => {
-  it('blends roughly 60/40 structured/mcq when both pools are deep', () => {
+  // The blend is of MINUTES now, not of question counts (R1.8 §2): five
+  // structured questions and three MCQs was a 60/40 split of a number that
+  // meant nothing to the student, while their session ran an hour.
+  it('blends roughly 60/40 structured/mcq by time when both pools are deep', () => {
     const candidates = [
       ...Array.from({ length: 8 }, (_, i) => q(`s${i}`, 1, `M1.1.${i + 1}`, 'structured')),
       ...Array.from({ length: 8 }, (_, i) => q(`m${i}`, 1, `M1.5.${i + 1}`, 'mcq')),
@@ -117,11 +127,17 @@ describe('buildSession — kind blend and coverage', () => {
       m1Mastery: 0,
       targetModules: [1],
       topicWeightByPrefix: weights,
-      size: 8,
+      minutes: 30,
     });
-    expect(picked).toHaveLength(8);
-    expect(picked.filter((p) => p.kind === 'structured')).toHaveLength(5);
-    expect(picked.filter((p) => p.kind === 'mcq')).toHaveLength(3);
+    const spent = picked.reduce((s, p) => s + estimatedMinutes(p), 0);
+    const structured = picked
+      .filter((p) => p.kind === 'structured')
+      .reduce((s, p) => s + estimatedMinutes(p), 0);
+    // Fills the budget to within one question of it — here the MCQ pool runs
+    // dry first and the cheapest structured question left will not fit.
+    expect(spent).toBeGreaterThan(24);
+    expect(structured / spent).toBeGreaterThan(0.5);
+    expect(picked.some((p) => p.kind === 'mcq')).toBe(true);
   });
 
   it('degrades gracefully when one kind is unavailable', () => {
@@ -132,7 +148,7 @@ describe('buildSession — kind blend and coverage', () => {
       m1Mastery: 0,
       targetModules: [1],
       topicWeightByPrefix: weights,
-      size: 8,
+      minutes: 12,
     });
     expect(picked).toHaveLength(8);
     expect(picked.every((p) => p.kind === 'mcq')).toBe(true);
@@ -151,13 +167,13 @@ describe('buildSession — kind blend and coverage', () => {
       m1Mastery: 0,
       targetModules: [1],
       topicWeightByPrefix: weights,
-      size: 3,
+      minutes: 4.5,
     });
     const objectives = picked.map((p) => p.objective_ids[0]);
     expect(new Set(objectives).size).toBe(3);
   });
 
-  it('returns fewer than size when the bank is small, never errors', () => {
+  it('returns fewer than the budget when the bank is small, never errors', () => {
     const picked = buildSession({
       candidates: [q('only', 1, 'M1.1.1')],
       perObjectiveMastery: new Map(),
@@ -196,7 +212,7 @@ describe('buildSession — a question enters the pool when it has anything to ma
       m1Mastery: 0,
       targetModules: [1],
       topicWeightByPrefix: weights,
-      size: 1,
+      minutes: 1,
     });
     expect(picked.map((p) => p.id)).toEqual(['mixed']);
   });
@@ -210,5 +226,57 @@ describe('buildSession — a question enters the pool when it has anything to ma
       topicWeightByPrefix: weights,
     });
     expect(picked).toEqual([]);
+  });
+});
+
+// R1.8 §2 — what a session IS, now that a question is a whole paper question.
+describe('buildSession — a session is a budget of work', () => {
+  it('spends a 15-minute session on one paper-shaped question, not eight fragments', () => {
+    const candidates = [
+      q('paper', 1, 'M1.1.1', 'structured', 10),
+      ...Array.from({ length: 8 }, (_, i) => q(`m${i}`, 1, `M1.5.${i + 1}`, 'mcq')),
+    ];
+    const picked = buildSession({
+      candidates,
+      perObjectiveMastery: new Map(),
+      m1Mastery: 0,
+      targetModules: [1],
+      topicWeightByPrefix: weights,
+    });
+    expect(picked[0].id).toBe('paper');
+    expect(picked.length).toBeLessThanOrEqual(2);
+    expect(estimatedMinutes(picked[0])).toBeGreaterThan(SESSION_MINUTES);
+  });
+
+  it('buys the first question even when it costs more than the whole budget', () => {
+    const picked = buildSession({
+      candidates: [q('big', 1, 'M1.1.1', 'structured', 12)],
+      perObjectiveMastery: new Map(),
+      m1Mastery: 0,
+      targetModules: [1],
+      topicWeightByPrefix: weights,
+      minutes: 5,
+    });
+    expect(picked.map((p) => p.id)).toEqual(['big']);
+  });
+
+  it('prefers the question that covers MORE of the student weak objectives', () => {
+    // Same weakness per objective; the multi-topic question covers three of
+    // them and the drill item one, which is the whole point of §2.
+    const spanning: CandidateQuestion = {
+      id: 'spanning',
+      module: 1,
+      objective_ids: ['M1.1.1', 'M1.1.2', 'M1.1.3'],
+      kind: 'structured',
+      marks: 9,
+    };
+    const picked = buildSession({
+      candidates: [q('narrow', 1, 'M1.1.1', 'structured', 9), spanning],
+      perObjectiveMastery: new Map(),
+      m1Mastery: 0,
+      targetModules: [1],
+      topicWeightByPrefix: weights,
+    });
+    expect(picked[0].id).toBe('spanning');
   });
 });

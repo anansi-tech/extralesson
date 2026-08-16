@@ -12,8 +12,9 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;');
 }
 
-// The $ in a currency marker like "EC$12" must never act as a math delimiter.
-// Swap "EC$" for a sentinel before splitting on $...$, restore afterwards.
+// Money must never act as a math delimiter. It is stored escaped (\$) and
+// swapped for a sentinel before splitting on $...$, restored afterwards; see
+// lib/money.ts, which is the only place this is decided.
 // Money is understood in exactly one place: lib/money.ts. Content stores an
 // escaped \$ and the renderer emits a bare $, so the segmenter below never
 // meets a dollar sign it could mistake for a delimiter.
@@ -23,7 +24,7 @@ function escapeHtml(s: string): string {
 // value with no $ delimiters ("P=M^2-2M", "r=\sqrt[3]{\frac{3V}{4\pi}}"), so
 // renderMathHtml alone leaves them as raw source. Each ";"-separated value is
 // typeset when it is an expression and left as text when it is a phrase
-// ("obtuse angle", "No", "5 pieces", "EC$51").
+// ("obtuse angle", "No", "5 pieces", "\$51").
 export function renderAnswerHtml(raw: string): string {
   return raw
     .split(';')

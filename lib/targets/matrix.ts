@@ -10,7 +10,18 @@ import type { Archetype, ModuleNumber, Profile, Representation } from '@/lib/typ
 // representation/archetype shares only.
 
 export const P1_TOTAL = 160; // 60-item P1 table × 2.67
-export const P2_TOTAL = 240; // structured; coverage measured in rubric marks
+
+// R1.8 §2 — the P2 target is a pool of MARKS, and always was. It used to be
+// written as 240 "questions" and then multiplied by an assumed 7-mark mean
+// wherever it was actually used, which made the headline number a function of
+// how big we happened to be writing questions that month. Paper-shaped
+// questions run 9-12 marks instead of 4-10, so under the old unit the same
+// bank would have looked like a 40% regression overnight while containing
+// strictly more work.
+//
+// The pool is unchanged (240 × 7), so no topic's target moves. Only the unit
+// is now the one we were already measuring in.
+export const P2_MARKS_TOTAL = 1680;
 
 // Per-module profile splits (per 20 P1 items / per 30 P2 raw marks).
 export const P1_PROFILE_SPLIT: Record<Profile, number> = { CK: 6, AK: 8, R: 6 };
@@ -87,17 +98,11 @@ interface TopicLean {
   order: number;
 }
 
-// Average structured question size used to convert the P2 marks pool into the
-// 240-question target: 90 blueprint marks over 9 questions ≈ 10 marks per
-// exam question; bank questions run 4-10 marks, so the marks pool target is
-// P2_TOTAL × the blueprint per-question mean scaled by bank mix. We measure
-// coverage in MARKS against the blueprint SHARE, which avoids committing to a
-// per-question size at all.
+// A topic's share of the 90 blueprint marks (cluster marks split equally among
+// the topics in the cluster), scaled to the bank's marks pool. Measuring the
+// share in marks is what lets question size change without moving the target.
 export function p2MarksTargetForTopic(blueprints: BlueprintLean[], topicCode: string): number {
-  // Share of the 90 blueprint marks attributed to this topic (cluster marks
-  // split equally among cluster topics), scaled to the marks pool implied by
-  // the bank: P2_TOTAL questions × mean 7 marks (documented assumption).
-  const POOL = P2_TOTAL * 7;
+  const POOL = P2_MARKS_TOTAL;
   let share = 0;
   for (const b of blueprints.filter((b) => b.paper === 'P2')) {
     for (const a of b.allocations) {

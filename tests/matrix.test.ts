@@ -8,10 +8,15 @@ import {
   p1TargetForTopic,
   p2MarksTargetForTopic,
   P1_TOTAL,
-  P2_TOTAL,
+  P2_MARKS_TOTAL,
   type QuestionFacts,
 } from '@/lib/targets/matrix';
-import { nextRecipe, STRUCTURED_MARKS, type ObjectiveCoverage } from '@/lib/generation/recipe';
+import {
+  nextRecipe,
+  PAPER_MARKS,
+  STRUCTURED_MARKS,
+  type ObjectiveCoverage,
+} from '@/lib/generation/recipe';
 import { GRID_BIASED_OBJECTIVES, REPRESENTATION_TARGETS } from '@/lib/targets/representation';
 import { seedBlueprints } from '@/lib/seed/blueprints';
 import { module1Topics } from '@/lib/seed/module1-topics';
@@ -66,7 +71,7 @@ describe('matrix targets', () => {
   it('P2 marks targets follow the blueprint mark shares', () => {
     // M2-GEO1 carries 9 of 90 blueprint marks -> 10% of the marks pool
     const geo = p2MarksTargetForTopic(seedBlueprints, 'M2-GEO1');
-    expect(geo).toBe(Math.round(0.1 * P2_TOTAL * 7));
+    expect(geo).toBe(Math.round(0.1 * P2_MARKS_TOTAL));
     // V&M1 (3 marks) must be well below RFG1 (half of 12-mark cluster)
     expect(p2MarksTargetForTopic(seedBlueprints, 'M2-VM1')).toBeLessThan(
       p2MarksTargetForTopic(seedBlueprints, 'M2-RFG1'),
@@ -149,7 +154,7 @@ describe('nextRecipe — overrides constrain the search, never patch its output'
     // deficit is justification (11%). The old bug returned 'direct-procedure'
     // — the MCQ table's top entry — for every structured run.
     expect(forced.archetype).toBe('justification');
-    expect(forced.marks).toBe(STRUCTURED_MARKS[forced.difficulty]);
+    expect(forced.marks).toBe(PAPER_MARKS[forced.difficulty]);
   });
 
   it('a difficulty override drives marks', () => {
@@ -158,7 +163,14 @@ describe('nextRecipe — overrides constrain the search, never patch its output'
       difficulty: 3,
     }).recipe;
     expect(r.difficulty).toBe(3);
-    expect(r.marks).toBe(STRUCTURED_MARKS[3]);
+    expect(r.marks).toBe(PAPER_MARKS[3]);
+    // The short drill item is still generable, and keeps the smaller table.
+    const drill = nextRecipe(emptyMatrix(), objectivesByTopic, {
+      kind: 'structured',
+      difficulty: 3,
+      shape: 'drill',
+    }).recipe;
+    expect(drill.marks).toBe(STRUCTURED_MARKS[3]);
   });
 
   it('a topic override selects that topic and its representation targets', () => {
@@ -366,5 +378,55 @@ describe('nextRecipe — coordinate work is biased toward the grid', () => {
 
   it('still lets a diagram recipe reach for the grid when it needs one', () => {
     expect(REPRESENTATION_TARGETS['M3-GEO2'][0].template_hints).toContain('coordinateGrid');
+  });
+});
+
+// R1.8 §2 — a question is what the paper sets, and the matrix counts P2 in the
+// unit the paper does.
+describe('nextRecipe — paper-shaped questions', () => {
+  const emptyMatrix = () => computeMatrix(topics, seedBlueprints, []);
+
+  it('makes a structured recipe paper-shaped by default, 9-12 marks', () => {
+    const r = nextRecipe(emptyMatrix(), objectivesByTopic, { kind: 'structured' }).recipe;
+    expect(r.shape).toBe('paper');
+    expect(r.marks).toBeGreaterThanOrEqual(9);
+    expect(r.marks).toBeLessThanOrEqual(12);
+  });
+
+  it('draws objectives from two or three topics of the SAME module', () => {
+    const { recipe, context } = nextRecipe(emptyMatrix(), objectivesByTopic, {
+      kind: 'structured',
+    });
+    expect(context.topic_codes.length).toBeGreaterThanOrEqual(2);
+    expect(context.topic_codes[0]).toBe(context.topic_code);
+    const modules = new Set(
+      context.topic_codes.map((code) => topics.find((t) => t.code === code)!.module),
+    );
+    expect(modules.size).toBe(1);
+    expect(recipe.objective_ids.length).toBe(context.topic_codes.length);
+  });
+
+  it('keeps an MCQ a single-topic drill item', () => {
+    const { recipe, context } = nextRecipe(emptyMatrix(), objectivesByTopic, { kind: 'mcq' });
+    expect(recipe.shape).toBe('drill');
+    expect(context.topic_codes).toEqual([context.topic_code]);
+    expect(recipe.marks).toBe(1);
+  });
+
+  it('measures the P2 shortfall in marks, so a 12-mark question is not one question', () => {
+    // A bank of few but large questions is further along on P2 than the same
+    // count of small ones, and the paper choice has to see that.
+    const big = computeMatrix(
+      topics,
+      seedBlueprints,
+      Array.from({ length: 30 }, () => fact({ kind: 'structured', marks: 12 })),
+    );
+    const small = computeMatrix(
+      topics,
+      seedBlueprints,
+      Array.from({ length: 30 }, () => fact({ kind: 'structured', marks: 2 })),
+    );
+    expect(big.p2_marks_actual_total).toBeGreaterThan(small.p2_marks_actual_total);
+    expect(big.p2_actual_total).toBe(small.p2_actual_total);
   });
 });

@@ -4,7 +4,7 @@ import {
   largestDeficit,
   MCQ_ARCHETYPE_TARGETS,
   P1_TOTAL,
-  P2_TOTAL,
+  P2_MARKS_TOTAL,
   REPRESENTATION_TARGETS,
   STRUCTURED_ARCHETYPE_TARGETS,
   type Matrix,
@@ -33,12 +33,23 @@ export interface QuestionRecipe {
    * topic blocks do, instead of the model choosing one item at a time.
    */
   profile?: Profile;
+  /**
+   * R1.8 §2. A 'paper' question is what the exam actually sets: 9-12 marks,
+   * 2-4 lettered parts, objectives drawn from two or three topics in one
+   * module, parts chaining into each other. A 'drill' item is the short
+   * single-slot practice item the bank is currently made of — still a valid
+   * category, no longer the default. MCQs are always drill.
+   */
+  shape: 'paper' | 'drill';
 }
 
 // Extra context the prompt needs that is derived from the recipe (not part of
 // the six fields): which templates fit the representation for this topic.
 export interface RecipeContext {
+  /** The topic the deficit search chose; the question is filed under it. */
   topic_code: string;
+  /** Every topic the objectives came from, primary first (§2 multi-topic). */
+  topic_codes: string[];
   template_hints: TemplateName[];
 }
 
@@ -52,6 +63,14 @@ export interface ObjectiveCoverage {
 // question; bank items run smaller at low difficulty).
 export const STRUCTURED_MARKS: Record<1 | 2 | 3, number> = { 1: 5, 2: 7, 3: 9 };
 
+// R1.8 §2 — a paper-shaped question is the size the exam sets: 9-10 marks for a
+// standard question and 12 for an extended one. Difficulty still decides, so
+// that marks remain derived from the settled recipe rather than chosen twice.
+export const PAPER_MARKS: Record<1 | 2 | 3, number> = { 1: 9, 2: 10, 3: 12 };
+
+/** How many topics a paper-shaped question draws from at each difficulty. */
+const PAPER_TOPIC_COUNT: Record<1 | 2 | 3, number> = { 1: 2, 2: 2, 3: 3 };
+
 // CLI overrides. These CONSTRAIN the deficit search — they are never applied
 // to a finished recipe. Every downstream field (representation, archetype,
 // difficulty, marks) is derived from the constrained values, so a recipe can
@@ -62,6 +81,8 @@ export interface RecipeOverrides {
   difficulty?: 1 | 2 | 3;
   /** Confine the deficit search to one module (bulk fill, module by module). */
   module?: 1 | 2 | 3;
+  /** Ask for a short drill item instead of the paper-shaped default (§2). */
+  shape?: 'paper' | 'drill';
 }
 
 export function nextRecipe(
@@ -70,10 +91,14 @@ export function nextRecipe(
   overrides: RecipeOverrides = {},
 ): { recipe: QuestionRecipe; context: RecipeContext } {
   // 1. Paper: larger proportional shortfall wins (tie → P2, the bigger bank).
+  // P1 is item-counted and P2 is marks-counted, each in its own unit (§2): a
+  // 12-mark question and a 4-mark one are not the same amount of P2.
   const p1Shortfall = (P1_TOTAL - matrix.p1_actual_total) / P1_TOTAL;
-  const p2Shortfall = (P2_TOTAL - matrix.p2_actual_total) / P2_TOTAL;
+  const p2Shortfall = (P2_MARKS_TOTAL - matrix.p2_marks_actual_total) / P2_MARKS_TOTAL;
   const kind: 'mcq' | 'structured' =
     overrides.kind ?? (p1Shortfall > p2Shortfall ? 'mcq' : 'structured');
+  const shape: 'paper' | 'drill' =
+    kind === 'mcq' ? 'drill' : (overrides.shape ?? 'paper');
 
   // 2. Topic: largest deficit vs the paper's blueprint-derived targets.
   const topicTargets: Record<string, number> = {};
@@ -103,12 +128,42 @@ export function nextRecipe(
   // 4. Objectives (least-approved first; §4 floors). Chosen before the
   //    representation because coordinate work has to be plotted, and a recipe
   //    field must be derived from its inputs rather than patched afterwards.
-  const objectives = [...(objectivesByTopic.get(topic) ?? [])].sort(
-    (a, b) => a.approved - b.approved || (a.id < b.id ? -1 : 1),
-  );
-  const objective_ids = objectives
-    .slice(0, kind === 'structured' && difficulty >= 2 ? 2 : 1)
-    .map((o) => o.id);
+  const leastApproved = (code: string) =>
+    [...(objectivesByTopic.get(code) ?? [])].sort(
+      (a, b) => a.approved - b.approved || (a.id < b.id ? -1 : 1),
+    );
+
+  // A paper-shaped question spans two or three topics of the SAME module, as
+  // the papers do — computation opening into an applied context, a formula
+  // rearranged and then used. The extra topics are the next-largest deficits
+  // inside that module, so multi-topic filling and deficit filling are the same
+  // act rather than two that compete.
+  const topic_codes = [topic];
+  if (shape === 'paper') {
+    const siblings = matrix.topics
+      .filter(
+        (t) =>
+          t.module === row.module &&
+          t.code !== topic &&
+          (objectivesByTopic.get(t.code)?.length ?? 0) > 0,
+      )
+      .sort(
+        (a, b) =>
+          b.p2_marks_target - b.p2_marks_actual - (a.p2_marks_target - a.p2_marks_actual) ||
+          (a.code < b.code ? -1 : 1),
+      );
+    topic_codes.push(...siblings.slice(0, PAPER_TOPIC_COUNT[difficulty] - 1).map((t) => t.code));
+  }
+
+  // One objective per topic for a paper question — the breadth comes from the
+  // topics. A drill item stays with its single topic and takes a second
+  // objective only where the difficulty asks for one.
+  const objective_ids =
+    shape === 'paper'
+      ? topic_codes.flatMap((code) => leastApproved(code).slice(0, 1).map((o) => o.id))
+      : leastApproved(topic)
+          .slice(0, kind === 'structured' && difficulty >= 2 ? 2 : 1)
+          .map((o) => o.id);
   if (objective_ids.length === 0) {
     throw new Error(`no objectives known for topic ${topic}`);
   }
@@ -151,14 +206,15 @@ export function nextRecipe(
   );
 
 
-  // Marks follow the settled difficulty.
-  const marks = kind === 'mcq' ? 1 : STRUCTURED_MARKS[difficulty];
+  // Marks follow the settled difficulty and shape.
+  const marks =
+    kind === 'mcq' ? 1 : shape === 'paper' ? PAPER_MARKS[difficulty] : STRUCTURED_MARKS[difficulty];
 
   // 7. Paper 1 profile: position in this topic's block (§B5).
   const profile = kind === 'mcq' ? nextP1Profile(row.p1_actual) : undefined;
 
   return {
-    recipe: { objective_ids, kind, difficulty, marks, archetype, representation, profile },
-    context: { topic_code: topic, template_hints },
+    recipe: { objective_ids, kind, difficulty, marks, archetype, representation, profile, shape },
+    context: { topic_code: topic, topic_codes, template_hints },
   };
 }

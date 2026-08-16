@@ -7,14 +7,30 @@ import type { ModuleNumber, QuestionKind } from '@/lib/types';
 // the prerequisite threshold, ~60/40 structured/mcq blend per availability,
 // biased toward blueprint-heavy topics.
 
-export const SESSION_SIZE = 8;
+// R1.8 §2 — a session is a budget of WORK, not a count of questions. Once a
+// question is a whole 9-12 mark paper question, "8 questions" stops describing
+// anything a student recognises: it was a 15-minute session in the spec and
+// nearer an hour in practice. The papers price the work themselves — Paper 1
+// allows 90 minutes for 60 items, Paper 2 150 minutes for 90 marks — so a
+// session is now minutes at exam pace, and one or two paper-shaped questions
+// fill it exactly as §2 asks.
+export const SESSION_MINUTES = 15;
+export const MINUTES_PER_MCQ = 90 / 60;
+export const MINUTES_PER_STRUCTURED_MARK = 150 / 90;
 export const STRUCTURED_SHARE = 0.6;
+
+/** Exam-pace minutes for one question, which is what the budget spends. */
+export function estimatedMinutes(q: CandidateQuestion): number {
+  return q.kind === 'mcq' ? MINUTES_PER_MCQ : Math.max(1, q.marks) * MINUTES_PER_STRUCTURED_MARK;
+}
 
 export interface CandidateQuestion {
   id: string;
   objective_ids: string[];
   module: ModuleNumber;
   kind: QuestionKind;
+  /** Rubric marks; an MCQ is 1. Prices the question against the budget. */
+  marks: number;
   /** R1.6 §1: response modes present on this question's parts. */
   response_modes?: string[];
 }
@@ -38,7 +54,8 @@ export interface BuildSessionArgs {
   targetModules: ModuleNumber[];
   // blueprint weight per topic keyed by objective prefix, e.g. 'M1.5.' -> 10
   topicWeightByPrefix: Map<string, number>;
-  size?: number;
+  /** Budget in exam-pace minutes; defaults to a 15-minute session. */
+  minutes?: number;
 }
 
 function objectivePrefix(objectiveId: string): string {
@@ -56,7 +73,7 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
     m1Mastery,
     targetModules,
     topicWeightByPrefix,
-    size = SESSION_SIZE,
+    minutes = SESSION_MINUTES,
   } = args;
 
   const m1Gated = targetModules.includes(1) && m1Mastery <= M1_PREREQ_THRESHOLD;
@@ -64,12 +81,17 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
   const scored: Scored[] = candidates
     .filter((c) => targetModules.includes(c.module) && hasMarkableParts(c))
     .map((c) => {
-      // Weakest objective drives the need; untouched objectives count as 0.
-      const weakest = Math.min(...c.objective_ids.map((id) => perObjectiveMastery.get(id) ?? 0));
-      const weight = Math.max(
-        ...c.objective_ids.map((id) => topicWeightByPrefix.get(objectivePrefix(id)) ?? 1),
-      );
-      return { ...c, priority: (1 - weakest) * weight };
+      // R1.8 §2 — how much of the student's weakness this question COVERS, not
+      // how weak its weakest objective is. A paper-shaped question spanning
+      // three shaky objectives is worth more of a session than a drill item on
+      // one of them, and the old min() could not say so. An untouched
+      // objective counts as fully weak.
+      const priority = c.objective_ids.reduce((sum, id) => {
+        const mastery = perObjectiveMastery.get(id) ?? 0;
+        const weight = topicWeightByPrefix.get(objectivePrefix(id)) ?? 1;
+        return sum + (1 - mastery) * weight;
+      }, 0);
+      return { ...c, priority };
     })
     .sort((a, b) => {
       // Cold-start prerequisite: all M1 questions rank ahead of M2/M3.
@@ -78,40 +100,43 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
       return a.id < b.id ? -1 : 1; // deterministic tiebreak
     });
 
-  // Blend kinds: aim for the 60/40 structured/mcq split, degrade gracefully
-  // when one pool runs dry. Objectives already picked are deprioritized so a
-  // session spreads across weak objectives instead of repeating one.
+  // Blend kinds: aim for the 60/40 structured/mcq split of the budget, degrade
+  // gracefully when one pool runs dry. Objectives already picked are
+  // deprioritized so a session spreads across weak objectives instead of
+  // repeating one.
   const structuredPool = scored.filter((q) => q.kind === 'structured');
   const mcqPool = scored.filter((q) => q.kind === 'mcq');
-  let structuredLeft = Math.min(structuredPool.length, Math.round(size * STRUCTURED_SHARE));
-  let mcqLeft = Math.min(mcqPool.length, size - structuredLeft);
-  structuredLeft = Math.min(structuredPool.length, size - mcqLeft);
 
   const covered = new Set<string>();
   const picked: CandidateQuestion[] = [];
-  const pickFrom = (pool: Scored[]): boolean => {
+  let spent = 0;
+  const pickFrom = (pool: Scored[], budget: number): boolean => {
+    const affordable = pool.filter(
+      (q) => !picked.includes(q) && estimatedMinutes(q) <= budget,
+    );
     const next =
-      pool.find((q) => !picked.includes(q) && !q.objective_ids.some((o) => covered.has(o))) ??
-      pool.find((q) => !picked.includes(q));
+      affordable.find((q) => !q.objective_ids.some((o) => covered.has(o))) ?? affordable[0];
     if (!next) return false;
     picked.push(next);
+    spent += estimatedMinutes(next);
     next.objective_ids.forEach((o) => covered.add(o));
     return true;
   };
 
-  while (picked.length < size && (structuredLeft > 0 || mcqLeft > 0)) {
-    // Keep the running ratio close to the target share.
-    const structuredSoFar = picked.filter((q) => q.kind === 'structured').length;
-    const wantStructured =
-      structuredLeft > 0 &&
-      (mcqLeft === 0 || structuredSoFar / Math.max(1, picked.length) < STRUCTURED_SHARE);
-    if (wantStructured) {
-      if (pickFrom(structuredPool)) structuredLeft--;
-      else structuredLeft = 0;
-    } else {
-      if (pickFrom(mcqPool)) mcqLeft--;
-      else mcqLeft = 0;
-    }
+  // The first question is bought whatever it costs. A 12-mark question prices
+  // at 20 minutes against a 15-minute budget, and a session that returned
+  // nothing rather than one good question would be the wrong answer to that.
+  const first = m1Gated || structuredPool.length ? structuredPool : mcqPool;
+  if (!pickFrom(first, Infinity)) pickFrom(mcqPool, Infinity);
+
+  while (spent < minutes) {
+    const remaining = minutes - spent;
+    const structuredMinutes = picked
+      .filter((q) => q.kind === 'structured')
+      .reduce((s, q) => s + estimatedMinutes(q), 0);
+    const wantStructured = structuredMinutes / Math.max(1, spent) < STRUCTURED_SHARE;
+    const order = wantStructured ? [structuredPool, mcqPool] : [mcqPool, structuredPool];
+    if (!pickFrom(order[0], remaining) && !pickFrom(order[1], remaining)) break;
   }
 
   return picked;
