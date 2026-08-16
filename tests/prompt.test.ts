@@ -296,3 +296,27 @@ describe('buildDraftPrompt — a solution set has to say what it is a set of', (
     expect(p).toContain('including 15.4 pairs');
   });
 });
+
+// The solve pass only gets asked about the figure when there is one.
+describe('buildSolvePrompt — the figure check rides along with the visual', () => {
+  const base = { stem: 'Triangle $ABC$ has $AB = 4$ cm.', kind: 'structured' as const, partPrompts: [{ label: 'a', prompt: 'Find $BC$.', mode: 'answer' }] };
+
+  it('asks for a verdict when a figure is supplied', () => {
+    const p = buildSolvePrompt({ ...base, visualText: 'Triangle ABC. Side CA is marked 4 cm.' });
+    expect(p).toContain('BEFORE SOLVING');
+    expect(p).toContain('"contradicts"');
+    expect(p).toContain('"under_determined"');
+    expect(p).toContain('figure_check');
+  });
+
+  it('asks nothing of the kind on a prose question', () => {
+    const p = buildSolvePrompt(base);
+    expect(p).not.toContain('BEFORE SOLVING');
+    expect(p).not.toContain('figure_check');
+  });
+
+  it('does not invite a verdict on a merely uninformative sketch', () => {
+    const p = buildSolvePrompt({ ...base, visualText: 'Triangle ABC.' });
+    expect(p).toContain('A figure that is a plain sketch of what the words describe is consistent');
+  });
+});

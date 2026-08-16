@@ -12,8 +12,23 @@ import type { QuestionDraft } from '@/lib/validation/question';
 // receives stimulus + a TEXT rendering of the visual params — never SVG,
 // never the draft's answers.
 
-const McqSolveZ = z.object({ answer_index: z.number(), final_answer: z.string() });
+// R1.7: the solve pass already receives the figure as text, so it is the one
+// place that reads figure and question together with fresh eyes. Three distinct
+// mismatch classes have now reached a review queue — a length on the wrong
+// side, a figure that rendered blank, a sketch asked to show coordinates — and
+// a rule per class does not scale. One field, in a call we already make.
+const FigureCheckZ = z.object({
+  verdict: z.enum(['consistent', 'contradicts', 'under_determined']),
+  note: z.string().max(240).default(''),
+});
+
+const McqSolveZ = z.object({
+  figure_check: FigureCheckZ.optional(),
+  answer_index: z.number(),
+  final_answer: z.string(),
+});
 const StructuredSolveZ = z.object({
+  figure_check: FigureCheckZ.optional(),
   part_answers: z.array(z.object({ label: z.string(), final_answer: z.string() })),
 });
 
@@ -23,6 +38,21 @@ export interface SolveOutcome {
   solveAnswer: string;
   /** How each contested part was settled — printed with every rejection. */
   notes: string[];
+}
+
+// A figure that contradicts its question is rejected; one that leaves the
+// question unanswerable is reported, because "under-determined" is a judgement
+// about what a solver could read off a description of the picture, and a
+// reviewer looking at the picture itself is better placed to make it.
+function figureNotes(check?: { verdict: string; note: string }): {
+  contradicts: boolean;
+  notes: string[];
+} {
+  if (!check || check.verdict === 'consistent') return { contradicts: false, notes: [] };
+  return {
+    contradicts: check.verdict === 'contradicts',
+    notes: [`figure ${check.verdict.replace('_', '-')}: ${check.note}`],
+  };
 }
 
 export async function independentSolve(draft: QuestionDraft): Promise<SolveOutcome> {
@@ -40,11 +70,12 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
         visualText,
       }),
     });
+    const figure = figureNotes(sol.figure_check);
     return {
-      agrees: sol.answer_index === draft.answer_key,
+      agrees: sol.answer_index === draft.answer_key && !figure.contradicts,
       draftAnswer: `key=${draft.answer_key} (${draft.options[draft.answer_key]})`,
       solveAnswer: `index=${sol.answer_index} (${draft.options[sol.answer_index] ?? '?'}) — "${sol.final_answer}"`,
-      notes: [],
+      notes: figure.notes,
     };
   }
 
@@ -65,8 +96,9 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   });
 
   const solByLabel = new Map(sol.part_answers.map((p) => [p.label.toLowerCase(), p.final_answer]));
-  const notes: string[] = [];
-  let agrees = sol.part_answers.length === draft.parts.length;
+  const figure = figureNotes(sol.figure_check);
+  const notes: string[] = [...figure.notes];
+  let agrees = sol.part_answers.length === draft.parts.length && !figure.contradicts;
 
   for (const p of draft.parts) {
     if (!agrees) break;
