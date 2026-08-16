@@ -13,7 +13,12 @@ export interface ReviewQuestion {
   stimulusHtml?: string;
   stemHtml: string;
   visualHtml?: string;
-  parts: { label: string; promptHtml: string; marks: number; answerHtml: string; acceptHtml?: string }[];
+  parts: {
+    label: string;
+    promptHtml: string;
+    marks: number;
+    slots: { label: string; promptHtml?: string; answerHtml: string; acceptHtml?: string }[];
+  }[];
   optionsHtml?: string[];
   answer_key?: number;
   profile?: string;
@@ -140,16 +145,22 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
                   [{p.marks}]
                 </span>
               </div>
-              <div className="mt-0.5 pl-7 text-xs text-dim">
+              {p.slots.map((slot) => (
+              <div key={slot.label} className="mt-0.5 pl-7 text-xs text-dim">
+                {p.slots.length > 1 && <span className="font-mono text-[10px]">({slot.label}) </span>}
+                {slot.promptHtml && (
+                  <span className="question-prose" dangerouslySetInnerHTML={{ __html: slot.promptHtml }} />
+                )}
                 <span className="font-mono">→ </span>
-                <span dangerouslySetInnerHTML={{ __html: p.answerHtml }} />
-                {p.acceptHtml && (
+                <span dangerouslySetInnerHTML={{ __html: slot.answerHtml }} />
+                {slot.acceptHtml && (
                   <>
                     <span className="font-mono"> · accept </span>
-                    <span dangerouslySetInnerHTML={{ __html: p.acceptHtml }} />
+                    <span dangerouslySetInnerHTML={{ __html: slot.acceptHtml }} />
                   </>
                 )}
               </div>
+              ))}
             </li>
           ))}
         </ol>

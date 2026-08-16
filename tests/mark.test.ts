@@ -3,9 +3,9 @@ import { markMcq, markStructured, markStructuredParts } from '@/lib/grade/mark';
 import type { RubricItem } from '@/lib/types';
 
 const rubric: RubricItem[] = [
-  { code: 'CK1', profile: 'CK', criterion: 'concept', mark_value: 1, part_label: 'a' },
-  { code: 'AK1', profile: 'AK', criterion: 'procedure', mark_value: 2, part_label: 'a' },
-  { code: 'R1', profile: 'R', criterion: 'result', mark_value: 1, part_label: 'a' },
+  { code: 'CK1', profile: 'CK', criterion: 'concept', mark_value: 1, slot_ref: 'a.i', part_label: 'a' },
+  { code: 'AK1', profile: 'AK', criterion: 'procedure', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
+  { code: 'R1', profile: 'R', criterion: 'result', mark_value: 1, slot_ref: 'a.i', part_label: 'a' },
 ];
 
 describe('markMcq', () => {
@@ -57,19 +57,19 @@ describe('markStructured — documented heuristics', () => {
 
 describe('markStructuredParts — per-part equivalence (R1.5)', () => {
   const partRubric: RubricItem[] = [
-    { code: 'AK1', profile: 'AK', criterion: 'part a procedure', mark_value: 2, part_label: 'a' },
-    { code: 'CK1', profile: 'CK', criterion: 'part b concept', mark_value: 1, part_label: 'b' },
-    { code: 'R1', profile: 'R', criterion: 'part b conclusion', mark_value: 2, part_label: 'b' },
+    { code: 'AK1', profile: 'AK', criterion: 'part a procedure', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
+    { code: 'CK1', profile: 'CK', criterion: 'part b concept', mark_value: 1, slot_ref: 'b.i', part_label: 'b' },
+    { code: 'R1', profile: 'R', criterion: 'part b conclusion', mark_value: 2, slot_ref: 'b.i', part_label: 'b' },
   ];
   const parts = [
-    { label: 'a', answer: 'x = 4' },
-    { label: 'b', answer: 'EC$24' },
+    { label: 'a', slots: [{ label: 'i', answer: 'x = 4' }] },
+    { label: 'b', slots: [{ label: 'i', answer: 'EC$24' }] },
   ];
 
   it('awards each part independently', () => {
     const r = markStructuredParts(partRubric, parts, [
-      { label: 'a', answer: '4', working: '' },
-      { label: 'b', answer: '25', working: '' },
+      { ref: 'a.i', answer: '4', working: '' },
+      { ref: 'b.i', answer: '25', working: '' },
     ]);
     expect(r.correct).toBe(false); // part b wrong
     expect(r.rubric_awarded).toEqual(['AK1']); // part a fully awarded
@@ -78,8 +78,8 @@ describe('markStructuredParts — per-part equivalence (R1.5)', () => {
 
   it('all parts correct awards the full rubric', () => {
     const r = markStructuredParts(partRubric, parts, [
-      { label: 'a', answer: 'x = 4', working: '' },
-      { label: 'b', answer: '$24', working: '' },
+      { ref: 'a.i', answer: 'x = 4', working: '' },
+      { ref: 'b.i', answer: '$24', working: '' },
     ]);
     expect(r.correct).toBe(true);
     expect(r.profile_marks).toEqual({ CK: 1, AK: 2, R: 2 });
@@ -87,15 +87,15 @@ describe('markStructuredParts — per-part equivalence (R1.5)', () => {
 
   it('working earns CK within the missed part only, never R', () => {
     const r = markStructuredParts(partRubric, parts, [
-      { label: 'a', answer: 'x = 9', working: '' },
-      { label: 'b', answer: '30', working: '3 × 8 = 30' },
+      { ref: 'a.i', answer: 'x = 9', working: '' },
+      { ref: 'b.i', answer: '30', working: '3 × 8 = 30' },
     ]);
     expect(r.rubric_awarded).toEqual(['CK1']);
     expect(r.profile_marks.R).toBe(0);
   });
 
   it('missing input for a part earns nothing for that part', () => {
-    const r = markStructuredParts(partRubric, parts, [{ label: 'a', answer: 'x = 4', working: '' }]);
+    const r = markStructuredParts(partRubric, parts, [{ ref: 'a.i', answer: 'x = 4', working: '' }]);
     expect(r.correct).toBe(false);
     expect(r.rubric_awarded).toEqual(['AK1']);
   });
@@ -103,14 +103,14 @@ describe('markStructuredParts — per-part equivalence (R1.5)', () => {
 
 describe('mark-scheme accept lists', () => {
   const terminologyRubric: RubricItem[] = [
-    { code: 'CK1', profile: 'CK', criterion: 'names the feature', mark_value: 1, part_label: 'a' },
+    { code: 'CK1', profile: 'CK', criterion: 'names the feature', mark_value: 1, slot_ref: 'a.i', part_label: 'a' },
   ];
-  const part = [{ label: 'a', answer: 'edge', accept: ['line segment where two faces meet'] }];
+  const part = [{ label: 'a', slots: [{ label: 'i', answer: 'edge', accept: ['line segment where two faces meet'] }] }];
 
   it('any accepted form earns the marks', () => {
     for (const student of ['edge', 'Edge', 'line segment where two faces meet']) {
       const r = markStructuredParts(terminologyRubric, part, [
-        { label: 'a', answer: student, working: '' },
+        { ref: 'a.i', answer: student, working: '' },
       ]);
       expect(r.correct, student).toBe(true);
       expect(r.profile_marks.CK).toBe(1);
@@ -119,7 +119,7 @@ describe('mark-scheme accept lists', () => {
 
   it('an unlisted answer still fails', () => {
     const r = markStructuredParts(terminologyRubric, part, [
-      { label: 'a', answer: 'vertex', working: '' },
+      { ref: 'a.i', answer: 'vertex', working: '' },
     ]);
     expect(r.correct).toBe(false);
   });
@@ -127,12 +127,12 @@ describe('mark-scheme accept lists', () => {
 
 describe('format-aware marking (R1.6 §2)', () => {
   const rubric: RubricItem[] = [
-    { code: 'AK1', profile: 'AK', criterion: 'value', mark_value: 2, part_label: 'a' },
+    { code: 'AK1', profile: 'AK', criterion: 'value', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
   ];
 
   it('marks an equivalent value in the wrong form incorrect, and says so', () => {
-    const parts = [{ label: 'a', answer: '1/3', answer_format: 'exact' as const }];
-    const r = markStructuredParts(rubric, parts, [{ label: 'a', answer: '0.333', working: '' }]);
+    const parts = [{ label: 'a', slots: [{ label: 'i', answer: '1/3', answer_format: 'exact' as const }] }];
+    const r = markStructuredParts(rubric, parts, [{ ref: 'a.i', answer: '0.333', working: '' }]);
     expect(r.correct).toBe(false);
     expect(r.format_feedback).toContain('EXACT');
     // The mathematics was not wrong, so it must not read as a maths error.
@@ -140,21 +140,21 @@ describe('format-aware marking (R1.6 §2)', () => {
   });
 
   it('accepts the same value written in the required form', () => {
-    const parts = [{ label: 'a', answer: '1/3', answer_format: 'exact' as const }];
-    const r = markStructuredParts(rubric, parts, [{ label: 'a', answer: '1/3', working: '' }]);
+    const parts = [{ label: 'a', slots: [{ label: 'i', answer: '1/3', answer_format: 'exact' as const }] }];
+    const r = markStructuredParts(rubric, parts, [{ ref: 'a.i', answer: '1/3', working: '' }]);
     expect(r.correct).toBe(true);
     expect(r.format_feedback).toBeUndefined();
   });
 
   it('leaves marking unchanged when no format is required', () => {
-    const parts = [{ label: 'a', answer: '1/3' }];
-    const r = markStructuredParts(rubric, parts, [{ label: 'a', answer: '0.333', working: '' }]);
+    const parts = [{ label: 'a', slots: [{ label: 'i', answer: '1/3' }] }];
+    const r = markStructuredParts(rubric, parts, [{ ref: 'a.i', answer: '0.333', working: '' }]);
     expect(r.correct).toBe(true); // permissive equivalence, as before
   });
 
   it('explains the form even when the value is also wrong-ish but close', () => {
-    const parts = [{ label: 'a', answer: '36.9', answer_format: 'dp:1' as const }];
-    const r = markStructuredParts(rubric, parts, [{ label: 'a', answer: '36.87', working: '' }]);
+    const parts = [{ label: 'a', slots: [{ label: 'i', answer: '36.9', answer_format: 'dp:1' as const }] }];
+    const r = markStructuredParts(rubric, parts, [{ ref: 'a.i', answer: '36.87', working: '' }]);
     expect(r.correct).toBe(false);
     expect(r.format_feedback).toContain('1 decimal place');
   });
@@ -165,20 +165,20 @@ describe('format-aware marking (R1.6 §2)', () => {
 // of the question wrong.
 describe('markStructuredParts — self-marked parts are left out of the marking', () => {
   const rubric: RubricItem[] = [
-    { code: 'AK1', profile: 'AK', criterion: 'Finds the interior angle', mark_value: 2, part_label: 'a' },
-    { code: 'R1', profile: 'R', criterion: 'Explains the symmetry', mark_value: 3, part_label: 'b' },
-    { code: 'AK2', profile: 'AK', criterion: 'Finds the exterior angle', mark_value: 2, part_label: 'c' },
+    { code: 'AK1', profile: 'AK', criterion: 'Finds the interior angle', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
+    { code: 'R1', profile: 'R', criterion: 'Explains the symmetry', mark_value: 3, slot_ref: 'b.i', part_label: 'b' },
+    { code: 'AK2', profile: 'AK', criterion: 'Finds the exterior angle', mark_value: 2, slot_ref: 'c.i', part_label: 'c' },
   ];
   const parts = [
-    { label: 'a', answer: '108°', response_mode: 'answer' },
-    { label: 'b', answer: 'each line joins a vertex to the opposite midpoint', response_mode: 'explain' },
-    { label: 'c', answer: '72°', response_mode: 'answer' },
+    { label: 'a', slots: [{ label: 'i', answer: '108°', response_mode: 'answer' }] },
+    { label: 'b', slots: [{ label: 'i', answer: 'each line joins a vertex to the opposite midpoint', response_mode: 'explain' }] },
+    { label: 'c', slots: [{ label: 'i', answer: '72°', response_mode: 'answer' }] },
   ];
 
   it('marks every markable part correct without the student answering the prose one', () => {
     const res = markStructuredParts(rubric, parts, [
-      { label: 'a', answer: '108', working: '' },
-      { label: 'c', answer: '72 degrees', working: '' },
+      { ref: 'a.i', answer: '108', working: '' },
+      { ref: 'c.i', answer: '72 degrees', working: '' },
     ]);
     expect(res.correct).toBe(true);
     expect(res.profile_marks).toEqual({ CK: 0, AK: 4, R: 0 });
@@ -187,9 +187,9 @@ describe('markStructuredParts — self-marked parts are left out of the marking'
 
   it('never awards the reasoning row for a part it did not mark', () => {
     const res = markStructuredParts(rubric, parts, [
-      { label: 'a', answer: '108°', working: '' },
-      { label: 'b', answer: 'because it looks symmetric', working: '' },
-      { label: 'c', answer: '72°', working: '' },
+      { ref: 'a.i', answer: '108°', working: '' },
+      { ref: 'b.i', answer: 'because it looks symmetric', working: '' },
+      { ref: 'c.i', answer: '72°', working: '' },
     ]);
     expect(res.rubric_awarded).not.toContain('R1');
     expect(res.profile_marks.R).toBe(0);
@@ -197,8 +197,8 @@ describe('markStructuredParts — self-marked parts are left out of the marking'
 
   it('still fails the question when a markable part is wrong', () => {
     const res = markStructuredParts(rubric, parts, [
-      { label: 'a', answer: '120°', working: '' },
-      { label: 'c', answer: '72°', working: '' },
+      { ref: 'a.i', answer: '120°', working: '' },
+      { ref: 'c.i', answer: '72°', working: '' },
     ]);
     expect(res.correct).toBe(false);
     expect(res.profile_marks.AK).toBe(2);
@@ -210,9 +210,9 @@ describe('markStructuredParts — self-marked parts are left out of the marking'
 // number plainly has lost one mark, not the question.
 describe('markStructured — a wrong form costs only the form mark', () => {
   const rubric: RubricItem[] = [
-    { code: 'CK1', profile: 'CK', criterion: 'CAO $0.000045$', mark_value: 2, part_label: 'a' },
-    { code: 'AK1', profile: 'AK', criterion: 'Divides correctly', mark_value: 2, part_label: 'a' },
-    { code: 'R1', profile: 'R', criterion: "Expresses 'their' answer in standard form", mark_value: 1, part_label: 'a', for_format: true },
+    { code: 'CK1', profile: 'CK', criterion: 'CAO $0.000045$', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
+    { code: 'AK1', profile: 'AK', criterion: 'Divides correctly', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
+    { code: 'R1', profile: 'R', criterion: "Expresses 'their' answer in standard form", mark_value: 1, slot_ref: 'a.i', part_label: 'a', for_format: true },
   ];
 
   it('keeps the value and method marks, withholds the form mark', () => {
@@ -239,8 +239,8 @@ describe('markStructured — a wrong form costs only the form mark', () => {
 
   it('falls back to the ordinary heuristics when no row marks the form', () => {
     const plain: RubricItem[] = [
-      { code: 'CK1', profile: 'CK', criterion: 'CAO $0.000045$', mark_value: 2, part_label: 'a' },
-      { code: 'R1', profile: 'R', criterion: 'Interprets the result', mark_value: 1, part_label: 'a' },
+      { code: 'CK1', profile: 'CK', criterion: 'CAO $0.000045$', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
+      { code: 'R1', profile: 'R', criterion: 'Interprets the result', mark_value: 1, slot_ref: 'a.i', part_label: 'a' },
     ];
     const res = markStructured(plain, '4.5 \\times 10^{-5}', '0.000045', '', undefined, 'standard_form');
     expect(res.correct).toBe(false);

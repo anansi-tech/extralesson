@@ -11,20 +11,31 @@ const RubricItemSchema = new Schema(
   { _id: false },
 );
 
-const PartSchema = new Schema(
+// R1.8 Part 1: an answerable slot inside a lettered part. The papers put
+// several under one instruction; a part that holds one answer cannot.
+const SlotSchema = new Schema(
   {
-    label: { type: String, required: true }, // 'a'..'j', flat
-    prompt: { type: String, required: true },
-    marks: { type: Number, required: true },
+    label: { type: String, required: true }, // 'i' | 'r5.S' | 'centre'
+    prompt: { type: String },
     answer: { type: String, required: true }, // values-only convention
     accept: { type: [String], default: undefined }, // mark-scheme alternatives
-    // R1.6: 'answer' parts are auto-marked; show_that/explain go to worked practice.
     response_mode: {
       type: String,
       enum: ['answer', 'show_that', 'explain', 'construct'],
       default: 'answer',
     },
     answer_format: { type: String }, // 'exact' | 'sf:3' | 'dp:1' | ...
+    rubric_codes: { type: [String], default: [] },
+  },
+  { _id: false },
+);
+
+const PartSchema = new Schema(
+  {
+    label: { type: String, required: true }, // 'a'..'j', flat
+    prompt: { type: String, required: true },
+    marks: { type: Number, required: true },
+    slots: { type: [SlotSchema], required: true },
   },
   { _id: false },
 );

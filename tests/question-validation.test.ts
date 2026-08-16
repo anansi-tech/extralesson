@@ -12,13 +12,13 @@ const validStructured = {
   difficulty: 2 as const,
   marks: 3,
   parts: [
-    { label: 'a', prompt: 'Factorise the expression.', marks: 2, answer: '(3x + 1)(x - 2)', response_mode: 'answer' as const },
-    { label: 'b', prompt: 'State both roots.', marks: 1, answer: 'x = -1/3; x = 2', response_mode: 'answer' as const },
+    { label: 'a', prompt: 'Factorise the expression.', marks: 2, slots: [{ label: 'i', answer: '(3x + 1)(x - 2)', response_mode: 'answer' as const }] },
+    { label: 'b', prompt: 'State both roots.', marks: 1, slots: [{ label: 'i', answer: 'x = -1/3; x = 2', response_mode: 'answer' as const }] },
   ],
   rubric: [
-    { code: 'CK1', profile: 'CK' as const, criterion: 'Recognises factorisable quadratic', mark_value: 1, part_label: 'a' },
-    { code: 'AK1', profile: 'AK' as const, criterion: 'Correct factorisation', mark_value: 1, part_label: 'a' },
-    { code: 'R1', profile: 'R' as const, criterion: 'Both roots stated correctly', mark_value: 1, part_label: 'b' },
+    { code: 'CK1', profile: 'CK' as const, criterion: 'Recognises factorisable quadratic', mark_value: 1, slot_ref: 'a.i', part_label: 'a' },
+    { code: 'AK1', profile: 'AK' as const, criterion: 'Correct factorisation', mark_value: 1, slot_ref: 'a.i', part_label: 'a' },
+    { code: 'R1', profile: 'R' as const, criterion: 'Both roots stated correctly', mark_value: 1, slot_ref: 'b.i', part_label: 'b' },
   ],
   final_answer: '(3x + 1)(x - 2); x = -1/3; x = 2',
   worked_solution: '$(3x+1)(x-2)=0$ so $x=-\\frac{1}{3}$ or $x=2$.',
@@ -39,7 +39,7 @@ const validMcq = {
   representation: 'prose' as const,
   difficulty: 1 as const,
   marks: 1,
-  parts: [{ label: 'a', prompt: 'Select the median.', marks: 1, answer: '9', response_mode: 'answer' as const }],
+  parts: [{ label: 'a', prompt: 'Select the median.', marks: 1, slots: [{ label: 'i', answer: '9', response_mode: 'answer' as const }] }],
   worked_solution: 'Ordered already; middle value is 9.',
   misconceptions: [],
 };
@@ -64,7 +64,7 @@ describe('QuestionDraftZ — structured (R1.5)', () => {
   it('rejects rubric part_label outside the part labels', () => {
     const q = {
       ...validStructured,
-      rubric: validStructured.rubric.map((r, i) => (i === 0 ? { ...r, part_label: 'c' } : r)),
+      rubric: validStructured.rubric.map((r, i) => (i === 0 ? { ...r, slot_ref: 'c.i', part_label: 'c' } : r)),
     };
     expect(QuestionDraftZ.safeParse(q).success).toBe(false);
   });
@@ -92,7 +92,7 @@ describe('QuestionDraftZ — structured (R1.5)', () => {
         response_mode: 'answer' as const,
       })),
       rubric: [
-        { code: 'AK1', profile: 'AK' as const, criterion: 'c', mark_value: labels.length, part_label: 'a' },
+        { code: 'AK1', profile: 'AK' as const, criterion: 'c', mark_value: labels.length, slot_ref: 'a.i', part_label: 'a' },
       ],
       final_answer: labels.split('').map(() => '1').join('; '),
     });
@@ -118,8 +118,8 @@ describe('QuestionDraftZ — structured (R1.5)', () => {
   it('rejects rubric code prefix that disagrees with profile', () => {
     const q = {
       ...validStructured,
-      rubric: [{ code: 'AK1', profile: 'CK', criterion: 'x', mark_value: 3, part_label: 'a' }],
-      parts: [{ label: 'a', prompt: 'p', marks: 3, answer: '1', response_mode: 'answer' as const }],
+      rubric: [{ code: 'AK1', profile: 'CK', criterion: 'x', mark_value: 3, slot_ref: 'a.i', part_label: 'a' }],
+      parts: [{ label: 'a', prompt: 'p', marks: 3, slots: [{ label: 'i', answer: '1', response_mode: 'answer' as const }] }],
       final_answer: '1',
     };
     expect(QuestionDraftZ.safeParse(q).success).toBe(false);
@@ -174,7 +174,7 @@ describe('QuestionDraftZ — mcq (R1.5)', () => {
       ...validMcq,
       parts: [
         validMcq.parts[0],
-        { label: 'b', prompt: 'p', marks: 1, answer: '1', response_mode: 'answer' as const },
+        { label: 'b', prompt: 'p', marks: 1, slots: [{ label: 'i', answer: '1', response_mode: 'answer' as const }] },
       ],
     };
     expect(QuestionDraftZ.safeParse(q).success).toBe(false);
@@ -207,24 +207,30 @@ describe('QuestionDraftZ — mcq (R1.5)', () => {
 });
 
 describe('QuestionDraftZ — response_mode and answer_format (R1.6)', () => {
+  // R1.8: response_mode and answer_format live on the slot, so an override
+  // lands there rather than on the part that governs it.
   const withPart = (over: Record<string, unknown>) => ({
     ...validStructured,
     marks: 3,
     parts: [
-      { ...validStructured.parts[0], ...over },
+      {
+        ...validStructured.parts[0],
+        slots: [{ ...validStructured.parts[0].slots[0], ...over }],
+      },
       validStructured.parts[1],
     ],
   });
 
   it('defaults response_mode to answer', () => {
-    const { response_mode: _drop, ...bare } = validStructured.parts[0];
+    const first = validStructured.parts[0];
+    const { response_mode: _drop, ...bareSlot } = first.slots[0];
     const res = QuestionDraftZ.safeParse({
       ...validStructured,
-      parts: [bare, validStructured.parts[1]],
+      parts: [{ ...first, slots: [bareSlot] }, validStructured.parts[1]],
     });
     expect(res.success).toBe(true);
     if (res.success && res.data.kind === 'structured') {
-      expect(res.data.parts[0].response_mode).toBe('answer');
+      expect(res.data.parts[0].slots[0].response_mode).toBe('answer');
     }
   });
 
@@ -254,7 +260,7 @@ describe('QuestionDraftZ — response_mode and answer_format (R1.6)', () => {
       const parsed = QuestionDraftZ.safeParse(withPart({ answer_format: f }));
       expect(parsed.success, f).toBe(true);
       const q = parsed.success ? parsed.data : null;
-      expect(q && 'parts' in q ? q.parts[0].answer_format : 'unset', f).toBeUndefined();
+      expect(q && 'parts' in q ? q.parts[0].slots[0].answer_format : 'unset', f).toBeUndefined();
     }
   });
 });
@@ -268,27 +274,27 @@ describe('response_mode is read from the wording, not just the label', () => {
     PartZ.parse({ label: 'a', prompt, marks: 2, answer: '5', ...(response_mode ? { response_mode } : {}) });
 
   it('recognises a show-that part however the model labelled it', () => {
-    expect(part('Show that $P = M^2 - 2M$.').response_mode).toBe('show_that');
-    expect(part('Prove that the triangles are congruent.').response_mode).toBe('show_that');
-    expect(part('(b) Show that the interior angle is $108°$.', 'answer').response_mode).toBe('show_that');
+    expect(part('Show that $P = M^2 - 2M$.').slots[0].response_mode).toBe('show_that');
+    expect(part('Prove that the triangles are congruent.').slots[0].response_mode).toBe('show_that');
+    expect(part('(b) Show that the interior angle is $108°$.', 'answer').slots[0].response_mode).toBe('show_that');
   });
 
   it('recognises a part that asks for a reason', () => {
-    expect(part('Explain why the hexagon has rotational symmetry of order 6.').response_mode).toBe('explain');
-    expect(part('Give a reason for your answer.').response_mode).toBe('explain');
-    expect(part('State ONE reason your answer to (b) is an estimate.').response_mode).toBe('explain');
-    expect(part('Justify your conclusion.').response_mode).toBe('explain');
+    expect(part('Explain why the hexagon has rotational symmetry of order 6.').slots[0].response_mode).toBe('explain');
+    expect(part('Give a reason for your answer.').slots[0].response_mode).toBe('explain');
+    expect(part('State ONE reason your answer to (b) is an estimate.').slots[0].response_mode).toBe('explain');
+    expect(part('Justify your conclusion.').slots[0].response_mode).toBe('explain');
   });
 
   it('leaves an ordinary part alone', () => {
-    expect(part('Calculate the area of the shaded region.').response_mode).toBe('answer');
-    expect(part('Show your working and state the value of $x$.').response_mode).toBe('answer');
-    expect(part('Find the value of $fg(3)$.').response_mode).toBe('answer');
+    expect(part('Calculate the area of the shaded region.').slots[0].response_mode).toBe('answer');
+    expect(part('Show your working and state the value of $x$.').slots[0].response_mode).toBe('answer');
+    expect(part('Find the value of $fg(3)$.').slots[0].response_mode).toBe('answer');
   });
 
   it('never weakens a mode the model set deliberately', () => {
-    expect(part('Calculate the area.', 'explain').response_mode).toBe('explain');
-    expect(part('Find $x$.', 'show_that').response_mode).toBe('show_that');
+    expect(part('Calculate the area.', 'explain').slots[0].response_mode).toBe('explain');
+    expect(part('Find $x$.', 'show_that').slots[0].response_mode).toBe('show_that');
   });
 });
 
@@ -297,17 +303,17 @@ describe('response_mode is read from the wording, not just the label', () => {
 // for. The question was fine; only the label was unknown.
 describe('answer_format we do not recognise drops out, and the question survives', () => {
   const part = (answer_format: unknown) =>
-    PartZ.parse({ label: 'a', prompt: 'Solve the inequality.', marks: 2, answer: 'x > 3', answer_format });
+    PartZ.parse({ label: 'a', prompt: 'Solve the inequality.', marks: 2, slots: [{ label: 'i', answer: 'x > 3', answer_format }] });
 
   it('keeps every format we can actually mark', () => {
     for (const f of ['exact', 'standard_form', 'lowest_terms', 'integer', 'surd', 'equation_form', 'sf:3', 'dp:1']) {
-      expect(part(f).answer_format, f).toBe(f);
+      expect(part(f).slots[0].answer_format, f).toBe(f);
     }
   });
 
   it('drops a value we have no checker for rather than failing the part', () => {
     for (const f of ['set_builder_notation', 'ratio', 'bearing', 'sf:three', 'dp', '']) {
-      expect(part(f).answer_format, f).toBeUndefined();
+      expect(part(f).slots[0].answer_format, f).toBeUndefined();
     }
   });
 
@@ -319,9 +325,9 @@ describe('answer_format we do not recognise drops out, and the question survives
       answer: '\\{x : x > 3\\}',
       answer_format: 'set_builder_notation',
     });
-    expect(p.answer_format).toBeUndefined();
+    expect(p.slots[0].answer_format).toBeUndefined();
     expect(p.prompt).toContain('set-builder notation');
-    expect(p.answer).toBe('\\{x : x > 3\\}');
+    expect(p.slots[0].answer).toBe('\\{x : x > 3\\}');
   });
 });
 
@@ -342,7 +348,7 @@ describe('a named sketch counts as a diagram', () => {
     answer_key: 0,
     profile: 'AK' as const,
     visual: { template: 'coordinateGrid', params },
-    parts: [{ label: 'a', prompt: 'Select the vector.', marks: 1, answer: 'a' }],
+    parts: [{ label: 'a', prompt: 'Select the vector.', marks: 1, slots: [{ label: 'i', answer: 'a' }] }],
     final_answer: 'a',
     worked_solution: 'The vector is $(4,-2)$.',
     misconceptions: [],

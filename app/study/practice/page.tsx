@@ -28,7 +28,12 @@ interface LeanQuestion {
   stimulus?: string;
   stem: string;
   visual?: { template: TemplateName; params: Record<string, unknown> };
-  parts?: { label: string; prompt: string; marks: number; response_mode?: string }[];
+  parts?: {
+    label: string;
+    prompt: string;
+    marks: number;
+    slots?: { label: string; prompt?: string; response_mode?: string }[];
+  }[];
   worked_solution: string;
   rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label: string }[];
 }
@@ -44,7 +49,7 @@ export default async function WorkedPracticePage() {
   const rows = await Question.find({
     status: 'approved',
     module: { $in: student.target_modules },
-    'parts.response_mode': { $in: SELF_MARKED_MODES, $nin: ['answer'] },
+    'parts.slots.response_mode': { $in: SELF_MARKED_MODES, $nin: ['answer'] },
   })
     .select('module marks stimulus stem visual parts worked_solution rubric')
     .limit(20)
@@ -60,14 +65,19 @@ export default async function WorkedPracticePage() {
       ? renderVisual(q.visual as StoredVisual, {
           stimulus: q.stimulus,
           stem: q.stem,
-          partPrompts: (q.parts ?? []).map((p) => p.prompt),
+          partPrompts: (q.parts ?? []).flatMap((p) => [
+        p.prompt,
+        ...(p.slots ?? []).map((slot) => slot.prompt ?? ''),
+      ]),
         })
       : undefined,
     parts: (q.parts ?? []).map((p) => ({
       label: p.label,
       promptHtml: renderMathHtml(p.prompt),
       marks: p.marks,
-      mode: p.response_mode ?? 'answer',
+      mode: (p.slots ?? []).every((s) => (s.response_mode ?? 'answer') !== 'answer')
+        ? (p.slots?.[0]?.response_mode ?? 'answer')
+        : 'answer',
     })),
     workedSolutionHtml: renderMathHtml(q.worked_solution),
     rubric: (q.rubric ?? []).map((r) => ({

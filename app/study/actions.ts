@@ -24,7 +24,7 @@ export async function startSession(): Promise<void> {
         objective_ids: string[];
         module: ModuleNumber;
         kind: 'mcq' | 'structured';
-        parts?: { response_mode?: string }[];
+        parts?: { slots?: { response_mode?: string }[] }[];
       }[]
     >();
 
@@ -34,7 +34,9 @@ export async function startSession(): Promise<void> {
       objective_ids: c.objective_ids,
       module: c.module,
       kind: c.kind,
-      response_modes: (c.parts ?? []).map((p) => p.response_mode ?? 'answer'),
+      response_modes: (c.parts ?? []).flatMap((p) =>
+        (p.slots ?? []).map((slot) => slot.response_mode ?? 'answer'),
+      ),
     })),
     perObjectiveMastery: state.perObjective,
     m1Mastery: state.moduleMastery[1],

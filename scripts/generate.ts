@@ -200,12 +200,20 @@ async function main() {
       // Normalize prose fields, assemble candidate
       const clean = normalizeEscapedNewlines;
       const parts = raw.parts.map((p) => ({
-        ...p,
+        label: p.label,
         prompt: clean(p.prompt),
-        answer: clean(p.answer),
-        accept: p.accept?.length ? p.accept.map(clean) : undefined,
-        response_mode: p.response_mode ?? 'answer',
-        answer_format: p.answer_format ?? undefined,
+        marks: p.marks,
+        slots: (p.slots?.length
+          ? p.slots
+          : [{ label: 'i', answer: p.answer ?? '', accept: p.accept, response_mode: p.response_mode, answer_format: p.answer_format }]
+        ).map((slot) => ({
+          ...slot,
+          prompt: slot.prompt ? clean(slot.prompt) : undefined,
+          answer: clean(slot.answer ?? ''),
+          accept: slot.accept?.length ? slot.accept.map(clean) : undefined,
+          response_mode: slot.response_mode ?? 'answer',
+          answer_format: slot.answer_format ?? undefined,
+        })),
       }));
       const candidate = {
         ...raw,
@@ -259,7 +267,13 @@ async function main() {
 
       // A dropped answer_format is not a rejection, but it is drift worth seeing.
       const droppedFormats = (candidate.parts ?? [])
-        .map((p, i) => ({ raw: p.answer_format, kept: draft.parts[i]?.answer_format, label: p.label }))
+        .flatMap((p, i) =>
+          (p.slots ?? []).map((slot, j) => ({
+            raw: slot.answer_format,
+            kept: draft.parts[i]?.slots[j]?.answer_format,
+            label: `${p.label}.${slot.label}`,
+          })),
+        )
         .filter((f) => f.raw && !f.kept);
       if (droppedFormats.length > 0) {
         console.log(
@@ -300,7 +314,8 @@ async function main() {
         // Deterministic corruption so the solve pass provably disagrees.
         if (draft.kind === 'mcq') draft.answer_key = (draft.answer_key + 1) % 4;
         else {
-          draft.parts[draft.parts.length - 1].answer += ' + 999';
+          const lastPart = draft.parts[draft.parts.length - 1];
+          lastPart.slots[lastPart.slots.length - 1].answer += ' + 999';
           draft.final_answer = deriveFinalAnswer(draft.parts);
         }
       }

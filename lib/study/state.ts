@@ -68,7 +68,7 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
         question_id: {
           objective_ids: string[];
           marks: number;
-          parts?: { marks: number; response_mode?: string }[];
+          parts?: { marks: number; slots?: { response_mode?: string }[] }[];
         } | null;
         profile_marks: { CK: number; AK: number; R: number };
         ts: Date;
@@ -77,11 +77,17 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
   return attempts
     .filter((a) => a.question_id)
     .map((a) => {
-      // Denominator counts only the marks we can actually assess (R1.6 §1/§4),
-      // so a question carrying a show_that part is scored out of the rest.
+      // Denominator counts only the marks we can actually assess (R1.6 §1/§4).
+      // R1.8: a part may mix marked and self-marked slots, so a part counts in
+      // proportion to the share of its slots we mark rather than all-or-nothing.
       const parts = a.question_id!.parts ?? [];
       const assessable = parts.length
-        ? parts.filter((p) => (p.response_mode ?? 'answer') === 'answer').reduce((s, p) => s + p.marks, 0)
+        ? parts.reduce((sum, p) => {
+            const slots = p.slots ?? [];
+            if (slots.length === 0) return sum + p.marks;
+            const marked = slots.filter((s) => (s.response_mode ?? 'answer') === 'answer').length;
+            return sum + (p.marks * marked) / slots.length;
+          }, 0)
         : a.question_id!.marks;
       const marks = assessable || a.question_id!.marks || 1;
       const earned = a.profile_marks.CK + a.profile_marks.AK + a.profile_marks.R;

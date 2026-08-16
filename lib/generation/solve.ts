@@ -93,11 +93,15 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
       stimulus: draft.stimulus,
       stem: draft.stem,
       kind: 'structured',
-      partPrompts: draft.parts.map((p) => ({
-        label: p.label,
-        prompt: p.prompt,
-        mode: p.response_mode ?? 'answer',
-      })),
+      partPrompts: draft.parts.flatMap((p) =>
+        p.slots.map((slot) => ({
+          // The solver answers slot by slot, addressed the way the paper
+          // addresses them: (a)(i), (a)(ii), (b).
+          label: p.slots.length === 1 ? p.label : `${p.label}${slot.label}`,
+          prompt: slot.prompt ? `${p.prompt} ${slot.prompt}` : p.prompt,
+          mode: slot.response_mode ?? 'answer',
+        })),
+      ),
       visualText,
     }),
   });
@@ -109,11 +113,18 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   const solByLabel = new Map(sol.part_answers.map((p) => [bareLabel(p.label), p.final_answer]));
   const figure = figureNotes(sol.figure_check);
   const notes: string[] = [...figure.notes];
-  let agrees = sol.part_answers.length === draft.parts.length && !figure.contradicts;
+  const askable = draft.parts.flatMap((p) =>
+    p.slots.map((slot) => ({
+      ref: p.slots.length === 1 ? p.label : `${p.label}${slot.label}`,
+      prompt: slot.prompt ?? p.prompt,
+      slot,
+    })),
+  );
+  let agrees = sol.part_answers.length === askable.length && !figure.contradicts;
 
-  for (const p of draft.parts) {
+  for (const p of askable) {
     if (!agrees) break;
-    const s = solByLabel.get(bareLabel(p.label));
+    const s = solByLabel.get(bareLabel(p.ref));
     if (s === undefined) {
       agrees = false;
       break;
@@ -122,24 +133,24 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     // "show that" derivation or an "explain" reason answers with — but those
     // are shown to students in worked practice, so they are checked too, by
     // the reader rather than by the rules (R1.6 §1).
-    const mode = p.response_mode ?? 'answer';
-    if (mode === 'answer' && answersEquivalentAny(s, p.answer, p.accept)) continue;
+    const mode = p.slot.response_mode ?? 'answer';
+    if (mode === 'answer' && answersEquivalentAny(s, p.slot.answer, p.slot.accept)) continue;
 
     const verdict = await adjudicateAnswers({
       partPrompt: p.prompt,
-      draftAnswer: p.answer,
+      draftAnswer: p.slot.answer,
       solveAnswer: s,
       mode,
     });
     notes.push(
-      `(${p.label}) ${mode === 'answer' ? '' : `${mode} — `}judged ${verdict.same ? 'SAME' : 'DIFFERENT'}: ${verdict.reason}`,
+      `(${p.ref}) ${mode === 'answer' ? '' : `${mode} — `}judged ${verdict.same ? 'SAME' : 'DIFFERENT'}: ${verdict.reason}`,
     );
     if (!verdict.same) agrees = false;
   }
 
   return {
     agrees,
-    draftAnswer: draft.parts.map((p) => `(${p.label}) ${p.answer}`).join(' '),
+    draftAnswer: askable.map((p) => `(${p.ref}) ${p.slot.answer}`).join(' '),
     solveAnswer: sol.part_answers.map((p) => `(${p.label}) ${p.final_answer}`).join(' '),
     notes,
   };

@@ -34,7 +34,12 @@ export default async function ReviewPage() {
         profile?: string;
         difficulty: number;
         marks: number;
-        parts?: { label: string; prompt: string; marks: number; answer: string; accept?: string[] }[];
+        parts?: {
+          label: string;
+          prompt: string;
+          marks: number;
+          slots?: { label: string; prompt?: string; answer: string; accept?: string[] }[];
+        }[];
         rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string }[];
         final_answer?: string;
         worked_solution: string;
@@ -47,7 +52,10 @@ export default async function ReviewPage() {
           visualHtml = renderVisual(raw.visual as never, {
             stimulus: raw.stimulus,
             stem: raw.stem,
-            partPrompts: (raw.parts ?? []).map((p) => p.prompt),
+            partPrompts: (raw.parts ?? []).flatMap((p) => [
+          p.prompt,
+          ...(p.slots ?? []).map((slot) => slot.prompt ?? ''),
+        ]),
           });
         } catch {
           visualHtml = `<p class="text-red-pen">visual failed to render (template ${raw.visual.template})</p>`;
@@ -66,11 +74,13 @@ export default async function ReviewPage() {
         parts: (raw.parts ?? []).map((p) => ({
           label: p.label,
           marks: p.marks,
-          answerHtml: renderAnswerHtml(p.answer),
-          acceptHtml: p.accept?.length
-            ? p.accept.map(renderAnswerHtml).join(' / ')
-            : undefined,
           promptHtml: renderMathHtml(p.prompt),
+          slots: (p.slots ?? []).map((slot) => ({
+            label: slot.label,
+            promptHtml: slot.prompt ? renderMathHtml(slot.prompt) : undefined,
+            answerHtml: renderAnswerHtml(slot.answer),
+            acceptHtml: slot.accept?.length ? slot.accept.map(renderAnswerHtml).join(' / ') : undefined,
+          })),
         })),
         optionsHtml: raw.options?.map(renderMathHtml),
         answer_key: raw.answer_key,

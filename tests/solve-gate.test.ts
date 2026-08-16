@@ -44,18 +44,30 @@ function draft(parts: QuestionDraft['parts']): QuestionDraft {
       mark_value: p.marks,
       part_label: p.label,
     })),
-    final_answer: parts.map((p) => p.answer).join('; '),
+    final_answer: parts.map((p) => p.slots[0].answer).join('; '),
     worked_solution: 'Step by step.',
     misconceptions: [],
-  } as QuestionDraft;
+  } as unknown as QuestionDraft;
 }
 
+// A part with one answerable slot — the shape almost every drill question has.
 const answerPart = (label: string, answer: string) => ({
   label,
   prompt: `Find part ${label}.`,
   marks: 2,
-  answer,
-  response_mode: 'answer' as const,
+  slots: [{ label: 'i', answer, response_mode: 'answer' as const, rubric_codes: [] }],
+});
+
+// A part governing several slots, as the papers print it.
+const multiSlotPart = (
+  label: string,
+  prompt: string,
+  slots: { label: string; answer: string; response_mode?: 'answer' | 'show_that' | 'explain' }[],
+) => ({
+  label,
+  prompt,
+  marks: slots.length * 2,
+  slots: slots.map((s) => ({ ...s, response_mode: s.response_mode ?? ('answer' as const), rubric_codes: [] })),
 });
 
 beforeEach(() => {
@@ -89,7 +101,7 @@ describe('independentSolve — prose parts are judged, never string-matched (R1.
     ];
     const parts = [
       answerPart('a', '4'),
-      { label: 'b', prompt: 'Show that $P = M^2 - 2M$.', marks: 3, answer: 'P = M^2 - 2M', response_mode: 'show_that' as const },
+      { label: 'b', prompt: 'Show that $P = M^2 - 2M$.', marks: 3, slots: [{ label: 'i', answer: 'P = M^2 - 2M', response_mode: 'show_that' as const, rubric_codes: [] }] },
     ];
     verdicts = [{ same: true, reason: 'The derivation ends at the stated result.' }];
     const out = await independentSolve(draft(parts));
@@ -101,7 +113,7 @@ describe('independentSolve — prose parts are judged, never string-matched (R1.
   it('accepts a differently worded reason, which the rules could never settle', async () => {
     solverParts = [{ label: 'a', final_answer: 'The two composites have different rules.' }];
     const parts = [
-      { label: 'a', prompt: 'Give a reason.', marks: 1, answer: 'fg(x) != gf(x) for x != -2, 0', response_mode: 'explain' as const },
+      { label: 'a', prompt: 'Give a reason.', marks: 1, slots: [{ label: 'i', answer: 'fg(x) != gf(x) for x != -2, 0', response_mode: 'explain' as const, rubric_codes: [] }] },
     ];
     verdicts = [{ same: true, reason: 'Same reason, worded differently.' }];
     const out = await independentSolve(draft(parts));
@@ -113,7 +125,7 @@ describe('independentSolve — prose parts are judged, never string-matched (R1.
     solverParts = [{ label: 'a', final_answer: 'P = M^2 - 3M, so the stated result is wrong.' }];
     verdicts = [{ same: false, reason: 'B derives a different expression.' }];
     const parts = [
-      { label: 'a', prompt: 'Show that $P = M^2 - 2M$.', marks: 3, answer: 'P = M^2 - 2M', response_mode: 'show_that' as const },
+      { label: 'a', prompt: 'Show that $P = M^2 - 2M$.', marks: 3, slots: [{ label: 'i', answer: 'P = M^2 - 2M', response_mode: 'show_that' as const, rubric_codes: [] }] },
     ];
     const out = await independentSolve(draft(parts));
     expect(out.agrees).toBe(false);
