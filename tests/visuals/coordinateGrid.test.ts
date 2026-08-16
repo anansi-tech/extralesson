@@ -451,3 +451,64 @@ describe('coordinateGrid — labels stay readable, windows stay usable', () => {
     expect(Math.max(...ticks)).toBe(5);
   });
 });
+
+// A feasible-region figure printed "x + y = 10" straight through the x-axis,
+// among its tick numerals and its arrow: that line leaves the window at (10, 0),
+// and the label was anchored at the last point of the run.
+describe('coordinateGrid — a line label keeps off the axes', () => {
+  const params = CoordinateGridParamsZ.parse({
+    x_range: [0, 10],
+    y_range: [0, 10],
+    lines: [
+      { m: -1, c: 10, label: 'x + y = 10' },
+      { m: -2, c: 16, label: '2x + y = 16' },
+    ],
+    regions: [
+      {
+        constraints: [
+          { a: 1, b: 1, c: 10, op: 'le' },
+          { a: 2, b: 1, c: 16, op: 'le' },
+        ],
+        label: 'Feasible region',
+      },
+    ],
+  });
+  const svg = coordinateGrid.render(params);
+  const labels = [...svg.matchAll(/<text x="([\d.]+)" y="([\d.]+)"[^>]*>([^<]*)<\/text>/g)]
+    .map((m) => ({ x: Number(m[1]), y: Number(m[2]), t: m[3] }))
+    .filter((l) => l.t.includes('='));
+
+  it('places both equation labels clear of both axes', () => {
+    const axisY = 445; // y = 0 in screen space for this window
+    const axisX = 40; // x = 0
+    expect(labels).toHaveLength(2);
+    for (const l of labels) {
+      expect(Math.abs(l.y - axisY), l.t).toBeGreaterThan(16);
+      expect(Math.abs(l.x - axisX), l.t).toBeGreaterThan(16);
+    }
+  });
+
+  it('keeps them apart from each other', () => {
+    const [a, b] = labels;
+    expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThan(60);
+  });
+
+  it('still labels near the end, not back at the crowded middle', () => {
+    // the x + y = 10 label belongs in the lower right half of the run
+    const l = labels.find((x) => x.t.startsWith('x +'))!;
+    expect(l.x).toBeGreaterThan(245); // right of centre
+    expect(l.y).toBeGreaterThan(245); // below centre
+  });
+
+  it('labels a sketch too, where there are no axes to avoid', () => {
+    const sketch = CoordinateGridParamsZ.parse({
+      named: { polygons: [{ points: ['A', 'B', 'C'] }] },
+      lines: [{ m: 1, c: 0, label: 'y = x' }],
+    });
+    const out = coordinateGrid.render(sketch, {
+      stem: 'Triangle $ABC$ has $A(1,1)$, $B(4,1)$ and $C(2,5)$.',
+      partPrompts: [],
+    });
+    expect(out).toContain('y = x');
+  });
+});
