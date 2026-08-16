@@ -112,26 +112,51 @@ const MAX_ASPECT = 1.6;
 
 // Where a curve or line label goes. The midpoint of a drawn run is the most
 // crowded part of a graph — for a line through the middle of the window it is
-// almost exactly the origin, on top of the axes and their tick numerals. The
-// end of the run is empty by comparison, so labels ride there, pushed clear of
-// the curve and clamped inside the canvas.
+// almost exactly the origin, on top of the axes and their tick numerals — so
+// labels ride near the far end instead, pushed clear of the stroke and clamped
+// inside the canvas.
+//
+// At the end, unless the end is on an axis: a line like x + y = 10 leaves the
+// window at (10, 0) and its label printed straight through the x-axis, its tick
+// numerals and its arrow. Then, and only then, the anchor walks back along the
+// run until it is clear — backing off unconditionally would push labels on
+// other lines toward the middle, which is what putting them at the end fixed.
+const AXIS_CLEARANCE = 24; // px
+
 function labelAtEnd(
   pts: [number, number][],
   canvasW: number,
   canvasH: number,
+  axes?: { x?: number; y?: number }, // screen positions of the drawn axes
 ): { x: number; y: number; anchor: 'start' | 'end' } {
   const end = pts[pts.length - 1];
   const prev = pts[Math.max(0, pts.length - 2)];
   const dx = end[0] - prev[0];
   const dy = end[1] - prev[1];
   const len = Math.hypot(dx, dy) || 1;
+
+  // Walk back along the run until the anchor is clear of both axes, or we have
+  // gone far enough that we are no longer labelling the end of anything.
+  const from = pts[0];
+  const clearOf = (x: number, y: number) =>
+    (axes?.x === undefined || Math.abs(y - axes.x) > AXIS_CLEARANCE) &&
+    (axes?.y === undefined || Math.abs(x - axes.y) > AXIS_CLEARANCE);
+  let t = 0;
+  let ax = end[0];
+  let ay = end[1];
+  while (t < 0.5 && !clearOf(ax, ay)) {
+    t += 0.05;
+    ax = end[0] + (from[0] - end[0]) * t;
+    ay = end[1] + (from[1] - end[1]) * t;
+  }
+
   // perpendicular, upward on screen, so the label sits off the stroke
   const nx = (-dy / len) * 12;
   const ny = (dx / len) * 12 - 4;
-  const toRight = end[0] > canvasW / 2;
+  const toRight = ax > canvasW / 2;
   const anchor: 'start' | 'end' = toRight ? 'end' : 'start';
-  const x = Math.min(canvasW - 6, Math.max(6, end[0] + nx + (toRight ? -6 : 6)));
-  const y = Math.min(canvasH - 6, Math.max(14, end[1] + ny));
+  const x = Math.min(canvasW - 6, Math.max(6, ax + nx + (toRight ? -6 : 6)));
+  const y = Math.min(canvasH - 6, Math.max(14, ay + ny));
   return { x, y, anchor };
 }
 
@@ -571,6 +596,15 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     const X = (v: number) => ox + (v - xmin) * u;
     const Y = (v: number) => oy + (ymax - v) * u;
 
+    // Where the axes are drawn, so a label can be kept off them. A sketch draws
+    // none, and then there is nothing to avoid.
+    const drawnAxes = sketch
+      ? {}
+      : {
+          x: ymin <= 0 && 0 <= ymax ? Y(0) : undefined,
+          y: xmin <= 0 && 0 <= xmax ? X(0) : undefined,
+        };
+
     const parts: string[] = [svgOpen(canvasW, H)];
     // A sketch keeps the geometry and drops the apparatus: no gridlines, axes,
     // arrows or scale numbers. What survives is the shape, drawn from the
@@ -664,6 +698,7 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
           ],
           canvasW,
           H,
+          drawnAxes,
         );
         parts.push(text(spot.x, spot.y, ln.label, { size: 12, anchor: spot.anchor, halo: true }));
       }
@@ -684,6 +719,7 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
           longest.map((pt) => [X(pt[0]), Y(pt[1])] as [number, number]),
           canvasW,
           H,
+          drawnAxes,
         );
         parts.push(text(spot.x, spot.y, cv.label, { size: 12, anchor: spot.anchor, halo: true }));
       }
