@@ -3,14 +3,17 @@ import { circle, svgOpen, text } from '../svg';
 import type { VisualTemplate } from '../types';
 import { numbersInText, valueStatedInText } from '../types';
 
-// Venn diagram: two overlapping labeled set circles inside a universal-set
-// rectangle (labeled U or ξ), with an optional third set. Region values are
+// Venn diagram: two or three overlapping labelled set circles inside a
+// universal-set rectangle (labelled U or ξ). Named venn2 until R1.8, which was
+// a lie the file told about itself — the third set and all seven of its regions
+// have been supported throughout, and the name had us counting the template as
+// two-set-only when auditing coverage against the papers. Region values are
 // strings so they can be counts ("12") or expressions ("x", "x - 3"). Empty
 // string = region shown blank. In the 3-set layout, aAndB means "A and B
 // only" (not C), etc.
 const RegionZ = z.string().max(16);
 
-export const Venn2ParamsZ = z.object({
+export const VennDiagramParamsZ = z.object({
   universe_label: z.string().min(1).max(8).default('U'),
   set_a: z.string().min(1).max(12),
   set_b: z.string().min(1).max(12),
@@ -27,7 +30,7 @@ export const Venn2ParamsZ = z.object({
   }),
 });
 
-export type Venn2Params = z.infer<typeof Venn2ParamsZ>;
+export type VennDiagramParams = z.infer<typeof VennDiagramParamsZ>;
 
 const W = 640;
 
@@ -37,7 +40,7 @@ function isPlainNumber(s: string): boolean {
   return /^-?\d+(?:\.\d+)?$/.test(s.trim());
 }
 
-function definedRegionValues(p: Venn2Params): string[] {
+function definedRegionValues(p: VennDiagramParams): string[] {
   const base = [p.regions.onlyA, p.regions.onlyB, p.regions.aAndB, p.regions.outside];
   if (p.set_c) {
     for (const k of THREE_SET_KEYS) {
@@ -48,15 +51,15 @@ function definedRegionValues(p: Venn2Params): string[] {
   return base;
 }
 
-export const venn2: VisualTemplate<Venn2Params> = {
-  name: 'venn2',
+export const vennDiagram: VisualTemplate<VennDiagramParams> = {
+  name: 'vennDiagram',
   // Invariants enforced by verify(); surfaced to the draft prompt.
   rules: [
     "set labels must be unique",
     "a three-set diagram must supply all seven region values",
     "numeric region values must be non-negative",
   ],
-  paramsSchema: Venn2ParamsZ,
+  paramsSchema: VennDiagramParamsZ,
 
   render(p) {
     const three = Boolean(p.set_c);
@@ -128,24 +131,24 @@ export const venn2: VisualTemplate<Venn2Params> = {
   verify(p, context) {
     const issues: string[] = [];
     const labels = [p.set_a, p.set_b, ...(p.set_c ? [p.set_c] : [])];
-    if (new Set(labels).size !== labels.length) issues.push('venn2: duplicate set labels');
+    if (new Set(labels).size !== labels.length) issues.push('vennDiagram: duplicate set labels');
     if (p.set_c) {
       for (const k of THREE_SET_KEYS) {
         if (p.regions[k] === undefined) {
-          issues.push(`venn2: three-set diagram is missing region "${k}"`);
+          issues.push(`vennDiagram: three-set diagram is missing region "${k}"`);
         }
       }
     } else {
       for (const k of THREE_SET_KEYS) {
         if (p.regions[k] !== undefined) {
-          issues.push(`venn2: region "${k}" given but there is no third set`);
+          issues.push(`vennDiagram: region "${k}" given but there is no third set`);
         }
       }
     }
     const values = definedRegionValues(p);
     for (const v of values) {
       if (isPlainNumber(v) && Number(v) < 0) {
-        issues.push(`venn2: negative region value ${v}`);
+        issues.push(`vennDiagram: negative region value ${v}`);
       }
     }
     // When every region is a plain number and the text states numbers, the
@@ -155,7 +158,7 @@ export const venn2: VisualTemplate<Venn2Params> = {
       const sum = values.reduce((acc, v) => acc + Number(v), 0);
       if (numbersInText(context).length > 0 && !valueStatedInText(sum, context)) {
         issues.push(
-          `venn2: region values sum to ${sum}, which does not match any total stated in the question text`,
+          `vennDiagram: region values sum to ${sum}, which does not match any total stated in the question text`,
         );
       }
     }

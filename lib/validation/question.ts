@@ -39,13 +39,14 @@ export const TemplateNameZ = z.enum([
   'parallelTransversal',
   'polygonMarkedAngle',
   'quadrilateralLabeled',
+  'compoundTriangle',
   'coordinateGrid',
   'travelGraph',
   'barChart',
   'pieChart',
   'histogram',
   'cumulativeFrequency',
-  'venn2',
+  'vennDiagram',
   'compositeShape',
   'patternFigure',
   'numberLine',
@@ -70,6 +71,7 @@ export const TEMPLATES_BY_REPRESENTATION: Record<Exclude<Representation, 'prose'
       'parallelTransversal',
       'polygonMarkedAngle',
       'quadrilateralLabeled',
+      'compoundTriangle',
       'compositeShape',
       'patternFigure',
       'numberLine',
@@ -79,7 +81,7 @@ export const TEMPLATES_BY_REPRESENTATION: Record<Exclude<Representation, 'prose'
     graph: ['coordinateGrid', 'travelGraph', 'cumulativeFrequency'],
     chart: ['barChart', 'pieChart', 'histogram'],
     table: ['dataTable'],
-    venn: ['venn2'],
+    venn: ['vennDiagram'],
   };
 
 export const VisualZ = z.object({
