@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { hatchDefs, hatchFill, INK, line, round, svgOpen, text } from '../svg';
+import { hatchDefs, hatchFill, INK, line, meshDefs, meshRect, plotMark, round, svgOpen, text } from '../svg';
 import type { VerifyContext, VisualTemplate } from '../types';
 import { namedPoints, resolvePoints } from '../points';
 
@@ -69,6 +69,9 @@ export const CoordinateGridParamsZ = z.object({
         c: z.number().min(-100).max(100),
         label: z.string().max(24).optional(),
         domain: z.tuple([CoordZ, CoordZ]).optional(),
+        // The x values whose points are marked on the drawn curve, as the
+        // papers mark the values a candidate plotted from a table.
+        plotted: z.array(CoordZ).max(12).optional(),
       }),
     )
     .max(3)
@@ -567,6 +570,7 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     "curves are quadratics y = ax^2 + bx + c and need a non-zero a; use lines for straight graphs",
     "a curve label written as y = ax^2 + bx + c must match that curve's a, b and c",
     "any root, turning point, y-intercept or axis of symmetry STATED in the question text must be true of a drawn curve",
+    "curves may list `plotted` x values, which mark the points a candidate would have plotted from a table of values",
     "a region shades where ALL of its constraints hold; each constraint is a*x + b*y <= c (op 'le') or a*x + b*y >= c (op 'ge') — write y <= mx + k as a = -m, b = 1, c = k, and x >= k as a = 1, b = 0, c = k",
     "a region constraint must have a or b non-zero — a = b = 0 constrains nothing",
     "a region's constraints must be satisfiable together somewhere inside x_range x y_range; mutually exclusive constraints shade nothing",
@@ -611,6 +615,10 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     // question's own coordinates, and the labels — which is what CXC prints
     // when a transformation question is not set on a supplied grid.
     if (!sketch) {
+    // The paper's fine mesh, under the unit lines: reading an intercept or a
+    // value between two whole numbers is only fair when it is there.
+    parts.push(meshDefs('gridMesh', u));
+    parts.push(meshRect('gridMesh', ox, oy, gridW, gridH));
     // integer gridlines, step 1
     for (let gx = xmin; gx <= xmax; gx++) {
       parts.push(
@@ -712,6 +720,11 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
       for (const run of runs) {
         const d = run.map((pt) => `${round(X(pt[0]))},${round(Y(pt[1]))}`).join(' ');
         parts.push(`<polyline points="${d}" />`);
+      }
+      for (const px of cv.plotted ?? []) {
+        const py = cv.a * px * px + cv.b * px + cv.c;
+        if (px < xmin || px > xmax || py < ymin || py > ymax) continue;
+        parts.push(plotMark(X(px), Y(py)));
       }
       if (cv.label && runs.length > 0) {
         const longest = runs.reduce((best, r) => (r.length > best.length ? r : best), runs[0]);

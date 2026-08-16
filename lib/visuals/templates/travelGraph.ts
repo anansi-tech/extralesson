@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { esc, line, polygon, round, svgOpen, svgPlainLabel, text } from '../svg';
+import { esc, line, meshDefs, meshRect, polygon, round, svgOpen, svgPlainLabel, text } from '../svg';
 import { numbersInText, type VisualTemplate } from '../types';
 
 // Distance-time or speed-time graph: a piecewise-linear journey through
@@ -59,6 +59,11 @@ export const travelGraph: VisualTemplate<TravelGraphParams> = {
     const Y = (v: number) => PAD_T + plotH - (v / vMax) * plotH;
 
     const parts: string[] = [svgOpen(W, H)];
+    // The paper's mesh: a velocity-time graph is read for distances (areas)
+    // and accelerations (gradients), neither of which is fair on a bare plot.
+    const tSpan = Math.max(...p.points.map((pt) => pt.t)) || 1;
+    parts.push(meshDefs('travelMesh', plotW / Math.max(4, Math.min(12, tSpan))));
+    parts.push(meshRect('travelMesh', PAD_L, PAD_T, plotW, plotH));
     // axes
     parts.push(line(PAD_L, PAD_T - 10, PAD_L, PAD_T + plotH));
     parts.push(line(PAD_L, PAD_T + plotH, PAD_L + plotW + 10, PAD_T + plotH));

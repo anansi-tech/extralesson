@@ -136,6 +136,33 @@ export function round(n: number): number {
 // Nice tick positions between min and max inclusive.
 // 45° line hatch, the paper convention for a shaded region. Emit the defs once
 // per SVG and fill shapes with hatchFill(id).
+/**
+ * The 2 mm mesh a real paper prints under its unit lines. Reading "how many
+ * took at most 32 minutes" or a root at x = 1.5 off a grid ruled only in units
+ * is guesswork; the mesh is what makes those questions answerable.
+ *
+ * Drawn as a tiled pattern rather than thousands of lines, so a dense grid
+ * costs the same as a sparse one.
+ */
+export function meshDefs(id: string, spacing: number, divisions = 5): string {
+  const fine = spacing / divisions;
+  return `<defs><pattern id="${id}" width="${round(spacing)}" height="${round(spacing)}" patternUnits="userSpaceOnUse"><path d="M ${round(fine)} 0 L ${round(fine)} ${round(spacing)} M 0 ${round(fine)} L ${round(spacing)} ${round(fine)}" stroke="${INK}" stroke-width="0.25" opacity="0.55" fill="none" /><path d="M ${round(fine * 2)} 0 L ${round(fine * 2)} ${round(spacing)} M 0 ${round(fine * 2)} L ${round(spacing)} ${round(fine * 2)}" stroke="${INK}" stroke-width="0.25" opacity="0.55" fill="none" /><path d="M ${round(fine * 3)} 0 L ${round(fine * 3)} ${round(spacing)} M 0 ${round(fine * 3)} L ${round(spacing)} ${round(fine * 3)}" stroke="${INK}" stroke-width="0.25" opacity="0.55" fill="none" /><path d="M ${round(fine * 4)} 0 L ${round(fine * 4)} ${round(spacing)} M 0 ${round(fine * 4)} L ${round(spacing)} ${round(fine * 4)}" stroke="${INK}" stroke-width="0.25" opacity="0.55" fill="none" /></pattern></defs>`;
+}
+
+/** A rectangle filled with that mesh, drawn under everything else. */
+export function meshRect(id: string, x: number, y: number, w: number, h: number): string {
+  return `<rect x="${round(x)}" y="${round(y)}" width="${round(w)}" height="${round(h)}" fill="url(#${id})" stroke="none" />`;
+}
+
+/** A plotted point, as the papers mark them: a small cross or a filled dot. */
+export function plotMark(x: number, y: number, style: 'cross' | 'dot' = 'dot'): string {
+  if (style === 'cross') {
+    const r = 4;
+    return `<path d="M ${round(x - r)} ${round(y - r)} L ${round(x + r)} ${round(y + r)} M ${round(x - r)} ${round(y + r)} L ${round(x + r)} ${round(y - r)}" stroke="${INK}" stroke-width="1.4" fill="none" />`;
+  }
+  return `<circle cx="${round(x)}" cy="${round(y)}" r="2.6" fill="${INK}" stroke="none" />`;
+}
+
 export function hatchDefs(id: string): string {
   return `<defs><pattern id="${id}" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="${INK}" stroke-width="0.5" /></pattern></defs>`;
 }
