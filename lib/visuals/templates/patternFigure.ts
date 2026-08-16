@@ -6,7 +6,12 @@ import type { VisualTemplate } from '../types';
 // pairing for the complete-the-table archetype. The load-bearing invariant:
 // the number of drawn elements in each figure group exactly equals counts[i].
 export const PatternFigureParamsZ = z.object({
-  kind: z.enum(['dots', 'matchsticks']),
+  // 'concentric-circles' is the target/ripple pattern: figure n is n circles
+  // of radii 1..n about a common centre, a dot at the centre and four on each
+  // circumference, with the region outside the innermost circle shaded. It
+  // grows by a DRAWN RING rather than by loose elements, which is why neither
+  // the dot nor the matchstick arrangements can express it.
+  kind: z.enum(['dots', 'matchsticks', 'concentric-circles']),
   arrangement: z.enum(['triangle', 'square', 'L', 'row', 'cross']),
   figure_numbers: z.array(z.number().int().min(1).max(30)).min(2).max(4),
   counts: z.array(z.number().int().min(1).max(60)).min(2).max(4),
@@ -122,6 +127,8 @@ function renderSvg(p: PatternFigureParams): string {
   const slotW = (W - 2 * PAD) / nFig;
   const bottom = H - 55;
 
+  if (p.kind === 'concentric-circles') return renderCircles(p);
+
   // Per-figure elements in unit coordinates.
   const figures = p.figure_numbers.map((_, i) => {
     const n = p.counts[i] ?? 1;
@@ -168,6 +175,57 @@ function renderSvg(p: PatternFigureParams): string {
   return parts.join('');
 }
 
+/** Rings about a common centre: figure n carries n circles of radii 1..n. */
+export function ringsFor(figureNumber: number): number {
+  return figureNumber;
+}
+
+/** A centre dot and four on each circumference: 4n + 1 for n rings. */
+export function circleDotCount(figureNumber: number): number {
+  return 4 * ringsFor(figureNumber) + 1;
+}
+
+function renderCircles(p: PatternFigureParams): string {
+  const nFig = p.figure_numbers.length;
+  const slotW = (W - 2 * PAD) / nFig;
+  const maxRings = Math.max(...p.figure_numbers);
+  const u = Math.min((slotW - 20) / (2 * maxRings), (H - 70) / (2 * maxRings));
+  const cy = (H - 45) / 2 + 10;
+
+  const parts: string[] = [svgOpen(W, H)];
+  p.figure_numbers.forEach((fig, i) => {
+    const cx = PAD + slotW * (i + 0.5);
+    const rings = ringsFor(fig);
+    const outer = rings * u;
+    parts.push(`<g data-figure="${fig}">`);
+    // Everything outside the innermost circle is shaded, which is the region
+    // the question asks about; the first figure has no such region.
+    if (rings > 1) {
+      parts.push(
+        `<path d="M ${round(cx - outer)} ${round(cy)} a ${round(outer)} ${round(outer)} 0 1 0 ${round(2 * outer)} 0 a ${round(outer)} ${round(outer)} 0 1 0 ${round(-2 * outer)} 0 Z M ${round(cx - u)} ${round(cy)} a ${round(u)} ${round(u)} 0 1 1 ${round(2 * u)} 0 a ${round(u)} ${round(u)} 0 1 1 ${round(-2 * u)} 0 Z" fill="#E4DFD5" fill-rule="evenodd" stroke="none" />`,
+      );
+    }
+    for (let k = 1; k <= rings; k++) {
+      parts.push(
+        `<circle cx="${round(cx)}" cy="${round(cy)}" r="${round(k * u)}" fill="none" stroke="${INK}" stroke-width="1.5" />`,
+      );
+    }
+    // The diameters the paper rules through every figure.
+    parts.push(line(cx - outer, cy, cx + outer, cy));
+    parts.push(line(cx, cy - outer, cx, cy + outer));
+    const dot = (x: number, y: number) =>
+      `<circle cx="${round(x)}" cy="${round(y)}" r="${round(Math.min(4, u * 0.28))}" fill="${INK}" />`;
+    parts.push(dot(cx, cy));
+    for (let k = 1; k <= rings; k++) {
+      parts.push(dot(cx + k * u, cy), dot(cx - k * u, cy), dot(cx, cy + k * u), dot(cx, cy - k * u));
+    }
+    parts.push(text(cx, H - 18, `Figure ${fig}`, { size: 13 }));
+    parts.push('</g>');
+  });
+  parts.push('</svg>');
+  return parts.join('');
+}
+
 export const patternFigure: VisualTemplate<PatternFigureParams> = {
   name: 'patternFigure',
   // Invariants enforced by verify(); surfaced to the draft prompt.
@@ -175,12 +233,22 @@ export const patternFigure: VisualTemplate<PatternFigureParams> = {
     "figure_numbers must be consecutive and start at 1 or more",
     "counts must strictly increase with CONSTANT SECOND DIFFERENCES (linear or quadratic growth)",
     "counts must equal the number of dots/matchsticks actually drawn",
+    "for kind 'concentric-circles', figure n is n circles of radii 1..n about one centre and counts must be the DOTS: 4n + 1 (one at the centre, four on each circumference)",
   ],
   paramsSchema: PatternFigureParamsZ,
 
   render: renderSvg,
 
   describe(p) {
+    if (p.kind === 'concentric-circles') {
+      const perFigure = p.figure_numbers
+        .map(
+          (n, i) =>
+            `Figure ${n} has ${ringsFor(n)} circle(s) of radii 1 to ${ringsFor(n)} units and ${p.counts[i]} dots`,
+        )
+        .join('; ');
+      return `Growing pattern of concentric circles about a common centre, with a horizontal and a vertical diameter ruled through each figure. There is one dot at the centre and four dots on each circumference. ${perFigure}. In every figure after the first, the region between the innermost circle and the outermost circle is shaded.`;
+    }
     const unit = p.kind === 'dots' ? 'dots' : 'matchsticks';
     const perFigure = p.figure_numbers
       .map((n, i) => `Figure ${n} has ${p.counts[i]} ${unit}`)
@@ -190,6 +258,18 @@ export const patternFigure: VisualTemplate<PatternFigureParams> = {
 
   verify(p) {
     const issues: string[] = [];
+    if (p.kind === 'concentric-circles') {
+      // The drawn dots ARE the count, exactly as for the other kinds: a figure
+      // whose table says 12 dots and whose picture shows 13 is unanswerable.
+      p.figure_numbers.forEach((n, i) => {
+        const drawn = circleDotCount(n);
+        if (p.counts[i] !== drawn) {
+          issues.push(
+            `patternFigure: figure ${n} draws ${drawn} dots (4 x ${ringsFor(n)} rings + 1 centre) but counts says ${p.counts[i]}`,
+          );
+        }
+      });
+    }
     if (p.counts.length !== p.figure_numbers.length) {
       issues.push(
         `patternFigure: ${p.counts.length} counts for ${p.figure_numbers.length} figure numbers`,
@@ -221,7 +301,10 @@ export const patternFigure: VisualTemplate<PatternFigureParams> = {
     }
     // Drawn-element invariant: each figure group must contain exactly counts[i]
     // dots (circles) or matchsticks (lines).
-    if (p.counts.length === p.figure_numbers.length) {
+    // The concentric-circles kind is counted above, against the rings it draws:
+    // here a <circle> is a ring OR a dot and a <line> is a ruled diameter, so
+    // counting tags would compare the wrong things.
+    if (p.kind !== 'concentric-circles' && p.counts.length === p.figure_numbers.length) {
       const svg = renderSvg(p);
       const groups = [...svg.matchAll(/<g data-figure="(\d+)">([\s\S]*?)<\/g>/g)];
       if (groups.length !== p.figure_numbers.length) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { Fragment, useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { submitAnswer, type Feedback } from './actions';
 
@@ -16,6 +16,8 @@ export interface CardQuestion {
     label: string;
     promptHtml: string;
     marks: number;
+    /** Cloze prose, already split on its gaps: n gaps give n+1 pieces. */
+    statementHtml?: string[];
     slots: { ref: string; label: string; promptHtml?: string; mode: string }[];
   }[];
   optionsHtml?: string[];
@@ -161,9 +163,36 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                     [{p.marks}]
                   </span>
                 </div>
+                {/* A statement completed in place: the prose runs on and the
+                    answers sit inside it, which is how the papers print it and
+                    is why it is one item rather than two questions. */}
+                {p.statementHtml && (
+                  <div className="mt-2 flex flex-wrap items-baseline gap-x-1 gap-y-2 pl-4 text-sm">
+                    {p.statementHtml.map((piece, i) => (
+                      <Fragment key={i}>
+                        <span
+                          className="question-prose"
+                          dangerouslySetInnerHTML={{ __html: piece }}
+                        />
+                        {i < p.slots.length && (
+                          <input
+                            value={partAnswers[p.slots[i].ref] ?? ''}
+                            onChange={(e) =>
+                              setPartAnswers((prev) => ({ ...prev, [p.slots[i].ref]: e.target.value }))
+                            }
+                            disabled={!!feedback}
+                            aria-label={`Answer ${i + 1} in the statement for part (${p.label})`}
+                            className="w-24 border-0 border-b-[1.5px] border-ink bg-transparent px-1 py-0.5 text-center font-mono text-sm"
+                          />
+                        )}
+                      </Fragment>
+                    ))}
+                  </div>
+                )}
+
                 {/* One row per slot: the paper's (i), (ii), a table cell, or a
                     single unlabelled answer when the part asks for one thing. */}
-                {p.slots.map((slot) => {
+                {!p.statementHtml && p.slots.map((slot) => {
                   const partFeedback = feedback?.partResults.find((r) => r.label === slot.ref);
                   return (
                     <div key={slot.ref} className={p.slots.length > 1 ? 'mt-1 pl-4' : ''}>

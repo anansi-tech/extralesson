@@ -40,6 +40,8 @@ const PartSchema = new Schema(
     prompt: { type: String, required: true },
     marks: { type: Number, required: true },
     slots: { type: [SlotSchema], required: true },
+    // A statement completed in place, {} per gap — the paper's cloze item.
+    statement: { type: String },
   },
   { _id: false },
 );

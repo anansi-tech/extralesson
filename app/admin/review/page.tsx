@@ -39,6 +39,7 @@ export default async function ReviewPage() {
           label: string;
           prompt: string;
           marks: number;
+          statement?: string;
           slots?: { label: string; prompt?: string; answer: string; accept?: string[] }[];
         }[];
         rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string }[];
@@ -76,6 +77,9 @@ export default async function ReviewPage() {
           label: p.label,
           marks: p.marks,
           promptHtml: renderMathHtml(p.prompt),
+          statementHtml: p.statement
+            ? p.statement.split('{}').map((piece: string) => renderMathHtml(piece))
+            : undefined,
           slots: (p.slots ?? []).map((slot) => ({
             label: slot.label,
             promptHtml: slot.prompt ? renderMathHtml(slot.prompt) : undefined,

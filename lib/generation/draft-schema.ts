@@ -33,6 +33,8 @@ const SlotLooseZ = z.object({
 export const PartLooseZ = z.object({
   label: z.string(),
   prompt: z.string(),
+  // A sentence with {} where each answer goes, one gap per slot.
+  statement: z.string().nullish(),
   marks: z.number(),
   slots: z.array(SlotLooseZ).nullish(),
   answer: z.string().nullish(),
