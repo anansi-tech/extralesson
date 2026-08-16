@@ -17,7 +17,8 @@ function preClean(raw: string): string {
     .toLowerCase()
     .replace(/\\left|\\right|\\,|\\;/g, '')
     .replace(/\$+/g, '') // KaTeX delimiters and bare dollar signs
-    .replace(/\b(ec|us|tt|bds|gy|j)\s*(?=\d)/g, '') // currency prefixes left after $ strip
+    // currency prefixes left behind once the $ is stripped, across the region
+    .replace(/\b(ec|us|tt|bb|bds|bz|ky|gy|g|j|b)\s*(?=\d)/g, '')
     .replace(/\\text\{([^{}]*)\}/g, '$1') // \text{ and } wrappers carry no value
     .replace(/\\[dt]frac\b/g, '\\frac') // display/inline fractions are one fraction
     .replace(/[−–]/g, '-') // unicode minus / en-dash
