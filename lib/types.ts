@@ -6,6 +6,27 @@ export type Profile = 'CK' | 'AK' | 'R';
 
 export type SyllabusMode = 'legacy-jan' | 'modular-2027';
 
+// R1.8 Part 0: where a question is set, so the bank can be kept varied and
+// measured. 'none' is a first-class choice — the papers set most Paper 1 items
+// as bare symbolic work.
+export type ContextCategory =
+  | 'none'
+  | 'retail'
+  | 'wages'
+  | 'banking'
+  | 'transport'
+  | 'agriculture'
+  | 'fishing'
+  | 'construction'
+  | 'household'
+  | 'school'
+  | 'sport'
+  | 'events'
+  | 'tourism'
+  | 'health'
+  | 'environment'
+  | 'manufacturing';
+
 export type ExamSitting = 'jan-2027' | 'may-june-2027';
 
 export type QuestionKind = 'mcq' | 'structured';

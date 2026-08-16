@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { CONTEXT_CATEGORIES } from '@/lib/generation/contexts';
 import type { Representation, ResponseMode, TemplateName } from '@/lib/types';
 
 // Boundary validation for questions (R1.5 §2). Every question write —
@@ -167,6 +168,9 @@ const QuestionBaseZ = z.object({
   marks: z.number().int().min(1),
   worked_solution: z.string().min(1),
   misconceptions: z.array(MisconceptionZ).default([]),
+  // R1.8 Part 0: where the question is set. Absent on questions written before
+  // the field existed; the backfill classifies those from their own text.
+  context_category: optional(z.enum(CONTEXT_CATEGORIES)),
 });
 
 const moduleAgrees = (q: { module: number; objective_ids: string[] }) =>

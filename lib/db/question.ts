@@ -57,6 +57,8 @@ const QuestionSchema = new Schema({
   kind: { type: String, enum: ['mcq', 'structured'], required: true },
   stimulus: { type: String }, // shared context (KaTeX-safe), R1.5
   stem: { type: String, required: true }, // KaTeX-safe
+  // R1.8 Part 0: the setting, for keeping the bank varied and measurable.
+  context_category: { type: String },
   visual: { type: VisualSchema, default: undefined }, // R1.5 §3
   parts: { type: [PartSchema], default: [] }, // R1.5 §2; backfilled for old rows
   archetype: {
