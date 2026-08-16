@@ -14,6 +14,7 @@ import { parallelTransversal } from './templates/parallelTransversal';
 import { patternFigure } from './templates/patternFigure';
 import { pieChart } from './templates/pieChart';
 import { polygonMarkedAngle } from './templates/polygonMarkedAngle';
+import { quadrilateralLabeled } from './templates/quadrilateralLabeled';
 import { travelGraph } from './templates/travelGraph';
 import { triangleLabeled } from './templates/triangleLabeled';
 import { vectorFigure } from './templates/vectorFigure';
@@ -25,6 +26,7 @@ export const TEMPLATES: Record<TemplateName, VisualTemplate<never>> = {
   circleCenter,
   parallelTransversal,
   polygonMarkedAngle,
+  quadrilateralLabeled,
   coordinateGrid,
   travelGraph,
   barChart,

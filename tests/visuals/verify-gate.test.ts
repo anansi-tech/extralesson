@@ -6,9 +6,9 @@ import { svgPlainLabel } from '@/lib/visuals/svg';
 import type { TemplateName } from '@/lib/types';
 
 describe('visual verify gate', () => {
-  it('registry contains all 17 templates with consistent names', () => {
+  it('registry contains all 18 templates with consistent names', () => {
     const names = Object.keys(TEMPLATES) as TemplateName[];
-    expect(names).toHaveLength(17);
+    expect(names).toHaveLength(18);
     for (const n of names) expect(TEMPLATES[n].name).toBe(n);
   });
 

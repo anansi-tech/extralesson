@@ -36,7 +36,7 @@ export const REPRESENTATION_TARGETS: Record<string, RepresentationTarget[]> = {
     {
       representation: 'diagram',
       share: 81,
-      template_hints: ['compositeShape', 'triangleLabeled', 'polygonMarkedAngle', 'circleCenter'],
+      template_hints: ['compositeShape', 'triangleLabeled', 'quadrilateralLabeled', 'polygonMarkedAngle', 'circleCenter'],
     },
     { representation: 'graph', share: 15, template_hints: ['travelGraph', 'coordinateGrid'] },
     { representation: 'prose', share: 4, template_hints: [] },
@@ -72,7 +72,7 @@ export const REPRESENTATION_TARGETS: Record<string, RepresentationTarget[]> = {
     {
       representation: 'diagram',
       share: 79,
-      template_hints: ['triangleLabeled', 'parallelTransversal', 'polygonMarkedAngle', 'circleCenter', 'compositeShape'],
+      template_hints: ['triangleLabeled', 'parallelTransversal', 'quadrilateralLabeled', 'polygonMarkedAngle', 'circleCenter', 'compositeShape'],
     },
     { representation: 'prose', share: 21, template_hints: [] },
   ],

@@ -89,6 +89,7 @@ export type TemplateName =
   | 'circleCenter'
   | 'parallelTransversal'
   | 'polygonMarkedAngle'
+  | 'quadrilateralLabeled'
   | 'coordinateGrid'
   | 'travelGraph'
   | 'barChart'
