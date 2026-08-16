@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { verifyQuestionVisual } from '@/lib/visuals/verify';
 import { paramsDocFor, renderVisual, describeVisual } from '@/lib/visuals';
 import { TEMPLATES } from '@/lib/visuals';
+import { svgPlainLabel } from '@/lib/visuals/svg';
 import type { TemplateName } from '@/lib/types';
 
 describe('visual verify gate', () => {
@@ -298,5 +299,37 @@ describe('the coordinate rule does not care whether the question is an MCQ', () 
       { stem: transformationStem, partPrompts: ['Select the translation vector.'] },
     );
     expect(res.ok).toBe(true);
+  });
+});
+
+// A curve label read "y = x^2 - 6x + 5" on the figure: svgPlainLabel translates
+// \frac, \sqrt, \times and ^\circ for plain SVG text, but had no rule for an
+// exponent, and figure labels carry no markup to fall back on.
+describe('svgPlainLabel — exponents and indices', () => {
+  it('sets a numeric exponent as a superscript', () => {
+    expect(svgPlainLabel('y = x^2 - 6x + 5')).toBe('y = x² - 6x + 5');
+    expect(svgPlainLabel('y = x^{2} - 2x - 3')).toBe('y = x² - 2x - 3');
+    expect(svgPlainLabel('10^{-5}')).toBe('10⁻⁵');
+    expect(svgPlainLabel('f^{-1}(x)')).toBe('f⁻¹(x)');
+    expect(svgPlainLabel('x^{2n}')).toBe('x²ⁿ');
+  });
+
+  it('sets an index as a subscript, which image points now use', () => {
+    expect(svgPlainLabel('A_1')).toBe('A₁');
+    expect(svgPlainLabel('A_{12}')).toBe('A₁₂');
+  });
+
+  it('leaves alone what unicode cannot set, rather than half-converting it', () => {
+    // no superscript 'a' or 'b' in the set we use
+    expect(svgPlainLabel('x^{a+b}')).toContain('^');
+  });
+
+  it('keeps every translation it already did', () => {
+    expect(svgPlainLabel('90^\\circ')).toBe('90°');
+    expect(svgPlainLabel('\\frac{1}{2}x')).toBe('1/2x');
+    expect(svgPlainLabel('\\sqrt{2}')).toBe('√2');
+    expect(svgPlainLabel('3 \\times 4')).toBe('3 × 4');
+    expect(svgPlainLabel('EC$50')).toBe('EC$50');
+    expect(svgPlainLabel('\\vec{AB}')).toBe('AB⃗');
   });
 });
