@@ -51,8 +51,15 @@ function renderOneAnswer(raw: string): string {
 
 // An expression carries math signals and no prose words. Backslash commands
 // are removed first so \frac and \sqrt don't read as words.
+// English words that join quantities in an answer: "14 m by 6 m", "3 to 4".
+// A run of three letters already marks a value as prose; these are the short
+// ones that slipped through and were typeset as maths, which renders them as
+// italic variables with the spaces closed up — "14mby6m".
+const CONNECTOR = /\b(?:by|to|per|and|or|each)\b/i;
+
 function looksLikeExpression(value: string): boolean {
   if (!/[\\^_=+\-*/]|\d/.test(value)) return false;
+  if (CONNECTOR.test(value)) return false;
   const letters = value
     .replace(/\\(?:begin|end)\{[a-zA-Z*]+\}/g, '') // environments: pmatrix, cases
     .replace(/\\[a-zA-Z]+/g, '') // commands: \frac, \sqrt, \pi
