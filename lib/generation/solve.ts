@@ -55,6 +55,18 @@ function figureNotes(check?: { verdict: string; note: string }): {
   };
 }
 
+/**
+ * A statement with every gap shown as ___ and the one being asked for marked,
+ * so a solver reading one slot at a time knows which blank is its own.
+ */
+export function clozeWithGapMarked(statement: string, index: number): string {
+  let seen = -1;
+  return statement.replace(/\{\}/g, () => {
+    seen += 1;
+    return seen === index ? '[___ THIS GAP ___]' : '___';
+  });
+}
+
 export async function independentSolve(draft: QuestionDraft): Promise<SolveOutcome> {
   const questionContext = {
     stimulus: draft.stimulus,
@@ -94,11 +106,20 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
       stem: draft.stem,
       kind: 'structured',
       partPrompts: draft.parts.flatMap((p) =>
-        p.slots.map((slot) => ({
+        p.slots.map((slot, si) => ({
           // Addressed by the slot's own reference, so a key cannot be read as
           // "the whole of part (a)" and answered once for several slots.
           label: p.slots.length === 1 ? p.label : `${p.label}.${slot.label}`,
-          prompt: slot.prompt ? `${p.prompt} ${slot.prompt}` : p.prompt,
+          // A cloze part's instruction is only "Complete the statement below",
+          // and the statement is the question. Without it the solver has
+          // nothing to work from and answers "cannot be determined" — which
+          // reads as a disagreement and auto-rejects a perfectly good draft.
+          // Each gap is shown in place, with THIS slot's gap marked.
+          prompt: p.statement
+            ? `${p.prompt} "${clozeWithGapMarked(p.statement, si)}" — give the answer for gap ${si + 1}.`
+            : slot.prompt
+              ? `${p.prompt} ${slot.prompt}`
+              : p.prompt,
           mode: slot.response_mode ?? 'answer',
         })),
       ),
@@ -120,9 +141,13 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   const figure = figureNotes(sol.figure_check);
   const notes: string[] = [...figure.notes];
   const askable = draft.parts.flatMap((p) =>
-    p.slots.map((slot) => ({
+    p.slots.map((slot, si) => ({
       ref: p.slots.length === 1 ? p.label : `${p.label}.${slot.label}`,
-      prompt: slot.prompt ?? p.prompt,
+      // The adjudicator judges two answers against the question they answer, so
+      // it needs the statement for the same reason the solver does.
+      prompt: p.statement
+        ? `${p.prompt} "${clozeWithGapMarked(p.statement, si)}"`
+        : (slot.prompt ?? p.prompt),
       slot,
     })),
   );
