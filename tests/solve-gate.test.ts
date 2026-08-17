@@ -9,6 +9,7 @@ const calls: string[] = [];
 let solverParts: { label: string; final_answer: string }[] = [];
 let verdicts: { same: boolean; reason: string }[] = [];
 let figureCheck: { verdict: string; note: string } | undefined;
+let lastPrompt = '';
 
 vi.mock('ai', () => ({
   generateObject: vi.fn(async ({ prompt }: { prompt: string }) => {
@@ -19,12 +20,13 @@ vi.mock('ai', () => ({
       return { object: next };
     }
     calls.push('solve');
+    lastPrompt = prompt;
     return { object: { part_answers: solverParts, ...(figureCheck ? { figure_check: figureCheck } : {}) } };
   }),
 }));
 vi.mock('@/lib/ai', () => ({ model: {}, MODEL_ID: 'test' }));
 
-const { independentSolve } = await import('@/lib/generation/solve');
+const { independentSolve, clozeWithGapMarked } = await import('@/lib/generation/solve');
 
 function draft(parts: QuestionDraft['parts']): QuestionDraft {
   return {
@@ -235,5 +237,54 @@ describe('independentSolve — a part label is a letter, however it is written',
     solverParts = [{ label: '(a)', final_answer: '4' }, { label: '(zz)', final_answer: '9' }];
     const out = await independentSolve(draft([answerPart('a', '4'), answerPart('b', '9')]));
     expect(out.agrees).toBe(false);
+  });
+});
+
+// A cloze part's instruction is "Complete the statement below" and the
+// statement IS the question. Sending the instruction alone left the solver with
+// nothing to work from: it answered "cannot be determined", which reads as a
+// disagreement, and a regeneration run lost 54 drafts to it.
+describe('independentSolve — cloze parts reach the solver', () => {
+  it('marks each gap so a solver answering one slot knows which blank is its own', () => {
+    const s = 'The octagon has {} lines of symmetry and rotational symmetry of order {}.';
+    expect(clozeWithGapMarked(s, 0)).toBe(
+      'The octagon has [___ THIS GAP ___] lines of symmetry and rotational symmetry of order ___.',
+    );
+    expect(clozeWithGapMarked(s, 1)).toBe(
+      'The octagon has ___ lines of symmetry and rotational symmetry of order [___ THIS GAP ___].',
+    );
+  });
+
+  it('sends the statement, not just the instruction', async () => {
+    solverParts = [
+      { label: 'a.i', final_answer: '8' },
+      { label: 'a.ii', final_answer: '8' },
+    ];
+    const cloze = {
+      ...draft([
+        {
+          label: 'a',
+          prompt: 'x',
+          marks: 2,
+          slots: [{ label: 'i', answer: '8', response_mode: 'answer' as const, rubric_codes: [], depends_on: [] }],
+        },
+      ] as never),
+      parts: [
+        {
+          label: 'a',
+          prompt: 'Complete the statement below.',
+          marks: 2,
+          statement: 'The regular octagon has {} lines of symmetry and order {}.',
+          slots: [
+            { label: 'i', answer: '8', response_mode: 'answer' as const, rubric_codes: [], depends_on: [] },
+            { label: 'ii', answer: '8', response_mode: 'answer' as const, rubric_codes: [], depends_on: [] },
+          ],
+        },
+      ],
+    };
+    const out = await independentSolve(cloze as never);
+    expect(out.agrees).toBe(true);
+    expect(lastPrompt).toContain('lines of symmetry');
+    expect(lastPrompt).toContain('THIS GAP');
   });
 });
