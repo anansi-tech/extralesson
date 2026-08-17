@@ -6,7 +6,7 @@ import type { QuestionDraft } from '@/lib/validation/question';
 // about the model.
 
 const calls: string[] = [];
-let solverParts: { label: string; final_answer: string }[] = [];
+let solverParts: { label: string; final_answer: string; new_work?: boolean; new_work_note?: string }[] = [];
 let verdicts: { same: boolean; reason: string }[] = [];
 let figureCheck: { verdict: string; note: string } | undefined;
 let lastPrompt = '';
@@ -286,5 +286,67 @@ describe('independentSolve — cloze parts reach the solver', () => {
     expect(out.agrees).toBe(true);
     expect(lastPrompt).toContain('lines of symmetry');
     expect(lastPrompt).toContain('THIS GAP');
+  });
+});
+
+// A part that demands nothing is a part the student cannot get wrong, and no
+// structural check can see it: depends_on proves the parts CONNECT, and a
+// vectors question whose (b) restated its own premise and whose (c) inverted
+// (a) satisfied every gate we had. The solver has just done the work, so it is
+// the only reader that knows what each part actually cost.
+describe('independentSolve — a part that demands no new work', () => {
+  const twoParts = () =>
+    draft([
+      answerPart('a', '4'),
+      answerPart('b', '9'),
+    ]);
+
+  it('rejects when the solver reports a part cost nothing', async () => {
+    solverParts = [
+      { label: 'a', final_answer: '4', new_work: true, new_work_note: 'computed from the given vectors' },
+      { label: 'b', final_answer: '9', new_work: false, new_work_note: 'stated in the stem' },
+    ];
+    const out = await independentSolve(twoParts());
+    expect(out.agrees).toBe(false);
+    expect(out.notes.join(' ')).toContain('(b) demands no new work: stated in the stem');
+  });
+
+  it('accepts when every part cost something', async () => {
+    solverParts = [
+      { label: 'a', final_answer: '4', new_work: true, new_work_note: 'computed' },
+      { label: 'b', final_answer: '9', new_work: true, new_work_note: 'derived from (a)' },
+    ];
+    const out = await independentSolve(twoParts());
+    expect(out.agrees).toBe(true);
+  });
+
+  it('treats a missing field as work done, so a quiet solver cannot fail everything', async () => {
+    solverParts = [
+      { label: 'a', final_answer: '4' },
+      { label: 'b', final_answer: '9' },
+    ];
+    const out = await independentSolve(twoParts());
+    expect(out.agrees).toBe(true);
+  });
+
+  it('judges only auto-marked parts: a show-that part restates its result by design', async () => {
+    const withShowThat = draft([
+      answerPart('a', '4'),
+      {
+        label: 'b',
+        prompt: 'Show that the total is 9.',
+        marks: 2,
+        slots: [
+          { label: 'i', answer: '9', response_mode: 'show_that' as const, rubric_codes: [], depends_on: [] },
+        ],
+      },
+    ] as never);
+    solverParts = [
+      { label: 'a', final_answer: '4', new_work: true, new_work_note: 'computed' },
+      { label: 'b', final_answer: '9', new_work: false, new_work_note: 'the stem states the result' },
+    ];
+    verdicts = [{ same: true, reason: 'same derivation' }];
+    const out = await independentSolve(withShowThat);
+    expect(out.agrees).toBe(true);
   });
 });
