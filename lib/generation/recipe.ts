@@ -1,7 +1,8 @@
 import {
   DIFFICULTY_TARGETS,
-  nextP1Profile,
   largestDeficit,
+  P1_PROFILE_SPLIT,
+  P2_PROFILE_SPLIT,
   MCQ_ARCHETYPE_TARGETS,
   P1_TOTAL,
   P2_MARKS_TOTAL,
@@ -12,11 +13,66 @@ import {
 import {
   GRID_BIAS,
   GRID_BIASED_OBJECTIVES,
-  MCQ_VISUAL_BIAS_TOPICS,
   MCQ_VISUAL_SHARE,
   type RepresentationTarget,
 } from '@/lib/targets/representation';
 import type { Archetype, Profile, Representation, TemplateName } from '@/lib/types';
+
+const PROFILES: Profile[] = ['CK', 'AK', 'R'];
+
+/**
+ * Marks per profile for one question, pulled toward whichever profile the bank
+ * is shortest of.
+ *
+ * The base target is the blueprint split; the correction is the shortfall
+ * against it, so a bank at 21% CK asks the next question for more CK than the
+ * steady-state 30% and the mix converges instead of sitting still. Largest
+ * remainder keeps the marks summing to the question's total exactly.
+ */
+export function rubricSplitFor(
+  marks: number,
+  target: Record<Profile, number>,
+  actual: Record<Profile, number>,
+): Record<Profile, number> {
+  const targetTotal = PROFILES.reduce((s, p) => s + target[p], 0);
+  const actualTotal = PROFILES.reduce((s, p) => s + (actual[p] ?? 0), 0);
+
+  const weights = PROFILES.map((p) => {
+    const want = target[p] / targetTotal;
+    const have = actualTotal === 0 ? want : (actual[p] ?? 0) / actualTotal;
+    // Aim past the target by the size of the shortfall, never below a floor:
+    // a profile that is already over-represented still appears, just less.
+    return Math.max(0.05, want + (want - have));
+  });
+  const weightTotal = weights.reduce((s, w) => s + w, 0);
+
+  const exact = weights.map((w) => (w / weightTotal) * marks);
+  const split = exact.map((v) => Math.floor(v));
+  let left = marks - split.reduce((s, v) => s + v, 0);
+  const order = exact
+    .map((v, i) => ({ i, frac: v - Math.floor(v) }))
+    .sort((a, b) => b.frac - a.frac || a.i - b.i);
+  for (const { i } of order) {
+    if (left <= 0) break;
+    split[i]++;
+    left--;
+  }
+
+  // A question big enough to carry all three carries all three. Correcting a
+  // skew by zeroing a profile out is the same failure the correction exists to
+  // fix, pointed the other way — and a 10-mark paper question with no reasoning
+  // mark, or none for knowing what to do, is not what the papers set.
+  if (marks >= 6) {
+    for (let i = 0; i < split.length; i++) {
+      if (split[i] > 0) continue;
+      const biggest = split.indexOf(Math.max(...split));
+      if (split[biggest] <= 1) break;
+      split[biggest]--;
+      split[i]++;
+    }
+  }
+  return { CK: split[0], AK: split[1], R: split[2] };
+}
 
 // R1.5 §5 — the 6-field recipe. The generator computes the largest matrix
 // deficit and emits recipes; the model no longer free-chooses objectives.
@@ -33,6 +89,15 @@ export interface QuestionRecipe {
    * topic blocks do, instead of the model choosing one item at a time.
    */
   profile?: Profile;
+  /**
+   * Structured only: how many marks of this question's rubric each profile must
+   * carry, summing to `marks`.
+   *
+   * A target the recipe does not consume is a wish. CK/AK/R was declared
+   * 30/40/30 and sat at 21/55/24 because a structured recipe carried no profile
+   * at all — the split was left to the model, which reaches for procedure.
+   */
+  rubric_split?: Record<Profile, number>;
   /**
    * R1.8 §2. A 'paper' question is what the exam actually sets: 9-12 marks,
    * 2-4 lettered parts, objectives drawn from two or three topics in one
@@ -169,9 +234,11 @@ export function nextRecipe(
   }
   const gridBiased = objective_ids.some((id) => GRID_BIASED_OBJECTIVES.has(id));
 
-  // 5. Representation: topic targets minus topic actuals. For MCQs, respect
-  //    the global 37% visual share: unbiased topics only get prose recipes
-  //    once the global visual share is exceeded.
+  // 5. Representation: topic targets minus topic actuals. For a Paper 1 item
+  //    the visual/prose decision comes FIRST and from the global share, which
+  //    is a target rather than a ceiling: as a ceiling it only diverted to
+  //    prose once 37% was already exceeded, and it exempted nine of fifteen
+  //    topics, so the bank reached 53% visual before anything pushed back.
   const repTargets: RepresentationTarget[] = REPRESENTATION_TARGETS[topic] ?? [
     { representation: 'prose', share: 100, template_hints: [] },
   ];
@@ -186,11 +253,22 @@ export function nextRecipe(
     repTargetRecord,
     row.representation_actuals as Record<string, number>,
   ) as Representation;
-  if (kind === 'mcq' && representation !== 'prose') {
+  if (kind === 'mcq') {
+    // Visual or prose is its own deficit against the corpus share. Which
+    // visual, when the item is to carry one, still comes from the topic's own
+    // table above — that is where "sets get Venn diagrams and statistics get
+    // charts" already lives, which is what the old bias list duplicated.
     const visualShare =
       matrix.p1_actual_total === 0 ? 0 : matrix.mcq_visual_actual / matrix.p1_actual_total;
-    if (visualShare >= MCQ_VISUAL_SHARE && !MCQ_VISUAL_BIAS_TOPICS.has(topic)) {
+    const wantVisual = visualShare < MCQ_VISUAL_SHARE;
+    const visualOptions = repTargets.filter((r) => r.representation !== 'prose');
+    if (!wantVisual) {
       representation = 'prose';
+    } else if (representation === 'prose' && visualOptions.length > 0) {
+      representation = largestDeficit(
+        Object.fromEntries(visualOptions.map((r) => [r.representation, repTargetRecord[r.representation]])),
+        row.representation_actuals as Record<string, number>,
+      ) as Representation;
     }
   }
   const template_hints =
@@ -210,11 +288,35 @@ export function nextRecipe(
   const marks =
     kind === 'mcq' ? 1 : shape === 'paper' ? PAPER_MARKS[difficulty] : STRUCTURED_MARKS[difficulty];
 
-  // 7. Paper 1 profile: position in this topic's block (§B5).
-  const profile = kind === 'mcq' ? nextP1Profile(row.p1_actual) : undefined;
+  // 7. Profile. Both papers now take it from the same deficit, per module.
+  //
+  //    Paper 1 used a ten-item cycle keyed to the topic's own count. The cycle
+  //    is balanced over ten items and topics hold two to five, so positions
+  //    0-4 (CK, AK, AK, R, CK) were all that ever ran and R was structurally
+  //    starved. A deficit converges at any topic size.
+  //
+  //    Paper 2 had no profile at all: the split was the model's to choose and
+  //    it chose procedure.
+  const moduleProfiles = matrix.profile_actuals[row.module];
+  const profile =
+    kind === 'mcq'
+      ? (largestDeficit(P1_PROFILE_SPLIT, moduleProfiles.p1) as Profile)
+      : undefined;
+  const rubric_split =
+    kind === 'structured' ? rubricSplitFor(marks, P2_PROFILE_SPLIT, moduleProfiles.p2) : undefined;
 
   return {
-    recipe: { objective_ids, kind, difficulty, marks, archetype, representation, profile, shape },
+    recipe: {
+      objective_ids,
+      kind,
+      difficulty,
+      marks,
+      archetype,
+      representation,
+      profile,
+      rubric_split,
+      shape,
+    },
     context: { topic_code: topic, topic_codes, template_hints },
   };
 }

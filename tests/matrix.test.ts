@@ -2,17 +2,17 @@ import { describe, expect, it } from 'vitest';
 import {
   computeMatrix,
   largestDeficit,
-  nextP1Profile,
-  P1_PROFILE_CYCLE,
   P1_PROFILE_SPLIT,
   p1TargetForTopic,
   p2MarksTargetForTopic,
   P1_TOTAL,
   P2_MARKS_TOTAL,
+  P2_PROFILE_SPLIT,
   type QuestionFacts,
 } from '@/lib/targets/matrix';
 import {
   nextRecipe,
+  rubricSplitFor,
   PAPER_MARKS,
   STRUCTURED_MARKS,
   type ObjectiveCoverage,
@@ -239,38 +239,6 @@ describe('nextRecipe — a bank built from empty converges on the target shape',
 
 // R1.7 §B5 — Paper 1 topic blocks climb CK -> AK -> R in the specimen key, and
 // a practice set that samples profiles independently loses that ramp.
-describe('nextP1Profile — topic blocks climb the cognitive ladder', () => {
-  it('opens a topic with a concept item and closes each block with reasoning', () => {
-    expect(nextP1Profile(0)).toBe('CK');
-    expect(nextP1Profile(1)).toBe('AK');
-    expect(nextP1Profile(2)).toBe('AK');
-    expect(nextP1Profile(3)).toBe('R');
-  });
-
-  it('never puts reasoning before the procedure inside a block', () => {
-    for (let i = 0; i < P1_PROFILE_CYCLE.length; i++) {
-      if (P1_PROFILE_CYCLE[i] === 'R') {
-        expect(P1_PROFILE_CYCLE.slice(0, i)).toContain('CK');
-      }
-    }
-  });
-
-  it('reproduces the seeded 6/8/6 split exactly over twenty items', () => {
-    const counts = { CK: 0, AK: 0, R: 0 };
-    for (let i = 0; i < 20; i++) counts[nextP1Profile(i)]++;
-    expect(counts).toEqual(P1_PROFILE_SPLIT);
-  });
-
-  it('keeps cycling as a topic fills, without drifting off the split', () => {
-    const counts = { CK: 0, AK: 0, R: 0 };
-    for (let i = 0; i < 100; i++) counts[nextP1Profile(i)]++;
-    expect(counts).toEqual({ CK: 30, AK: 40, R: 30 });
-    expect(nextP1Profile(100)).toBe(nextP1Profile(0));
-  });
-});
-
-// Bulk fill runs module by module, so the deficit search has to be confinable
-// to one module without changing how it chooses inside it.
 describe('nextRecipe — module override', () => {
   const empty = computeMatrix(topics, seedBlueprints, []);
 
@@ -430,5 +398,82 @@ describe('nextRecipe — paper-shaped questions', () => {
     );
     expect(big.p2_marks_actual_total).toBeGreaterThan(small.p2_marks_actual_total);
     expect(big.p2_actual_total).toBe(small.p2_actual_total);
+  });
+});
+
+// A target the recipe does not consume is a wish. CK/AK/R was declared 30/40/30
+// and sat at 21/55/24 — structured recipes carried no profile at all, and
+// Paper 1 used a ten-item cycle that never completed at two to five items per
+// topic, starving R.
+describe('profile is a deficit the recipe consumes', () => {
+  const emptyMatrix = () => computeMatrix(topics, seedBlueprints, []);
+
+  it('splits a question\'s marks toward whichever profile the bank is short of', () => {
+    const balanced = rubricSplitFor(10, P2_PROFILE_SPLIT, { CK: 30, AK: 40, R: 30 });
+    expect(balanced.CK + balanced.AK + balanced.R).toBe(10);
+    expect(balanced.CK).toBeGreaterThanOrEqual(2);
+
+    // The mix we actually measured: CK starved, AK bloated.
+    const correcting = rubricSplitFor(10, P2_PROFILE_SPLIT, { CK: 21, AK: 55, R: 24 });
+    expect(correcting.CK + correcting.AK + correcting.R).toBe(10);
+    expect(correcting.CK).toBeGreaterThan(balanced.CK);
+    expect(correcting.AK).toBeLessThan(balanced.AK);
+  });
+
+  it('always spends every mark, at any question size', () => {
+    for (const marks of [1, 2, 3, 5, 7, 9, 10, 12]) {
+      const s = rubricSplitFor(marks, P2_PROFILE_SPLIT, { CK: 1, AK: 90, R: 9 });
+      expect(s.CK + s.AK + s.R, `marks=${marks}`).toBe(marks);
+      expect(Math.min(s.CK, s.AK, s.R)).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('never abandons a profile the bank already has plenty of', () => {
+    const s = rubricSplitFor(12, P2_PROFILE_SPLIT, { CK: 0, AK: 0, R: 100 });
+    expect(s.R).toBeGreaterThan(0);
+  });
+
+  it('gives a structured recipe a split that sums to its marks', () => {
+    const { recipe } = nextRecipe(emptyMatrix(), objectivesByTopic, { kind: 'structured' });
+    expect(recipe.rubric_split).toBeDefined();
+    const s = recipe.rubric_split!;
+    expect(s.CK + s.AK + s.R).toBe(recipe.marks);
+  });
+
+  it('gives a Paper 1 item the profile the module is shortest of, at any topic size', () => {
+    // One CK item banked and nothing else: the next item must not be CK.
+    const m = computeMatrix(topics, seedBlueprints, [
+      fact({ kind: 'mcq', marks: 1, module: 1, topic_code: 'M1-NTC', rubric_profile_marks: { CK: 1, AK: 0, R: 0 } }),
+    ]);
+    const { recipe } = nextRecipe(m, objectivesByTopic, { kind: 'mcq', module: 1 });
+    expect(recipe.profile).not.toBe('CK');
+  });
+});
+
+// The visual share is a target the recipe consumes, not a ceiling applied after
+// the fact: as a ceiling it waited until 37% was passed and exempted nine of
+// fifteen topics, and the bank reached 53%.
+describe('Paper 1 visual share is a deficit', () => {
+  const visualHeavy = (n: number) =>
+    computeMatrix(
+      topics,
+      seedBlueprints,
+      Array.from({ length: n }, () =>
+        fact({ kind: 'mcq', marks: 1, topic_code: 'M2-GEO1', representation: 'diagram', rubric_profile_marks: { CK: 1, AK: 0, R: 0 } }),
+      ),
+    );
+
+  it('asks for prose once the visual share is already past the target', () => {
+    const { recipe } = nextRecipe(visualHeavy(20), objectivesByTopic, { kind: 'mcq' });
+    expect(recipe.representation).toBe('prose');
+  });
+
+  it('asks for a visual while the share is below it', () => {
+    const { recipe } = nextRecipe(
+      computeMatrix(topics, seedBlueprints, []),
+      objectivesByTopic,
+      { kind: 'mcq', topic_code: 'M2-GEO1' },
+    );
+    expect(recipe.representation).not.toBe('prose');
   });
 });

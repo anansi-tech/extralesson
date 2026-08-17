@@ -27,26 +27,13 @@ export const P2_MARKS_TOTAL = 1680;
 export const P1_PROFILE_SPLIT: Record<Profile, number> = { CK: 6, AK: 8, R: 6 };
 export const P2_PROFILE_SPLIT: Record<Profile, number> = { CK: 9, AK: 12, R: 9 };
 
-// R1.7 §B5 — Paper 1 items come in topic blocks of 2-4 that climb the cognitive
-// ladder: the concept first, the procedure(s) next, the reasoning last. The
-// specimen key shows the whole paper built this way, so a practice set sampled
-// profile-by-profile feels nothing like the exam and denies the student the
-// same ramp.
-//
-// This cycle is that shape and the seeded split at once: blocks of
-// CK-AK-AK-R, CK-AK-AK-R, CK-R give 3 CK, 4 AK, 3 R every ten items, which is
-// exactly the 6/8/6 per twenty that the blueprint asks for.
-export const P1_PROFILE_CYCLE: Profile[] = [
-  'CK', 'AK', 'AK', 'R',
-  'CK', 'AK', 'AK', 'R',
-  'CK', 'R',
-];
-
-/** The profile of the next Paper 1 item in a topic, given how many it already has. */
-export function nextP1Profile(existingItems: number): Profile {
-  const i = ((existingItems % P1_PROFILE_CYCLE.length) + P1_PROFILE_CYCLE.length) % P1_PROFILE_CYCLE.length;
-  return P1_PROFILE_CYCLE[i];
-}
+// R1.7 §B5 asked for Paper 1 items to climb CK -> AK -> R within a topic
+// block, and a fixed ten-item cycle delivered it. The cycle is balanced only
+// over its full length: at two to five items per topic only its first
+// positions ever ran, so R was structurally starved and the split sat at
+// 31/53/16. The profile now comes from the same per-module deficit the rest of
+// the recipe uses, which converges at any topic size; the ramp is emergent
+// rather than fixed, which is the price of converging at all.
 
 export const DIFFICULTY_TARGETS: Record<1 | 2 | 3, number> = { 1: 25, 2: 50, 3: 25 };
 
