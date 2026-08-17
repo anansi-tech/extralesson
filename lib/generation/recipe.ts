@@ -16,6 +16,7 @@ import {
   MCQ_VISUAL_SHARE,
   type RepresentationTarget,
 } from '@/lib/targets/representation';
+import { MULTI_TOPIC_SHARE, naturalPartners } from '@/lib/targets/pairings';
 import type { Archetype, Profile, Representation, TemplateName } from '@/lib/types';
 
 const PROFILES: Profile[] = ['CK', 'AK', 'R'];
@@ -133,8 +134,7 @@ export const STRUCTURED_MARKS: Record<1 | 2 | 3, number> = { 1: 5, 2: 7, 3: 9 };
 // that marks remain derived from the settled recipe rather than chosen twice.
 export const PAPER_MARKS: Record<1 | 2 | 3, number> = { 1: 9, 2: 10, 3: 12 };
 
-/** How many topics a paper-shaped question draws from at each difficulty. */
-const PAPER_TOPIC_COUNT: Record<1 | 2 | 3, number> = { 1: 2, 2: 2, 3: 3 };
+
 
 // CLI overrides. These CONSTRAIN the deficit search — they are never applied
 // to a finished recipe. Every downstream field (representation, archetype,
@@ -198,26 +198,37 @@ export function nextRecipe(
       (a, b) => a.approved - b.approved || (a.id < b.id ? -1 : 1),
     );
 
-  // A paper-shaped question spans two or three topics of the SAME module, as
-  // the papers do — computation opening into an applied context, a formula
-  // rearranged and then used. The extra topics are the next-largest deficits
-  // inside that module, so multi-topic filling and deficit filling are the same
-  // act rather than two that compete.
+  // A paper-shaped question is SINGLE-TOPIC unless the corpus says otherwise.
+  //
+  // Requiring two or three topics on every question was the pressure that
+  // produced stapled parts: where no natural combination existed the model
+  // satisfied the requirement by bolting on a part that used earlier answers
+  // and demanded nothing. Measured over 104 real questions, 13% pair two topics
+  // of one module and the rest carry one, and only six pairs occur at all.
+  //
+  // So the pairing is a deficit like everything else: pair only where the
+  // corpus pairs, and only while we are below the share it shows.
   const topic_codes = [topic];
   if (shape === 'paper') {
-    const siblings = matrix.topics
-      .filter(
-        (t) =>
-          t.module === row.module &&
-          t.code !== topic &&
-          (objectivesByTopic.get(t.code)?.length ?? 0) > 0,
-      )
-      .sort(
-        (a, b) =>
-          b.p2_marks_target - b.p2_marks_actual - (a.p2_marks_target - a.p2_marks_actual) ||
-          (a.code < b.code ? -1 : 1),
-      );
-    topic_codes.push(...siblings.slice(0, PAPER_TOPIC_COUNT[difficulty] - 1).map((t) => t.code));
+    const pairedSoFar =
+      matrix.p2_actual_total === 0 ? 0 : matrix.multi_topic_actual / matrix.p2_actual_total;
+    if (pairedSoFar < MULTI_TOPIC_SHARE) {
+      const partner = naturalPartners(topic)
+        .filter((code) => {
+          const t = matrix.topics.find((x) => x.code === code);
+          return t && t.module === row.module && (objectivesByTopic.get(code)?.length ?? 0) > 0;
+        })
+        // Among the partners the corpus allows, take the one we are shortest of.
+        .sort((a, b) => {
+          const ta = matrix.topics.find((x) => x.code === a)!;
+          const tb = matrix.topics.find((x) => x.code === b)!;
+          return (
+            tb.p2_marks_target - tb.p2_marks_actual - (ta.p2_marks_target - ta.p2_marks_actual) ||
+            (a < b ? -1 : 1)
+          );
+        })[0];
+      if (partner) topic_codes.push(partner);
+    }
   }
 
   // One objective per topic for a paper question — the breadth comes from the

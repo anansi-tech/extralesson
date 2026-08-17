@@ -41,6 +41,8 @@ export interface QuestionFacts {
   kind: 'mcq' | 'structured';
   module: ModuleNumber;
   topic_code: string; // resolved from objective ids by the caller
+  /** How many distinct topics the question's objectives span. */
+  topic_span?: number;
   representation: Representation;
   archetype: Archetype;
   difficulty: 1 | 2 | 3;
@@ -70,6 +72,8 @@ export interface Matrix {
   difficulty_actuals: { mcq: Record<1 | 2 | 3, number>; structured: Record<1 | 2 | 3, number> };
   profile_actuals: Record<ModuleNumber, { p1: Record<Profile, number>; p2: Record<Profile, number> }>;
   mcq_visual_actual: number;
+  /** Structured questions drawing on more than one topic (R1.8 pairing). */
+  multi_topic_actual: number;
 }
 
 interface BlueprintLean {
@@ -145,6 +149,7 @@ export function computeMatrix(
       3: { p1: { CK: 0, AK: 0, R: 0 }, p2: { CK: 0, AK: 0, R: 0 } },
     },
     mcq_visual_actual: 0,
+    multi_topic_actual: 0,
   };
 
   for (const q of questions) {
@@ -157,6 +162,7 @@ export function computeMatrix(
     } else {
       matrix.p2_actual_total++;
       matrix.p2_marks_actual_total += q.marks;
+      if ((q.topic_span ?? 1) > 1) matrix.multi_topic_actual++;
       if (row) {
         row.p2_marks_actual += q.marks;
         row.p2_questions++;

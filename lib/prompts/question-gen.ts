@@ -11,7 +11,7 @@ import { flavourGuidance } from '@/lib/generation/territories';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v36';
+export const PROMPT_VERSION = 'v37';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -185,7 +185,12 @@ ${
       ? ''
       : `QUESTION SHAPE — this is a WHOLE Paper 2 question, not a fragment:
 - It is worth ${recipe.marks} marks and it develops. The papers open a question with something a candidate can do immediately, then build on it: a computation that becomes an applied context, a formula rearranged and then used, a figure measured and then reasoned about.
-- Its objectives span ${context.topic_codes.length} topics of the same module (listed above). Do NOT write ${context.topic_codes.length} separate questions under one number — the later parts must USE what the earlier parts produced, so a student who got part (a) right is genuinely further along in part (b).
+${
+        context.topic_codes.length > 1
+          ? `- Its objectives span two topics of the same module (listed above), and they are a pairing the real papers actually make — the question must flow through ONE context from one to the other, never staple a part from the second topic onto the end. If the mathematics will not flow, write the whole question on the first topic and ignore the second.`
+          : `- It is a SINGLE-TOPIC question, which is what the papers set most of the time. Depth comes from the chain, not from reaching into another topic.`
+      }
+- Do NOT write separate questions under one number — the later parts must USE what the earlier parts produced, so a student who got part (a) right is genuinely further along in part (b).
 - Later parts must USE the earlier ones — record it in "depends_on" and let the rubric award follow-through — but do not signpost it. The papers almost never write "hence"; they ask for the next thing and let the candidate see what it rests on.
 - One shared setting, introduced once in the stimulus, carries the whole question. Do not restart the scenario at every part.
 
