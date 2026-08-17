@@ -183,7 +183,10 @@ async function main() {
         contextFree = all === 0 || bare / all < CONTEXT_FREE_MCQ_SHARE;
       }
       console.log(
-        `→ attempt ${attempts}: recipe ${recipe.kind} ${context.topic_code} d${recipe.difficulty} ${recipe.marks}mk ${recipe.archetype}/${recipe.representation} [${recipe.objective_ids.join(', ')}]`,
+        `→ attempt ${attempts}: recipe ${recipe.kind} ${context.topic_code} d${recipe.difficulty} ${recipe.marks}mk ${recipe.archetype}/${recipe.representation}` +
+          `${recipe.profile ? ` ${recipe.profile}` : ''}` +
+          `${recipe.rubric_split ? ` CK${recipe.rubric_split.CK}/AK${recipe.rubric_split.AK}/R${recipe.rubric_split.R}` : ''}` +
+          ` [${recipe.objective_ids.join(', ')}]`,
       );
 
       // Draft

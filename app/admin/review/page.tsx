@@ -3,7 +3,11 @@ import { dbConnect, Question } from '@/lib/db';
 import { getCoverage, getNextDraftId } from '@/lib/admin/coverage';
 import { renderAnswerHtml, renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
-import { P2_MARKS_TOTAL } from '@/lib/targets/matrix';
+import {
+  P2_MARKS_TOTAL,
+  P2_PROFILE_SPLIT,
+  STRUCTURED_ARCHETYPE_TARGETS,
+} from '@/lib/targets/matrix';
 import ReviewCard, { type ReviewQuestion } from './review-card';
 
 export const metadata = { title: 'Review queue — ExtraLesson admin' };
@@ -220,7 +224,9 @@ export default async function ReviewPage() {
         <section className="mt-8 grid gap-6 sm:grid-cols-2">
           <div>
             <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
-              Profile marks by module (P2, target 9/12/9 per 30)
+              Profile marks by module (P2, target{' '}
+              {(['CK', 'AK', 'R'] as const).map((k) => P2_PROFILE_SPLIT[k]).join('/')} per{' '}
+              {(['CK', 'AK', 'R'] as const).reduce((s, k) => s + P2_PROFILE_SPLIT[k], 0)})
             </h2>
             {([1, 2, 3] as const).map((m) => (
               <div key={m} className="mt-1 font-mono text-xs text-dim">
@@ -231,7 +237,8 @@ export default async function ReviewPage() {
           </div>
           <div>
             <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
-              Archetypes (structured, target 67/11/11/9/2)
+              Archetypes (structured, target{' '}
+              {Object.values(STRUCTURED_ARCHETYPE_TARGETS).join('/')})
             </h2>
             {Object.entries(matrix.archetype_actuals.structured).map(([a, n]) => (
               <div key={a} className="mt-1 font-mono text-xs text-dim">

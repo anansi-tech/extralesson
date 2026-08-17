@@ -141,19 +141,13 @@ export const MCQ_ARCHETYPE_TARGETS: Record<string, number> = {
   'reverse-reasoning': 10,
 };
 
-// 37% of MCQs carry a visual (R1.5 §4), biased to these topics.
+// 37% of Paper 1 items carry a visual (R1.5 §4). This is a TARGET the recipe
+// consumes as a deficit, not a ceiling applied afterwards: as a ceiling it
+// waited until 37% was exceeded and then exempted nine of the fifteen topics,
+// and the bank reached 53%. Which topics carry the visuals is already decided
+// by REPRESENTATION_TARGETS below — sets get Venn diagrams, statistics get
+// charts — so the bias list it used to need is gone.
 export const MCQ_VISUAL_SHARE = 0.37;
-export const MCQ_VISUAL_BIAS_TOPICS = new Set([
-  'M1-SETS',
-  'M1-MEAS',
-  'M1-GRAPHS',
-  'M2-STAT1',
-  'M2-RFG1',
-  'M2-GEO1',
-  'M3-STAT2',
-  'M3-RFG2',
-  'M3-GEO2',
-]);
 
 
 // Objectives whose work lives on a coordinate plane: an object and its image, a
