@@ -45,6 +45,7 @@ export function toFacts(
     kind: q.kind,
     module: q.module,
     topic_code: topicCodeFor(q.objective_ids, topics),
+    topic_span: new Set(q.objective_ids.map((id) => topicCodeFor([id], topics))).size,
     representation: q.representation ?? 'prose',
     archetype: q.archetype ?? 'multi-step-application',
     difficulty: q.difficulty,

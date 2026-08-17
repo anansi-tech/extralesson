@@ -477,3 +477,43 @@ describe('Paper 1 visual share is a deficit', () => {
     expect(recipe.representation).not.toBe('prose');
   });
 });
+
+// Pairing is a deficit like everything else: pair only where the corpus pairs,
+// and only while the bank is below the share the corpus shows.
+describe('nextRecipe — topic pairing', () => {
+  const emptyMatrix = () => computeMatrix(topics, seedBlueprints, []);
+
+  it('never pairs a Module 3 topic, which is where the stapling came from', () => {
+    for (const code of ['M3-VM2', 'M3-GEO2', 'M3-STAT2']) {
+      const { context } = nextRecipe(emptyMatrix(), objectivesByTopic, {
+        kind: 'structured',
+        topic_code: code,
+      });
+      expect(context.topic_codes, code).toEqual([code]);
+    }
+  });
+
+  it('pairs only with a partner the corpus was seen to pair with', () => {
+    const { context } = nextRecipe(emptyMatrix(), objectivesByTopic, {
+      kind: 'structured',
+      topic_code: 'M2-ALG2',
+    });
+    if (context.topic_codes.length > 1) {
+      expect(['M2-RFG1', 'M2-VM1', 'M2-GEO1']).toContain(context.topic_codes[1]);
+    }
+  });
+
+  it('stops pairing once the bank is past the corpus share', () => {
+    // A bank of questions that all span two topics: the next one must not.
+    const paired = computeMatrix(
+      topics,
+      seedBlueprints,
+      Array.from({ length: 20 }, () => fact({ kind: 'structured', topic_code: 'M2-ALG2', topic_span: 2 })),
+    );
+    const { context } = nextRecipe(paired, objectivesByTopic, {
+      kind: 'structured',
+      topic_code: 'M2-ALG2',
+    });
+    expect(context.topic_codes).toEqual(['M2-ALG2']);
+  });
+});

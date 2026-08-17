@@ -63,6 +63,7 @@ async function main() {
     kind: q.kind,
     module: q.module,
     topic_code: topicOf(q.objective_ids[0] ?? ''),
+    topic_span: new Set(q.objective_ids.map(topicOf)).size,
     representation: q.representation as QuestionFacts['representation'],
     archetype: (q.archetype ?? 'multi-step-application') as QuestionFacts['archetype'],
     difficulty: q.difficulty,
