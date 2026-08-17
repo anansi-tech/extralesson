@@ -6,7 +6,16 @@ const RubricItemSchema = new Schema(
     profile: { type: String, enum: ['CK', 'AK', 'R'], required: true },
     criterion: { type: String, required: true },
     mark_value: { type: Number, required: true },
-    part_label: { type: String, default: 'a' }, // R1.5: which part this row marks
+    // R1.8 Part 1: the SLOT this row is earned by. Undeclared here until now,
+    // so Mongoose stripped it on save and every stored rubric row lost its
+    // link — the third boundary this class of bug has crossed, after the model
+    // contract and the validator.
+    slot_ref: { type: String, required: true },
+    part_label: { type: String, default: 'a' }, // derived from slot_ref; read by the review card and the matrices
+    // R1.7 §B4: this row credits the FORM of the answer, so a student who got
+    // the value but not the form still earns the rest. Unstored until now, so
+    // the partial-credit rows were being marked as ordinary ones.
+    for_format: { type: Boolean },
   },
   { _id: false },
 );

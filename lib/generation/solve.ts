@@ -29,7 +29,16 @@ const McqSolveZ = z.object({
 });
 const StructuredSolveZ = z.object({
   figure_check: FigureCheckZ.optional(),
-  part_answers: z.array(z.object({ label: z.string(), final_answer: z.string() })),
+  part_answers: z.array(
+    z.object({
+      label: z.string(),
+      final_answer: z.string(),
+      // Whether answering this part cost anything. Default true so a solver
+      // that omits the field cannot silently fail every question.
+      new_work: z.boolean().default(true),
+      new_work_note: z.string().max(200).default(''),
+    }),
+  ),
 });
 
 export interface SolveOutcome {
@@ -138,6 +147,9 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
       .replace(/[()\[\]]/g, '')
       .replace(/^([a-j])[.:]?$/, '$1');
   const solByLabel = new Map(sol.part_answers.map((p) => [bareLabel(p.label), p.final_answer]));
+  const workByLabel = new Map(
+    sol.part_answers.map((p) => [bareLabel(p.label), { did: p.new_work, why: p.new_work_note }]),
+  );
   const figure = figureNotes(sol.figure_check);
   const notes: string[] = [...figure.notes];
   const askable = draft.parts.flatMap((p) =>
@@ -177,6 +189,24 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
       `(${p.ref}) ${mode === 'answer' ? '' : `${mode} — `}judged ${verdict.same ? 'SAME' : 'DIFFERENT'}: ${verdict.reason}`,
     );
     if (!verdict.same) agrees = false;
+  }
+
+  // A part that demands nothing is a part the student cannot get wrong, and no
+  // structural check can see it: depends_on proves the parts CONNECT, and a
+  // question whose (b) restates its own premise and whose (c) inverts (a)
+  // satisfies that perfectly. The solver has just done the work, so it is the
+  // only reader that knows what each part actually cost.
+  const emptyParts: string[] = [];
+  for (const p of askable) {
+    if ((p.slot.response_mode ?? 'answer') !== 'answer') continue;
+    const work = workByLabel.get(bareLabel(p.ref));
+    if (work && work.did === false) {
+      emptyParts.push(`(${p.ref}) demands no new work${work.why ? `: ${work.why}` : ''}`);
+    }
+  }
+  if (emptyParts.length > 0) {
+    agrees = false;
+    notes.push(...emptyParts);
   }
 
   return {

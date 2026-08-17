@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { PartLooseZ, StructuredLooseZ, McqLooseZ } from '@/lib/generation/draft-schema';
 import { PartZ, StructuredQuestionZ, McqQuestionZ } from '@/lib/validation/question';
+import { Question } from '@/lib/db';
 
 // A field the model never sees cannot be emitted, and the failure is silent:
 // depends_on was added to the strict schema and not to the loose one, so a
@@ -137,5 +138,62 @@ describe('schema drift — the model can emit every field we validate', () => {
     for (const [field, reason] of Object.entries(DERIVED)) {
       expect(reason.length, `${field} has no reason`).toBeGreaterThan(8);
     }
+  });
+});
+
+// The THIRD boundary. The first two tests guard what the model may emit and
+// what validation may keep; this one guards what the database may store.
+//
+// slot_ref has been required by the strict schema since R1.8 Part 1 and was
+// never declared in the Mongoose schema, so Mongoose stripped it on every save
+// and every stored rubric row lost the slot it is earned by. Nothing errored.
+// It surfaced only when a sweep tried to re-read the drafts and none of them
+// parsed. for_format was missing the same way, so partial-credit rows were
+// stored as ordinary ones.
+describe('schema drift — the database stores every field we validate', () => {
+  const documented: Record<string, string> = {
+    _id: 'mongo',
+    __v: 'mongo',
+  };
+
+  /** Field names Mongoose will actually persist for a (sub)schema. */
+  function storedPaths(schema: { paths: Record<string, unknown> }): Set<string> {
+    return new Set(Object.keys(schema.paths));
+  }
+
+  it('stores every strict QUESTION field', () => {
+    const strict = new Set([...keysOf(StructuredQuestionZ), ...keysOf(McqQuestionZ)]);
+    const stored = storedPaths(Question.schema as never);
+    const missing = [...strict].filter((f) => !stored.has(f) && !(f in documented));
+    expect(
+      missing,
+      `validated but never stored — Mongoose strips these on save: ${missing.join(', ')}`,
+    ).toEqual([]);
+  });
+
+  it('stores every strict RUBRIC field, which is where it went wrong', () => {
+    const rubricStrict = new Set(keysOf(elementOf(StructuredQuestionZ, 'rubric')));
+    const rubricStored = storedPaths(
+      (Question.schema.path('rubric') as unknown as { schema: { paths: Record<string, unknown> } }).schema,
+    );
+    expect(rubricStrict.has('slot_ref')).toBe(true);
+    const missing = [...rubricStrict].filter((f) => !rubricStored.has(f) && !(f in documented));
+    expect(missing, `rubric fields never stored: ${missing.join(', ')}`).toEqual([]);
+  });
+
+  it('stores every strict PART and SLOT field', () => {
+    const partsPath = Question.schema.path('parts') as unknown as {
+      schema: { paths: Record<string, unknown>; path(p: string): { schema: { paths: Record<string, unknown> } } };
+    };
+    const partMissing = [...new Set(keysOf(PartZ))].filter(
+      (f) => !storedPaths(partsPath.schema).has(f) && !(f in documented),
+    );
+    expect(partMissing, `part fields never stored: ${partMissing.join(', ')}`).toEqual([]);
+
+    const slotStored = storedPaths(partsPath.schema.path('slots').schema);
+    const slotMissing = [...new Set(keysOf(elementOf(PartZ, 'slots')))].filter(
+      (f) => !slotStored.has(f) && !(f in documented),
+    );
+    expect(slotMissing, `slot fields never stored: ${slotMissing.join(', ')}`).toEqual([]);
   });
 });
