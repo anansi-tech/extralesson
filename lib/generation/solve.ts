@@ -6,6 +6,7 @@ import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { adjudicateAnswers } from './adjudicate';
 import { describeVisual, type StoredVisual } from '@/lib/visuals';
 import type { QuestionDraft } from '@/lib/validation/question';
+import { symbolicVerdict } from '@/lib/grade/checkable';
 
 // Independent solve pass (R1.5 §5), shared by the generation pipeline and the
 // Edit→Approve path. Fresh model call; for visual questions the solver
@@ -207,6 +208,23 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   if (emptyParts.length > 0) {
     agrees = false;
     notes.push(...emptyParts);
+  }
+
+  // Deterministic verification is AUTHORITATIVE where it applies; the solve
+  // pass is a second opinion everywhere else.
+  //
+  // The solve pass is independent in PROMPT only — same model, same blind spot
+  // — so a systematic error survives both passes agreeing. A composite-function
+  // question reached review with fg(x) computed as gf(x), both passes content,
+  // and the correct answer listed in the misconception panel as the error. No
+  // amount of asking again would have caught it; arithmetic catches it in
+  // milliseconds.
+  const symbolic = symbolicVerdict(draft);
+  if (symbolic.failures.length > 0) {
+    agrees = false;
+    for (const f of symbolic.failures) {
+      notes.push(`(${f.slotRef}) SYMBOLIC CHECK FAILED — ${f.family}: ${f.reason}`);
+    }
   }
 
   return {
