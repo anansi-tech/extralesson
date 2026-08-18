@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Gate the commit on the kill list, checking what is STAGED.
+#
+# Bypass with --no-verify only when you mean to; the point of the hook is that
+# forgetting is no longer possible.
+set -uo pipefail
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+mapfile -t STAGED < <(git diff --cached --name-only --diff-filter=ACMR \
+  | grep -E '^(app|lib|scripts|tests)/.*\.(ts|tsx)$' || true)
+
+[ "${#STAGED[@]}" -eq 0 ] && exit 0
+exec scripts/check-kill-list.sh "${STAGED[@]}"
