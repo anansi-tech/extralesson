@@ -42,7 +42,7 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v37');
+    expect(PROMPT_VERSION).toBe('v38');
   });
 
   it('teaches chaining as structure with follow-through, and restrains the signposting', () => {
@@ -336,5 +336,26 @@ describe('buildSolvePrompt — the figure check rides along with the visual', ()
   it('does not invite a verdict on a merely uninformative sketch', () => {
     const p = buildSolvePrompt({ ...base, visualText: 'Triangle ABC.' });
     expect(p).toContain('A figure that is a plain sketch of what the words describe is consistent');
+  });
+});
+
+// A 10-mark question was being rejected over its 1-mark opening part, because
+// the model kept opening by transcribing: "the coordinates of A are (2,1)"
+// followed by "write OA as a column vector". The corpus says the gate is right
+// and the prompt was wrong — 30% of real questions open on one mark, and not
+// one of the fourteen opens by copying.
+describe('buildDraftPrompt — the opening part', () => {
+  it('tells the model to open small but never by transcribing', () => {
+    const p = prompt({ topic: 'M3-VM2' });
+    expect(p).toContain('THE OPENING PART MUST DEMAND A STEP');
+    expect(p).toContain('30% of real questions open with a single mark');
+    expect(p).toContain('The entry step is a step');
+  });
+
+  it('names the corpus openings rather than describing them abstractly', () => {
+    const p = prompt({ topic: 'M2-STAT1' });
+    for (const shape of ['EVALUATE', 'FACTORISE', 'SUBSTITUTE', 'APPLY A DEFINITION', 'FORM', 'DEDUCE']) {
+      expect(p).toContain(shape);
+    }
   });
 });
