@@ -24,7 +24,9 @@ export const QuadrilateralLabeledParamsZ = z.object({
         side: z.number().int().min(0).max(3),
         value: z.number().positive().max(100000).optional(),
         variable: z.string().max(8).optional(),
-        unit: z.enum(['cm', 'm', 'mm']).optional(),
+        // km belongs here: bearings and navigation questions are set in
+        // kilometres in every paper, and rejecting them rejected 11 drafts.
+        unit: z.enum(['cm', 'm', 'mm', 'km']).optional(),
       }),
     )
     .max(4)

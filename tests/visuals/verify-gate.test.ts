@@ -128,7 +128,7 @@ describe('template contract completeness', () => {
     expect(doc).toContain('exactly as many cells as there are headers');
 
     const grid = paramsDocFor(['coordinateGrid']);
-    expect(grid).toContain('span at most 20 units');
+    expect(grid).toContain('span at most 40 units');
     expect(grid).toContain('standard transformation');
   });
 });
