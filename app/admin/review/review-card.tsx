@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { approveQuestion, editAndApproveQuestion, rejectQuestion } from './actions';
+import { approveQuestion, rejectQuestion, saveQuestionEdit } from './actions';
 
 export interface ReviewQuestion {
   id: string;
@@ -90,8 +90,15 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
 
   const saveEdit = () =>
     startTransition(async () => {
-      const res = await editAndApproveQuestion(question.id, json);
-      if (res.error) setError(res.error);
+      const res = await saveQuestionEdit(question.id, json);
+      if (res.error) {
+        setError(res.error);
+        return;
+      }
+      // Close the editor so the reviewer reads the rendered result and decides
+      // whether to approve it, rather than approving unseen.
+      setError(undefined);
+      setEditing(false);
     });
 
   return (
@@ -267,9 +274,9 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
             <button
               onClick={saveEdit}
               disabled={pending}
-              className="bg-green-pen px-4 py-2 font-bold text-white disabled:opacity-60"
+              className="bg-ink px-4 py-2 font-bold text-white shadow-[3px_3px_0_var(--rule)] disabled:opacity-60"
             >
-              Save & approve
+              {pending ? 'Checking…' : 'Save'}
             </button>
             <button
               onClick={() => setEditing(false)}

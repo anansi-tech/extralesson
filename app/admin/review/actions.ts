@@ -23,10 +23,16 @@ export async function rejectQuestion(id: string): Promise<void> {
   revalidatePath('/admin/review');
 }
 
-// Edit -> Approve: the reviewer edits the question JSON; it must pass the same
-// gates as generated drafts — Zod, then visual verify + an independent
-// re-solve (R1.5 §5) — before it can be approved.
-export async function editAndApproveQuestion(
+// Save an edit, WITHOUT approving. The reviewer then reads the rendered result
+// and approves it in the ordinary way if they agree — editing and approving are
+// two judgements and were one button.
+//
+// The gates run HERE, on save, because this is where the content changes.
+// approveQuestion is deliberately ungated: it approves a draft that has already
+// passed the generation gates. If an edit could be saved without re-verifying,
+// the pair of actions would let edited content reach a student unchecked, which
+// is exactly what the old combined action existed to prevent.
+export async function saveQuestionEdit(
   id: string,
   editedJson: string,
 ): Promise<{ error?: string }> {
@@ -49,7 +55,7 @@ export async function editAndApproveQuestion(
   await dbConnect();
   await Question.updateOne(
     { _id: IdZ.parse(id), status: 'draft' },
-    { $set: { ...validated.data, status: 'approved' } },
+    { $set: { ...validated.data, status: 'draft' } },
   );
   revalidatePath('/admin/review');
   return {};
