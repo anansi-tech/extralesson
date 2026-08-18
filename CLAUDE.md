@@ -48,6 +48,13 @@ dataTable HTML in `lib/visuals/` only) · no corpus inventory/classification/OCR
 pipeline in main · no similarity checks against external corpora · no (i)/(ii)
 sub-nesting · no image assets/CDN.
 
+These are enforced by a **pre-commit hook**, not by remembering to check:
+`.githooks/pre-commit` runs `scripts/check-kill-list.sh` over the staged files
+and fails the commit. `pnpm install` wires it up (`prepare` sets
+`core.hooksPath`); run `pnpm check:kill-list` to sweep the whole tree by hand.
+The hook exists because the greps were twice run alongside `git commit` and read
+after the push — reading order is not a control.
+
 Verification greps must return zero hits in `app/ lib/ scripts/`:
 `whatsapp`, `twilio`, `stripe` (imports), `vision`, `upload`, `investigation`, `sba`,
 `tikz`, `jsxgraph`, `minhash`, `latex` (write "KaTeX", never the other name).
