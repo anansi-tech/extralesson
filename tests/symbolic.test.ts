@@ -55,7 +55,7 @@ describe('inverse, factorisation, roots', () => {
   });
 });
 
-describe('toExpr — the papers write LaTeX, mathjs reads arithmetic', () => {
+describe('toExpr — the papers write KaTeX source, mathjs reads arithmetic', () => {
   it('reads implicit multiplication and fractions', () => {
     expect(toExpr('2x+1')).toBe('2*x+1');
     expect(toExpr('\\frac{x-1}{2}')).toBe('((x-1)/(2))');
