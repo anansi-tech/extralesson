@@ -11,7 +11,7 @@ import { flavourGuidance } from '@/lib/generation/territories';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v38';
+export const PROMPT_VERSION = 'v39';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -238,6 +238,14 @@ RULES:
 - The question must be ORIGINAL — written in exam style but never copied, reconstructed, paraphrased, or imitated from any CXC past paper. The recipe contains abstract controls only.
 - Use Caribbean contexts naturally where a context is needed, drawn from across the region rather than one corner of it, and without being forced.
 - An optional "stimulus" carries shared context for the parts; keep the stem short when a stimulus is present.
+- DELIMITERS, exactly these two and no others: inline maths is $...$ and display maths is \\[ ... \\]. NEVER $$ ... $$ — our renderer splits on single $, so a $$ block leaves a stray delimiter that pairs with the next one and swallows the prose between them as maths. Never \\( ... \\) either. Every $ you open must be closed in the SAME field.
+- A CLOZE GAP {} MUST SIT OUTSIDE MATHS. The statement is split at {} before it is typeset, so each piece must be able to stand alone: write "the gradient is {}" or "$n(A \\cap B) =$ {}", never "$n(A \\cap B) = {}$", which leaves both halves with one unmatched $.
+- AN ANSWER MAY NOT CONTAIN A SEMICOLON INSIDE MATHS. Answers are split on ";" to separate one value from the next, so a semicolon inside $...$ or inside an array tears the expression in half. Use a comma, or separate the values into their own slots.
+- A FIGURE OR TABLE LABEL IS PLAIN TEXT: "Frequency", "Time t (s)", "U", "A". No $ and no commands — labels are drawn into SVG and printed into table headers, neither of which runs KaTeX.
+- DELIMITERS, exactly two and no others: inline maths is $...$ and display maths is \\[ ... \\]. NEVER $$ ... $$ — the renderer splits on single $, so a $$ block leaves a stray delimiter that pairs with the next one and swallows the prose between them as maths. Every $ you open must close in the SAME field.
+- A CLOZE GAP {} MUST SIT OUTSIDE MATHS. The statement is split at {} before it is typeset, so each piece must stand alone: write \"the gradient is {}\" or \"$n(A \\cap B) =$ {}\", never \"$n(A \\cap B) = {}$\", which leaves both halves with one unmatched $.
+- AN ANSWER MAY NOT CONTAIN A SEMICOLON INSIDE MATHS. Answers are split on \";\" to separate one value from the next, so a semicolon inside $...$ or inside an array tears the expression in half. Use a comma, or give each value its own slot.
+- A FIGURE OR TABLE LABEL IS PLAIN TEXT: \"Frequency\", \"Time t (s)\", \"U\", \"A\". No $ and no commands — labels are drawn into SVG and printed into table headers, and neither runs KaTeX.
 - Math is KaTeX-safe: inline math in $...$ (never \\( ... \\)), and a column vector or matrix already carries its own brackets — never put parentheses around one, escape backslashes correctly in JSON. Matrices are notation in stem/parts, never visuals.
 - AN UNDERLINED DIGIT is written \\underline{2} inside maths — $3\\underline{2}01_4$ — and works the same in a stem, a slot statement, a figure label and a table cell. It is not decoration: "state the value of the underlined digit in $3\\underline{2}01_4$" is a place-value question in base 4, and without the underline there is nothing to point at.
 - MONEY (hard rule, every field): write it as an ESCAPED dollar sign — \$85, \$1 250, \$17 400 — with NO country prefix. The papers are territory-neutral: sixteen countries sit the same paper, and across every one of them money is a bare dollar sign. Never EC$, J$ or BB$; a prefix belongs only in a question ABOUT currency conversion, where naming the currencies is the point. The escape is what keeps $ free to mean "start of maths": inside $...$ it is a delimiter, everywhere else money is written \$.

@@ -29,6 +29,18 @@ export function restoreMoney(text: string): string {
   return text.replace(new RegExp(MONEY_SENTINEL, 'g'), '$');
 }
 
+/**
+ * The sentinel, restored for KaTeX rather than for prose.
+ *
+ * Inside a math segment a BARE $ is a syntax error — "Can't use function '$' in
+ * math mode" — so money that reaches KaTeX has to stay escaped. Prose gets the
+ * bare sign a student reads; maths gets the escape KaTeX understands, and both
+ * print the same glyph.
+ */
+export function restoreMoneyForMath(text: string): string {
+  return text.replace(new RegExp(MONEY_SENTINEL, 'g'), '\\$');
+}
+
 /** True when the sentinel is present — used to keep a value out of KaTeX. */
 export function hasProtectedMoney(text: string): boolean {
   return text.includes(MONEY_SENTINEL);

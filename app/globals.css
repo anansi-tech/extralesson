@@ -54,10 +54,14 @@ body {
 }
 
 .katex .mord,
-.katex .mbin,
-.katex .mrel {
+.katex .mbin {
   -webkit-text-stroke: 0.018em currentColor;
 }
+
+/* NOT .mrel. The stroke exists to keep a minus sign from disappearing, and a
+   minus is .mbin; = < > are .mrel, and thickening those closes the gap between
+   the two bars of an equals sign until it reads as a single heavy dash. The
+   fix for one glyph was making another glyph wrong. */
 
 /* A superscript sets at ~70%, so a minus inside one — tan⁻¹, 10⁻⁵ — is thinner
    again than the body minus and needs proportionally more. */

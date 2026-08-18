@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import { CONTEXT_CATEGORIES } from '@/lib/generation/contexts';
 import { SLOT_LABEL_RE, SLOT_REF_RE } from '@/lib/notation';
+import {
+  answerIssues,
+  clozeIssues,
+  delimiterIssues,
+  labelIssues,
+} from './renderable';
 import type { Representation, ResponseMode, TemplateName } from '@/lib/types';
 
 // Boundary validation for questions (R1.5 §2). Every question write —
@@ -248,6 +254,90 @@ export const PartZ = z
 
 const PART_LABELS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 
+/**
+ * Every string a student will see has to survive the renderer that shows it.
+ * This is the layer the August formatting audit found missing: the defects it
+ * catalogued were all storable, so every fix had been a database fix and the
+ * next batch reproduced them.
+ */
+function checkRenderable(q: Record<string, unknown>, ctx: z.RefinementCtx): void {
+  const at = (path: (string | number)[], message: string) =>
+    ctx.addIssue({ code: 'custom', path, message });
+
+  const prose: [string[], unknown][] = [
+    [['stem'], q.stem],
+    [['stimulus'], q.stimulus],
+    [['worked_solution'], q.worked_solution],
+  ];
+  for (const [path, value] of prose) {
+    if (typeof value !== 'string') continue;
+    for (const issue of delimiterIssues(value)) at(path, issue);
+  }
+
+  if (typeof q.final_answer === 'string') {
+    for (const issue of answerIssues(q.final_answer)) at(['final_answer'], issue);
+  }
+
+  for (const [i, m] of ((q.misconceptions ?? []) as { trigger?: string; remediation?: string }[]).entries()) {
+    if (typeof m.remediation === 'string') {
+      for (const issue of delimiterIssues(m.remediation)) at(['misconceptions', i, 'remediation'], issue);
+    }
+    if (typeof m.trigger === 'string') {
+      for (const issue of answerIssues(m.trigger)) at(['misconceptions', i, 'trigger'], issue);
+    }
+  }
+
+  for (const [i, r] of ((q.rubric ?? []) as { criterion?: string }[]).entries()) {
+    if (typeof r.criterion === 'string') {
+      for (const issue of delimiterIssues(r.criterion)) at(['rubric', i, 'criterion'], issue);
+    }
+  }
+
+  type P = { prompt?: string; statement?: string; slots?: { prompt?: string; answer?: string; accept?: string[] }[] };
+  for (const [i, part] of ((q.parts ?? []) as P[]).entries()) {
+    if (typeof part.prompt === 'string') {
+      for (const issue of delimiterIssues(part.prompt)) at(['parts', i, 'prompt'], issue);
+    }
+    if (typeof part.statement === 'string') {
+      for (const issue of delimiterIssues(part.statement)) at(['parts', i, 'statement'], issue);
+      for (const issue of clozeIssues(part.statement)) at(['parts', i, 'statement'], issue);
+    }
+    for (const [j, slot] of (part.slots ?? []).entries()) {
+      if (typeof slot.prompt === 'string') {
+        for (const issue of delimiterIssues(slot.prompt)) at(['parts', i, 'slots', j, 'prompt'], issue);
+      }
+      if (typeof slot.answer === 'string') {
+        for (const issue of answerIssues(slot.answer)) at(['parts', i, 'slots', j, 'answer'], issue);
+      }
+      for (const [k, a] of (slot.accept ?? []).entries()) {
+        for (const issue of answerIssues(a)) at(['parts', i, 'slots', j, 'accept', k], issue);
+      }
+    }
+  }
+
+  // Figure and table labels are drawn as plain text; KaTeX never runs on them.
+  const params = (q.visual as { params?: Record<string, unknown> } | undefined)?.params ?? {};
+  const LABEL_KEYS = ['label', 'name', 'caption', 'universe_label', 't_label', 'v_label', 'set_a', 'set_b', 'set_c'];
+  const walk = (value: unknown, path: (string | number)[]): void => {
+    if (typeof value === 'string') {
+      const key = String(path[path.length - 1]);
+      if (LABEL_KEYS.includes(key) || key === 'headers' || typeof path[path.length - 1] === 'number') {
+        for (const issue of labelIssues(value)) at(['visual', 'params', ...path], issue);
+      }
+      return;
+    }
+    if (Array.isArray(value)) {
+      const key = String(path[path.length - 1]);
+      if (key === 'headers' || key === 'labels') value.forEach((v, i) => walk(v, [...path, i]));
+      return;
+    }
+    if (value && typeof value === 'object') {
+      for (const [k, v] of Object.entries(value)) walk(v, [...path, k]);
+    }
+  };
+  walk(params, []);
+}
+
 const QuestionBaseZ = z.object({
   objective_ids: z.array(z.string().regex(OBJECTIVE_ID_RE)).min(1),
   module: z.union([z.literal(1), z.literal(2), z.literal(3)]),
@@ -331,6 +421,7 @@ export const McqQuestionZ = QuestionBaseZ.extend({
 })
   .refine(moduleAgrees, { message: 'objective_ids must belong to module' })
   .superRefine((q, ctx) => {
+    checkRenderable(q, ctx);
     checkVisualConsistency(q, ctx);
     checkPartLabels(q.parts, ctx);
     if (q.parts[0].marks !== q.marks) {
@@ -353,6 +444,7 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
     message: 'rubric codes must be unique',
   })
   .superRefine((q, ctx) => {
+    checkRenderable(q, ctx);
     checkVisualConsistency(q, ctx);
     checkPartLabels(q.parts, ctx);
     if (q.parts.reduce((s, p) => s + p.marks, 0) !== q.marks) {
