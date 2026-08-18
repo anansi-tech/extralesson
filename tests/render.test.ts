@@ -327,3 +327,17 @@ describe('an underlined digit survives every rendering path', () => {
     expect(svgPlainLabel('$\\underline{35}$')).toBe('3̲5̲');
   });
 });
+
+// The August formatting audit.
+describe('renderability — contracts the renderer imposes', () => {
+  it('renders money inside maths, which used to be a KaTeX syntax error', () => {
+    // restoreMoney put a BARE $ back inside the math body, and a bare $ in math
+    // mode is "Can't use function '$'". Fourteen fields could never render.
+    const html = renderMathHtml('CAO $\\begin{pmatrix}\\$1 860&\\$3 150\\end{pmatrix}$');
+    expect(html).not.toContain('katex-error');
+  });
+
+  it('still shows prose money as a bare sign', () => {
+    expect(renderMathHtml('It costs \\$45 today.')).toContain('$45');
+  });
+});

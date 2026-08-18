@@ -1,5 +1,5 @@
 import katex from 'katex';
-import { protectMoney, restoreMoney } from '@/lib/money';
+import { protectMoney, restoreMoney, restoreMoneyForMath } from '@/lib/money';
 
 // Render a KaTeX-safe string (inline math delimited by $...$) to HTML.
 // Server-side only; output is injected with dangerouslySetInnerHTML and the
@@ -113,7 +113,7 @@ function renderInline(text: string): string {
     .map((seg) => {
       if (seg.startsWith('$') && seg.endsWith('$') && seg.length > 2) {
         try {
-          return katex.renderToString(restoreMoney(seg.slice(1, -1)), { throwOnError: false });
+          return katex.renderToString(restoreMoneyForMath(seg.slice(1, -1)), { throwOnError: false });
         } catch {
           return escapeHtml(restoreMoney(seg));
         }
