@@ -104,7 +104,89 @@ function repairParams(value: unknown, key = ''): unknown {
   return value;
 }
 
-const prose = (s: string) => fixOddDollar(fixClozeGaps(fixControlChars(fixDisplayMath(s))));
+/**
+ * Even delimiters can still be mis-paired: one $ left open in part (c) and
+ * another in part (d) balance each other, and every span between them is
+ * shifted so the prose reads as maths. Parity cannot see it, so the repair
+ * searches instead — try deleting each delimiter, and try closing each span at
+ * a sentence end, and keep the first edit that leaves no prose inside maths and
+ * still renders.
+ */
+export function fixMisPairing(input: string): string {
+  let s = input;
+  // One question needed two edits — a stray delimiter deleted in part (c) and a
+  // span closed in part (d) — so the search runs until the damage stops
+  // shrinking rather than trying a single edit and giving up.
+  for (let round = 0; round < 5 && damage(s) > 0; round++) {
+    const positions: number[] = [];
+    for (let i = 0; i < s.length; i++) {
+      if (s[i] === '$' && s[i - 1] !== '\\') positions.push(i);
+    }
+    const candidates: string[] = [];
+    for (const at of positions) candidates.push(s.slice(0, at) + s.slice(at + 1));
+    for (const at of positions) {
+      const end = s.slice(at + 1).search(/[.;]\s|[.;]$/);
+      if (end > 0) candidates.push(s.slice(0, at + 1 + end) + '$' + s.slice(at + 1 + end));
+    }
+    let best: string | null = null;
+    let bestScore = damage(s);
+    for (const c of candidates) {
+      if (renderMathHtml(c).includes('katex-error')) continue;
+      const score = damage(c);
+      if (score < bestScore) {
+        bestScore = score;
+        best = c;
+      }
+    }
+    if (!best) break;
+    s = best;
+  }
+  // Only accept a result that is both sane and balanced.
+  return damage(s) === 0 ? s : input;
+}
+
+/**
+ * What is still wrong, as one number to minimise.
+ *
+ * Prose-in-maths and odd parity have to be scored TOGETHER. Deleting a single
+ * stray delimiter fixes the pairing and breaks the parity, and a guard that
+ * demanded parity at every step threw that good intermediate away — so the
+ * search could never reach the two-edit repair this question needed.
+ */
+function damage(text: string): number {
+  const odd = (text.replace(/\\\$/g, '').match(/\$/g) ?? []).length % 2;
+  // A command left outside maths prints its backslash to the student, so
+  // closing a broken span is preferred over deleting its opener when both
+  // otherwise score the same.
+  const prose = text
+    .replace(/\\\$/g, '')
+    .replace(/\\\[[\s\S]*?\\\]/g, ' ')
+    .replace(/\$[^$]+\$/g, ' ');
+  const stranded = (prose.match(/\\[a-zA-Z]+|\\%/g) ?? []).length;
+  return proseSpans(text) * 100 + stranded * 10 + odd;
+}
+
+/** How many $...$ spans hold a sentence of prose. */
+export function proseSpans(text: string): number {
+  return text
+    .replace(/\\\$/g, '')
+    .split(/(\$[^$]+\$)/g)
+    .filter((seg) => {
+      if (!(seg.startsWith('$') && seg.endsWith('$') && seg.length > 2)) return false;
+      const body = seg.slice(1, -1);
+      if (/\\text\{|\\mbox\{|\\operatorname|\\begin\{/.test(body)) return false;
+      const words = body
+        .replace(/\\(?:begin|end)\{[a-zA-Z*]+\}|\\[a-zA-Z]+/g, ' ')
+        .replace(/[^a-zA-Z ]+/g, ' ')
+        .trim()
+        .split(/\s+/)
+        .filter((w) => w.length >= 3 && w !== w.toUpperCase());
+      return words.length >= 2;
+    }).length;
+}
+
+
+const prose = (s: string) => fixMisPairing(fixOddDollar(fixClozeGaps(fixControlChars(fixDisplayMath(s)))));
 const answer = (s: string) => fixOddDollar(fixAnswerSemicolons(fixControlChars(s)));
 
 function repair(q: Record<string, unknown>): Record<string, unknown> {
@@ -182,7 +264,11 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: the helpers are imported by tests and by ad-hoc
+// checks, and an import must not start a database write.
+if (process.argv[1]?.endsWith('repair-formatting.ts')) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
