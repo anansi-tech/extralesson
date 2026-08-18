@@ -24,7 +24,7 @@ export type Verdict =
 
 const UNCHECKED = (reason: string): Verdict => ({ checked: false, reason });
 
-/** LaTeX as the papers write it, reduced to something mathjs can parse. */
+/** KaTeX source as the papers write it, reduced to something mathjs parses. */
 export function toExpr(raw: string): string | null {
   if (!raw) return null;
   let s = raw
