@@ -5,8 +5,11 @@ import { valueStatedInText, type VisualTemplate } from '../types';
 // Number line with tick marks, optional labeled points, and optional
 // solution-set ray/segment (for inequalities).
 export const NumberLineParamsZ = z.object({
-  min: z.number().int().min(-100).max(100),
-  max: z.number().int().min(-100).max(100),
+  // Not integers: an inequality line from -2.5 to 2.5 is ordinary, and the
+  // template already carries its own `step`, so the ticks were never tied to
+  // whole-number bounds.
+  min: z.number().min(-100).max(100),
+  max: z.number().min(-100).max(100),
   step: z.number().positive().max(50).default(1),
   points: z
     .array(

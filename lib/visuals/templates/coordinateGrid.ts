@@ -602,7 +602,7 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
   name: 'coordinateGrid',
   // Invariants enforced by verify(); surfaced to the draft prompt.
   rules: [
-    "x_range and y_range must be ascending and each span at most 20 units",
+    "x_range and y_range must be ascending and each span at most 40 units",
     "every point and polygon vertex must lie inside the ranges",
     "if you supply TWO polygons the second must be the image of the first under ONE standard transformation: translation, reflection in an axis or y = x, rotation of 90/180/270 about the origin, or enlargement from the origin",
     "a line label written as y = mx + c must match that line's m and c",
@@ -887,8 +887,12 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     }
     if (xmin >= xmax) issues.push('coordinateGrid: x_range must be ascending');
     if (ymin >= ymax) issues.push('coordinateGrid: y_range must be ascending');
-    if (xmax - xmin > 20) issues.push('coordinateGrid: x_range span exceeds 20');
-    if (ymax - ymin > 20) issues.push('coordinateGrid: y_range span exceeds 20');
+    // 40, not 20. The mesh step scales with the span, so a wider window stays
+    // readable, and applied contexts routinely need one: a graph of cost
+    // against 30 items, or distance over 40 km, was being rejected for being
+    // the size the question is.
+    if (xmax - xmin > 40) issues.push('coordinateGrid: x_range span exceeds 40');
+    if (ymax - ymin > 40) issues.push('coordinateGrid: y_range span exceeds 40');
     const inRange = (x: number, y: number) => x >= xmin && x <= xmax && y >= ymin && y <= ymax;
     for (const pt of p.points) {
       if (!inRange(pt.x, pt.y)) {
