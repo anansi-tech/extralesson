@@ -54,7 +54,8 @@ body {
 }
 
 .katex .mord,
-.katex .mbin {
+.katex .mbin,
+.katex .mrel {
   -webkit-text-stroke: 0.018em currentColor;
 }
 

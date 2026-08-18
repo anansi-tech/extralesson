@@ -40,8 +40,9 @@ function pct(n: number, of: number): string {
 
 async function main() {
   await dbConnect();
-  const [qs, topics, blueprints] = await Promise.all([
+  const [qs, everything, topics, blueprints] = await Promise.all([
     Question.find({ status: { $in: ['draft', 'approved'] } }).lean<Lean[]>(),
+    Question.find({}).select('kind status').lean<{ kind: string; status: string }[]>(),
     Topic.find({}).lean<{ code: string; title: string; module: 1 | 2 | 3; order: number }[]>(),
     Blueprint.find({}).lean<
       { paper: 'P1' | 'P2'; module: number; allocations: { topic_codes: string[]; items?: number; marks?: number }[] }[]
@@ -56,7 +57,21 @@ async function main() {
 
   const structured = qs.filter((q) => q.kind === 'structured');
   const mcq = qs.filter((q) => q.kind === 'mcq');
-  console.log(`BANK: ${qs.length} questions — ${structured.length} structured, ${mcq.length} Paper 1 items\n`);
+
+  // Always by STATUS. "Still in the queue" and "already approved" lead to
+  // opposite decisions — a single total once had a reviewer agree to retire 48
+  // questions on the understanding that none of them had been reviewed, when 34
+  // of them had.
+  console.log(`BANK: ${qs.length} live questions — ${structured.length} structured, ${mcq.length} Paper 1 items`);
+  const cell = (kind: string, status: string) =>
+    everything.filter((q) => q.kind === kind && q.status === status).length;
+  console.log('             approved   draft  retired');
+  for (const kind of ['structured', 'mcq']) {
+    console.log(
+      `  ${kind.padEnd(11)}${String(cell(kind, 'approved')).padStart(8)}${String(cell(kind, 'draft')).padStart(8)}${String(cell(kind, 'retired')).padStart(9)}`,
+    );
+  }
+  console.log('');
 
   // --- matrix coverage -----------------------------------------------------
   const facts: QuestionFacts[] = qs.map((q) => ({
