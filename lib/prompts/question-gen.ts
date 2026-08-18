@@ -11,7 +11,7 @@ import { flavourGuidance } from '@/lib/generation/territories';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v37';
+export const PROMPT_VERSION = 'v38';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -166,6 +166,8 @@ ${
 - "rubric_codes" on a slot lists the rubric rows that slot earns, and every rubric row carries "slot_ref" as "part.slot" (for example "a.ii").
 - A part may instead be a STATEMENT THE STUDENT COMPLETES IN PLACE: set "statement" to the sentence with {} where each answer goes, one gap per slot in order, and keep the part's prompt as the instruction ("Complete the statement below."). The papers set this repeatedly — "The regular octagon has {} lines of symmetry and rotational symmetry of order {}." — and it is ONE item rather than the two questions it would otherwise split into, because reading the sentence whole is part of the work. Use it where the answers belong to one statement; do not use it as a way to bundle unrelated asks.
 - "depends_on" on a slot lists the EARLIER slot refs whose results it uses — ["a.i"], or [] when it needs nothing before it. A real Paper 2 question is a chain: something the candidate can do immediately, then a second thing that needs the first, then a third that needs the second. Aim for a chain at least THREE slots long in a paper-shaped question. Every ref must be a slot of this question that comes before the one declaring it.
+- THE OPENING PART MUST DEMAND A STEP, however small (hard requirement). Opening small is right — 30% of real questions open with a single mark — but not one of them opens by copying. Measured across the papers, a 1-mark opening asks the candidate to EVALUATE (73.18 - 5.23 x 9.34), FACTORISE (1 - 4h^2), SUBSTITUTE (the value of f(1)), APPLY A DEFINITION to given data (the lower class boundary of the class 21-30, the upper class limit of 20-39), FORM a relationship (an equation connecting P and V; an inequality for "must not spend more than \$1 200"), or DEDUCE (a value of x that cannot be in the domain).
+  What none of them does is restate the stem in another notation. Do NOT open by asking for a column vector whose components are the coordinates the stem just gave, a value the stimulus states, or a total the table already prints. Give the position vectors and ask for $\\overrightarrow{AB}$; give the diagram and ask for a vector read from it; give the table and ask for a value that must be selected or computed rather than copied. The entry step is a step.
 - EVERY PART MUST DEMAND WORK THAT HAS NOT ALREADY BEEN DONE (hard requirement). A part earns its marks only if answering it requires something not stated in the stem and not already performed in an earlier part. Two failures to check for by name, because they pass every structural check:
   · A part whose answer is the premise restated. If the stem says "$M$ is the midpoint of $AB$", then "state $\\vec{AM}$ in terms of $\\vec{AB}$" asks the candidate to repeat what they were told.
   · A part that is an earlier part's calculation inverted or rearranged. If (a) computed $\\vec{PQ}$ from $\\vec{OP}$ and $\\vec{OQ}$, then a later part recovering $\\vec{OQ}$ from $\\vec{OP}$ and $\\vec{PQ}$ establishes no new fact — its rubric is (a)'s rubric backwards.
