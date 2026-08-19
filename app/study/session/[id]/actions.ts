@@ -9,7 +9,7 @@ import { renderMathHtml } from '@/lib/katex';
 import type { ProfileMarks, QuestionPart, RubricItem, TemplateName } from '@/lib/types';
 import { SLOT_REF_RE } from '@/lib/notation';
 import { renderVisual } from '@/lib/visuals';
-import { constructFamily } from '@/lib/targets/construct';
+import { constructActs, constructFamily } from '@/lib/targets/construct';
 
 const SubmitZ = z.object({
   sessionId: z.string().regex(/^[a-f0-9]{24}$/),
@@ -173,7 +173,7 @@ export async function submitAnswer(input: {
             ...(p.slots ?? []).map((sl) => sl.prompt ?? ''),
           ]),
         }),
-        acts: family.acts,
+        acts: constructActs(question.visual),
       };
     } catch {
       construction = undefined;

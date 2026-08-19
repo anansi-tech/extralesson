@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CONSTRUCT_FAMILIES, CONSTRUCT_SHARE, constructFamily, isConstructTemplate } from '@/lib/targets/construct';
+import { CONSTRUCT_FAMILIES, CONSTRUCT_SHARE, constructActs, constructFamily, isConstructTemplate } from '@/lib/targets/construct';
 import { QuestionDraftZ } from '@/lib/validation/question';
 import { buildDraftPrompt } from '@/lib/prompts/question-gen';
 import type { QuestionRecipe, RecipeContext } from '@/lib/generation/recipe';
@@ -90,6 +90,27 @@ describe('construct families', () => {
       expect(f.acts.length).toBeGreaterThanOrEqual(3);
       expect(constructFamily(f.template)).toBe(f);
     }
+  });
+
+  // One template, three drawings: the first live batch produced a linear
+  // programming region on a coordinateGrid, which would have been checked
+  // against "draw a smooth curve through the plotted points".
+  it('takes the acts from what the figure declares, not from the template name', () => {
+    const curve = constructActs({ template: 'coordinateGrid', params: { curves: [{ a: 1, b: 0, c: -4 }] } });
+    const region = constructActs({ template: 'coordinateGrid', params: { lines: [{ m: -2, c: 12 }], regions: [{ constraints: [] }] } });
+    const lines = constructActs({ template: 'coordinateGrid', params: { lines: [{ m: 2, c: 1 }] } });
+    expect(curve.join(' ')).toContain('smooth curve');
+    expect(region.join(' ')).toContain('shaded');
+    expect(region.join(' ')).not.toContain('smooth curve');
+    expect(lines.join(' ')).toContain('labelled with its equation');
+    expect(lines.join(' ')).not.toContain('shaded');
+  });
+
+  it('gives a non-grid family its own single list', () => {
+    expect(constructActs({ template: 'cumulativeFrequency', params: {} })).toEqual(
+      constructFamily('cumulativeFrequency')!.acts,
+    );
+    expect(constructActs({ template: 'triangleLabeled', params: {} })).toEqual([]);
   });
 
   it('holds the measured share, which the recipe consumes', () => {
