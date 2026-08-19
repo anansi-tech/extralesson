@@ -40,8 +40,18 @@ function renderOneAnswer(raw: string): string {
   const value = raw.replace(/\\[()]/g, '$').trim();
   if (value === '') return '';
   // Already delimited, or carries currency: the prose renderer handles both.
-  // Already delimited, or carries money: the prose renderer handles both.
-  if (/\$[^$]+\$/.test(value) || /\\\$/.test(value)) return renderMathHtml(value);
+  // Already delimited? Ask that question of the value with its MONEY removed:
+  // "\\begin{pmatrix}\\$1&\\$2\\end{pmatrix}" contains $...$ as a substring —
+  // the two escaped prices — so it read as already-delimited and was handed to
+  // the prose renderer, which found no maths in it and printed the source.
+  const withoutMoney = value.replace(/\\\$/g, '');
+  if (/\$[^$]+\$/.test(withoutMoney)) return renderMathHtml(value);
+  // Money with no delimiters: prose keeps it as prose, but an expression that
+  // happens to contain a price — a matrix of them — is still an expression and
+  // was reaching the page as source.
+  if (/\\\$/.test(value)) {
+    return renderMathHtml(looksLikeExpression(value) ? `$${value}$` : value);
+  }
   if (!looksLikeExpression(value)) return escapeHtml(value);
   try {
     // A bare % opens a comment in KaTeX's input syntax and would swallow the
@@ -62,7 +72,12 @@ function renderOneAnswer(raw: string): string {
 // italic variables with the spaces closed up — "14mby6m".
 const CONNECTOR = /\b(?:by|to|per|and|or|each)\b/i;
 
-function looksLikeExpression(value: string): boolean {
+function looksLikeExpression(raw: string): boolean {
+  // Words inside \text{} are prose the AUTHOR put inside maths on purpose —
+  // "10\text{ grid units}", "...\right|=1\text{ and }...". Stripping the
+  // command but leaving its contents left "grid units" and "and" behind, which
+  // read as prose and sent the whole value to the page as raw source.
+  const value = raw.replace(/\\(?:text|mbox|operatorname)\{[^{}]*\}/g, ' ');
   if (!/[\\^_=+\-*/]|\d/.test(value)) return false;
   if (CONNECTOR.test(value)) return false;
   const letters = value
