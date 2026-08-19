@@ -38,6 +38,14 @@ const StructuredSolveZ = z.object({
       // that omits the field cannot silently fail every question.
       new_work: z.boolean().default(true),
       new_work_note: z.string().max(200).default(''),
+      // Whether the answer is simply legible in the figure. Distinct from
+      // new_work, which counts reading a value off a graph as work — and it is,
+      // for a one-mark "state the coordinates of P". It stops being work when
+      // the rubric is paying for the derivation instead: a feasible region
+      // whose optimum the candidate is meant to find by testing vertices, and
+      // can instead read off the corner of the shading. Default false so a
+      // solver that omits the field cannot fail every question.
+      read_off_figure: z.boolean().default(false),
     }),
   ),
 });
@@ -149,7 +157,10 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
       .replace(/^([a-j])[.:]?$/, '$1');
   const solByLabel = new Map(sol.part_answers.map((p) => [bareLabel(p.label), p.final_answer]));
   const workByLabel = new Map(
-    sol.part_answers.map((p) => [bareLabel(p.label), { did: p.new_work, why: p.new_work_note }]),
+    sol.part_answers.map((p) => [
+      bareLabel(p.label),
+      { did: p.new_work, why: p.new_work_note, readOff: p.read_off_figure },
+    ]),
   );
   const figure = figureNotes(sol.figure_check);
   const notes: string[] = [...figure.notes];
@@ -208,6 +219,31 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   if (emptyParts.length > 0) {
     agrees = false;
     notes.push(...emptyParts);
+  }
+
+  // A slot we mark by string equality, whose answer the figure already shows,
+  // while its rubric pays for the work of deriving it. The rubric is then
+  // marking a derivation the question never made the student do — which is how
+  // a linear-programming question can award three marks for testing the
+  // vertices of a region whose optimum is the visibly highest corner.
+  //
+  // Gated on two marks or more, because reading a value off a graph is a real
+  // one-mark demand and the papers set it constantly.
+  const rubricMarksFor = (ref: string) =>
+    (draft.rubric ?? [])
+      .filter((r) => bareLabel(r.slot_ref) === bareLabel(ref))
+      .reduce((sum, r) => sum + r.mark_value, 0);
+  const readOff: string[] = [];
+  for (const p of askable) {
+    if ((p.slot.response_mode ?? 'answer') !== 'answer') continue;
+    if (!workByLabel.get(bareLabel(p.ref))?.readOff) continue;
+    const marks = rubricMarksFor(p.ref);
+    if (marks < 2) continue;
+    readOff.push(`(${p.ref}) answer is readable off the figure, but its rubric awards ${marks} marks for deriving it`);
+  }
+  if (readOff.length > 0) {
+    agrees = false;
+    notes.push(...readOff);
   }
 
   // Deterministic verification is AUTHORITATIVE where it applies; the solve

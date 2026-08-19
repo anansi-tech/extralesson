@@ -42,7 +42,30 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v40');
+    expect(PROMPT_VERSION).toBe('v41');
+  });
+
+  // Both caught in review on the same batch: composite-function content tagged
+  // with Module 3 objectives under the integration requirement, and feasible
+  // regions whose inequalities left x >= 0, y >= 0 implied by the shading.
+  it('names the module a part\'s mathematics must belong to, and rules out M2 function notation in M3', () => {
+    const p = buildDraftPrompt({
+      topicTitle: 'Test topic',
+      objectives: [objective('Draw the graph of a linear inequality.')],
+      recipe: recipe({ difficulty: 3, integrate: true }),
+      context: context('M3-RFG1'),
+      module: 3,
+      visualContract: '',
+    });
+    expect(p).toContain('tagged Module 3');
+    expect(p).toContain('is Module 2 content specifically');
+    expect(p).toContain('must not appear anywhere in a question tagged Module 3');
+  });
+
+  it('requires a region of inequalities to state its non-negativity constraints', () => {
+    const p = prompt({ topic: 'M3-RFG1' });
+    expect(p).toContain('NON-NEGATIVITY CONSTRAINTS');
+    expect(p).toContain('constraints OF THE MODEL');
   });
 
   it('teaches chaining as structure with follow-through, and restrains the signposting', () => {
@@ -331,6 +354,14 @@ describe('buildSolvePrompt — the figure check rides along with the visual', ()
     const p = buildSolvePrompt(base);
     expect(p).not.toContain('BEFORE SOLVING');
     expect(p).not.toContain('figure_check');
+    // Nothing can be read off a figure that does not exist.
+    expect(p).not.toContain('read_off_figure');
+  });
+
+  it('asks whether the answer is simply legible in the figure', () => {
+    const p = buildSolvePrompt({ ...base, visualText: 'A grid with a shaded region.' });
+    expect(p).toContain('read_off_figure');
+    expect(p).toContain('without doing the mathematics the part is asking for');
   });
 
   it('does not invite a verdict on a merely uninformative sketch', () => {
