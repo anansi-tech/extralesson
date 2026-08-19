@@ -124,7 +124,9 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
       stem: draft.stem,
       kind: 'structured',
       partPrompts: draft.parts.flatMap((p) =>
-        p.slots.filter((slot) => slot.response_mode !== 'construct').map((slot, si) => ({
+        // Mapped before it is filtered: `si` indexes the part's cloze gaps, so
+        // dropping a slot first would shift every gap after it.
+        p.slots.map((slot, si) => ({
           // Addressed by the slot's own reference, so a key cannot be read as
           // "the whole of part (a)" and answered once for several slots.
           label: p.slots.length === 1 ? p.label : `${p.label}.${slot.label}`,
@@ -139,7 +141,7 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
               ? `${p.prompt} ${slot.prompt}`
               : p.prompt,
           mode: slot.response_mode ?? 'answer',
-        })),
+        })).filter((sl) => sl.mode !== 'construct'),
       ),
       visualText,
     }),
@@ -168,7 +170,7 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   // return and nothing to compare, so it is not asked about at all — which
   // also keeps the one-entry-per-key count the prompt demands honest.
   const askable = draft.parts.flatMap((p) =>
-    p.slots.filter((slot) => slot.response_mode !== 'construct').map((slot, si) => ({
+    p.slots.map((slot, si) => ({
       ref: p.slots.length === 1 ? p.label : `${p.label}.${slot.label}`,
       // The adjudicator judges two answers against the question they answer, so
       // it needs the statement for the same reason the solver does.
@@ -176,7 +178,7 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
         ? `${p.prompt} "${clozeWithGapMarked(p.statement, si)}"`
         : (slot.prompt ?? p.prompt),
       slot,
-    })),
+    })).filter((sl) => sl.slot.response_mode !== 'construct'),
   );
   let agrees = sol.part_answers.length === askable.length && !figure.contradicts;
 
