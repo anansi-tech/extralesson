@@ -39,8 +39,9 @@ describe('a table whose cells can be answered', () => {
 
   it('keeps the scaffold around its gaps, which is the teaching part', () => {
     const html = dataTable.render(sequence);
-    // "( _ × _ ) + _ + _ =" — the skeleton survives, with four gaps inside it
-    expect(html).toMatch(/\(<span class="cell-blank"><\/span> × <span class="cell-blank">/);
+    // "( _ × _ ) + _ + _ =" — the skeleton survives, with four gaps inside it,
+    // each gap now naming the box that fills it.
+    expect(html).toMatch(/\(<span class="cell-blank"><i class="cell-key">[^<]+<\/i><\/span> × <span class="cell-blank">/);
   });
 
   it('tells the solver which cells are to be completed, and with what shape', () => {
