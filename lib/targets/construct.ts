@@ -46,7 +46,7 @@ export const CONSTRUCT_FAMILIES: ConstructFamily[] = [
   {
     template: 'coordinateGrid',
     demand:
-      'draw the graph of a linear or quadratic function over a stated domain, using a stated scale, and where the question goes on to it, a second straight line on the same axes whose intersection solves a pair of equations graphically',
+      'draw the graph of a linear or quadratic function over a stated domain, using a stated scale, and where the question goes on to it, a second straight line on the same axes whose intersection solves a pair of equations graphically; or draw and shade the region satisfying a set of inequalities',
     acts: [
       'Axes drawn to the scale the question states, and long enough for the whole domain',
       'Every point from the table plotted, and none outside the domain',
@@ -96,4 +96,37 @@ export function constructFamily(template: TemplateName | undefined): ConstructFa
 
 export function isConstructTemplate(template: TemplateName): boolean {
   return BY_TEMPLATE.has(template);
+}
+
+// A coordinate grid carries three quite different drawings and an examiner
+// credits different acts for each: a curve is marked on its smoothness, a
+// region on its boundaries and its shading, a straight line on neither. The
+// acts therefore come from the params the question DECLARES — `curves`,
+// `regions`, `lines` — and not from the template name, which is the same for
+// all three. Every other family draws one thing, so its own list stands.
+const GRID_ACTS = {
+  regions: [
+    'Axes drawn to the scale the question states, covering the whole range given',
+    'Each boundary line drawn correctly, and drawn solid or broken as its inequality requires',
+    'The correct side of every boundary shaded, including $x \\ge 0$ and $y \\ge 0$',
+    'The region satisfying ALL the inequalities identified and labelled',
+  ],
+  lines: [
+    'Axes drawn to the scale the question states, covering the whole range given',
+    'Each line drawn through points you worked out, not sketched by eye',
+    'Every line labelled with its equation',
+    'Any intersection the question asks about marked and read off',
+  ],
+} as const;
+
+/** The self-check list for a question's construction, from its declared visual. */
+export function constructActs(visual?: { template: TemplateName; params?: Record<string, unknown> }): string[] {
+  const family = constructFamily(visual?.template);
+  if (!family) return [];
+  if (family.template !== 'coordinateGrid') return family.acts;
+  const params = (visual?.params ?? {}) as Record<string, unknown[]>;
+  if (Array.isArray(params.curves) && params.curves.length > 0) return family.acts;
+  if (Array.isArray(params.regions) && params.regions.length > 0) return [...GRID_ACTS.regions];
+  if (Array.isArray(params.lines) && params.lines.length > 0) return [...GRID_ACTS.lines];
+  return family.acts;
 }
