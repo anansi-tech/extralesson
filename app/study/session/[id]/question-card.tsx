@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { submitAnswer, type Feedback } from './actions';
+import { isPositionalLabel } from '@/lib/notation';
 
 export interface CardQuestion {
   sessionId: string;
@@ -18,11 +19,56 @@ export interface CardQuestion {
     marks: number;
     /** Cloze prose, already split on its gaps: n gaps give n+1 pieces. */
     statementHtml?: string[];
-    slots: { ref: string; label: string; promptHtml?: string; mode: string }[];
+    slots: {
+      ref: string;
+      label: string;
+      promptHtml?: string;
+      /** The same prompt as plain text, for the input's accessible name. */
+      promptText?: string;
+      mode: string;
+    }[];
   }[];
   optionsHtml?: string[];
   marks: number;
   rubricCodes: { code: string; profile: string; mark_value: number; part_label: string }[];
+}
+
+type CardSlot = CardQuestion['parts'][number]['slots'][number];
+type CardPart = CardQuestion['parts'][number];
+
+const ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'];
+
+/**
+ * What to call a box whose slot carries no prompt.
+ *
+ * lib/notation.ts states the contract: the label is a KEY and the wording the
+ * student reads lives in the slot prompt. Where an older question left the
+ * prompt empty there is no wording to show, and counting position is the only
+ * honest thing left to say — so we say it in words rather than making the
+ * student infer it from the order of the boxes.
+ */
+function ordinalAnswer(slots: CardSlot[], ref: string): string {
+  const marked = slots.filter((s) => s.mode === 'answer');
+  const i = marked.findIndex((s) => s.ref === ref);
+  return `${ORDINALS[i] ?? `${i + 1}th`} answer`;
+}
+
+/**
+ * What to show beside a box whose slot carries no prompt. A descriptive label
+ * IS the wording — "modal_class" is the paper's own name for the thing — so it
+ * is shown as words. A positional one names nothing, and counting position out
+ * loud is the only honest thing left to say.
+ */
+function describeSlot(slots: CardSlot[], slot: CardSlot): string {
+  return isPositionalLabel(slot.label)
+    ? ordinalAnswer(slots, slot.ref)
+    : slot.label.replace(/[_-]+/g, ' ');
+}
+
+function slotAriaLabel(part: CardPart, slot: CardSlot): string {
+  if (part.slots.length === 1) return `Answer to part (${part.label})`;
+  const named = slot.promptText?.trim() || describeSlot(part.slots, slot);
+  return `Part (${part.label}) (${slot.label}): ${named}`;
 }
 
 const chipColor: Record<string, string> = {
@@ -195,26 +241,39 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 {!p.statementHtml && p.slots.map((slot) => {
                   const partFeedback = feedback?.partResults.find((r) => r.label === slot.ref);
                   return (
-                    <div key={slot.ref} className={p.slots.length > 1 ? 'mt-1 pl-4' : ''}>
-                      {p.slots.length > 1 && (
-                        <div className="flex items-baseline gap-2 text-sm">
-                          <span className="font-mono text-[11px] text-dim">({slot.label})</span>
-                          {slot.promptHtml && (
-                            <span
-                              className="question-prose"
-                              dangerouslySetInnerHTML={{ __html: slot.promptHtml }}
-                            />
-                          )}
-                        </div>
-                      )}
+                    <div key={slot.ref} className={p.slots.length > 1 ? 'mt-2 pl-4' : ''}>
                       {slot.mode === 'answer' ? (
-                        <div className="mt-1 flex items-center gap-2">
+                        // The label belongs TO THE BOX, on its line, the way a
+                        // printed paper puts (i) beside the answer line it
+                        // belongs to. Stacked above, two boxes under one
+                        // instruction are told apart only by counting, and a
+                        // student who counts wrong has a correct answer marked
+                        // wrong — the worst thing this can do to them.
+                        <div className="mt-1 flex items-start gap-2">
+                          {p.slots.length > 1 && (
+                            <label
+                              htmlFor={`slot-${slot.ref}`}
+                              className="flex min-w-0 shrink-0 basis-[42%] items-baseline gap-1.5 pt-2 text-sm sm:basis-[38%]"
+                            >
+                              <span className="font-mono text-[11px] text-dim">({slot.label})</span>
+                              {slot.promptHtml ? (
+                                <span
+                                  className="question-prose"
+                                  dangerouslySetInnerHTML={{ __html: slot.promptHtml }}
+                                />
+                              ) : (
+                                <span className="text-dim">{describeSlot(p.slots, slot)}</span>
+                              )}
+                            </label>
+                          )}
                           <input
+                            id={`slot-${slot.ref}`}
                             value={partAnswers[slot.ref] ?? ''}
                             onChange={(e) =>
                               setPartAnswers((prev) => ({ ...prev, [slot.ref]: e.target.value }))
                             }
                             disabled={!!feedback}
+                            aria-label={slotAriaLabel(p, slot)}
                             className="w-full border-[1.5px] border-ink p-2 font-mono text-sm"
                             placeholder={
                               p.slots.length > 1
@@ -230,7 +289,20 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                             </span>
                           )}
                         </div>
-                      ) : slot.mode === 'construct' ? (
+                      ) : (
+                        <>
+                          {p.slots.length > 1 && (
+                            <div className="flex items-baseline gap-2 text-sm">
+                              <span className="font-mono text-[11px] text-dim">({slot.label})</span>
+                              {slot.promptHtml && (
+                                <span
+                                  className="question-prose"
+                                  dangerouslySetInnerHTML={{ __html: slot.promptHtml }}
+                                />
+                              )}
+                            </div>
+                          )}
+                          {slot.mode === 'construct' ? (
                         <p className="mt-1 border-l-3 border-margin bg-[#FFFDF6] py-1 pl-3 text-[13px] text-dim">
                           Do this on graph paper.{' '}
                           {feedback
@@ -242,6 +314,8 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                         <p className="mt-1 border-l-3 border-paper-deep bg-[#FFFDF6] py-1 pl-3 text-[13px] text-dim">
                           Work this one on paper. {feedback ? 'Mark it yourself against the solution below' : 'It is not marked here'} — these marks are left out of your estimate.
                         </p>
+                          )}
+                        </>
                       )}
                     </div>
                   );

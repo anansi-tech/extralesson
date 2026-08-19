@@ -39,3 +39,14 @@ export const SLOT_LABEL_RE = new RegExp(`^[a-z0-9${GREEK}][${LABEL_BODY}]{0,29}$
 
 /** A slot reference as the rubric and the table write it: "a.ii", "b.P''". */
 export const SLOT_REF_RE = new RegExp(`^[a-j]\\.[a-z0-9${GREEK}][${LABEL_BODY}]{0,29}$`, 'i');
+
+/**
+ * A label that names nothing: a position in a list rather than a quantity.
+ *
+ * "centre", "factor" and "modal_class" tell a student which box is which all by
+ * themselves — they are the paper's own names for the things being asked for.
+ * "i" and "ii" do not, so a part using them needs the wording in the prompt.
+ */
+export function isPositionalLabel(label: string): boolean {
+  return /^(?:i{1,3}|iv|v|vi{1,3}|ix|x)$/i.test(label) || /^\d+$/.test(label);
+}

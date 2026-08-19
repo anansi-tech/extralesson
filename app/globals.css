@@ -90,6 +90,16 @@ body {
   min-width: 3.5em;
   border-bottom: 1px dotted var(--ink);
   margin: 0 2px;
+  text-align: center;
+}
+
+/* The key naming which answer box fills this gap. Small and grey: it is a
+   reference, not something to be read as part of the table's data. */
+.cell-key {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68em;
+  font-style: normal;
+  color: var(--dim, #6B7280);
 }
 
 /* Ruled-paper background used across study/admin surfaces */

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { CONTEXT_CATEGORIES } from '@/lib/generation/contexts';
-import { SLOT_LABEL_RE, SLOT_REF_RE } from '@/lib/notation';
+import { isPositionalLabel, SLOT_LABEL_RE, SLOT_REF_RE } from '@/lib/notation';
 import {
   answerIssues,
   clozeIssues,
@@ -542,6 +542,38 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
       }
     }
     for (const [i, part] of q.parts.entries()) {
+      // TWO BOXES UNDER ONE INSTRUCTION MUST SAY WHICH IS WHICH.
+      //
+      // notation.ts already states the contract — the label is a KEY, and the
+      // wording the student reads lives in the slot prompt — but nothing
+      // enforced it, so parts reached students as an instruction followed by
+      // unexplained boxes (i) and (ii). The student then has to infer the order
+      // from the wording of the instruction, and a student who infers it the
+      // other way round has correct answers marked wrong.
+      //
+      // A DESCRIPTIVE LABEL IS ITSELF THE WORDING — "centre", "factor",
+      // "modal_class" are the paper's own names for the things asked for, and
+      // the card shows them beside their box. Only a POSITIONAL label — i, ii,
+      // a bare letter or number — names nothing, and a part built out of those
+      // needs its prompts.
+      //
+      // A cloze part is exempt: its gaps sit inside the prose, so their
+      // position IS their label.
+      const markedSlots = part.slots.filter((sl) => (sl.response_mode ?? 'answer') === 'answer');
+      if (!part.statement && markedSlots.length > 1) {
+        for (const [j, slot] of part.slots.entries()) {
+          if ((slot.response_mode ?? 'answer') !== 'answer') continue;
+          if (!isPositionalLabel(slot.label)) continue;
+          if ((slot.prompt ?? '').trim() === '') {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['parts', i, 'slots', j, 'prompt'],
+              message:
+                'a part with more than one answer box must say what each box is for — give every slot a prompt',
+            });
+          }
+        }
+      }
       const dupes = new Set(part.slots.map((s) => s.label));
       if (dupes.size !== part.slots.length) {
         ctx.addIssue({ code: 'custom', path: ['parts', i, 'slots'], message: 'slot labels must be unique within a part' });

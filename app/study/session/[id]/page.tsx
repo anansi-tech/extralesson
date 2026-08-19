@@ -205,6 +205,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
         ref: `${p.label}.${slot.label}`,
         label: slot.label,
         promptHtml: slot.prompt ? renderMathHtml(slot.prompt) : undefined,
+        promptText: slot.prompt,
         mode: slot.response_mode ?? 'answer',
       })),
     })),

@@ -51,16 +51,26 @@ function cellText(raw: string): string {
   return esc(svgPlainLabel(raw));
 }
 
-/** A cell the student fills: the printed skeleton with a gap per slot. */
+/**
+ * A cell the student fills: the printed skeleton with a gap per slot.
+ *
+ * Each gap is STAMPED WITH THE LABEL OF THE SLOT THAT FILLS IT, because that
+ * label is also what the answer box beside the question is called. Anonymous
+ * gaps put four identical blanks above four boxes named (i) to (iv) and left
+ * the student to pair them by counting; pairing them wrong gets correct
+ * answers marked wrong, which is the worst thing this can do to them.
+ */
 function answerCell(cell: Exclude<Cell, string>): string {
-  const gap = '<span class="cell-blank"></span>';
-  if (!cell.template) return gap;
+  const gaps = cell.slots.map(
+    (ref) => `<span class="cell-blank"><i class="cell-key">${esc(ref.slice(ref.indexOf('.') + 1))}</i></span>`,
+  );
+  if (!cell.template) return gaps[0] ?? '<span class="cell-blank"></span>';
   // The skeleton's spacing is the teaching: "( _ × _ ) + _" must not collapse
   // to "(_×_)+_", so the outer spaces of each piece survive the label tidy-up.
   const spaced = (piece: string) =>
     `${piece.match(/^\s*/)?.[0] ?? ''}${cellText(piece)}${piece.match(/\s*$/)?.[0] ?? ''}`;
   const pieces = cell.template.split('{}');
-  return pieces.map((piece, i) => spaced(piece) + (i < pieces.length - 1 ? gap : '')).join('');
+  return pieces.map((piece, i) => spaced(piece) + (i < pieces.length - 1 ? (gaps[i] ?? '') : '')).join('');
 }
 
 function isAnswerCell(cell: Cell): cell is Exclude<Cell, string> {
