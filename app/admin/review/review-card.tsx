@@ -1,10 +1,18 @@
 'use client';
 
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { approveQuestion, rejectQuestion, saveQuestionEdit } from './actions';
+import { approveQuestion, rejectQuestion, restoreQuestion, saveQuestionEdit } from './actions';
 
 export interface ReviewQuestion {
   id: string;
+  status: string;
+  promptVersion?: string;
+  /** Reasons to look, from lib/admin/review-flags — never verdicts. */
+  flags: { level: 'warn' | 'note'; text: string }[];
+  /** The question to return to after acting on this one. */
+  backTo?: string;
   objective_ids: string[];
   module: number;
   kind: 'mcq' | 'structured';
@@ -64,6 +72,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
   const [json, setJson] = useState(question.editJson);
   const [error, setError] = useState<string>();
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
   const editRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -72,13 +81,26 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
     setError(undefined);
   }, [question.id, question.editJson]);
 
+  // Acting moves the queue on, so the question just judged would otherwise be
+  // unreachable — including the one judged by a keystroke, which is the easy
+  // way to approve the wrong thing. `from` carries its id to the next page,
+  // where it becomes a way back.
+  const act = (fn: (id: string) => Promise<void>) =>
+    startTransition(async () => {
+      await fn(question.id);
+      router.replace(`/admin/review?from=${question.id}`);
+    });
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (editing || e.metaKey || e.ctrlKey || e.altKey) return;
       const tag = (e.target as HTMLElement).tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      if (e.key === 'a' || e.key === 'A') startTransition(() => approveQuestion(question.id));
-      if (e.key === 'r' || e.key === 'R') startTransition(() => rejectQuestion(question.id));
+      // The keys do exactly what the buttons do and nothing more. Retiring now
+      // reaches approved questions, and a stray R while reading one back should
+      // not be the way that happens.
+      if ((e.key === 'a' || e.key === 'A') && question.status === 'draft') act(approveQuestion);
+      if ((e.key === 'r' || e.key === 'R') && question.status !== 'retired') act(rejectQuestion);
       if (e.key === 'e' || e.key === 'E') {
         setEditing(true);
         setTimeout(() => editRef.current?.focus(), 0);
@@ -86,7 +108,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [editing, question.id]);
+  }, [editing, question.id, question.status]);
 
   const saveEdit = () =>
     startTransition(async () => {
@@ -103,8 +125,45 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
 
   return (
     <article className="border-[1.5px] border-ink bg-white p-5 shadow-[4px_4px_0_var(--ink)]">
+      {question.backTo && (
+        <Link
+          href={`/admin/review?id=${question.backTo}`}
+          className="mb-3 inline-block font-mono text-[11px] uppercase tracking-widest text-dim underline"
+        >
+          ← back to {question.backTo.slice(-6)}
+        </Link>
+      )}
+
+      {question.flags.length > 0 && (
+        <ul className="mb-3 space-y-1">
+          {question.flags.map((f) => (
+            <li
+              key={f.text}
+              className={`border-l-3 py-1 pl-2 text-[13px] ${
+                f.level === 'warn' ? 'border-red-pen bg-[#FDF1F0]' : 'border-paper-deep bg-[#FFFDF6] text-dim'
+              }`}
+            >
+              {f.text}
+            </li>
+          ))}
+        </ul>
+      )}
+
       <div className="mb-3 flex flex-wrap items-center gap-2 font-mono text-xs text-dim">
         <span className="font-semibold text-ink">M{question.module}</span>
+        <span
+          className={
+            question.status === 'approved'
+              ? 'uppercase text-green-pen'
+              : question.status === 'retired'
+                ? 'uppercase text-red-pen'
+                : 'uppercase'
+          }
+        >
+          {question.status}
+        </span>
+        <span>{question.id.slice(-6)}</span>
+        {question.promptVersion && <span>· {question.promptVersion}</span>}
         <span>{question.objective_ids.join(', ')}</span>
         <span>· {question.kind}</span>
         <span>· difficulty {question.difficulty}</span>
@@ -294,13 +353,24 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
         </div>
       ) : (
         <div className="mt-5 flex items-center gap-3">
-          <button
-            onClick={() => startTransition(() => approveQuestion(question.id))}
-            disabled={pending}
-            className="bg-green-pen px-4 py-2 font-bold text-white shadow-[3px_3px_0_var(--ink)] disabled:opacity-60"
-          >
-            Approve <kbd className="font-mono text-xs opacity-80">A</kbd>
-          </button>
+          {question.status === 'retired' ? (
+            <button
+              onClick={() => act(restoreQuestion)}
+              disabled={pending}
+              className="border-[1.5px] border-ink px-4 py-2 font-bold disabled:opacity-60"
+            >
+              Put back in the queue
+            </button>
+          ) : (
+            <button
+              onClick={() => act(approveQuestion)}
+              disabled={pending || question.status !== 'draft'}
+              className="bg-green-pen px-4 py-2 font-bold text-white shadow-[3px_3px_0_var(--ink)] disabled:opacity-60"
+            >
+              {question.status === 'approved' ? 'Approved' : 'Approve'}{' '}
+              <kbd className="font-mono text-xs opacity-80">A</kbd>
+            </button>
+          )}
           <button
             onClick={() => {
               setEditing(true);
@@ -311,11 +381,12 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
             Edit <kbd className="font-mono text-xs text-dim">E</kbd>
           </button>
           <button
-            onClick={() => startTransition(() => rejectQuestion(question.id))}
-            disabled={pending}
+            onClick={() => act(rejectQuestion)}
+            disabled={pending || question.status === 'retired'}
             className="bg-red-pen px-4 py-2 font-bold text-white shadow-[3px_3px_0_var(--ink)] disabled:opacity-60"
           >
-            Reject <kbd className="font-mono text-xs opacity-80">R</kbd>
+            {question.status === 'approved' ? 'Retire' : 'Reject'}{' '}
+            <kbd className="font-mono text-xs opacity-80">R</kbd>
           </button>
           {pending && <span className="font-mono text-xs text-dim">saving…</span>}
         </div>

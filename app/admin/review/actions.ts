@@ -16,10 +16,26 @@ export async function approveQuestion(id: string): Promise<void> {
   revalidatePath('/admin/review');
 }
 
+// Retiring reaches APPROVED questions too, not only drafts. Twice in one day a
+// defect class was found in questions that had already been approved, and the
+// only way to retire them was a script — the reviewer could see the problem on
+// the page and could not act on it. Retiring is a status change and is
+// reversible; nothing is deleted.
 export async function rejectQuestion(id: string): Promise<void> {
   await requireAdmin();
   await dbConnect();
-  await Question.updateOne({ _id: IdZ.parse(id), status: 'draft' }, { $set: { status: 'retired' } });
+  await Question.updateOne(
+    { _id: IdZ.parse(id), status: { $in: ['draft', 'approved'] } },
+    { $set: { status: 'retired' } },
+  );
+  revalidatePath('/admin/review');
+}
+
+/** Put a retired question back in the queue — the undo for the above. */
+export async function restoreQuestion(id: string): Promise<void> {
+  await requireAdmin();
+  await dbConnect();
+  await Question.updateOne({ _id: IdZ.parse(id), status: 'retired' }, { $set: { status: 'draft' } });
   revalidatePath('/admin/review');
 }
 

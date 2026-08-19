@@ -9,20 +9,33 @@ import {
   STRUCTURED_ARCHETYPE_TARGETS,
 } from '@/lib/targets/matrix';
 import ReviewCard, { type ReviewQuestion } from './review-card';
+import { findQuestions } from '@/lib/admin/find-questions';
+import { reviewFlags } from '@/lib/admin/review-flags';
+import Link from 'next/link';
 
 export const metadata = { title: 'Review queue — ExtraLesson admin' };
 export const dynamic = 'force-dynamic';
 
-export default async function ReviewPage() {
+export default async function ReviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ id?: string; find?: string; from?: string }>;
+}) {
   await dbConnect();
-  const [{ matrix, approvedTotal, draftsRemaining }, nextId] = await Promise.all([
+  const { id: askedId, find, from } = await searchParams;
+  const [{ matrix, approvedTotal, draftsRemaining }, nextId, found] = await Promise.all([
     getCoverage(),
     getNextDraftId(),
+    findQuestions(find ?? ''),
   ]);
 
+  // An explicitly asked-for question wins over the queue's next draft, so a
+  // search result, or a "back" link, opens the question it names.
+  const showId = /^[a-f0-9]{24}$/.test(askedId ?? '') ? askedId! : nextId;
+
   let question: ReviewQuestion | null = null;
-  if (nextId) {
-    const q = await Question.findById(nextId).lean<Record<string, unknown> | null>();
+  if (showId) {
+    const q = await Question.findById(showId).lean<Record<string, unknown> | null>();
     if (q) {
       const raw = q as {
         _id: unknown;
@@ -51,6 +64,7 @@ export default async function ReviewPage() {
         worked_solution: string;
         misconceptions: { trigger: string; name: string; remediation: string }[];
         gen_meta?: { recipe?: unknown; dedup_score?: number; prompt_version?: string };
+        status: string;
       };
       let visualHtml: string | undefined;
       if (raw.visual?.template) {
@@ -69,6 +83,10 @@ export default async function ReviewPage() {
       }
       question = {
         id: String(raw._id),
+        status: raw.status,
+        promptVersion: raw.gen_meta?.prompt_version,
+        flags: reviewFlags(raw as never),
+        backTo: /^[a-f0-9]{24}$/.test(from ?? '') ? from : undefined,
         objective_ids: raw.objective_ids,
         module: raw.module,
         kind: raw.kind,
@@ -154,6 +172,52 @@ export default async function ReviewPage() {
             <b className="text-ink">{approvedTotal}</b>/400 approved
           </div>
         </header>
+
+        <form method="get" className="mb-4 flex gap-2">
+          <input
+            name="find"
+            defaultValue={find ?? ''}
+            placeholder="Find by id (d16f74) or by text (hire purchase, ferry, cumulative)"
+            className="w-full border-[1.5px] border-ink p-2 font-mono text-xs"
+          />
+          <button className="shrink-0 border-[1.5px] border-ink bg-white px-4 font-mono text-[11px] uppercase tracking-widest shadow-[3px_3px_0_var(--ink)]">
+            Find
+          </button>
+        </form>
+
+        {find && (
+          <div className="mb-6 border-[1.5px] border-dashed border-paper-deep bg-white p-3">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+              {found.length === 0 ? 'nothing matched' : `${found.length} match${found.length === 1 ? '' : 'es'}`}
+            </div>
+            <ul className="mt-2 space-y-1">
+              {found.map((r) => (
+                <li key={r.id} className="flex items-baseline gap-2 text-sm">
+                  <Link
+                    href={`/admin/review?id=${r.id}${find ? `&find=${encodeURIComponent(find)}` : ''}`}
+                    className="shrink-0 font-mono text-xs underline"
+                  >
+                    {r.id.slice(-6)}
+                  </Link>
+                  <span
+                    className={`shrink-0 font-mono text-[10px] uppercase ${
+                      r.status === 'approved'
+                        ? 'text-green-pen'
+                        : r.status === 'retired'
+                          ? 'text-red-pen'
+                          : 'text-dim'
+                    }`}
+                  >
+                    {r.status}
+                  </span>
+                  <span className="min-w-0 truncate text-dim">
+                    M{r.module} · {r.marks}mk · {r.preview}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {question ? (
           <ReviewCard question={question} />
