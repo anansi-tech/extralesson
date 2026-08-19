@@ -10,7 +10,8 @@
     "test": "vitest run",
     "seed:topics": "tsx scripts/seed-topics.ts",
     "seed:blueprints": "tsx scripts/seed-blueprints.ts",
-    "generate": "tsx scripts/generate.ts"
+    "generate": "tsx scripts/generate.ts",
+    "check:figures": "tsx scripts/check-figures.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.118",
