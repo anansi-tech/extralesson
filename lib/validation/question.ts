@@ -191,6 +191,15 @@ export const SlotZ = z.object({
   // prose would have collapsed the moment we stopped mandating the word,
   // while the dependency it stood for was unchanged.
   depends_on: defaulted(z.array(z.string().regex(SLOT_REF_RE)).max(6), []),
+  // Which syllabus objective this slot assesses.
+  //
+  // Integration — one scenario chaining several skills — is the hardest class
+  // the papers set, and it has to be counted from something we DECLARE. Real
+  // Paper 2 questions demand 2.04 distinct skills on average and 30% demand
+  // three or more; ours ran at 0.96 and 6% for difficulty 3, no harder on this
+  // axis than difficulty 1. Counting skills out of prose would measure our
+  // vocabulary, so each slot names its objective instead.
+  objective_id: optional(z.string().regex(OBJECTIVE_ID_RE)),
 });
 
 /**

@@ -28,6 +28,8 @@ const SlotLooseZ = z.object({
   // first v32 batch came back with every slot independent and a chain depth of
   // 1 across questions that plainly chained.
   depends_on: z.array(z.string()).nullish(),
+  // The objective this slot assesses; integration is counted from these.
+  objective_id: z.string().nullish(),
 });
 
 export const PartLooseZ = z.object({

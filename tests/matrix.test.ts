@@ -517,3 +517,45 @@ describe('nextRecipe — topic pairing', () => {
     expect(context.topic_codes).toEqual(['M2-ALG2']);
   });
 });
+
+// INTEGRATION — one topic, several objectives chained through one scenario.
+// The papers demand 2.04 distinct skills per question and 30% demand three or
+// more; our difficulty-3 questions ran at 0.96 and 6%, no harder on this axis
+// than difficulty 1.
+describe('nextRecipe — integration at difficulty 3', () => {
+  const emptyMatrix = () => computeMatrix(topics, seedBlueprints, []);
+
+  it('asks a d3 structured question for three objectives from ONE topic', () => {
+    const { recipe, context } = nextRecipe(emptyMatrix(), objectivesByTopic, {
+      kind: 'structured',
+      difficulty: 3,
+    });
+    expect(recipe.integrate).toBe(true);
+    expect(recipe.objective_ids.length).toBe(3);
+    expect(context.topic_codes).toEqual([context.topic_code]);
+  });
+
+  it('leaves d1 and d2 alone', () => {
+    for (const difficulty of [1, 2] as const) {
+      const { recipe } = nextRecipe(emptyMatrix(), objectivesByTopic, { kind: 'structured', difficulty });
+      expect(recipe.integrate, `d${difficulty}`).toBeUndefined();
+    }
+  });
+
+  it('leaves Paper 1 alone', () => {
+    const { recipe } = nextRecipe(emptyMatrix(), objectivesByTopic, { kind: 'mcq', difficulty: 3 });
+    expect(recipe.integrate).toBeUndefined();
+  });
+
+  it('stops asking once the share is met, like every other target', () => {
+    const integrated = computeMatrix(
+      topics,
+      seedBlueprints,
+      Array.from({ length: 10 }, () =>
+        fact({ kind: 'structured', difficulty: 3, objective_span: 3, topic_code: 'M2-GEO1' }),
+      ),
+    );
+    const { recipe } = nextRecipe(integrated, objectivesByTopic, { kind: 'structured', difficulty: 3 });
+    expect(recipe.integrate).toBeUndefined();
+  });
+});

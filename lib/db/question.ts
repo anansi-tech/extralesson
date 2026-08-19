@@ -39,6 +39,8 @@ const SlotSchema = new Schema(
     // chain depth is measured from this graph, and the papers chain constantly
     // without ever saying so in the wording.
     depends_on: { type: [String], default: [] },
+    // The objective this slot assesses — integration is measured from these.
+    objective_id: { type: String },
   },
   { _id: false },
 );

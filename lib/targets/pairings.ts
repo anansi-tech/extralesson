@@ -53,3 +53,22 @@ export function isNaturalPair(a: string, b: string): boolean {
     ({ pair }) => (pair[0] === a && pair[1] === b) || (pair[0] === b && pair[1] === a),
   );
 }
+
+// INTEGRATION — one topic, several objectives, chained through one scenario.
+//
+// Distinct from pairing, which is about two TOPICS and stays at 13%. This is
+// the hardest class the papers set: multiple circle theorems with reasons,
+// cosine-then-sine-rule bearings, vector ratio proofs, combined
+// transformations — all inside a single topic.
+//
+// Measured with one extractor over both corpora, method-naming markers excluded
+// because our prompt forbids naming a method: real Paper 2 questions demand
+// 2.04 distinct skills on average and 30% demand three or more. Our difficulty-3
+// questions ran at 0.96 and 6% — no more integrated than our difficulty-1 ones,
+// so difficulty was not being expressed as integration at all.
+//
+// Applies to difficulty 3 structured questions only.
+export const INTEGRATION_MIN_OBJECTIVES = 3;
+
+/** Share of difficulty-3 structured questions that must integrate. */
+export const INTEGRATED_D3_SHARE = 0.8;
