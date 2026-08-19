@@ -341,3 +341,30 @@ describe('renderability — contracts the renderer imposes', () => {
     expect(renderMathHtml('It costs \\$45 today.')).toContain('$45');
   });
 });
+
+// renderAnswerHtml decides whether a value is maths or prose, and got two
+// values wrong in ways that printed the source to the student.
+describe('renderAnswerHtml — maths that looked like prose', () => {
+  const typeset = (s: string) => renderAnswerHtml(s).includes('class="katex"');
+
+  it('typesets an expression whose words are inside \\text{}', () => {
+    // Stripping the command but keeping its contents left "grid units" and
+    // "and" behind, and the value was judged prose.
+    expect(typeset('10\\text{ grid units}')).toBe(true);
+    expect(typeset('|v|=1\\text{ and }w=2v')).toBe(true);
+  });
+
+  it('typesets an expression that contains prices', () => {
+    // "\\begin{pmatrix}\\$1&\\$2\\end{pmatrix}" contains $...$ as a substring —
+    // the two escaped prices — so it read as already-delimited and went to the
+    // prose renderer, which found no maths and printed the source.
+    expect(typeset('\\begin{pmatrix}\\$1 860&\\$3 150\\end{pmatrix}')).toBe(true);
+  });
+
+  it('still leaves genuine prose alone', () => {
+    expect(typeset('obtuse angle')).toBe(false);
+    expect(typeset('14 m by 6 m')).toBe(false);
+    expect(typeset('costs \\$45 each')).toBe(false);
+    expect(typeset('Yes')).toBe(false);
+  });
+});
