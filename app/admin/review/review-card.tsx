@@ -115,7 +115,10 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
       </div>
 
       {question.recipeJson && (
-        <div className="mb-3 border border-dashed border-paper-deep p-2 font-mono text-[10px] text-dim">
+        // JSON.stringify emits no spaces, so the recipe is one unbroken token
+        // and the browser has nowhere to wrap it — it ran out of the dashed box
+        // and off the card. break-all lets it wrap anywhere.
+        <div className="mb-3 break-all border border-dashed border-paper-deep p-2 font-mono text-[10px] text-dim">
           RECIPE {question.recipeJson}
           {question.dedupScore != null && ` · dedup ${question.dedupScore}`}
         </div>
