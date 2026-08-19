@@ -17,6 +17,7 @@ interface LeanQuestion {
   marks: number;
   profile?: Profile;
   rubric?: { profile: Profile; mark_value: number }[];
+  parts?: { slots?: { objective_id?: string }[] }[];
   status: string;
 }
 
@@ -46,6 +47,9 @@ export function toFacts(
     module: q.module,
     topic_code: topicCodeFor(q.objective_ids, topics),
     topic_span: new Set(q.objective_ids.map((id) => topicCodeFor([id], topics))).size,
+    objective_span: new Set(
+      (q.parts ?? []).flatMap((part) => (part.slots ?? []).map((sl) => sl.objective_id).filter(Boolean)),
+    ).size,
     representation: q.representation ?? 'prose',
     archetype: q.archetype ?? 'multi-step-application',
     difficulty: q.difficulty,
@@ -68,7 +72,7 @@ export async function getCoverage(): Promise<CoverageBundle> {
       { paper: 'P1' | 'P2'; module: number; allocations: { topic_codes: string[]; items?: number; marks?: number }[] }[]
     >(),
     Question.find({ status: { $in: ['draft', 'approved'] } })
-      .select('kind module objective_ids representation archetype difficulty marks profile rubric status')
+      .select('kind module objective_ids representation archetype difficulty marks profile rubric status parts')
       .lean<LeanQuestion[]>(),
   ]);
 

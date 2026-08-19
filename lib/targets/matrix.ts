@@ -43,6 +43,8 @@ export interface QuestionFacts {
   topic_code: string; // resolved from objective ids by the caller
   /** How many distinct topics the question's objectives span. */
   topic_span?: number;
+  /** Distinct objectives its slots declare — how integrated the question is. */
+  objective_span?: number;
   representation: Representation;
   archetype: Archetype;
   difficulty: 1 | 2 | 3;
@@ -74,6 +76,9 @@ export interface Matrix {
   mcq_visual_actual: number;
   /** Structured questions drawing on more than one topic (R1.8 pairing). */
   multi_topic_actual: number;
+  /** Difficulty-3 structured questions, and how many of them integrate. */
+  d3_structured: number;
+  d3_integrated: number;
 }
 
 interface BlueprintLean {
@@ -150,6 +155,8 @@ export function computeMatrix(
     },
     mcq_visual_actual: 0,
     multi_topic_actual: 0,
+    d3_structured: 0,
+    d3_integrated: 0,
   };
 
   for (const q of questions) {
@@ -163,6 +170,10 @@ export function computeMatrix(
       matrix.p2_actual_total++;
       matrix.p2_marks_actual_total += q.marks;
       if ((q.topic_span ?? 1) > 1) matrix.multi_topic_actual++;
+      if (q.difficulty === 3) {
+        matrix.d3_structured++;
+        if ((q.objective_span ?? 1) >= 3) matrix.d3_integrated++;
+      }
       if (row) {
         row.p2_marks_actual += q.marks;
         row.p2_questions++;
