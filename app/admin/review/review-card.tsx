@@ -163,7 +163,10 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
                       <span className="question-prose" dangerouslySetInnerHTML={{ __html: piece }} />
                       {i < p.slots.length && (
                         <span
-                          className="mx-1 border-b border-ink px-1 font-mono"
+                          // inline-block, or the underline is drawn at the
+                          // text baseline and cuts through a tall answer — a
+                          // column vector gets a line through its bottom row.
+                          className="mx-1 inline-block border-b border-ink px-1 align-middle font-mono"
                           dangerouslySetInnerHTML={{ __html: p.slots[i].answerHtml }}
                         />
                       )}
