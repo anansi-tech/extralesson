@@ -267,3 +267,36 @@ describe('circleCenter — external point (R1.6 §6)', () => {
     expect(circleCenter.describe(alt)).toContain('A tangent touches the circle at A.');
   });
 });
+
+// Two tangents meet at R/cos(half the angle between their contact points, which
+// runs away as that angle widens: contacts 132 degrees apart put the meeting
+// point 388px from the centre of a 640px canvas, and P was drawn off the edge.
+describe('circleCenter — an external point stays on the canvas', () => {
+  const wide = CircleCenterParamsZ.parse({
+    points: [
+      { label: 'A', bearing: 156, radius: true },
+      { label: 'B', bearing: 24, radius: true },
+    ],
+    externalPoint: { label: 'P', tangentTo: ['A', 'B'] },
+  });
+
+  it('shrinks the figure until the meeting point fits', () => {
+    const svg = circleCenter.render(wide);
+    const xs = [...svg.matchAll(/x="([\d.]+)"/g)].map((m) => Number(m[1]));
+    const ys = [...svg.matchAll(/y="([\d.]+)"/g)].map((m) => Number(m[1]));
+    expect(Math.max(...xs)).toBeLessThanOrEqual(640);
+    expect(Math.max(...ys)).toBeLessThanOrEqual(420);
+    // and it did shrink, rather than clipping
+    expect(svg).not.toContain('r="158"');
+  });
+
+  it('leaves a figure without an external point at full size', () => {
+    const plain = CircleCenterParamsZ.parse({
+      points: [
+        { label: 'A', bearing: 30, radius: true },
+        { label: 'B', bearing: 150, radius: true },
+      ],
+    });
+    expect(circleCenter.render(plain)).toContain('r="158"');
+  });
+});
