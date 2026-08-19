@@ -7,14 +7,24 @@ import { renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
 import { loadStudyState } from '@/lib/study/state';
 import QuestionCard, { type CardQuestion } from './question-card';
+import { answersEquivalentAny } from '@/lib/grade/equivalence';
+import { constructActs } from '@/lib/targets/construct';
+import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 import type { ModuleNumber, ProfileMarks } from '@/lib/types';
 
 export const metadata = { title: 'Session — ExtraLesson' };
 export const dynamic = 'force-dynamic';
 
-export default async function SessionPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function SessionPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ q?: string }>;
+}) {
   const auth = await requireSession();
   const { id } = await params;
+  const { q: qParam } = await searchParams;
   if (!/^[a-f0-9]{24}$/.test(id)) notFound();
 
   await dbConnect();
@@ -28,11 +38,28 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
 
   const attempts = await Attempt.find({ session_id: id })
     .sort({ ts: 1 })
-    .lean<{ profile_marks: ProfileMarks; correct: boolean; question_id: unknown }[]>();
+    .lean<
+      {
+        profile_marks: ProfileMarks;
+        correct: boolean;
+        question_id: unknown;
+        answer: string | number;
+        rubric_awarded: string[];
+      }[]
+    >();
   const total = session.question_ids.length;
   const answered = attempts.length;
 
-  if (answered >= total) {
+  // Which question is on screen. A student may look back at one they have
+  // answered; they may not skip ahead of themselves, so the index is clamped to
+  // the first unanswered one. Revisiting is READ-ONLY and writes nothing: the
+  // view is a fold over the attempt that already exists (§3.5).
+  const asked = qParam === undefined ? null : Number(qParam);
+  const index =
+    asked !== null && Number.isInteger(asked) ? Math.min(Math.max(asked, 0), Math.min(answered, total - 1)) : answered;
+  const reviewing = index < answered;
+
+  if (answered >= total && !reviewing) {
     // Session complete -> summary (§6.4).
     if (!session.completed_at) {
       await PracticeSession.updateOne(
@@ -140,8 +167,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
     );
   }
 
-  // Next unanswered question.
-  const question = await Question.findById(session.question_ids[answered]).lean<{
+  const question = await Question.findById(session.question_ids[index]).lean<{
     _id: unknown;
     kind: 'mcq' | 'structured';
     stimulus?: string;
@@ -154,18 +180,20 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
       prompt: string;
       marks: number;
       statement?: string;
-      slots?: { label: string; prompt?: string; response_mode?: string }[];
+      slots?: { label: string; prompt?: string; response_mode?: string; answer: string; accept?: string[] }[];
     }[];
     rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string }[];
+    answer_key?: number;
+    worked_solution: string;
   } | null>();
   if (!question) notFound();
 
   // A construct question's figure IS the answer to its part (a), and every
   // later part asks the student to read something off it. It is withheld until
   // they commit, and comes back with the marking (see actions.ts).
-  const withholdsFigure = (question.parts ?? []).some((p) =>
-    (p.slots ?? []).some((slot) => slot.response_mode === 'construct'),
-  );
+  const withholdsFigure =
+    !reviewing &&
+    (question.parts ?? []).some((p) => (p.slots ?? []).some((slot) => slot.response_mode === 'construct'));
 
   let visualHtml: string | undefined;
   if (question.visual?.template && !withholdsFigure) {
@@ -183,10 +211,59 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
     }
   }
 
+  // The session's shape in MARKS, which is the unit the budget is actually
+  // spent in: "Question 1 of 2" reads as a trivially short session next to the
+  // 15 minutes it claims, and 12 marks is what makes the 15 minutes honest.
+  const sessionQuestions = await Question.find({ _id: { $in: session.question_ids } })
+    .select('marks')
+    .lean<{ _id: unknown; marks: number }[]>();
+  const marksById = new Map(sessionQuestions.map((sq) => [String(sq._id), sq.marks]));
+  const marksOf = (i: number) => marksById.get(String(session.question_ids[i])) ?? 0;
+  const marksTotal = session.question_ids.reduce<number>((sum, _, i) => sum + marksOf(i), 0);
+  const marksAnswered = session.question_ids.reduce<number>((sum, _, i) => (i < answered ? sum + marksOf(i) : sum), 0);
+
+  // A revisited question is rebuilt from its attempt — the answers the student
+  // typed, and the marks they earned. Nothing is re-marked and nothing is
+  // written; correctness per slot is recomputed with the same equivalence the
+  // marker used, which is a fold over the attempt rather than a second opinion.
+  let prior: CardQuestion['prior'];
+  if (reviewing) {
+    const attempt = attempts[index];
+    const refs: string[] = (question.parts ?? []).flatMap((p) =>
+      (p.slots ?? []).filter((sl) => (sl.response_mode ?? 'answer') === 'answer').map((sl) => `${p.label}.${sl.label}`),
+    );
+    const answers = splitStoredAnswer(String(attempt.answer), refs);
+    const slotByRef = new Map<string, { answer: string; accept?: string[] }>(
+      (question.parts ?? []).flatMap((p) => (p.slots ?? []).map((sl) => [`${p.label}.${sl.label}`, sl])),
+    );
+    prior = {
+      answers,
+      selected: question.kind === 'mcq' ? Number(attempt.answer) : undefined,
+      feedback: {
+        correct: attempt.correct,
+        profile_marks: attempt.profile_marks,
+        rubric_awarded: attempt.rubric_awarded,
+        partResults: refs.map((ref) => {
+          const slot = slotByRef.get(ref);
+          return { label: ref, correct: answersEquivalentAny(answers[ref] ?? '', slot?.answer ?? '', slot?.accept) };
+        }),
+        feedbackTitleHtml: 'Worked solution',
+        feedbackHtml: renderMathHtml(question.worked_solution),
+        isMisconception: false,
+        construction: constructActs(question.visual as never).length
+          ? { figureHtml: visualHtml ?? '', acts: constructActs(question.visual as never) }
+          : undefined,
+      },
+    };
+  }
+
   const card: CardQuestion = {
     sessionId: id,
-    index: answered,
+    index,
     total,
+    marksTotal,
+    marksAnswered,
+    prior,
     kind: question.kind,
     stimulusHtml: question.stimulus ? renderMathHtml(question.stimulus) : undefined,
     stemHtml: renderMathHtml(question.stem),
@@ -229,9 +306,12 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
             ← copybook
           </Link>
           <span>
-            Q{answered + 1} OF {total}
+            Q{index + 1} OF {total} · {question.marks} MARK{question.marks === 1 ? '' : 'S'}
           </span>
         </header>
+        <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-dim">
+          {marksAnswered} of {marksTotal} marks answered
+        </p>
         <QuestionCard question={card} />
       </div>
     </main>
