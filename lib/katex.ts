@@ -4,6 +4,14 @@ import { protectMoney, restoreMoney, restoreMoneyForMath } from '@/lib/money';
 // Render a KaTeX-safe string (inline math delimited by $...$) to HTML.
 // Server-side only; output is injected with dangerouslySetInnerHTML and the
 // non-math segments are HTML-escaped here first.
+// A column vector of fractions set its two rows almost touching, and its
+// brackets too small to enclose them: at the default spacing the total height
+// falls below the point where KaTeX reaches for a taller delimiter, so the two
+// faults have one cause. \arraystretch is the standard way to open an array up
+// and KaTeX reads it as a macro; at 1.4 the rows separate AND the brackets grow
+// to fit, while a matrix of plain integers stays compact.
+const KATEX_MACROS = { '\\arraystretch': '1.4' } as const;
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, '&amp;')
@@ -62,6 +70,7 @@ function renderOneAnswer(raw: string): string {
     // rest of the line, so "12.5%" must be escaped before it is parsed.
     return katex.renderToString(value.replace(/(^|[^\\])%/g, '$1\\%'), {
       throwOnError: true,
+      macros: { ...KATEX_MACROS },
     });
   } catch {
     return escapeHtml(value); // not valid math after all — show it verbatim
@@ -107,7 +116,11 @@ export function renderMathHtml(text: string): string {
 
 function renderDisplayMath(body: string): string {
   try {
-    return katex.renderToString(body.trim(), { displayMode: true, throwOnError: true });
+    return katex.renderToString(body.trim(), {
+      displayMode: true,
+      throwOnError: true,
+      macros: { ...KATEX_MACROS },
+    });
   } catch {
     return escapeHtml(body); // not valid math — show it rather than lose it
   }
@@ -132,7 +145,10 @@ function renderInline(text: string): string {
     .map((seg) => {
       if (seg.startsWith('$') && seg.endsWith('$') && seg.length > 2) {
         try {
-          return katex.renderToString(restoreMoneyForMath(seg.slice(1, -1)), { throwOnError: false });
+          return katex.renderToString(restoreMoneyForMath(seg.slice(1, -1)), {
+            throwOnError: false,
+            macros: { ...KATEX_MACROS },
+          });
         } catch {
           return escapeHtml(restoreMoney(seg));
         }
