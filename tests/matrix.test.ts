@@ -547,15 +547,28 @@ describe('nextRecipe — integration at difficulty 3', () => {
     expect(recipe.integrate).toBeUndefined();
   });
 
-  it('stops asking once the share is met, like every other target', () => {
-    const integrated = computeMatrix(
+  it('integrates EVERY d3 paper question, because that is what the label means', () => {
+    // A share to converge on would be a hedge: a d3 carrying one objective is a
+    // d2 wearing the wrong tag, which is what 52 of the first 55 turned out to
+    // be. How MANY d3 questions to write is the 25/50/25 band's job.
+    const stocked = computeMatrix(
       topics,
       seedBlueprints,
       Array.from({ length: 10 }, () =>
         fact({ kind: 'structured', difficulty: 3, objective_span: 3, topic_code: 'M2-GEO1' }),
       ),
     );
-    const { recipe } = nextRecipe(integrated, objectivesByTopic, { kind: 'structured', difficulty: 3 });
+    const { recipe } = nextRecipe(stocked, objectivesByTopic, { kind: 'structured', difficulty: 3 });
+    expect(recipe.integrate).toBe(true);
+    expect(recipe.objective_ids.length).toBe(3);
+  });
+
+  it('still leaves a d3 DRILL item alone', () => {
+    const { recipe } = nextRecipe(computeMatrix(topics, seedBlueprints, []), objectivesByTopic, {
+      kind: 'structured',
+      difficulty: 3,
+      shape: 'drill',
+    });
     expect(recipe.integrate).toBeUndefined();
   });
 });

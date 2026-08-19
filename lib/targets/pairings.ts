@@ -67,8 +67,10 @@ export function isNaturalPair(a: string, b: string): boolean {
 // questions ran at 0.96 and 6% — no more integrated than our difficulty-1 ones,
 // so difficulty was not being expressed as integration at all.
 //
-// Applies to difficulty 3 structured questions only.
+// Applies to difficulty 3 structured questions only, and to ALL of them: at
+// difficulty 3 integration is what the label means, so a share to converge on
+// would be a hedge with nothing behind it. A d3 question that carries one
+// objective is a d2 question wearing the wrong tag, which is exactly what 52 of
+// the first 55 turned out to be. The deficit that decides HOW MANY d3 questions
+// to write is the 25/50/25 difficulty band, which the recipe already consumes.
 export const INTEGRATION_MIN_OBJECTIVES = 3;
-
-/** Share of difficulty-3 structured questions that must integrate. */
-export const INTEGRATED_D3_SHARE = 0.8;
