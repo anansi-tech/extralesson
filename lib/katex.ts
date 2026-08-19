@@ -50,7 +50,11 @@ function renderOneAnswer(raw: string): string {
   // happens to contain a price — a matrix of them — is still an expression and
   // was reaching the page as source.
   if (/\\\$/.test(value)) {
-    return renderMathHtml(looksLikeExpression(value) ? `$${value}$` : value);
+    // A bare price is a VALUE and stays readable text; a matrix of prices is an
+    // EXPRESSION and must be typeset. The difference is structure beyond the
+    // money itself — a command or an environment, not just digits.
+    const structured = /\\(?!\$)[a-zA-Z]+/.test(value);
+    return renderMathHtml(structured && looksLikeExpression(value) ? `$${value}$` : value);
   }
   if (!looksLikeExpression(value)) return escapeHtml(value);
   try {

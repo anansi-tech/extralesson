@@ -354,6 +354,12 @@ describe('renderAnswerHtml — maths that looked like prose', () => {
     expect(typeset('|v|=1\\text{ and }w=2v')).toBe(true);
   });
 
+  it('leaves a bare price as readable text, not typeset', () => {
+    // A price is a VALUE; only structure beyond the money makes it an
+    // expression. Widening this too far broke two existing tests.
+    expect(typeset('\\$51')).toBe(false);
+  });
+
   it('typesets an expression that contains prices', () => {
     // "\\begin{pmatrix}\\$1&\\$2\\end{pmatrix}" contains $...$ as a substring —
     // the two escaped prices — so it read as already-delimited and went to the
