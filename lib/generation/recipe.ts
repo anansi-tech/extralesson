@@ -249,8 +249,40 @@ export function nextRecipe(
   // INTEGRATION, difficulty 3 structured only: one topic, several objectives,
   // chained through one scenario. This is the hardest class the papers set and
   // the one we had none of — our d3 demanded 0.96 distinct skills against the
-  // papers' 2.04, no harder than our d1. Like every other target it is a
-  // deficit the recipe consumes, so it stops pushing once the share is met.
+  // papers' 2.04, no harder than our d1.
+  //
+  // The three objectives are the three LEAST-APPROVED in the topic, which makes
+  // them adjacent ids 66% of the time. That adjacency was suspected of
+  // producing thin questions — three neighbouring objectives are often variants
+  // of one technique, so "write a percentage, then write it in standard form"
+  // declares three objectives and demands barely one. DO NOT re-derive the
+  // analysis that followed; it is settled:
+  //
+  //   Selecting for a wider objective SPAN was refuted by measurement. Span
+  //   does not predict integration and the relationship runs backwards if
+  //   anything: span 2 averaged 1.26 distinct skills, span 9 averaged 1.00, and
+  //   the four widest (span 13) averaged 0.00. The best question in the batch —
+  //   simultaneous equations into completing the square into solving the
+  //   quadratic — was itself span 2.
+  //
+  //   Prose skill-counting cannot triage either. It scored that best question 0
+  //   and a thin one 1, because our own prompt forbids naming a method, so
+  //   "rewrite in the form (t+h)^2+k" never says "completing the square".
+  //
+  //   Clustering is AUTHENTIC, so span could only ever be a preference. Of the
+  //   real questions demanding three or more named skills, 7 spread across
+  //   sub-areas and 2 stayed inside one — three transformations on one figure,
+  //   averages into cumulative frequency into probability.
+  //
+  // The known right fix, if generation quality needs raising, is TECHNIQUE
+  // GROUPS: encode per topic which objectives are genuinely different
+  // techniques, as data, the way NATURAL_PAIRS encodes which topics pair — then
+  // pick a group instead of three neighbours. It is deferred on purpose. The
+  // trigger is the review of the first 80 integrated d3 questions: if a
+  // meaningful share (>25%) is rejected as thin, the grouping is necessary and
+  // wants a proper syllabus read, drafted here and confirmed by David, who
+  // taught it. If most pass, the thinness was smaller than the prose measure
+  // suggested and the work waits until the bank next grows.
   const integrate = integrateWanted(kind, shape, difficulty);
 
   // Otherwise one objective per topic — the breadth comes from the topics. A
