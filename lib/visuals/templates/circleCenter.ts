@@ -52,8 +52,8 @@ function polarDeg(bearing: number): number {
   return 90 - bearing;
 }
 
-function pointPos(bearing: number): [number, number] {
-  return polar(CX, CY, R, polarDeg(bearing));
+function pointPos(bearing: number, radius = R): [number, number] {
+  return polar(CX, CY, radius, polarDeg(bearing));
 }
 
 function dirDeg(from: [number, number], to: [number, number]): number {
@@ -63,13 +63,44 @@ function dirDeg(from: [number, number], to: [number, number]): number {
 // Where the tangents at two circumference points meet. They are parallel when
 // the points coincide or are diametrically opposite; verify() rejects that, and
 // render() draws nothing rather than a point at infinity.
-function tangentIntersection(b1: number, b2: number): [number, number] | null {
+function tangentIntersection(b1: number, b2: number, radius = R): [number, number] | null {
   const between = ((((b2 - b1) % 360) + 360) % 360);
   if (between < 1e-6 || Math.abs(between - 180) < 1e-6) return null; // same tangent, or parallel
   const half = between / 2;
   // A negative radius when the points are more than half a turn apart puts the
   // meeting point on the far bisector, which is where it belongs.
-  return polar(CX, CY, R / Math.cos((half * Math.PI) / 180), polarDeg(b1 + half));
+  return polar(CX, CY, radius / Math.cos((half * Math.PI) / 180), polarDeg(b1 + half));
+}
+
+/**
+ * The radius to draw at, so that an external point fits on the canvas.
+ *
+ * Two tangents meet at R/cos(half the angle between their points of contact),
+ * which runs away as that angle widens: contacts 132 degrees apart put the
+ * meeting point 388px from the centre of a 640px canvas, and P was drawn off
+ * the right-hand edge. The figure is a labelled sketch and not to scale, so the
+ * whole drawing shrinks about O until P is on it — which changes no angle and
+ * loses no question.
+ */
+function fitRadius(p: CircleCenterParams): number {
+  if (!p.externalPoint) return R;
+  const [l1, l2] = p.externalPoint.tangentTo;
+  const t1 = p.points.find((q) => q.label === l1);
+  const t2 = p.points.find((q) => q.label === l2);
+  if (!t1 || !t2) return R;
+  const meet = tangentIntersection(t1.bearing, t2.bearing, R);
+  if (!meet) return R;
+
+  const M = 30; // room for P's label outside the meeting point
+  const dx = meet[0] - CX;
+  const dy = meet[1] - CY;
+  const limits = [
+    dx > 0 ? (W - M - CX) / dx : dx < 0 ? (M - CX) / dx : Infinity,
+    dy > 0 ? (H - M - CY) / dy : dy < 0 ? (M - CY) / dy : Infinity,
+  ];
+  const scale = Math.min(1, ...limits);
+  // Never shrink so far that the circle itself stops being readable.
+  return Math.max(70, R * scale);
 }
 
 export const circleCenter: VisualTemplate<CircleCenterParams> = {
@@ -85,18 +116,19 @@ export const circleCenter: VisualTemplate<CircleCenterParams> = {
   paramsSchema: CircleCenterParamsZ,
 
   render(p) {
+    const r = fitRadius(p);
     const pos = new Map<string, [number, number]>([['O', [CX, CY]]]);
-    for (const pt of p.points) pos.set(pt.label, pointPos(pt.bearing));
+    for (const pt of p.points) pos.set(pt.label, pointPos(pt.bearing, r));
 
     const parts: string[] = [svgOpen(W, H)];
-    parts.push(circle(CX, CY, R));
+    parts.push(circle(CX, CY, r));
     parts.push(`<circle cx="${CX}" cy="${CY}" r="2.5" fill="#1E2430" stroke="none" />`);
     parts.push(text(CX - 13, CY + 19, 'O', { size: 15, italic: true }));
 
     for (const pt of p.points) {
       const [px, py] = pos.get(pt.label) as [number, number];
       if (pt.radius) parts.push(line(CX, CY, px, py));
-      const [lx, ly] = polar(CX, CY, R + 19, polarDeg(pt.bearing));
+      const [lx, ly] = polar(CX, CY, r + 19, polarDeg(pt.bearing));
       parts.push(text(lx, ly + 5, pt.label, { size: 15, italic: true }));
     }
 
@@ -116,7 +148,7 @@ export const circleCenter: VisualTemplate<CircleCenterParams> = {
       const [l1, l2] = p.externalPoint.tangentTo;
       const t1 = p.points.find((q) => q.label === l1);
       const t2 = p.points.find((q) => q.label === l2);
-      const meet = t1 && t2 ? tangentIntersection(t1.bearing, t2.bearing) : null;
+      const meet = t1 && t2 ? tangentIntersection(t1.bearing, t2.bearing, r) : null;
       if (meet && t1 && t2) {
         pos.set(p.externalPoint.label, meet);
         for (const t of [t1, t2]) {
