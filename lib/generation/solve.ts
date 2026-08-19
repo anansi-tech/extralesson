@@ -124,7 +124,7 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
       stem: draft.stem,
       kind: 'structured',
       partPrompts: draft.parts.flatMap((p) =>
-        p.slots.map((slot, si) => ({
+        p.slots.filter((slot) => slot.response_mode !== 'construct').map((slot, si) => ({
           // Addressed by the slot's own reference, so a key cannot be read as
           // "the whole of part (a)" and answered once for several slots.
           label: p.slots.length === 1 ? p.label : `${p.label}.${slot.label}`,
@@ -164,8 +164,11 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   );
   const figure = figureNotes(sol.figure_check);
   const notes: string[] = [...figure.notes];
+  // A construct slot asks for a drawing. There is nothing for a solver to
+  // return and nothing to compare, so it is not asked about at all — which
+  // also keeps the one-entry-per-key count the prompt demands honest.
   const askable = draft.parts.flatMap((p) =>
-    p.slots.map((slot, si) => ({
+    p.slots.filter((slot) => slot.response_mode !== 'construct').map((slot, si) => ({
       ref: p.slots.length === 1 ? p.label : `${p.label}.${slot.label}`,
       // The adjudicator judges two answers against the question they answer, so
       // it needs the statement for the same reason the solver does.
@@ -233,8 +236,13 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     (draft.rubric ?? [])
       .filter((r) => bareLabel(r.slot_ref) === bareLabel(ref))
       .reduce((sum, r) => sum + r.mark_value, 0);
+  //
+  // A construct question is exempt: it asks the student to DRAW the figure and
+  // then read it, so an answer legible in the figure is the design, not a
+  // defect. Its reads are checked against the equation instead.
+  const constructs = draft.parts.some((p) => p.slots.some((s) => s.response_mode === 'construct'));
   const readOff: string[] = [];
-  for (const p of askable) {
+  for (const p of constructs ? [] : askable) {
     if ((p.slot.response_mode ?? 'answer') !== 'answer') continue;
     if (!workByLabel.get(bareLabel(p.ref))?.readOff) continue;
     const marks = rubricMarksFor(p.ref);

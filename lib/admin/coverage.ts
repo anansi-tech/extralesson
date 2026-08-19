@@ -17,7 +17,7 @@ interface LeanQuestion {
   marks: number;
   profile?: Profile;
   rubric?: { profile: Profile; mark_value: number }[];
-  parts?: { slots?: { objective_id?: string }[] }[];
+  parts?: { slots?: { objective_id?: string; response_mode?: string }[] }[];
   status: string;
 }
 
@@ -50,6 +50,9 @@ export function toFacts(
     objective_span: new Set(
       (q.parts ?? []).flatMap((part) => (part.slots ?? []).map((sl) => sl.objective_id).filter(Boolean)),
     ).size,
+    has_construct: (q.parts ?? []).some((part) =>
+      (part.slots ?? []).some((sl) => sl.response_mode === 'construct'),
+    ),
     representation: q.representation ?? 'prose',
     archetype: q.archetype ?? 'multi-step-application',
     difficulty: q.difficulty,

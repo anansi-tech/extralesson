@@ -21,6 +21,7 @@ import {
   MULTI_TOPIC_SHARE,
   naturalPartners,
 } from '@/lib/targets/pairings';
+import { CONSTRUCT_SHARE, isConstructTemplate } from '@/lib/targets/construct';
 import type { Archetype, Profile, Representation, TemplateName } from '@/lib/types';
 
 const PROFILES: Profile[] = ['CK', 'AK', 'R'];
@@ -117,6 +118,13 @@ export interface QuestionRecipe {
    * set, and the one the bank had almost none of.
    */
   integrate?: boolean;
+  /**
+   * Paper-shaped structured only: this question opens with a part asking the
+   * student to DRAW something on graph paper, and the parts that follow read
+   * their own answers off what the equation says it should look like. The
+   * construct part is self-marked; the rest of the question is not.
+   */
+  construct?: boolean;
 }
 
 // Extra context the prompt needs that is derived from the recipe (not part of
@@ -350,6 +358,29 @@ export function nextRecipe(
   );
 
 
+  // CONSTRUCT-THEN-INTERROGATE: 15% of real Paper 2 questions open by asking
+  // for a drawing and then interrogate it. Like every other target here it is a
+  // deficit the recipe consumes — declared but unconsumed, it would be a wish,
+  // and the prompt otherwise forbids construct slots outright, so nothing
+  // would ever be generated.
+  //
+  // Gated on the template the representation deficit already chose: a construct
+  // part only makes sense where we can render the finished drawing to check
+  // against, which is the four families in CONSTRUCT_FAMILIES. That makes this
+  // a preference within the eligible questions rather than a force applied to
+  // all of them — a statistics question that came out as a bar chart is left
+  // alone rather than bent into an ogive.
+  //
+  // Asking for a construction NARROWS the templates rather than merely being
+  // allowed by them. A geometry topic offers coordinateGrid alongside
+  // triangleLabeled and bearingDiagram; "any hint is a construct family" would
+  // let the model take the bearing diagram and then be told to draw a graph.
+  const constructHints = template_hints.filter(isConstructTemplate);
+  const constructedSoFar =
+    matrix.p2_actual_total === 0 ? 0 : matrix.construct_actual / matrix.p2_actual_total;
+  const construct =
+    kind === 'structured' && shape === 'paper' && constructedSoFar < CONSTRUCT_SHARE && constructHints.length > 0;
+
   // Marks follow the settled difficulty and shape.
   const marks =
     kind === 'mcq' ? 1 : shape === 'paper' ? PAPER_MARKS[difficulty] : STRUCTURED_MARKS[difficulty];
@@ -383,7 +414,8 @@ export function nextRecipe(
       rubric_split,
       shape,
       ...(integrate ? { integrate: true } : {}),
+      ...(construct ? { construct: true } : {}),
     },
-    context: { topic_code: topic, topic_codes, template_hints },
+    context: { topic_code: topic, topic_codes, template_hints: construct ? constructHints : template_hints },
   };
 }

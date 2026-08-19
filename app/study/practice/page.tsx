@@ -19,7 +19,7 @@ export const dynamic = 'force-dynamic';
 // A question with any markable part belongs in the daily session, where its
 // self-marked parts are shown inline. This surface is for the rare question
 // that is self-marked end to end.
-const SELF_MARKED_MODES = ['show_that', 'explain'];
+const SELF_MARKED_MODES = ['show_that', 'explain', 'construct'];
 
 interface LeanQuestion {
   _id: unknown;

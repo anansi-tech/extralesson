@@ -230,6 +230,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                             </span>
                           )}
                         </div>
+                      ) : slot.mode === 'construct' ? (
+                        <p className="mt-1 border-l-3 border-margin bg-[#FFFDF6] py-1 pl-3 text-[13px] text-dim">
+                          Do this on graph paper.{' '}
+                          {feedback
+                            ? 'Check your drawing against the one below'
+                            : 'The finished graph is shown once you submit your answers'}{' '}
+                          — these marks are left out of your estimate.
+                        </p>
                       ) : (
                         <p className="mt-1 border-l-3 border-paper-deep bg-[#FFFDF6] py-1 pl-3 text-[13px] text-dim">
                           Work this one on paper. {feedback ? 'Mark it yourself against the solution below' : 'It is not marked here'} — these marks are left out of your estimate.
@@ -300,6 +308,26 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                   </span>
                 );
               })}
+            </div>
+          )}
+
+          {feedback.construction && (
+            <div className="mt-3">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+                Your graph should look like this
+              </div>
+              <div
+                className="mt-1 border border-paper-deep bg-white p-2 [&_svg]:h-auto [&_svg]:w-full"
+                dangerouslySetInnerHTML={{ __html: feedback.construction.figureHtml }}
+              />
+              <ul className="mt-2 space-y-1">
+                {feedback.construction.acts.map((act) => (
+                  <li key={act} className="flex gap-2 text-[13px]">
+                    <span className="font-hand text-lg leading-none text-dim">☐</span>
+                    <span>{act}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 

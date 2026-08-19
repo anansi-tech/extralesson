@@ -25,7 +25,7 @@ interface Lean {
   objective_ids: string[];
   representation: string;
   context_category?: string;
-  parts?: { label: string; prompt: string; slots?: { label: string; depends_on?: string[] }[] }[];
+  parts?: { label: string; prompt: string; slots?: { label: string; depends_on?: string[]; response_mode?: string }[] }[];
   rubric?: { mark_value: number; profile: 'CK' | 'AK' | 'R' }[];
 }
 
@@ -80,6 +80,7 @@ async function main() {
     topic_code: topicOf(q.objective_ids[0] ?? ''),
     topic_span: new Set(q.objective_ids.map(topicOf)).size,
     objective_span: new Set((q.parts ?? []).flatMap((p: any) => (p.slots ?? []).map((s: any) => s.objective_id).filter(Boolean))).size,
+    has_construct: (q.parts ?? []).some((p) => (p.slots ?? []).some((s) => s.response_mode === 'construct')),
     representation: q.representation as QuestionFacts['representation'],
     archetype: (q.archetype ?? 'multi-step-application') as QuestionFacts['archetype'],
     difficulty: q.difficulty,

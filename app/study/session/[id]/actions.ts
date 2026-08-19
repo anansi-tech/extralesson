@@ -6,8 +6,10 @@ import { requireSession } from '@/lib/auth/session';
 import { markMcq, markStructuredParts } from '@/lib/grade/mark';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { renderMathHtml } from '@/lib/katex';
-import type { ProfileMarks, QuestionPart, RubricItem } from '@/lib/types';
+import type { ProfileMarks, QuestionPart, RubricItem, TemplateName } from '@/lib/types';
 import { SLOT_REF_RE } from '@/lib/notation';
+import { renderVisual } from '@/lib/visuals';
+import { constructFamily } from '@/lib/targets/construct';
 
 const SubmitZ = z.object({
   sessionId: z.string().regex(/^[a-f0-9]{24}$/),
@@ -43,6 +45,13 @@ export interface Feedback {
   isMisconception: boolean;
   /** Right value, wrong required form (R1.6 §2). */
   formatFeedback?: string;
+  /**
+   * The figure, for a construct question only. It is the ANSWER to part (a) —
+   * showing it beside the question would hand the student every read the later
+   * parts ask for — so it travels back with the marking, as the answers do,
+   * and is not in the page the student is answering on.
+   */
+  construction?: { figureHtml: string; acts: string[] };
 }
 
 export async function submitAnswer(input: {
@@ -77,6 +86,9 @@ export async function submitAnswer(input: {
     marks: number;
     parts?: QuestionPart[];
     rubric?: RubricItem[];
+    stimulus?: string;
+    stem: string;
+    visual?: { template: TemplateName; params: Record<string, unknown> };
     worked_solution: string;
     misconceptions: { trigger: string; name: string; remediation: string }[];
   } | null>();
@@ -142,6 +154,32 @@ export async function submitAnswer(input: {
     }
   }
 
+  // The construction, released now that the reads are committed. The acts are
+  // the family's, not the question's: they are what an examiner credits for
+  // that kind of drawing, which does not vary question to question.
+  let construction: Feedback['construction'];
+  const family = constructFamily(question.visual?.template);
+  if (
+    family &&
+    (question.parts ?? []).some((p) => p.slots?.some((sl) => sl.response_mode === 'construct'))
+  ) {
+    try {
+      construction = {
+        figureHtml: renderVisual(question.visual as never, {
+          stimulus: question.stimulus,
+          stem: question.stem,
+          partPrompts: (question.parts ?? []).flatMap((p) => [
+            p.prompt,
+            ...(p.slots ?? []).map((sl) => sl.prompt ?? ''),
+          ]),
+        }),
+        acts: family.acts,
+      };
+    } catch {
+      construction = undefined;
+    }
+  }
+
   return {
     correct: result.correct,
     profile_marks: result.profile_marks,
@@ -151,5 +189,6 @@ export async function submitAnswer(input: {
     feedbackHtml,
     isMisconception,
     formatFeedback: 'format_feedback' in result ? result.format_feedback : undefined,
+    construction,
   };
 }
