@@ -128,7 +128,7 @@ export function displayFigure(percent: number): number {
 export function coverageSentence(coverage: Coverage): string {
   const partial =
     coverage.partialCount > 0
-      ? ` On a few graph and solid questions we cover reading and interpreting, not drawing — you still need to practise producing those on paper.`
+      ? ` On graph questions we set the drawing itself: you do it on graph paper, and once you have answered we show the finished graph with the list of things an examiner credits, for you to check against. We do not mark the drawing, so those marks stay out of your estimate. On a few solid-geometry and region-shading questions we cover reading and interpreting only.`
       : '';
   return `ExtraLesson practises about ${coverage.displayPercent}% of the marks in a CSEC Mathematics paper.${partial} Construction questions with ruler and compasses — roughly ${coverage.uncoveredMarks} marks — are not covered at all, so practise those with past papers. We do not prepare you for Paper 032, the alternative to the school-based assessment that private candidates sit.`;
 }

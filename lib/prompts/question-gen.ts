@@ -2,6 +2,7 @@ import type { Objective, QuestionKind } from '@/lib/types';
 import type { QuestionRecipe, RecipeContext } from '@/lib/generation/recipe';
 import { exemplarsFor } from './exemplars';
 import { MARK_SCHEME_CONVENTIONS } from './mark-scheme';
+import { constructFamily } from '@/lib/targets/construct';
 import { misconceptionGuidance } from '@/lib/misconceptions';
 import { contextGuidance } from '@/lib/generation/contexts';
 import { flavourGuidance } from '@/lib/generation/territories';
@@ -11,7 +12,7 @@ import { flavourGuidance } from '@/lib/generation/territories';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v41';
+export const PROMPT_VERSION = 'v42';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -176,6 +177,17 @@ ${
 - EVERY PART'S MATHEMATICS BELONGS TO ITS DECLARED OBJECTIVE'S MODULE (hard requirement). This question is tagged Module ${module}, and a slot naming one of the objectives above must be answerable with the content of THAT objective. Difficulty comes from chaining the objectives you were given; it never comes from importing a technique from elsewhere in the syllabus to make the question feel harder. Composite and inverse function notation — $fg(x)$, $gf(2)$, $f(g(x))$, $f^{-1}(x)$ — is Module 2 content specifically, and must not appear anywhere in a question tagged Module 3: a candidate sitting Module 3 in the modular format may never have met it, so a part that uses it is unanswerable for the student it was written for, whatever the mark scheme says.
 - A REGION DEFINED BY INEQUALITIES STATES ITS NON-NEGATIVITY CONSTRAINTS. When the unknowns count things that cannot be negative — items made, hours worked, crates loaded, trips scheduled — $x \\ge 0$ and $y \\ge 0$ are constraints OF THE MODEL and belong in the list with the others, in the wording, in the answer, and in the rubric. Leaving them implied by which corner of the grid you happened to shade makes the region wrong as written, and makes a student who states them look like they added something.
 ${
+        recipe.construct
+          ? `- CONSTRUCTION (hard requirement for this question): part (a) asks the student to DRAW, on graph paper, exactly what the figure you emit shows. For the template you choose, that means: ${context.template_hints
+              .map((t) => constructFamily(t)?.demand)
+              .filter(Boolean)
+              .join('; or ')} — "Using a scale of 2 cm to represent 1 unit on both axes, draw the graph of ..." — and its slot carries "response_mode": "construct". State the scale and the domain, as the papers do. There is ONE such slot and it is part (a).
+- THE REST OF THE QUESTION INTERROGATES THE DRAWING, and those parts are ordinary "answer" slots we mark: state the roots, the value where the curve cuts the $y$-axis, the coordinates of the minimum, the equation of the axis of symmetry; draw a stated straight line on the same axes and use the intersections to solve the pair. At least two such parts follow.
+- EVERY ONE OF THOSE ANSWERS MUST FOLLOW FROM THE EQUATION OR THE DATA, exactly, and be the value the algebra gives — never a value that only a reading off a drawing would produce. We check them against the equation, and a student who draws accurately will read the same thing. Choose the numbers so the reads are exact: roots and intercepts at integers, a turning point at a half-integer at worst.
+- THE CONSTRUCTION CARRIES ITS MARKS as the papers award them — the scale, the points plotted, the smooth curve — written as ordinary rubric rows against its slot. Like a "show that" or an "explain", the student marks it themselves against the figure we display, so those marks stay out of their estimate; the rows still say what an examiner would credit. Its "answer" states in ONE line what the finished drawing shows, because that line is displayed beside the figure.
+`
+          : ''
+      }${
         recipe.integrate
           ? `- INTEGRATION (hard requirement for this question): ONE scenario, ONE topic, and the objectives above chained through it — not ${recipe.objective_ids.length} questions under one number. This is the hardest class the papers set, and what it looks like: several circle theorems applied in turn to the same figure, each with its reason; a bearings problem where the cosine rule gives a length and the sine rule then gives an angle; a vector question where a ratio gives a point, the point gives a vector, and the vector proves two lines parallel; a transformation described, applied, then combined with a second one. Each part draws on a DIFFERENT one of the objectives, and the later parts use what the earlier ones produced.
 - EVERY SLOT NAMES THE OBJECTIVE IT ASSESSES in "objective_id", using one of the ids above. Between them the slots must cover every objective listed — that is what makes this question integrated rather than merely long.
@@ -183,7 +195,7 @@ ${
           : ''
       }- REQUIRED RUBRIC SPLIT (hard requirement): ${recipe.rubric_split ? `this question's rubric must award EXACTLY ${recipe.rubric_split.CK} CK mark(s), ${recipe.rubric_split.AK} AK mark(s) and ${recipe.rubric_split.R} R mark(s)` : 'as the recipe states'}. These are the profiles the examiner uses, and a real scheme spends about a third of its marks on CK. CK marks attach to SHORT CONCEPTUAL ACTS inside the working, not to a separate easy part: defining a suitable unknown ("let the number of adults be $x$"), stating the relationship or formula that applies before using it, naming the property or theorem being relied on, recognising the structure (that a figure is composite, that two triangles are similar, that a total is shared in a ratio). Award them where the candidate shows they know WHAT to do; award AK where they carry it out; award R where they justify, compare, decide, or reason back from a result.
 - ONE RUBRIC ROW PER MARK. A mark scheme credits one act per mark, so a 3-mark part carries three rows, each naming a different creditable act, not one row worth 3. A row worth several marks cannot give a student partial credit for the steps they did get right.
-- Every SLOT carries "response_mode": "answer" when the student types a final value, "show_that" when the stem states the result and the slot asks for the derivation, or "explain" when it asks for a reason or justification. A part may mix them: a computed value in one slot and the reason for it in the next. Never "construct" — we do not set drawing, plotting, or ruler-and-compasses work. Whichever mode you choose, "answer" still holds the value or the reason, because the mark scheme is built from it.
+- Every SLOT carries "response_mode": "answer" when the student types a final value, "show_that" when the stem states the result and the slot asks for the derivation, or "explain" when it asks for a reason or justification. A part may mix them: a computed value in one slot and the reason for it in the next. ${recipe.construct ? '"construct" is required on this question and on no other slot — see the CONSTRUCTION contract below.' : 'Never "construct" — we do not set drawing, plotting, or ruler-and-compasses work.'} Whichever mode you choose, "answer" still holds the value or the reason, because the mark scheme is built from it.
 - Set "answer_format" on a SLOT ONLY when its wording demands a particular form: "exact", "surd" ($a\\sqrt{b}$), "standard_form", "lowest_terms", "integer", "equation_form" (an answer of the form $y = mx + c$), "sf:N" (N significant figures) or "dp:N" (N decimal places). If you write "correct to 2 decimal places" or "in exact form" into a part, that part must carry the matching answer_format; if you do not demand a form, omit the field. Use ONLY the values listed — they are the forms we can mark. If the form you want is not there (set-builder notation, a ratio, a bearing), write the demand into the part's wording, where the student reads it, and leave answer_format unset.
 - When a part asks the student to NAME, STATE, CLASSIFY, or JUDGE something (including yes/no verdicts), "answer" must be the shortest standard form — the syllabus term, or the bare verdict word — and every other wording an examiner would accept goes in that part's "accept" array (a mark scheme's "accept:" list — e.g. answer "edge", accept ["line segment where two faces meet"]). Omit "accept" for numeric/algebraic answers unless a genuinely different correct form exists.`;
 

@@ -45,6 +45,8 @@ export interface QuestionFacts {
   topic_span?: number;
   /** Distinct objectives its slots declare — how integrated the question is. */
   objective_span?: number;
+  /** Declared by a slot with response_mode 'construct' — never inferred. */
+  has_construct?: boolean;
   representation: Representation;
   archetype: Archetype;
   difficulty: 1 | 2 | 3;
@@ -79,6 +81,8 @@ export interface Matrix {
   /** Difficulty-3 structured questions, and how many of them integrate. */
   d3_structured: number;
   d3_integrated: number;
+  /** Paper-shaped questions that open by asking the student to draw. */
+  construct_actual: number;
 }
 
 interface BlueprintLean {
@@ -157,6 +161,7 @@ export function computeMatrix(
     multi_topic_actual: 0,
     d3_structured: 0,
     d3_integrated: 0,
+    construct_actual: 0,
   };
 
   for (const q of questions) {
@@ -170,6 +175,7 @@ export function computeMatrix(
       matrix.p2_actual_total++;
       matrix.p2_marks_actual_total += q.marks;
       if ((q.topic_span ?? 1) > 1) matrix.multi_topic_actual++;
+      if (q.has_construct) matrix.construct_actual++;
       if (q.difficulty === 3) {
         matrix.d3_structured++;
         if ((q.objective_span ?? 1) >= 3) matrix.d3_integrated++;

@@ -498,16 +498,50 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
         }
       }
     }
-    for (const [i, part] of q.parts.entries()) {
-      for (const [j, slot] of part.slots.entries()) {
-        if (slot.response_mode === 'construct') {
-          ctx.addIssue({
-            code: 'custom',
-            path: ['parts', i, 'slots', j, 'response_mode'],
-            message: 'construct slots are out of scope and must not be generated',
-          });
-        }
+    // CONSTRUCT-THEN-INTERROGATE (R1.9). A construct slot asks the student to
+    // draw on graph paper. It is self-marked, so a question made of one is
+    // standalone drawing practice with nothing marked and nothing recorded —
+    // which is not what the papers set and not what we are adding. What they
+    // set is a drawing the REST of the question interrogates, so the shape is
+    // the requirement: it opens the question, there is only one, the question
+    // carries the figure we will show as the model answer, and auto-marked
+    // slots follow it.
+    const constructSlots = q.parts.flatMap((part, i) =>
+      part.slots.map((slot, j) => ({ slot, i, j, partIndex: i })).filter((x) => x.slot.response_mode === 'construct'),
+    );
+    if (constructSlots.length > 1) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['parts', constructSlots[1].i, 'slots', constructSlots[1].j, 'response_mode'],
+        message: 'a question may ask for at most one construction',
+      });
+    }
+    if (constructSlots.length === 1) {
+      const only = constructSlots[0];
+      if (only.partIndex !== 0) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['parts', only.i, 'slots', only.j, 'response_mode'],
+          message: 'the construction must be the first part — the later parts interrogate it',
+        });
       }
+      if (!q.visual) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['visual'],
+          message: 'a construct question must carry the figure it asks the student to draw',
+        });
+      }
+      const marked = q.parts.flatMap((part) => part.slots).filter((sl) => (sl.response_mode ?? 'answer') === 'answer');
+      if (marked.length === 0) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['parts'],
+          message: 'a construction must be followed by parts we can mark — a drawing alone is not a question',
+        });
+      }
+    }
+    for (const [i, part] of q.parts.entries()) {
       const dupes = new Set(part.slots.map((s) => s.label));
       if (dupes.size !== part.slots.length) {
         ctx.addIssue({ code: 'custom', path: ['parts', i, 'slots'], message: 'slot labels must be unique within a part' });

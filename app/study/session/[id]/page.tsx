@@ -160,8 +160,15 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   } | null>();
   if (!question) notFound();
 
+  // A construct question's figure IS the answer to its part (a), and every
+  // later part asks the student to read something off it. It is withheld until
+  // they commit, and comes back with the marking (see actions.ts).
+  const withholdsFigure = (question.parts ?? []).some((p) =>
+    (p.slots ?? []).some((slot) => slot.response_mode === 'construct'),
+  );
+
   let visualHtml: string | undefined;
-  if (question.visual?.template) {
+  if (question.visual?.template && !withholdsFigure) {
     try {
       visualHtml = renderVisual(question.visual as never, {
         stimulus: question.stimulus,

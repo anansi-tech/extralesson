@@ -117,7 +117,10 @@ describe('coverage statement (R1.7)', () => {
   it('says what partial coverage means, so the number cannot erase the caveat', () => {
     expect(coverage.partialCount).toBeGreaterThan(0);
     const s = coverageSentence(coverage);
-    expect(s).toContain('reading and interpreting, not drawing');
+    // R1.9 — the drawing is now set and self-checked on graph questions, so
+    // the caveat is that we do not MARK it, not that we skip it.
+    expect(s).toContain('We do not mark the drawing');
+    expect(s).toContain('reading and interpreting only');
     expect(s).toContain('not covered at all'); // the instrument work
   });
 
