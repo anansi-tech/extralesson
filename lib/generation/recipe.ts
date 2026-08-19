@@ -17,7 +17,6 @@ import {
   type RepresentationTarget,
 } from '@/lib/targets/representation';
 import {
-  INTEGRATED_D3_SHARE,
   INTEGRATION_MIN_OBJECTIVES,
   MULTI_TOPIC_SHARE,
   naturalPartners,
@@ -162,10 +161,8 @@ export interface RecipeOverrides {
 }
 
 /** Difficulty-3 structured questions integrate within ONE topic, so they never pair. */
-function integrateWanted(matrix: Matrix, kind: string, difficulty: number): boolean {
-  if (kind !== 'structured' || difficulty !== 3) return false;
-  const share = matrix.d3_structured === 0 ? 0 : matrix.d3_integrated / matrix.d3_structured;
-  return share < INTEGRATED_D3_SHARE;
+function integrateWanted(kind: string, shape: string, difficulty: number): boolean {
+  return kind === 'structured' && shape === 'paper' && difficulty === 3;
 }
 
 export function nextRecipe(
@@ -227,7 +224,7 @@ export function nextRecipe(
   // So the pairing is a deficit like everything else: pair only where the
   // corpus pairs, and only while we are below the share it shows.
   const topic_codes = [topic];
-  if (shape === 'paper' && !integrateWanted(matrix, kind, difficulty)) {
+  if (shape === 'paper' && !integrateWanted(kind, shape, difficulty)) {
     const pairedSoFar =
       matrix.p2_actual_total === 0 ? 0 : matrix.multi_topic_actual / matrix.p2_actual_total;
     if (pairedSoFar < MULTI_TOPIC_SHARE) {
@@ -254,10 +251,7 @@ export function nextRecipe(
   // the one we had none of — our d3 demanded 0.96 distinct skills against the
   // papers' 2.04, no harder than our d1. Like every other target it is a
   // deficit the recipe consumes, so it stops pushing once the share is met.
-  const integratedShare =
-    matrix.d3_structured === 0 ? 0 : matrix.d3_integrated / matrix.d3_structured;
-  const integrate =
-    kind === 'structured' && shape === 'paper' && difficulty === 3 && integratedShare < INTEGRATED_D3_SHARE;
+  const integrate = integrateWanted(kind, shape, difficulty);
 
   // Otherwise one objective per topic — the breadth comes from the topics. A
   // drill item stays with its single topic and takes a second objective only
