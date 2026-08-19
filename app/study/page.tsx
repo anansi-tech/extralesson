@@ -5,6 +5,8 @@ import { coverageSentence } from '@/lib/targets/coverage';
 import { paperShape } from '@/lib/exam/paper-shape';
 import Link from 'next/link';
 import { logout, startSession } from './actions';
+import { openSession } from '@/lib/study/open-session';
+import { SESSION_MINUTES } from '@/lib/session/builder';
 import type { ModuleNumber } from '@/lib/types';
 import type { MasteryBand } from '@/lib/mastery/config';
 
@@ -41,6 +43,7 @@ export default async function StudyDashboard({
   if (!student) return null;
 
   const state = await loadStudyState(auth.student_id, student.target_modules);
+  const open = await openSession(auth.student_id);
   const { prediction } = state;
   // Stating what we cannot mark is a trust asset — it sits with the estimate it
   // qualifies, not in a footnote (R1.6 §3).
@@ -122,14 +125,32 @@ export default async function StudyDashboard({
           </p>
         )}
 
-        <form action={startSession} className="mt-5">
-          <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
-            Start today&rsquo;s session
+        {open ? (
+          <Link
+            href={`/study/session/${open.id}`}
+            className="mt-5 block bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]"
+          >
+            Carry on with your session
             <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
-              8 QUESTIONS · WEAKEST TOPICS FIRST
+              {open.answered} OF {open.questions} DONE · {open.marksLeft} MARK
+              {open.marksLeft === 1 ? '' : 'S'} LEFT
             </small>
-          </button>
-        </form>
+          </Link>
+        ) : (
+          <form action={startSession} className="mt-5">
+            <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
+              Start today&rsquo;s session
+              <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
+                ABOUT {SESSION_MINUTES} MINUTES AT EXAM PACE · WEAKEST TOPICS FIRST
+              </small>
+            </button>
+          </form>
+        )}
+        <p className="mt-2 text-center text-[11px] leading-snug text-dim">
+          {open
+            ? 'Your answers so far are saved. You can look back at any question you have already done.'
+            : 'One or two whole exam questions, priced the way the paper prices them — a Paper 2 question is 9 to 12 marks and takes most of the session.'}
+        </p>
 
         <Link
           href="/study/practice"
@@ -137,7 +158,7 @@ export default async function StudyDashboard({
         >
           Worked practice
           <small className="block font-sans text-[10px] normal-case tracking-normal text-dim">
-            &ldquo;Show that&rdquo; and &ldquo;explain&rdquo; questions — you mark these yourself
+            &ldquo;Show that&rdquo;, &ldquo;explain&rdquo; and drawing questions — you mark these yourself
           </small>
         </Link>
 

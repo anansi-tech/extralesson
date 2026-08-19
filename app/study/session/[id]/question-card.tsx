@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment, useEffect, useRef, useState, useTransition } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { submitAnswer, type Feedback } from './actions';
 import { isPositionalLabel } from '@/lib/notation';
@@ -30,6 +31,19 @@ export interface CardQuestion {
   }[];
   optionsHtml?: string[];
   marks: number;
+  /** The session's own budget, in the unit it is actually spent in. */
+  marksTotal: number;
+  marksAnswered: number;
+  /**
+   * Set when the student is looking back at a question they have answered.
+   * Everything is read-only: the card shows what they typed and what it
+   * earned, and no attempt is written for a second look.
+   */
+  prior?: {
+    answers: Record<string, string>;
+    selected?: number;
+    feedback: Feedback;
+  };
   rubricCodes: { code: string; profile: string; mark_value: number; part_label: string }[];
 }
 
@@ -79,22 +93,28 @@ const chipColor: Record<string, string> = {
 
 export default function QuestionCard({ question }: { question: CardQuestion }) {
   const router = useRouter();
-  const [selected, setSelected] = useState<number | null>(null);
-  const [partAnswers, setPartAnswers] = useState<Record<string, string>>({});
+  const [selected, setSelected] = useState<number | null>(question.prior?.selected ?? null);
+  const [partAnswers, setPartAnswers] = useState<Record<string, string>>(question.prior?.answers ?? {});
   const [working, setWorking] = useState('');
-  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [feedback, setFeedback] = useState<Feedback | null>(question.prior?.feedback ?? null);
   const [error, setError] = useState<string>();
   const [pending, startTransition] = useTransition();
   const startedAt = useRef(Date.now());
 
+  // Moving to another question resets the card to whatever that question is:
+  // blank if it is the one to answer, and their own answers if they are looking
+  // back at one they have done.
   useEffect(() => {
-    setSelected(null);
-    setPartAnswers({});
+    setSelected(question.prior?.selected ?? null);
+    setPartAnswers(question.prior?.answers ?? {});
     setWorking('');
-    setFeedback(null);
+    setFeedback(question.prior?.feedback ?? null);
     setError(undefined);
     startedAt.current = Date.now();
-  }, [question.sessionId, question.index]);
+  }, [question.sessionId, question.index, question.prior]);
+
+  const reviewing = !!question.prior;
+  const href = (i: number) => `/study/session/${question.sessionId}?q=${i}`;
 
   // R1.8: the student answers SLOTS. "Show that" and "explain" slots are worked
   // on paper and self-marked, so they are not typed in and never gate submit —
@@ -328,7 +348,15 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
       {error && <p className="mt-3 text-sm text-red-pen">{error}</p>}
 
+      {reviewing && (
+        <p className="mt-4 border-l-3 border-paper-deep bg-[#FFFDF6] p-2 text-[13px] text-dim">
+          You have already answered this one — this is what you wrote. It cannot be answered again,
+          and looking back does not change your marks.
+        </p>
+      )}
+
       {!feedback ? (
+        reviewing ? null : (
         <button
           onClick={submit}
           disabled={pending || !canSubmit}
@@ -340,6 +368,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               ? `Submit answer (${blanks} left blank)`
               : 'Submit answer'}
         </button>
+        )
       ) : (
         <div className="mt-5">
           <div
@@ -419,14 +448,47 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             />
           </div>
 
-          <button
-            onClick={() => startTransition(() => router.refresh())}
-            disabled={pending}
-            className="mt-4 w-full bg-ink p-3 font-black text-paper shadow-[3px_3px_0_var(--red)] disabled:opacity-60"
-          >
-            {question.index + 1 >= question.total ? 'Finish session' : 'Next question →'}
-          </button>
+          {reviewing ? (
+            <Link
+              href={href(question.total - 1)}
+              className="mt-4 block bg-ink p-3 text-center font-black text-paper shadow-[3px_3px_0_var(--red)]"
+            >
+              Back to where you were →
+            </Link>
+          ) : (
+            <button
+              onClick={() => startTransition(() => router.refresh())}
+              disabled={pending}
+              className="mt-4 w-full bg-ink p-3 font-black text-paper shadow-[3px_3px_0_var(--red)] disabled:opacity-60"
+            >
+              {question.index + 1 >= question.total ? 'Finish session' : 'Next question →'}
+            </button>
+          )}
         </div>
+      )}
+
+      {/* Looking back costs nothing and writes nothing, so the way back is
+          always open; forward stops at the question they are actually on. */}
+      {question.total > 1 && (
+        <nav className="mt-4 flex items-center justify-between border-t border-dashed border-paper-deep pt-3 font-mono text-[11px] uppercase tracking-widest">
+          {question.index > 0 ? (
+            <Link href={href(question.index - 1)} className="text-dim underline">
+              ← previous
+            </Link>
+          ) : (
+            <span className="text-paper-deep">← previous</span>
+          )}
+          <span className="text-dim">
+            {question.index + 1} / {question.total}
+          </span>
+          {reviewing ? (
+            <Link href={href(question.index + 1)} className="text-dim underline">
+              next →
+            </Link>
+          ) : (
+            <span className="text-paper-deep">next →</span>
+          )}
+        </nav>
       )}
     </article>
   );

@@ -100,15 +100,41 @@ export default async function WorkedPracticePage() {
           Worked practice<span className="text-red-pen">.</span>
         </h1>
         <p className="mt-1 text-sm text-dim">
-          Exam questions that give away the answer and ask for the working, or ask you to explain.
-          A machine cannot mark these fairly yet, so you mark them: work each one on paper, then
-          reveal the full solution and mark scheme. Nothing here changes your estimate.
+          Exam questions that give away the answer and ask for the working, ask you to explain, or
+          ask you to draw. A machine cannot mark these fairly yet, so you mark them: work each one
+          on paper, then reveal the full solution and mark scheme. Nothing here changes your
+          estimate.
         </p>
 
         {questions.length === 0 ? (
-          <p className="mt-6 border-l-3 border-red-pen bg-[#FDF1F0] p-3 text-sm">
-            No worked-practice questions for your modules yet. Check back soon.
-          </p>
+          // Not an error. This page fills as questions of these three kinds are
+          // written and approved, and saying so is the difference between a
+          // feature that is waiting and one that looks broken.
+          <div className="mt-6 border-[1.5px] border-dashed border-paper-deep bg-white p-4 text-sm">
+            <b>Nothing here yet for your modules.</b>
+            <p className="mt-1 text-dim">
+              Three kinds of question land on this page as they are written and approved:
+            </p>
+            <ul className="mt-2 space-y-1 text-dim">
+              <li>
+                <b className="text-ink">&ldquo;Show that&rdquo;</b> — the answer is printed in the
+                question and the marks are for the working that gets there.
+              </li>
+              <li>
+                <b className="text-ink">&ldquo;Explain&rdquo;</b> — a reason or a justification,
+                marked on the argument rather than the value.
+              </li>
+              <li>
+                <b className="text-ink">Constructions</b> — drawing a graph on graph paper, which
+                you check against the finished figure and an examiner&rsquo;s list.
+              </li>
+            </ul>
+            <p className="mt-2 text-dim">
+              A question with any part we <i>can</i> mark goes into your daily session instead, with
+              its self-marked parts shown alongside — so these three kinds are already reaching you
+              there. Only a question that is self-marked from beginning to end waits here.
+            </p>
+          </div>
         ) : (
           questions.map((q) => <WorkedCard key={q.id} question={q} />)
         )}
