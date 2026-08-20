@@ -23,6 +23,7 @@ import {
 } from '@/lib/targets/pairings';
 import { CONSTRUCT_SHARE, isConstructTemplate } from '@/lib/targets/construct';
 import { SHOW_THAT_SHARE } from '@/lib/targets/show-that';
+import { TEMPLATES_BY_REPRESENTATION } from '@/lib/validation/question';
 import type { Archetype, Profile, Representation, TemplateName } from '@/lib/types';
 
 const PROFILES: Profile[] = ['CK', 'AK', 'R'];
@@ -382,7 +383,19 @@ export function nextRecipe(
   // allowed by them. A geometry topic offers coordinateGrid alongside
   // triangleLabeled and bearingDiagram; "any hint is a construct family" would
   // let the model take the bearing diagram and then be told to draw a graph.
-  const constructHints = template_hints.filter(isConstructTemplate);
+  //
+  // Eligibility is checked against the CANONICAL map as well as the hint list.
+  // A hint list is per-topic data and can disagree with it; the schema cannot.
+  // Narrowing to a template the chosen representation forbids produced a recipe
+  // that could never validate, and the run spent sixteen attempts on it before
+  // being stopped. This also, correctly, drops coordinateGrid from a 'diagram'
+  // recipe: it is legal there only as a named sketch with no axes or scale,
+  // which is the opposite of a question asking for a plotted graph.
+  const validHere: TemplateName[] =
+    representation === 'prose' ? [] : TEMPLATES_BY_REPRESENTATION[representation];
+  const constructHints = template_hints.filter(
+    (t) => isConstructTemplate(t) && validHere.includes(t),
+  );
   const constructedSoFar =
     matrix.p2_actual_total === 0 ? 0 : matrix.construct_actual / matrix.p2_actual_total;
 
