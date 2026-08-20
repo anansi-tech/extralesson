@@ -74,9 +74,9 @@ export default async function ReviewPage({
             stimulus: raw.stimulus,
             stem: raw.stem,
             partPrompts: (raw.parts ?? []).flatMap((p) => [
-          p.prompt,
-          ...(p.slots ?? []).map((slot) => slot.prompt ?? ''),
-        ]),
+              p.prompt,
+              ...(p.slots ?? []).map((slot) => slot.prompt ?? ''),
+            ]),
           });
         } catch {
           visualHtml = `<p class="text-red-pen">visual failed to render (template ${raw.visual.template})</p>`;
@@ -193,9 +193,22 @@ export default async function ReviewPage({
             placeholder="Find by id (d16f74) or by text (hire purchase, ferry, cumulative)"
             className="w-full border-[1.5px] border-ink p-2 font-mono text-xs"
           />
-          <button className="shrink-0 border-[1.5px] border-ink bg-white px-4 font-mono text-[11px] uppercase tracking-widest shadow-[3px_3px_0_var(--ink)]">
+
+          <button
+            type="submit"
+            className="shrink-0 border-[1.5px] border-ink bg-white px-4 font-mono text-[11px] uppercase"
+          >
             Find
           </button>
+
+          {(find || askedId) && (
+            <Link
+              href="/admin/review"
+              className="shrink-0 border-[1.5px] border-ink bg-white px-4 py-2 font-mono text-[11px] uppercase"
+            >
+              Clear
+            </Link>
+          )}
         </form>
 
         {find && (
@@ -213,13 +226,12 @@ export default async function ReviewPage({
                     {r.id.slice(-6)}
                   </Link>
                   <span
-                    className={`shrink-0 font-mono text-[10px] uppercase ${
-                      r.status === 'approved'
-                        ? 'text-green-pen'
-                        : r.status === 'retired'
-                          ? 'text-red-pen'
-                          : 'text-dim'
-                    }`}
+                    className={`shrink-0 font-mono text-[10px] uppercase ${r.status === 'approved'
+                      ? 'text-green-pen'
+                      : r.status === 'retired'
+                        ? 'text-red-pen'
+                        : 'text-dim'
+                      }`}
                   >
                     {r.status}
                   </span>
