@@ -43,6 +43,11 @@ const BASE: Record<string, { dimension: string; factor: number }> = {
   min: { dimension: 'time', factor: 60 },
   h: { dimension: 'time', factor: 3600 },
   day: { dimension: 'time', factor: 86400 },
+  // money → dollar. One dimension, not one per currency: a question that
+  // converts between currencies states its own rate, and the answer is checked
+  // against the number that rate produces.
+  dollar: { dimension: 'money', factor: 1 },
+  cent: { dimension: 'money', factor: 0.01 },
   // angle → degree
   '°': { dimension: 'angle', factor: 1 },
   rad: { dimension: 'angle', factor: 180 / Math.PI },
@@ -66,6 +71,7 @@ const SPELLING: Record<string, string> = {
   minute: 'min', minutes: 'min', mins: 'min',
   hour: 'h', hours: 'h', hr: 'h', hrs: 'h',
   days: 'day',
+  dollars: 'dollar', cents: 'cent',
   degree: '°', degrees: '°', deg: '°',
   radian: 'rad', radians: 'rad',
 };

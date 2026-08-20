@@ -78,3 +78,36 @@ describe('units are compared, not stripped', () => {
     expect(parseQuantity('2 hours')).toEqual({ value: 7200, dimension: 'time' });
   });
 });
+
+// Money was the hole the first pass left: stripMoney deleted the currency so
+// every amount reached the comparison as a bare number. Consumer Arithmetic is
+// an entire topic, so this is the commonest unit in the bank.
+describe('money is a dimension', () => {
+  const both = (a: string, b: string) => [answersEquivalent(a, b), answersEquivalent(b, a)];
+
+  it('is not a length', () => {
+    expect(both('\\$70', '70 m')).toEqual([false, false]);
+    expect(both('\\$70', '70 kg')).toEqual([false, false]);
+  });
+
+  it('reads every way the bank writes an amount', () => {
+    expect(both('\\$70', '70 dollars')).toEqual([true, true]);
+    expect(both('\\$70', 'EC\\$70')).toEqual([true, true]);
+    expect(both('\\$17 400', '17400 dollars')).toEqual([true, true]);
+  });
+
+  it('knows a dollar is a hundred cents', () => {
+    expect(both('\\$0.50', '50 cents')).toEqual([true, true]);
+  });
+
+  it('still accepts an amount written without the sign', () => {
+    expect(both('\\$70', '70')).toEqual([true, true]);
+    expect(both('\\$70', '\\$58')).toEqual([false, false]);
+  });
+
+  it('leaves a bare $ alone, because that is a KaTeX delimiter', () => {
+    // "$70$" is the number seventy in maths mode. Reading it as currency would
+    // make every typeset number an amount.
+    expect(both('$70$', '70')).toEqual([true, true]);
+  });
+});

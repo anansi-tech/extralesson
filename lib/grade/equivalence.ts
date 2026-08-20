@@ -1,5 +1,5 @@
 import { evaluate, rationalize, simplify } from 'mathjs';
-import { normaliseDigitGroups, stripMoney } from '@/lib/money';
+import { markMoney, normaliseDigitGroups } from '@/lib/money';
 import { parseQuantity, sameDimension } from './quantity';
 
 // Final-answer equivalence check (ROUND_1 §6.3 and §4.3).
@@ -16,7 +16,11 @@ import { parseQuantity, sameDimension } from './quantity';
 function preClean(raw: string): string {
   // Money and thousands grouping are understood in lib/money.ts, nowhere else:
   // the J$80 bug came from currency logic living in three places at once.
-  return normaliseDigitGroups(stripMoney(raw))
+  // Money is MARKED, not stripped: deleting the currency made every amount a
+  // bare number, so $70 matched 70 m. markMoney rewrites it as a unit the
+  // quantity parser understands; the bare $ that follows is a KaTeX delimiter
+  // and is still removed below.
+  return normaliseDigitGroups(markMoney(raw))
     .trim()
     .toLowerCase()
     .replace(/\\left|\\right|\\,|\\;/g, '')
