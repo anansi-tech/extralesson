@@ -4,6 +4,7 @@ import { getCoverage, getNextDraftId } from '@/lib/admin/coverage';
 import { renderAnswerHtml, renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
 import {
+  P1_TOTAL,
   P2_MARKS_TOTAL,
   P2_PROFILE_SPLIT,
   STRUCTURED_ARCHETYPE_TARGETS,
@@ -169,7 +170,19 @@ export default async function ReviewPage({
           </div>
           <div className="font-mono text-xs text-dim">
             <b className="text-ink">{draftsRemaining}</b> drafts remaining ·{' '}
-            <b className="text-ink">{approvedTotal}</b>/400 approved
+            <b className="text-ink">{approvedTotal}</b> approved ·{' '}
+            {/* Against the matrix, which is the target — "/400" was a question
+                count from Round 1, restated here rather than read, and it read
+                456/400 as if the bank were finished while the two pools it is
+                actually measured against say 102% and 185%. */}
+            <b className={matrix.p1_actual_total >= P1_TOTAL ? 'text-green-pen' : 'text-ink'}>
+              P1 {Math.round((matrix.p1_actual_total / P1_TOTAL) * 100)}%
+            </b>{' '}
+            ·{' '}
+            <b className={matrix.p2_marks_actual_total >= P2_MARKS_TOTAL ? 'text-green-pen' : 'text-ink'}>
+              P2 {Math.round((matrix.p2_marks_actual_total / P2_MARKS_TOTAL) * 100)}%
+            </b>{' '}
+            of target
           </div>
         </header>
 
