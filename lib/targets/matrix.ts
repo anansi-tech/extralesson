@@ -14,14 +14,21 @@ export const P1_TOTAL = 160; // 60-item P1 table × 2.67
 // R1.8 §2 — the P2 target is a pool of MARKS, and always was. It used to be
 // written as 240 "questions" and then multiplied by an assumed 7-mark mean
 // wherever it was actually used, which made the headline number a function of
-// how big we happened to be writing questions that month. Paper-shaped
-// questions run 9-12 marks instead of 4-10, so under the old unit the same
-// bank would have looked like a 40% regression overnight while containing
-// strictly more work.
+// how big we happened to be writing questions that month.
 //
-// The pool is unchanged (240 × 7), so no topic's target moves. Only the unit
-// is now the one we were already measuring in.
-export const P2_MARKS_TOTAL = 1680;
+// R1.9 — the pool is now FORTY WHOLE PAPER 2s at the real 90 marks each. It was
+// 240 × 7, which encoded the same intent against a 7-mark question that no
+// longer exists: paper-shaped questions run 9-12 marks and the bank means 10.7,
+// so every topic sat at 185-190% of its target while being correctly
+// proportioned. The old number measured a bank of fragments with a fragment's
+// yardstick.
+//
+// This is a re-derivation, not a nudge. Nothing about the shape of the target
+// changes — each topic still takes its share of the 90 blueprint marks — and
+// deliberately no thumb is put on the scale for P2 over P1: an honest pool
+// restores the steering by itself, because a P2 that is 13% short again
+// outranks a P1 that is 2% over and the paper choice starts working.
+export const P2_MARKS_TOTAL = 3600;
 
 // Per-module profile splits (per 20 P1 items / per 30 P2 raw marks).
 export const P1_PROFILE_SPLIT: Record<Profile, number> = { CK: 6, AK: 8, R: 6 };
@@ -47,6 +54,8 @@ export interface QuestionFacts {
   objective_span?: number;
   /** Declared by a slot with response_mode 'construct' — never inferred. */
   has_construct?: boolean;
+  /** Declared by a slot with response_mode 'show_that' — never inferred. */
+  has_show_that?: boolean;
   representation: Representation;
   archetype: Archetype;
   difficulty: 1 | 2 | 3;
@@ -83,6 +92,8 @@ export interface Matrix {
   d3_integrated: number;
   /** Paper-shaped questions that open by asking the student to draw. */
   construct_actual: number;
+  /** Structured questions carrying a part whose result the stem states. */
+  show_that_actual: number;
 }
 
 interface BlueprintLean {
@@ -162,6 +173,7 @@ export function computeMatrix(
     d3_structured: 0,
     d3_integrated: 0,
     construct_actual: 0,
+    show_that_actual: 0,
   };
 
   for (const q of questions) {
@@ -176,6 +188,7 @@ export function computeMatrix(
       matrix.p2_marks_actual_total += q.marks;
       if ((q.topic_span ?? 1) > 1) matrix.multi_topic_actual++;
       if (q.has_construct) matrix.construct_actual++;
+      if (q.has_show_that) matrix.show_that_actual++;
       if (q.difficulty === 3) {
         matrix.d3_structured++;
         if ((q.objective_span ?? 1) >= 3) matrix.d3_integrated++;

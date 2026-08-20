@@ -12,7 +12,7 @@ import { flavourGuidance } from '@/lib/generation/territories';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v43';
+export const PROMPT_VERSION = 'v44';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -177,6 +177,13 @@ ${
 - EVERY PART'S MATHEMATICS BELONGS TO ITS DECLARED OBJECTIVE'S MODULE (hard requirement). This question is tagged Module ${module}, and a slot naming one of the objectives above must be answerable with the content of THAT objective. Difficulty comes from chaining the objectives you were given; it never comes from importing a technique from elsewhere in the syllabus to make the question feel harder. Composite and inverse function notation — $fg(x)$, $gf(2)$, $f(g(x))$, $f^{-1}(x)$ — is Module 2 content specifically, and must not appear anywhere in a question tagged Module 3: a candidate sitting Module 3 in the modular format may never have met it, so a part that uses it is unanswerable for the student it was written for, whatever the mark scheme says.
 - A REGION DEFINED BY INEQUALITIES STATES ITS NON-NEGATIVITY CONSTRAINTS. When the unknowns count things that cannot be negative — items made, hours worked, crates loaded, trips scheduled — $x \\ge 0$ and $y \\ge 0$ are constraints OF THE MODEL and belong in the list with the others, in the wording, in the answer, and in the rubric. Leaving them implied by which corner of the grid you happened to shade makes the region wrong as written, and makes a student who states them look like they added something.
 ${
+        recipe.show_that
+          ? `- ONE PART OF THIS QUESTION IS A "SHOW THAT" (hard requirement). The papers state a result and give the marks for reaching it — "Show that the area of the plot is $48\\,\\text{m}^2$", "Show that $x = 4$ satisfies the equation", "Prove that triangle $ABC$ is isosceles" — and the candidate's job is the working, not the value. Put it where the question has earned it: after a part that produced something to work with, and before a part that uses the stated result, so a candidate who cannot derive it can still carry on with it.
+- ITS SLOT CARRIES "response_mode": "show_that", and its "answer" is the DERIVATION in one or two lines — the route, not the value the stem already printed. The student marks it themselves against that, so it is the whole of what they check against.
+- THE RESULT MUST ACTUALLY FOLLOW, exactly, from what the question has given. A "show that" whose number is a rounding away from the truth teaches a candidate to fudge, and the papers choose their numbers so it comes out clean.
+`
+          : ''
+      }${
         recipe.construct
           ? `- CONSTRUCTION (hard requirement for this question): part (a) asks the student to DRAW, on graph paper, exactly what the figure you emit shows. For the template you choose, that means: ${context.template_hints
               .map((t) => constructFamily(t)?.demand)

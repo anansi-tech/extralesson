@@ -11,6 +11,8 @@ import { dbConnect, Question, Topic, Blueprint } from '@/lib/db';
 import { actsPerMark, chainDepth, summarise } from '@/lib/targets/difficulty';
 import { computeMatrix, P1_TOTAL, P2_MARKS_TOTAL, type QuestionFacts } from '@/lib/targets/matrix';
 import { CONTEXT_CATEGORIES, CONTEXT_FREE_MCQ_SHARE } from '@/lib/generation/contexts';
+import { hasShowThat, SHOW_THAT_SHARE } from '@/lib/targets/show-that';
+import { CONSTRUCT_SHARE } from '@/lib/targets/construct';
 import { STRUCTURED_ARCHETYPE_TARGETS } from '@/lib/targets/representation';
 import { TARGET_ACTS_PER_MARK, TARGET_CHAIN_DEPTH } from '@/lib/targets/difficulty';
 
@@ -81,6 +83,7 @@ async function main() {
     topic_span: new Set(q.objective_ids.map(topicOf)).size,
     objective_span: new Set((q.parts ?? []).flatMap((p: any) => (p.slots ?? []).map((s: any) => s.objective_id).filter(Boolean))).size,
     has_construct: (q.parts ?? []).some((p) => (p.slots ?? []).some((s) => s.response_mode === 'construct')),
+    has_show_that: hasShowThat(q.parts as never),
     representation: q.representation as QuestionFacts['representation'],
     archetype: (q.archetype ?? 'multi-step-application') as QuestionFacts['archetype'],
     difficulty: q.difficulty,
@@ -160,6 +163,16 @@ async function main() {
       `  ${name.padEnd(24)} ${String(n).padStart(3)} ${pct(n, structured.length).padStart(4)}  target ${String(target).padStart(2)}%  ${bar(n, structured.length)}`,
     );
   }
+
+  // --- demands the papers set that we have to ASK for ----------------------
+  const pct1 = (n: number) => `${Math.round((n / Math.max(1, matrix.p2_actual_total)) * 100)}%`;
+  console.log('\nDEMAND SHARES (structured)');
+  console.log(
+    `  construction  ${String(matrix.construct_actual).padStart(3)} ${pct1(matrix.construct_actual).padStart(4)}  target ${Math.round(CONSTRUCT_SHARE * 100)}%`,
+  );
+  console.log(
+    `  show that     ${String(matrix.show_that_actual).padStart(3)} ${pct1(matrix.show_that_actual).padStart(4)}  target ${Math.round(SHOW_THAT_SHARE * 100)}%`,
+  );
 
   // --- acceptance by topic is reported by the generator itself --------------
   console.log('\nPER-TOPIC COUNTS (acceptance rates come from the generation run)');
