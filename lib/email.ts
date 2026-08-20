@@ -13,6 +13,15 @@ const FROM = process.env.RESEND_FROM ?? 'ExtraLesson <onboarding@resend.dev>';
 export interface SendResult {
   /** True when no provider is configured, so the caller can fall back. */
   skipped: boolean;
+  /**
+   * The provider's id for this message, when there is one.
+   *
+   * It was discarded, which left no way to connect "I never got the email" to
+   * a record of what happened to it — and that is the whole of the diagnosis:
+   * accepted-and-filed and never-accepted are different problems with different
+   * fixes, and only the provider knows which happened.
+   */
+  id?: string;
 }
 
 /**
@@ -34,7 +43,7 @@ export async function sendEmail(args: {
   const key = process.env.RESEND_API_KEY;
   if (!key) return { skipped: true };
 
-  const { error } = await new Resend(key).emails.send({
+  const { data, error } = await new Resend(key).emails.send({
     from: FROM,
     to: args.to,
     subject: args.subject,
@@ -42,7 +51,7 @@ export async function sendEmail(args: {
     text: args.text,
   });
   if (error) throw new Error(error.message || 'email send failed');
-  return { skipped: false };
+  return { skipped: false, id: data?.id };
 }
 
 /**

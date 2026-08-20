@@ -126,7 +126,11 @@ export async function requestReset(_prev: AuthState, formData: FormData): Promis
     await ResetToken.create({ lookup, email, expires_at: new Date(Date.now() + RESET_TTL_MS) });
     const link = `${externalBaseUrl()}/study/reset?token=${secret}`;
     try {
-      const { skipped } = await sendEmail({ to: email, ...resetEmail(link, RESET_TTL_MS / 60000) });
+      const { skipped, id } = await sendEmail({ to: email, ...resetEmail(link, RESET_TTL_MS / 60000) });
+      // The id, not the link. It is what turns "I never got it" into a lookup
+      // against the provider's record of whether it was accepted, refused or
+      // accepted and filed somewhere the student did not look.
+      if (id) console.log(`[reset-link] sent to ${email}, message ${id}`);
       // Without a provider the link still has to reach a human somehow, so it
       // goes to the server log as it always did. With one, it must NOT — a
       // reset link in a log is a way into the account for anyone who can read
