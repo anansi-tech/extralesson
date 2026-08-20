@@ -1,5 +1,5 @@
 import { dbConnect, Student } from '@/lib/db';
-import { requireSession } from '@/lib/auth/session';
+import { isAdminEmail, requireSession } from '@/lib/auth/session';
 import { loadStudyState } from '@/lib/study/state';
 import { coverageSentence } from '@/lib/targets/coverage';
 import { paperShape } from '@/lib/exam/paper-shape';
@@ -45,6 +45,7 @@ export default async function StudyDashboard({
   } | null>();
   if (!student) return null;
 
+  const isAdmin = isAdminEmail(auth.email);
   const state = await loadStudyState(auth.student_id, student.target_modules);
   const { prediction } = state;
   const [open, progress] = await Promise.all([
@@ -106,6 +107,18 @@ export default async function StudyDashboard({
             extra<em className="not-italic text-red-pen">lesson</em>
           </div>
           <div className="flex items-baseline gap-3">
+            {/* Signing in lands an admin here, in the product, because an admin
+                is also a student and seeing what a student sees is the point of
+                having the account at all. This is the way across — without it
+                the review queue was reachable only by typing the URL. */}
+            {isAdmin && (
+              <Link
+                href="/admin/review"
+                className="font-mono text-[10px] uppercase tracking-widest text-red-pen underline"
+              >
+                Review queue
+              </Link>
+            )}
             <span className="font-mono text-[10px] uppercase tracking-widest text-dim">
               {student.syllabus_mode === 'legacy-jan' ? 'CSEC MATH · JAN RE-SIT' : 'CSEC MATH · MAY/JUNE 2027'}
             </span>
