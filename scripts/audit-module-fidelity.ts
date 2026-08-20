@@ -44,8 +44,27 @@ const COMPOSITE = /f\s*\(\s*g\s*\(|g\s*\(\s*f\s*\(|\bfg\s*\(|\bgf\s*\(|f\s*\^\s*
 // a sine — the first attempt at this flagged tan(30) = QR/45 as a sine rule.
 const NON_RIGHT_TRIG = /\b(sine|cosine)\s+rule\b|\blaw of (sines|cosines)\b/i;
 const SINE_COSINE_OBJECTIVE = 'M3.3.7';
-const LP = /feasible region|linear programm|shaded region[^.]*inequalit|inequalit[^.]*shaded region/i;
-const NONNEG = /x\s*\\g(?:e|eq)\s*0|y\s*\\g(?:e|eq)\s*0|x\s*[≥⩾]\s*0|y\s*[≥⩾]\s*0|non-?negativ/i;
+// LINEAR PROGRAMMING, and only that. The first version matched "shaded region"
+// near "inequality", which caught every one-inequality question in M3.2.1 —
+// "which inequality represents R?" over a region that legitimately runs into
+// the negative quadrants, where x >= 0 would be WRONG. An optimisation over a
+// feasible set is the thing with non-negativity in it.
+const LP = /feasible region|linear programm/i;
+
+// Non-negativity can be stated three ways and all three count. The syllabus
+// wording "where x and y are whole numbers" says it in English — a whole number
+// is not negative — and the region's own params say it in structure. Reading
+// only the maths markup flagged a question that stated it twice.
+const NONNEG_TEXT =
+  /x\s*\\g(?:e|eq)\s*0|y\s*\\g(?:e|eq)\s*0|x\s*[≥⩾]\s*0|y\s*[≥⩾]\s*0|non-?negativ|whole numbers?|positive integers?|cannot be negative/i;
+
+/** x >= 0 and y >= 0 declared among a region's constraints. */
+function nonNegativeInParams(visual: Lean['visual']): boolean {
+  const cons = (visual?.params?.regions ?? []).flatMap((r) => r.constraints ?? []);
+  const has = (a: number, b: number) =>
+    cons.some((c) => c.a === a && c.b === b && c.c === 0 && c.op === 'ge');
+  return has(1, 0) && has(0, 1);
+}
 
 interface Lean {
   _id: unknown;
@@ -53,6 +72,9 @@ interface Lean {
   module: number;
   objective_ids: string[];
   stimulus?: string;
+  visual?: {
+    params?: { regions?: { constraints?: { a: number; b: number; c: number; op: string }[] }[] };
+  };
   worked_solution?: string;
   rubric?: { criterion?: string }[];
   parts?: { label: string; prompt?: string; statement?: string; slots?: { prompt?: string; answer?: string }[] }[];
@@ -92,7 +114,9 @@ async function main() {
     if (q.module === 2 && NON_RIGHT_TRIG.test(method)) {
       flags.push(`Module 3 method (sine/cosine rule, ${SINE_COSINE_OBJECTIVE}) in a Module 2 question`);
     }
-    if (LP.test(text) && !NONNEG.test(text)) flags.push('region defined without x >= 0, y >= 0');
+    if (LP.test(text) && !NONNEG_TEXT.test(text) && !nonNegativeInParams(q.visual)) {
+      flags.push('linear programming with no non-negativity, in the wording or the region');
+    }
     if (NON_RIGHT_TRIG.test(method) && !q.objective_ids.includes(SINE_COSINE_OBJECTIVE)) {
       flags.push(
         `UNDER-TAGGED: uses the sine/cosine rule but declares ${q.objective_ids.join(', ')} — ${SINE_COSINE_OBJECTIVE} reads as uncovered`,
