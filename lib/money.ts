@@ -56,6 +56,29 @@ const CURRENCY_CODES = ['EC', 'US', 'TT', 'BB', 'BDS', 'BZ', 'KY', 'GY', 'JA', '
  * Money markers removed for comparison: the escape, a bare sign, and the
  * currency codes a conversion question is allowed to use.
  */
+/**
+ * Money marked as a QUANTITY rather than deleted.
+ *
+ * stripMoney removes the currency so the number can be compared, which made
+ * every amount dimensionless: $70 matched 70 m, because by the time the two
+ * reached the comparison neither carried a unit. Rewriting the marker as a unit
+ * word instead lets the quantity parser give money its own dimension — so $70
+ * is 70 dollars, is not 70 metres, and is still 70 to a student who left the
+ * sign off.
+ *
+ * Only the ESCAPED sign and the currency codes are money. A bare $ is a KaTeX
+ * delimiter — "$70$" is the number seventy in maths mode — so treating it as
+ * currency would turn every typeset number into an amount.
+ */
+export function markMoney(value: string): string {
+  const codes = CURRENCY_CODES.join('|');
+  const amount = String.raw`(\d[\d\s.,]*)`;
+  return value
+    .replace(new RegExp(String.raw`\b(?:${codes})\s*\\?\$\s*` + amount, 'gi'), '$1 dollars')
+    .replace(new RegExp(String.raw`\\\$\s*` + amount, 'g'), '$1 dollars')
+    .replace(new RegExp(String.raw`\b(?:${codes})\s*` + amount, 'gi'), '$1 dollars');
+}
+
 export function stripMoney(value: string): string {
   const codes = CURRENCY_CODES.join('|');
   return value
