@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildDraftPrompt, buildSolvePrompt, PROMPT_VERSION } from '@/lib/prompts/question-gen';
 import type { QuestionRecipe, RecipeContext } from '@/lib/generation/recipe';
 import type { Objective } from '@/lib/types';
+import { flavourGuidance, recentActors } from '@/lib/generation/territories';
 
 // R1.6 §7 — the paper patterns must reach the model, and only where they apply:
 // a prompt that always says everything teaches the model nothing.
@@ -433,5 +434,34 @@ describe('the avoid-list carries the mathematics, not just the lead-in', () => {
     const long = `${'A regional ferry operator records passenger numbers over a long period of trading. '.repeat(1)}The function is $g: x \\to 2x^2 - 5x + 1$.`;
     const p = build([long]);
     expect(p).toContain('2x^2 - 5x + 1');
+  });
+});
+
+// The examples WERE the defaults. This prompt named "a market vendor", "a
+// farmer", "the school canteen" and always printed the first six livelihoods —
+// and the bank came out with farmer in 32 questions, shopkeeper in 16 and
+// market vendor in 11. A model shown the same examples writes the same world.
+describe('setting variety', () => {
+  const livelihoods = (g: string) => (g.match(/livelihoods such as ([^;]+);/) ?? [])[1] ?? '';
+
+  it('shows different examples for different objectives', () => {
+    const a = livelihoods(flavourGuidance([], undefined, 'M1.4.1'));
+    const b = livelihoods(flavourGuidance([], undefined, 'M2.3.5'));
+    expect(a).not.toBe(b);
+    expect(a).not.toBe('');
+  });
+
+  it('avoids the actor a recent question actually used, not only ours', () => {
+    // recentFlavour only knew words from FLAVOUR, so the two favourites the
+    // model invented for itself were free to repeat forever.
+    expect(recentActors(['A contractor installs a mast.'])).toContain('contractor');
+    expect(recentActors(['A manufacturer produces batches of chips.'])).toContain('manufacturer');
+    const g = flavourGuidance(['A contractor installs a mast.'], undefined, 'M1.4.1');
+    expect(g).toContain('contractor');
+    expect(g).toContain('pick differently');
+  });
+
+  it('finds no actor where there is no person', () => {
+    expect(recentActors(['The graph shows a curve through the origin.'])).toEqual([]);
   });
 });
