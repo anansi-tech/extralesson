@@ -150,9 +150,17 @@ export function slotRefsNamedByVisual(visual: unknown): Set<string> {
   return refs;
 }
 
-/** Wording that promises a figure on the page. */
+/**
+ * Wording that promises a figure on the page.
+ *
+ * The first version required the noun to follow "the" directly, so it read
+ * "the grid below" and missed "the coordinate grid below" — and matched
+ * "use the grid" but not "use the information and the graph". Five approved
+ * questions sat behind that gap. Adjectives are allowed between the article
+ * and the noun now, which is how people actually write.
+ */
 const SHOWN_FIGURE =
-  /\b(?:the\s+(?:completed\s+|shaded\s+)?(?:grid|graph|diagram|figure|sketch)\s+(?:shows|below|above|provided)|shown\s+below|use\s+the\s+(?:grid|graph|diagram|figure)|below\s+shows|as\s+shown)/i;
+  /\b(?:use\s+the\s+[a-z' ]{0,24}?(?:grid|graph|diagram|figure|sketch)|the\s+[a-z' ]{0,24}?(?:grid|graph|diagram|figure|sketch)\s+(?:shows?|below|above|provided|is\s+for|represents)|shown\s+below|below\s+shows|as\s+shown)/i;
 
 export const ResponseModeZ = z.enum(['answer', 'show_that', 'explain', 'construct']);
 
