@@ -124,6 +124,7 @@ export default async function ReviewPage({
           };
         }),
         backTo: /^[a-f0-9]{24}$/.test(from ?? '') ? from : undefined,
+        pinned: showId !== nextId,
         objective_ids: raw.objective_ids,
         module: raw.module,
         kind: raw.kind,
