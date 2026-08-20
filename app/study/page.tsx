@@ -1,7 +1,7 @@
 import { dbConnect, Student } from '@/lib/db';
 import { isAdminEmail, requireSession } from '@/lib/auth/session';
 import { loadStudyState } from '@/lib/study/state';
-import { coverageSentence } from '@/lib/targets/coverage';
+import { coverageDetail, coverageSummary } from '@/lib/targets/coverage';
 import { paperShape } from '@/lib/exam/paper-shape';
 import Link from 'next/link';
 import { logout, startSession } from './actions';
@@ -102,7 +102,8 @@ export default async function StudyDashboard({
     reachable.length > 0 && (!prediction.estimable || prediction.overall_percent < 50);
   // Stating what we cannot mark is a trust asset — it sits with the estimate it
   // qualifies, not in a footnote (R1.6 §3).
-  const coverage = coverageSentence(state.coverage);
+  const coverage = coverageSummary(state.coverage);
+  const coverageMore = coverageDetail(state.coverage);
 
   return (
     <main className="ruled relative min-h-screen px-5 py-8">
@@ -242,12 +243,24 @@ export default async function StudyDashboard({
               Paper 3 project assumed at neutral carry-over — estimates move as you practise.
             </div>
           )}
-          <details className="mt-3 border-t border-dashed border-paper-deep pt-3 text-left">
+          {/* The summary is short enough to be read standing up. Everything it
+              compressed is one tap away, for the parent who wants the whole
+              answer before paying for it. */}
+          <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-left text-[11px] leading-snug text-dim">
+            {coverage}
+          </p>
+          <details className="mt-2 text-left">
             <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">
-              How this estimate is worked out
+              What we cover
             </summary>
+            <ul className="mt-2 space-y-2">
+              {coverageMore.map((line) => (
+                <li key={line} className="text-[11px] leading-snug text-dim">
+                  {line}
+                </li>
+              ))}
+            </ul>
             <p className="mt-2 text-[11px] leading-snug text-dim">{paperShape(student.syllabus_mode)}</p>
-            <p className="mt-2 text-[11px] leading-snug text-dim">{coverage}</p>
           </details>
         </section>
 
@@ -321,7 +334,7 @@ export default async function StudyDashboard({
               <div className="flex items-baseline justify-between">
                 <h2 className="font-black">Module {m}</h2>
                 <span className="font-mono text-xs text-dim">
-                  {Math.round(state.moduleMastery[m] * 100)}% mastery
+                  {Math.round(state.moduleMastery[m] * 100)}% topic strength
                 </span>
               </div>
               <div className="mt-2 space-y-3">
