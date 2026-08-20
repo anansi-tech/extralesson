@@ -41,6 +41,9 @@ export default async function CoveragePage() {
             <Link href="/admin/review" className="underline">
               ← review queue
             </Link>
+            <Link href="/study" className="underline">
+              student app
+            </Link>
           </div>
         </header>
 

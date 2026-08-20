@@ -1,14 +1,22 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { baseUrl, externalBaseUrl } from '@/lib/base-url';
 
-const KEYS = ['NEXT_PUBLIC_BASE_URL', 'VERCEL_PROJECT_PRODUCTION_URL', 'VERCEL_URL', 'NODE_ENV'] as const;
+const KEYS = ['NEXT_PUBLIC_BASE_URL', 'VERCEL_PROJECT_PRODUCTION_URL', 'VERCEL_URL'] as const;
 const saved = Object.fromEntries(KEYS.map((k) => [k, process.env[k]]));
+const savedEnv = process.env.NODE_ENV;
+
+// NODE_ENV is typed readonly, and process.env rejects a non-enumerable
+// descriptor, so it is set through a cast rather than defineProperty.
+function setNodeEnv(value: string): void {
+  (process.env as Record<string, string | undefined>).NODE_ENV = value;
+}
 
 afterEach(() => {
   for (const k of KEYS) {
     if (saved[k] === undefined) delete process.env[k];
     else process.env[k] = saved[k];
   }
+  setNodeEnv(savedEnv ?? 'test');
 });
 
 describe('where this deployment lives', () => {
@@ -32,13 +40,13 @@ describe('where this deployment lives', () => {
     // A sitemap saying localhost is embarrassing. A reset link saying localhost
     // is an account nobody can get back into, so this throws rather than sends.
     for (const k of ['NEXT_PUBLIC_BASE_URL', 'VERCEL_PROJECT_PRODUCTION_URL', 'VERCEL_URL']) delete process.env[k];
-    process.env.NODE_ENV = 'production';
+    setNodeEnv('production');
     expect(() => externalBaseUrl()).toThrow(/NEXT_PUBLIC_BASE_URL/);
   });
 
   it('allows localhost in development, where it is correct', () => {
     for (const k of ['NEXT_PUBLIC_BASE_URL', 'VERCEL_PROJECT_PRODUCTION_URL', 'VERCEL_URL']) delete process.env[k];
-    process.env.NODE_ENV = 'development';
+    setNodeEnv('development');
     expect(externalBaseUrl()).toBe('http://localhost:3000');
   });
 });
