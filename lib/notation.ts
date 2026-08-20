@@ -46,7 +46,12 @@ export const SLOT_REF_RE = new RegExp(`^[a-j]\\.[a-z0-9${GREEK}][${LABEL_BODY}]{
  * "centre", "factor" and "modal_class" tell a student which box is which all by
  * themselves — they are the paper's own names for the things being asked for.
  * "i" and "ii" do not, so a part using them needs the wording in the prompt.
+ *
+ * The roman numerals stop at viii because a part holds at most eight slots, so
+ * ix and x can never BE a position. "x" is the unknown — a part asking for the
+ * values of x and y labels its boxes x and y, and reading that as the tenth
+ * item flagged two perfectly clear questions.
  */
 export function isPositionalLabel(label: string): boolean {
-  return /^(?:i{1,3}|iv|v|vi{1,3}|ix|x)$/i.test(label) || /^\d+$/.test(label);
+  return /^(?:i{1,3}|iv|v|vi{1,3})$/i.test(label) || /^\d+$/.test(label);
 }

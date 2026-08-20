@@ -130,6 +130,25 @@ export const MisconceptionZ = z.object({
   remediation: z.string().min(1),
 });
 
+
+/**
+ * The slots a figure labels in place. Only `dataTable` references slots — its
+ * completable cells name the slot that fills each gap, and the renderer prints
+ * that key inside the gap.
+ */
+function slotRefsNamedByVisual(visual: unknown): Set<string> {
+  const refs = new Set<string>();
+  const v = visual as { template?: string; params?: { rows?: unknown[][] } } | undefined;
+  if (v?.template !== 'dataTable') return refs;
+  for (const row of v.params?.rows ?? []) {
+    for (const cell of row ?? []) {
+      const slots = (cell as { slots?: unknown })?.slots;
+      if (Array.isArray(slots)) for (const ref of slots) if (typeof ref === 'string') refs.add(ref);
+    }
+  }
+  return refs;
+}
+
 export const ResponseModeZ = z.enum(['answer', 'show_that', 'explain', 'construct']);
 
 // 'sf:N' / 'dp:N' carry a precision; the rest are bare tags.
@@ -559,11 +578,18 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
       //
       // A cloze part is exempt: its gaps sit inside the prose, so their
       // position IS their label.
+      //
+      // A figure that names the boxes is the third exemption, for the same
+      // reason as the statement: a completable table prints each gap with the
+      // key of the slot that fills it, so cell (ii) and box (ii) are visibly
+      // the same thing and the wording lives in the table.
       const markedSlots = part.slots.filter((sl) => (sl.response_mode ?? 'answer') === 'answer');
+      const namedByFigure = slotRefsNamedByVisual(q.visual);
       if (!part.statement && markedSlots.length > 1) {
         for (const [j, slot] of part.slots.entries()) {
           if ((slot.response_mode ?? 'answer') !== 'answer') continue;
           if (!isPositionalLabel(slot.label)) continue;
+          if (namedByFigure.has(`${part.label}.${slot.label}`)) continue;
           if ((slot.prompt ?? '').trim() === '') {
             ctx.addIssue({
               code: 'custom',
