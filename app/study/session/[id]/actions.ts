@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { dbConnect, Attempt, PracticeSession, Question } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { markMcq, markStructuredParts } from '@/lib/grade/mark';
+import { GRADER_VERSION, questionFingerprint } from '@/lib/grade/version';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { renderMathHtml } from '@/lib/katex';
 import type { ProfileMarks, QuestionPart, RubricItem, TemplateName } from '@/lib/types';
@@ -132,6 +133,8 @@ export async function submitAnswer(input: {
     profile_marks: result.profile_marks,
     correct: result.correct,
     duration_ms: durationMs,
+    grader_version: GRADER_VERSION,
+    question_fingerprint: questionFingerprint(question as never),
     ts: new Date(),
   });
 
