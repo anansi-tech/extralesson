@@ -59,10 +59,13 @@ SVG templates + `dataTable` in `lib/visuals/`; raw SVG is never accepted.
   same way whether or not the address is registered.
 - **Rotating `SESSION_SECRET` logs out every user globally.** This is intentional:
   sessions are stateless HMAC cookies, so the secret is the kill switch.
-- No email provider is configured — password-reset links are printed to the
-  server log (`[reset-link] …`). Signing in no longer needs email at all, so
-  this now affects only the reset flow. Configure a provider before real
-  students, or a forgotten password is unrecoverable without server access.
+- Password-reset links are sent with Resend (`RESEND_API_KEY`, `RESEND_FROM` —
+  the same variables cognicare uses). With no key set the link is printed to the
+  server log instead (`[reset-link] …`) so local development works; with a key
+  set it is NOT logged, because a reset link in a log is a way into the account
+  for anyone who can read logs.
+- A provider outage is never reported to the form. An error there would mean the
+  address exists, which is exactly what the neutral reply is protecting.
 - Accounts created before passwords existed have no hash and cannot sign in;
   they set one through the reset flow.
 
