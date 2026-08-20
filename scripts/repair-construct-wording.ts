@@ -19,7 +19,7 @@ import { figureGivesAnswer } from '@/lib/targets/construct';
 import { QuestionDraftZ } from '@/lib/validation/question';
 
 const SHOWN =
-  /\b(?:the\s+(?:completed\s+|shaded\s+)?(?:grid|graph|diagram|figure|sketch)\s+(?:shows|below|above|provided)|shown\s+below|use\s+the\s+(?:grid|graph|diagram|figure)|below\s+shows|as\s+shown)/i;
+  /\b(?:use\s+the\s+[a-z' ]{0,24}?(?:grid|graph|diagram|figure|sketch)|the\s+[a-z' ]{0,24}?(?:grid|graph|diagram|figure|sketch)\s+(?:shows?|below|above|provided|is\s+for|represents)|shown\s+below|below\s+shows|as\s+shown)/i;
 
 /** A clause that only points at the figure, inside a sentence that says more. */
 const CLAUSE = /,?\s*(?:and\s+)?as\s+shown\s+(?:on|in)\s+the\s+[a-z ]+?(?=[.,;]|$)/gi;
@@ -47,14 +47,21 @@ function sentences(text: string): string[] {
 }
 
 function repairStimulus(text: string): string {
-  let out = text.replace(CLAUSE, '');
-  // Until it stops changing: a stimulus can point at the figure twice.
-  for (let pass = 0; pass < 4; pass++) {
-    const next = sentences(out).filter((s) => !SHOWN.test(s)).join(' ');
-    if (next === out) break;
-    out = next;
-  }
-  return out.replace(/[ \t]+/g, ' ').replace(/ +([.,;])/g, '$1').trim();
+  // LINE BY LINE, then sentence by sentence inside each line. A stimulus often
+  // opens with a colon and a display block on its own line, so the whole thing
+  // is one "sentence" to a full-stop splitter — and dropping it took the
+  // question with the pointer. Line structure is also worth keeping: the block
+  // sits on its own line because that is how it reads.
+  const repairedLines = text.split('\n').map((line) => {
+    let out = line.replace(CLAUSE, '');
+    for (let pass = 0; pass < 4; pass++) {
+      const next = sentences(out).filter((s) => !SHOWN.test(s)).join(' ');
+      if (next === out) break;
+      out = next;
+    }
+    return out.replace(/[ \t]+/g, ' ').replace(/ +([.,;])/g, '$1').trim();
+  });
+  return repairedLines.filter((l) => l !== '').join('\n').trim();
 }
 
 async function main() {
