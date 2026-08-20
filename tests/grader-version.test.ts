@@ -58,8 +58,8 @@ describe('the question fingerprint', () => {
   });
 
   it('names a grader version that changes when marking does', () => {
-    // v2 is this week's: units compared, money a dimension, precision-aware
-    // comparison, and the denominator read off the rubric.
-    expect(GRADER_VERSION).toBe('v2');
+    // Bumped whenever a verdict could change: v3 adds products typed with any
+    // multiplication sign, and percent's omitted-unit leniency.
+    expect(GRADER_VERSION).toBe('v3');
   });
 });

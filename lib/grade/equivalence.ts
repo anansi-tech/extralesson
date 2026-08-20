@@ -1,6 +1,6 @@
 import { evaluate, rationalize, simplify } from 'mathjs';
 import { markMoney, normaliseDigitGroups } from '@/lib/money';
-import { parseQuantity, sameDimension } from './quantity';
+import { parseQuantity, parseQuantityProduct, productsEqual, sameDimension } from './quantity';
 
 // Final-answer equivalence check (ROUND_1 §6.3 and §4.3).
 // Deliberately simple, documented heuristics — no LLM grading in Round 1.
@@ -300,6 +300,13 @@ function valueEquivalent(a: string, b: string): boolean {
   // If either side carries a unit, the comparison is about quantities and the
   // numeric path below must not see it — that path parses the number and drops
   // the unit, which is how 72 cm came to equal 72 m.
+  // A product of quantities — "8 m × 6 m" — before a single one, since each
+  // side of it is a quantity too.
+  const pa = parseQuantityProduct(a);
+  const pb = parseQuantityProduct(b);
+  if (pa && pb) return productsEqual(pa, pb, closeEnough);
+  if (pa || pb) return false;
+
   const qa = parseQuantity(a);
   const qb = parseQuantity(b);
   if (qa && qb) return sameDimension(qa, qb) && closeEnough(qa.value, qb.value);

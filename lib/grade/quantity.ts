@@ -43,6 +43,11 @@ const BASE: Record<string, { dimension: string; factor: number }> = {
   min: { dimension: 'time', factor: 60 },
   h: { dimension: 'time', factor: 3600 },
   day: { dimension: 'time', factor: 86400 },
+  // percent → its own dimension. It was handled in parseNumeric, which divided
+  // by a hundred and moved on, so "4" against "4%" was the one place we refused
+  // an omitted unit that the question had supplied. Every other unit gets that
+  // leniency; percent was our inconsistency, not the student's.
+  '%': { dimension: 'percent', factor: 0.01 },
   // money → dollar. One dimension, not one per currency: a question that
   // converts between currencies states its own rate, and the answer is checked
   // against the number that rate produces.
@@ -191,4 +196,39 @@ export function parseQuantity(raw: string): Quantity | null {
 
 export function sameDimension(a: Quantity, b: Quantity): boolean {
   return a.dimension === b.dimension;
+}
+
+
+// A PRODUCT OF QUANTITIES: "8 m × 6 m", the dimensions of a rectangle.
+//
+// Students type the multiplication sign with whatever the phone keyboard gives
+// them — the letter x, a capital X, an asterisk — and a real attempt was marked
+// wrong for writing "8m x 6m" against "8 m × 6 m". That is typing, not
+// mathematics.
+//
+// The rule is POSITIONAL and never a substitution. A separator is only a
+// multiplication sign when a quantity sits on both sides of it: "3x" keeps its
+// x, "2x + 5" keeps its x, and only a string that is entirely quantities
+// separated by one is read as a product. Rewriting x to * anywhere else would
+// turn every algebraic answer into arithmetic.
+const SEPARATOR = /\s*\*\s*|\s+[x×]\s+|\s+by\s+/i;
+
+export function parseQuantityProduct(raw: string): Quantity[] | null {
+  const pieces = raw.trim().split(SEPARATOR);
+  if (pieces.length < 2) return null;
+  const parsed = pieces.map((p) => parseQuantity(p));
+  if (parsed.some((q) => q === null)) return null;
+  return parsed as Quantity[];
+}
+
+/** Two products match when they hold the same quantities, in any order. */
+export function productsEqual(a: Quantity[], b: Quantity[], equal: (x: number, y: number) => boolean): boolean {
+  if (a.length !== b.length) return false;
+  const used = new Array<boolean>(b.length).fill(false);
+  return a.every((qa) => {
+    const i = b.findIndex((qb, j) => !used[j] && qb.dimension === qa.dimension && equal(qa.value, qb.value));
+    if (i === -1) return false;
+    used[i] = true;
+    return true;
+  });
 }

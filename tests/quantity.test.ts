@@ -143,3 +143,38 @@ describe('two numbers agree to the precision that was written', () => {
     expect(answersEquivalent('1000 cm^3', '1 litre')).toBe(true);
   });
 });
+
+// Both of these were found in stored attempts, not imagined: a student was
+// marked wrong for typing the multiplication sign their phone offered, and for
+// omitting a percent sign the question had already supplied.
+describe('typing is not mathematics', () => {
+  it('reads a product however the multiplication sign was typed', () => {
+    for (const typed of ['8m x 6m', '8 m X 6 m', '8 m * 6 m', '24m by 16m']) {
+      const against = typed.startsWith('24') ? '24 m × 16 m' : '8 m × 6 m';
+      expect(answersEquivalent(typed, against), typed).toBe(true);
+    }
+  });
+
+  it('is positional: x between quantities only, never a substitution', () => {
+    // Rewriting x to * anywhere else turns every algebraic answer into
+    // arithmetic, so a quantity has to sit on both sides of it.
+    expect(answersEquivalent('3x', '3x')).toBe(true);
+    expect(answersEquivalent('2x + 5', '2x + 5')).toBe(true);
+    expect(answersEquivalent('3x', '3 m')).toBe(false);
+  });
+
+  it('still compares the quantities in the product', () => {
+    expect(answersEquivalent('8 m × 5 m', '8 m × 6 m')).toBe(false);
+    expect(answersEquivalent('8 m × 6 kg', '8 m × 6 m')).toBe(false);
+    // A product is a product: order carries no meaning.
+    expect(answersEquivalent('6 m × 8 m', '8 m × 6 m')).toBe(true);
+  });
+
+  it('gives percent the leniency every other unit already had', () => {
+    expect(answersEquivalent('4', '4%')).toBe(true);
+    expect(answersEquivalent('4%', '0.04')).toBe(true);
+    // ...without giving up on it being right, or being a percent.
+    expect(answersEquivalent('4%', '5%')).toBe(false);
+    expect(answersEquivalent('4%', '4 m')).toBe(false);
+  });
+});
