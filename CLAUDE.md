@@ -37,7 +37,10 @@ boundaries · Vitest · KaTeX.
 - `attempts` is append-only — never mutate an attempt; all mastery/progress state is a
   fold over attempts. No mutable score fields anywhere.
 - Any schema addition ships with a same-commit backfill.
-- Design tokens (copybook language): `--paper #FBF7EE`, `--ink #1E2430`, `--rule #C9D6E8`,
+- "Copybook" is the INTERNAL name for the design language only — tokens, comments,
+  specs. It never appears in student-facing text, where the word is "notebook":
+  a Caribbean sixteen-year-old does not reliably know the term, and neither did
+  the person who chose it. Design tokens (copybook language): `--paper #FBF7EE`, `--ink #1E2430`, `--rule #C9D6E8`,
   `--margin #E4B8B4`, `--red #C1121F`, `--green #2E7D5B`. Fonts: Fraunces, IBM Plex Mono,
   Caveat. Mobile-first, usable at 360px.
 

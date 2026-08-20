@@ -161,7 +161,7 @@ export default async function SessionPage({
             href="/study"
             className="mt-8 block bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]"
           >
-            Back to your copybook
+            Back to your notebook
           </Link>
         </div>
       </main>
@@ -312,7 +312,7 @@ export default async function SessionPage({
       <div className="mx-auto max-w-xl">
         <header className="flex items-baseline justify-between font-mono text-xs text-dim">
           <Link href="/study" className="underline">
-            ← copybook
+            ← notebook
           </Link>
           <span>
             Q{index + 1} OF {total} · {question.marks} MARK{question.marks === 1 ? '' : 'S'}
