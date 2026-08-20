@@ -13,6 +13,9 @@ export interface ReviewQuestion {
   flags: { level: 'warn' | 'note'; text: string }[];
   /** The question to return to after acting on this one. */
   backTo?: string;
+  /** True when this question was asked for by id rather than handed out by the
+   *  queue — so there is somewhere to go back TO. */
+  pinned?: boolean;
   /** This question's own objectives, and how much else covers them. */
   objectives: { id: string; text: string; approvedOthers: number; draftOthers: number }[];
   objective_ids: string[];
@@ -87,6 +90,19 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
   // unreachable — including the one judged by a keystroke, which is the easy
   // way to approve the wrong thing. `from` carries its id to the next page,
   // where it becomes a way back.
+  // Drop `from` from the address bar once it has been rendered. It is true for
+  // exactly one view — the one immediately after acting — and leaving it there
+  // means a refresh hours later still offers a way back to a question you
+  // finished with. history.replaceState rather than the router, so the link
+  // already on screen stays and nothing re-renders.
+  useEffect(() => {
+    if (!question.backTo) return;
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has('from')) return;
+    url.searchParams.delete('from');
+    window.history.replaceState(null, '', url.pathname + url.search);
+  }, [question.backTo]);
+
   const act = (fn: (id: string) => Promise<void>) =>
     startTransition(async () => {
       await fn(question.id);
@@ -127,13 +143,22 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
 
   return (
     <article className="border-[1.5px] border-ink bg-white p-5 shadow-[4px_4px_0_var(--ink)]">
-      {question.backTo && (
-        <Link
-          href={`/admin/review?id=${question.backTo}`}
-          className="mb-3 inline-block font-mono text-[11px] uppercase tracking-widest text-dim underline"
-        >
-          ← back to {question.backTo.slice(-6)}
-        </Link>
+      {(question.backTo || question.pinned) && (
+        <div className="mb-3 flex flex-wrap items-baseline gap-4 font-mono text-[11px] uppercase tracking-widest text-dim">
+          {question.backTo && (
+            <Link href={`/admin/review?id=${question.backTo}`} className="underline">
+              ← back to {question.backTo.slice(-6)}
+            </Link>
+          )}
+          {/* Looking at a question you asked for by id is a detour. Without
+              this the only way back to the queue was the browser's own back
+              button, which is not a thing to rely on mid-review. */}
+          {question.pinned && (
+            <Link href="/admin/review" className="ml-auto underline">
+              back to the queue →
+            </Link>
+          )}
+        </div>
       )}
 
       {question.flags.length > 0 && (
