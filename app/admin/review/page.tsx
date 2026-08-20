@@ -11,6 +11,7 @@ import {
 } from '@/lib/targets/matrix';
 import ReviewCard, { type ReviewQuestion } from './review-card';
 import { findQuestions } from '@/lib/admin/find-questions';
+import { OBJECTIVE_FLOOR } from '@/lib/targets/objectives';
 import { reviewFlags } from '@/lib/admin/review-flags';
 import Link from 'next/link';
 
@@ -24,7 +25,7 @@ export default async function ReviewPage({
 }) {
   await dbConnect();
   const { id: askedId, find, from } = await searchParams;
-  const [{ matrix, approvedTotal, draftsRemaining }, nextId, found] = await Promise.all([
+  const [{ matrix, approvedTotal, draftsRemaining, objectiveRows }, nextId, found] = await Promise.all([
     getCoverage(),
     getNextDraftId(),
     findQuestions(find ?? ''),
@@ -33,6 +34,11 @@ export default async function ReviewPage({
   // An explicitly asked-for question wins over the queue's next draft, so a
   // search result, or a "back" link, opens the question it names.
   const showId = /^[a-f0-9]{24}$/.test(askedId ?? '') ? askedId! : nextId;
+
+  const allObjectives = objectiveRows.flatMap((r) => r.objectives);
+  const totalObjectives = allObjectives.length;
+  const atFloor = allObjectives.filter((o) => o.approved >= OBJECTIVE_FLOOR).length;
+  const neverAssessed = allObjectives.filter((o) => o.approved === 0).length;
 
   let question: ReviewQuestion | null = null;
   if (showId) {
@@ -251,6 +257,66 @@ export default async function ReviewPage({
             Queue is empty — no drafts to review. Run the generation pipeline to add more.
           </p>
         )}
+
+        {/* OBJECTIVE COVERAGE, above the matrices on purpose.
+            A topic reads complete at 185% of its mark target while most of its
+            objectives have never been assessed — that aggregate is precisely
+            what hid 65 empty objectives until someone commissioned an audit.
+            The syllabus is the unit a student is examined on. */}
+        <section className="mt-10">
+          <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
+            Objective coverage — {atFloor}/{totalObjectives} at the floor of {OBJECTIVE_FLOOR}
+            {neverAssessed > 0 && (
+              <span className="text-red-pen"> · {neverAssessed} never assessed</span>
+            )}
+          </h2>
+          <div className="mt-2 space-y-3">
+            {objectiveRows
+              .filter((row) => row.objectives.length > 0)
+              .map((row) => {
+                const done = row.objectives.filter((o) => o.approved >= OBJECTIVE_FLOOR).length;
+                return (
+                  <div key={row.topic_code}>
+                    <div className="flex items-baseline justify-between gap-3 text-sm">
+                      <span>
+                        <span className="font-mono text-xs text-dim">{row.topic_code}</span>{' '}
+                        {row.topic_title}
+                      </span>
+                      <span
+                        className={`shrink-0 font-mono text-xs ${done === row.objectives.length ? 'text-green-pen' : 'text-ink'}`}
+                      >
+                        {done}/{row.objectives.length}
+                      </span>
+                    </div>
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {row.objectives.map((o) => (
+                        <span
+                          key={o.id}
+                          title={`${o.id} — ${o.text} (${o.approved} approved${o.draft ? `, ${o.draft} draft` : ''})`}
+                          className={`rounded px-1 py-0.5 font-mono text-[10px] ${
+                            o.approved >= OBJECTIVE_FLOOR
+                              ? 'bg-[#E8F0E9] text-green-pen'
+                              : o.approved > 0
+                                ? 'bg-[#FDF8EC] text-[#8A6D1F]'
+                                : o.draft > 0
+                                  ? 'bg-paper-deep text-dim'
+                                  : 'bg-[#FDF1F0] text-red-pen'
+                          }`}
+                        >
+                          {o.id.slice(3)}
+                          {o.approved > 0 ? ` ${o.approved}` : o.draft > 0 ? ` ·${o.draft}` : ' ✗'}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+          <p className="mt-2 font-mono text-[10px] text-dim">
+            green = at the floor · amber = assessed but below it · grey = drafts only · red = never
+            assessed. ROUND_1_5_FINAL §4.
+          </p>
+        </section>
 
         <section className="mt-10">
           <h2 className="font-mono text-xs uppercase tracking-widest text-dim">

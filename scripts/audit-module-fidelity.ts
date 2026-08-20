@@ -9,6 +9,20 @@
 //      region is then wrong as written, and a student who states them looks
 //      like they added a constraint.
 //
+// R1.9 makes it SYMMETRIC, and adds under-tagging. The first pass looked only
+// for Module 2 content inside Module 3 questions, because that was the
+// direction the review happened to catch; the leak runs both ways. The sine and
+// cosine rules are M3.3.7, and Module 2 trigonometry is the right-angled ratios
+// and Pythagoras, so a Module 2 question solving a non-right triangle is the
+// mirror image of the first defect.
+//
+// Under-tagging is the same evidence read the other way. A question that uses
+// the sine rule and never declares M3.3.7 leaves the matrix reporting zero
+// coverage for an objective the bank actually assesses — which is how an
+// objective can be both taught and invisible. Those are REPORTED for retagging,
+// never retagged here: whether the question assesses the objective well enough
+// to count is a judgement about content.
+//
 // This REPORTS. It does not retire anything and it is not wired into any gate:
 // the prompt rule (v41) stops new questions carrying these, and what is already
 // in the bank is a review decision, not a script's. Most of the first sweep's
@@ -23,6 +37,13 @@ import { dbConnect, Question } from '@/lib/db';
 // appear in matrix and transformation questions, which are legitimately M2 and
 // M3 respectively. Only the function notation itself is evidence.
 const COMPOSITE = /f\s*\(\s*g\s*\(|g\s*\(\s*f\s*\(|\bfg\s*\(|\bgf\s*\(|f\s*\^\s*\{?\s*-\s*1|g\s*\^\s*\{?\s*-\s*1/;
+// The worked solution names the method even though the question may not: the
+// no-naming rule is about what a candidate reads, not about our own solution.
+// Detecting on the name rather than on formula shape is what separates a real
+// sine-rule question from right-angled work that merely contains a fraction and
+// a sine — the first attempt at this flagged tan(30) = QR/45 as a sine rule.
+const NON_RIGHT_TRIG = /\b(sine|cosine)\s+rule\b|\blaw of (sines|cosines)\b/i;
+const SINE_COSINE_OBJECTIVE = 'M3.3.7';
 const LP = /feasible region|linear programm|shaded region[^.]*inequalit|inequalit[^.]*shaded region/i;
 const NONNEG = /x\s*\\g(?:e|eq)\s*0|y\s*\\g(?:e|eq)\s*0|x\s*[≥⩾]\s*0|y\s*[≥⩾]\s*0|non-?negativ/i;
 
@@ -32,6 +53,8 @@ interface Lean {
   module: number;
   objective_ids: string[];
   stimulus?: string;
+  worked_solution?: string;
+  rubric?: { criterion?: string }[];
   parts?: { label: string; prompt?: string; statement?: string; slots?: { prompt?: string; answer?: string }[] }[];
 }
 
@@ -47,23 +70,38 @@ function fullText(q: Lean): string {
   ].join(' ');
 }
 
+/** What we WORK, as opposed to what the student reads — where a method is named. */
+function methodText(q: Lean): string {
+  return [q.worked_solution ?? '', ...(q.rubric ?? []).map((r) => r.criterion ?? '')].join(' ');
+}
+
 async function main() {
   await dbConnect();
-  const qs = await Question.find({
-    kind: 'structured',
-    difficulty: 3,
-    'gen_meta.prompt_version': 'v40',
-  }).lean<Lean[]>();
+  // The whole live bank now, not one prompt version: the first sweep was scoped
+  // to the batch under suspicion, which is exactly the habit that keeps finding
+  // the same class of defect in whatever corner was last looked at.
+  const qs = await Question.find({ status: { $in: ['draft', 'approved'] } }).lean<Lean[]>();
 
   const hits = qs.flatMap((q) => {
     const text = fullText(q);
     const flags: string[] = [];
-    if (q.module === 3 && COMPOSITE.test(text)) flags.push('composite/inverse notation in an M3 question');
+    const method = methodText(q);
+    if (q.module === 3 && COMPOSITE.test(text)) {
+      flags.push('Module 2 function notation (fg, f-inverse) in a Module 3 question');
+    }
+    if (q.module === 2 && NON_RIGHT_TRIG.test(method)) {
+      flags.push(`Module 3 method (sine/cosine rule, ${SINE_COSINE_OBJECTIVE}) in a Module 2 question`);
+    }
     if (LP.test(text) && !NONNEG.test(text)) flags.push('region defined without x >= 0, y >= 0');
+    if (NON_RIGHT_TRIG.test(method) && !q.objective_ids.includes(SINE_COSINE_OBJECTIVE)) {
+      flags.push(
+        `UNDER-TAGGED: uses the sine/cosine rule but declares ${q.objective_ids.join(', ')} — ${SINE_COSINE_OBJECTIVE} reads as uncovered`,
+      );
+    }
     return flags.length ? [{ q, flags }] : [];
   });
 
-  console.log(`Swept ${qs.length} v40 difficulty-3 structured questions — ${hits.length} carry at least one defect.\n`);
+  console.log(`Swept ${qs.length} live questions — ${hits.length} carry at least one flag.\n`);
   for (const status of ['draft', 'approved', 'retired']) {
     const rows = hits.filter((h) => h.q.status === status);
     if (rows.length === 0) continue;
