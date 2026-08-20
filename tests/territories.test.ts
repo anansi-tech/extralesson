@@ -17,8 +17,10 @@ describe('regional flavour, not place names', () => {
 
   it('tells generation not to name a country or a city', () => {
     const g = flavourGuidance([], undefined);
-    expect(g).toContain('do NOT name a country or a city');
-    expect(g).toContain('name a place only where the question genuinely needs it');
+    // Case-insensitive: the rule is what matters, not where the sentence
+    // happens to start.
+    expect(g).toMatch(/do NOT name a country or a city/i);
+    expect(g).toMatch(/name a place only where the question genuinely needs it/i);
   });
 
   it('says nothing whatever about currency — money is one rule elsewhere', () => {
@@ -31,7 +33,11 @@ describe('regional flavour, not place names', () => {
     expect(used).toContain('market vendor');
     expect(used).toContain('mangoes');
     expect(used).toContain('Kemar');
-    expect(flavourGuidance(['A market vendor sells mangoes.'], undefined)).toContain('pick differently');
+    // The ledger now names what to avoid rather than saying "pick
+    // differently" — it is an adjacency guard, which is all it ever was.
+    const g = flavourGuidance(['A market vendor sells mangoes.'], undefined);
+    expect(g).toMatch(/this topic has just used/i);
+    expect(g).toContain('market vendor');
   });
 
   it('remembers only the recent past', () => {
