@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { CONTEXT_CATEGORIES } from '@/lib/generation/contexts';
 import { isPositionalLabel, SLOT_LABEL_RE, SLOT_REF_RE } from '@/lib/notation';
+import { figureGivesAnswer } from '@/lib/targets/construct';
 import {
   answerIssues,
   clozeIssues,
@@ -148,6 +149,10 @@ export function slotRefsNamedByVisual(visual: unknown): Set<string> {
   }
   return refs;
 }
+
+/** Wording that promises a figure on the page. */
+const SHOWN_FIGURE =
+  /\b(?:the\s+(?:completed\s+|shaded\s+)?(?:grid|graph|diagram|figure|sketch)\s+(?:shows|below|above|provided)|shown\s+below|use\s+the\s+(?:grid|graph|diagram|figure)|below\s+shows|as\s+shown)/i;
 
 export const ResponseModeZ = z.enum(['answer', 'show_that', 'explain', 'construct']);
 
@@ -550,6 +555,21 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
           path: ['visual'],
           message: 'a construct question must carry the figure it asks the student to draw',
         });
+      }
+      // ...and must not talk about it. Where the figure IS the answer it is
+      // withheld until the student has committed, so a stem promising "the
+      // graph below" points at nothing and contradicts the part asking them to
+      // draw it. 35 of 58 construct questions did this before it was gated.
+      // A pattern of figures is exempt: those figures are the premise.
+      if (figureGivesAnswer((q.visual as { template?: TemplateName } | undefined)?.template)) {
+        const said = [q.stimulus ?? '', q.stem].join(' ').match(SHOWN_FIGURE);
+        if (said) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['stem'],
+            message: `refers to a figure the student cannot see while answering ("${said[0]}") — the figure is the answer to part (a) and is withheld until they commit`,
+          });
+        }
       }
       const marked = q.parts.flatMap((part) => part.slots).filter((sl) => (sl.response_mode ?? 'answer') === 'answer');
       if (marked.length === 0) {

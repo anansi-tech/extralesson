@@ -40,6 +40,16 @@ export interface ConstructFamily {
   demand: string;
   /** Examiner acts, in the order a student should check them. */
   acts: string[];
+  /**
+   * Whether the stored figure IS what the student is asked to draw.
+   *
+   * For a graph it is: the params carry the curve and the line, so showing it
+   * hands over part (a) and every read that follows. For a pattern it is NOT —
+   * the params carry figures 1 to 3, which are the question's premise, and the
+   * figure the student draws is figure 4, which is nowhere in them. Hiding that
+   * leaves them asked to continue a sequence they cannot see.
+   */
+  figureIsAnswer: boolean;
 }
 
 export const CONSTRUCT_FAMILIES: ConstructFamily[] = [
@@ -53,6 +63,7 @@ export const CONSTRUCT_FAMILIES: ConstructFamily[] = [
       'A smooth curve through the plotted points — not straight segments joining them',
       'Intercepts, the turning point and any line you were asked to add clearly labelled',
     ],
+    figureIsAnswer: true,
   },
   {
     template: 'travelGraph',
@@ -64,6 +75,7 @@ export const CONSTRUCT_FAMILIES: ConstructFamily[] = [
       'Rest periods drawn horizontal, and the graph continuous from stage to stage',
       'The end of the journey at the stated total distance or time',
     ],
+    figureIsAnswer: true,
   },
   {
     template: 'cumulativeFrequency',
@@ -75,6 +87,7 @@ export const CONSTRUCT_FAMILIES: ConstructFamily[] = [
       'A smooth increasing curve through the points, starting at the lower boundary of the first class',
       'The reads you were asked for shown on the curve with dotted lines to the axes',
     ],
+    figureIsAnswer: true,
   },
   {
     template: 'patternFigure',
@@ -84,6 +97,8 @@ export const CONSTRUCT_FAMILIES: ConstructFamily[] = [
       'The number of elements matches the pattern the earlier figures set',
       'The arrangement follows the same rule as the figures given',
     ],
+    // The figures shown are the ones GIVEN. The one drawn is the next.
+    figureIsAnswer: false,
   },
 ];
 
@@ -96,6 +111,11 @@ export function constructFamily(template: TemplateName | undefined): ConstructFa
 
 export function isConstructTemplate(template: TemplateName): boolean {
   return BY_TEMPLATE.has(template);
+}
+
+/** Whether showing this question's figure would hand over its answer. */
+export function figureGivesAnswer(template: TemplateName | undefined): boolean {
+  return constructFamily(template)?.figureIsAnswer ?? false;
 }
 
 // A coordinate grid carries three quite different drawings and an examiner
