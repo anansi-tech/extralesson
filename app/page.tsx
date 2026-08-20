@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import './landing.css';
+import Link from 'next/link';
 import { LANDING, landingCoverage, paymentLink } from '@/lib/landing-content';
+import { getSession } from '@/lib/auth/session';
 
 // Faithful port of design/extralesson-landing.html (ROUND_1 §7).
 // Copy changed only where exam facts changed: the old M1/A1 mark language is
@@ -18,14 +20,33 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LandingPage() {
+// Reading the session cookie makes this page render per request rather than
+// statically. That is the cost of the header knowing who you are, and it is
+// worth paying: without it, everyone who has already bought the product finds
+// two Stripe buttons and no way in.
+export default async function LandingPage() {
   const coverage = landingCoverage();
+  const session = await getSession();
   return (
     <div className="landing">
       <header className="hero">
         <div className="wrap">
-          <div className="logo">
-            extra<em>lesson</em>
+          <div className="toprow">
+            <div className="logo">
+              extra<em>lesson</em>
+            </div>
+            {/* Quiet on purpose. The page's job is still to convert, so this
+                must be findable by someone looking for it and must not compete
+                with the offer. */}
+            {session ? (
+              <Link className="authlink" href="/study">
+                Continue studying &rarr;
+              </Link>
+            ) : (
+              <Link className="authlink" href="/study/login">
+                Sign in
+              </Link>
+            )}
           </div>
           <h1>
             Your child&rsquo;s own
@@ -236,6 +257,10 @@ export default function LandingPage() {
               <small>SECURE CHECKOUT · CARD OR APPLE PAY</small>
             </a>
             <div className="cap">
+              AFTER PAYING, SIGN UP WITH THE SAME EMAIL ADDRESS YOU USED AT CHECKOUT — THAT IS HOW
+              WE MATCH YOUR PAYMENT TO YOUR ACCOUNT.
+            </div>
+            <div className="cap">
               LAUNCHES {LANDING.launchDate} · IN TIME FOR THE JANUARY SITTING · NOT SATISFIED AT
               LAUNCH? FULL REFUND, NO QUESTIONS.
             </div>
@@ -284,6 +309,22 @@ export default function LandingPage() {
           style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}
         >
           <div>EXTRALESSON · AN ANANSI EDUCATION PRODUCT</div>
+          {/* Mirrored here because a phone scrolls past the header and never
+              scrolls back up to look for a way in. */}
+          <div>
+            {session ? (
+              <Link className="authlink" href="/study">
+                Continue studying &rarr;
+              </Link>
+            ) : (
+              <>
+                Already have an account?{' '}
+                <Link className="authlink" href="/study/login">
+                  Sign in
+                </Link>
+              </>
+            )}
+          </div>
           <div>{LANDING.contactEmail} · MADE FOR THE CARIBBEAN 🇬🇩</div>
         </div>
       </footer>
