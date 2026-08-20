@@ -10,8 +10,9 @@ export interface ClaimedToken {
   };
 }
 
-// Atomically claim a magic-link jti. Returns the token doc on first claim,
-// null on any subsequent claim — this is what makes links single-use.
+// Atomically claim a reset jti. Returns the token doc on first claim, null on
+// any subsequent claim — this is what makes a reset link single-use, and why a
+// link that is opened twice cannot set two passwords.
 export async function claimMagicToken(jti: string): Promise<ClaimedToken | null> {
   return MagicToken.findOneAndUpdate(
     { jti, used_at: null },

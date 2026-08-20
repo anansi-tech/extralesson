@@ -24,9 +24,11 @@ Requires Node 20+, pnpm, and a MongoDB instance (`MONGODB_URI`).
 | Route | Purpose | Auth |
 |---|---|---|
 | `/` | Landing page | Public |
-| `/study` | Student app | Magic-link session |
-| `/study/login` | Email → magic link | Public |
+| `/study` | Student app | Session cookie (30 days) |
+| `/study/login` | Email + password, or register | Public |
+| `/study/reset` | Set a new password from a reset link | Reset token |
 | `/admin/review` | Question review queue | Admin allowlist (`ADMIN_EMAILS`) |
+| `/admin/coverage` | Objective coverage + target matrices | Admin allowlist |
 | `/admin/topics` | Syllabus graph + blueprint viewer | Admin allowlist |
 
 ## Question generation (recipe-driven, R1.5)
@@ -49,11 +51,20 @@ SVG templates + `dataTable` in `lib/visuals/`; raw SVG is never accepted.
 
 ## Security notes
 
-- Auth is passwordless magic-link (HMAC-SHA256, 15-minute expiry, single-use).
+- Auth is email + password. Hashing is scrypt from `node:crypto` — a real
+  password KDF already in the runtime, so this adds no dependency to the one
+  surface where a supply-chain problem would be a credential problem.
+- Sign-in reveals nothing about who has an account: an unknown email is offered
+  registration rather than told it is unknown, and a reset request answers the
+  same way whether or not the address is registered.
 - **Rotating `SESSION_SECRET` logs out every user globally.** This is intentional:
   sessions are stateless HMAC cookies, so the secret is the kill switch.
-- No email provider is configured this round — magic links are printed to the
-  server log (`[magic-link] …`). Grab the link from there to sign in.
+- No email provider is configured — password-reset links are printed to the
+  server log (`[reset-link] …`). Signing in no longer needs email at all, so
+  this now affects only the reset flow. Configure a provider before real
+  students, or a forgotten password is unrecoverable without server access.
+- Accounts created before passwords existed have no hash and cannot sign in;
+  they set one through the reset flow.
 
 ## Tests & verification
 

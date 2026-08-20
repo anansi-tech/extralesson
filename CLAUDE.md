@@ -26,8 +26,13 @@ boundaries · Vitest · KaTeX.
 
 - Env vars: see `.env.example`. Never commit values. Rotating `SESSION_SECRET` = global
   logout (intentional; documented in README).
-- Auth is passwordless magic-link only (HMAC-SHA256, 15-min expiry, single-use jti).
-  No passwords anywhere.
+- Auth is email + password (scrypt from `node:crypto`, no dependency). Sessions last
+  30 days. R1 was passwordless magic-link; checking an inbox every session was friction
+  a student on a phone would not pay, and it cost us the session. The HMAC-SHA256
+  single-use-jti machinery survives for the ONE flow that still has to prove control of
+  an inbox: password reset, 30-min expiry.
+- No email provider is configured, so a reset link is delivered to the server log —
+  the same gap the sign-in link had. Configure one before real students.
 - `attempts` is append-only — never mutate an attempt; all mastery/progress state is a
   fold over attempts. No mutable score fields anywhere.
 - Any schema addition ships with a same-commit backfill.

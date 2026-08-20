@@ -15,14 +15,14 @@ export default async function LoginPage({
         <div className="text-2xl font-black">
           extra<em className="not-italic text-red-pen">lesson</em>
         </div>
-        <h1 className="mt-8 text-3xl font-black leading-tight">Sign in with a magic link.</h1>
+        <h1 className="mt-8 text-3xl font-black leading-tight">Sign in.</h1>
         <p className="mt-2 text-dim">
-          No passwords. We send a link that signs you in — it works once and expires in 15
-          minutes.
+          Your email and a password. We keep you signed in for 30 days, so on your own phone this
+          is usually the last time you type it.
         </p>
         {error === 'expired' && (
           <p className="mt-4 border-l-3 border-red-pen bg-[#FDF1F0] p-3 text-sm text-red-pen">
-            That link has expired or was already used. Request a fresh one.
+            Your session ended. Sign in again.
           </p>
         )}
         <LoginForm />

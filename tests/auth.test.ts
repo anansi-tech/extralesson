@@ -1,39 +1,40 @@
+import { hashPassword, passwordProblem, verifyPassword } from '@/lib/auth/password';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import {
-  createMagicLinkToken,
+  createResetToken,
   createSessionToken,
   verifyToken,
-  MAGIC_LINK_TTL_MS,
+  RESET_TTL_MS,
 } from '@/lib/auth/token';
 import { claimMagicToken } from '@/lib/auth/consume';
 import { MagicToken } from '@/lib/db/magic-token';
 
 const SECRET = 'test-secret';
 
-describe('magic-link token (HMAC-SHA256)', () => {
+describe('password-reset token (HMAC-SHA256)', () => {
   it('round-trips a valid token', () => {
-    const { token } = createMagicLinkToken('kid@example.com', SECRET);
+    const { token } = createResetToken('kid@example.com', SECRET);
     const payload = verifyToken(token, SECRET);
     expect(payload).not.toBeNull();
-    expect(payload!.kind).toBe('magic');
-    if (payload!.kind === 'magic') expect(payload!.email).toBe('kid@example.com');
+    expect(payload!.kind).toBe('reset');
+    if (payload!.kind === 'reset') expect(payload!.email).toBe('kid@example.com');
   });
 
   it('expires after 15 minutes', () => {
     const now = Date.now();
-    const { token } = createMagicLinkToken('kid@example.com', SECRET, now);
-    expect(verifyToken(token, SECRET, now + MAGIC_LINK_TTL_MS - 1)).not.toBeNull();
-    expect(verifyToken(token, SECRET, now + MAGIC_LINK_TTL_MS)).toBeNull();
-    expect(verifyToken(token, SECRET, now + MAGIC_LINK_TTL_MS + 1)).toBeNull();
+    const { token } = createResetToken('kid@example.com', SECRET, now);
+    expect(verifyToken(token, SECRET, now + RESET_TTL_MS - 1)).not.toBeNull();
+    expect(verifyToken(token, SECRET, now + RESET_TTL_MS)).toBeNull();
+    expect(verifyToken(token, SECRET, now + RESET_TTL_MS + 1)).toBeNull();
   });
 
   it('rejects tampered payloads and wrong secrets', () => {
-    const { token } = createMagicLinkToken('kid@example.com', SECRET);
+    const { token } = createResetToken('kid@example.com', SECRET);
     const [body, sig] = token.split('.');
     const forgedBody = Buffer.from(
-      JSON.stringify({ kind: 'magic', email: 'admin@example.com', jti: 'x', exp: Date.now() + 60000 }),
+      JSON.stringify({ kind: 'reset', email: 'admin@example.com', jti: 'x', exp: Date.now() + 60000 }),
     ).toString('base64url');
     expect(verifyToken(`${forgedBody}.${sig}`, SECRET)).toBeNull();
     expect(verifyToken(token, 'other-secret')).toBeNull();
@@ -48,7 +49,7 @@ describe('magic-link token (HMAC-SHA256)', () => {
   });
 });
 
-describe('magic-link single use (jti persisted)', () => {
+describe('password-reset single use (jti persisted)', () => {
   let mongod: MongoMemoryServer;
 
   beforeAll(async () => {
@@ -62,7 +63,7 @@ describe('magic-link single use (jti persisted)', () => {
   });
 
   it('claims a jti exactly once', async () => {
-    const { jti, expires_at } = createMagicLinkToken('kid@example.com', SECRET);
+    const { jti, expires_at } = createResetToken('kid@example.com', SECRET);
     await MagicToken.create({ jti, email: 'kid@example.com', expires_at });
 
     const first = await claimMagicToken(jti);
@@ -75,5 +76,37 @@ describe('magic-link single use (jti persisted)', () => {
 
   it('rejects a jti that was never issued', async () => {
     expect(await claimMagicToken('never-issued')).toBeNull();
+  });
+});
+
+describe('passwords', () => {
+  it('accepts the right password and rejects a near miss', async () => {
+    const stored = await hashPassword('a long enough phrase');
+    expect(await verifyPassword('a long enough phrase', stored)).toBe(true);
+    expect(await verifyPassword('a long enough phras', stored)).toBe(false);
+    expect(await verifyPassword('A long enough phrase', stored)).toBe(false);
+  });
+
+  it('salts, so the same password stores differently every time', async () => {
+    const a = await hashPassword('the same password');
+    const b = await hashPassword('the same password');
+    expect(a).not.toBe(b);
+    // ...and both still verify, which is what a salt is for.
+    expect(await verifyPassword('the same password', a)).toBe(true);
+    expect(await verifyPassword('the same password', b)).toBe(true);
+  });
+
+  it('never throws on a malformed or empty stored hash', async () => {
+    for (const junk of ['', 'nonsense', 'scrypt$', 'scrypt$abc', 'bcrypt$a$b']) {
+      expect(await verifyPassword('anything', junk)).toBe(false);
+    }
+  });
+
+  it('asks for length rather than punctuation', () => {
+    expect(passwordProblem('short')).toContain('at least');
+    expect(passwordProblem('a whole sentence as a password')).toBeNull();
+    // No character-class rule: Passw0rd! is worse than a long plain phrase.
+    expect(passwordProblem('aaaaaaaaaaaa')).toBeNull();
+    expect(passwordProblem(' leadingspace')).toContain('space');
   });
 });

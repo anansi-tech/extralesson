@@ -1,9 +1,15 @@
 import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 
-// HMAC-SHA256 magic-link tokens and session cookies (ROUND_1 §3.4).
+// HMAC-SHA256 password-reset tokens and session cookies.
 // Pure functions: secret and clock are injectable for tests.
+//
+// The same machinery signed magic links until logging in stopped needing one.
+// A reset is the one flow that still has to prove control of an inbox, so it
+// keeps the single-use jti and the short expiry the login used to have.
 
-export const MAGIC_LINK_TTL_MS = 15 * 60 * 1000; // 15 minutes
+// A reset link is the only email in the product now, and it is rare, so it can
+// afford to be short-lived.
+export const RESET_TTL_MS = 30 * 60 * 1000; // 30 minutes
 export const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 function b64url(buf: Buffer): string {
@@ -20,8 +26,8 @@ export function getSecret(): string {
   return s;
 }
 
-export interface MagicLinkPayload {
-  kind: 'magic';
+export interface ResetPayload {
+  kind: 'reset';
   email: string;
   jti: string;
   exp: number; // epoch ms
@@ -34,7 +40,7 @@ export interface SessionPayload {
   exp: number; // epoch ms
 }
 
-type Payload = MagicLinkPayload | SessionPayload;
+type Payload = ResetPayload | SessionPayload;
 
 export function signToken(payload: Payload, secret: string): string {
   const body = b64url(Buffer.from(JSON.stringify(payload)));
@@ -60,14 +66,14 @@ export function verifyToken(token: string, secret: string, now: number = Date.no
   return payload;
 }
 
-export function createMagicLinkToken(
+export function createResetToken(
   email: string,
   secret: string,
   now: number = Date.now(),
 ): { token: string; jti: string; expires_at: Date } {
   const jti = randomUUID();
-  const exp = now + MAGIC_LINK_TTL_MS;
-  const token = signToken({ kind: 'magic', email: email.toLowerCase().trim(), jti, exp }, secret);
+  const exp = now + RESET_TTL_MS;
+  const token = signToken({ kind: 'reset', email: email.toLowerCase().trim(), jti, exp }, secret);
   return { token, jti, expires_at: new Date(exp) };
 }
 
