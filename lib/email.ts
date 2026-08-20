@@ -46,16 +46,45 @@ export async function sendEmail(args: {
 }
 
 /**
- * The reset email. Plain, short, and honest about the expiry — a student on a
- * phone reads the first line and nothing else.
+ * The reset email.
+ *
+ * Written to read as correspondence, because a classifier reads it before a
+ * person does. The previous version delivered to Outlook and vanished at Gmail
+ * while Resend reported it delivered, on a domain that authenticates correctly
+ * and delivers for another product — so the body was what was being judged.
+ *
+ * What changed, and why each part matters:
+ *
+ *   The link's text is a phrase, never the URL. An anchor whose visible text is
+ *   a 242-character URL is the shape of a phishing mail, and it was printed
+ *   twice — once as the href, once as the text.
+ *
+ *   The full URL appears only in the plain-text part, alone on its line with
+ *   blank lines around it. Running a token into the next sentence leaves mail
+ *   clients to guess where the link ends, and they guess wrong.
+ *
+ *   There is a greeting and a sign-off with a name. A message that is only an
+ *   instruction and a token has nothing in it that a person wrote.
  */
 export function resetEmail(link: string, minutes: number): { subject: string; html: string; text: string } {
   const subject = 'Set a new ExtraLesson password';
-  const text = `Open this link to set a new password: ${link}
+  const text = `Hi,
 
-It works once and expires in ${minutes} minutes. If you did not ask for it, you can ignore this — your password has not changed.`;
-  const html = `<p>Open this link to set a new password:</p>
-<p><a href="${link}">${link}</a></p>
-<p>It works once and expires in ${minutes} minutes. If you did not ask for it, you can ignore this — your password has not changed.</p>`;
+Someone asked to set a new password for your ExtraLesson account. If it was you, open this link:
+
+${link}
+
+The link works once and expires in ${minutes} minutes.
+
+If it wasn't you, you can ignore this email — nothing has changed and your current password still works.
+
+— ExtraLesson
+CSEC Mathematics practice`;
+  const html = `<p>Hi,</p>
+<p>Someone asked to set a new password for your ExtraLesson account. If it was you:</p>
+<p><a href="${link}">Set a new password</a></p>
+<p>The link works once and expires in ${minutes} minutes.</p>
+<p>If it wasn't you, you can ignore this email — nothing has changed and your current password still works.</p>
+<p>— ExtraLesson<br>CSEC Mathematics practice</p>`;
   return { subject, html, text };
 }

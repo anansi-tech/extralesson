@@ -3,54 +3,54 @@ import { hashPassword, passwordProblem, verifyPassword } from '@/lib/auth/passwo
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import {
-  createResetToken,
-  createSessionToken,
-  verifyToken,
-  RESET_TTL_MS,
-} from '@/lib/auth/token';
-import { claimMagicToken } from '@/lib/auth/consume';
-import { MagicToken } from '@/lib/db/magic-token';
+import { createSessionToken, verifyToken, SESSION_TTL_MS } from '@/lib/auth/token';
+
+import { lookupFor, newResetSecret, RESET_TOKEN_BYTES } from '@/lib/auth/reset-token';
+import { claimResetSecret } from '@/lib/auth/consume';
+import { ResetToken } from '@/lib/db/reset-token';
+import { RESET_TTL_MS } from '@/lib/auth/token';
 
 const SECRET = 'test-secret';
 
-describe('password-reset token (HMAC-SHA256)', () => {
-  it('round-trips a valid token', () => {
-    const { token } = createResetToken('kid@example.com', SECRET);
-    const payload = verifyToken(token, SECRET);
-    expect(payload).not.toBeNull();
-    expect(payload!.kind).toBe('reset');
-    if (payload!.kind === 'reset') expect(payload!.email).toBe('kid@example.com');
-  });
-
-  it('expires after 15 minutes', () => {
+describe('session tokens', () => {
+  it('round-trips, and expires', () => {
     const now = Date.now();
-    const { token } = createResetToken('kid@example.com', SECRET, now);
-    expect(verifyToken(token, SECRET, now + RESET_TTL_MS - 1)).not.toBeNull();
-    expect(verifyToken(token, SECRET, now + RESET_TTL_MS)).toBeNull();
-    expect(verifyToken(token, SECRET, now + RESET_TTL_MS + 1)).toBeNull();
+    const token = createSessionToken('abc123', 'kid@example.com', SECRET, now);
+    const payload = verifyToken(token, SECRET, now);
+    expect(payload?.kind).toBe('session');
+    expect(verifyToken(token, SECRET, now + SESSION_TTL_MS + 1)).toBeNull();
   });
 
-  it('rejects tampered payloads and wrong secrets', () => {
-    const { token } = createResetToken('kid@example.com', SECRET);
-    const [body, sig] = token.split('.');
-    const forgedBody = Buffer.from(
-      JSON.stringify({ kind: 'reset', email: 'admin@example.com', jti: 'x', exp: Date.now() + 60000 }),
-    ).toString('base64url');
-    expect(verifyToken(`${forgedBody}.${sig}`, SECRET)).toBeNull();
-    expect(verifyToken(token, 'other-secret')).toBeNull();
-    expect(verifyToken(`${body}.`, SECRET)).toBeNull();
-    expect(verifyToken('garbage', SECRET)).toBeNull();
-  });
-
-  it('rotating the secret invalidates all sessions (global logout)', () => {
-    const session = createSessionToken('abc123', 'kid@example.com', SECRET);
-    expect(verifyToken(session, SECRET)).not.toBeNull();
-    expect(verifyToken(session, 'rotated-secret')).toBeNull();
+  it('rejects a token signed with another secret', () => {
+    const token = createSessionToken('abc123', 'kid@example.com', SECRET);
+    expect(verifyToken(token, 'a-different-secret')).toBeNull();
   });
 });
 
-describe('password-reset single use (jti persisted)', () => {
+describe('the reset secret', () => {
+  it('is short enough for a human to read off a screen', () => {
+    // It replaced a 200-character signed token, which made a 242-character URL
+    // that had to be printed twice in the email to be usable at all.
+    const { secret } = newResetSecret();
+    expect(secret.length).toBeLessThanOrEqual(24);
+    expect(secret).toMatch(/^[A-Za-z0-9_-]+$/);
+    expect(RESET_TOKEN_BYTES * 8).toBeGreaterThanOrEqual(128);
+  });
+
+  it('is never itself what gets stored', () => {
+    // A dump of the collection must not yield a working link.
+    const { secret, lookup } = newResetSecret();
+    expect(lookup).not.toContain(secret);
+    expect(lookup).toBe(lookupFor(secret));
+  });
+
+  it('does not repeat', () => {
+    const seen = new Set(Array.from({ length: 200 }, () => newResetSecret().secret));
+    expect(seen.size).toBe(200);
+  });
+});
+
+describe('claiming a reset secret', () => {
   let mongod: MongoMemoryServer;
 
   beforeAll(async () => {
@@ -63,20 +63,28 @@ describe('password-reset single use (jti persisted)', () => {
     await mongod.stop();
   });
 
-  it('claims a jti exactly once', async () => {
-    const { jti, expires_at } = createResetToken('kid@example.com', SECRET);
-    await MagicToken.create({ jti, email: 'kid@example.com', expires_at });
+  const issue = async (email: string, ttl = RESET_TTL_MS) => {
+    const { secret, lookup } = newResetSecret();
+    await ResetToken.create({ lookup, email, expires_at: new Date(Date.now() + ttl) });
+    return secret;
+  };
 
-    const first = await claimMagicToken(jti);
-    expect(first).not.toBeNull();
-    expect(first!.email).toBe('kid@example.com');
-
-    const second = await claimMagicToken(jti);
-    expect(second).toBeNull();
+  it('claims exactly once', async () => {
+    const secret = await issue('kid@example.com');
+    expect(await claimResetSecret(secret)).toBe('kid@example.com');
+    // Opening the link twice must not set two passwords.
+    expect(await claimResetSecret(secret)).toBeNull();
   });
 
-  it('rejects a jti that was never issued', async () => {
-    expect(await claimMagicToken('never-issued')).toBeNull();
+  it('refuses a secret that was never issued', async () => {
+    expect(await claimResetSecret(newResetSecret().secret)).toBeNull();
+  });
+
+  it('refuses an expired secret without waiting for the TTL sweep', async () => {
+    // Mongo's TTL runs about once a minute. The expiry is in the claim query
+    // because a row that outlives its expiry by a minute is a live reset link.
+    const secret = await issue('kid@example.com', -1000);
+    expect(await claimResetSecret(secret)).toBeNull();
   });
 });
 
@@ -113,14 +121,40 @@ describe('passwords', () => {
 });
 
 describe('the reset email', () => {
+  const LINK = 'https://x.test/study/reset?token=abc';
+
   it('carries the link and states the expiry in minutes', () => {
-    const { subject, html, text } = resetEmail('https://x.test/study/reset?token=abc', 30);
+    const { subject, html, text } = resetEmail(LINK, 30);
     expect(subject).toContain('password');
-    expect(text).toContain('https://x.test/study/reset?token=abc');
-    expect(html).toContain('href="https://x.test/study/reset?token=abc"');
+    expect(text).toContain(LINK);
+    expect(html).toContain(`href="${LINK}"`);
     expect(text).toContain('30 minutes');
-    // Someone who did not ask for it should be told nothing has changed.
-    expect(text).toContain('has not changed');
+    expect(text).toContain('nothing has changed');
+  });
+
+  it('never shows the raw URL as the link\'s text', () => {
+    // An anchor whose visible text is the URL is the shape of a phishing mail,
+    // and it was printed twice — once as the href, once as the text. Gmail
+    // dropped it silently while Outlook took it.
+    const { html } = resetEmail(LINK, 30);
+    const visible = html.replace(/href="[^"]*"/g, '');
+    expect(visible).not.toContain('http');
+    expect(html).toMatch(/<a [^>]*>Set a new password<\/a>/);
+  });
+
+  it('puts the URL alone on its line in the text part', () => {
+    // Run into the next sentence, a mail client has to guess where the link
+    // ends, and it guesses wrong.
+    const { text } = resetEmail(LINK, 30);
+    expect(text).toContain(`\n\n${LINK}\n\n`);
+  });
+
+  it('reads as correspondence, with a greeting and a sign-off', () => {
+    const { text, html } = resetEmail(LINK, 30);
+    expect(text.startsWith('Hi,')).toBe(true);
+    expect(text).toContain('— ExtraLesson');
+    expect(html).toContain('<p>Hi,</p>');
+    expect(html).toContain('— ExtraLesson');
   });
 
   it('skips rather than pretending to send when no provider is configured', async () => {
