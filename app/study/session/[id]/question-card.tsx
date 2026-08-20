@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { submitAnswer, type Feedback } from './actions';
 import { isPositionalLabel } from '@/lib/notation';
+import { PROFILE_GLOSS } from '@/lib/study/profiles';
 
 export interface CardQuestion {
   sessionId: string;
@@ -397,6 +398,8 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           )}
 
           {question.rubricCodes.length > 0 && (
+            <>
+              <p className="mt-2 text-[11px] leading-snug text-dim">{PROFILE_GLOSS}</p>
             <div className="mt-2 flex flex-wrap gap-1">
               {question.rubricCodes.map((r) => {
                 const got = feedback.rubric_awarded.includes(r.code);
@@ -412,6 +415,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 );
               })}
             </div>
+            </>
           )}
 
           {feedback.construction && (

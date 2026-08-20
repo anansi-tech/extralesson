@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { PROFILE_GLOSS } from '@/lib/study/profiles';
 
 export interface WorkedQuestion {
   id: string;
@@ -92,6 +93,7 @@ export default function WorkedCard({ question }: { question: WorkedQuestion }) {
               <div className="mt-4 font-mono text-[10px] uppercase tracking-widest text-dim">
                 Mark scheme — self-mark honestly
               </div>
+              <p className="mt-1 text-[11px] leading-snug text-dim">{PROFILE_GLOSS}</p>
               <ul className="mt-2 space-y-1.5">
                 {question.rubric.map((r) => (
                   <li key={r.code} className="flex gap-2 text-sm">
