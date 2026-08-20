@@ -51,8 +51,10 @@ describe('units are compared, not stripped', () => {
     // answer is where the unit came from.
     expect(both('336', '336 m²')).toEqual([true, true]);
     expect(both('7', '7 units')).toEqual([true, true]);
-    // ...but the number still has to be right.
-    expect(both('335', '336 m²')).toEqual([false, false]);
+    // ...but the number still has to be right. 335 is NOT used here: numeric
+    // comparison carries a 0.5% tolerance throughout, so 335 and 336 are
+    // already the same answer to it. That is pre-existing and separate.
+    expect(both('300', '336 m²')).toEqual([false, false]);
   });
 
   it('handles a rate part-wise, without splitting the answer on its operators', () => {

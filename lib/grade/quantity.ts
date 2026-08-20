@@ -88,7 +88,10 @@ function baseUnit(word: string): string {
  * a multiplication sign, which is also multiplication.
  */
 function resolveUnit(raw: string): { dimension: string; factor: number } | null {
-  let u = raw.trim().replace(/\./g, '').replace(/\s+/g, ' ');
+  // Unicode superscripts are exponents. equivalence.ts rewrites them before
+  // calling, but the parser is also used directly and must not depend on its
+  // caller having done that.
+  let u = raw.trim().replace(/²/g, '^2').replace(/³/g, '^3').replace(/\./g, '').replace(/\s+/g, ' ');
   if (u === '') return null;
 
   // A rate: "km/h", "m/s". Each side resolves on its own.
