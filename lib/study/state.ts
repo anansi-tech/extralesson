@@ -8,6 +8,7 @@ import {
   type AttemptScore,
 } from '@/lib/mastery/fold';
 import { predictModule, predictOverall, type OverallPrediction } from '@/lib/grade/predict';
+import { markSplit } from '@/lib/grade/assessable';
 import { computeCoverage, type Coverage } from '@/lib/targets/coverage';
 import type { MasteryBand } from '@/lib/mastery/config';
 import type { ModuleNumber } from '@/lib/types';
@@ -64,13 +65,14 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
   const query: Record<string, unknown> = { student_id: studentId };
   if (before) query.ts = { $lt: before };
   const attempts = await Attempt.find(query)
-    .populate('question_id', 'objective_ids marks parts')
+    .populate('question_id', 'objective_ids marks parts rubric')
     .lean<
       {
         question_id: {
           objective_ids: string[];
           marks: number;
-          parts?: { marks: number; slots?: { response_mode?: string }[] }[];
+          parts?: { label: string; marks: number; slots?: { label: string; response_mode?: string }[] }[];
+          rubric?: { slot_ref: string; mark_value: number }[];
         } | null;
         profile_marks: { CK: number; AK: number; R: number };
         ts: Date;
@@ -79,19 +81,11 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
   return attempts
     .filter((a) => a.question_id)
     .map((a) => {
-      // Denominator counts only the marks we can actually assess (R1.6 §1/§4).
-      // R1.8: a part may mix marked and self-marked slots, so a part counts in
-      // proportion to the share of its slots we mark rather than all-or-nothing.
-      const parts = a.question_id!.parts ?? [];
-      const assessable = parts.length
-        ? parts.reduce((sum, p) => {
-            const slots = p.slots ?? [];
-            if (slots.length === 0) return sum + p.marks;
-            const marked = slots.filter((s) => (s.response_mode ?? 'answer') === 'answer').length;
-            return sum + (p.marks * marked) / slots.length;
-          }, 0)
-        : a.question_id!.marks;
-      const marks = assessable || a.question_id!.marks || 1;
+      // Denominator counts only the marks we actually award (R1.6 §1/§4), read
+      // off the rubric rows that sit on auto-marked slots. It used to be
+      // approximated by slot proportion, which is a different number whenever a
+      // part's marks are not spread evenly across its slots.
+      const marks = markSplit(a.question_id!).auto || a.question_id!.marks || 1;
       const earned = a.profile_marks.CK + a.profile_marks.AK + a.profile_marks.R;
       return {
         objective_ids: a.question_id!.objective_ids,

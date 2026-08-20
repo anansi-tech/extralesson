@@ -7,6 +7,7 @@ import { renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
 import { loadStudyState } from '@/lib/study/state';
 import { estimatedMinutes } from '@/lib/session/builder';
+import { markSplit } from '@/lib/grade/assessable';
 import { PROFILE_GLOSS, PROFILE_MEANING } from '@/lib/study/profiles';
 import QuestionCard, { type CardQuestion } from './question-card';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
@@ -317,6 +318,9 @@ export default async function SessionPage({
     })),
     optionsHtml: question.options?.map(renderMathHtml),
     marks: question.marks,
+    // What is actually on offer, and what the student marks themselves. The
+    // card divided by the question total, so 11 out of 11 read as 11 out of 12.
+    ...markSplit(question as never),
     rubricCodes:
       question.rubric?.map((r) => ({
         code: r.code,
