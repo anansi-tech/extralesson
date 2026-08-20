@@ -11,6 +11,7 @@ import {
   satisfiesEquation,
   type Verdict,
 } from './symbolic';
+import { multiply, parseMatrix, sameMatrix, type Matrix2 } from './matrix';
 
 export interface CheckTarget {
   slotRef: string;
@@ -22,9 +23,82 @@ interface QuestionLike {
   stem?: string;
   stimulus?: string;
   parts?: { label: string; prompt: string; slots?: { label: string; prompt?: string; answer: string }[] }[];
+  worked_solution?: string;
 }
 
-/** "f: x \to 2x+1", "f(x) = 2x+1", "f : x \mapsto 2x + 1". */
+/**
+ * Matrix arithmetic the WORKED SOLUTION asserts.
+ *
+ * Read from the solution's own equality CHAIN rather than inferred from prose,
+ * so nothing is guessed about which matrices the question meant to multiply.
+ *
+ * A chain is how these are written: "AB = M1 M2 = <entrywise working> = R".
+ * Each segment either evaluates to a matrix or does not — the working step is
+ * full of expressions like "2-1" and evaluates to nothing — and every segment
+ * that DOES evaluate must agree. Matching "A B = C" pairwise instead pulled
+ * triples out of the middle of a chain and reported three approved questions
+ * as wrong when they were correct.
+ */
+export function matrixClaims(text: string): CheckTarget[] {
+  const out: CheckTarget[] = [];
+  if (!text) return out;
+
+  for (const block of mathBlocks(text)) {
+    const segments = block.split('=').map(evaluateMatrixSegment);
+    const known = segments.filter((v): v is Matrix2 => v !== null);
+    if (known.length < 2) continue;
+    const [first, ...rest] = known;
+    const wrong = rest.find((m) => !sameMatrix(first, m));
+    out.push({
+      slotRef: 'worked_solution',
+      family: 'matrix arithmetic',
+      verdict: wrong
+        ? { checked: true, ok: false, reason: matrixMismatch(block, first, wrong) }
+        : { checked: true, ok: true },
+    });
+  }
+  return out;
+}
+
+/** Display and inline maths, where an asserted equation lives. */
+function mathBlocks(text: string): string[] {
+  return [...text.matchAll(/\\\[([\s\S]*?)\\\]|\$([^$]+)\$/g)].map((m) => m[1] ?? m[2]);
+}
+
+/**
+ * A segment of an equality chain, as a matrix — or null when it is not one.
+ *
+ * Null is the load-bearing half again: an entrywise working step is a matrix of
+ * expressions, and a checker that guessed at "2-1" would be inventing claims
+ * the solution never made.
+ */
+function evaluateMatrixSegment(segment: string): Matrix2 | null {
+  const found = [...segment.matchAll(/\\begin\{[bp]matrix\}[\s\S]*?\\end\{[bp]matrix\}/g)].map((m) =>
+    parseMatrix(m[0]),
+  );
+  if (found.length === 0 || found.some((m) => m === null)) return null;
+
+  // ABSTAIN ON ANYTHING THAT IS NOT A PLAIN PRODUCT. A scalar in front of the
+  // matrices — "3M", the "1/det" of an inverse — or a superscript such as
+  // ^{-1} or ^T changes the value, and ignoring it invents a claim the solution
+  // never made. Reading only the matrices reported four correct approved
+  // questions as false, all of them scaled or inverted.
+  const leftover = segment
+    .replace(/\\begin\{[bp]matrix\}[\s\S]*?\\end\{[bp]matrix\}/g, '')
+    .replace(/\\times|\\cdot|\\left|\\right|\\,|\\;|\\quad|[*\s()]/g, '')
+    // Sentence punctuation closing a display block is not mathematics.
+    .replace(/^[.,;:]+|[.,;:]+$/g, '');
+  if (leftover !== '') return null;
+
+  return (found as Matrix2[]).reduce((acc, m) => multiply(acc, m));
+}
+
+function matrixMismatch(block: string, want: Matrix2, got: Matrix2): string {
+  const show = (m: Matrix2) => `(${m[0]} ${m[1]}; ${m[2]} ${m[3]})`;
+  void block;
+  return `the solution asserts ${show(want)} = ${show(got)}, which is false`;
+}
+
 export function functionDefs(text: string): Map<string, string> {
   const defs = new Map<string, string>();
   // A period inside a decimal is part of the definition; a period that ends the
@@ -137,7 +211,7 @@ export function symbolicVerdict(q: QuestionLike): {
   checked: number;
   failures: { slotRef: string; family: string; reason: string }[];
 } {
-  const targets = checkQuestion(q);
+  const targets = [...checkQuestion(q), ...matrixClaims(q.worked_solution ?? '')];
   const decided = targets.filter((t) => t.verdict.checked);
   return {
     checked: decided.length,
