@@ -6,6 +6,7 @@ import { dbConnect, Student } from '@/lib/db';
 import { MagicToken } from '@/lib/db/magic-token';
 import { createResetToken, getSecret, RESET_TTL_MS } from '@/lib/auth/token';
 import { resetEmail, sendEmail } from '@/lib/email';
+import { externalBaseUrl } from '@/lib/base-url';
 import { hashPassword, passwordProblem, verifyPassword } from '@/lib/auth/password';
 import { setSessionCookie } from '@/lib/auth/session';
 
@@ -122,8 +123,7 @@ export async function requestReset(_prev: AuthState, formData: FormData): Promis
   if (student) {
     const { token, jti, expires_at } = createResetToken(email, getSecret());
     await MagicToken.create({ jti, email, expires_at });
-    const base = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
-    const link = `${base}/study/reset?token=${encodeURIComponent(token)}`;
+    const link = `${externalBaseUrl()}/study/reset?token=${encodeURIComponent(token)}`;
     try {
       const { skipped } = await sendEmail({ to: email, ...resetEmail(link, RESET_TTL_MS / 60000) });
       // Without a provider the link still has to reach a human somehow, so it
