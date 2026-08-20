@@ -1,5 +1,6 @@
 import { evaluate, rationalize, simplify } from 'mathjs';
 import { normaliseDigitGroups, stripMoney } from '@/lib/money';
+import { parseQuantity, sameDimension } from './quantity';
 
 // Final-answer equivalence check (ROUND_1 §6.3 and §4.3).
 // Deliberately simple, documented heuristics — no LLM grading in Round 1.
@@ -32,7 +33,6 @@ function preClean(raw: string): string {
     .replace(/\^\s*\{?\s*\\?circ\s*\}?/g, '°') // KaTeX degrees: ^\circ, ^{\circ}
     .replace(/²/g, '^2') // unicode superscripts are exponents, not prose
     .replace(/³/g, '^3')
-    .replace(/°/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -123,13 +123,27 @@ export function parseNumeric(raw: string): number | null {
     return Number.isFinite(v) ? (percent ? v / 100 : v) : null;
   }
   if (s === '') return null;
-  // Number followed by a unit/noun ("72 cm", "5 pieces", "500 ml"): parse the
-  // numeric head. Letters must not touch the digits ("2x" stays algebraic).
-  const unitTail = s.match(/^(-?[\d.]+(?: \d+\/\d+)?|-?[\d.]+\/[\d.]+) [a-z][a-z .°]*$/);
-  if (unitTail) return parseNumeric(unitTail[1]);
+  // Number followed by a REAL unit ("72 cm", "500 ml"): the numeric head, for
+  // callers that need a number — the format checks, which ask how many decimal
+  // places an answer carries and do not care what it measures.
+  //
+  // Only units the quantity parser recognises are stripped. It used to strip
+  // any trailing word, which made "5 pi" the number 5 and stopped it ever
+  // reaching the algebra path that knows pi is 3.14159. Equivalence no longer
+  // reaches here for quantities at all — it compares them dimensionally first.
+  // The degree sign is a unit that is not a letter, and it may be the whole
+  // tail — "67°" — so the class has to admit it in first position too.
+  const unitTail = s.match(/^(-?[\d.]+(?: \d+\/\d+)?|-?[\d.]+\/[\d.]+)\s*[a-z°][a-z .°^\d]*$/);
+  if (unitTail && parseQuantity(s) !== null) return parseNumeric(unitTail[1]);
   const n = Number(s);
   if (!Number.isFinite(n)) return null;
   return percent ? n / 100 : n;
+}
+
+/** The numeric head of a quantity, before any unit conversion. */
+function headOf(raw: string): number | null {
+  const m = raw.trim().match(/^(-?\d+(?:\.\d+)?)/);
+  return m ? Number(m[1]) : null;
 }
 
 function closeEnough(a: number, b: number): boolean {
@@ -244,6 +258,28 @@ function looksMathematical(s: string): boolean {
 }
 
 function valueEquivalent(a: string, b: string): boolean {
+  // QUANTITIES FIRST, and decisively.
+  //
+  // If either side carries a unit, the comparison is about quantities and the
+  // numeric path below must not see it — that path parses the number and drops
+  // the unit, which is how 72 cm came to equal 72 m.
+  const qa = parseQuantity(a);
+  const qb = parseQuantity(b);
+  if (qa && qb) return sameDimension(qa, qb) && closeEnough(qa.value, qb.value);
+  if (qa || qb) {
+    // One side has a unit and the other does not. A bare number is accepted
+    // against it when the values agree — the question supplied the unit, and a
+    // student who omits it has not made a mathematical error. Anything else
+    // with no unit of its own is not a number at all, and is not equal.
+    const quantity = (qa ?? qb)!;
+    const other = parseNumeric(qa ? b : a);
+    if (other === null) return false;
+    const asWritten = headOf(qa ? a : b);
+    return (
+      closeEnough(other, quantity.value) || (asWritten !== null && closeEnough(other, asWritten))
+    );
+  }
+
   const na = parseNumeric(a);
   const nb = parseNumeric(b);
   if (na !== null && nb !== null) return closeEnough(na, nb);
