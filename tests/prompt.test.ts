@@ -442,13 +442,16 @@ describe('the avoid-list carries the mathematics, not just the lead-in', () => {
 // and the bank came out with farmer in 32 questions, shopkeeper in 16 and
 // market vendor in 11. A model shown the same examples writes the same world.
 describe('setting variety', () => {
-  const livelihoods = (g: string) => (g.match(/livelihoods such as ([^;]+);/) ?? [])[1] ?? '';
-
-  it('shows different examples for different objectives', () => {
-    const a = livelihoods(flavourGuidance([], undefined, 'M1.4.1'));
-    const b = livelihoods(flavourGuidance([], undefined, 'M2.3.5'));
-    expect(a).not.toBe(b);
-    expect(a).not.toBe('');
+  it('offers the whole closed list, and names no actor of its own', () => {
+    // Settings converged because they are picked from an enumerated list, not
+    // because of the avoid ledger: consecutive questions repeat a category 6%
+    // of the time against a 7% chance rate. Actors are enumerated for the same
+    // reason, and the prompt no longer prints "a farmer" in its own prose for
+    // the model to anchor on.
+    const g = flavourGuidance([], undefined, 'M1.4.1');
+    expect(g).toContain('ONE of these, and nothing else');
+    for (const who of ['a plumber', 'a nurse', 'a bus conductor', 'a mason']) expect(g).toContain(who);
+    expect(g).not.toMatch(/such as a market vendor|examples? (?:such as|like)/);
   });
 
   it('avoids the actor a recent question actually used, not only ours', () => {
@@ -458,7 +461,7 @@ describe('setting variety', () => {
     expect(recentActors(['A manufacturer produces batches of chips.'])).toContain('manufacturer');
     const g = flavourGuidance(['A contractor installs a mast.'], undefined, 'M1.4.1');
     expect(g).toContain('contractor');
-    expect(g).toContain('pick differently');
+    expect(g).toMatch(/this topic has just used/i);
   });
 
   it('finds no actor where there is no person', () => {
