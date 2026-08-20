@@ -29,7 +29,13 @@
 .landing .hero { padding: 56px 0 40px; position: relative; background: repeating-linear-gradient(to bottom, transparent 0 31px, var(--rule) 31px 32px); }
 .landing .hero .wrap { position: relative; }
 .landing .hero::after { content: ''; position: absolute; top: 0; bottom: 0; left: max(14px, calc(50% - 460px + 4px)); width: 1.5px; background: var(--margin); }
+.landing .toprow { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
 .landing .logo { font-weight: 900; font-size: 22px; letter-spacing: -.01em; }
+/* The way back in for someone who has already bought. Deliberately quiet: text,
+   not a button, so it never argues with the offer. */
+.landing .authlink { font-family: var(--font-mono), ui-monospace, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.landing .authlink:hover { color: var(--red); }
+.landing footer .authlink { color: inherit; }
 .landing .logo em { font-style: normal; color: var(--red); }
 .landing h1 { font-size: clamp(34px, 6.4vw, 62px); font-weight: 900; line-height: 1.04; letter-spacing: -.02em; margin: 26px 0 14px; }
 .landing h1 .pen { color: var(--red); }
