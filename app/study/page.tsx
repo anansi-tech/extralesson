@@ -19,7 +19,7 @@ import { SESSION_MINUTES } from '@/lib/session/builder';
 import type { ModuleNumber } from '@/lib/types';
 import type { MasteryBand } from '@/lib/mastery/config';
 
-export const metadata = { title: 'Your copybook — ExtraLesson' };
+export const metadata = { title: 'Your notebook — ExtraLesson' };
 export const dynamic = 'force-dynamic';
 
 const bandLabel: Record<MasteryBand, string> = {

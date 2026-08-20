@@ -94,7 +94,7 @@ export default async function WorkedPracticePage() {
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-xl">
         <Link href="/study" className="font-mono text-[10px] uppercase tracking-widest text-dim underline">
-          &larr; Back to your copybook
+          &larr; Back to your notebook
         </Link>
         <h1 className="mt-3 text-2xl font-black">
           Worked practice<span className="text-red-pen">.</span>
