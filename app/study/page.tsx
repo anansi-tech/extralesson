@@ -7,7 +7,13 @@ import Link from 'next/link';
 import { logout, startSession } from './actions';
 import { openSession } from '@/lib/study/open-session';
 import { loadProgress } from '@/lib/study/progress';
-import { examDateFor, projectTrajectory, topicLeverage } from '@/lib/study/trajectory';
+import {
+  examDateFor,
+  gradeLabel,
+  gradePlace,
+  projectTrajectory,
+  topicLeverage,
+} from '@/lib/study/trajectory';
 import { PracticeSession } from '@/lib/db';
 import { SESSION_MINUTES } from '@/lib/session/builder';
 import type { ModuleNumber } from '@/lib/types';
@@ -159,9 +165,10 @@ export default async function StudyDashboard({
                 At the rate you have been working —{' '}
                 <b>{trajectory.sessionsPerWeek.toFixed(1)} sessions a week</b>, each moving your
                 estimate about <b>{trajectory.perSession.toFixed(1)} points</b> — you are on track
-                for <b className="text-green-pen">{trajectory.projectedGrade}</b> by the exam. That
-                is your own rate over your last {trajectory.sessionsMeasured} sessions, not a
-                promise.
+                for <b className="text-green-pen">{gradeLabel(trajectory.projectedGrade)}</b>,{' '}
+                {gradePlace(trajectory.projectedGrade)}, by the exam. That is your own rate over
+                your last {trajectory.sessionsMeasured} sessions, capped at the next grade up — a
+                direction, not a promise.
               </p>
             ) : trajectory ? (
               <p className="mt-2 text-[12px] leading-snug text-dim">
@@ -199,10 +206,12 @@ export default async function StudyDashboard({
             // Jan sitting awards an overall grade only — no per-module letters (§6.6).
             <>
               <div className={`font-black text-red-pen ${leadWithReachable ? 'text-2xl' : 'text-5xl'}`}>
-                {prediction.overall_grade}
+                {prediction.overall_grade ? gradeLabel(prediction.overall_grade) : '—'}
               </div>
               <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-dim">
-                Estimated overall grade · estimate only
+                Estimated overall grade
+                {prediction.overall_grade ? ` · ${gradePlace(prediction.overall_grade)}` : ''} ·
+                estimate only
               </div>
             </>
           ) : (
@@ -221,7 +230,10 @@ export default async function StudyDashboard({
               </div>
               <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-dim">
                 {leadWithReachable ? 'Where you are today' : 'Overall estimate'}:{' '}
-                {prediction.overall_grade} · all figures are estimates
+                {prediction.overall_grade
+                  ? `${gradeLabel(prediction.overall_grade)}, ${gradePlace(prediction.overall_grade)}`
+                  : 'not yet'}{' '}
+                · all figures are estimates
               </div>
             </>
           )}
