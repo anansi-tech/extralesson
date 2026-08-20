@@ -63,6 +63,13 @@ export function toFacts(
   };
 }
 
+export interface ObjectiveRow {
+  topic_code: string;
+  topic_title: string;
+  module: ModuleNumber;
+  objectives: { id: string; text: string; approved: number; draft: number }[];
+}
+
 export interface CoverageBundle {
   matrix: Matrix;
   draftsRemaining: number;
@@ -79,11 +86,21 @@ export interface CoverageBundle {
    * nothing and stops a run repeating itself fifty times.
    */
   objectiveCovered: Map<string, number>;
+  /** Per-topic objective coverage, for the surface that hid this. */
+  objectiveRows: ObjectiveRow[];
 }
 
 export async function getCoverage(): Promise<CoverageBundle> {
   const [topics, blueprints, questions] = await Promise.all([
-    Topic.find().lean<{ code: string; title: string; module: ModuleNumber; order: number }[]>(),
+    Topic.find().lean<
+      {
+        code: string;
+        title: string;
+        module: ModuleNumber;
+        order: number;
+        objectives?: { id: string; text: string; assessable?: boolean }[];
+      }[]
+    >(),
     Blueprint.find().lean<
       { paper: 'P1' | 'P2'; module: number; allocations: { topic_codes: string[]; items?: number; marks?: number }[] }[]
     >(),
@@ -116,7 +133,24 @@ export async function getCoverage(): Promise<CoverageBundle> {
     }
   }
 
-  return { matrix, draftsRemaining, approvedTotal, objectiveApproved, objectiveCovered };
+  const objectiveRows: ObjectiveRow[] = topics
+    .slice()
+    .sort((a, b) => a.module - b.module || a.order - b.order)
+    .map((t) => ({
+      topic_code: t.code,
+      topic_title: t.title,
+      module: t.module,
+      objectives: ((t as unknown as { objectives?: { id: string; text: string; assessable?: boolean }[] }).objectives ?? [])
+        .filter((o) => o.assessable !== false)
+        .map((o) => ({
+          id: o.id,
+          text: o.text,
+          approved: objectiveApproved.get(o.id) ?? 0,
+          draft: (objectiveCovered.get(o.id) ?? 0) - (objectiveApproved.get(o.id) ?? 0),
+        })),
+    }));
+
+  return { matrix, draftsRemaining, approvedTotal, objectiveApproved, objectiveCovered, objectiveRows };
 }
 
 // Queue order (R1.5 unchanged principle): review drafts from the topic with

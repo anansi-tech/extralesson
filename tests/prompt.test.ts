@@ -42,7 +42,7 @@ function prompt(args: {
 
 describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   it('is versioned so gen_meta records which wording produced a draft', () => {
-    expect(PROMPT_VERSION).toBe('v44');
+    expect(PROMPT_VERSION).toBe('v45');
   });
 
   // Both caught in review on the same batch: composite-function content tagged
@@ -58,8 +58,11 @@ describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
       visualContract: '',
     });
     expect(p).toContain('tagged Module 3');
-    expect(p).toContain('is Module 2 content specifically');
+    expect(p).toContain('is Module 2 content');
     expect(p).toContain('must not appear anywhere in a question tagged Module 3');
+    // Symmetric: the leak runs both ways, and the reverse reached review too.
+    expect(p).toContain('THE RULE RUNS BOTH WAYS');
+    expect(p).toContain('must not appear anywhere in a question tagged Module 2');
   });
 
   it('requires a region of inequalities to state its non-negativity constraints', () => {
