@@ -33,9 +33,29 @@ const topics = [...module1Topics, ...module2Topics, ...module3Topics].map((t) =>
 const objectivesByTopic = new Map<string, ObjectiveCoverage[]>(
   [...module1Topics, ...module2Topics, ...module3Topics].map((t) => [
     t.code,
-    t.objectives.map((o) => ({ id: o.id, approved: 0 })),
+    t.objectives.map((o) => ({ id: o.id, approved: 0, covered: 0 })),
   ]),
 );
+
+
+// The pipeline re-reads objective coverage from the database on every attempt,
+// so a simulation that holds it still is simulating a different machine: with
+// coverage frozen at zero, the same topic is the least-covered one sixty times
+// running. These helpers feed coverage back exactly as facts are fed back.
+function freshCoverage(): Map<string, ObjectiveCoverage[]> {
+  return new Map(
+    [...module1Topics, ...module2Topics, ...module3Topics].map((t) => [
+      t.code,
+      t.objectives.map((o) => ({ id: o.id, approved: 0, covered: 0 })),
+    ]),
+  );
+}
+
+function recordCoverage(cov: Map<string, ObjectiveCoverage[]>, ids: string[]): void {
+  for (const rows of cov.values()) {
+    for (const row of rows) if (ids.includes(row.id)) row.covered++;
+  }
+}
 
 function fact(over: Partial<QuestionFacts>): QuestionFacts {
   return {
@@ -127,12 +147,18 @@ describe('nextRecipe — deficit-driven', () => {
   });
 
   it('objectives with fewest approvals are chosen first (floors)', () => {
+    // Pinned to one topic, because topic CHOICE is now decided by coverage and
+    // would otherwise move to whichever topic has the most uncovered
+    // objectives. What is under test here is the order WITHIN a topic.
+    const code = 'M2-RFG1';
     const skewed = new Map(objectivesByTopic);
-    const code = nextRecipe(computeMatrix(topics, seedBlueprints, []), objectivesByTopic).context
-      .topic_code;
-    const objs = skewed.get(code)!.map((o, i) => ({ ...o, approved: i === 3 ? 0 : 5 }));
+    // `covered` is what steers — approved plus draft — because a run that
+    // steered on approvals alone never moved off its first choice.
+    const objs = skewed.get(code)!.map((o, i) => ({ ...o, approved: i === 3 ? 0 : 5, covered: i === 3 ? 0 : 5 }));
     skewed.set(code, objs);
-    const { recipe } = nextRecipe(computeMatrix(topics, seedBlueprints, []), skewed);
+    const { recipe } = nextRecipe(computeMatrix(topics, seedBlueprints, []), skewed, {
+      topic_code: code,
+    });
     expect(recipe.objective_ids[0]).toBe(objs[3].id);
   });
 });
@@ -197,11 +223,13 @@ describe('nextRecipe — a bank built from empty converges on the target shape',
   it('60 consecutive recipes track the archetype and difficulty targets', () => {
     // Feed each recipe back in as a fact, exactly as the pipeline does.
     const facts: QuestionFacts[] = [];
+    const coverage = freshCoverage();
     const recipes = [];
     for (let i = 0; i < 60; i++) {
       const m = computeMatrix(topics, seedBlueprints, facts);
-      const { recipe, context } = nextRecipe(m, objectivesByTopic);
+      const { recipe, context } = nextRecipe(m, coverage);
       recipes.push(recipe);
+      recordCoverage(coverage, recipe.objective_ids);
       const profile = recipe.kind === 'mcq' ? { CK: 1, AK: 0, R: 0 } : { CK: 2, AK: 3, R: 2 };
       facts.push({
         kind: recipe.kind,
@@ -253,7 +281,11 @@ describe('nextRecipe — module override', () => {
 
   it('still picks the largest deficit inside the module', () => {
     const facts: QuestionFacts[] = [];
-    const first = nextRecipe(empty, objectivesByTopic, { module: 2, kind: 'structured' });
+    const coverage = freshCoverage();
+    const first = nextRecipe(empty, coverage, { module: 2, kind: 'structured' });
+    // Coverage outranks marks, so a topic still holding uncovered objectives is
+    // correctly chosen again. Satisfy its floor before asking what marks say.
+    for (const row of coverage.get(first.context.topic_code) ?? []) row.covered = 5;
     // fill that topic well past its target, and the search must move on
     for (let i = 0; i < 40; i++) {
       facts.push({
@@ -268,7 +300,7 @@ describe('nextRecipe — module override', () => {
       });
     }
     const filled = computeMatrix(topics, seedBlueprints, facts);
-    const second = nextRecipe(filled, objectivesByTopic, { module: 2, kind: 'structured' });
+    const second = nextRecipe(filled, coverage, { module: 2, kind: 'structured' });
     expect(second.context.topic_code).not.toBe(first.context.topic_code);
     expect(second.context.topic_code.startsWith('M2-')).toBe(true);
   });
@@ -298,7 +330,7 @@ describe('nextRecipe — coordinate work is biased toward the grid', () => {
     const onlyTransformations = new Map(objectivesByTopic);
     onlyTransformations.set(
       'M3-GEO2',
-      ['M3.3.2', 'M3.3.3', 'M3.3.4'].map((id) => ({ id, approved: 0 })),
+      ['M3.3.2', 'M3.3.3', 'M3.3.4'].map((id) => ({ id, approved: 0, covered: 0 })),
     );
     const { recipe, context } = nextRecipe(empty, onlyTransformations, {
       topic_code: 'M3-GEO2',
@@ -312,8 +344,8 @@ describe('nextRecipe — coordinate work is biased toward the grid', () => {
   it('leaves circle-theorem work on a diagram', () => {
     const circlesFirst = new Map(objectivesByTopic);
     circlesFirst.set('M3-GEO2', [
-      { id: 'M3.3.1', approved: 0 },
-      { id: 'M3.3.7', approved: 0 },
+      { id: 'M3.3.1', approved: 0, covered: 0 },
+      { id: 'M3.3.7', approved: 0, covered: 0 },
     ]);
     const { recipe } = nextRecipe(empty, circlesFirst, {
       topic_code: 'M3-GEO2',
@@ -338,7 +370,7 @@ describe('nextRecipe — coordinate work is biased toward the grid', () => {
       })),
     );
     const onlyTransformations = new Map(objectivesByTopic);
-    onlyTransformations.set('M3-GEO2', [{ id: 'M3.3.2', approved: 0 }]);
+    onlyTransformations.set('M3-GEO2', [{ id: 'M3.3.2', approved: 0, covered: 0 }]);
     const { recipe } = nextRecipe(graphHeavy, onlyTransformations, {
       topic_code: 'M3-GEO2',
       kind: 'structured',
@@ -364,8 +396,13 @@ describe('nextRecipe — paper-shaped questions', () => {
   });
 
   it('draws objectives from two or three topics of the SAME module', () => {
+    // Pairing applies to a question that is NOT integrating. On a bank with
+    // uncovered objectives everywhere the recipe reaches for a difficulty-3
+    // integration instead, which is one topic by design, so this fixes the
+    // difficulty to the band pairing actually lives in.
     const { recipe, context } = nextRecipe(emptyMatrix(), objectivesByTopic, {
       kind: 'structured',
+      difficulty: 2,
     });
     expect(context.topic_codes.length).toBeGreaterThanOrEqual(2);
     expect(context.topic_codes[0]).toBe(context.topic_code);

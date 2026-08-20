@@ -68,6 +68,17 @@ export interface CoverageBundle {
   draftsRemaining: number;
   approvedTotal: number;
   objectiveApproved: Map<string, number>;
+  /**
+   * Approved PLUS draft, which is what generation must steer by.
+   *
+   * The floor in ROUND_1_5_FINAL §4 is counted in approved questions, and a
+   * run that steered on approved alone never moved: nothing it wrote was
+   * approved yet, so the least-covered objective stayed the least-covered one
+   * for the whole run and every question landed on it. A draft rejected in
+   * review returns its objective to the deficit, so counting drafts here costs
+   * nothing and stops a run repeating itself fifty times.
+   */
+  objectiveCovered: Map<string, number>;
 }
 
 export async function getCoverage(): Promise<CoverageBundle> {
@@ -88,9 +99,13 @@ export async function getCoverage(): Promise<CoverageBundle> {
   );
 
   const objectiveApproved = new Map<string, number>();
+  const objectiveCovered = new Map<string, number>();
   let draftsRemaining = 0;
   let approvedTotal = 0;
   for (const q of questions) {
+    for (const id of new Set(q.objective_ids)) {
+      objectiveCovered.set(id, (objectiveCovered.get(id) ?? 0) + 1);
+    }
     if (q.status === 'approved') {
       approvedTotal++;
       for (const id of q.objective_ids) {
@@ -101,7 +116,7 @@ export async function getCoverage(): Promise<CoverageBundle> {
     }
   }
 
-  return { matrix, draftsRemaining, approvedTotal, objectiveApproved };
+  return { matrix, draftsRemaining, approvedTotal, objectiveApproved, objectiveCovered };
 }
 
 // Queue order (R1.5 unchanged principle): review drafts from the topic with

@@ -47,11 +47,10 @@ describe('a construction is only asked for where the schema would accept one', (
     for (const [topic, rows] of Object.entries(REPRESENTATION_TARGETS)) {
       for (const row of rows) {
         if (row.representation === 'prose') continue;
-        const eligible = row.template_hints.filter(
-          (t) => isConstructTemplate(t) && TEMPLATES_BY_REPRESENTATION[row.representation].includes(t),
-        );
+        const allowed: TemplateName[] = TEMPLATES_BY_REPRESENTATION[row.representation];
+        const eligible = row.template_hints.filter((t) => isConstructTemplate(t) && allowed.includes(t));
         for (const t of eligible) {
-          expect(TEMPLATES_BY_REPRESENTATION[row.representation], `${topic} ${row.representation} ${t}`).toContain(t);
+          expect(allowed, `${topic} ${row.representation} ${t}`).toContain(t);
         }
       }
     }

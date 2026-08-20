@@ -71,7 +71,7 @@ async function buildRecipe(
   topicTitle: string;
   objectives: { id: string; text: string; notes?: string }[];
 }> {
-  const { matrix, objectiveApproved } = await getCoverage();
+  const { matrix, objectiveApproved, objectiveCovered } = await getCoverage();
   const topics = await Topic.find().lean<
     {
       code: string;
@@ -91,7 +91,14 @@ async function buildRecipe(
       t.code,
       t.objectives
         .filter((o) => o.assessable !== false)
-        .map((o) => ({ id: o.id, approved: objectiveApproved.get(o.id) ?? 0 })),
+        .map((o) => ({
+          id: o.id,
+          approved: objectiveApproved.get(o.id) ?? 0,
+          // Drafts count for STEERING: a run that ignored its own output kept
+          // returning the same least-covered objective and wrote fifty
+          // questions about it.
+          covered: objectiveCovered.get(o.id) ?? 0,
+        })),
     ]),
   );
 

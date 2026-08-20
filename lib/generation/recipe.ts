@@ -23,6 +23,7 @@ import {
 } from '@/lib/targets/pairings';
 import { CONSTRUCT_SHARE, isConstructTemplate } from '@/lib/targets/construct';
 import { SHOW_THAT_SHARE } from '@/lib/targets/show-that';
+import { OBJECTIVE_FLOOR } from '@/lib/targets/objectives';
 import { TEMPLATES_BY_REPRESENTATION } from '@/lib/validation/question';
 import type { Archetype, Profile, Representation, TemplateName } from '@/lib/types';
 
@@ -148,6 +149,12 @@ export interface RecipeContext {
 export interface ObjectiveCoverage {
   id: string;
   approved: number; // floors: ≥2 approved per objective where sensible (§4)
+  /**
+   * Approved plus draft. What the recipe STEERS by, while `approved` is what
+   * the floor is reported against — a run that steers on approved alone never
+   * moves, because nothing it writes is approved until a human says so.
+   */
+  covered: number;
 }
 
 // Marks by difficulty for structured questions. Documented assumption
@@ -196,6 +203,30 @@ export function nextRecipe(
   const shape: 'paper' | 'drill' =
     kind === 'mcq' ? 'drill' : (overrides.shape ?? 'paper');
 
+  const leastApproved = (code: string) =>
+    [...(objectivesByTopic.get(code) ?? [])].sort(
+      (a, b) => a.covered - b.covered || (a.id < b.id ? -1 : 1),
+    );
+
+  // OBJECTIVE COVERAGE, ranked ahead of topic marks.
+  //
+  // The topic was chosen by its share of the blueprint's MARKS and nothing
+  // else, so a topic over its mark quota was never chosen again and the
+  // objectives it had never touched stayed untouched permanently, while its
+  // existing questions piled onto the two or three the sort kept returning.
+  // Measured when this was written: 65 of 150 assessable objectives had never
+  // been assessed at all — 43% — and they were the TAIL of every topic's list
+  // (M1.1.14-19, M2.3.3-9, M3.3.5-9, M3.4.6-9), which is exactly the shape that
+  // defect produces. ROUND_1_5_FINAL §4 asked for two approved questions per
+  // objective and nothing ever consumed it.
+  //
+  // A syllabus objective nobody is ever asked about is a hole in the product,
+  // and a topic's mark total cannot see it. So while any objective is below the
+  // floor, coverage outranks marks; once the floor is met everywhere, marks
+  // decide again exactly as before.
+  const uncovered = (code: string, below: number) =>
+    (objectivesByTopic.get(code) ?? []).filter((o) => o.covered < below).length;
+
   // 2. Topic: largest deficit vs the paper's blueprint-derived targets.
   const topicTargets: Record<string, number> = {};
   const topicActuals: Record<string, number> = {};
@@ -206,28 +237,66 @@ export function nextRecipe(
     topicTargets[t.code] = kind === 'mcq' ? t.p1_target : t.p2_marks_target;
     topicActuals[t.code] = kind === 'mcq' ? t.p1_actual : t.p2_marks_actual;
   }
-  const topic = overrides.topic_code ?? largestDeficit(topicTargets, topicActuals);
+  // Coverage first, marks second. Floor 1 before floor 2 everywhere: an
+  // objective nobody has been asked about once is a worse hole than one asked
+  // about only once, so no topic goes to a second question on an objective
+  // while another topic still has an objective at zero.
+  const candidates = Object.keys(topicTargets);
+  const byCoverage = (below: number) => {
+    const gaps = candidates.map((code) => ({ code, gap: uncovered(code, below) })).filter((c) => c.gap > 0);
+    if (gaps.length === 0) return null;
+    const most = Math.max(...gaps.map((g) => g.gap));
+    // Among topics equally short of coverage, the marks deficit still decides,
+    // so the old rule breaks the tie rather than being discarded.
+    const tied = gaps.filter((g) => g.gap === most).map((g) => g.code);
+    return tied.length === 1
+      ? tied[0]
+      : largestDeficit(
+          Object.fromEntries(tied.map((c) => [c, topicTargets[c]])),
+          Object.fromEntries(tied.map((c) => [c, topicActuals[c]])),
+        );
+  };
+  const topic =
+    overrides.topic_code ??
+    byCoverage(1) ??
+    byCoverage(OBJECTIVE_FLOOR) ??
+    largestDeficit(topicTargets, topicActuals);
   const row = matrix.topics.find((t) => t.code === topic);
   if (!row) throw new Error(`unknown topic ${topic}`);
 
   // 3. Difficulty: 25/50/25 target minus actuals for this kind. Settled before
   //    the objectives because it decides how many of them a recipe carries.
-  const difficulty =
+  //    While the topic still has three objectives nobody has been asked about,
+  //    an integrated difficulty-3 question is the cheapest coverage there is:
+  //    it declares three at once, and the three it declares are the three least
+  //    covered. Sixty-five objectives at zero cost sixty-five questions one at
+  //    a time and about twenty-two this way.
+  //
+  //    Bounded by the difficulty band, which is a target in its own right. On a
+  //    bank where nothing is covered yet EVERY topic has three uncovered
+  //    objectives, so an unbounded preference makes every question difficulty 3
+  //    and 25/50/25 never converges — the 60-recipe convergence test says so.
+  //    Cheap coverage is worth having only while difficulty 3 is still short of
+  //    its share.
+  const dActuals = matrix.difficulty_actuals[kind];
+  const dTotal = dActuals[1] + dActuals[2] + dActuals[3];
+  const dTargetTotal = DIFFICULTY_TARGETS[1] + DIFFICULTY_TARGETS[2] + DIFFICULTY_TARGETS[3];
+  const d3RoomLeft = (dTotal === 0 ? 0 : dActuals[3] / dTotal) < DIFFICULTY_TARGETS[3] / dTargetTotal;
+  const zerosHere = uncovered(topic, 1);
+  const difficulty: 1 | 2 | 3 =
     overrides.difficulty ??
-    (Number(
-      largestDeficit(
-        DIFFICULTY_TARGETS as unknown as Record<string, number>,
-        matrix.difficulty_actuals[kind] as unknown as Record<string, number>,
-      ),
-    ) as 1 | 2 | 3);
+    (kind === 'structured' && zerosHere >= INTEGRATION_MIN_OBJECTIVES && d3RoomLeft
+      ? 3
+      : (Number(
+          largestDeficit(
+            DIFFICULTY_TARGETS as unknown as Record<string, number>,
+            matrix.difficulty_actuals[kind] as unknown as Record<string, number>,
+          ),
+        ) as 1 | 2 | 3));
 
   // 4. Objectives (least-approved first; §4 floors). Chosen before the
   //    representation because coordinate work has to be plotted, and a recipe
   //    field must be derived from its inputs rather than patched afterwards.
-  const leastApproved = (code: string) =>
-    [...(objectivesByTopic.get(code) ?? [])].sort(
-      (a, b) => a.approved - b.approved || (a.id < b.id ? -1 : 1),
-    );
 
   // A paper-shaped question is SINGLE-TOPIC unless the corpus says otherwise.
   //
