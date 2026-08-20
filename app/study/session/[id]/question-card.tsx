@@ -32,6 +32,10 @@ export interface CardQuestion {
   }[];
   optionsHtml?: string[];
   marks: number;
+  /** Marks we award automatically — the denominator a score is out of. */
+  auto: number;
+  /** Marks the student marks themselves, which are out of that denominator. */
+  self: number;
   /** The session's own budget, in the unit it is actually spent in. */
   marksTotal: number;
   marksAnswered: number;
@@ -386,8 +390,13 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 'Not quite ✗'
               )}
             </b>
-            <span className="font-mono text-xs">
-              {earned}/{question.marks}
+            <span className="text-right font-mono text-xs">
+              {earned}/{question.auto}
+              {question.self > 0 && (
+                <span className="block text-[10px] text-dim">
+                  {question.auto} marked here · {question.self} you mark yourself
+                </span>
+              )}
             </span>
           </div>
 
