@@ -66,15 +66,63 @@ export interface Trajectory {
   flat: boolean;
 }
 
-export const MIN_SESSIONS_FOR_TRAJECTORY = 2;
+// A rate needs enough sessions AND enough days behind it. Two sessions on one
+// afternoon read as fourteen sessions a week, which projected a student from
+// their first day to Grade I at full marks — the same invented optimism as
+// extrapolating a flat rate, arriving by a different route.
+export const MIN_SESSIONS_FOR_TRAJECTORY = 4;
+export const MIN_DAYS_FOR_TRAJECTORY = 10;
+
+/** Nobody sustains more than one session a day for a school year. */
+export const MAX_SESSIONS_PER_WEEK = 7;
+
+// The six-point scale, highest first. One table, used to grade and to find the
+// next band up, so the two can never disagree.
+const BANDS: { grade: OverallGrade; from: number }[] = [
+  { grade: 'I', from: 75 },
+  { grade: 'II', from: 65 },
+  { grade: 'III', from: 50 },
+  { grade: 'IV', from: 35 },
+  { grade: 'V', from: 20 },
+  { grade: 'VI', from: 0 },
+];
+
+// CXC grades are Roman numerals, and a numeral alone is ambiguous: "on track
+// for I" reads as "on track for 1", which is the opposite end of the scale from
+// what a student assumes. The word "Grade" goes in front of it everywhere, and
+// where a grade first appears on a page it says where on the scale it sits.
+export function gradeLabel(grade: OverallGrade): string {
+  return `Grade ${grade}`;
+}
+
+const PLACE: Record<OverallGrade, string> = {
+  I: 'the highest of the six',
+  II: 'second of the six',
+  III: 'third of the six',
+  IV: 'fourth of the six',
+  V: 'fifth of the six',
+  VI: 'the lowest of the six',
+};
+
+export function gradePlace(grade: OverallGrade): string {
+  return PLACE[grade];
+}
 
 export function gradeFor(percent: number): OverallGrade {
-  if (percent >= 75) return 'I';
-  if (percent >= 65) return 'II';
-  if (percent >= 50) return 'III';
-  if (percent >= 35) return 'IV';
-  if (percent >= 20) return 'V';
-  return 'VI';
+  return (BANDS.find((b) => percent >= b.from) ?? BANDS[BANDS.length - 1]).grade;
+}
+
+/**
+ * The percentage that would earn the next grade up, or 100 at the top.
+ *
+ * The projection is capped here on purpose. Early evidence supports a claim
+ * about DIRECTION, not about a destination nine months away, and the next band
+ * is the honest form of that claim — it is also the one a student can act on.
+ * The cap rises with them: reach it, and the next band becomes the new one.
+ */
+export function nextBandEntry(percent: number): number {
+  const above = [...BANDS].reverse().find((b) => b.from > percent);
+  return above ? above.from : 100;
 }
 
 /**
@@ -95,18 +143,34 @@ export function projectTrajectory(args: {
   examDate: Date;
 }): Trajectory | null {
   const { percentNow, percentBefore, sessionsBetween, firstSessionAt, now, examDate } = args;
+  const daysStudying = (now.getTime() - firstSessionAt.getTime()) / 86_400_000;
   if (sessionsBetween < MIN_SESSIONS_FOR_TRAJECTORY) return null;
+  if (daysStudying < MIN_DAYS_FOR_TRAJECTORY) return null;
 
   const perSession = (percentNow - percentBefore) / sessionsBetween;
-  const daysStudying = Math.max(1, (now.getTime() - firstSessionAt.getTime()) / 86_400_000);
-  const sessionsPerWeek = (sessionsBetween / daysStudying) * 7;
+  const sessionsPerWeek = Math.min(MAX_SESSIONS_PER_WEEK, (sessionsBetween / daysStudying) * 7);
   const weeksToExam = Math.max(0, (examDate.getTime() - now.getTime()) / (7 * 86_400_000));
+  const sessionsLeft = sessionsPerWeek * weeksToExam;
 
-  const gain = perSession * sessionsPerWeek * weeksToExam;
+  // DIMINISHING RETURNS. The measured gain is expressed as the share of the
+  // headroom it closed, and applied to the headroom that is left — so a rate
+  // earned climbing out of nothing is not extrapolated straight through the
+  // ceiling. Going from 0% to 25% is a quarter of the way to full marks; the
+  // next quarter of what remains is a smaller number of points, as it is in
+  // practice.
+  const headroomBefore = Math.max(1e-9, 100 - percentBefore);
+  const sharePerSession = Math.max(0, Math.min(1, perSession / headroomBefore));
+  const closed = 1 - Math.pow(1 - sharePerSession, sessionsLeft);
+  const damped = percentNow + (100 - percentNow) * closed;
+
   // A rate that is flat or falling projects to where they already are. We do
   // not extrapolate a decline into a worse grade either: the honest statement
   // is that the estimate has not moved, and that is what `flat` says.
-  const projectedPercent = Math.min(100, Math.max(percentNow, percentNow + gain));
+  const projectedPercent = Math.min(
+    100,
+    nextBandEntry(percentNow),
+    Math.max(percentNow, damped),
+  );
   return {
     perSession,
     sessionsMeasured: sessionsBetween,
