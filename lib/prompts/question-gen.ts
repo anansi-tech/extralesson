@@ -12,7 +12,7 @@ import { flavourGuidance } from '@/lib/generation/territories';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v45';
+export const PROMPT_VERSION = 'v46';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -195,6 +195,7 @@ ${
               .join('; or ')} — "Using a scale of 2 cm to represent 1 unit on both axes, draw the graph of ..." — and its slot carries "response_mode": "construct". State the scale and the domain, as the papers do. There is ONE such slot and it is part (a).
 - THE REST OF THE QUESTION INTERROGATES THE DRAWING, and those parts are ordinary "answer" slots we mark: state the roots, the value where the curve cuts the $y$-axis, the coordinates of the minimum, the equation of the axis of symmetry; draw a stated straight line on the same axes and use the intersections to solve the pair. At least two such parts follow.
 - EVERY ONE OF THOSE ANSWERS MUST FOLLOW FROM THE EQUATION OR THE DATA, exactly, and be the value the algebra gives — never a value that only a reading off a drawing would produce. We check them against the equation, and a student who draws accurately will read the same thing. Choose the numbers so the reads are exact: roots and intercepts at integers, a turning point at a half-integer at worst.
+- THE STUDENT CANNOT SEE THE FIGURE WHILE THEY ANSWER, so nothing may refer to it as shown. The figure you emit is the MODEL ANSWER to part (a): it is withheld until they have committed their reads, then displayed for them to check their drawing against. So no "the graph below shows", no "use the grid provided", no "as shown on the diagram" — the question must read as it would on a blank page, because that is the page the student has. The exception is a pattern of figures, where the figures you emit are the ones GIVEN and the one drawn is the next; there the diagram is shown and may be referred to.
 - THE CONSTRUCTION CARRIES ITS MARKS as the papers award them — the scale, the points plotted, the smooth curve — written as ordinary rubric rows against its slot. Like a "show that" or an "explain", the student marks it themselves against the figure we display, so those marks stay out of their estimate; the rows still say what an examiner would credit. Its "answer" states in ONE line what the finished drawing shows, because that line is displayed beside the figure.
 `
           : ''

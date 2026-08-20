@@ -11,7 +11,7 @@ import { markSplit } from '@/lib/grade/assessable';
 import { PROFILE_GLOSS, PROFILE_MEANING } from '@/lib/study/profiles';
 import QuestionCard, { type CardQuestion } from './question-card';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
-import { constructActs } from '@/lib/targets/construct';
+import { constructActs, figureGivesAnswer } from '@/lib/targets/construct';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 import type { ModuleNumber, ProfileMarks } from '@/lib/types';
 
@@ -213,9 +213,14 @@ export default async function SessionPage({
   // A construct question's figure IS the answer to its part (a), and every
   // later part asks the student to read something off it. It is withheld until
   // they commit, and comes back with the marking (see actions.ts).
+  //
+  // ...and only when the figure IS the answer. A pattern question's figure is
+  // figures 1 to 3, which is the premise; hiding it asked the student to
+  // continue a sequence they could not see.
   const withholdsFigure =
     !reviewing &&
-    (question.parts ?? []).some((p) => (p.slots ?? []).some((slot) => slot.response_mode === 'construct'));
+    (question.parts ?? []).some((p) => (p.slots ?? []).some((slot) => slot.response_mode === 'construct')) &&
+    figureGivesAnswer(question.visual?.template as never);
 
   let visualHtml: string | undefined;
   if (question.visual?.template && !withholdsFigure) {

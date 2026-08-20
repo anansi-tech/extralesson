@@ -191,3 +191,72 @@ describe('show that — a demand the gates cannot check, so it must be asked for
     expect(SHOW_THAT_SHARE).toBeCloseTo(0.15);
   });
 });
+
+describe('a construct question does not talk about a figure the student cannot see', () => {
+  const base = () => ({
+    kind: 'structured' as const,
+    module: 3 as const,
+    objective_ids: ['M3.2.4'],
+    difficulty: 2 as const,
+    marks: 4,
+    representation: 'graph' as const,
+    archetype: 'multi-step-application' as const,
+    shape: 'paper' as const,
+    stem: 'Answer the parts below.',
+    visual: { template: 'coordinateGrid', params: { x_range: [-3, 3], y_range: [-5, 5], curves: [{ a: 1, b: 0, c: -4 }] } },
+    worked_solution: 'The curve cuts the $x$-axis at $x = -2$ and $x = 2$.',
+    misconceptions: [],
+    final_answer: 'A parabola with minimum $(0, -4)$.; $x = -2$; $x = 2$',
+    parts: [
+      {
+        label: 'a',
+        prompt: 'Using a scale of 2 cm to 1 unit, draw the graph of $y = x^2 - 4$.',
+        marks: 2,
+        slots: [{ label: 'i', answer: 'A parabola with minimum $(0, -4)$.', response_mode: 'construct' as const }],
+      },
+      {
+        label: 'b',
+        prompt: 'State the values of $x$ where the graph cuts the $x$-axis.',
+        marks: 2,
+        slots: [{ label: 'i', answer: '$x = -2$; $x = 2$', response_mode: 'answer' as const }],
+      },
+    ],
+    rubric: [
+      { code: 'AK1', profile: 'AK' as const, criterion: 'Plots the points', mark_value: 1, slot_ref: 'a.i' },
+      { code: 'CK1', profile: 'CK' as const, criterion: 'Smooth curve', mark_value: 1, slot_ref: 'a.i' },
+      { code: 'AK2', profile: 'AK' as const, criterion: 'Negative root', mark_value: 1, slot_ref: 'b.i' },
+      { code: 'R1', profile: 'R' as const, criterion: 'Positive root', mark_value: 1, slot_ref: 'b.i' },
+    ],
+  });
+
+  it('rejects a stem that points at the withheld figure', () => {
+    // 35 of 58 construct questions did this, because the prompt never said the
+    // figure was hidden. It points at nothing, and contradicts part (a).
+    for (const stem of [
+      'The grid below shows the completed graph. Answer the parts below.',
+      'Use the graph to answer the parts below.',
+      'The diagram shows the curve, as shown below.',
+    ]) {
+      const res = QuestionDraftZ.safeParse({ ...base(), stem });
+      expect(res.success, stem).toBe(false);
+      expect(JSON.stringify(res.error)).toContain('cannot see while answering');
+    }
+  });
+
+  it('checks the stimulus as well as the stem', () => {
+    const res = QuestionDraftZ.safeParse({ ...base(), stimulus: 'The graph below represents this model.' });
+    expect(res.success).toBe(false);
+  });
+
+  it('leaves a pattern of figures alone, where the figures ARE given', () => {
+    // patternFigure params carry figures 1 to 3 — the premise. The one drawn is
+    // figure 4, which is not in them, so the diagram is shown and may be named.
+    const pattern = {
+      ...base(),
+      representation: 'diagram' as const,
+      visual: { template: 'patternFigure', params: { kind: 'matchsticks', arrangement: 'row', figure_numbers: [1, 2, 3], counts: [3, 5, 7] } },
+      stem: 'The diagram shows the first three figures in the pattern.',
+    };
+    expect(QuestionDraftZ.safeParse(pattern).success).toBe(true);
+  });
+});
