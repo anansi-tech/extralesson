@@ -123,12 +123,42 @@ export function displayFigure(percent: number): number {
   return Math.max(0, Math.floor((percent - 1) / 5) * 5);
 }
 
-// The sentence shown to students on the mastery map and beside the predicted
-// grade, and echoed on the landing page. Stating coverage is a trust asset.
-export function coverageSentence(coverage: Coverage): string {
-  const partial =
-    coverage.partialCount > 0
-      ? ` On graph questions we set the drawing itself: you do it on graph paper, and once you have answered we show the finished graph with the list of things an examiner credits, for you to check against. We do not mark the drawing, so those marks stay out of your estimate. On a few solid-geometry and region-shading questions we cover reading and interpreting only.`
-      : '';
-  return `ExtraLesson practises about ${coverage.displayPercent}% of the marks in a CSEC Mathematics paper.${partial} Construction questions with ruler and compasses — roughly ${coverage.uncoveredMarks} marks — are not covered at all, so practise those with past papers. We do not prepare you for Paper 032, the alternative to the school-based assessment that private candidates sit.`;
+// What we cover, said in two parts.
+//
+// It was one seventy-word paragraph carrying five facts, sitting above the
+// fold on the landing page. Every fact in it was worth stating and the shape
+// was self-defeating: seventy words that go unread say less than three
+// sentences that get read.
+//
+// So the SUMMARY leads with the number and keeps the two facts a student could
+// be caught out by — the marks we do not cover at all, and Paper 032, which a
+// private candidate needs the name of to know it is missing. The DETAIL keeps
+// everything, behind a disclosure, for the reader who wants it. No fact was
+// dropped in the compression; they moved.
+
+/** Two or three short sentences. The version everybody actually reads. */
+export function coverageSummary(coverage: Coverage): string {
+  return (
+    `ExtraLesson practises about ${coverage.displayPercent}% of the marks in a CSEC Mathematics paper. ` +
+    `The rest is ruler-and-compasses construction — roughly ${coverage.uncoveredMarks} marks — which needs past papers. ` +
+    `We do not prepare you for Paper 032, the alternative to the school-based assessment that private candidates sit.`
+  );
+}
+
+/** Everything the summary compressed, for the reader who opens it. */
+export function coverageDetail(coverage: Coverage): string[] {
+  const lines = [
+    `About ${coverage.displayPercent}% of a paper's marks are practised here, and marked the way an examiner marks them.`,
+  ];
+  if (coverage.partialCount > 0) {
+    lines.push(
+      'On graph questions we set the drawing itself: you do it on graph paper, and once you have answered we show the finished graph with the list of things an examiner credits, for you to check against. We do not mark the drawing, so those marks stay out of your estimate.',
+      'On a few solid-geometry and region-shading questions we cover reading and interpreting only.',
+    );
+  }
+  lines.push(
+    `Construction questions with ruler and compasses — roughly ${coverage.uncoveredMarks} marks — are not covered at all, so practise those with past papers.`,
+    'Paper 032 is the alternative to the school-based assessment that private candidates sit. We do not prepare you for it.',
+  );
+  return lines;
 }

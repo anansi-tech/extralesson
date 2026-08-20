@@ -142,7 +142,7 @@ export default async function SessionPage({
 
           <section className="mt-5">
             <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
-              Mastery moved
+              Topic strength moved
             </div>
             <ul className="mt-2 space-y-1">
               {deltas.map((d) => {

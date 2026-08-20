@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   computeCoverage,
-  coverageSentence,
+  coverageSummary,
+  coverageDetail,
   displayFigure,
   FULL_PAPER_RAW_MARKS,
 } from '@/lib/targets/coverage';
@@ -43,10 +44,39 @@ describe('computeCoverage (R1.6 §3)', () => {
   });
 
   it('states the gap plainly, in marks, without hedging', () => {
-    const s = coverageSentence(coverage);
+    const s = coverageSummary(coverage);
     expect(s).toContain(`${coverage.displayPercent}%`);
     expect(s).toContain(`${coverage.uncoveredMarks} marks`);
-    expect(s).toMatch(/ruler and compasses/);
+    expect(s).toMatch(/ruler[- ]and[- ]compasses/);
+  });
+
+  it('is short enough to be read', () => {
+    // Seventy words above the fold went unread, which said less than three
+    // sentences that get read.
+    const s = coverageSummary(coverage);
+    expect(s.split(/\s+/).length).toBeLessThanOrEqual(50);
+    expect(s.split('. ').length).toBeLessThanOrEqual(3);
+  });
+
+  it('names Paper 032 in the summary, because a private candidate needs the term', () => {
+    // It is the one thing a reader cannot look up if we do not name it: they
+    // would not know there was anything to look for.
+    expect(coverageSummary(coverage)).toContain('Paper 032');
+  });
+
+  it('drops no fact into the detail that the summary was carrying', () => {
+    const detail = coverageDetail(coverage).join(' ');
+    for (const fact of [
+      `${coverage.displayPercent}%`,
+      `${coverage.uncoveredMarks} marks`,
+      'ruler and compasses',
+      'Paper 032',
+      'school-based assessment',
+      'graph paper',
+      'solid-geometry',
+    ]) {
+      expect(detail, fact).toContain(fact);
+    }
   });
 });
 
@@ -98,8 +128,8 @@ describe('coverage statement (R1.7)', () => {
   it('rounds down to a number that does not claim false precision', () => {
     expect(coverage.percent).toBe(93);
     expect(coverage.displayPercent).toBe(90);
-    expect(coverageSentence(coverage)).toContain('about 90%');
-    expect(coverageSentence(coverage)).not.toContain('93%');
+    expect(coverageSummary(coverage)).toContain('about 90%');
+    expect(coverageSummary(coverage)).not.toContain('93%');
   });
 
   // A claim about coverage should lag the truth, never lead it. Untagging two
@@ -116,7 +146,7 @@ describe('coverage statement (R1.7)', () => {
 
   it('says what partial coverage means, so the number cannot erase the caveat', () => {
     expect(coverage.partialCount).toBeGreaterThan(0);
-    const s = coverageSentence(coverage);
+    const s = coverageDetail(coverage).join(' ');
     // R1.9 — the drawing is now set and self-checked on graph questions, so
     // the caveat is that we do not MARK it, not that we skip it.
     expect(s).toContain('We do not mark the drawing');
@@ -142,7 +172,7 @@ describe('coverage statement (R1.7)', () => {
   });
 
   it('names Paper 032, which we do not prepare anyone for', () => {
-    const s = coverageSentence(coverage);
+    const s = coverageDetail(coverage).join(' ');
     expect(s).toContain('Paper 032');
     expect(s).toContain('private candidates');
   });
