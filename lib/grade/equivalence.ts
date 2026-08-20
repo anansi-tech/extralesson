@@ -150,11 +150,44 @@ function headOf(raw: string): number | null {
   return m ? Number(m[1]) : null;
 }
 
+// How close is the same number: AGREEMENT TO THE PRECISION THAT WAS WRITTEN.
+//
+// This was a blanket 0.5% relative tolerance, which accepted 335 for 336. That
+// forgives exactly what CXC penalises — the papers ask for three significant
+// figures, or one decimal place on an angle, and the mark scheme pays for
+// getting it right.
+//
+// Exactness is not the answer either, and the format round-trips say why. When
+// a question demands a form, the canonical answer is the ROUNDED value and a
+// student who writes the unrounded one has done the mathematics correctly:
+// 12.68 against a canonical 12.7 keeps the value marks and loses only the mark
+// written for the form (R1.7 §B4). Exact comparison would take everything.
+//
+// So two numbers agree when they agree to the precision of the less precise of
+// them — which is what "correct to 3 s.f." means, and what a human marker does.
+// 12.68 and 12.7 agree to three figures. 335 and 336 do not agree to three.
+//
+// One guard: a value carrying a single significant figure is compared exactly.
+// At that precision the rule is too coarse to mean anything — 3.4 rounds to 3 —
+// and an integer answer is the common case.
+function significantDigits(n: number): number {
+  const mantissa = Math.abs(n).toExponential().split('e')[0].replace('.', '').replace(/0+$/, '');
+  return Math.max(1, mantissa.length);
+}
+
 function closeEnough(a: number, b: number): boolean {
   if (a === b) return true;
-  const scale = Math.max(Math.abs(a), Math.abs(b));
-  return Math.abs(a - b) <= Math.max(1e-9, scale * 5e-3);
+  // Representation error FIRST, before anything reasons about precision. A
+  // unit conversion computes 1000 x 1e-6 and gets 0.001 with a tail, which
+  // carries seventeen significant digits and one real one — the guard below
+  // would read that as a single-figure answer and refuse it.
+  if (Math.abs(a - b) <= Math.max(1e-9, Math.max(Math.abs(a), Math.abs(b)) * 1e-9)) return true;
+  if (a === 0 || b === 0) return false;
+  const precision = Math.min(significantDigits(a), significantDigits(b));
+  if (precision < 2) return false;
+  return Number(a.toPrecision(precision)) === Number(b.toPrecision(precision));
 }
+
 
 // Rewrite KaTeX-isms into mathjs syntax.
 function toMathExpr(s: string): string {

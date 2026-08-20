@@ -111,3 +111,35 @@ describe('money is a dimension', () => {
     expect(both('$70$', '70')).toEqual([true, true]);
   });
 });
+
+// The blanket 0.5% tolerance accepted 335 for 336. Rounding accuracy is
+// examined — the papers ask for 3 s.f., or 1 d.p. on an angle, and the scheme
+// pays for it — so a flat percentage forgave what CXC penalises.
+describe('two numbers agree to the precision that was written', () => {
+  it('rejects a difference at the precision given', () => {
+    expect(answersEquivalent('335', '336')).toBe(false);
+    expect(answersEquivalent('12.7', '12.4')).toBe(false);
+  });
+
+  it('accepts the unrounded value against a rounded canonical', () => {
+    // This is what the tolerance was really for: a question demanding 3 s.f.
+    // has a rounded canonical, and a student writing the unrounded value has
+    // done the mathematics right. They keep the value marks and lose the mark
+    // written for the form — exactness would take both.
+    expect(answersEquivalent('12.7', '12.68')).toBe(true);
+    expect(answersEquivalent('36.9', '36.87')).toBe(true);
+    expect(answersEquivalent('47', '47.2')).toBe(true);
+    expect(answersEquivalent('4.243', '4.24264069')).toBe(true);
+  });
+
+  it('compares a single significant figure exactly', () => {
+    // At one figure the rule is too coarse to mean anything: 3.4 rounds to 3.
+    expect(answersEquivalent('3', '3.4')).toBe(false);
+  });
+
+  it('still absorbs floating point represented two ways', () => {
+    expect(answersEquivalent('1/3', '2/6')).toBe(true);
+    // 1000 x 1e-6 is not exactly 0.001 in binary, and a conversion computes it.
+    expect(answersEquivalent('1000 cm^3', '1 litre')).toBe(true);
+  });
+});
