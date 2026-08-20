@@ -6,8 +6,6 @@ import { renderVisual } from '@/lib/visuals';
 import {
   P1_TOTAL,
   P2_MARKS_TOTAL,
-  P2_PROFILE_SPLIT,
-  STRUCTURED_ARCHETYPE_TARGETS,
 } from '@/lib/targets/matrix';
 import ReviewCard, { type ReviewQuestion } from './review-card';
 import { findQuestions } from '@/lib/admin/find-questions';
@@ -35,10 +33,25 @@ export default async function ReviewPage({
   // search result, or a "back" link, opens the question it names.
   const showId = /^[a-f0-9]{24}$/.test(askedId ?? '') ? askedId! : nextId;
 
+  // What is SHORT, and nothing else. A target that is met is not information
+  // while someone is reading a question.
   const allObjectives = objectiveRows.flatMap((r) => r.objectives);
-  const totalObjectives = allObjectives.length;
-  const atFloor = allObjectives.filter((o) => o.approved >= OBJECTIVE_FLOOR).length;
   const neverAssessed = allObjectives.filter((o) => o.approved === 0).length;
+  const belowFloor = allObjectives.filter((o) => o.approved < OBJECTIVE_FLOOR).length;
+  const p1Short = P1_TOTAL - matrix.p1_actual_total;
+  const p2Short = P2_MARKS_TOTAL - matrix.p2_marks_actual_total;
+
+  const deficits: { value: string; label: string }[] = [];
+  const onTarget: string[] = [];
+  if (neverAssessed > 0) deficits.push({ value: String(neverAssessed), label: 'objectives with no approved question' });
+  if (belowFloor > neverAssessed) {
+    deficits.push({ value: String(belowFloor - neverAssessed), label: `more below the floor of ${OBJECTIVE_FLOOR}` });
+  }
+  if (neverAssessed === 0 && belowFloor === 0) onTarget.push('objectives');
+  if (p1Short > 0) deficits.push({ value: `${p1Short}`, label: 'P1 items short' });
+  else onTarget.push('P1');
+  if (p2Short > 0) deficits.push({ value: `${p2Short}`, label: 'P2 marks short' });
+  else onTarget.push('P2');
 
   let question: ReviewQuestion | null = null;
   if (showId) {
@@ -93,6 +106,23 @@ export default async function ReviewPage({
         status: raw.status,
         promptVersion: raw.gen_meta?.prompt_version,
         flags: reviewFlags(raw as never),
+        // What this question is evidence FOR. When it is the only evidence for
+        // an objective, a marginal question is worth editing rather than
+        // rejecting — and that is invisible without the count.
+        //
+        // Counted BESIDES this question. The totals include it, so an approved
+        // question that is the only evidence for its objective would otherwise
+        // report "1 other approved" — pointing at itself.
+        objectives: raw.objective_ids.map((id) => {
+          const row = objectiveRows.find((r) => r.objectives.some((o) => o.id === id));
+          const o = row?.objectives.find((x) => x.id === id);
+          return {
+            id,
+            text: o?.text ?? '',
+            approvedOthers: Math.max(0, (o?.approved ?? 0) - (raw.status === 'approved' ? 1 : 0)),
+            draftOthers: Math.max(0, (o?.draft ?? 0) - (raw.status === 'draft' ? 1 : 0)),
+          };
+        }),
         backTo: /^[a-f0-9]{24}$/.test(from ?? '') ? from : undefined,
         objective_ids: raw.objective_ids,
         module: raw.module,
@@ -250,6 +280,35 @@ export default async function ReviewPage({
           </div>
         )}
 
+        {/* DEFICITS ONLY.
+            The full picture lives at /admin/coverage. Under a review card it
+            was a dashboard: fourteen P1 topics reading 11/11 tell a reviewer
+            nothing about the question in front of them, and the four lines that
+            did matter were somewhere inside them. What is on target is worth
+            exactly two words. */}
+        <section className="mb-6 border-l-3 border-paper-deep bg-white p-3 text-sm">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-dim">deficits</span>
+            {deficits.length === 0 ? (
+              <span className="text-green-pen">Everything on target.</span>
+            ) : (
+              deficits.map((d) => (
+                <span key={d.label}>
+                  <b className="text-red-pen">{d.value}</b> {d.label}
+                </span>
+              ))
+            )}
+            {onTarget.length > 0 && (
+              <span className="text-dim">
+                {onTarget.join(', ')} on target
+              </span>
+            )}
+            <Link href="/admin/coverage" className="ml-auto font-mono text-[11px] underline">
+              coverage detail →
+            </Link>
+          </div>
+        </section>
+
         {question ? (
           <ReviewCard question={question} />
         ) : (
@@ -258,159 +317,6 @@ export default async function ReviewPage({
           </p>
         )}
 
-        {/* OBJECTIVE COVERAGE, above the matrices on purpose.
-            A topic reads complete at 185% of its mark target while most of its
-            objectives have never been assessed — that aggregate is precisely
-            what hid 65 empty objectives until someone commissioned an audit.
-            The syllabus is the unit a student is examined on. */}
-        <section className="mt-10">
-          <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
-            Objective coverage — {atFloor}/{totalObjectives} at the floor of {OBJECTIVE_FLOOR}
-            {neverAssessed > 0 && (
-              <span className="text-red-pen"> · {neverAssessed} never assessed</span>
-            )}
-          </h2>
-          <div className="mt-2 space-y-3">
-            {objectiveRows
-              .filter((row) => row.objectives.length > 0)
-              .map((row) => {
-                const done = row.objectives.filter((o) => o.approved >= OBJECTIVE_FLOOR).length;
-                return (
-                  <div key={row.topic_code}>
-                    <div className="flex items-baseline justify-between gap-3 text-sm">
-                      <span>
-                        <span className="font-mono text-xs text-dim">{row.topic_code}</span>{' '}
-                        {row.topic_title}
-                      </span>
-                      <span
-                        className={`shrink-0 font-mono text-xs ${done === row.objectives.length ? 'text-green-pen' : 'text-ink'}`}
-                      >
-                        {done}/{row.objectives.length}
-                      </span>
-                    </div>
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {row.objectives.map((o) => (
-                        <span
-                          key={o.id}
-                          title={`${o.id} — ${o.text} (${o.approved} approved${o.draft ? `, ${o.draft} draft` : ''})`}
-                          className={`rounded px-1 py-0.5 font-mono text-[10px] ${
-                            o.approved >= OBJECTIVE_FLOOR
-                              ? 'bg-[#E8F0E9] text-green-pen'
-                              : o.approved > 0
-                                ? 'bg-[#FDF8EC] text-[#8A6D1F]'
-                                : o.draft > 0
-                                  ? 'bg-paper-deep text-dim'
-                                  : 'bg-[#FDF1F0] text-red-pen'
-                          }`}
-                        >
-                          {o.id.slice(3)}
-                          {o.approved > 0 ? ` ${o.approved}` : o.draft > 0 ? ` ·${o.draft}` : ' ✗'}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-          <p className="mt-2 font-mono text-[10px] text-dim">
-            green = at the floor · amber = assessed but below it · grey = drafts only · red = never
-            assessed. ROUND_1_5_FINAL §4.
-          </p>
-        </section>
-
-        <section className="mt-10">
-          <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
-            P1 matrix — {matrix.p1_actual_total}/160 MCQs ·{' '}
-            {matrix.p1_actual_total > 0
-              ? Math.round((matrix.mcq_visual_actual / matrix.p1_actual_total) * 100)
-              : 0}
-            % visual (target 37%)
-          </h2>
-          <div className="mt-2 grid gap-x-8 gap-y-1 sm:grid-cols-2">
-            {matrix.topics.map((t) => (
-              <div
-                key={`p1-${t.code}`}
-                className="flex items-baseline justify-between gap-3 text-sm"
-              >
-                <span className="min-w-0">
-                  <span className="font-mono text-xs text-dim">{t.code}</span> {t.title}
-                </span>
-                <span className="shrink-0 whitespace-nowrap font-mono text-xs">
-                  <b className={t.p1_actual >= t.p1_target ? 'text-green-pen' : 'text-ink'}>
-                    {t.p1_actual}
-                  </b>
-                  /{t.p1_target}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-8">
-          <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
-            P2 matrix — {matrix.p2_marks_actual_total}/{P2_MARKS_TOTAL} rubric marks ·{' '}
-            {matrix.p2_actual_total} structured questions
-          </h2>
-          <div className="mt-2 grid gap-x-8 gap-y-1 sm:grid-cols-2">
-            {matrix.topics.map((t) => (
-              <div
-                key={`p2-${t.code}`}
-                className="flex items-baseline justify-between gap-3 text-sm"
-              >
-                <span className="min-w-0">
-                  <span className="font-mono text-xs text-dim">{t.code}</span> {t.title}
-                </span>
-                <span className="shrink-0 whitespace-nowrap font-mono text-xs">
-                  <b
-                    className={
-                      t.p2_marks_actual >= t.p2_marks_target ? 'text-green-pen' : 'text-ink'
-                    }
-                  >
-                    {t.p2_marks_actual}
-                  </b>
-                  /{t.p2_marks_target} marks
-                  {t.p2_questions > 0 && <span className="text-dim"> ({t.p2_questions}q)</span>}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-8 grid gap-6 sm:grid-cols-2">
-          <div>
-            <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
-              Profile marks by module (P2, target{' '}
-              {(['CK', 'AK', 'R'] as const).map((k) => P2_PROFILE_SPLIT[k]).join('/')} per{' '}
-              {(['CK', 'AK', 'R'] as const).reduce((s, k) => s + P2_PROFILE_SPLIT[k], 0)})
-            </h2>
-            {([1, 2, 3] as const).map((m) => (
-              <div key={m} className="mt-1 font-mono text-xs text-dim">
-                M{m}: CK {matrix.profile_actuals[m].p2.CK} · AK {matrix.profile_actuals[m].p2.AK} ·
-                R {matrix.profile_actuals[m].p2.R}
-              </div>
-            ))}
-          </div>
-          <div>
-            <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
-              Archetypes (structured, target{' '}
-              {Object.values(STRUCTURED_ARCHETYPE_TARGETS).join('/')})
-            </h2>
-            {Object.entries(matrix.archetype_actuals.structured).map(([a, n]) => (
-              <div key={a} className="mt-1 font-mono text-xs text-dim">
-                {a}: {n}
-              </div>
-            ))}
-            <h2 className="mt-3 font-mono text-xs uppercase tracking-widest text-dim">
-              Difficulty (target 25/50/25)
-            </h2>
-            <div className="mt-1 font-mono text-xs text-dim">
-              mcq {matrix.difficulty_actuals.mcq[1]}/{matrix.difficulty_actuals.mcq[2]}/
-              {matrix.difficulty_actuals.mcq[3]} · structured{' '}
-              {matrix.difficulty_actuals.structured[1]}/{matrix.difficulty_actuals.structured[2]}/
-              {matrix.difficulty_actuals.structured[3]}
-            </div>
-          </div>
-        </section>
       </div>
     </main>
   );

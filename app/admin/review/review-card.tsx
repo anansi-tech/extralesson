@@ -13,6 +13,8 @@ export interface ReviewQuestion {
   flags: { level: 'warn' | 'note'; text: string }[];
   /** The question to return to after acting on this one. */
   backTo?: string;
+  /** This question's own objectives, and how much else covers them. */
+  objectives: { id: string; text: string; approvedOthers: number; draftOthers: number }[];
   objective_ids: string[];
   module: number;
   kind: 'mcq' | 'structured';
@@ -148,6 +150,32 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
           ))}
         </ul>
       )}
+
+      {/* The objectives this question is evidence for. A question that is the
+          ONLY approved evidence for an objective is worth editing rather than
+          rejecting, and nothing on the page used to say which those were. */}
+      <div className="mb-3 space-y-1">
+        {question.objectives.map((o) => (
+          <div key={o.id} className="flex items-baseline gap-2 text-[13px]">
+            <span className="shrink-0 font-mono text-xs font-semibold">{o.id}</span>
+            <span
+              className={`shrink-0 rounded px-1 py-0.5 font-mono text-[10px] ${
+                o.approvedOthers === 0
+                  ? 'bg-[#FDF1F0] text-red-pen'
+                  : o.approvedOthers === 1
+                    ? 'bg-[#FDF8EC] text-[#8A6D1F]'
+                    : 'bg-[#E8F0E9] text-green-pen'
+              }`}
+            >
+              {o.approvedOthers === 0
+                ? 'the only evidence'
+                : `${o.approvedOthers} other approved`}
+              {o.draftOthers > 0 ? ` · ${o.draftOthers} more in draft` : ''}
+            </span>
+            <span className="min-w-0 text-dim">{o.text}</span>
+          </div>
+        ))}
+      </div>
 
       <div className="mb-3 flex flex-wrap items-center gap-2 font-mono text-xs text-dim">
         <span className="font-semibold text-ink">M{question.module}</span>

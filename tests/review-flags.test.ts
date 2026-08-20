@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { reviewFlags } from '@/lib/admin/review-flags';
+import { reviewFlags, type FlaggableQuestion } from '@/lib/admin/review-flags';
 
 // Every flag is a defect class that reached a review queue and was caught by
 // eye. They point; they never judge.
-const base = { module: 2, stem: 'A line passes through two points.', parts: [] };
+const base: FlaggableQuestion = { module: 2, stem: 'A line passes through two points.', parts: [] };
 
 describe('review flags', () => {
   it('says nothing about a clean question', () => {
