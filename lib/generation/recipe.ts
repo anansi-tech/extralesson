@@ -22,6 +22,7 @@ import {
   naturalPartners,
 } from '@/lib/targets/pairings';
 import { CONSTRUCT_SHARE, isConstructTemplate } from '@/lib/targets/construct';
+import { SHOW_THAT_SHARE } from '@/lib/targets/show-that';
 import type { Archetype, Profile, Representation, TemplateName } from '@/lib/types';
 
 const PROFILES: Profile[] = ['CK', 'AK', 'R'];
@@ -125,6 +126,12 @@ export interface QuestionRecipe {
    * construct part is self-marked; the rest of the question is not.
    */
   construct?: boolean;
+  /**
+   * Paper-shaped structured only: one part of this question must STATE its
+   * result and ask for the working that reaches it. Self-marked, like an
+   * explain part.
+   */
+  show_that?: boolean;
 }
 
 // Extra context the prompt needs that is derived from the recipe (not part of
@@ -378,8 +385,29 @@ export function nextRecipe(
   const constructHints = template_hints.filter(isConstructTemplate);
   const constructedSoFar =
     matrix.p2_actual_total === 0 ? 0 : matrix.construct_actual / matrix.p2_actual_total;
-  const construct =
-    kind === 'structured' && shape === 'paper' && constructedSoFar < CONSTRUCT_SHARE && constructHints.length > 0;
+
+  // SHOW THAT: 15% of real Paper 2 questions state a result and mark the route
+  // to it. We had 4%, because the demand cannot be machine-marked and nothing
+  // asked for it — a model writing to gates reaches for what the gates can
+  // check. It is a deficit for the same reason integration was.
+  //
+  // Never on the same question as a construction: both parts would then be
+  // self-marked, and a 12-mark question with only its middle marked is not the
+  // shape either target is asking for.
+  //
+  // So the two COMPETE, and the one further behind takes the question. Letting
+  // construction simply win whenever it was eligible sent all twenty of the
+  // next twenty recipes its way, which would have spent a 45-question budget
+  // closing one target and left the other where it was. Ranking by gap is the
+  // same rule the rest of the matrix uses; it also settles itself, because
+  // whichever is served stops being the one further behind.
+  const shownSoFar =
+    matrix.p2_actual_total === 0 ? 0 : matrix.show_that_actual / matrix.p2_actual_total;
+  const wantsDemand = kind === 'structured' && shape === 'paper';
+  const constructGap = constructHints.length > 0 ? CONSTRUCT_SHARE - constructedSoFar : -Infinity;
+  const showThatGap = SHOW_THAT_SHARE - shownSoFar;
+  const construct = wantsDemand && constructGap > 0 && constructGap >= showThatGap;
+  const show_that = wantsDemand && !construct && showThatGap > 0;
 
   // Marks follow the settled difficulty and shape.
   const marks =
@@ -415,6 +443,7 @@ export function nextRecipe(
       shape,
       ...(integrate ? { integrate: true } : {}),
       ...(construct ? { construct: true } : {}),
+      ...(show_that ? { show_that: true } : {}),
     },
     context: { topic_code: topic, topic_codes, template_hints: construct ? constructHints : template_hints },
   };

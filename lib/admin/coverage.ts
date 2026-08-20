@@ -1,5 +1,6 @@
 import { Blueprint, Question, Topic } from '@/lib/db';
 import { computeMatrix, type Matrix, type QuestionFacts } from '@/lib/targets/matrix';
+import { hasShowThat } from '@/lib/targets/show-that';
 import type { ModuleNumber, Profile } from '@/lib/types';
 
 // R1.5 §4 — separate P1/P2 target matrices replace the combined coverage.
@@ -53,6 +54,7 @@ export function toFacts(
     has_construct: (q.parts ?? []).some((part) =>
       (part.slots ?? []).some((sl) => sl.response_mode === 'construct'),
     ),
+    has_show_that: hasShowThat(q.parts),
     representation: q.representation ?? 'prose',
     archetype: q.archetype ?? 'multi-step-application',
     difficulty: q.difficulty,

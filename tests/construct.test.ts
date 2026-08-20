@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CONSTRUCT_FAMILIES, CONSTRUCT_SHARE, constructActs, constructFamily, isConstructTemplate } from '@/lib/targets/construct';
 import { QuestionDraftZ } from '@/lib/validation/question';
+import { SHOW_THAT_SHARE } from '@/lib/targets/show-that';
 import { buildDraftPrompt } from '@/lib/prompts/question-gen';
 import type { QuestionRecipe, RecipeContext } from '@/lib/generation/recipe';
 
@@ -151,5 +152,42 @@ describe('the prompt asks for a construction only when the recipe does', () => {
     const p = build({});
     expect(p).not.toContain('CONSTRUCTION (hard requirement');
     expect(p).toContain('Never "construct"');
+  });
+});
+
+describe('show that — a demand the gates cannot check, so it must be asked for', () => {
+  const recipe = (over: Partial<QuestionRecipe>): QuestionRecipe => ({
+    objective_ids: ['M1.4.1'],
+    kind: 'structured',
+    difficulty: 2,
+    marks: 10,
+    archetype: 'multi-step-application',
+    representation: 'prose',
+    shape: 'paper',
+    ...over,
+  });
+  const build = (over: Partial<QuestionRecipe>) =>
+    buildDraftPrompt({
+      topicTitle: 'Measurement',
+      objectives: [{ id: 'M1.4.1', text: 'Calculate the area of a plane figure.' }],
+      recipe: recipe(over),
+      context: { topic_code: 'M1-MEAS', topic_codes: ['M1-MEAS'], template_hints: [] },
+      module: 1,
+      visualContract: '',
+    });
+
+  it('carries the contract when the recipe asks', () => {
+    const p = build({ show_that: true });
+    expect(p).toContain('ONE PART OF THIS QUESTION IS A "SHOW THAT"');
+    expect(p).toContain('response_mode": "show_that');
+    expect(p).toContain('THE RESULT MUST ACTUALLY FOLLOW');
+  });
+
+  it('says nothing about it otherwise', () => {
+    expect(build({})).not.toContain('ONE PART OF THIS QUESTION IS A "SHOW THAT"');
+  });
+
+  it('holds the measured share', () => {
+    expect(SHOW_THAT_SHARE).toBeCloseTo(0.15);
   });
 });
