@@ -1,13 +1,34 @@
 #!/usr/bin/env bash
-# Gate the commit on the kill list, checking what is STAGED.
+# Gate the commit on the things that reading cannot be trusted to catch.
 #
-# Bypass with --no-verify only when you mean to; the point of the hook is that
-# forgetting is no longer possible.
+# The kill list came first, after the greps were twice run alongside `git
+# commit` and read after the push. The test suite is here for the same reason
+# and the same failure: `pnpm test && git commit` in one block runs the commit
+# before anyone reads the output, and main went red for a commit because of it.
+# Reading order is not a control; a gate is.
+#
+# Bypass with --no-verify only when you mean to.
 set -uo pipefail
 cd "$(git rev-parse --show-toplevel)" || exit 1
 
 mapfile -t STAGED < <(git diff --cached --name-only --diff-filter=ACMR \
   | grep -E '^(app|lib|scripts|tests)/.*\.(ts|tsx)$' || true)
 
+# A commit touching no code — a spec, a README, the env example — needs neither
+# check, and paying nine seconds for it would teach people to reach for
+# --no-verify, which costs more than it saves.
 [ "${#STAGED[@]}" -eq 0 ] && exit 0
-exec scripts/check-kill-list.sh "${STAGED[@]}"
+
+scripts/check-kill-list.sh "${STAGED[@]}" || exit 1
+
+# The whole suite, not the staged files' tests: a change in lib/ breaks tests
+# that do not name it, which is most of the ones worth catching. It runs in
+# about nine seconds, which is cheaper than a red main.
+echo "running tests…"
+if ! pnpm vitest run --silent >/tmp/el-pre-commit.log 2>&1; then
+  echo "TESTS FAILED — commit refused. Full output:"
+  tail -40 /tmp/el-pre-commit.log
+  echo "(bypass with --no-verify if you know why)"
+  exit 1
+fi
+echo "tests pass"

@@ -69,10 +69,13 @@ sub-nesting · no image assets/CDN.
 
 These are enforced by a **pre-commit hook**, not by remembering to check:
 `.githooks/pre-commit` runs `scripts/check-kill-list.sh` over the staged files
-and fails the commit. `pnpm install` wires it up (`prepare` sets
+**and the whole test suite** (~9s), and fails the commit on either. `pnpm install` wires it up (`prepare` sets
 `core.hooksPath`); run `pnpm check:kill-list` to sweep the whole tree by hand.
 The hook exists because the greps were twice run alongside `git commit` and read
-after the push — reading order is not a control.
+after the push, and later because `pnpm test && git commit` in one block commits
+before anyone reads the output — main went red for a commit that way. Reading
+order is not a control; a gate is. A commit touching no `.ts`/`.tsx` under
+`app/ lib/ scripts/ tests/` skips both checks, so docs-only commits stay quick.
 
 Verification greps must return zero hits in `app/ lib/ scripts/`:
 `whatsapp`, `twilio`, `stripe` (imports), `vision`, `upload`, `investigation`, `sba`,
