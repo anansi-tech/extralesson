@@ -132,7 +132,11 @@ ${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 200)}`).join('\n')}`
   const patterns = paperPatterns(recipe, context, objectives);
   const documentedErrors = misconceptionGuidance(recipe.objective_ids);
   const setting = contextGuidance(args.recentContexts ?? [], args.contextFree ?? false);
-  const territory = args.contextFree ? '' : flavourGuidance(args.existingStems ?? [], undefined);
+  // Seeded by the objectives, so two questions on different objectives are not
+  // offered the same six livelihoods to choose from.
+  const territory = args.contextFree
+    ? ''
+    : flavourGuidance(args.existingStems ?? [], undefined, recipe.objective_ids.join(','));
   const kind = recipe.kind;
   const objectiveBlock = objectives
     .map((o) => `- ${o.id}: ${o.text}${o.notes ? `\n  Notes: ${o.notes}` : ''}`)

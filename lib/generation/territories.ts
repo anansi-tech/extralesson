@@ -60,9 +60,54 @@ export function recentFlavour(texts: string[]): string[] {
  * says nothing about currency — money is written the same way everywhere and
  * lib/money.ts owns that rule.
  */
-export function flavourGuidance(recentTexts: string[], category: ContextCategory | undefined): string {
-  const used = recentFlavour(recentTexts);
-  const avoid = used.length ? ` Recently used here: ${used.slice(0, 8).join(', ')} — pick differently.` : '';
+/**
+ * A rotating window over a list, so the same six are not shown every time.
+ *
+ * The examples WERE the defaults. This prompt named "a market vendor", "a
+ * farmer", "the school canteen" and then always printed the first six
+ * livelihoods, and the bank came out with farmer in 32 questions, shopkeeper in
+ * 16 and market vendor in 11 — four of the five commonest actors were the ones
+ * standing at the front of the list. A model shown the same examples writes the
+ * same world.
+ */
+function window(list: string[], seed: number, size = 6): string[] {
+  const start = Math.abs(seed) % list.length;
+  return Array.from({ length: Math.min(size, list.length) }, (_, i) => list[(start + i) % list.length]);
+}
+
+function seedFrom(text: string): number {
+  let h = 0;
+  for (const ch of text) h = (h * 31 + ch.charCodeAt(0)) | 0;
+  return h;
+}
+
+export function flavourGuidance(
+  recentTexts: string[],
+  category: ContextCategory | undefined,
+  seed = '',
+): string {
+  const used = [...new Set([...recentFlavour(recentTexts), ...recentActors(recentTexts)])];
+  const avoid = used.length ? ` Recently used here: ${used.slice(0, 10).join(', ')} — pick differently.` : '';
   void category;
-  return `SETTING DETAIL: keep it generic, as the papers do — "a market vendor", "a farmer", "the school canteen" — and do NOT name a country or a city. Sixteen territories sit this paper and a stem that names one is a stem about one of them; name a place only where the question genuinely needs it (a scale drawing of a named site, say). Vary the people and the goods: livelihoods such as ${FLAVOUR.livelihoods.slice(0, 6).join(', ')}; goods such as ${FLAVOUR.goods.slice(0, 6).join(', ')}; names such as ${FLAVOUR.names.slice(0, 6).join(', ')}.${avoid}`;
+  const n = seedFrom(seed + recentTexts.length);
+  return `SETTING DETAIL: keep it generic, as the papers do, and do NOT name a country or a city. Sixteen territories sit this paper and a stem that names one is a stem about one of them; name a place only where the question genuinely needs it (a scale drawing of a named site, say). Vary the people and the goods: livelihoods such as ${window(FLAVOUR.livelihoods, n).join(', ')}; goods such as ${window(FLAVOUR.goods, n).join(', ')}; names such as ${window(FLAVOUR.names, n).join(', ')}.${avoid}`;
+}
+
+/**
+ * The actor a recent stem actually opened with, whatever it was.
+ *
+ * recentFlavour only recognises words from FLAVOUR, so the two favourites the
+ * model invented for itself — "a contractor" in 20 questions and "a
+ * manufacturer" in 12 — were invisible to the avoid list and free to repeat.
+ */
+export function recentActors(texts: string[]): string[] {
+  const found: string[] = [];
+  for (const text of texts.slice(0, FLAVOUR_MEMORY)) {
+    const m = text
+      .replace(/\$[^$]*\$/g, ' ')
+      .match(/\b(?:A|An|The|At a|At an|In a|During a|On a)\s+([a-z][a-z' -]{2,28}?)\s+(?:plans|records|is|are|has|have|sells|makes|buys|uses|prepares|wants|needs|orders|packs|runs|owns|tracks|models|compares|charges|delivers|offers|installs|designs|builds|stores|ships|collects|measures|surveys|begins|opens|operates|produces|supplies|manages|hires|rents|plants|harvests|bakes|repairs|transports|imports|exports|stocks|sews|paints|mixes|fills|loads|serves|cuts|weighs|counts)\b/);
+    const actor = m?.[1]?.trim().toLowerCase();
+    if (actor && !found.includes(actor)) found.push(actor);
+  }
+  return found;
 }
