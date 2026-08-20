@@ -3,8 +3,7 @@
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { dbConnect, Student } from '@/lib/db';
-import { getSecret, verifyToken } from '@/lib/auth/token';
-import { claimMagicToken } from '@/lib/auth/consume';
+import { claimResetSecret } from '@/lib/auth/consume';
 import { hashPassword, passwordProblem } from '@/lib/auth/password';
 import { setSessionCookie } from '@/lib/auth/session';
 
@@ -24,18 +23,15 @@ export async function setPassword(_prev: ResetState, formData: FormData): Promis
   const problem = passwordProblem(parsed.data.password);
   if (problem) return { error: problem };
 
-  const payload = verifyToken(parsed.data.token, getSecret());
-  if (!payload || payload.kind !== 'reset') {
-    return { error: 'That link has expired. Ask for a new one.' };
-  }
-
   await dbConnect();
-  // Single-use: claim the jti before anything is changed, so a link that is
-  // opened twice cannot set two passwords.
-  const claimed = await claimMagicToken(payload.jti);
-  if (!claimed) return { error: 'That link has already been used. Ask for a new one.' };
+  // Single-use and in-date, claimed atomically before anything is changed, so a
+  // link opened twice cannot set two passwords. Unknown, used and expired are
+  // deliberately the same answer: telling them apart tells the holder of a
+  // stale link which kind of stale it is, and they can do nothing with either.
+  const email = await claimResetSecret(parsed.data.token);
+  if (!email) return { error: 'That link has expired or has already been used. Ask for a new one.' };
 
-  const student = await Student.findOne({ email: payload.email });
+  const student = await Student.findOne({ email });
   if (!student) return { error: 'That link has expired. Ask for a new one.' };
 
   student.password_hash = await hashPassword(parsed.data.password);

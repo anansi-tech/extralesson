@@ -3,8 +3,9 @@
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { dbConnect, Student } from '@/lib/db';
-import { MagicToken } from '@/lib/db/magic-token';
-import { createResetToken, getSecret, RESET_TTL_MS } from '@/lib/auth/token';
+import { ResetToken } from '@/lib/db/reset-token';
+import { newResetSecret } from '@/lib/auth/reset-token';
+import { RESET_TTL_MS } from '@/lib/auth/token';
 import { resetEmail, sendEmail } from '@/lib/email';
 import { externalBaseUrl } from '@/lib/base-url';
 import { hashPassword, passwordProblem, verifyPassword } from '@/lib/auth/password';
@@ -121,9 +122,9 @@ export async function requestReset(_prev: AuthState, formData: FormData): Promis
   await dbConnect();
   const student = await Student.findOne({ email }).lean();
   if (student) {
-    const { token, jti, expires_at } = createResetToken(email, getSecret());
-    await MagicToken.create({ jti, email, expires_at });
-    const link = `${externalBaseUrl()}/study/reset?token=${encodeURIComponent(token)}`;
+    const { secret, lookup } = newResetSecret();
+    await ResetToken.create({ lookup, email, expires_at: new Date(Date.now() + RESET_TTL_MS) });
+    const link = `${externalBaseUrl()}/study/reset?token=${secret}`;
     try {
       const { skipped } = await sendEmail({ to: email, ...resetEmail(link, RESET_TTL_MS / 60000) });
       // Without a provider the link still has to reach a human somehow, so it

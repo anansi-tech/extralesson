@@ -1,11 +1,12 @@
 import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 
-// HMAC-SHA256 password-reset tokens and session cookies.
-// Pure functions: secret and clock are injectable for tests.
+// HMAC-SHA256 session cookies. Pure functions: secret and clock are injectable
+// for tests.
 //
-// The same machinery signed magic links until logging in stopped needing one.
-// A reset is the one flow that still has to prove control of an inbox, so it
-// keeps the single-use jti and the short expiry the login used to have.
+// This signed magic links, then reset links, and now only sessions. A reset
+// token is an opaque secret checked against a stored row (lib/auth/reset-token)
+// — it needed a row anyway to be single-use, and a signature on top of a lookup
+// bought nothing but a 200-character URL.
 
 // A reset link is the only email in the product now, and it is rare, so it can
 // afford to be short-lived.
@@ -26,13 +27,6 @@ export function getSecret(): string {
   return s;
 }
 
-export interface ResetPayload {
-  kind: 'reset';
-  email: string;
-  jti: string;
-  exp: number; // epoch ms
-}
-
 export interface SessionPayload {
   kind: 'session';
   student_id: string;
@@ -40,7 +34,7 @@ export interface SessionPayload {
   exp: number; // epoch ms
 }
 
-type Payload = ResetPayload | SessionPayload;
+type Payload = SessionPayload;
 
 export function signToken(payload: Payload, secret: string): string {
   const body = b64url(Buffer.from(JSON.stringify(payload)));
@@ -64,17 +58,6 @@ export function verifyToken(token: string, secret: string, now: number = Date.no
   }
   if (typeof payload.exp !== 'number' || payload.exp <= now) return null;
   return payload;
-}
-
-export function createResetToken(
-  email: string,
-  secret: string,
-  now: number = Date.now(),
-): { token: string; jti: string; expires_at: Date } {
-  const jti = randomUUID();
-  const exp = now + RESET_TTL_MS;
-  const token = signToken({ kind: 'reset', email: email.toLowerCase().trim(), jti, exp }, secret);
-  return { token, jti, expires_at: new Date(exp) };
 }
 
 export function createSessionToken(
