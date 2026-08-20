@@ -4,7 +4,8 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { dbConnect, Student } from '@/lib/db';
 import { MagicToken } from '@/lib/db/magic-token';
-import { createResetToken, getSecret } from '@/lib/auth/token';
+import { createResetToken, getSecret, RESET_TTL_MS } from '@/lib/auth/token';
+import { resetEmail, sendEmail } from '@/lib/email';
 import { hashPassword, passwordProblem, verifyPassword } from '@/lib/auth/password';
 import { setSessionCookie } from '@/lib/auth/session';
 
@@ -122,9 +123,21 @@ export async function requestReset(_prev: AuthState, formData: FormData): Promis
     const { token, jti, expires_at } = createResetToken(email, getSecret());
     await MagicToken.create({ jti, email, expires_at });
     const base = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
-    // No email provider is configured (see README) — the link is delivered via
-    // the server log, exactly as the sign-in link was.
-    console.log(`[reset-link] ${email} -> ${base}/study/reset?token=${encodeURIComponent(token)}`);
+    const link = `${base}/study/reset?token=${encodeURIComponent(token)}`;
+    try {
+      const { skipped } = await sendEmail({ to: email, ...resetEmail(link, RESET_TTL_MS / 60000) });
+      // Without a provider the link still has to reach a human somehow, so it
+      // goes to the server log as it always did. With one, it must NOT — a
+      // reset link in a log is a way into the account for anyone who can read
+      // logs, and it stops being a development convenience the moment the
+      // email actually arrives.
+      if (skipped) console.log(`[reset-link] ${email} -> ${link}`);
+    } catch (err) {
+      // A provider that is down must not tell the form anything, or the
+      // "we said the same thing either way" property is lost — an error here
+      // would mean the address exists.
+      console.error('[reset-link] send failed:', err);
+    }
   }
   // The same answer either way, whether or not that email has an account.
   return { resetRequested: true, email };

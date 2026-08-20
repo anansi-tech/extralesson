@@ -31,8 +31,9 @@ boundaries · Vitest · KaTeX.
   a student on a phone would not pay, and it cost us the session. The HMAC-SHA256
   single-use-jti machinery survives for the ONE flow that still has to prove control of
   an inbox: password reset, 30-min expiry.
-- No email provider is configured, so a reset link is delivered to the server log —
-  the same gap the sign-in link had. Configure one before real students.
+- Reset links go out through Resend (`lib/email.ts`, same env var names as cognicare).
+  With no `RESEND_API_KEY` the link falls back to the server log so local dev works;
+  with one set it is never logged.
 - `attempts` is append-only — never mutate an attempt; all mastery/progress state is a
   fold over attempts. No mutable score fields anywhere.
 - Any schema addition ships with a same-commit backfill.
@@ -44,8 +45,18 @@ boundaries · Vitest · KaTeX.
 
 No code/imports/stubs for: WhatsApp/Twilio · parent reports · Stripe SDK/API/webhooks
 (payment-link href is exempt) · photo upload/vision · Investigation-type questions ·
-SBA coaching · spaced repetition · streaks/gamification · CAPE or second subject ·
+SBA coaching · spaced repetition · streak REWARDS · CAPE or second subject ·
 in-app payments · Railway/cron · offline sync · native apps.
+
+**Streaks — the line, drawn on purpose.** A streak as a STATISTIC is permitted: days
+in a row printed beside sessions, questions and marks attempted, in the same type, as
+one more count of work done. Streak REWARDS are not, and the ban is on the mechanism
+rather than the word — no badges, no points, no bonuses, no multipliers, no "don't
+lose your streak" prompt, no notification or copy that makes a missed day a
+punishment. The test: if the number disappeared, would the student lose information
+or lose a prize? Information is a statistic; a prize is gamification. Written out
+because the rule read "streaks/gamification" and was about to be resolved to whatever
+the last person assumed.
 
 R1.5 additions: no TikZ/KaTeX-server toolchains beyond the katex npm package ·
 no runtime drawing code (visuals are the 15 parametric SVG templates +
