@@ -12,8 +12,10 @@ import { createHash } from 'node:crypto';
  *   v2  units compared dimensionally; money a dimension; numbers compared to
  *       the precision written rather than within 0.5%; the denominator read
  *       from rubric rows on auto-marked slots
+ *   v3  a product of quantities matches however the multiplication sign was
+ *       typed; percent gets the omitted-unit leniency every other unit had
  */
-export const GRADER_VERSION = 'v2';
+export const GRADER_VERSION = 'v3';
 
 /** An attempt stamped before this existed. Recorded, not guessed at. */
 export const GRADER_VERSION_UNKNOWN = 'unstamped';
