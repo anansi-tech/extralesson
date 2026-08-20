@@ -1,12 +1,13 @@
 import 'katex/dist/katex.min.css';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { dbConnect, Attempt, PracticeSession, Question, Student } from '@/lib/db';
+import { dbConnect, Attempt, PracticeSession, Question, Student, Topic } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
 import { loadStudyState } from '@/lib/study/state';
 import { estimatedMinutes } from '@/lib/session/builder';
+import { PROFILE_GLOSS, PROFILE_MEANING } from '@/lib/study/profiles';
 import QuestionCard, { type CardQuestion } from './question-card';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { constructActs } from '@/lib/targets/construct';
@@ -82,6 +83,13 @@ export default async function SessionPage({
       .select('objective_ids')
       .lean<{ _id: unknown; objective_ids: string[] }[]>();
     const touchedObjectives = [...new Set(questions.flatMap((q) => q.objective_ids))].sort();
+    // The objectives in the syllabus's own words, which is what a student can
+    // read. The ids stay behind the scenes, where they address things.
+    const touchedTopics = await Topic.find({ 'objectives.id': { $in: touchedObjectives } })
+      .select('objectives')
+      .lean<{ objectives: { id: string; text: string }[] }[]>();
+    const textById = new Map(touchedTopics.flatMap((t) => t.objectives.map((o) => [o.id, o.text])));
+    const touchedSkills = [...new Set(touchedObjectives.map((id) => textById.get(id)).filter(Boolean))] as string[];
     const touchedPrefixes = new Set(
       touchedObjectives.map((o) => o.slice(0, o.lastIndexOf('.') + 1)),
     );
@@ -116,16 +124,20 @@ export default async function SessionPage({
 
           <section className="mt-5 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
             <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
-              Marks by profile
+              How you earned your marks
             </div>
-            <div className="mt-2 flex gap-6 text-center">
+            <div className="mt-2 flex flex-wrap gap-x-6 gap-y-3 text-center">
               {(['CK', 'AK', 'R'] as const).map((p) => (
                 <div key={p}>
                   <div className="text-3xl font-black">{totals[p]}</div>
                   <div className="font-mono text-[10px] text-dim">{p}</div>
+                  <div className="text-[11px] leading-tight text-dim">{PROFILE_MEANING[p]}</div>
                 </div>
               ))}
             </div>
+            <p className="mt-3 border-t border-dashed border-paper-deep pt-2 text-[11px] leading-snug text-dim">
+              {PROFILE_GLOSS} You will see the same three letters on a real mark scheme.
+            </p>
           </section>
 
           <section className="mt-5">
@@ -151,10 +163,18 @@ export default async function SessionPage({
           </section>
 
           <section className="mt-5">
+            {/* This printed the syllabus codes — "M1.1.14 · M2.3.5" — under the
+                word "objectives". Both halves were ours rather than theirs: the
+                codes mean nothing without the syllabus open, and a student does
+                not call them objectives. */}
             <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
-              Objectives touched
+              What this session covered
             </div>
-            <p className="mt-1 font-mono text-xs text-dim">{touchedObjectives.join(' · ')}</p>
+            <ul className="mt-1 space-y-0.5 text-[13px] text-dim">
+              {touchedSkills.map((t) => (
+                <li key={t}>{t}</li>
+              ))}
+            </ul>
           </section>
 
           <Link

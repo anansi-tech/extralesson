@@ -8,7 +8,7 @@ import type { SyllabusMode } from '@/lib/types';
 
 export function paperShape(mode: SyllabusMode): string {
   if (mode === 'legacy-jan') {
-    return 'Your January paper uses the old format: Paper 1 is 60 multiple-choice items in 90 minutes, and Paper 2 is structured questions worth 90 marks — one paper, no module sections.';
+    return 'Your January paper uses the old format: Paper 1 is 60 multiple-choice questions in 90 minutes, and Paper 2 is structured questions worth 90 marks — one paper, no module sections.';
   }
-  return 'Your paper has three sections, one for each module, with three questions in each — 90 marks over 2 hours 40 minutes. Paper 1 is 60 multiple-choice items in 90 minutes.';
+  return 'Your paper has three sections, one for each module, with three questions in each — 90 marks over 2 hours 40 minutes. Paper 1 is 60 multiple-choice questions in 90 minutes.';
 }
