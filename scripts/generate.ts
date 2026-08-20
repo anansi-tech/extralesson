@@ -21,6 +21,7 @@ import { nextRecipe, type ObjectiveCoverage, type QuestionRecipe, type RecipeCon
 import { independentSolve } from '@/lib/generation/solve';
 import { McqLooseZ, StructuredLooseZ } from '@/lib/generation/draft-schema';
 import { checkDuplicate } from '@/lib/generation/dedup';
+import { reviewFlags, type FlaggableQuestion } from '@/lib/admin/review-flags';
 import { CONTEXT_FREE_MCQ_SHARE } from '@/lib/generation/contexts';
 import { verifyQuestionVisual } from '@/lib/visuals/verify';
 import { lintCriteria } from '@/lib/prompts/mark-scheme';
@@ -147,6 +148,8 @@ async function main() {
   // Topics that keep returning duplicates are skipped for the rest of the run.
   const DEDUP_STREAK_LIMIT = 3;
   const dedupStreak = new Map<string, number>();
+  /** What this run wrote, so it can audit its own output before it exits. */
+  const insertedIds: unknown[] = [];
   const exhausted = new Set<string>();
   const byReason = new Map<string, number>();
   const tally = (code: string) => {
@@ -168,15 +171,22 @@ async function main() {
         recipe.representation === 'prose' ? '' : paramsDocFor(context.template_hints);
       // What this topic already holds, so the model writes something else. Read
       // fresh each attempt: a draft inserted a moment ago counts.
+      //
+      // STIMULUS AND STEM, because the stem is a lead-in. Ten questions on one
+      // objective show ten stems reading "Use the graph to answer the parts
+      // below", so a model told to write something else could not see that the
+      // last four had all used x^2-4x+3 — the function lives in the stimulus,
+      // and four near-identical questions reached the queue. The dedup gate
+      // below already joins the two for exactly this reason.
       const recent = await Question.find({
         status: { $in: ['draft', 'approved'] },
         objective_ids: { $in: recipe.objective_ids },
       })
-        .select('stem context_category')
+        .select('stem stimulus context_category')
         .sort({ _id: -1 })
         .limit(10)
-        .lean<{ stem: string; context_category?: string }[]>();
-      const existingStems = recent.map((q) => q.stem);
+        .lean<{ stem: string; stimulus?: string; context_category?: string }[]>();
+      const existingStems = recent.map((q) => [q.stimulus, q.stem].filter(Boolean).join(' '));
 
       // R1.8 Part 0: the papers write most Paper 1 items as bare symbolic work.
       // Aim for half, measured against what this paper already holds rather
@@ -393,7 +403,7 @@ async function main() {
         continue;
       }
 
-      await Question.create({
+      const created = await Question.create({
         ...draft,
         status: 'draft',
         gen_meta: {
@@ -405,6 +415,7 @@ async function main() {
           dedup_score: dedup.score,
         },
       });
+      insertedIds.push(created._id);
       inserted++;
       tally(context.topic_code).inserted++;
       console.log(`  ✓ inserted draft (${inserted}/${args.count}): ${draft.stem.slice(0, 70)}…`);
@@ -428,6 +439,29 @@ async function main() {
     const reasons = [...byReason.entries()].sort((a, b) => b[1] - a[1]);
     if (reasons.length > 0) {
       console.log(`Rejections: ${reasons.map(([r, n]) => `${r} ${n}`).join(' · ')}`);
+    }
+  }
+
+  // Audit what this run actually wrote. The standing sweep only ever saw the
+  // bank as it stood when it ran, so a defect written after it was invisible
+  // until someone thought to run it again — which is how a cross-module
+  // question sat in the queue while the audit reported zero flags. A batch now
+  // reports on itself, using the same checks the review card shows.
+  if (insertedIds.length > 0) {
+    const written = await Question.find({ _id: { $in: insertedIds } }).lean<
+      (FlaggableQuestion & { _id: unknown; objective_ids: string[] })[]
+    >();
+    const flagged = written
+      .map((q) => ({ q, flags: reviewFlags(q).filter((f) => f.level === 'warn') }))
+      .filter((h) => h.flags.length > 0);
+    if (flagged.length > 0) {
+      console.log(`\nFLAGGED FOR REVIEW — ${flagged.length} of ${written.length} written this run:`);
+      for (const { q, flags } of flagged) {
+        console.log(`  ${String(q._id)}  ${q.objective_ids.join(',')}`);
+        for (const f of flags) console.log(`    · ${f.text}`);
+      }
+    } else {
+      console.log(`\nNo review flags on the ${written.length} written this run.`);
     }
   }
 

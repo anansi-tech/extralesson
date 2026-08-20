@@ -243,7 +243,9 @@ describe('buildDraftPrompt — the model is shown what the topic already holds',
     const long = `The diagram shows ${'a very long context sentence '.repeat(20)}`;
     const p = withBank([long]);
     const line = p.split('\n').find((l) => l.startsWith('- The diagram shows'))!;
-    expect(line.length).toBeLessThan(150);
+    // 200 now rather than 140: each entry leads with the stimulus, where the
+    // identifying mathematics lives, and 140 could cut before reaching it.
+    expect(line.length).toBeLessThan(210);
   });
 
   it('says nothing at all when the topic is empty', () => {
@@ -391,5 +393,45 @@ describe('buildDraftPrompt — the opening part', () => {
     for (const shape of ['EVALUATE', 'FACTORISE', 'SUBSTITUTE', 'APPLY A DEFINITION', 'FORM', 'DEDUCE']) {
       expect(p).toContain(shape);
     }
+  });
+});
+
+// The avoid-list is what stops the model rewriting a question it has already
+// written. It was built from stems alone, and a stem is a lead-in: ten
+// questions on one objective all read "Use the graph to answer the parts
+// below", so four consecutive drafts used x^2-4x+3 without the model ever
+// being shown that it had.
+describe('the avoid-list carries the mathematics, not just the lead-in', () => {
+  const build = (existingStems: string[]) =>
+    buildDraftPrompt({
+      topicTitle: 'Relations, functions and graphs',
+      objectives: [{ id: 'M3.2.5', text: 'Interpret graphs of functions.' }],
+      recipe: {
+        objective_ids: ['M3.2.5'],
+        kind: 'structured',
+        difficulty: 2,
+        marks: 10,
+        archetype: 'multi-step-application',
+        representation: 'graph',
+        shape: 'paper',
+      },
+      context: { topic_code: 'M3-RFG2', topic_codes: ['M3-RFG2'], template_hints: ['coordinateGrid'] },
+      module: 3,
+      visualContract: '',
+      existingStems,
+    });
+
+  it('shows the function a previous question used', () => {
+    const p = build([
+      'A bakery uses the function $f: x \\to x^2 - 4x + 3$ to model its profit, in hundreds of dollars, $x$ hours after opening. Use the graph to answer the parts below.',
+    ]);
+    expect(p).toContain('ALREADY IN THE BANK');
+    expect(p).toContain('x^2 - 4x + 3');
+  });
+
+  it('keeps enough of a long stimulus to reach the mathematics', () => {
+    const long = `${'A regional ferry operator records passenger numbers over a long period of trading. '.repeat(1)}The function is $g: x \\to 2x^2 - 5x + 1$.`;
+    const p = build([long]);
+    expect(p).toContain('2x^2 - 5x + 1');
   });
 });

@@ -17,7 +17,23 @@
 /** Money is stored escaped (\$) and is not a delimiter; drop it before counting. */
 const bare = (s: string) => s.replace(/\\\$/g, '');
 
-const CONTROL = new RegExp('[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F]');
+// Every control character except the newline, which is the only one a question
+// legitimately contains.
+//
+// TAB and DEL were both outside the old class and both reached review. A tab is
+// never formatting here — it is what a JSON escape leaves behind when a maths
+// command loses its second backslash, so a theta written with one arrives as a
+// tab followed by "heta" and renders as the word. The same swallows \times,
+// \neq, \rho and \frac, whose escapes are \t, \n, \r and \f, so the class has
+// to be everything rather than the codes noticed so far.
+const CONTROL = new RegExp('[\\u0000-\\u0009\\u000B-\\u001F\\u007F]');
+
+/** The one check every field needs, whatever else is checked about it. */
+function controlIssues(text: string): string[] {
+  return CONTROL.test(text)
+    ? ['contains a control character — a maths command whose backslash was eaten by a JSON escape, not maths']
+    : [];
+}
 
 /**
  * A math span holding a sentence of prose is a mis-paired delimiter.
@@ -67,9 +83,7 @@ export function delimiterIssues(text: string): string[] {
   if ((s.match(/\$/g) ?? []).length % 2 !== 0) {
     issues.push('has an odd number of $ delimiters, so one opens and never closes');
   }
-  if (CONTROL.test(text)) {
-    issues.push('contains a control character, which is a mangled command rather than maths');
-  }
+  issues.push(...controlIssues(text));
   const stranded = strandedCommands(text);
   if (stranded.length > 0) {
     issues.push(
@@ -100,6 +114,11 @@ export function clozeIssues(statement: string): string[] {
  * tears the expression in half.
  */
 export function answerIssues(answer: string): string[] {
+  // An answer is compared character by character against what a student types,
+  // so a stray control character there is worse than in prose: it can never be
+  // matched, and the question is unanswerable rather than merely ugly.
+  const control = controlIssues(answer);
+  if (control.length > 0) return control;
   if (!answer.includes(';')) return [];
   const torn = answer
     .split(';')

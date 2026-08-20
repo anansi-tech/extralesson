@@ -120,10 +120,14 @@ export function buildDraftPrompt(args: {
   // batch came back with four isosceles-triangle-and-symmetry questions that
   // differed only in the apex angle. Showing the model the bank is the cheaper
   // half of the job.
+  //
+  // 200 characters rather than 140, because each entry now leads with the
+  // stimulus and the identifying mathematics — the function, the sequence, the
+  // figure — sits inside the first sentence or two of it.
   const existing = (args.existingStems ?? []).filter((s) => s.trim().length > 0);
   const bankSection = existing.length
     ? `ALREADY IN THE BANK for this topic — write something a student would not mistake for any of these. Change the figure or context, and change what is being asked, not just the numbers or the letters:
-${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 140)}`).join('\n')}`
+${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 200)}`).join('\n')}`
     : '';
   const patterns = paperPatterns(recipe, context, objectives);
   const documentedErrors = misconceptionGuidance(recipe.objective_ids);

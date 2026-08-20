@@ -136,7 +136,7 @@ export const MisconceptionZ = z.object({
  * completable cells name the slot that fills each gap, and the renderer prints
  * that key inside the gap.
  */
-function slotRefsNamedByVisual(visual: unknown): Set<string> {
+export function slotRefsNamedByVisual(visual: unknown): Set<string> {
   const refs = new Set<string>();
   const v = visual as { template?: string; params?: { rows?: unknown[][] } } | undefined;
   if (v?.template !== 'dataTable') return refs;

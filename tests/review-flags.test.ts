@@ -19,10 +19,54 @@ describe('review flags', () => {
   });
 
   it('spots a region whose non-negativity is left to the shading', () => {
-    const shown = { ...base, module: 3, stem: 'Draw the feasible region for $x \\ge 0$, $y \\ge 0$.' };
-    const missing = { ...base, module: 3, stem: 'Draw the feasible region for this situation.' };
-    expect(reviewFlags(missing).some((f) => f.text.includes('x ≥ 0'))).toBe(true);
-    expect(reviewFlags(shown).some((f) => f.text.includes('x ≥ 0'))).toBe(false);
+    const nonNeg = (q: typeof base) => reviewFlags(q).some((f) => f.text.includes('non-negativity'));
+    expect(nonNeg({ ...base, module: 3, stem: 'Draw the feasible region for this situation.' })).toBe(true);
+    // Stated in symbols, in the syllabus's own English, or in the region's
+    // declared constraints — all three are the constraint being stated.
+    expect(nonNeg({ ...base, module: 3, stem: 'Draw the feasible region for $x \\ge 0$, $y \\ge 0$.' })).toBe(false);
+    expect(nonNeg({ ...base, module: 3, stem: 'Draw the feasible region where $x$ and $y$ are whole numbers.' })).toBe(false);
+    expect(
+      nonNeg({
+        ...base,
+        module: 3,
+        stem: 'Draw the feasible region for this situation.',
+        visual: {
+          params: {
+            regions: [
+              {
+                constraints: [
+                  { a: 1, b: 0, c: 0, op: 'ge' },
+                  { a: 0, b: 1, c: 0, op: 'ge' },
+                ],
+              },
+            ],
+          },
+        },
+      }),
+    ).toBe(false);
+  });
+
+  it('does not read a single-inequality question as linear programming', () => {
+    // "Which inequality represents R?" over a region that legitimately runs
+    // into the negative quadrants — x >= 0 there would be wrong.
+    const q = { ...base, module: 3, stem: 'The grid shows the shaded region $R$. Which inequality represents $R$?' };
+    expect(reviewFlags(q)).toEqual([]);
+  });
+
+  it('spots a Module 3 method inside a Module 2 question, and the missing tag', () => {
+    const q = {
+      ...base,
+      module: 2,
+      objective_ids: ['M2.4.10'],
+      worked_solution: 'Using the sine rule gives $QS = 14.2$.',
+    };
+    const texts = reviewFlags(q).map((f) => f.text).join(' | ');
+    expect(texts).toContain('Module 3 method');
+    expect(texts).toContain('Under-tagged');
+    // Declaring it is the difference between assessed-and-invisible and covered.
+    expect(reviewFlags({ ...q, objective_ids: ['M2.4.10', 'M3.3.7'] }).map((f) => f.text).join(' ')).not.toContain(
+      'Under-tagged',
+    );
   });
 
   it('spots two answer boxes that do not say which is which', () => {
