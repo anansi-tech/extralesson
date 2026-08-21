@@ -323,12 +323,26 @@ export default async function StudyDashboard({
         {/* The session above is the one the app chooses, and it stays the
             default. These are the three things a student knows about their own
             week that it cannot: what class covered today, what they got wrong,
-            and that it has never seen them work. */}
-        {!open && (
-          <section className="mt-6 border-t-[1.5px] border-rule pt-4">
-            <h2 className="font-mono text-[10px] uppercase tracking-widest text-dim">
-              Or choose for yourself
-            </h2>
+            and that it has never seen them work.
+
+            Shown WHILE A SESSION IS OPEN as well. Hiding them until the old one
+            was finished made finishing a prerequisite for choosing, which is
+            backwards: a student who wants circle theorems tonight wants them
+            tonight. Nothing is lost by starting another: sessions QUEUE rather
+            than replace each other. completed_at is set only when every
+            question in a session has been answered, and openSession returns the
+            most recent unfinished one — so the half-done session is offered
+            again as soon as the new one is finished. */}
+        <section className="mt-6 border-t-[1.5px] border-rule pt-4">
+          <h2 className="font-mono text-[10px] uppercase tracking-widest text-dim">
+            Or choose for yourself
+          </h2>
+          {open && (
+            <p className="mt-1 text-[11px] leading-snug text-dim">
+              Starting one of these begins a new session. Your answers so far are saved, and the
+              session above is waiting for you when this one is finished.
+            </p>
+          )}
 
             <form action={startSession} className="mt-3 flex flex-wrap items-center gap-2">
               <input type="hidden" name="mode" value="topic" />
@@ -383,8 +397,7 @@ export default async function StudyDashboard({
                 </small>
               </button>
             </form>
-          </section>
-        )}
+        </section>
 
         <Link
           href="/study/practice"
