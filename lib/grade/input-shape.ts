@@ -144,6 +144,20 @@ export function readInputShape(rawAnswer: string): ShapeReading {
   const s = bare(rawAnswer);
   const lower = s.toLowerCase();
 
+  // \binom{4}{-2} is a column vector too. The papers and the generator both
+  // reach for it — it is the shorter way to write a 2x1 — and reading only
+  // \begin{pmatrix} left twelve vector answers classified as prose, so they
+  // rendered as a single free-text box asking a student to type KaTeX.
+  const binom = s.match(/\\[dt]?binom\s*\{([^{}]*)\}\s*\{([^{}]*)\}/);
+  if (binom) {
+    return {
+      shape: 'column_vector',
+      boxes: 2,
+      ordered: true,
+      values: [binom[1].trim(), binom[2].trim()],
+    };
+  }
+
   const grid = s.match(/\\begin\{[bp]matrix\}([\s\S]*?)\\end\{[bp]matrix\}/);
   if (grid) {
     const rows = grid[1].split(/\\\\/).map((r) => r.trim()).filter(Boolean);

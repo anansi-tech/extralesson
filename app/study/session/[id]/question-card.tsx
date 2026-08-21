@@ -360,11 +360,15 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               instruction are told apart only by counting, and a
                               student who counts wrong has a correct answer
                               marked wrong — the worst thing this can do. */}
-                        <div className="mt-1 flex items-start gap-2">
+                        {/* Stacked on a phone, side by side once there is room.
+                            The label held 42% of a 360px row, which left the
+                            box too narrow to see a long answer while typing
+                            it. */}
+                        <div className="mt-1 flex flex-col items-stretch gap-1 sm:flex-row sm:items-start sm:gap-2">
                           {p.slots.length > 1 && (
                             <label
                               htmlFor={`slot-${slot.ref}`}
-                              className="flex min-w-0 shrink-0 basis-[42%] items-baseline gap-1.5 pt-2 text-sm sm:basis-[38%]"
+                              className="flex min-w-0 items-baseline gap-1.5 text-sm sm:shrink-0 sm:basis-[38%] sm:pt-2"
                             >
                               <span className="font-mono text-[11px] text-dim">({slot.label})</span>
                               {slot.promptHtml ? (
@@ -417,7 +421,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                             </span>
                           )}
                           </div>
-                          <div className={p.slots.length > 1 ? 'ml-auto basis-[58%] sm:basis-[62%]' : ''}>
+                          <div className={p.slots.length > 1 ? 'sm:ml-auto sm:basis-[62%]' : ''}>
                             <SymbolStrip
                               symbols={slot.symbols ?? []}
                               disabled={!!feedback}
@@ -542,12 +546,26 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           {feedback.construction && (
             <div className="mt-3">
               <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
-                Your graph should look like this
+                {feedback.construction.figureHtml
+                  ? 'Your drawing should look like this'
+                  : 'Your drawing should show this'}
               </div>
-              <div
-                className="mt-1 border border-paper-deep bg-white p-2 [&_svg]:h-auto [&_svg]:w-full"
-                dangerouslySetInnerHTML={{ __html: feedback.construction.figureHtml }}
-              />
+              {/* A pattern question has no stored picture of the answer — its
+                  figure is the premise — so it says what the drawing should
+                  show instead of showing the wrong thing. */}
+              {feedback.construction.figureHtml ? (
+                <div
+                  className="mt-1 border border-paper-deep bg-white p-2 [&_svg]:h-auto [&_svg]:w-full"
+                  dangerouslySetInnerHTML={{ __html: feedback.construction.figureHtml }}
+                />
+              ) : (
+                feedback.construction.describes && (
+                  <div
+                    className="question-prose mt-1 border-l-3 border-paper-deep pl-3 text-[15px]"
+                    dangerouslySetInnerHTML={{ __html: feedback.construction.describes }}
+                  />
+                )
+              )}
               <ul className="mt-2 space-y-1">
                 {feedback.construction.acts.map((act) => (
                   <li key={act} className="flex gap-2 text-[13px]">
