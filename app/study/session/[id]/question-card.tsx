@@ -4,6 +4,7 @@ import { Fragment, useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { submitAnswer, type Feedback } from './actions';
+import { TypedInput } from './typed-input';
 import { isPositionalLabel } from '@/lib/notation';
 import { PROFILE_GLOSS } from '@/lib/study/profiles';
 
@@ -28,6 +29,12 @@ export interface CardQuestion {
       /** The same prompt as plain text, for the input's accessible name. */
       promptText?: string;
       mode: string;
+      /**
+       * Set when the answer is entered as several values. The shape only —
+       * never the answer, and `boxes` only where the count is part of the
+       * question rather than part of the answer.
+       */
+      input?: { shape: string; boxes?: number; cols?: number };
     }[];
   }[];
   optionsHtml?: string[];
@@ -100,6 +107,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const router = useRouter();
   const [selected, setSelected] = useState<number | null>(question.prior?.selected ?? null);
   const [partAnswers, setPartAnswers] = useState<Record<string, string>>(question.prior?.answers ?? {});
+  // Typed slots keep their values as a list; partAnswers keeps the single-box
+  // ones. A slot is in exactly one of the two.
+  const [boxValues, setBoxValues] = useState<Record<string, string[]>>(
+    () => splitPriorValues(question.prior?.answers ?? {}, question.parts ?? []),
+  );
   const [working, setWorking] = useState('');
   const [feedback, setFeedback] = useState<Feedback | null>(question.prior?.feedback ?? null);
   const [error, setError] = useState<string>();
@@ -125,6 +137,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // on paper and self-marked, so they are not typed in and never gate submit —
   // and a part may hold both kinds at once.
   const markedSlots = question.parts.flatMap((p) => p.slots.filter((s) => s.mode === 'answer'));
+  /** A slot has an answer when its box — or any of its boxes — holds one. */
+  const filled = (s: { ref: string; input?: unknown }) =>
+    s.input
+      ? (boxValues[s.ref] ?? []).some((v) => v.trim() !== '')
+      : (partAnswers[s.ref] ?? '').trim() !== '';
   // R1.8 §2 — ONE filled slot is enough to hand the question in, because a
   // paper-shaped question can now be the whole session. Requiring every slot
   // was harmless when a session was eight fragments and being stuck cost you
@@ -136,15 +153,23 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const canSubmit =
     question.kind === 'mcq'
       ? selected !== null
-      : markedSlots.some((s) => (partAnswers[s.ref] ?? '').trim() !== '');
-  const blanks = markedSlots.filter((s) => (partAnswers[s.ref] ?? '').trim() === '').length;
+      : markedSlots.some((s) => filled(s));
+  const blanks = markedSlots.filter((s) => !filled(s)).length;
 
   const submit = () => {
     if (!canSubmit) return;
     const answers =
       question.kind === 'mcq'
         ? [{ label: 'a', answer: String(selected) }]
-        : markedSlots.map((s) => ({ label: s.ref, answer: (partAnswers[s.ref] ?? '').trim() }));
+        : markedSlots.map((s) =>
+            s.input
+              ? {
+                  label: s.ref,
+                  answer: '',
+                  values: (boxValues[s.ref] ?? []).map((v) => v.trim()).filter(Boolean),
+                }
+              : { label: s.ref, answer: (partAnswers[s.ref] ?? '').trim() },
+          );
     startTransition(async () => {
       const res = await submitAnswer({
         sessionId: question.sessionId,
@@ -291,21 +316,36 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               )}
                             </label>
                           )}
-                          <input
-                            id={`slot-${slot.ref}`}
-                            value={partAnswers[slot.ref] ?? ''}
-                            onChange={(e) =>
-                              setPartAnswers((prev) => ({ ...prev, [slot.ref]: e.target.value }))
-                            }
-                            disabled={!!feedback}
-                            aria-label={slotAriaLabel(p, slot)}
-                            className="w-full border-[1.5px] border-ink p-2 font-mono text-sm"
-                            placeholder={
-                              p.slots.length > 1
-                                ? `Answer to (${p.label})(${slot.label})`
-                                : `Answer to (${p.label})`
-                            }
-                          />
+                          {slot.input ? (
+                            <TypedInput
+                              shape={slot.input.shape}
+                              boxes={slot.input.boxes}
+                              cols={slot.input.cols}
+                              values={boxValues[slot.ref] ?? []}
+                              onChange={(vals) =>
+                                setBoxValues((prev) => ({ ...prev, [slot.ref]: vals }))
+                              }
+                              disabled={!!feedback}
+                              slotRef={slot.ref}
+                              describe={slotAriaLabel(p, slot)}
+                            />
+                          ) : (
+                            <input
+                              id={`slot-${slot.ref}`}
+                              value={partAnswers[slot.ref] ?? ''}
+                              onChange={(e) =>
+                                setPartAnswers((prev) => ({ ...prev, [slot.ref]: e.target.value }))
+                              }
+                              disabled={!!feedback}
+                              aria-label={slotAriaLabel(p, slot)}
+                              className="w-full border-[1.5px] border-ink p-2 font-mono text-sm"
+                              placeholder={
+                                p.slots.length > 1
+                                  ? `Answer to (${p.label})(${slot.label})`
+                                  : `Answer to (${p.label})`
+                              }
+                            />
+                          )}
                           {partFeedback && (
                             <span
                               className={`font-hand text-xl ${partFeedback.correct ? 'text-green-pen' : 'text-red-pen'}`}
@@ -505,4 +545,29 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       )}
     </article>
   );
+}
+
+/**
+ * A revisited question shows what was typed. Typed slots stored their values
+ * composed into one line, so they are split back for display — display only,
+ * never for marking, which used the values as they were entered.
+ */
+function splitPriorValues(
+  answers: Record<string, string>,
+  parts: { slots: { ref: string; input?: { shape: string } }[] }[],
+): Record<string, string[]> {
+  const out: Record<string, string[]> = {};
+  for (const p of parts) {
+    for (const s of p.slots) {
+      if (!s.input) continue;
+      const stored = answers[s.ref];
+      if (!stored) continue;
+      out[s.ref] = stored
+        .replace(/^[([{]|[)\]}]$/g, '')
+        .split(/\s*,\s*|\s+or\s+|\s*:\s*/)
+        .map((v) => v.trim())
+        .filter(Boolean);
+    }
+  }
+  return out;
 }

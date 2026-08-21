@@ -8,6 +8,7 @@ import { renderVisual } from '@/lib/visuals';
 import { loadStudyState } from '@/lib/study/state';
 import { estimatedMinutes } from '@/lib/session/builder';
 import { markSplit } from '@/lib/grade/assessable';
+import { FIXED_ARITY, isMultiValue, readInputShape } from '@/lib/grade/input-shape';
 import { PROFILE_GLOSS, PROFILE_MEANING } from '@/lib/study/profiles';
 import QuestionCard, { type CardQuestion } from './question-card';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
@@ -313,13 +314,29 @@ export default async function SessionPage({
       statementHtml: p.statement
         ? p.statement.split('{}').map((piece: string) => renderMathHtml(piece))
         : undefined,
-      slots: (p.slots ?? []).map((slot) => ({
-        ref: `${p.label}.${slot.label}`,
-        label: slot.label,
-        promptHtml: slot.prompt ? renderMathHtml(slot.prompt) : undefined,
-        promptText: slot.prompt,
-        mode: slot.response_mode ?? 'answer',
-      })),
+      slots: (p.slots ?? []).map((slot) => {
+        const mode = slot.response_mode ?? 'answer';
+        // The shape of the input is read from the ANSWER, on the server, and
+        // only the shape crosses to the client — never the answer itself. For
+        // a list or a set the box COUNT is withheld too: it would say how many
+        // factors there are.
+        const reading = mode === 'answer' && slot.answer ? readInputShape(slot.answer) : null;
+        return {
+          ref: `${p.label}.${slot.label}`,
+          label: slot.label,
+          promptHtml: slot.prompt ? renderMathHtml(slot.prompt) : undefined,
+          promptText: slot.prompt,
+          mode,
+          input:
+            reading && isMultiValue(reading.shape)
+              ? {
+                  shape: reading.shape,
+                  boxes: FIXED_ARITY.has(reading.shape) ? reading.boxes : undefined,
+                  cols: reading.cols,
+                }
+              : undefined,
+        };
+      }),
     })),
     optionsHtml: question.options?.map(renderMathHtml),
     marks: question.marks,

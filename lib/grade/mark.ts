@@ -1,4 +1,5 @@
 import { answersEquivalentAny } from './equivalence';
+import { componentsEquivalent } from './components';
 import { checkAnswerFormat, valueLooksRight } from './format';
 import type { AnswerFormat, ProfileMarks, RubricItem } from '@/lib/types';
 
@@ -37,6 +38,12 @@ export interface SlotInput {
   ref: string;
   answer: string;
   working: string;
+  /**
+   * One entry per box, when the slot was rendered as a typed input. Present
+   * means the student never typed a delimiter, so marking compares values by
+   * POSITION instead of parsing the string back apart.
+   */
+  values?: string[];
 }
 
 export interface MarkableSlot {
@@ -77,6 +84,7 @@ export function markStructuredParts(
         input?.working ?? '',
         slot.accept,
         slot.answer_format as AnswerFormat | undefined,
+        input?.values,
       );
       if (!result.correct) allCorrect = false;
       if (result.format_feedback && !formatFeedback) formatFeedback = result.format_feedback;
@@ -106,8 +114,12 @@ export function markStructured(
   working: string,
   accept?: string[],
   answerFormat?: AnswerFormat,
+  enteredValues?: string[],
 ): MarkResult {
-  const equivalent = answersEquivalentAny(studentAnswer, canonicalAnswer, accept);
+  const equivalent =
+    enteredValues && enteredValues.length > 0
+      ? componentsEquivalent(enteredValues, canonicalAnswer, accept)
+      : answersEquivalentAny(studentAnswer, canonicalAnswer, accept);
   // A required form is part of the question, and the official scheme marks it
   // as its own act: the value earns its marks, and expressing it in the demanded
   // form earns a further one (R1.7 §B4). So a right value in the wrong form

@@ -6,6 +6,8 @@ import { requireSession } from '@/lib/auth/session';
 import { markMcq, markStructuredParts } from '@/lib/grade/mark';
 import { GRADER_VERSION, questionFingerprint } from '@/lib/grade/version';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
+import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
+import { readInputShape } from '@/lib/grade/input-shape';
 import { renderMathHtml } from '@/lib/katex';
 import type { ProfileMarks, QuestionPart, RubricItem, TemplateName } from '@/lib/types';
 import { SLOT_REF_RE } from '@/lib/notation';
@@ -28,6 +30,10 @@ const SubmitZ = z.object({
         // the paper in, and a blank is marked wrong. Requiring a character here
         // would reject the whole submission over one unanswered slot (§2).
         answer: z.string().max(2000),
+        // One entry per box, when the slot was rendered as a typed input. The
+        // student never typed a delimiter, so marking never parses one: these
+        // are compared with the mark scheme value in the SAME POSITION.
+        values: z.array(z.string().max(200)).max(24).optional(),
       }),
     )
     .min(1)
@@ -58,7 +64,7 @@ export interface Feedback {
 export async function submitAnswer(input: {
   sessionId: string;
   questionIndex: number;
-  answers: { label: string; answer: string }[];
+  answers: { label: string; answer: string; values?: string[] }[];
   working?: string;
   durationMs?: number;
 }): Promise<Feedback | { error: string }> {
@@ -105,22 +111,38 @@ export async function submitAnswer(input: {
     partResults = [{ label: 'a', correct: result.correct }];
   } else {
     const parts = question.parts ?? [];
-    const inputs = answers.map((a) => ({ ref: a.label, answer: a.answer, working }));
+    const slotByRef = new Map(
+      parts.flatMap((p) =>
+        p.slots.map((slot) => [`${p.label}.${slot.label}` as string, slot] as const),
+      ),
+    );
+    // A typed slot arrives as values, not as a line of text. The line is
+    // composed HERE, from the shape of the mark scheme answer, so the record
+    // reads the way the papers write it and nothing has to guess a delimiter.
+    const entered = answers.map((a) => {
+      const slot = slotByRef.get(a.label);
+      const values = a.values?.map((v) => v.trim()).filter(Boolean) ?? [];
+      if (!slot?.answer || values.length === 0) return { ...a, values: undefined, text: a.answer };
+      return { ...a, values, text: composeAnswer(values, readInputShape(slot.answer).shape) };
+    });
+    const inputs = entered.map((a) => ({ ref: a.label, answer: a.text, working, values: a.values }));
     result = markStructuredParts(question.rubric ?? [], parts, inputs);
-    const inputByRef = new Map(answers.map((a) => [a.label, a.answer]));
+    const inputByRef = new Map(entered.map((a) => [a.label, a]));
     partResults = parts.flatMap((p) =>
       p.slots
         .filter((slot) => (slot.response_mode ?? 'answer') === 'answer')
-        .map((slot) => ({
-          label: `${p.label}.${slot.label}`,
-          correct: answersEquivalentAny(
-            inputByRef.get(`${p.label}.${slot.label}`) ?? '',
-            slot.answer,
-            slot.accept,
-          ),
-        })),
+        .map((slot) => {
+          const ref = `${p.label}.${slot.label}`;
+          const given = inputByRef.get(ref);
+          return {
+            label: ref,
+            correct: given?.values?.length
+              ? componentsEquivalent(given.values, slot.answer, slot.accept)
+              : answersEquivalentAny(given?.text ?? '', slot.answer, slot.accept),
+          };
+        }),
     );
-    storedAnswer = answers.map((a) => `(${a.label}) ${a.answer}`).join('; ');
+    storedAnswer = entered.map((a) => `(${a.label}) ${a.text}`).join('; ');
   }
 
   // Append-only: attempts are never mutated (§3.5).
