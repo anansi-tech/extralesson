@@ -58,6 +58,25 @@ export interface ShapeReading {
  */
 export const FIXED_ARITY = new Set<InputShape>(['coordinate', 'column_vector', 'matrix', 'ratio']);
 
+/**
+ * A list this short is the question naming what it wants — "calculate both
+ * angles", "state the two shares" — so its length is already public and the
+ * boxes may show it. Longer than this it is an enumeration, and how many there
+ * are is the thing being asked.
+ *
+ * Measured on the live bank: 38 of 52 list slots hold exactly two values and
+ * only 7 hold five or more, while sets run the other way — 13 of 22 hold five
+ * or more and exactly one holds two. Withholding the count from all of them
+ * opened three empty boxes for a two-value answer, which is what a student hit.
+ */
+export const NAMED_LIST_MAX = 4;
+
+/** Whether the number of boxes can be shown without answering the question. */
+export function showsBoxCount(reading: ShapeReading): boolean {
+  if (FIXED_ARITY.has(reading.shape)) return true;
+  return reading.shape === 'list' && reading.boxes <= NAMED_LIST_MAX;
+}
+
 /** Shapes entered as several values, however many. */
 export function isMultiValue(shape: InputShape): boolean {
   return shape === 'list' || shape === 'set' || shape === 'roots' || FIXED_ARITY.has(shape);

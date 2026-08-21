@@ -12,7 +12,7 @@ import { startSession } from '@/app/study/actions';
 import { loadStudyState } from '@/lib/study/state';
 import { estimatedMinutes } from '@/lib/session/builder';
 import { markSplit } from '@/lib/grade/assessable';
-import { FIXED_ARITY, isMultiValue, readInputShape } from '@/lib/grade/input-shape';
+import { isMultiValue, readInputShape, showsBoxCount } from '@/lib/grade/input-shape';
 import { inputAffordance } from '@/lib/grade/input-hints';
 import { PROFILE_GLOSS, PROFILE_MEANING } from '@/lib/study/profiles';
 import QuestionCard, { type CardQuestion } from './question-card';
@@ -462,7 +462,7 @@ export default async function SessionPage({
             reading && isMultiValue(reading.shape)
               ? {
                   shape: reading.shape,
-                  boxes: FIXED_ARITY.has(reading.shape) ? reading.boxes : undefined,
+                  boxes: showsBoxCount(reading) ? reading.boxes : undefined,
                   cols: reading.cols,
                 }
               : undefined,

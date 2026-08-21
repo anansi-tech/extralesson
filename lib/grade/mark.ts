@@ -124,18 +124,35 @@ export function markStructured(
   // as its own act: the value earns its marks, and expressing it in the demanded
   // form earns a further one (R1.7 §B4). So a right value in the wrong form
   // keeps everything except the rows written for the form.
+  // A FORM IS CHECKED PER VALUE, not on the line they were joined into.
+  //
+  // "Calculate both angles, each correct to 1 decimal place" is one slot
+  // holding two values. Running the check over the composed "73.7°, 53.1°"
+  // asks whether that STRING is one number to one decimal place, which it
+  // never is — so the format mark was lost on every multi-value slot that
+  // demanded a form, however carefully the student had rounded.
+  const checkForm = (): { ok: boolean; feedback?: string } => {
+    if (!answerFormat) return { ok: true };
+    const values = enteredValues?.length ? enteredValues : [studentAnswer];
+    for (const v of values) {
+      const check = checkAnswerFormat(v, answerFormat);
+      if (!check.ok) return check;
+    }
+    return { ok: true };
+  };
+
   let format_feedback: string | undefined;
   let correct = equivalent;
   let formOnlyMiss = false;
   if (equivalent && answerFormat) {
-    const check = checkAnswerFormat(studentAnswer, answerFormat);
+    const check = checkForm();
     if (!check.ok) {
       correct = false;
       formOnlyMiss = true;
       format_feedback = check.feedback;
     }
   } else if (!equivalent && answerFormat && valueLooksRight(studentAnswer, canonicalAnswer)) {
-    format_feedback = checkAnswerFormat(studentAnswer, answerFormat).feedback;
+    format_feedback = checkForm().feedback;
   }
   const trimmed = working.trim();
   const hasWorking = trimmed.length > 0;

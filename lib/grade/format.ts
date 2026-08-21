@@ -43,21 +43,72 @@ function clean(raw: string): string {
   return normaliseDigitGroups(stripMoney(raw)).trim().replace(/\s+/g, ' ').trim();
 }
 
+// KaTeX dressing is not part of the number either. A canonical answer is
+// written "$203.0\text{ m}^2$" and a student types "203.0 m^2"; both state a
+// value of 203.0.
+function bareMath(s: string): string {
+  return s
+    .replace(/^\$+|\$+$/g, '')
+    .replace(/\\text\{([^{}]*)\}/g, '$1')
+    .replace(/\^\s*\{?\s*\\circ\s*\}?/g, '°')
+    .replace(/\\%/g, '%')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * A UNIT IS NOT PART OF THE NUMBER WHOSE FORM IS BEING JUDGED.
+ *
+ * "73.7°" is one decimal place and "203.0 m^2" is one decimal place, but the
+ * check could not read a number out of either — it required bare digits — so it
+ * reported the form wrong and withheld the format mark from every answer that
+ * carried a unit. Measured before the fix: 59 of the 256 slots declaring a
+ * format had a canonical answer that failed ITS OWN declared format. The mark
+ * scheme's own answer could not have earned the mark.
+ *
+ * The lookbehind is what keeps "2\pi" intact: a unit follows a DIGIT, and the
+ * "pi" there follows a backslash.
+ */
+const TRAILING_UNIT = /(?<=\d)\s*(?:%|°|[a-z]{1,3}(?:\/[a-z]{1,3})?(?:\^\{?[23]\}?)?)$/i;
+
+function withoutUnit(s: string): string {
+  const stripped = s.replace(TRAILING_UNIT, '').trim();
+  return /\d/.test(stripped) ? stripped : s;
+}
+
 // "x = 3.14" states a value of 3.14: the label is not part of the number whose
 // form is being judged.
 function value_(raw: string): string {
-  return clean(raw).replace(/^[a-z]\s*=\s*/i, '').trim();
+  return withoutUnit(bareMath(clean(raw)).replace(/^[a-z]\s*=\s*/i, '').trim());
+}
+
+/**
+ * The numeral a rounding instruction is about.
+ *
+ * "Correct to 1 decimal place" is a claim about the NUMBER, and an answer may
+ * carry more than the number: a bearing is "53.1° north of east" and a rate is
+ * "1.93 m^2 per litre". Reading the whole string as a numeral failed on those
+ * and reported the form wrong.
+ *
+ * Only the numeric form checks use this. "Exact form" and standard form are
+ * claims about the whole expression and must keep it.
+ */
+function numeral(raw: string): string {
+  const v = value_(raw);
+  if (/^-?\d+(\.\d+)?$/.test(v)) return v;
+  const m = v.match(/-?\d+(?:\.\d+)?/);
+  return m ? m[0] : v;
 }
 
 function decimalPlaces(s: string): number | null {
-  const m = value_(s).match(/^-?\d+\.(\d+)$/);
+  const m = numeral(s).match(/^-?\d+\.(\d+)$/);
   return m ? m[1].length : null;
 }
 
 // Significant figures in a written numeral: leading zeros never count,
 // trailing zeros after a decimal point do.
 function significantFigures(s: string): number | null {
-  const t = value_(s).replace(/^-/, '');
+  const t = numeral(s).replace(/^-/, '');
   if (!/^\d*\.?\d+$/.test(t)) return null;
   const digits = t.replace('.', '');
   const trimmed = digits.replace(/^0+/, '');
@@ -124,7 +175,7 @@ export function checkAnswerFormat(raw: string, format: AnswerFormat): FormatChec
   }
 
   if (format === 'integer') {
-    if (!/^-?\d+$/.test(value)) {
+    if (!/^-?\d+$/.test(numeral(raw))) {
       return {
         ok: false,
         feedback: 'Correct value, but the question asks for a whole number.',
@@ -164,7 +215,7 @@ export function checkAnswerFormat(raw: string, format: AnswerFormat): FormatChec
     const want = Number(dp[1]);
     const got = decimalPlaces(value);
     if (want === 0) {
-      if (!/^-?\d+$/.test(value)) {
+      if (!/^-?\d+$/.test(numeral(raw))) {
         return { ok: false, feedback: 'Correct value, but the question asks for an answer to the nearest whole number.' };
       }
       return { ok: true };

@@ -21,8 +21,12 @@ import { createHash } from 'node:crypto';
  *       between quantities carrying units; a comma separates a list whether or
  *       not a space follows it; zero-width characters and non-breaking spaces
  *       scrubbed before anything reads the answer
+ *   v5  a declared FORM is read off the number rather than the string around
+ *       it — a unit, KaTeX dressing or a prose tail no longer makes an
+ *       answer's form unreadable — and a form is checked per value on a slot
+ *       holding several, instead of on the line they were joined into
  */
-export const GRADER_VERSION = 'v4';
+export const GRADER_VERSION = 'v5';
 
 /** An attempt stamped before this existed. Recorded, not guessed at. */
 export const GRADER_VERSION_UNKNOWN = 'unstamped';

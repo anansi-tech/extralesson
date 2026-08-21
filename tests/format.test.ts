@@ -193,3 +193,42 @@ describe('round trip — a correctly formatted answer marks correct', () => {
     }
   });
 });
+
+// A FORM IS A CLAIM ABOUT THE NUMBER, NOT ABOUT THE STRING AROUND IT.
+//
+// The check required bare digits, so anything carrying a unit failed to parse
+// as a number at all and was reported as the wrong form. Measured on the live
+// bank before the fix: 59 of the 256 slots declaring a format had a canonical
+// answer that failed ITS OWN declared format — the mark scheme's own answer
+// could not have earned the mark it defines. Afterwards: one, and that one is a
+// content error (a four-significant-figure answer declaring sf:3).
+describe('checkAnswerFormat — units, dressing and prose around the number', () => {
+  it('reads the number through a unit', () => {
+    expect(checkAnswerFormat('73.7°', 'dp:1').ok).toBe(true);
+    expect(checkAnswerFormat('203.0\\text{ m}^2', 'dp:1').ok).toBe(true);
+    expect(checkAnswerFormat('34.3 km/h', 'sf:3').ok).toBe(true);
+    expect(checkAnswerFormat('20.2\\%', 'sf:3').ok).toBe(true);
+    expect(checkAnswerFormat('164^\\circ', 'integer').ok).toBe(true);
+  });
+
+  it('reads it through KaTeX dressing and a prose tail', () => {
+    expect(checkAnswerFormat('$203.0\\text{ m}^2$', 'dp:1').ok).toBe(true);
+    expect(checkAnswerFormat('$53.1°$ north of east', 'dp:1').ok).toBe(true);
+    expect(checkAnswerFormat('$1.93\\text{ m}^2\\text{ per litre}$', 'dp:2').ok).toBe(true);
+  });
+
+  // "2\pi" ends in the letters "pi", which must not be eaten as a unit.
+  it('does not mistake a symbol for a unit', () => {
+    expect(checkAnswerFormat('2\\pi', 'exact').ok).toBe(true);
+    expect(checkAnswerFormat('2\\sqrt{3}', 'exact').ok).toBe(true);
+    expect(checkAnswerFormat('2.34 \\times 10^9\\text{ L}', 'standard_form').ok).toBe(true);
+  });
+
+  it('still fails a form that is genuinely wrong', () => {
+    expect(checkAnswerFormat('74', 'dp:1').ok).toBe(false);
+    expect(checkAnswerFormat('73.75', 'dp:1').ok).toBe(false);
+    expect(checkAnswerFormat('2.5 cm', 'integer').ok).toBe(false);
+    expect(checkAnswerFormat('20.25%', 'dp:1').ok).toBe(false);
+    expect(checkAnswerFormat('0.5', 'exact').ok).toBe(false);
+  });
+});
