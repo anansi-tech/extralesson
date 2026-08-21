@@ -269,3 +269,65 @@ describe('answersEquivalent — standard form', () => {
     expect(answersEquivalent('4.5 \\times 10^{-5}', '4.5 \\times 10^{5}')).toBe(false);
   });
 });
+
+// GRADER v4. All three found in stored attempts from one evening's studying,
+// not imagined, and all three the same defect in different clothes: the marker
+// judging how an answer was TYPED rather than what it says.
+describe('answersEquivalent — v4: an expression is equivalent to itself', () => {
+  // rationalize() answers a question about strings. With decimal coefficients
+  // it leaves float residue (2.2e-16) that is not the string '0', so this
+  // reported an expression as not equivalent to ITSELF, and a real attempt
+  // lost the mark for writing the accepted alternative exactly as listed.
+  it('matches an expression against a character-identical copy', () => {
+    expect(answersEquivalent('1.6+0.2(n-1)', '1.6+0.2(n-1)')).toBe(true);
+    expect(answersEquivalent('0.35x+2.15', '0.35x+2.15')).toBe(true);
+  });
+
+  it('matches two forms of the same sequence rule', () => {
+    expect(answersEquivalentAny('T_n=1.6+0.2(n-1)', '$T_n=0.2n+1.4$')).toBe(true);
+    expect(answersEquivalent('1.6+0.2(n-1)', '0.2n+1.4')).toBe(true);
+    expect(answersEquivalent('2(x-2)', '2x-4')).toBe(true);
+  });
+
+  it('still separates expressions that differ, including by a decimal', () => {
+    expect(answersEquivalent('0.2n+1.5', '0.2n+1.4')).toBe(false);
+    expect(answersEquivalent('2x+3', '3x+2')).toBe(false);
+    // Distinct variables get distinct sample values, or these would agree.
+    expect(answersEquivalent('x+y', '2x')).toBe(false);
+  });
+});
+
+describe('answersEquivalent — v4: x is the multiplication sign a phone has', () => {
+  it('reads x as times between arithmetic pieces', () => {
+    expect(answersEquivalent('2^3 x 3', '$2^3 \\times 3$')).toBe(true);
+    expect(answersEquivalent('2^2 X 3^2', '$2^2 \\times 3^2$')).toBe(true);
+  });
+
+  it('leaves x alone wherever it is algebra', () => {
+    expect(answersEquivalent('2x + 5', '2x + 5')).toBe(true);
+    expect(answersEquivalent('2 x 3 grid', '6')).toBe(false);
+    expect(answersEquivalent('x + 1', '2')).toBe(false);
+  });
+});
+
+describe('answersEquivalent — v4: a comma needs no space after it', () => {
+  it('splits a list typed without the spacebar', () => {
+    expect(answersEquivalent('18kg,27kg,36kg', '18 kg, 27 kg, 36 kg')).toBe(true);
+    expect(answersEquivalent('1.6,9/5,2.0,11/5', '$1.6, \\frac{9}{5}, 2.0, \\frac{11}{5}$')).toBe(
+      true,
+    );
+  });
+
+  it('still keeps a wrong list wrong', () => {
+    expect(answersEquivalent('18kg,27kg,35kg', '18 kg, 27 kg, 36 kg')).toBe(false);
+  });
+});
+
+describe('answersEquivalent — v4: characters the student cannot see', () => {
+  // A stored attempt carried a trailing U+200B and was marked wrong for it.
+  it('ignores zero-width characters and non-breaking spaces', () => {
+    expect(answersEquivalent('1.6,(9/5),2.0,(11/5)​', '$1.6, \\frac{9}{5}, 2.0, \\frac{11}{5}$')).toBe(true);
+    expect(answersEquivalent('​42​', '42')).toBe(true);
+    expect(answersEquivalent('72 cm', '72 cm')).toBe(true);
+  });
+});

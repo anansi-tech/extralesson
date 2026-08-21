@@ -14,8 +14,15 @@ import { createHash } from 'node:crypto';
  *       from rubric rows on auto-marked slots
  *   v3  a product of quantities matches however the multiplication sign was
  *       typed; percent gets the omitted-unit leniency every other unit had
+ *   v4  expressions compared by sampling instead of by rationalize()'s output
+ *       string, which left float residue and reported an expression as not
+ *       equivalent to itself; a symbolic engine may now only prove equality,
+ *       never inequality; x read as times between arithmetic pieces, not only
+ *       between quantities carrying units; a comma separates a list whether or
+ *       not a space follows it; zero-width characters and non-breaking spaces
+ *       scrubbed before anything reads the answer
  */
-export const GRADER_VERSION = 'v3';
+export const GRADER_VERSION = 'v4';
 
 /** An attempt stamped before this existed. Recorded, not guessed at. */
 export const GRADER_VERSION_UNKNOWN = 'unstamped';

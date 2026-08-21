@@ -58,8 +58,10 @@ describe('the question fingerprint', () => {
   });
 
   it('names a grader version that changes when marking does', () => {
-    // Bumped whenever a verdict could change: v3 adds products typed with any
-    // multiplication sign, and percent's omitted-unit leniency.
-    expect(GRADER_VERSION).toBe('v3');
+    // Bumped whenever a verdict could change: v4 compares expressions by
+    // sampling rather than by rationalize()'s output string, reads x as times
+    // between arithmetic pieces, splits a comma with no space after it, and
+    // scrubs characters the student cannot see.
+    expect(GRADER_VERSION).toBe('v4');
   });
 });

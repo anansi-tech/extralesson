@@ -1,4 +1,4 @@
-import { evaluate, rationalize, simplify } from 'mathjs';
+import { evaluate, parse, rationalize, simplify } from 'mathjs';
 import { markMoney, normaliseDigitGroups } from '@/lib/money';
 import { parseQuantity, parseQuantityProduct, productsEqual, sameDimension } from './quantity';
 
@@ -11,6 +11,20 @@ import { parseQuantity, parseQuantityProduct, productsEqual, sameDimension } fro
 // mathjs (fractions, surds, equivalent algebraic forms), then as normalized
 // strings.
 
+// Characters a student cannot see and did not mean to send. A phone keyboard,
+// a copy out of a rendered page and some autocomplete engines all insert zero-
+// width joiners and non-breaking spaces, and a stored attempt was marked wrong
+// for a trailing U+200B on an otherwise correct list. Invisible is the worst
+// kind of wrong mark: nothing the student can look at explains it.
+//
+// Zero-width characters carry no meaning here and go. The various fixed-width
+// spaces are spaces and become one.
+function stripInvisible(raw: string): string {
+  return raw
+    .replace(/[\u200b-\u200f\u2060\ufeff]/g, '')
+    .replace(/[\u00a0\u2007\u2009\u202f]/g, ' ');
+}
+
 // Normalize: trim, lowercase, strip KaTeX/currency dressing, unify minus
 // signs and multiplication symbols, collapse whitespace.
 function preClean(raw: string): string {
@@ -20,7 +34,7 @@ function preClean(raw: string): string {
   // bare number, so $70 matched 70 m. markMoney rewrites it as a unit the
   // quantity parser understands; the bare $ that follows is a KaTeX delimiter
   // and is still removed below.
-  return normaliseDigitGroups(markMoney(raw))
+  const cleaned = normaliseDigitGroups(markMoney(stripInvisible(raw)))
     .trim()
     .toLowerCase()
     .replace(/\\left|\\right|\\,|\\;/g, '')
@@ -39,14 +53,39 @@ function preClean(raw: string): string {
     .replace(/³/g, '^3')
     .replace(/\s+/g, ' ')
     .trim();
+  return rewritePositionalTimes(cleaned);
+}
+
+// The letter x is a multiplication sign when the phone keyboard in a student's
+// hand has no x symbol on it. It is only ever read that way POSITIONALLY:
+// every piece either side must be arithmetic carrying no letters of its own,
+// so "2^3 x 3" is a product while "2x + 5", "y = 2 x" and "2 x 3 grid" keep
+// their x untouched. Substituting x for * anywhere else would turn every
+// algebraic answer into arithmetic.
+//
+// lib/grade/quantity.ts applies the same positional rule one level up, where
+// the pieces are quantities ("8 m x 6 m") rather than bare numbers. Both are
+// needed: that one requires a unit on both sides, and a prime factorisation
+// has none.
+const ARITHMETIC_PIECE = /^[\d.^{}()\s*\/+-]*\d[\d.^{}()\s*\/+-]*$/;
+
+function rewritePositionalTimes(s: string): string {
+  const pieces = s.split(/\s+x\s+/);
+  if (pieces.length < 2) return s;
+  return pieces.every((p) => ARITHMETIC_PIECE.test(p.trim())) ? pieces.join(' * ') : s;
 }
 
 // Split a (pre-cleaned) answer into independent parts: roots, or the answers
-// to (a)/(b)/(c) sub-parts. Comma splits only on ", " so thousands separators
-// ("1,200") survive.
+// to (a)/(b)/(c) sub-parts.
+//
+// The comma needs no space after it. It used to, so that a thousands separator
+// ("1,200") survived — but preClean has already run normaliseDigitGroups by
+// this point and digit grouping is gone, so every comma still standing here is
+// a separator. Requiring the space marked "18kg,27kg,36kg" wrong against
+// "18 kg, 27 kg, 36 kg", which is the same list typed without the spacebar.
 function splitParts(cleaned: string): string[] {
   return cleaned
-    .split(/\s+or\s+|\s+and\s+|;|\n|,\s+/)
+    .split(/\s+or\s+|\s+and\s+|;|\n|,\s*/)
     .map(stripLabel)
     .filter((p) => p.length > 0);
 }
@@ -207,32 +246,119 @@ function asDifference(expr: string): string {
   return sides.length === 2 ? `(${sides[0]}) - (${sides[1]})` : expr;
 }
 
-// Canonical comparison via mathjs: evaluate both (constants like "2*sqrt(2)"
-// vs "2.828"), else simplify the difference of two algebraic forms to 0.
-// Returns null when mathjs can't decide.
+// Names mathjs resolves itself; everything else in an expression is a free
+// variable the student chose.
+const MATH_CONSTANTS = new Set(['pi', 'e', 'i', 'tau', 'phi', 'infinity']);
+
+// The free variables of an expression, or null if it will not parse.
+function freeVariables(expr: string): string[] | null {
+  try {
+    const names = new Set<string>();
+    parse(expr).traverse((node: unknown, _path: string, parent: unknown) => {
+      const n = node as { isSymbolNode?: boolean; name?: string };
+      const p = parent as { isFunctionNode?: boolean; fn?: unknown } | null;
+      if (!n.isSymbolNode || !n.name) return;
+      if (p?.isFunctionNode && p.fn === node) return; // "sqrt" is not a variable
+      if (!MATH_CONSTANTS.has(n.name.toLowerCase())) names.add(n.name);
+    });
+    return [...names];
+  } catch {
+    return null;
+  }
+}
+
+// Sampling points for the free variables. Deliberately irrational-ish and
+// spread over both signs: two different expressions can agree at 0, 1 and 2 by
+// coincidence far more easily than they can agree here.
+const SAMPLE_POINTS = [0.7371, 1.4142, 2.6458, -1.2361, 3.3166, -2.2360, 4.7958];
+
+// Two expressions are the same function when they agree wherever they are
+// evaluated. This is a question about equality of functions, not about a
+// student rounding, so the tolerance is float noise and nothing more.
+function sameToFloatNoise(a: number, b: number): boolean {
+  return Math.abs(a - b) <= Math.max(Math.abs(a), Math.abs(b), 1) * 1e-9;
+}
+
+// Do two expressions agree at enough sample points to call them equal?
+// null means "could not tell" — never "not equal".
+function sampledEquivalent(ea: string, eb: string, vars: string[]): boolean | null {
+  let agreed = 0;
+  for (const base of SAMPLE_POINTS) {
+    const scope: Record<string, number> = {};
+    // Each variable gets its own value, or "x + y" and "2x" would agree.
+    vars.forEach((v, j) => {
+      scope[v] = base + j * 0.6180;
+    });
+    let va: unknown;
+    let vb: unknown;
+    try {
+      va = evaluate(ea, { ...scope });
+      vb = evaluate(eb, { ...scope });
+    } catch {
+      continue; // this point is outside a domain (log, sqrt, /0) — try the next
+    }
+    if (typeof va !== 'number' || typeof vb !== 'number') return null;
+    if (!Number.isFinite(va) || !Number.isFinite(vb)) continue;
+    if (!sameToFloatNoise(va, vb)) return false;
+    agreed++;
+  }
+  return agreed >= 3 ? true : null;
+}
+
+// Canonical comparison via mathjs. Returns null when it cannot decide.
+//
+// A CONSTANT is evaluated and compared with the rounding leniency every other
+// number gets ("2*sqrt(2)" against "2.828"). An EXPRESSION WITH A VARIABLE is
+// compared by SAMPLING — evaluating both sides at fixed points — because
+// rationalize() answers a question about strings, not about mathematics:
+//
+//   rationalize('(1.6+0.2(n-1)) - (1.6+0.2(n-1))')  ->  2.220446049250313e-16
+//
+// That is not the string '0', so an expression was reported as not equivalent
+// to ITSELF, and a real attempt lost the mark for writing the accepted
+// alternative exactly as the mark scheme listed it. Any expression with
+// decimal coefficients could hit it.
+//
+// rationalize and simplify are kept as a fallback for what sampling cannot
+// evaluate, but they are now trusted ASYMMETRICALLY: '0' is a sound proof of
+// equality, while a non-zero residue proves nothing and returns null rather
+// than false. A symbolic engine may never produce a confident "wrong" again.
 function mathEquivalent(a: string, b: string): boolean | null {
   const bothEquations = a.includes('=') && b.includes('=');
   const ea = toMathExpr(bothEquations ? asDifference(a) : a);
   const eb = toMathExpr(bothEquations ? asDifference(b) : b);
-  try {
-    const va = evaluate(ea);
-    const vb = evaluate(eb);
-    if (typeof va === 'number' && typeof vb === 'number') return closeEnough(va, vb);
-  } catch {
-    // fall through to symbolic comparison
+
+  const va = freeVariables(ea);
+  const vb = freeVariables(eb);
+  if (va === null || vb === null) return null;
+  const vars = [...new Set([...va, ...vb])];
+
+  if (vars.length === 0) {
+    try {
+      const na = evaluate(ea);
+      const nb = evaluate(eb);
+      if (typeof na === 'number' && typeof nb === 'number') return closeEnough(na, nb);
+    } catch {
+      // not something mathjs can evaluate — fall through
+    }
+  } else {
+    const sampled = sampledEquivalent(ea, eb, vars);
+    if (sampled !== null) return sampled;
   }
+
   // rationalize expands polynomials to canonical form (simplify alone does
   // not distribute, so "2(x-2)" vs "2x-4" would not reduce to 0).
   try {
-    return rationalize(`(${ea}) - (${eb})`).toString() === '0';
+    if (rationalize(`(${ea}) - (${eb})`).toString() === '0') return true;
   } catch {
     // non-polynomial (surds, functions) — try plain simplification
   }
   try {
-    return simplify(`(${ea}) - (${eb})`).toString() === '0';
+    if (simplify(`(${ea}) - (${eb})`).toString() === '0') return true;
   } catch {
     return null;
   }
+  return null;
 }
 
 // Generic nouns that never distinguish two answers ("obtuse" vs "obtuse
