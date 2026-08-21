@@ -200,8 +200,7 @@ describe('round trip — a correctly formatted answer marks correct', () => {
 // as a number at all and was reported as the wrong form. Measured on the live
 // bank before the fix: 59 of the 256 slots declaring a format had a canonical
 // answer that failed ITS OWN declared format — the mark scheme's own answer
-// could not have earned the mark it defines. Afterwards: one, and that one is a
-// content error (a four-significant-figure answer declaring sf:3).
+// could not have earned the mark it defines. Afterwards: none.
 describe('checkAnswerFormat — units, dressing and prose around the number', () => {
   it('reads the number through a unit', () => {
     expect(checkAnswerFormat('73.7°', 'dp:1').ok).toBe(true);
@@ -230,5 +229,35 @@ describe('checkAnswerFormat — units, dressing and prose around the number', ()
     expect(checkAnswerFormat('2.5 cm', 'integer').ok).toBe(false);
     expect(checkAnswerFormat('20.25%', 'dp:1').ok).toBe(false);
     expect(checkAnswerFormat('0.5', 'exact').ok).toBe(false);
+  });
+});
+
+// A TRAILING ZERO IN A WHOLE NUMBER IS AMBIGUOUS, and the numeral cannot say
+// which it is: 2540 is 2541 written to three significant figures, and it is
+// also an exact count written to four. Counting them "as written" picked one
+// reading and rejected the other, which rejected a correctly rounded answer —
+// 037d54 asks for the amount due after three years correct to 3 s.f., the
+// amount is $2 541, and three figures makes it $2 540.
+describe('checkAnswerFormat — significant figures in a whole number', () => {
+  it('accepts every reading the numeral can bear', () => {
+    expect(checkAnswerFormat('\\$2 540', 'sf:3').ok).toBe(true);
+    expect(checkAnswerFormat('2540', 'sf:3').ok).toBe(true);
+    expect(checkAnswerFormat('2540', 'sf:4').ok).toBe(true);
+    expect(checkAnswerFormat('2500', 'sf:2').ok).toBe(true);
+    expect(checkAnswerFormat('2500', 'sf:3').ok).toBe(true);
+  });
+
+  it('rejects a reading it cannot', () => {
+    expect(checkAnswerFormat('2540', 'sf:2').ok).toBe(false);
+    expect(checkAnswerFormat('2541', 'sf:3').ok).toBe(false);
+    expect(checkAnswerFormat('2537', 'sf:3').ok).toBe(false);
+  });
+
+  // A decimal point settles it: those zeros were written on purpose.
+  it('keeps a decimal exact, where nothing is ambiguous', () => {
+    expect(checkAnswerFormat('25.40', 'sf:4').ok).toBe(true);
+    expect(checkAnswerFormat('25.40', 'sf:3').ok).toBe(false);
+    expect(checkAnswerFormat('0.0250', 'sf:3').ok).toBe(true);
+    expect(checkAnswerFormat('0.0250', 'sf:2').ok).toBe(false);
   });
 });

@@ -23,8 +23,10 @@ import { createHash } from 'node:crypto';
  *       scrubbed before anything reads the answer
  *   v5  a declared FORM is read off the number rather than the string around
  *       it — a unit, KaTeX dressing or a prose tail no longer makes an
- *       answer's form unreadable — and a form is checked per value on a slot
- *       holding several, instead of on the line they were joined into
+ *       answer's form unreadable — a form is checked per value on a slot
+ *       holding several instead of on the line they were joined into, and a
+ *       whole number's trailing zeros are read as the ambiguity they are, so
+ *       2540 satisfies 3 significant figures as well as 4
  */
 export const GRADER_VERSION = 'v5';
 
