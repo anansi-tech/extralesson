@@ -1,0 +1,151 @@
+'use client';
+
+/**
+ * AN INPUT SHAPED LIKE THE ANSWER.
+ *
+ * One box per value, with the brackets, commas and colons PRINTED rather than
+ * typed. A student on a phone never reaches for a character the keyboard does
+ * not carry and never guesses which delimiter the marker will accept — and
+ * because each value arrives separately, the marker compares them by position
+ * instead of splitting a string back apart.
+ *
+ * How many boxes is itself part of the answer for some shapes. A coordinate is
+ * a pair and a column vector has the rows the question named, so those are laid
+ * out fixed. A list is not: rendering "list the factors of 24" as eight boxes
+ * would answer the question. Those start at three and grow on demand.
+ */
+
+const FIXED_START = 3;
+
+interface Props {
+  shape: string;
+  /** Fixed-arity shapes only; absent when showing it would give the answer. */
+  boxes?: number;
+  cols?: number;
+  values: string[];
+  onChange: (values: string[]) => void;
+  disabled: boolean;
+  /** 'a.i' — ids and labels are built from it. */
+  slotRef: string;
+  describe: string;
+}
+
+/** What box i is called, for the label a screen reader and a marker both need. */
+function boxName(shape: string, i: number, cols: number): string {
+  if (shape === 'coordinate') return i === 0 ? 'x' : 'y';
+  if (shape === 'ratio') return `part ${i + 1}`;
+  if (shape === 'column_vector') return `row ${i + 1}`;
+  if (shape === 'matrix') return `row ${Math.floor(i / cols) + 1}, column ${(i % cols) + 1}`;
+  return `value ${i + 1}`;
+}
+
+export function TypedInput({
+  shape,
+  boxes,
+  cols = 1,
+  values,
+  onChange,
+  disabled,
+  slotRef,
+  describe,
+}: Props) {
+  const fixed = boxes !== undefined;
+  const count = fixed ? boxes! : Math.max(FIXED_START, values.length);
+
+  const set = (i: number, v: string) => {
+    const next = [...values];
+    while (next.length < count) next.push('');
+    next[i] = v;
+    onChange(next);
+  };
+
+  const box = (i: number) => (
+    <input
+      key={i}
+      id={`slot-${slotRef}-${i}`}
+      value={values[i] ?? ''}
+      onChange={(e) => set(i, e.target.value)}
+      disabled={disabled}
+      aria-label={`${describe} — ${boxName(shape, i, cols)}`}
+      className="w-16 border-[1.5px] border-ink p-2 text-center font-mono text-sm"
+    />
+  );
+
+  // Printed punctuation: the student sees the notation and types only values.
+  const punct = (text: string) => (
+    <span aria-hidden className="font-mono text-lg text-dim">
+      {text}
+    </span>
+  );
+
+  if (shape === 'coordinate') {
+    return (
+      <div className="mt-1 flex items-center gap-1">
+        {punct('(')}
+        {box(0)}
+        {punct(',')}
+        {box(1)}
+        {punct(')')}
+        <span className="ml-2 font-mono text-[11px] text-dim">(x, y)</span>
+      </div>
+    );
+  }
+
+  if (shape === 'ratio') {
+    return (
+      <div className="mt-1 flex items-center gap-1">
+        {box(0)}
+        {punct(':')}
+        {box(1)}
+      </div>
+    );
+  }
+
+  if (shape === 'column_vector' || shape === 'matrix') {
+    const rows = Math.ceil(count / cols);
+    return (
+      <div className="mt-1 flex items-stretch gap-1">
+        <span aria-hidden className="w-2 border-y-[1.5px] border-l-[1.5px] border-ink" />
+        <div className="flex flex-col gap-1">
+          {Array.from({ length: rows }, (_, r) => (
+            <div key={r} className="flex gap-1">
+              {Array.from({ length: cols }, (_, c) => box(r * cols + c))}
+            </div>
+          ))}
+        </div>
+        <span aria-hidden className="w-2 border-y-[1.5px] border-r-[1.5px] border-ink" />
+      </div>
+    );
+  }
+
+  // list, set, roots — the count is not shown, so it grows on demand.
+  const open = shape === 'set' ? '{' : '';
+  const close = shape === 'set' ? '}' : '';
+  const between = shape === 'roots' ? 'or' : ',';
+  return (
+    <div className="mt-1">
+      <div className="flex flex-wrap items-center gap-1">
+        {open && punct(open)}
+        {Array.from({ length: count }, (_, i) => (
+          <span key={i} className="flex items-center gap-1">
+            {i > 0 && punct(between)}
+            {box(i)}
+          </span>
+        ))}
+        {close && punct(close)}
+      </div>
+      {!disabled && (
+        <button
+          type="button"
+          onClick={() => onChange([...values, ''].slice(0, 24))}
+          className="mt-1 font-mono text-[11px] text-dim underline"
+        >
+          + another box
+        </button>
+      )}
+      {shape === 'set' && (
+        <p className="mt-1 font-mono text-[11px] text-dim">Order does not matter.</p>
+      )}
+    </div>
+  );
+}
