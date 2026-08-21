@@ -107,14 +107,33 @@ function decimalPlaces(s: string): number | null {
 
 // Significant figures in a written numeral: leading zeros never count,
 // trailing zeros after a decimal point do.
-function significantFigures(s: string): number | null {
+/**
+ * How many significant figures a numeral is written to — as a RANGE, because
+ * for a whole number that is genuinely what it is.
+ *
+ * A trailing zero in an integer is a placeholder or a significant digit and the
+ * numeral cannot say which: 2540 is 2541 to three figures, and it is also a
+ * count of exactly 2540 to four. Both readings are correct, so both are
+ * accepted, and the range says so instead of picking one.
+ *
+ * This was resolved the other way — "count them as written" — and it rejected
+ * a correctly rounded answer. 037d54 asks for the amount due after three years
+ * correct to 3 s.f.; the amount is $2 541, three figures makes it $2 540, and
+ * the mark scheme's own answer could not earn the mark it defines.
+ *
+ * A decimal point removes the ambiguity: 25.40 states four figures, and 0.0250
+ * states three. There the range is a single number.
+ */
+function significantFigureRange(s: string): [number, number] | null {
   const t = numeral(s).replace(/^-/, '');
   if (!/^\d*\.?\d+$/.test(t)) return null;
   const digits = t.replace('.', '');
   const trimmed = digits.replace(/^0+/, '');
-  if (trimmed === '') return 1; // "0" / "0.0"
-  // A whole number's trailing zeros are ambiguous; count them as written.
-  return trimmed.length;
+  if (trimmed === '') return [1, 1]; // "0" / "0.0"
+  const written = trimmed.length;
+  if (t.includes('.')) return [written, written];
+  const withoutTrailingZeros = trimmed.replace(/0+$/, '');
+  return [Math.max(1, withoutTrailingZeros.length), written];
 }
 
 function gcd(a: number, b: number): number {
@@ -197,14 +216,17 @@ export function checkAnswerFormat(raw: string, format: AnswerFormat): FormatChec
   const sf = /^sf:(\d)$/.exec(format);
   if (sf) {
     const want = Number(sf[1]);
-    const got = significantFigures(value);
-    if (got === null) {
+    const range = significantFigureRange(value);
+    if (range === null) {
       return { ok: false, feedback: `Correct value, but the question asks for a number correct to ${want} significant figures.` };
     }
-    if (got !== want) {
+    const [least, most] = range;
+    if (want < least || want > most) {
       return {
         ok: false,
-        feedback: `Correct value, but the question asks for ${want} significant figures and this is written to ${got}.`,
+        feedback: `Correct value, but the question asks for ${want} significant figures and this is written to ${
+          least === most ? least : `${least}–${most}`
+        }.`,
       };
     }
     return { ok: true };
