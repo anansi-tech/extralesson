@@ -9,6 +9,7 @@ import { loadStudyState } from '@/lib/study/state';
 import { estimatedMinutes } from '@/lib/session/builder';
 import { markSplit } from '@/lib/grade/assessable';
 import { FIXED_ARITY, isMultiValue, readInputShape } from '@/lib/grade/input-shape';
+import { inputAffordance } from '@/lib/grade/input-hints';
 import { PROFILE_GLOSS, PROFILE_MEANING } from '@/lib/study/profiles';
 import QuestionCard, { type CardQuestion } from './question-card';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
@@ -321,12 +322,20 @@ export default async function SessionPage({
         // a list or a set the box COUNT is withheld too: it would say how many
         // factors there are.
         const reading = mode === 'answer' && slot.answer ? readInputShape(slot.answer) : null;
+        // What is legal to type, and the characters a phone keyboard hides.
+        // Derived from the answer, on the server; the examples inside the hints
+        // are constants, so nothing about THIS answer crosses over.
+        const affordance = reading
+          ? inputAffordance(slot.answer, reading.shape)
+          : { hints: [], symbols: [] };
         return {
           ref: `${p.label}.${slot.label}`,
           label: slot.label,
           promptHtml: slot.prompt ? renderMathHtml(slot.prompt) : undefined,
           promptText: slot.prompt,
           mode,
+          hints: affordance.hints,
+          symbols: affordance.symbols,
           input:
             reading && isMultiValue(reading.shape)
               ? {

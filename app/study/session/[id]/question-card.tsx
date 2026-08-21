@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { submitAnswer, type Feedback } from './actions';
 import { TypedInput } from './typed-input';
+import { HintLines, SymbolStrip } from './affordance';
 import { isPositionalLabel } from '@/lib/notation';
 import { PROFILE_GLOSS } from '@/lib/study/profiles';
 
@@ -29,6 +30,9 @@ export interface CardQuestion {
       /** The same prompt as plain text, for the input's accessible name. */
       promptText?: string;
       mode: string;
+      /** What is legal to type here, and the symbols the keyboard hides. */
+      hints?: string[];
+      symbols?: string[];
       /**
        * Set when the answer is entered as several values. The shape only —
        * never the answer, and `boxes` only where the count is part of the
@@ -137,6 +141,40 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // on paper and self-marked, so they are not typed in and never gate submit —
   // and a part may hold both kinds at once.
   const markedSlots = question.parts.flatMap((p) => p.slots.filter((s) => s.mode === 'answer'));
+  // Which box the caret was last in, so an inserted symbol lands there rather
+  // than at the end. box === -1 is a slot with a single box.
+  const [focus, setFocus] = useState<{ ref: string; box: number } | null>(null);
+  const boxId = (ref: string, box: number) => (box < 0 ? `slot-${ref}` : `slot-${ref}-${box}`);
+
+  const insertSymbol = (ref: string, hasBoxes: boolean, ch: string) => {
+    const box = focus?.ref === ref ? focus.box : hasBoxes ? 0 : -1;
+    const id = boxId(ref, box);
+    const el = document.getElementById(id) as HTMLInputElement | null;
+    const caret = el?.selectionStart ?? null;
+    const splice = (current: string) => {
+      const at = caret ?? current.length;
+      return current.slice(0, at) + ch + current.slice(at);
+    };
+    if (box < 0) {
+      setPartAnswers((prev) => ({ ...prev, [ref]: splice(prev[ref] ?? '') }));
+    } else {
+      setBoxValues((prev) => {
+        const values = [...(prev[ref] ?? [])];
+        while (values.length <= box) values.push('');
+        values[box] = splice(values[box] ?? '');
+        return { ...prev, [ref]: values };
+      });
+    }
+    // The value changes on re-render, so the caret is restored after it.
+    requestAnimationFrame(() => {
+      const after = document.getElementById(id) as HTMLInputElement | null;
+      if (!after) return;
+      const at = (caret ?? after.value.length - ch.length) + ch.length;
+      after.focus();
+      after.setSelectionRange(at, at);
+    });
+  };
+
   /** A slot has an answer when its box — or any of its boxes — holds one. */
   const filled = (s: { ref: string; input?: unknown }) =>
     s.input
@@ -277,12 +315,34 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               setPartAnswers((prev) => ({ ...prev, [p.slots[i].ref]: e.target.value }))
                             }
                             disabled={!!feedback}
+                            id={`slot-${p.slots[i].ref}`}
+                            onFocus={() => setFocus({ ref: p.slots[i].ref, box: -1 })}
                             aria-label={`Answer ${i + 1} in the statement for part (${p.label})`}
                             className="w-24 border-0 border-b-[1.5px] border-ink bg-transparent px-1 py-0.5 text-center font-mono text-sm"
                           />
                         )}
                       </Fragment>
                     ))}
+                  </div>
+                )}
+                {/* A cloze part's gaps are answer slots too. One strip serves
+                    the row, inserting into whichever gap the caret is in. */}
+                {p.statementHtml && (
+                  <div className="pl-4">
+                    <SymbolStrip
+                      symbols={[...new Set(p.slots.flatMap((sl) => sl.symbols ?? []))]}
+                      disabled={!!feedback}
+                      onInsert={(ch) =>
+                        insertSymbol(
+                          focus && p.slots.some((sl) => sl.ref === focus.ref)
+                            ? focus.ref
+                            : p.slots[0].ref,
+                          false,
+                          ch,
+                        )
+                      }
+                    />
+                    <HintLines hints={[...new Set(p.slots.flatMap((sl) => sl.hints ?? []))].slice(0, 2)} />
                   </div>
                 )}
 
@@ -293,12 +353,13 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                   return (
                     <div key={slot.ref} className={p.slots.length > 1 ? 'mt-2 pl-4' : ''}>
                       {slot.mode === 'answer' ? (
-                        // The label belongs TO THE BOX, on its line, the way a
-                        // printed paper puts (i) beside the answer line it
-                        // belongs to. Stacked above, two boxes under one
-                        // instruction are told apart only by counting, and a
-                        // student who counts wrong has a correct answer marked
-                        // wrong — the worst thing this can do to them.
+                        <>
+                          {/* The label belongs TO THE BOX, on its line, the way
+                              a printed paper puts (i) beside the answer line it
+                              belongs to. Stacked above, two boxes under one
+                              instruction are told apart only by counting, and a
+                              student who counts wrong has a correct answer
+                              marked wrong — the worst thing this can do. */}
                         <div className="mt-1 flex items-start gap-2">
                           {p.slots.length > 1 && (
                             <label
@@ -328,6 +389,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               disabled={!!feedback}
                               slotRef={slot.ref}
                               describe={slotAriaLabel(p, slot)}
+                              onFocusBox={(box) => setFocus({ ref: slot.ref, box })}
                             />
                           ) : (
                             <input
@@ -337,6 +399,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                                 setPartAnswers((prev) => ({ ...prev, [slot.ref]: e.target.value }))
                               }
                               disabled={!!feedback}
+                              onFocus={() => setFocus({ ref: slot.ref, box: -1 })}
                               aria-label={slotAriaLabel(p, slot)}
                               className="w-full border-[1.5px] border-ink p-2 font-mono text-sm"
                               placeholder={
@@ -353,7 +416,16 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               {partFeedback.correct ? '✓' : '✗'}
                             </span>
                           )}
-                        </div>
+                          </div>
+                          <div className={p.slots.length > 1 ? 'ml-auto basis-[58%] sm:basis-[62%]' : ''}>
+                            <SymbolStrip
+                              symbols={slot.symbols ?? []}
+                              disabled={!!feedback}
+                              onInsert={(ch) => insertSymbol(slot.ref, !!slot.input, ch)}
+                            />
+                            <HintLines hints={slot.hints ?? []} />
+                          </div>
+                        </>
                       ) : (
                         <>
                           {p.slots.length > 1 && (
