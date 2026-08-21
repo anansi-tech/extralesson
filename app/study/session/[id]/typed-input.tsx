@@ -28,6 +28,8 @@ interface Props {
   /** 'a.i' — ids and labels are built from it. */
   slotRef: string;
   describe: string;
+  /** Which box the caret is in, so an inserted symbol lands there. */
+  onFocusBox: (box: number) => void;
 }
 
 /** What box i is called, for the label a screen reader and a marker both need. */
@@ -48,6 +50,7 @@ export function TypedInput({
   disabled,
   slotRef,
   describe,
+  onFocusBox,
 }: Props) {
   const fixed = boxes !== undefined;
   const count = fixed ? boxes! : Math.max(FIXED_START, values.length);
@@ -66,6 +69,7 @@ export function TypedInput({
       value={values[i] ?? ''}
       onChange={(e) => set(i, e.target.value)}
       disabled={disabled}
+      onFocus={() => onFocusBox(i)}
       aria-label={`${describe} — ${boxName(shape, i, cols)}`}
       className="w-16 border-[1.5px] border-ink p-2 text-center font-mono text-sm"
     />
