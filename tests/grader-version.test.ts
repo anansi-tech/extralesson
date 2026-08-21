@@ -58,10 +58,9 @@ describe('the question fingerprint', () => {
   });
 
   it('names a grader version that changes when marking does', () => {
-    // Bumped whenever a verdict could change: v4 compares expressions by
-    // sampling rather than by rationalize()'s output string, reads x as times
-    // between arithmetic pieces, splits a comma with no space after it, and
-    // scrubs characters the student cannot see.
-    expect(GRADER_VERSION).toBe('v4');
+    // Bumped whenever a verdict could change: v5 reads a declared FORM off the
+    // number instead of the string around it, and checks it per value on a slot
+    // holding several.
+    expect(GRADER_VERSION).toBe('v5');
   });
 });

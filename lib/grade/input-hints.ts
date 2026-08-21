@@ -29,22 +29,68 @@ interface Rule {
   when: RegExp;
   hint?: string;
   symbols?: string[];
+  /**
+   * THE PROMISE THE HINT MAKES, as [what a student types, what the scheme says].
+   *
+   * A hint is a claim about the marker. Written as prose beside a regex, the
+   * two drift: the hint kept promising that a percent could be written without
+   * its sign long after anyone had checked, and the only thing standing behind
+   * the promise was that someone had once been right. Every promise here is
+   * asserted against the real marker in tests/input-hints.test.ts, so a hint
+   * that stops being true fails the build instead of misleading a student.
+   */
+  promise?: [string, string];
 }
 
 // Ordered by how much a student loses for not knowing it.
 const RULES: Rule[] = [
-  { when: /\\sqrt|√/, hint: 'A square root can be typed sqrt(2) or √2.', symbols: ['√'] },
-  { when: /\\le\b|\\ge\b|\\leq|\\geq|≤|≥/, hint: 'Type <= for ≤ and >= for ≥.', symbols: ['≤', '≥'] },
-  { when: /\\pi\b|π/, hint: 'Pi can be typed pi or π.', symbols: ['π'] },
-  { when: /\^\s*\{?\s*\\circ|°/, hint: 'The degree sign is optional: 45 or 45°.', symbols: ['°'] },
-  { when: /%/, hint: 'Percent or decimal: 20% or 0.2.' },
-  { when: /\\frac|\d\s*\/\s*\d/, hint: 'Fraction or decimal: 3/4 or 0.75.' },
-  { when: /\\times|×/, hint: 'The times sign can be typed x or *.' },
+  {
+    when: /\\sqrt|√/,
+    hint: 'A square root can be typed sqrt(…) — e.g. sqrt(7) for √7.',
+    symbols: ['√'],
+    promise: ['sqrt(7)', '$\\sqrt{7}$'],
+  },
+  {
+    when: /\\le\b|\\ge\b|\\leq|\\geq|≤|≥/,
+    hint: 'Type <= for ≤ and >= for ≥.',
+    symbols: ['≤', '≥'],
+    promise: ['n<=7', '$n \\le 7$'],
+  },
+  {
+    when: /\\pi\b|π/,
+    hint: 'Pi can be typed pi — e.g. 3pi for 3π.',
+    symbols: ['π'],
+    promise: ['3pi', '$3\\pi$'],
+  },
+  {
+    when: /\^\s*\{?\s*\\circ|°/,
+    hint: 'The degree sign is optional — e.g. 47 or 47°.',
+    symbols: ['°'],
+    promise: ['47', '$47^\\circ$'],
+  },
+  // The example carries "e.g." and an unroundable number on purpose: a student
+  // read a tidy "20%" here as the answer they were being told to give.
+  { when: /%/, hint: 'Percent or decimal — e.g. 37% or 0.37.', promise: ['37', '37%'] },
+  {
+    when: /\\frac|\d\s*\/\s*\d/,
+    hint: 'Fraction or decimal — e.g. 7/8 or 0.875.',
+    promise: ['0.875', '$\\frac{7}{8}$'],
+  },
+  {
+    when: /\\times|×/,
+    hint: 'The times sign can be typed x or *.',
+    promise: ['5 x 3', '$5 \\times 3$'],
+  },
   { when: /\^\s*\{?\s*[23]\}?|²|³/, symbols: ['²', '³'] },
 ];
 
+/** Every promise the hints make, for the test that holds them to the marker. */
+export const HINT_PROMISES: { hint: string; typed: string; canonical: string }[] = RULES.filter(
+  (r) => r.promise,
+).map((r) => ({ hint: r.hint ?? '', typed: r.promise![0], canonical: r.promise![1] }));
+
 /** A unit the student may leave off, which the marker supplies from the question. */
-const UNIT_HINT = 'The unit is optional — 72 and 72 cm are both accepted.';
+const UNIT_HINT = 'The unit is optional — e.g. 72 and 72 cm are both accepted.';
 
 export function inputAffordance(answer: string, shape: InputShape): InputAffordance {
   // Prose is answered in words; none of this applies, and a strip of maths
@@ -59,6 +105,10 @@ export function inputAffordance(answer: string, shape: InputShape): InputAfforda
     for (const s of rule.symbols ?? []) if (!symbols.includes(s)) symbols.push(s);
   }
 
-  if (shape === 'quantity' && hints.length < MAX_HINTS) hints.push(UNIT_HINT);
+  // The degree sign IS the unit, and percent is the unit. Adding "the unit is
+  // optional" underneath "the degree sign is optional" says one thing twice and
+  // spends the second line saying it.
+  const unitAlreadySaid = hints.some((h) => h.includes('degree sign') || h.includes('Percent'));
+  if (shape === 'quantity' && !unitAlreadySaid && hints.length < MAX_HINTS) hints.push(UNIT_HINT);
   return { hints, symbols };
 }

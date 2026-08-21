@@ -40,7 +40,11 @@ export function SymbolStrip({
 }) {
   if (symbols.length === 0 || disabled) return null;
   return (
-    <div className="mt-1 flex flex-wrap gap-1">
+    // Labelled, and in the ink the inputs are drawn in. Set in the faint rule
+    // colour with no label, it read as decoration: a student finished two
+    // geometry sessions without noticing the degree sign was a button.
+    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+      <span className="font-mono text-[10px] uppercase tracking-widest text-dim">Insert</span>
       {symbols.map((ch) => (
         <button
           key={ch}
@@ -48,7 +52,7 @@ export function SymbolStrip({
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => onInsert(ch)}
           aria-label={`Insert ${ch}`}
-          className="min-w-8 border-[1.5px] border-rule px-2 py-1 font-mono text-sm leading-none text-ink active:bg-paper-deep"
+          className="min-w-9 border-[1.5px] border-ink bg-white px-2.5 py-1.5 font-mono text-base leading-none text-ink shadow-[2px_2px_0_var(--ink)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
         >
           {ch}
         </button>

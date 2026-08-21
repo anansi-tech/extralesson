@@ -298,3 +298,55 @@ describe('marking a question handed in with blanks', () => {
     }
   });
 });
+
+// A FORM IS A PROPERTY OF EACH VALUE, not of the line they were joined into.
+//
+// "Calculate both angles, each correct to 1 decimal place" is one slot holding
+// two values. The check ran over the composed "73.7°, 53.1°" and asked whether
+// that STRING was a number to one decimal place, which it never is — so the
+// format mark was lost on every multi-value slot demanding a form, however
+// carefully the student had rounded. Found on a real attempt: b1a668 (d), where
+// R4 is marked for_format and could not be earned by any answer at all.
+describe('markStructured — a form is checked per value', () => {
+  const formatRow = {
+    code: 'R4',
+    profile: 'R' as const,
+    criterion: 'Expresses both angles correct to 1 decimal place.',
+    mark_value: 1,
+    slot_ref: 'd.i',
+    part_label: 'd',
+    for_format: true,
+  };
+
+  it('awards the format mark when every value carries the form', () => {
+    const result = markStructured(
+      [formatRow],
+      '$73.7°, 53.1°$',
+      '73.7°, 53.1°',
+      '',
+      undefined,
+      'dp:1',
+      ['73.7°', '53.1°'],
+    );
+    expect(result.correct).toBe(true);
+    expect(result.rubric_awarded).toContain('R4');
+  });
+
+  it('still withholds it when one value does not', () => {
+    const result = markStructured(
+      [formatRow],
+      '$73.7°, 53.1°$',
+      '73.7°, 53',
+      '',
+      undefined,
+      'dp:1',
+      ['73.7°', '53'],
+    );
+    expect(result.rubric_awarded).not.toContain('R4');
+  });
+
+  it('leaves single-value slots exactly as they were', () => {
+    expect(markStructured([formatRow], '73.7', '73.7', '', undefined, 'dp:1').rubric_awarded).toContain('R4');
+    expect(markStructured([formatRow], '73.7', '74', '', undefined, 'dp:1').rubric_awarded).not.toContain('R4');
+  });
+});

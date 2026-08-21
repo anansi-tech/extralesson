@@ -156,15 +156,25 @@ export default async function StudyDashboard({
                       M{t.module} · {Math.round(t.mastery * 100)}% so far
                     </span>
                   </span>
-                  <span className="shrink-0 font-mono text-sm text-green-pen">
-                    +{t.pointsAvailable.toFixed(1)}
+                  {/* "+8.0" on its own names no unit and reads as nothing to
+                      a student who has never seen this page before. Same
+                      arithmetic, said in words. */}
+                  <span className="shrink-0 text-right">
+                    <span className="font-mono text-sm text-green-pen">
+                      +{Math.round(t.pointsAvailable)}
+                    </span>
+                    <span className="block font-mono text-[10px] leading-tight text-dim">
+                      points of
+                      <br />
+                      your grade
+                    </span>
                   </span>
                 </li>
               ))}
             </ul>
             <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-[12px] leading-snug text-dim">
-              Those numbers are percentage points on your estimate, still sitting in those topics —
-              the most any one of them can add if you master it. Your sessions go here first.
+              Each number is how much your overall grade estimate could rise if you mastered that
+              topic — the marks still sitting there, out of 100. Your sessions go here first.
             </p>
             {trajectory && !trajectory.flat ? (
               <p className="mt-2 text-[12px] leading-snug">
@@ -299,6 +309,34 @@ export default async function StudyDashboard({
               {open.marksLeft === 1 ? '' : 'S'} LEFT
             </small>
           </Link>
+        ) : isNewStudent ? (
+          // BEFORE THE FIRST ATTEMPT, THE DIAGNOSTIC LEADS.
+          //
+          // "Weakest topics first" has nothing to sort on when there is no
+          // attempt to sort by: every objective reads as equally unmeasured, so
+          // the session is chosen by blueprint weight alone. Putting the red
+          // button on it buried the twelve minutes that would make it work.
+          // This swaps back on its own once attempts exist.
+          <>
+            <form action={startSession} className="mt-5">
+              <input type="hidden" name="mode" value="diagnostic" />
+              <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
+                Start with a quick diagnostic
+                <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
+                  ABOUT {DIAGNOSTIC_MINUTES} MINUTES · FINDS WHERE TO START
+                </small>
+              </button>
+            </form>
+            <form action={startSession} className="mt-3">
+              <input type="hidden" name="mode" value="adaptive" />
+              <button className="w-full border-[1.5px] border-ink p-3 text-center font-semibold">
+                Or start a session now
+                <small className="block font-mono text-[10px] uppercase tracking-widest text-dim">
+                  About {SESSION_MINUTES} minutes at exam pace
+                </small>
+              </button>
+            </form>
+          </>
         ) : (
           <form action={startSession} className="mt-5">
             <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
@@ -312,7 +350,9 @@ export default async function StudyDashboard({
         <p className="mt-2 text-center text-[11px] leading-snug text-dim">
           {open
             ? 'Your answers so far are saved. You can look back at any question you have already done.'
-            : 'One or two whole exam questions, priced the way the paper prices them — a Paper 2 question is 9 to 12 marks and takes most of the session.'}
+            : isNewStudent
+              ? 'Eight quick questions across the syllabus. Nothing is scored or graded — it only puts your topics in order, so the sessions after it start in the right place.'
+              : 'One or two whole exam questions, priced the way the paper prices them — a Paper 2 question is 9 to 12 marks and takes most of the session.'}
         </p>
 
         {/* The session above is the one the app chooses, and it stays the
@@ -378,20 +418,18 @@ export default async function StudyDashboard({
               </button>
             </form>
 
+            {!isNewStudent && (
             <form action={startSession} className="mt-3">
               <input type="hidden" name="mode" value="diagnostic" />
-              <button
-                className={`w-full border-[1.5px] p-3 text-left text-sm ${
-                  isNewStudent ? 'border-ink' : 'border-rule text-dim'
-                }`}
-              >
-                {isNewStudent ? 'Start with a quick diagnostic' : 'Take a quick diagnostic'}
+              <button className="w-full border-[1.5px] border-rule p-3 text-left text-sm text-dim">
+                Take a quick diagnostic
                 <small className="block font-mono text-[10px] uppercase tracking-widest text-dim">
                   About {DIAGNOSTIC_MINUTES} minutes · ranks your topics so the usual session knows
                   where to start
                 </small>
               </button>
             </form>
+            )}
         </section>
 
         <Link

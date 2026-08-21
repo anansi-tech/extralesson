@@ -15,7 +15,16 @@
  * would answer the question. Those start at three and grow on demand.
  */
 
-const FIXED_START = 3;
+/**
+ * How many boxes a growable input opens with.
+ *
+ * ONE, plus an empty one after whatever has been filled. Opening with three
+ * put two spare boxes under a two-value answer and read as a question asking
+ * for three things — a student filled two, left the third, and reasonably
+ * assumed the blank had cost them. Growing from one says nothing about the
+ * length of an answer whose length is the point.
+ */
+const GROW_FROM = 1;
 
 interface Props {
   shape: string;
@@ -53,7 +62,8 @@ export function TypedInput({
   onFocusBox,
 }: Props) {
   const fixed = boxes !== undefined;
-  const count = fixed ? boxes! : Math.max(FIXED_START, values.length);
+  const filled = values.filter((v) => v.trim() !== '').length;
+  const count = fixed ? boxes! : Math.max(GROW_FROM, filled + 1, values.length);
 
   const set = (i: number, v: string) => {
     const next = [...values];

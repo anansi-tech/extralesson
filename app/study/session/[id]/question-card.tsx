@@ -612,15 +612,16 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           <span className="text-dim">
             {question.index + 1} / {question.total}
           </span>
+          {/* Only when it is the ONLY way forward. While a question is being
+              answered the feedback block already carries "next question", and a
+              greyed arrow beside it is a second control for the same move that
+              looks broken rather than absent. */}
           {reviewing && question.index + 1 < question.total ? (
             <Link href={href(question.index + 1)} className="text-dim underline">
               next →
             </Link>
           ) : (
-            // Inert on the last question, exactly as "previous" is on the
-            // first. The way on from here is "back to where you were", which is
-            // the button above.
-            <span className="text-paper-deep">next →</span>
+            <span aria-hidden />
           )}
         </nav>
       )}
