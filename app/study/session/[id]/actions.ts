@@ -10,7 +10,7 @@ import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
 import { readInputShape } from '@/lib/grade/input-shape';
 import { renderMathHtml } from '@/lib/katex';
 import type { ProfileMarks, QuestionPart, RubricItem, TemplateName } from '@/lib/types';
-import { SLOT_REF_RE } from '@/lib/notation';
+import { ANSWER_REF_RE } from '@/lib/notation';
 import { renderVisual } from '@/lib/visuals';
 import { constructActs, constructFamily } from '@/lib/targets/construct';
 
@@ -25,7 +25,7 @@ const SubmitZ = z.object({
   answers: z
     .array(
       z.object({
-        label: z.string().regex(SLOT_REF_RE),
+        label: z.string().regex(ANSWER_REF_RE),
         // Empty is a legitimate answer: a candidate leaves a blank and hands
         // the paper in, and a blank is marked wrong. Requiring a character here
         // would reject the whole submission over one unanswered slot (§2).

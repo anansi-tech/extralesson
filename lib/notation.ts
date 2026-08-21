@@ -41,6 +41,23 @@ export const SLOT_LABEL_RE = new RegExp(`^[a-z0-9${GREEK}][${LABEL_BODY}]{0,29}$
 export const SLOT_REF_RE = new RegExp(`^[a-j]\\.[a-z0-9${GREEK}][${LABEL_BODY}]{0,29}$`, 'i');
 
 /**
+ * What a SUBMITTED ANSWER is addressed by.
+ *
+ * A structured question addresses one slot: "a.ii". An MCQ has a single answer
+ * and no slots to tell apart, so it addresses the bare part label: "a".
+ *
+ * Validating submissions with SLOT_REF_RE alone rejected every MCQ ever
+ * submitted — the dot is not optional there — and the error a student saw was
+ * "Invalid submission." The bank holds 164 approved MCQs and not one had been
+ * answered; nothing surfaced it until a diagnostic session, which is MCQ-only,
+ * put them in front of someone.
+ */
+export const ANSWER_REF_RE = new RegExp(
+  `^[a-j](\\.[a-z0-9${GREEK}][${LABEL_BODY}]{0,29})?$`,
+  'i',
+);
+
+/**
  * A label that names nothing: a position in a list rather than a quantity.
  *
  * "centre", "factor" and "modal_class" tell a student which box is which all by
