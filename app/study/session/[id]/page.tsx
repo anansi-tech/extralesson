@@ -5,6 +5,10 @@ import { dbConnect, Attempt, PracticeSession, Question, Student, Topic } from '@
 import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
+import { planSession, topicPrefixesOf } from '@/lib/session/plan';
+import { SESSION_MINUTES } from '@/lib/session/builder';
+import { rankByVerdict, topicsSeen, verdictFor } from '@/lib/study/diagnostic';
+import { startSession } from '@/app/study/actions';
 import { loadStudyState } from '@/lib/study/state';
 import { estimatedMinutes } from '@/lib/session/builder';
 import { markSplit } from '@/lib/grade/assessable';
@@ -38,6 +42,7 @@ export default async function SessionPage({
     question_ids: unknown[];
     started_at: Date;
     completed_at?: Date;
+    mode?: string;
   } | null>();
   if (!session) notFound();
 
@@ -113,6 +118,123 @@ export default async function SessionPage({
         const prev = before.topics.find((b) => b.code === t.code);
         return { code: t.code, title: t.title, from: prev?.mastery ?? 0, to: t.mastery };
       });
+
+    // A DIAGNOSTIC ENDS WITH THE RANKING IT WENT TO GET.
+    //
+    // Twelve minutes spent to answer "where am I?" has to answer it. What it
+    // does NOT report is a grade — eight items is far below the mark gate a
+    // prediction needs, and a grade here would be exactly the invented
+    // confidence taken out of the landing page — or a score out of eight, since
+    // WHICH topics are weak is the finding and how many were right is not.
+    if (session.mode === 'diagnostic') {
+      // What this session actually SAW of each topic. The band is no use here:
+      // one question per topic leaves every one of them WEAK, so eight
+      // identical chips would make the order look arbitrary when it is not.
+      // Right and wrong is the evidence, and it is what a student can check.
+      const topicOfQuestion = new Map(
+        questions.map((q) => [
+          String(q._id),
+          q.objective_ids[0]?.slice(0, q.objective_ids[0].lastIndexOf('.') + 1) ?? '',
+        ]),
+      );
+      const seen = topicsSeen(attempts, topicOfQuestion);
+      const verdictOf = (t: { module: number; order: number }) =>
+        verdictFor(seen.get(`M${t.module}.${t.order}.`));
+
+      const ranked = rankByVerdict(
+        after.topics.filter((t) => touchedPrefixes.has(`M${t.module}.${t.order}.`)),
+        verdictOf,
+      );
+
+      // Not a guess about what comes next: planSession is what the button below
+      // runs, it is pure, and nothing changes between here and the click.
+      const nextUp = await planSession({
+        studentId: auth.student_id,
+        targetModules,
+        mode: 'adaptive',
+      });
+      const nextPrefixes = new Set(topicPrefixesOf(nextUp));
+      const nextTopics = after.topics.filter((t) =>
+        nextPrefixes.has(`M${t.module}.${t.order}.`),
+      );
+
+      return (
+        <main className="ruled relative min-h-screen px-5 py-8">
+          <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
+          <div className="mx-auto max-w-xl">
+            <h1 className="text-2xl font-black">
+              Where you stand<span className="text-red-pen">.</span>
+            </h1>
+            <p className="mt-1 text-dim">
+              A quick read of {ranked.length} topic{ranked.length === 1 ? '' : 's'} — enough to put
+              them in order, which is all it was for.
+            </p>
+
+            <section className="mt-5 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+                Strongest to weakest
+              </div>
+              <ol className="mt-2">
+                {ranked.map((t) => (
+                  <li
+                    key={t.code}
+                    className="flex items-baseline gap-2 border-b border-dashed border-paper-deep py-1.5 last:border-0"
+                  >
+                    <span className="min-w-0 flex-1 text-sm">{t.title}</span>
+                    <span className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-dim">
+                      {verdictOf(t)}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-3 text-[11px] leading-snug text-dim">
+                One question a topic is a rough read — enough to point the next few sessions, not a
+                verdict on any of them. Topics you were not asked about are not here at all, and
+                still count as unmeasured.
+              </p>
+            </section>
+
+            {nextTopics.length > 0 && (
+              <section className="mt-4 border-l-3 border-red-pen bg-[#FDF1F0] p-3">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+                  Your next session starts here
+                </div>
+                <ul className="mt-1">
+                  {nextTopics.map((t) => (
+                    <li key={t.code} className="text-sm font-semibold">
+                      {t.title}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2 text-[11px] leading-snug text-dim">
+                  That is what the diagnostic was for. This is chosen from every topic, not only the
+                  ones above, and it weighs how much of a topic is still unmeasured against how
+                  heavily the paper examines it — so a topic you got right once can still come first
+                  when most of it is untested.
+                </p>
+              </section>
+            )}
+
+            <form action={startSession} className="mt-5">
+              <input type="hidden" name="mode" value="adaptive" />
+              <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
+                Start that session
+                <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
+                  ABOUT {SESSION_MINUTES} MINUTES AT EXAM PACE
+                </small>
+              </button>
+            </form>
+
+            <Link
+              href="/study"
+              className="mt-3 block text-center font-mono text-[11px] uppercase tracking-widest text-dim underline"
+            >
+              Back to your notebook
+            </Link>
+          </div>
+        </main>
+      );
+    }
 
     return (
       <main className="ruled relative min-h-screen px-5 py-8">

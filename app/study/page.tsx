@@ -18,18 +18,13 @@ import { PracticeSession } from '@/lib/db';
 import { DIAGNOSTIC_MINUTES, SESSION_MINUTES } from '@/lib/session/builder';
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
+import { BAND_LABEL } from '@/lib/study/profiles';
 import type { ModuleNumber } from '@/lib/types';
 import type { MasteryBand } from '@/lib/mastery/config';
 
 export const metadata = { title: 'Your notebook — ExtraLesson' };
 export const dynamic = 'force-dynamic';
 
-const bandLabel: Record<MasteryBand, string> = {
-  STRONG: 'STRONG',
-  BUILDING: 'BUILDING',
-  WEAK: 'WEAK',
-  NOT_STARTED: 'NOT STARTED',
-};
 
 function barColor(band: MasteryBand): string {
   if (band === 'STRONG') return 'bg-green-pen';
@@ -446,7 +441,7 @@ export default async function StudyDashboard({
                     <div key={t.code}>
                       <div className="flex justify-between text-sm">
                         <b>{t.title}</b>
-                        <span className="font-mono text-[10px] text-dim">{bandLabel[t.band]}</span>
+                        <span className="font-mono text-[10px] text-dim">{BAND_LABEL[t.band]}</span>
                       </div>
                       <div className="mt-1 h-2 overflow-hidden rounded border border-ink bg-paper-deep">
                         <i

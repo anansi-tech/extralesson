@@ -1,10 +1,10 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { dbConnect, PracticeSession, Question, Student } from '@/lib/db';
+import { dbConnect, PracticeSession, Student } from '@/lib/db';
 import { clearSessionCookie, requireSession } from '@/lib/auth/session';
-import { loadStudyState } from '@/lib/study/state';
-import { buildSession, type SessionMode } from '@/lib/session/builder';
+import { type SessionMode } from '@/lib/session/builder';
+import { planSession } from '@/lib/session/plan';
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
 import type { ModuleNumber } from '@/lib/types';
@@ -36,39 +36,11 @@ export async function startSession(formData?: FormData): Promise<void> {
   const mistakes = mode === 'revisit' ? await loadMistakes(auth.student_id) : null;
   if (mistakes && mistakes.lostByObjective.size === 0) redirect('/study?error=nothing-to-revisit');
 
-  const state = await loadStudyState(auth.student_id, student.target_modules);
-  const candidates = await Question.find({ status: 'approved' })
-    .select('objective_ids module kind marks parts')
-    .lean<
-      {
-        _id: unknown;
-        objective_ids: string[];
-        module: ModuleNumber;
-        kind: 'mcq' | 'structured';
-        marks: number;
-        parts?: { slots?: { response_mode?: string }[] }[];
-      }[]
-    >();
-
-  const picked = buildSession({
-    candidates: candidates.map((c) => ({
-      id: String(c._id),
-      objective_ids: c.objective_ids,
-      module: c.module,
-      kind: c.kind,
-      marks: c.marks,
-      response_modes: (c.parts ?? []).flatMap((p) =>
-        (p.slots ?? []).map((slot) => slot.response_mode ?? 'answer'),
-      ),
-    })),
-    perObjectiveMastery: state.perObjective,
-    m1Mastery: state.moduleMastery[1],
+  const picked = await planSession({
+    studentId: auth.student_id,
     targetModules: student.target_modules,
-    topicWeightByPrefix: state.topicWeightByPrefix,
     mode,
     focusPrefixes,
-    lostByObjective: mistakes?.lostByObjective,
-    attemptedIds: mistakes?.attemptedIds,
   });
 
   if (picked.length === 0) redirect(`/study?error=no-questions&mode=${mode}`);
@@ -78,6 +50,7 @@ export async function startSession(formData?: FormData): Promise<void> {
     student_id: auth.student_id,
     question_ids: picked.map((p) => p.id),
     module_focus: modules.size === 1 ? [...modules][0] : undefined,
+    mode,
   });
   redirect(`/study/session/${session._id}`);
 }
