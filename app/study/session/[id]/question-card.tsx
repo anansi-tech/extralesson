@@ -574,8 +574,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           </div>
 
           {reviewing ? (
+            // No ?q= at all. The session resumes at the first unanswered
+            // question, or the summary when there is none, and the page works
+            // that out from the attempts. Pointing this at the LAST question
+            // instead was a link to the current page whenever the last question
+            // was the one being reviewed, which is where a student ends up, so
+            // the button did nothing.
             <Link
-              href={href(question.total - 1)}
+              href={`/study/session/${question.sessionId}`}
               className="mt-4 block bg-ink p-3 text-center font-black text-paper shadow-[3px_3px_0_var(--red)]"
             >
               Back to where you were →
@@ -606,11 +612,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           <span className="text-dim">
             {question.index + 1} / {question.total}
           </span>
-          {reviewing ? (
+          {reviewing && question.index + 1 < question.total ? (
             <Link href={href(question.index + 1)} className="text-dim underline">
               next →
             </Link>
           ) : (
+            // Inert on the last question, exactly as "previous" is on the
+            // first. The way on from here is "back to where you were", which is
+            // the button above.
             <span className="text-paper-deep">next →</span>
           )}
         </nav>

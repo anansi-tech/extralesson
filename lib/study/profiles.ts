@@ -1,4 +1,5 @@
 import type { Profile } from '@/lib/types';
+import type { MasteryBand } from '@/lib/mastery/config';
 
 // CK, AK and R stay — they are CXC's own labels, they appear on real mark
 // schemes, and a candidate is better off meeting them here than for the first
@@ -19,3 +20,15 @@ export const PROFILE_MEANING: Record<Profile, string> = {
 /** Said once wherever the initials first appear on a surface. */
 export const PROFILE_GLOSS =
   'CXC gives marks three ways: CK for knowing what to do, AK for doing the working, and R for explaining why.';
+
+/**
+ * A mastery band in the words a student reads. Shared, because two pages print
+ * it and a band that says STRONG on one screen and "Strong" on another reads as
+ * two different measurements.
+ */
+export const BAND_LABEL: Record<MasteryBand, string> = {
+  STRONG: 'STRONG',
+  BUILDING: 'BUILDING',
+  WEAK: 'WEAK',
+  NOT_STARTED: 'NOT STARTED',
+};
