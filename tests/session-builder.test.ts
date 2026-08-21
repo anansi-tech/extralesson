@@ -280,3 +280,116 @@ describe('buildSession — a session is a budget of work', () => {
     expect(picked[0].id).toBe('spanning');
   });
 });
+
+// THE MODES. 'adaptive' is the default and is what every test above exercises;
+// these cover the three things a student knows about their own week that the
+// app cannot — what class covered today, what they got wrong, and that it has
+// never seen them work.
+describe('buildSession — practise a topic', () => {
+  const candidates = [
+    q('geom1', 3, 'M3.3.1', 'structured', 4),
+    q('geom2', 3, 'M3.3.7', 'structured', 4),
+    q('alg', 1, 'M1.5.1', 'structured', 4),
+    q('stats', 2, 'M2.1.1', 'structured', 4),
+  ];
+  const base = {
+    candidates,
+    perObjectiveMastery: new Map<string, number>(),
+    m1Mastery: 0,
+    targetModules: [1, 2, 3] as (1 | 2 | 3)[],
+    topicWeightByPrefix: weights,
+  };
+
+  it('returns only questions from the topic asked for', () => {
+    const picked = buildSession({ ...base, mode: 'topic', focusPrefixes: ['M3.3.'] });
+    expect(picked.length).toBeGreaterThan(0);
+    expect(picked.every((p) => p.objective_ids.some((o) => o.startsWith('M3.3.')))).toBe(true);
+  });
+
+  // The gate exists to stop the app sending a cold account to M3. A student who
+  // typed "circle theorems" has overruled that on purpose.
+  it('does not hold M3 back behind the M1 prerequisite', () => {
+    const picked = buildSession({
+      ...base,
+      m1Mastery: M1_PREREQ_THRESHOLD - 0.1,
+      mode: 'topic',
+      focusPrefixes: ['M3.3.'],
+    });
+    expect(picked.length).toBeGreaterThan(0);
+    expect(picked[0].module).toBe(3);
+  });
+
+  it('comes back empty for a topic with nothing in the bank', () => {
+    expect(buildSession({ ...base, mode: 'topic', focusPrefixes: ['M2.9.'] })).toEqual([]);
+  });
+});
+
+describe('buildSession — revisit mistakes', () => {
+  const candidates = [
+    q('missed-a', 1, 'M1.1.1', 'structured', 4),
+    q('missed-b', 1, 'M1.5.1', 'structured', 4),
+    q('never-wrong', 1, 'M1.1.9', 'structured', 4),
+  ];
+  const base = {
+    candidates,
+    perObjectiveMastery: new Map<string, number>(),
+    m1Mastery: 1,
+    targetModules: [1, 2, 3] as (1 | 2 | 3)[],
+    topicWeightByPrefix: weights,
+    mode: 'revisit' as const,
+  };
+
+  it('only sets objectives the student actually lost marks on', () => {
+    const picked = buildSession({ ...base, lostByObjective: new Map([['M1.1.1', 3]]) });
+    expect(picked.map((p) => p.id)).toEqual(['missed-a']);
+  });
+
+  it('ranks by the marks that were lost', () => {
+    const picked = buildSession({
+      ...base,
+      lostByObjective: new Map([
+        ['M1.1.1', 1],
+        ['M1.5.1', 9],
+      ]),
+    });
+    expect(picked[0].id).toBe('missed-b');
+  });
+
+  // Re-showing the same question tests whether the answer was remembered, which
+  // is not what was got wrong.
+  it('never re-shows a question already attempted', () => {
+    const picked = buildSession({
+      ...base,
+      lostByObjective: new Map([['M1.1.1', 3]]),
+      attemptedIds: new Set(['missed-a']),
+    });
+    expect(picked).toEqual([]);
+  });
+});
+
+describe('buildSession — diagnostic', () => {
+  // Four topics, several questions each, so a session COULD sit inside one.
+  const candidates = ['M1.1.', 'M1.5.', 'M2.3.', 'M3.1.'].flatMap((prefix) =>
+    [1, 2, 3].map((n) => q(`${prefix}${n}`, 1, `${prefix}${n}`)),
+  );
+  const base = {
+    candidates,
+    perObjectiveMastery: new Map<string, number>(),
+    m1Mastery: 0,
+    targetModules: [1, 2, 3] as (1 | 2 | 3)[],
+    topicWeightByPrefix: weights,
+    mode: 'diagnostic' as const,
+  };
+
+  it('spreads across topics rather than drilling one', () => {
+    const picked = buildSession(base);
+    const topics = new Set(picked.map((p) => p.objective_ids[0].slice(0, 5)));
+    expect(topics.size).toBe(4);
+  });
+
+  it('buys the cheap items, so the budget reports on more topics', () => {
+    const withBoth = [...candidates, q('long', 1, 'M1.1.4', 'structured', 12)];
+    const picked = buildSession({ ...base, candidates: withBoth });
+    expect(picked.every((p) => p.kind === 'mcq')).toBe(true);
+  });
+});

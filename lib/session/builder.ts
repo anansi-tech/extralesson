@@ -15,6 +15,25 @@ import type { ModuleNumber, QuestionKind } from '@/lib/types';
 // session is now minutes at exam pace, and one or two paper-shaped questions
 // fill it exactly as §2 asks.
 export const SESSION_MINUTES = 15;
+
+/**
+ * HOW THE QUESTIONS GET CHOSEN.
+ *
+ * 'adaptive' is the default and stays the default: a mark budget at exam pace,
+ * weakest objectives first, M1 before M2/M3 until the prerequisite is met. The
+ * others exist because that one cannot answer a student who knows something
+ * about their own week — the class did circle theorems today, or they want the
+ * questions they got wrong rather than the ones they have never seen.
+ */
+export type SessionMode = 'adaptive' | 'topic' | 'revisit' | 'diagnostic';
+
+/**
+ * A diagnostic is worth a session and not a lesson. Twelve minutes buys about
+ * eight items, which is enough to RANK topics — to find the ones already
+ * solid, so weakest-first stops sending a student there — and nowhere near
+ * enough to estimate a grade, which is why it does not try to.
+ */
+export const DIAGNOSTIC_MINUTES = 12;
 export const MINUTES_PER_MCQ = 90 / 60;
 export const MINUTES_PER_STRUCTURED_MARK = 150 / 90;
 export const STRUCTURED_SHARE = 0.6;
@@ -54,8 +73,16 @@ export interface BuildSessionArgs {
   targetModules: ModuleNumber[];
   // blueprint weight per topic keyed by objective prefix, e.g. 'M1.5.' -> 10
   topicWeightByPrefix: Map<string, number>;
-  /** Budget in exam-pace minutes; defaults to a 15-minute session. */
+  /** Budget in exam-pace minutes; defaults to the mode's own length. */
   minutes?: number;
+  /** Defaults to 'adaptive', which is what every session was before modes. */
+  mode?: SessionMode;
+  /** 'topic': the objective prefixes the student asked for, e.g. 'M1.5.'. */
+  focusPrefixes?: string[];
+  /** 'revisit': marks lost per objective, already filtered by the delay. */
+  lostByObjective?: Map<string, number>;
+  /** 'revisit': questions already attempted, which are not re-shown. */
+  attemptedIds?: Set<string>;
 }
 
 function objectivePrefix(objectiveId: string): string {
@@ -73,24 +100,57 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
     m1Mastery,
     targetModules,
     topicWeightByPrefix,
-    minutes = SESSION_MINUTES,
+    mode = 'adaptive',
+    focusPrefixes,
+    lostByObjective,
+    attemptedIds,
+    minutes = mode === 'diagnostic' ? DIAGNOSTIC_MINUTES : SESSION_MINUTES,
   } = args;
 
-  const m1Gated = targetModules.includes(1) && m1Mastery <= M1_PREREQ_THRESHOLD;
+  // The prerequisite gate belongs to the mode that chose for the student. When
+  // they name a topic themselves, or ask for their own mistakes, holding M3
+  // back would be overruling the request they just made.
+  const m1Gated = mode === 'adaptive' && targetModules.includes(1) && m1Mastery <= M1_PREREQ_THRESHOLD;
+
+  const eligible = (c: CandidateQuestion): boolean => {
+    if (!hasMarkableParts(c)) return false;
+    if (mode === 'topic') {
+      return (focusPrefixes ?? []).some((prefix) =>
+        c.objective_ids.some((id) => id.startsWith(prefix)),
+      );
+    }
+    if (!targetModules.includes(c.module)) return false;
+    if (mode === 'revisit') {
+      // A NEW question on the objective that was missed, never the same
+      // question again: re-showing it tests whether the answer was remembered,
+      // which is not what was got wrong.
+      if (attemptedIds?.has(c.id)) return false;
+      return c.objective_ids.some((id) => (lostByObjective?.get(id) ?? 0) > 0);
+    }
+    return true;
+  };
 
   const scored: Scored[] = candidates
-    .filter((c) => targetModules.includes(c.module) && hasMarkableParts(c))
+    .filter(eligible)
     .map((c) => {
       // R1.8 §2 — how much of the student's weakness this question COVERS, not
       // how weak its weakest objective is. A paper-shaped question spanning
       // three shaky objectives is worth more of a session than a drill item on
       // one of them, and the old min() could not say so. An untouched
       // objective counts as fully weak.
-      const priority = c.objective_ids.reduce((sum, id) => {
-        const mastery = perObjectiveMastery.get(id) ?? 0;
-        const weight = topicWeightByPrefix.get(objectivePrefix(id)) ?? 1;
-        return sum + (1 - mastery) * weight;
-      }, 0);
+      const priority =
+        mode === 'revisit'
+          ? // How much this question would put back: the marks actually lost on
+            // the objectives it covers.
+            c.objective_ids.reduce((sum, id) => sum + (lostByObjective?.get(id) ?? 0), 0)
+          : c.objective_ids.reduce((sum, id) => {
+              const mastery = perObjectiveMastery.get(id) ?? 0;
+              // A diagnostic is ranking topics it knows nothing about, so
+              // weighting by an unmeasured mastery would rank noise. Blueprint
+              // weight alone puts the heavily examined topics first.
+              const weight = topicWeightByPrefix.get(objectivePrefix(id)) ?? 1;
+              return sum + (mode === 'diagnostic' ? weight : (1 - mastery) * weight);
+            }, 0);
       return { ...c, priority };
     })
     .sort((a, b) => {
@@ -107,6 +167,12 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
   const structuredPool = scored.filter((q) => q.kind === 'structured');
   const mcqPool = scored.filter((q) => q.kind === 'mcq');
 
+  // What a session spreads ACROSS. Normally objectives, so one session does not
+  // drill the same one twice. A diagnostic spreads across TOPICS instead: its
+  // whole job is to rank them, and eight questions inside two topics rank two.
+  const spreadKeys = (q: CandidateQuestion): string[] =>
+    mode === 'diagnostic' ? q.objective_ids.map(objectivePrefix) : q.objective_ids;
+
   const covered = new Set<string>();
   const picked: CandidateQuestion[] = [];
   let spent = 0;
@@ -115,18 +181,27 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
       (q) => !picked.includes(q) && estimatedMinutes(q) <= budget,
     );
     const next =
-      affordable.find((q) => !q.objective_ids.some((o) => covered.has(o))) ?? affordable[0];
+      affordable.find((q) => !spreadKeys(q).some((o) => covered.has(o))) ?? affordable[0];
     if (!next) return false;
     picked.push(next);
     spent += estimatedMinutes(next);
-    next.objective_ids.forEach((o) => covered.add(o));
+    spreadKeys(next).forEach((o) => covered.add(o));
     return true;
   };
 
   // The first question is bought whatever it costs. A 12-mark question prices
   // at 20 minutes against a 15-minute budget, and a session that returned
   // nothing rather than one good question would be the wrong answer to that.
-  const first = m1Gated || structuredPool.length ? structuredPool : mcqPool;
+  // A diagnostic buys the cheapest items it can: an MCQ costs a minute and a
+  // half and reports on one more topic, where a 12-mark question spends the
+  // whole budget reporting on one.
+  const structuredShare = mode === 'diagnostic' ? 0 : STRUCTURED_SHARE;
+  const first =
+    mode === 'diagnostic' && mcqPool.length
+      ? mcqPool
+      : m1Gated || structuredPool.length
+        ? structuredPool
+        : mcqPool;
   if (!pickFrom(first, Infinity)) pickFrom(mcqPool, Infinity);
 
   while (spent < minutes) {
@@ -134,7 +209,7 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
     const structuredMinutes = picked
       .filter((q) => q.kind === 'structured')
       .reduce((s, q) => s + estimatedMinutes(q), 0);
-    const wantStructured = structuredMinutes / Math.max(1, spent) < STRUCTURED_SHARE;
+    const wantStructured = structuredMinutes / Math.max(1, spent) < structuredShare;
     const order = wantStructured ? [structuredPool, mcqPool] : [mcqPool, structuredPool];
     if (!pickFrom(order[0], remaining) && !pickFrom(order[1], remaining)) break;
   }

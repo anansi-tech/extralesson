@@ -4,16 +4,37 @@ import { redirect } from 'next/navigation';
 import { dbConnect, PracticeSession, Question, Student } from '@/lib/db';
 import { clearSessionCookie, requireSession } from '@/lib/auth/session';
 import { loadStudyState } from '@/lib/study/state';
-import { buildSession } from '@/lib/session/builder';
+import { buildSession, type SessionMode } from '@/lib/session/builder';
+import { loadMistakes } from '@/lib/study/mistakes';
+import { loadTopicChoices } from '@/lib/study/topics';
 import type { ModuleNumber } from '@/lib/types';
 
-export async function startSession(): Promise<void> {
+const MODES: SessionMode[] = ['adaptive', 'topic', 'revisit', 'diagnostic'];
+
+export async function startSession(formData?: FormData): Promise<void> {
+  const requested = String(formData?.get('mode') ?? 'adaptive');
+  const mode: SessionMode = (MODES as string[]).includes(requested)
+    ? (requested as SessionMode)
+    : 'adaptive';
+  const topicCode = formData?.get('topic') ? String(formData.get('topic')) : null;
+
   const auth = await requireSession();
   await dbConnect();
   const student = await Student.findById(auth.student_id).lean<{
     target_modules: ModuleNumber[];
   } | null>();
   if (!student) redirect('/study/login');
+
+  // Whatever the mode needs beyond the pool: the topic the student named, or
+  // the marks they have actually lost.
+  let focusPrefixes: string[] | undefined;
+  if (mode === 'topic') {
+    const choice = (await loadTopicChoices(student.target_modules)).find((t) => t.code === topicCode);
+    if (!choice) redirect('/study?error=no-topic');
+    focusPrefixes = choice.prefixes;
+  }
+  const mistakes = mode === 'revisit' ? await loadMistakes(auth.student_id) : null;
+  if (mistakes && mistakes.lostByObjective.size === 0) redirect('/study?error=nothing-to-revisit');
 
   const state = await loadStudyState(auth.student_id, student.target_modules);
   const candidates = await Question.find({ status: 'approved' })
@@ -44,9 +65,13 @@ export async function startSession(): Promise<void> {
     m1Mastery: state.moduleMastery[1],
     targetModules: student.target_modules,
     topicWeightByPrefix: state.topicWeightByPrefix,
+    mode,
+    focusPrefixes,
+    lostByObjective: mistakes?.lostByObjective,
+    attemptedIds: mistakes?.attemptedIds,
   });
 
-  if (picked.length === 0) redirect('/study?error=no-questions');
+  if (picked.length === 0) redirect(`/study?error=no-questions&mode=${mode}`);
 
   const modules = new Set(picked.map((p) => p.module));
   const session = await PracticeSession.create({
