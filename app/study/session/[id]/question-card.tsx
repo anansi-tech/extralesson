@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { submitAnswer, type Feedback } from './actions';
+import { saveDraft, submitAnswer, type Feedback } from './actions';
 import { TypedInput } from './typed-input';
 import { HintLines, SymbolStrip } from './affordance';
 import { isPositionalLabel } from '@/lib/notation';
@@ -55,6 +55,16 @@ export interface CardQuestion {
    * Everything is read-only: the card shows what they typed and what it
    * earned, and no attempt is written for a second look.
    */
+  /**
+   * What was typed and not yet handed in. Restores the question so twenty
+   * minutes of work survives a phone call.
+   */
+  draft?: {
+    answers: Record<string, string>;
+    values: Record<string, string[]>;
+    selected?: number;
+    working: string;
+  };
   prior?: {
     answers: Record<string, string>;
     selected?: number;
@@ -109,14 +119,20 @@ const chipColor: Record<string, string> = {
 
 export default function QuestionCard({ question }: { question: CardQuestion }) {
   const router = useRouter();
-  const [selected, setSelected] = useState<number | null>(question.prior?.selected ?? null);
-  const [partAnswers, setPartAnswers] = useState<Record<string, string>>(question.prior?.answers ?? {});
+  const [selected, setSelected] = useState<number | null>(
+    question.prior?.selected ?? question.draft?.selected ?? null,
+  );
+  const [partAnswers, setPartAnswers] = useState<Record<string, string>>(
+    question.prior?.answers ?? question.draft?.answers ?? {},
+  );
   // Typed slots keep their values as a list; partAnswers keeps the single-box
   // ones. A slot is in exactly one of the two.
-  const [boxValues, setBoxValues] = useState<Record<string, string[]>>(
-    () => splitPriorValues(question.prior?.answers ?? {}, question.parts ?? []),
+  const [boxValues, setBoxValues] = useState<Record<string, string[]>>(() =>
+    question.prior
+      ? splitPriorValues(question.prior.answers, question.parts ?? [])
+      : (question.draft?.values ?? {}),
   );
-  const [working, setWorking] = useState('');
+  const [working, setWorking] = useState(question.prior ? '' : (question.draft?.working ?? ''));
   const [feedback, setFeedback] = useState<Feedback | null>(question.prior?.feedback ?? null);
   const [error, setError] = useState<string>();
   const [pending, startTransition] = useTransition();
@@ -193,6 +209,41 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       ? selected !== null
       : markedSlots.some((s) => filled(s));
   const blanks = markedSlots.filter((s) => !filled(s)).length;
+
+  // AUTOSAVE, debounced. Writes a draft and never an attempt: attempts stay
+  // append-only and are written once, on submit, by the action below.
+  const draftTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (feedback || question.prior) return; // already answered; nothing to keep
+    const typed =
+      Object.values(partAnswers).some((v) => v.trim() !== '') ||
+      Object.values(boxValues).some((vals) => vals.some((v) => v.trim() !== '')) ||
+      working.trim() !== '' ||
+      selected !== null;
+    if (!typed) return;
+    draftTimer.current = setTimeout(() => {
+      void saveDraft({
+        sessionId: question.sessionId,
+        questionIndex: question.index,
+        answers: partAnswers,
+        values: boxValues,
+        selected: selected ?? undefined,
+        working,
+      });
+    }, 800);
+    return () => {
+      if (draftTimer.current) clearTimeout(draftTimer.current);
+    };
+  }, [
+    partAnswers,
+    boxValues,
+    working,
+    selected,
+    feedback,
+    question.prior,
+    question.sessionId,
+    question.index,
+  ]);
 
   const submit = () => {
     if (!canSubmit) return;

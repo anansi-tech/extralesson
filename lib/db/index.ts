@@ -5,3 +5,4 @@ export { Question, type QuestionDoc } from './question';
 export { Student, type StudentDoc } from './student';
 export { Attempt, type AttemptDoc } from './attempt';
 export { PracticeSession, type SessionDoc } from './session';
+export { SessionDraft, type SessionDraftDoc } from './session-draft';
