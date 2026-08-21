@@ -272,7 +272,11 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
               {/* A cloze part reads as the sentence it is, with each answer
                   shown where the student would write it. */}
               {p.statementHtml && (
-                <div className="mt-0.5 pl-7 text-xs">
+                // text-sm, not text-xs: this is the part's own sentence
+                // continuing, and KaTeX draws = as two hairlines a pixel apart
+                // that merge into a minus below ~14px. "24 = 2^3 x 3" read as
+                // "24 - 2^3 x 3".
+                <div className="mt-0.5 pl-7 text-sm">
                   {p.statementHtml.map((piece, i) => (
                     <span key={i}>
                       <span className="question-prose" dangerouslySetInnerHTML={{ __html: piece }} />
