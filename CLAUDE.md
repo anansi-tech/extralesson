@@ -61,6 +61,20 @@ or lose a prize? Information is a statistic; a prize is gamification. Written ou
 because the rule read "streaks/gamification" and was about to be resolved to whatever
 the last person assumed.
 
+**Revisiting mistakes — the same line, drawn again.** Selecting a session from
+objectives the student has LOST MARKS ON is permitted: the attempts and rubric
+rows are already stored, and choosing from them is selection, exactly like
+weakest-first. Spaced repetition is still banned, and the ban is on the
+mechanism: no interval or ease factor per item, no due dates, no queue that
+says what must be reviewed today, no "N cards due", no notification or copy
+that makes a skipped day a failure. The test: does the APP decide when you must
+review, or does the STUDENT ask to revisit and we pick sensibly? A schedule is
+spaced repetition; a filter on selection is not. `REVISIT_DELAY_DAYS` is one
+freshness rule, not an interval — it never grows, never shrinks, and nothing is
+tracked per item. Written out for the same reason the streak line was: the rule
+said "spaced repetition" and was about to be resolved to whatever the next
+person assumed.
+
 R1.5 additions: no TikZ/KaTeX-server toolchains beyond the katex npm package ·
 no runtime drawing code (visuals are the 15 parametric SVG templates +
 dataTable HTML in `lib/visuals/` only) · no corpus inventory/classification/OCR

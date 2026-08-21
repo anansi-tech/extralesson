@@ -15,7 +15,9 @@ import {
   topicLeverage,
 } from '@/lib/study/trajectory';
 import { PracticeSession } from '@/lib/db';
-import { SESSION_MINUTES } from '@/lib/session/builder';
+import { DIAGNOSTIC_MINUTES, SESSION_MINUTES } from '@/lib/session/builder';
+import { loadMistakes } from '@/lib/study/mistakes';
+import { loadTopicChoices } from '@/lib/study/topics';
 import type { ModuleNumber } from '@/lib/types';
 import type { MasteryBand } from '@/lib/mastery/config';
 
@@ -38,10 +40,10 @@ function barColor(band: MasteryBand): string {
 export default async function StudyDashboard({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; mode?: string }>;
 }) {
   const auth = await requireSession();
-  const { error } = await searchParams;
+  const { error, mode } = await searchParams;
   await dbConnect();
   const student = await Student.findById(auth.student_id).lean<{
     name: string;
@@ -73,6 +75,14 @@ export default async function StudyDashboard({
     .limit(RECENT + 1)
     .select('started_at')
     .lean<{ started_at: Date }[]>();
+  // What the student can ask for, beyond the session the app would choose.
+  const [topicChoices, mistakes] = await Promise.all([
+    loadTopicChoices(student.target_modules),
+    loadMistakes(auth.student_id),
+  ]);
+  const revisitMarks = [...mistakes.lostByObjective.values()].reduce((a, b) => a + b, 0);
+  const isNewStudent = mistakes.attemptedIds.size === 0;
+
   const windowStart = completed.length > 1 ? completed[completed.length - 1].started_at : null;
   const before = windowStart
     ? await loadStudyState(auth.student_id, student.target_modules, new Date(windowStart))
@@ -266,7 +276,20 @@ export default async function StudyDashboard({
 
         {error === 'no-questions' && (
           <p className="mt-4 border-l-3 border-red-pen bg-[#FDF1F0] p-3 text-sm">
-            No approved questions are available for your modules yet. Check back soon.
+            {mode === 'topic'
+              ? 'There are no questions on that topic yet. Try another one, or start the usual session.'
+              : 'No approved questions are available for your modules yet. Check back soon.'}
+          </p>
+        )}
+        {error === 'nothing-to-revisit' && (
+          <p className="mt-4 border-l-3 border-red-pen bg-[#FDF1F0] p-3 text-sm">
+            Nothing to revisit yet — the marks you have lost are all from the last few days. Come
+            back to them once they have had time to fade.
+          </p>
+        )}
+        {error === 'no-topic' && (
+          <p className="mt-4 border-l-3 border-red-pen bg-[#FDF1F0] p-3 text-sm">
+            That topic is not one of yours. Pick one from the list.
           </p>
         )}
 
@@ -296,6 +319,72 @@ export default async function StudyDashboard({
             ? 'Your answers so far are saved. You can look back at any question you have already done.'
             : 'One or two whole exam questions, priced the way the paper prices them — a Paper 2 question is 9 to 12 marks and takes most of the session.'}
         </p>
+
+        {/* The session above is the one the app chooses, and it stays the
+            default. These are the three things a student knows about their own
+            week that it cannot: what class covered today, what they got wrong,
+            and that it has never seen them work. */}
+        {!open && (
+          <section className="mt-6 border-t-[1.5px] border-rule pt-4">
+            <h2 className="font-mono text-[10px] uppercase tracking-widest text-dim">
+              Or choose for yourself
+            </h2>
+
+            <form action={startSession} className="mt-3 flex flex-wrap items-center gap-2">
+              <input type="hidden" name="mode" value="topic" />
+              <label htmlFor="topic" className="text-sm">
+                Practise a topic
+              </label>
+              <select
+                id="topic"
+                name="topic"
+                defaultValue={topicChoices[0]?.code}
+                className="min-w-0 flex-1 border-[1.5px] border-ink bg-paper p-2 text-sm"
+              >
+                {topicChoices.map((t) => (
+                  <option key={t.code} value={t.code}>
+                    M{t.module} · {t.title}
+                  </option>
+                ))}
+              </select>
+              <button className="border-[1.5px] border-ink px-3 py-2 font-mono text-xs uppercase tracking-widest">
+                Go
+              </button>
+            </form>
+
+            <form action={startSession} className="mt-3">
+              <input type="hidden" name="mode" value="revisit" />
+              <button
+                disabled={revisitMarks === 0}
+                className="w-full border-[1.5px] border-ink p-3 text-left text-sm disabled:border-rule disabled:text-dim"
+              >
+                Revisit mistakes
+                <small className="block font-mono text-[10px] uppercase tracking-widest text-dim">
+                  {revisitMarks > 0
+                    ? `${revisitMarks} mark${revisitMarks === 1 ? '' : 's'} lost across ${mistakes.lostByObjective.size} objective${mistakes.lostByObjective.size === 1 ? '' : 's'} · new questions on them`
+                    : mistakes.waiting > 0
+                      ? 'Nothing far enough back yet — these are still fresh'
+                      : 'Nothing to revisit yet'}
+                </small>
+              </button>
+            </form>
+
+            <form action={startSession} className="mt-3">
+              <input type="hidden" name="mode" value="diagnostic" />
+              <button
+                className={`w-full border-[1.5px] p-3 text-left text-sm ${
+                  isNewStudent ? 'border-ink' : 'border-rule text-dim'
+                }`}
+              >
+                {isNewStudent ? 'Start with a quick diagnostic' : 'Take a quick diagnostic'}
+                <small className="block font-mono text-[10px] uppercase tracking-widest text-dim">
+                  About {DIAGNOSTIC_MINUTES} minutes · ranks your topics so the usual session knows
+                  where to start
+                </small>
+              </button>
+            </form>
+          </section>
+        )}
 
         <Link
           href="/study/practice"
