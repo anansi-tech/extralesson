@@ -26,6 +26,8 @@ export interface ReviewQuestion {
   stimulusHtml?: string;
   stemHtml: string;
   visualHtml?: string;
+  figureMinWidth?: number;
+  figureMaxWidth?: number;
   parts: {
     label: string;
     promptHtml: string;
@@ -249,10 +251,15 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
       />
 
       {question.visualHtml && (
-        <div
-          className="mt-3 border border-paper-deep bg-white p-2 [&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
-          dangerouslySetInnerHTML={{ __html: question.visualHtml }}
-        />
+        // Same frame as the study card: a reviewer judging a figure on a phone
+        // needs to read it for the same reason a student does.
+        <div className="figure-frame mt-3">
+          <div
+            className="figure-inner [&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
+            style={{ minWidth: question.figureMinWidth, maxWidth: question.figureMaxWidth }}
+            dangerouslySetInnerHTML={{ __html: question.visualHtml }}
+          />
+        </div>
       )}
 
       {question.kind === 'structured' && question.parts.length > 0 && (

@@ -3,6 +3,7 @@ import { dbConnect, Question } from '@/lib/db';
 import { getCoverage, getNextDraftId } from '@/lib/admin/coverage';
 import { renderAnswerHtml, renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
+import { legibleMinWidth, MAX_FIGURE_PX } from '@/lib/visuals/legibility';
 import {
   P1_TOTAL,
   P2_MARKS_TOTAL,
@@ -133,6 +134,8 @@ export default async function ReviewPage({
         stimulusHtml: raw.stimulus ? renderMathHtml(raw.stimulus) : undefined,
         stemHtml: renderMathHtml(raw.stem),
         visualHtml,
+        figureMinWidth: visualHtml ? (legibleMinWidth(visualHtml) ?? undefined) : undefined,
+        figureMaxWidth: MAX_FIGURE_PX,
         parts: (raw.parts ?? []).map((p) => ({
           label: p.label,
           marks: p.marks,

@@ -17,6 +17,9 @@ export interface CardQuestion {
   stimulusHtml?: string;
   stemHtml: string;
   visualHtml?: string;
+  /** The narrowest this figure stays readable at; it scrolls below that. */
+  figureMinWidth?: number;
+  figureMaxWidth?: number;
   parts: {
     label: string;
     promptHtml: string;
@@ -157,6 +160,27 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // on paper and self-marked, so they are not typed in and never gate submit —
   // and a part may hold both kinds at once.
   const markedSlots = question.parts.flatMap((p) => p.slots.filter((s) => s.mode === 'answer'));
+  // THE FIGURE HAS TO STAY REACHABLE WHILE A LATER PART IS ANSWERED.
+  //
+  // Measured at 360px: on a 12-mark question the last input sits 909px below
+  // the bottom of the figure — more than a screen — so a student answering
+  // part (d) is reading nothing and scrolling back loses their place in the
+  // question. When the figure scrolls out of view a control appears that
+  // brings it back over the page, and dismissing it returns them exactly where
+  // they were, because the page never moved.
+  const figureRef = useRef<HTMLDivElement | null>(null);
+  const [figureAway, setFigureAway] = useState(false);
+  const [figureOpen, setFigureOpen] = useState(false);
+  useEffect(() => {
+    const el = figureRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => setFigureAway(!e.isIntersecting), {
+      threshold: 0.01,
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [question.visualHtml]);
+
   // Which box the caret was last in, so an inserted symbol lands there rather
   // than at the end. box === -1 is a slot with a single box.
   const [focus, setFocus] = useState<{ ref: string; box: number } | null>(null);
@@ -296,10 +320,16 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       </div>
 
       {question.visualHtml && (
-        <div
-          className="mt-3 border border-paper-deep bg-white p-2 [&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
-          dangerouslySetInnerHTML={{ __html: question.visualHtml }}
-        />
+        <div className="figure-frame mt-3" ref={figureRef}>
+          <div
+            className="figure-inner [&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
+            style={{
+              minWidth: question.figureMinWidth,
+              maxWidth: question.figureMaxWidth,
+            }}
+            dangerouslySetInnerHTML={{ __html: question.visualHtml }}
+          />
+        </div>
       )}
 
       {question.kind === 'mcq' && question.optionsHtml && (
@@ -369,7 +399,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                             id={`slot-${p.slots[i].ref}`}
                             onFocus={() => setFocus({ ref: p.slots[i].ref, box: -1 })}
                             aria-label={`Answer ${i + 1} in the statement for part (${p.label})`}
-                            className="w-24 border-0 border-b-[1.5px] border-ink bg-transparent px-1 py-0.5 text-center font-mono text-sm"
+                            className="min-h-11 w-24 border-0 border-b-[1.5px] border-ink bg-transparent px-1 py-2 text-center font-mono text-sm"
                           />
                         )}
                       </Fragment>
@@ -456,7 +486,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               disabled={!!feedback}
                               onFocus={() => setFocus({ ref: slot.ref, box: -1 })}
                               aria-label={slotAriaLabel(p, slot)}
-                              className="w-full border-[1.5px] border-ink p-2 font-mono text-sm"
+                              className="min-h-11 w-full border-[1.5px] border-ink p-2 font-mono text-sm"
                               placeholder={
                                 p.slots.length > 1
                                   ? `Answer to (${p.label})(${slot.label})`
@@ -664,6 +694,42 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               {question.index + 1 >= question.total ? 'Finish session' : 'Next question →'}
             </button>
           )}
+        </div>
+      )}
+
+      {question.visualHtml && figureAway && !figureOpen && (
+        <button
+          type="button"
+          onClick={() => setFigureOpen(true)}
+          className="fixed bottom-4 right-4 z-40 flex min-h-11 items-center gap-1.5 border-[1.5px] border-ink bg-paper px-3 py-2 font-mono text-xs uppercase tracking-widest shadow-[3px_3px_0_var(--ink)]"
+        >
+          Show figure
+        </button>
+      )}
+
+      {figureOpen && question.visualHtml && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-[rgba(30,36,48,0.55)] p-3">
+          <div className="flex min-h-0 flex-1 flex-col border-[1.5px] border-ink bg-white shadow-[4px_4px_0_var(--ink)]">
+            <div className="flex items-center justify-between border-b border-paper-deep px-3 py-2">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-dim">
+                The figure
+              </span>
+              <button
+                type="button"
+                onClick={() => setFigureOpen(false)}
+                className="min-h-11 px-3 font-mono text-xs uppercase tracking-widest underline"
+              >
+                Close
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-auto p-2">
+              <div
+                className="[&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
+                style={{ minWidth: question.figureMinWidth }}
+                dangerouslySetInnerHTML={{ __html: question.visualHtml }}
+              />
+            </div>
+          </div>
         </div>
       )}
 

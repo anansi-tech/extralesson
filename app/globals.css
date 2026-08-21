@@ -45,6 +45,39 @@ summary {
   cursor: pointer;
 }
 
+/* A FIGURE ESCAPES THE COLUMN AND KEEPS ITS SCALE.
+   The card sits inside main px-5 and article p-5, so a figure was drawn in
+   260px of a 360px screen — 100px of the phone was padding, and coordinateGrid
+   labels landed at 4px. The frame pulls back both paddings (40px a side, which
+   is the screen edge on a phone) and scrolls sideways when the figure needs
+   more room than the screen has, rather than shrinking below the legible
+   minimum. See lib/visuals/legibility.ts for where the minimum comes from. */
+.figure-frame {
+  margin-left: -40px;
+  margin-right: -40px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border-block: 1px solid var(--paper-deep);
+  background: #fff;
+}
+
+.figure-inner {
+  margin-inline: auto;
+  padding: 8px;
+  /* content-box, so the minimum width is the width the FIGURE gets. Under the
+     global border-box the 8px padding came out of it and every label landed at
+     9.7px against a 10px floor — the audit caught the 0.3px. */
+  box-sizing: content-box;
+}
+
+@media (min-width: 640px) {
+  .figure-frame {
+    margin-left: -8px;
+    margin-right: -8px;
+    border: 1px solid var(--paper-deep);
+  }
+}
+
 /* Question prose rendered by renderMathHtml. Authored line breaks and
    sentence spacing are meaningful (worked solutions read as board work), so
    they are preserved here rather than transformed into markup. KaTeX sets

@@ -52,7 +52,7 @@ export function SymbolStrip({
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => onInsert(ch)}
           aria-label={`Insert ${ch}`}
-          className="min-w-9 border-[1.5px] border-ink bg-white px-2.5 py-1.5 font-mono text-base leading-none text-ink shadow-[2px_2px_0_var(--ink)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+          className="min-h-11 min-w-11 border-[1.5px] border-ink bg-white px-2.5 font-mono text-base leading-none text-ink shadow-[2px_2px_0_var(--ink)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
         >
           {ch}
         </button>

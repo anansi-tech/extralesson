@@ -36,6 +36,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.23",
     "mongodb-memory-server": "^11.2.0",
+    "playwright-core": "^1.62.1",
     "tailwindcss": "^4",
     "tsx": "^4",
     "typescript": "^5",
