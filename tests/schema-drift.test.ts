@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { PartLooseZ, StructuredLooseZ, McqLooseZ } from '@/lib/generation/draft-schema';
 import { PartZ, StructuredQuestionZ, McqQuestionZ } from '@/lib/validation/question';
-import { Question } from '@/lib/db';
+import { Question, SessionDraft, Attempt } from '@/lib/db';
 
 // A field the model never sees cannot be emitted, and the failure is silent:
 // depends_on was added to the strict schema and not to the loose one, so a
@@ -195,5 +195,30 @@ describe('schema drift — the database stores every field we validate', () => {
       (f) => !slotStored.has(f) && !(f in documented),
     );
     expect(slotMissing, `slot fields never stored: ${slotMissing.join(', ')}`).toEqual([]);
+  });
+});
+
+// A draft is scratch and an attempt is the record. The line between them is the
+// whole reason drafts are a separate collection, so it is asserted rather than
+// remembered: nothing in a draft is marked, folded or counted, and the only
+// write to `attempts` is the one on submit.
+describe('session drafts are scratch, never a record', () => {
+  it('keeps the two collections apart', () => {
+    expect(SessionDraft.modelName).not.toBe(Attempt.modelName);
+    // A draft carries no marking of any kind — no rubric, no profile marks, no
+    // correctness. If one of these ever appears here, something is marking
+    // work that was never handed in.
+    const fields = Object.keys(SessionDraft.schema.paths);
+    for (const marked of ['rubric_awarded', 'profile_marks', 'correct', 'grader_version']) {
+      expect(fields).not.toContain(marked);
+    }
+  });
+
+  it('expires drafts rather than keeping them forever', () => {
+    const indexes = SessionDraft.schema.indexes() as [
+      Record<string, unknown>,
+      { expireAfterSeconds?: number } | undefined,
+    ][];
+    expect(indexes.some(([, opts]) => typeof opts?.expireAfterSeconds === 'number')).toBe(true);
   });
 });

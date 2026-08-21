@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { dbConnect, Attempt, PracticeSession, Question } from '@/lib/db';
+import { dbConnect, Attempt, PracticeSession, Question, SessionDraft } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { markMcq, markStructuredParts } from '@/lib/grade/mark';
 import { GRADER_VERSION, questionFingerprint } from '@/lib/grade/version';
@@ -150,6 +150,10 @@ export async function submitAnswer(input: {
     storedAnswer = entered.map((a) => `(${a.label}) ${a.text}`).join('; ');
   }
 
+  // The draft was scratch for an unanswered question. The attempt is now the
+  // record, so the scratch goes.
+  await SessionDraft.deleteOne({ session_id: sessionId, question_index: questionIndex });
+
   // Append-only: attempts are never mutated (§3.5).
   await Attempt.create({
     student_id: auth.student_id,
@@ -239,4 +243,48 @@ export async function submitAnswer(input: {
     formatFeedback: 'format_feedback' in result ? result.format_feedback : undefined,
     construction,
   };
+}
+
+
+const DraftZ = z.object({
+  sessionId: z.string().regex(/^[a-f0-9]{24}$/),
+  questionIndex: z.number().int().min(0).max(99),
+  answers: z.record(z.string().regex(ANSWER_REF_RE), z.string().max(2000)).default({}),
+  values: z.record(z.string().regex(ANSWER_REF_RE), z.array(z.string().max(200)).max(24)).default({}),
+  selected: z.number().int().min(0).max(9).optional(),
+  working: z.string().max(10000).default(''),
+});
+
+/**
+ * Keep what has been typed so far, so a question survives a phone call.
+ *
+ * Writes a DRAFT, never an attempt: attempts are append-only and are written
+ * once, on submit. This is overwritten on every save and deleted when the
+ * answer is handed in, and nothing reads it except the page that restores it.
+ */
+export async function saveDraft(input: {
+  sessionId: string;
+  questionIndex: number;
+  answers?: Record<string, string>;
+  values?: Record<string, string[]>;
+  selected?: number;
+  working?: string;
+}): Promise<{ ok: boolean }> {
+  const auth = await requireSession();
+  const parsed = DraftZ.safeParse(input);
+  if (!parsed.success) return { ok: false };
+  const { sessionId, questionIndex, answers, values, selected, working } = parsed.data;
+
+  await dbConnect();
+  // The session has to be this student's, or a draft is a way to write to
+  // someone else's row.
+  const owned = await PracticeSession.exists({ _id: sessionId, student_id: auth.student_id });
+  if (!owned) return { ok: false };
+
+  await SessionDraft.updateOne(
+    { session_id: sessionId, question_index: questionIndex },
+    { $set: { answers, values, selected, working, updated_at: new Date() } },
+    { upsert: true },
+  );
+  return { ok: true };
 }

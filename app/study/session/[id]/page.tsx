@@ -6,6 +6,7 @@ import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
 import { planSession, topicPrefixesOf } from '@/lib/session/plan';
+import { SessionDraft } from '@/lib/db';
 import { SESSION_MINUTES } from '@/lib/session/builder';
 import { rankByVerdict, topicsSeen, verdictFor } from '@/lib/study/diagnostic';
 import { startSession } from '@/app/study/actions';
@@ -451,6 +452,17 @@ export default async function SessionPage({
     ),
   ];
 
+  // What was typed and not handed in. Only for the question actually being
+  // answered: a question already attempted shows the attempt, not scratch.
+  const draftRow = reviewing
+    ? null
+    : await SessionDraft.findOne({ session_id: id, question_index: index }).lean<{
+        answers?: Record<string, string>;
+        values?: Record<string, string[]>;
+        selected?: number;
+        working?: string;
+      } | null>();
+
   const card: CardQuestion = {
     sessionId: id,
     index,
@@ -458,6 +470,14 @@ export default async function SessionPage({
     marksTotal,
     marksAnswered,
     prior,
+    draft: draftRow
+      ? {
+          answers: draftRow.answers ?? {},
+          values: draftRow.values ?? {},
+          selected: draftRow.selected,
+          working: draftRow.working ?? '',
+        }
+      : undefined,
     kind: question.kind,
     stimulusHtml: question.stimulus ? renderMathHtml(question.stimulus) : undefined,
     stemHtml: renderMathHtml(question.stem),
