@@ -6,6 +6,7 @@ import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
 import { planSession, topicPrefixesOf } from '@/lib/session/plan';
+import { legibleMinWidth, MAX_FIGURE_PX } from '@/lib/visuals/legibility';
 import { SessionDraft } from '@/lib/db';
 import { SESSION_MINUTES } from '@/lib/session/builder';
 import { rankByVerdict, topicsSeen, verdictFor } from '@/lib/study/diagnostic';
@@ -482,6 +483,10 @@ export default async function SessionPage({
     stimulusHtml: question.stimulus ? renderMathHtml(question.stimulus) : undefined,
     stemHtml: renderMathHtml(question.stem),
     visualHtml,
+    // How narrow this figure may be drawn before its labels stop being
+    // readable. The card holds it and scrolls rather than shrinking past it.
+    figureMinWidth: visualHtml ? (legibleMinWidth(visualHtml) ?? undefined) : undefined,
+    figureMaxWidth: MAX_FIGURE_PX,
     parts: (question.parts ?? []).map((p) => ({
       label: p.label,
       marks: p.marks,

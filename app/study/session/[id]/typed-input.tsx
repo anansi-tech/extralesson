@@ -81,7 +81,7 @@ export function TypedInput({
       disabled={disabled}
       onFocus={() => onFocusBox(i)}
       aria-label={`${describe} — ${boxName(shape, i, cols)}`}
-      className="w-16 border-[1.5px] border-ink p-2 text-center font-mono text-sm"
+      className="min-h-11 w-16 border-[1.5px] border-ink p-2 text-center font-mono text-sm"
     />
   );
 
@@ -152,7 +152,7 @@ export function TypedInput({
         <button
           type="button"
           onClick={() => onChange([...values, ''].slice(0, 24))}
-          className="mt-1 font-mono text-[11px] text-dim underline"
+          className="mt-1 min-h-11 font-mono text-[11px] text-dim underline"
         >
           + another box
         </button>
