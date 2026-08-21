@@ -409,12 +409,47 @@ export default async function SessionPage({
         feedbackTitleHtml: 'Worked solution',
         feedbackHtml: renderMathHtml(question.worked_solution),
         isMisconception: false,
+        // Same rule as actions.ts on the live path: the figure stands as the
+        // construction only when the figure is the answer.
         construction: constructActs(question.visual as never).length
-          ? { figureHtml: visualHtml ?? '', acts: constructActs(question.visual as never) }
+          ? {
+              figureHtml: figureGivesAnswer(question.visual?.template as never)
+                ? (visualHtml ?? '')
+                : '',
+              describes: figureGivesAnswer(question.visual?.template as never)
+                ? undefined
+                : renderMathHtml(
+                    (question.parts ?? [])
+                      .flatMap((p) => p.slots ?? [])
+                      .find((sl) => sl.response_mode === 'construct')?.answer ?? '',
+                  ),
+              acts: constructActs(question.visual as never),
+            }
           : undefined,
       },
     };
   }
+
+  // THE STRIP IS THE QUESTION'S, NOT THE SLOT'S.
+  //
+  // A student working a trigonometry question may want ° in a box whose own
+  // answer is a plain decimal — they are writing an intermediate value, or
+  // simply prefer to. Offering the character only on the slot whose ANSWER
+  // needs it makes the strip appear and vanish between boxes for no reason the
+  // student can see. The hints stay per-slot; only the characters broaden.
+  //
+  // Still rendered per input, each inserting into its own box: one strip for
+  // the whole question would need cursor tracking across inputs to know where
+  // the character was going.
+  const questionSymbols = [
+    ...new Set(
+      (question.parts ?? []).flatMap((p) =>
+        (p.slots ?? [])
+          .filter((sl) => (sl.response_mode ?? 'answer') === 'answer' && sl.answer)
+          .flatMap((sl) => inputAffordance(sl.answer, readInputShape(sl.answer).shape).symbols),
+      ),
+    ),
+  ];
 
   const card: CardQuestion = {
     sessionId: id,
@@ -457,7 +492,7 @@ export default async function SessionPage({
           promptText: slot.prompt,
           mode,
           hints: affordance.hints,
-          symbols: affordance.symbols,
+          symbols: questionSymbols,
           input:
             reading && isMultiValue(reading.shape)
               ? {

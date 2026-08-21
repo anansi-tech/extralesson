@@ -89,8 +89,35 @@ export const HINT_PROMISES: { hint: string; typed: string; canonical: string }[]
   (r) => r.promise,
 ).map((r) => ({ hint: r.hint ?? '', typed: r.promise![0], canonical: r.promise![1] }));
 
-/** A unit the student may leave off, which the marker supplies from the question. */
-const UNIT_HINT = 'The unit is optional — e.g. 72 and 72 cm are both accepted.';
+/**
+ * A unit the student may leave off, which the marker supplies from the question.
+ *
+ * The unit is the SLOT'S OWN — a hint under a mass answer that talks about
+ * centimetres is describing a different question, and a student reading it has
+ * to work out whether it applies to them. The number stays a constant, because
+ * the one thing a hint must never print is the answer.
+ */
+const EXAMPLE_VALUES = [72, 45];
+
+function unitOf(answer: string): string | null {
+  const bare = answer
+    .replace(/^\$+|\$+$/g, '')
+    .replace(/\\text\{([^{}]*)\}/g, '$1')
+    .replace(/\\,/g, ' ')
+    .trim();
+  const m = bare.match(/(?<=\d)\s*([a-z]{1,3}(?:\/[a-z]{1,3})?(?:\^\{?[23]\}?)?)\s*$/i);
+  return m ? m[1].trim() : null;
+}
+
+function unitHint(answer: string): string | null {
+  const unit = unitOf(answer);
+  if (!unit) return null;
+  // If the constant happens to be the answer's own number, use the other one:
+  // a hint that prints the answer under the box is worse than no hint.
+  const own = answer.match(/\d+/)?.[0];
+  const example = EXAMPLE_VALUES.find((v) => String(v) !== own) ?? EXAMPLE_VALUES[0];
+  return `The unit is optional — e.g. ${example} and ${example} ${unit} are both accepted.`;
+}
 
 export function inputAffordance(answer: string, shape: InputShape): InputAffordance {
   // Prose is answered in words; none of this applies, and a strip of maths
@@ -109,6 +136,9 @@ export function inputAffordance(answer: string, shape: InputShape): InputAfforda
   // optional" underneath "the degree sign is optional" says one thing twice and
   // spends the second line saying it.
   const unitAlreadySaid = hints.some((h) => h.includes('degree sign') || h.includes('Percent'));
-  if (shape === 'quantity' && !unitAlreadySaid && hints.length < MAX_HINTS) hints.push(UNIT_HINT);
+  if (shape === 'quantity' && !unitAlreadySaid && hints.length < MAX_HINTS) {
+    const hint = unitHint(answer);
+    if (hint) hints.push(hint);
+  }
   return { hints, symbols };
 }

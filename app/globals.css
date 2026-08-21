@@ -34,6 +34,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* A control that does something says so under the cursor. The reset leaves
+   buttons on the default arrow, which on a desktop reads as decoration —
+   which is how a strip of symbol buttons went unnoticed for two sessions. */
+button:not(:disabled),
+[role='button']:not(:disabled),
+label[for],
+select:not(:disabled),
+summary {
+  cursor: pointer;
+}
+
 /* Question prose rendered by renderMathHtml. Authored line breaks and
    sentence spacing are meaningful (worked solutions read as board work), so
    they are preserved here rather than transformed into markup. KaTeX sets

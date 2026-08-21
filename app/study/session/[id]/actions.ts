@@ -12,7 +12,7 @@ import { renderMathHtml } from '@/lib/katex';
 import type { ProfileMarks, QuestionPart, RubricItem, TemplateName } from '@/lib/types';
 import { ANSWER_REF_RE } from '@/lib/notation';
 import { renderVisual } from '@/lib/visuals';
-import { constructActs, constructFamily } from '@/lib/targets/construct';
+import { constructActs, constructFamily, figureGivesAnswer } from '@/lib/targets/construct';
 
 const SubmitZ = z.object({
   sessionId: z.string().regex(/^[a-f0-9]{24}$/),
@@ -58,7 +58,12 @@ export interface Feedback {
    * parts ask for — so it travels back with the marking, as the answers do,
    * and is not in the page the student is answering on.
    */
-  construction?: { figureHtml: string; acts: string[] };
+  /**
+   * What to check the drawing against. A figure when the question's own figure
+   * IS the answer; otherwise the written description of what should have been
+   * drawn, because there is no stored picture of it.
+   */
+  construction?: { figureHtml: string; describes?: string; acts: string[] };
 }
 
 export async function submitAnswer(input: {
@@ -189,15 +194,33 @@ export async function submitAnswer(input: {
     (question.parts ?? []).some((p) => p.slots?.some((sl) => sl.response_mode === 'construct'))
   ) {
     try {
+      // THE FIGURE IS ONLY THE CONSTRUCTION WHEN IT IS THE ANSWER.
+      //
+      // A pattern question's figure is Figures 1 to 3 — the premise the student
+      // was given and had to continue. Rendering it under "your drawing should
+      // look like this" hands back the question as though it were the answer,
+      // and a student checking their Figure 4 against Figures 1 to 3 is being
+      // told they got it wrong by an image of something else. Fifteen of the
+      // sixty construct questions in the bank are this family.
+      //
+      // What those questions DO have is the construct slot's written answer,
+      // which says what the drawing should show. That is what to check against.
+      const givesAnswer = figureGivesAnswer(question.visual?.template as never);
+      const constructSlot = (question.parts ?? [])
+        .flatMap((p) => p.slots ?? [])
+        .find((sl) => sl.response_mode === 'construct');
       construction = {
-        figureHtml: renderVisual(question.visual as never, {
-          stimulus: question.stimulus,
-          stem: question.stem,
-          partPrompts: (question.parts ?? []).flatMap((p) => [
-            p.prompt,
-            ...(p.slots ?? []).map((sl) => sl.prompt ?? ''),
-          ]),
-        }),
+        figureHtml: givesAnswer
+          ? renderVisual(question.visual as never, {
+              stimulus: question.stimulus,
+              stem: question.stem,
+              partPrompts: (question.parts ?? []).flatMap((p) => [
+                p.prompt,
+                ...(p.slots ?? []).map((sl) => sl.prompt ?? ''),
+              ]),
+            })
+          : '',
+        describes: givesAnswer ? undefined : renderMathHtml(constructSlot?.answer ?? ''),
         acts: constructActs(question.visual),
       };
     } catch {
