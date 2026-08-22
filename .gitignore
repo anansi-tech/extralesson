@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# The marking golden set: photographs of real people's handwriting, and David's
+# hand-marking of them. Personal data of minors and of the volunteers who wrote
+# it, and the ground truth we grade ourselves against — read-only reference,
+# like the past papers. Never in the repo.
+design/golden/

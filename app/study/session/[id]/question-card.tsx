@@ -751,9 +751,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           </div>
 
           {/* R2 §2 — the camera comes after the typed answers are in, and only
-              for a question the student actually worked on paper. */}
-          {question.kind === 'structured' && !reviewing && (
-            <WorkingPhoto attemptId={feedback.attemptId} />
+              where the working could still earn something. A prompt on every
+              question is a chore; a prompt on a question with three unearned
+              method marks is an offer. */}
+          {question.kind === 'structured' && !reviewing && feedback.earnableByMethod > 0 && (
+            <WorkingPhoto attemptId={feedback.attemptId} marks={feedback.earnableByMethod} />
           )}
 
           {reviewing ? (
