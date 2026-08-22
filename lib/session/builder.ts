@@ -104,6 +104,23 @@ interface Scored extends CandidateQuestion {
   topicUnstarted: boolean;
 }
 
+/**
+ * WHETHER MODULE 1 IS STILL HOLDING THE LATER MODULES BACK.
+ *
+ * Exported because the landing page has to say the same thing the builder does.
+ * It showed a student their highest-leverage topic, +6.9 points in Geometry and
+ * Trigonometry 1, while this gate meant no session would ever take them there —
+ * the plan and the sessions told different stories and nothing explained the
+ * difference. Two copies of the condition would drift the first time the
+ * threshold moved, so there is one.
+ *
+ * The gate is on the ADAPTIVE mode only: a student who names a topic has
+ * overruled the default deliberately, and topic mode reaches it.
+ */
+export function m1GateHolds(targetModules: ModuleNumber[], m1Mastery: number): boolean {
+  return targetModules.includes(1) && m1Mastery <= M1_PREREQ_THRESHOLD;
+}
+
 export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
   const {
     candidates,
@@ -122,7 +139,7 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
   // The prerequisite gate belongs to the mode that chose for the student. When
   // they name a topic themselves, or ask for their own mistakes, holding M3
   // back would be overruling the request they just made.
-  const m1Gated = mode === 'adaptive' && targetModules.includes(1) && m1Mastery <= M1_PREREQ_THRESHOLD;
+  const m1Gated = mode === 'adaptive' && m1GateHolds(targetModules, m1Mastery);
 
   // The topics the student has opened at all, by objective prefix.
   const startedPrefixes = new Set(

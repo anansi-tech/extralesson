@@ -17,7 +17,7 @@ import {
   type TrajectoryGap,
 } from '@/lib/study/trajectory';
 import { PracticeSession } from '@/lib/db';
-import { DIAGNOSTIC_MINUTES, SESSION_MINUTES } from '@/lib/session/builder';
+import { DIAGNOSTIC_MINUTES, m1GateHolds, SESSION_MINUTES } from '@/lib/session/builder';
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
 import { BAND_LABEL } from '@/lib/study/profiles';
@@ -128,6 +128,11 @@ export default async function StudyDashboard({
   // rather than an exception: "not yet estimated" is a placeholder where the
   // topics carrying their marks are a plan.
   const reachable = topicLeverage(state, student.target_modules).slice(0, 3);
+  // The same condition the session builder applies, read from the same
+  // function: a topic outside Module 1 is where the marks are and is not where
+  // today's session will go while Module 1 is still the prerequisite.
+  const m1Gated = m1GateHolds(student.target_modules, state.moduleMastery[1]);
+  const gatedTopics = m1Gated ? reachable.filter((t) => t.module !== 1) : [];
   const leadWithReachable =
     reachable.length > 0 && (!prediction.estimable || prediction.overall_percent < 50);
   // Stating what we cannot mark is a trust asset — it sits with the estimate it
@@ -179,6 +184,7 @@ export default async function StudyDashboard({
                     <b>{t.title}</b>
                     <span className="ml-2 font-mono text-[10px] text-dim">
                       M{t.module} · {Math.round(t.mastery * 100)}% so far
+                      {m1Gated && t.module !== 1 && ' · after Module 1'}
                     </span>
                   </span>
                   {/* "+8.0" on its own names no unit and reads as nothing to
@@ -201,6 +207,15 @@ export default async function StudyDashboard({
               Each number is how much your overall grade estimate could rise if you mastered that
               topic — the marks still sitting there, out of 100. Your sessions go here first.
             </p>
+            {gatedTopics.length > 0 && (
+              <p className="mt-2 text-[12px] leading-snug text-dim">
+                {gatedTopics.length === 1 ? 'One of these sits' : 'Some of these sit'} in a later
+                module. Module 1 comes first because the rest of the syllabus is built on it, so
+                today&rsquo;s session stays there until your Module 1 topics are stronger. You can
+                still practise{' '}
+                {gatedTopics.length === 1 ? gatedTopics[0].title : 'any of them'} by name below.
+              </p>
+            )}
             {trajectory && !trajectory.flat ? (
               <p className="mt-2 text-[12px] leading-snug">
                 At the rate you have been working —{' '}

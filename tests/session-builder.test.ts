@@ -3,6 +3,7 @@ import {
   buildSession,
   estimatedMinutes,
   hasMarkableParts,
+  m1GateHolds,
   SESSION_MINUTES,
   type CandidateQuestion,
 } from '@/lib/session/builder';
@@ -450,5 +451,57 @@ describe('buildSession — a topic never opened comes first', () => {
   // caller and every stored session unchanged.
   it('is unchanged when no attempt history is supplied', () => {
     expect(buildSession(base)[0].id).toBe('touched');
+  });
+});
+
+// The landing page shows where the marks are; the builder decides where the
+// session goes. They disagreed: a student was shown Geometry and Trigonometry 1
+// as their best topic at +6.9 while this gate meant no adaptive session would
+// ever take them there, with nothing on the page explaining why. The page now
+// marks those topics "after Module 1" — and reads the condition from HERE, so
+// the two cannot drift apart when the threshold moves.
+describe('m1GateHolds — one condition, used by the page and the builder', () => {
+  const q2 = (id: string) => ({
+    id,
+    module: 2 as const,
+    objective_ids: ['M2.4.1'],
+    kind: 'structured' as const,
+    marks: 4,
+  });
+  const q1 = (id: string) => ({
+    id,
+    module: 1 as const,
+    objective_ids: ['M1.1.1'],
+    kind: 'structured' as const,
+    marks: 4,
+  });
+  const base = {
+    candidates: [q2('m2'), q1('m1')],
+    perObjectiveMastery: new Map<string, number>(),
+    targetModules: [1, 2, 3] as (1 | 2 | 3)[],
+    topicWeightByPrefix: new Map([
+      ['M2.4.', 13],
+      ['M1.1.', 7],
+    ]),
+  };
+
+  it('holds while Module 1 is below the threshold, and the builder agrees', () => {
+    const m1Mastery = M1_PREREQ_THRESHOLD - 0.1;
+    expect(m1GateHolds(base.targetModules, m1Mastery)).toBe(true);
+    // Module 1 first, even though the M2 topic is worth nearly twice as much.
+    expect(buildSession({ ...base, m1Mastery })[0].module).toBe(1);
+  });
+
+  it('lifts once Module 1 is strong enough, and the builder agrees', () => {
+    const m1Mastery = M1_PREREQ_THRESHOLD + 0.1;
+    expect(m1GateHolds(base.targetModules, m1Mastery)).toBe(false);
+    expect(buildSession({ ...base, m1Mastery })[0].module).toBe(2);
+  });
+
+  // A student who names a topic has overruled the default deliberately.
+  it('never applies to a topic the student asked for by name', () => {
+    const m1Mastery = M1_PREREQ_THRESHOLD - 0.1;
+    const picked = buildSession({ ...base, m1Mastery, mode: 'topic', focusPrefixes: ['M2.4.'] });
+    expect(picked.map((p) => p.id)).toEqual(['m2']);
   });
 });
