@@ -209,3 +209,36 @@ export function readInputShape(rawAnswer: string): ShapeReading {
 
   return one('word');
 }
+
+/**
+ * HOW WIDE A BOX HAS TO BE TO HOLD ITS ANSWER.
+ *
+ * Measured in characters, from what the student will TYPE rather than from the
+ * mark scheme's markup: the key writes \\frac{9}{5}, eleven characters, and the
+ * student types 9/5, which is three. Sizing from the raw string would make
+ * every fraction box three times wider than it needs to be.
+ *
+ * The width is the longest value in the SLOT, applied to all of its boxes, so
+ * one box is never a clue to the length of its own answer while the boxes stay
+ * a consistent size beside each other.
+ */
+const MIN_BOX_CHARS = 5;
+const MAX_BOX_CHARS = 18;
+
+function typedLength(value: string): number {
+  const typed = value
+    .replace(/\$/g, '')
+    .replace(/\\[dt]?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, '$1/$2')
+    .replace(/\\sqrt\s*\{([^{}]*)\}/g, 'sqrt($1)')
+    .replace(/\\text\s*\{([^{}]*)\}/g, '$1')
+    .replace(/\\[a-z]+/gi, 'x') // any remaining command types as a symbol or two
+    .replace(/[{}]/g, '')
+    .trim();
+  return typed.length;
+}
+
+/** Characters wide the boxes of this slot should be. */
+export function boxWidthChars(reading: ShapeReading): number {
+  const longest = Math.max(0, ...reading.values.map(typedLength));
+  return Math.min(MAX_BOX_CHARS, Math.max(MIN_BOX_CHARS, longest));
+}

@@ -15,7 +15,7 @@ import { startSession } from '@/app/study/actions';
 import { loadStudyState } from '@/lib/study/state';
 import { estimatedMinutes } from '@/lib/session/builder';
 import { markSplit } from '@/lib/grade/assessable';
-import { isMultiValue, readInputShape, showsBoxCount } from '@/lib/grade/input-shape';
+import { boxWidthChars, isMultiValue, readInputShape, showsBoxCount } from '@/lib/grade/input-shape';
 import { inputAffordance } from '@/lib/grade/input-hints';
 import { PROFILE_GLOSS, PROFILE_MEANING } from '@/lib/study/profiles';
 import QuestionCard, { type CardQuestion } from './question-card';
@@ -540,6 +540,9 @@ export default async function SessionPage({
                   shape: reading.shape,
                   boxes: showsBoxCount(reading) ? reading.boxes : undefined,
                   cols: reading.cols,
+                  // Wide enough for the longest value in the slot, so a box is
+                  // never a clue to the length of its own answer.
+                  chars: boxWidthChars(reading),
                 }
               : undefined,
         };

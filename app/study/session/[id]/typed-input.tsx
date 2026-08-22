@@ -31,6 +31,8 @@ interface Props {
   /** Fixed-arity shapes only; absent when showing it would give the answer. */
   boxes?: number;
   cols?: number;
+  /** How many characters wide each box starts; it grows past this as typed. */
+  chars?: number;
   values: string[];
   onChange: (values: string[]) => void;
   disabled: boolean;
@@ -54,6 +56,7 @@ export function TypedInput({
   shape,
   boxes,
   cols = 1,
+  chars = 5,
   values,
   onChange,
   disabled,
@@ -72,18 +75,27 @@ export function TypedInput({
     onChange(next);
   };
 
-  const box = (i: number) => (
-    <input
-      key={i}
-      id={`slot-${slotRef}-${i}`}
-      value={values[i] ?? ''}
-      onChange={(e) => set(i, e.target.value)}
-      disabled={disabled}
-      onFocus={() => onFocusBox(i)}
-      aria-label={`${describe} — ${boxName(shape, i, cols)}`}
-      className="min-h-11 w-16 border-[1.5px] border-ink p-2 text-center font-mono text-sm"
-    />
-  );
+  // Sized from the longest answer this slot expects, and growing past it as the
+  // student types: a fixed 64px box held about seven characters, which was too
+  // narrow for a word in a set and for the values a ratio carries. The ch unit
+  // is the width of a digit in the box's own monospace face, so the arithmetic
+  // is the same on a phone and on a desktop.
+  const box = (i: number) => {
+    const typed = (values[i] ?? '').length;
+    return (
+      <input
+        key={i}
+        id={`slot-${slotRef}-${i}`}
+        value={values[i] ?? ''}
+        onChange={(e) => set(i, e.target.value)}
+        disabled={disabled}
+        onFocus={() => onFocusBox(i)}
+        aria-label={`${describe} — ${boxName(shape, i, cols)}`}
+        style={{ width: `${Math.min(28, Math.max(chars, typed + 1)) + 2}ch` }}
+        className="min-h-11 min-w-16 max-w-full border-[1.5px] border-ink p-2 text-center font-mono text-sm"
+      />
+    );
+  };
 
   // Printed punctuation: the student sees the notation and types only values.
   const punct = (text: string) => (
