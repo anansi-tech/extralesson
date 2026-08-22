@@ -393,3 +393,62 @@ describe('buildSession — diagnostic', () => {
     expect(picked.every((p) => p.kind === 'mcq')).toBe(true);
   });
 });
+
+// COVER BEFORE DEEPEN.
+//
+// Priority is (1 - mastery) x blueprint weight, and weight can cancel the
+// mastery gap: a heavy topic already at 15% scores 0.85 x 10 = 8.5 an
+// objective, an untouched lighter one 1.0 x 7.5 = 7.5. So the session kept
+// returning to topics the student had seen. After sixteen sessions a real
+// account had four topics it had never once been sent to, and the best
+// candidate in an untouched topic sat at rank 12 of 216.
+//
+// Mastery cannot express this on its own: an objective never seen and one
+// answered wrong both read 0. Which topics have been OPENED is separate
+// evidence, and it decides first.
+describe('buildSession — a topic never opened comes first', () => {
+  const heavy = new Map([
+    ['M1.1.', 10], // touched, and the heaviest topic
+    ['M1.3.', 7.5], // never opened, and lighter
+  ]);
+  const candidates = [
+    { id: 'touched', module: 1 as const, objective_ids: ['M1.1.1', 'M1.1.2', 'M1.1.3'], kind: 'structured' as const, marks: 6 },
+    { id: 'unopened', module: 1 as const, objective_ids: ['M1.3.1', 'M1.3.2'], kind: 'structured' as const, marks: 6 },
+  ];
+  const base = {
+    candidates,
+    // The touched topic is part way through; the untouched one reads 0 because
+    // nothing has been asked, which is the same number for a different reason.
+    perObjectiveMastery: new Map([
+      ['M1.1.1', 0.15],
+      ['M1.1.2', 0.15],
+      ['M1.1.3', 0.15],
+    ]),
+    m1Mastery: 0.15,
+    targetModules: [1, 2, 3] as (1 | 2 | 3)[],
+    topicWeightByPrefix: heavy,
+  };
+
+  it('sends the student to the unopened topic, not the heavier familiar one', () => {
+    const picked = buildSession({
+      ...base,
+      attemptedObjectives: new Set(['M1.1.1', 'M1.1.2', 'M1.1.3']),
+    });
+    expect(picked[0].id).toBe('unopened');
+  });
+
+  it('falls back to weight times deficit once every topic has been opened', () => {
+    const picked = buildSession({
+      ...base,
+      attemptedObjectives: new Set(['M1.1.1', 'M1.1.2', 'M1.1.3', 'M1.3.1', 'M1.3.2']),
+    });
+    // Both topics are started now, so the heavier one wins on its deficit.
+    expect(picked[0].id).toBe('touched');
+  });
+
+  // Without the evidence it behaves as it did before, which keeps every other
+  // caller and every stored session unchanged.
+  it('is unchanged when no attempt history is supplied', () => {
+    expect(buildSession(base)[0].id).toBe('touched');
+  });
+});
