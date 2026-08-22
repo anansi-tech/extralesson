@@ -7,6 +7,7 @@ import { renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
 import { planSession, topicPrefixesOf } from '@/lib/session/plan';
 import { legibleMinWidth, MAX_FIGURE_PX } from '@/lib/visuals/legibility';
+import { slotCellNames } from '@/lib/visuals/slot-names';
 import { SessionDraft } from '@/lib/db';
 import { SESSION_MINUTES } from '@/lib/session/builder';
 import { rankByVerdict, topicsSeen, verdictFor } from '@/lib/study/diagnostic';
@@ -443,6 +444,11 @@ export default async function SessionPage({
   // Still rendered per input, each inserting into its own box: one strip for
   // the whole question would need cursor tracking across inputs to know where
   // the character was going.
+  // A box in a table-completion part is named by the cell it fills. Without it
+  // the card falls back to "first answer", and a student filling boxes in the
+  // order they read the table put a percentage where a count belonged.
+  const cellNames = slotCellNames(question.visual);
+
   const questionSymbols = [
     ...new Set(
       (question.parts ?? []).flatMap((p) =>
@@ -516,6 +522,7 @@ export default async function SessionPage({
           promptHtml: slot.prompt ? renderMathHtml(slot.prompt) : undefined,
           promptText: slot.prompt,
           mode,
+          cellName: cellNames.get(`${p.label}.${slot.label}`),
           hints: affordance.hints,
           symbols: questionSymbols,
           input:
