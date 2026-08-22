@@ -13,6 +13,8 @@ import {
   gradePlace,
   projectTrajectory,
   topicLeverage,
+  trajectoryGap,
+  type TrajectoryGap,
 } from '@/lib/study/trajectory';
 import { PracticeSession } from '@/lib/db';
 import { DIAGNOSTIC_MINUTES, SESSION_MINUTES } from '@/lib/session/builder';
@@ -24,6 +26,22 @@ import type { MasteryBand } from '@/lib/mastery/config';
 
 export const metadata = { title: 'Your notebook — ExtraLesson' };
 export const dynamic = 'force-dynamic';
+
+/**
+ * Says what is actually missing before a rate can be shown — sessions, days, or
+ * both. Telling a student with sixteen sessions to "finish a couple more" asks
+ * for something they have already done, and asks for it again every visit.
+ */
+function trajectoryWait(gap: TrajectoryGap | null): string {
+  if (!gap) return 'Your rate will appear here once there is enough to measure.';
+  const s = gap.sessionsShort;
+  const d = gap.daysShort;
+  const sessions = `${s} more session${s === 1 ? '' : 's'}`;
+  const days = `${d} more day${d === 1 ? '' : 's'} of study`;
+  if (s > 0 && d > 0) return `After ${sessions}, spread over ${days}, we can show you the grade your current rate is heading for.`;
+  if (s > 0) return `After ${sessions} we can show you the grade your current rate is heading for.`;
+  return `You have done enough sessions. A rate needs time as well, so after ${days} we can show you the grade it is heading for.`;
+}
 
 
 function barColor(band: MasteryBand): string {
@@ -77,6 +95,13 @@ export default async function StudyDashboard({
   ]);
   const revisitMarks = [...mistakes.lostByObjective.values()].reduce((a, b) => a + b, 0);
   const isNewStudent = mistakes.attemptedIds.size === 0;
+
+  // What the trajectory is still waiting for, named rather than guessed at.
+  const gap = trajectoryGap({
+    sessionsBetween: Math.max(0, completed.length - 1),
+    firstSessionAt: completed.length ? new Date(completed[completed.length - 1].started_at) : null,
+    now: new Date(),
+  });
 
   const windowStart = completed.length > 1 ? completed[completed.length - 1].started_at : null;
   const before = windowStart
@@ -192,10 +217,7 @@ export default async function StudyDashboard({
                 The topics above are where it will move first.
               </p>
             ) : (
-              <p className="mt-2 text-[12px] leading-snug text-dim">
-                Finish a couple more sessions and we can show you the grade your current rate is
-                heading for.
-              </p>
+              <p className="mt-2 text-[12px] leading-snug text-dim">{trajectoryWait(gap)}</p>
             )}
           </section>
         )}

@@ -54,6 +54,7 @@ export async function planSession(args: PlanArgs): Promise<CandidateQuestion[]> 
       ),
     })),
     perObjectiveMastery: state.perObjective,
+    attemptedObjectives: state.attemptedObjectives,
     m1Mastery: state.moduleMastery[1],
     targetModules,
     topicWeightByPrefix: state.topicWeightByPrefix,

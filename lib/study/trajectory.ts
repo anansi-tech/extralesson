@@ -134,6 +134,42 @@ export function nextBandEntry(percent: number): number {
  * projection off one session would be exactly the invented optimism this is
  * meant to avoid.
  */
+/**
+ * WHAT IS STILL MISSING BEFORE A RATE CAN BE PROJECTED.
+ *
+ * The gate below needs BOTH enough sessions and enough elapsed days: a rate is
+ * work over time, and sixteen sessions crammed into two days says nothing about
+ * how much gets done in a week. The card used to ask for "a couple more
+ * sessions" whatever was actually short, so a student with sixteen sessions
+ * across three days was told to do something they had already done, and would
+ * have been told it again every visit.
+ *
+ * Read from the same two constants the gate reads, so the two cannot drift.
+ */
+export interface TrajectoryGap {
+  /** Sessions still needed, 0 when that half is satisfied. */
+  sessionsShort: number;
+  /** Whole days still needed, 0 when that half is satisfied. */
+  daysShort: number;
+}
+
+export function trajectoryGap(args: {
+  sessionsBetween: number;
+  firstSessionAt: Date | null;
+  now: Date;
+}): TrajectoryGap | null {
+  const { sessionsBetween, firstSessionAt, now } = args;
+  if (!firstSessionAt) {
+    return { sessionsShort: MIN_SESSIONS_FOR_TRAJECTORY, daysShort: MIN_DAYS_FOR_TRAJECTORY };
+  }
+  const daysStudying = (now.getTime() - firstSessionAt.getTime()) / 86_400_000;
+  const gap = {
+    sessionsShort: Math.max(0, MIN_SESSIONS_FOR_TRAJECTORY - sessionsBetween),
+    daysShort: Math.max(0, Math.ceil(MIN_DAYS_FOR_TRAJECTORY - daysStudying)),
+  };
+  return gap.sessionsShort === 0 && gap.daysShort === 0 ? null : gap;
+}
+
 export function projectTrajectory(args: {
   percentNow: number;
   percentBefore: number;

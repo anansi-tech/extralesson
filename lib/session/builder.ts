@@ -69,6 +69,15 @@ export function hasMarkableParts(q: CandidateQuestion): boolean {
 export interface BuildSessionArgs {
   candidates: CandidateQuestion[];
   perObjectiveMastery: Map<string, number>; // absent objective = not started
+  /**
+   * Objectives the student has actually been asked about.
+   *
+   * Mastery cannot carry this: an objective never seen and an objective
+   * answered wrong both read 0, so the deficit is identical and a topic the
+   * student has never opened competes on level terms with one they are part way
+   * through. Weight then decides, and the heavier topic keeps winning.
+   */
+  attemptedObjectives?: Set<string>;
   m1Mastery: number;
   targetModules: ModuleNumber[];
   // blueprint weight per topic keyed by objective prefix, e.g. 'M1.5.' -> 10
@@ -91,6 +100,8 @@ function objectivePrefix(objectiveId: string): string {
 
 interface Scored extends CandidateQuestion {
   priority: number;
+  /** No objective in this question's topic has ever been asked. */
+  topicUnstarted: boolean;
 }
 
 export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
@@ -104,6 +115,7 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
     focusPrefixes,
     lostByObjective,
     attemptedIds,
+    attemptedObjectives,
     minutes = mode === 'diagnostic' ? DIAGNOSTIC_MINUTES : SESSION_MINUTES,
   } = args;
 
@@ -111,6 +123,11 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
   // they name a topic themselves, or ask for their own mistakes, holding M3
   // back would be overruling the request they just made.
   const m1Gated = mode === 'adaptive' && targetModules.includes(1) && m1Mastery <= M1_PREREQ_THRESHOLD;
+
+  // The topics the student has opened at all, by objective prefix.
+  const startedPrefixes = new Set(
+    [...(attemptedObjectives ?? [])].map(objectivePrefix),
+  );
 
   const eligible = (c: CandidateQuestion): boolean => {
     if (!hasMarkableParts(c)) return false;
@@ -151,11 +168,22 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
               const weight = topicWeightByPrefix.get(objectivePrefix(id)) ?? 1;
               return sum + (mode === 'diagnostic' ? weight : (1 - mastery) * weight);
             }, 0);
-      return { ...c, priority };
+      const topicUnstarted = c.objective_ids.some(
+        (id) => !startedPrefixes.has(objectivePrefix(id)),
+      );
+      return { ...c, priority, topicUnstarted };
     })
     .sort((a, b) => {
       // Cold-start prerequisite: all M1 questions rank ahead of M2/M3.
       if (m1Gated && (a.module === 1) !== (b.module === 1)) return a.module === 1 ? -1 : 1;
+      // COVER BEFORE DEEPEN. A topic the student has never been asked about
+      // outranks one they are part way through, whatever the blueprint weight
+      // says. Weight times deficit alone let a heavy topic at 15% (0.85 x 10)
+      // beat an untouched lighter one (1.0 x 7.5), so after sixteen sessions
+      // three M1 topics had still never been seen and the session kept
+      // returning to the same two. The generation recipe settled this rule
+      // already — coverage outranks the marks deficit there too.
+      if (a.topicUnstarted !== b.topicUnstarted) return a.topicUnstarted ? -1 : 1;
       if (b.priority !== a.priority) return b.priority - a.priority;
       return a.id < b.id ? -1 : 1; // deterministic tiebreak
     });
