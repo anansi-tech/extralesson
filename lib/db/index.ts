@@ -6,3 +6,10 @@ export { Student, type StudentDoc } from './student';
 export { Attempt, type AttemptDoc } from './attempt';
 export { PracticeSession, type SessionDoc } from './session';
 export { SessionDraft, type SessionDraftDoc } from './session-draft';
+export {
+  CapturedImage,
+  IMAGE_TTL_DAYS,
+  Transcription,
+  type CapturedImageDoc,
+  type TranscriptionDoc,
+} from './transcription';

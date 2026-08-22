@@ -44,12 +44,28 @@ boundaries · Vitest · KaTeX.
   `--margin #E4B8B4`, `--red #C1121F`, `--green #2E7D5B`. Fonts: Fraunces, IBM Plex Mono,
   Caveat. Mobile-first, usable at 360px.
 
-## Kill list — hard gates (Round 1)
+## Kill list — hard gates
 
 No code/imports/stubs for: WhatsApp/Twilio · parent reports · Stripe SDK/API/webhooks
-(payment-link href is exempt) · photo upload/vision · Investigation-type questions ·
+(payment-link href is exempt) · Investigation-type questions ·
 SBA coaching · spaced repetition · streak REWARDS · CAPE or second subject ·
 in-app payments · Railway/cron · offline sync · native apps.
+
+**Photo capture and vision left this list in Round 2.** They were R1 gates because
+R1 had no examiner, and half a camera would have been scope creep. R2
+(`ROUND_2_EXAMINER.md`) IS that examiner, so they are now the round's subject.
+The gate moved rather than lifted — R2 brings its own, below — and everything R1
+banned for a reason that still holds stays banned.
+
+**Round 2 additions.** No handwriting model or OCR training · no per-stroke or video
+capture · no live camera guidance · no marking without a stored transcription · no
+vision pass that can reduce a deterministically-earned mark · no image retained beyond
+the TTL · no parent report · no instrument constructions · no second marking dialect
+(transcription targets the grader's existing conventions).
+Greps: `tesseract`, `ocr`, `per-stroke`, `inkml`, `handwriting-model`. Note that
+`stroke` itself is NOT a banned word — SVG stroke attributes account for fifty
+legitimate hits in `lib/visuals` — so the ban is written as the thing it forbids:
+capturing strokes, ink formats, or a bundled recogniser.
 
 **Streaks — the line, drawn on purpose.** A streak as a STATISTIC is permitted: days
 in a row printed beside sessions, questions and marks attempted, in the same type, as
@@ -92,10 +108,10 @@ order is not a control; a gate is. A commit touching no `.ts`/`.tsx` under
 `app/ lib/ scripts/ tests/` skips both checks, so docs-only commits stay quick.
 
 Verification greps must return zero hits in `app/ lib/ scripts/`:
-`whatsapp`, `twilio`, `stripe` (imports), `vision`, `upload`, `investigation`, `sba`,
-`tikz`, `jsxgraph`, `minhash`, `latex` (write "KaTeX", never the other name).
-Use word-boundary matching for `vision`/`upload` — "division" in faithful syllabus
-text is not a violation. Spell out "school-based assessment" / "investigative
+`whatsapp`, `twilio`, `stripe` (imports), `investigation`, `sba`,
+`tikz`, `jsxgraph`, `minhash`, `latex` (write "KaTeX", never the other name),
+plus the Round 2 list above. Use word-boundary matching — "division" in faithful
+syllabus text is not a violation, and neither is an SVG `stroke`. Spell out "school-based assessment" / "investigative
 question" in comments instead of the banned tokens.
 
 ## Working style

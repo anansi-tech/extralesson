@@ -1,4 +1,5 @@
 import 'katex/dist/katex.min.css';
+import { readingCost } from '@/lib/admin/reading-cost';
 import Link from 'next/link';
 import { getCoverage } from '@/lib/admin/coverage';
 import {
@@ -19,6 +20,7 @@ export const dynamic = 'force-dynamic';
 // question. A satisfied target carries no information at the moment of review,
 // so the card keeps the deficits and this page keeps everything.
 export default async function CoveragePage() {
+  const cost = await readingCost();
   const { matrix, objectiveRows, approvedTotal, draftsRemaining } = await getCoverage();
   const allObjectives = objectiveRows.flatMap((r) => r.objectives);
   const totalObjectives = allObjectives.length;
@@ -200,6 +202,27 @@ export default async function CoveragePage() {
               {matrix.difficulty_actuals.structured[3]}
             </div>
           </div>
+        </section>
+
+        {/* R2 §7 — the real figure, from recorded token usage, not the estimate.
+            A student who never photographs anything costs nothing at all, so
+            this is the whole of what reading handwriting has cost. */}
+        <section className="mt-6 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+          <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+            Reading handwriting — measured cost
+          </div>
+          {cost.reads === 0 ? (
+            <p className="mt-1 text-[13px] text-dim">
+              No working photographed yet, so nothing has been spent.
+            </p>
+          ) : (
+            <div className="mt-1 font-mono text-xs">
+              {cost.reads} read{cost.reads === 1 ? '' : 's'} ·{' '}
+              {cost.inputTokens.toLocaleString()} in / {cost.outputTokens.toLocaleString()} out ·{' '}
+              <b>${cost.totalUsd.toFixed(4)}</b> total ·{' '}
+              <b>${cost.perReadUsd.toFixed(4)}</b> per photographed question
+            </div>
+          )}
         </section>
       </div>
     </main>

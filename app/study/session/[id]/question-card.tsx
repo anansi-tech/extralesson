@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { saveDraft, submitAnswer, type Feedback } from './actions';
 import { TypedInput } from './typed-input';
 import { HintLines, SymbolStrip } from './affordance';
+import { WorkingPhoto } from './working-photo';
 import { isPositionalLabel } from '@/lib/notation';
 import { PROFILE_GLOSS } from '@/lib/study/profiles';
 
@@ -748,6 +749,12 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               dangerouslySetInnerHTML={{ __html: feedback.feedbackHtml }}
             />
           </div>
+
+          {/* R2 §2 — the camera comes after the typed answers are in, and only
+              for a question the student actually worked on paper. */}
+          {question.kind === 'structured' && !reviewing && (
+            <WorkingPhoto attemptId={feedback.attemptId} />
+          )}
 
           {reviewing ? (
             // No ?q= at all. The session resumes at the first unanswered
