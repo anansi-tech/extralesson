@@ -53,8 +53,14 @@ summary {
    more room than the screen has, rather than shrinking below the legible
    minimum. See lib/visuals/legibility.ts for where the minimum comes from. */
 .figure-frame {
-  margin-left: -40px;
-  margin-right: -40px;
+  /* The card's own padding, and no more. Pulling the main padding as well put
+     the figure 19px past the notebook border on each side at 390px, which reads
+     as a mistake rather than as a deliberate bleed. Legibility does not depend
+     on this: the figure holds its minimum width and scrolls inside the frame,
+     so the frame decides how much is visible at once, not how small the labels
+     get. */
+  margin-left: -20px;
+  margin-right: -20px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   border-block: 1px solid var(--paper-deep);
@@ -72,8 +78,6 @@ summary {
 
 @media (min-width: 640px) {
   .figure-frame {
-    margin-left: -8px;
-    margin-right: -8px;
     border: 1px solid var(--paper-deep);
   }
 }
