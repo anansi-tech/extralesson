@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useEffect, useRef, useState, useTransition } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { saveDraft, submitAnswer, type Feedback } from './actions';
@@ -43,7 +43,7 @@ export interface CardQuestion {
        * never the answer, and `boxes` only where the count is part of the
        * question rather than part of the answer.
        */
-      input?: { shape: string; boxes?: number; cols?: number };
+      input?: { shape: string; boxes?: number; cols?: number; chars?: number };
     }[];
   }[];
   optionsHtml?: string[];
@@ -247,40 +247,72 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       : markedSlots.some((s) => filled(s));
   const blanks = markedSlots.filter((s) => !filled(s)).length;
 
-  // AUTOSAVE, debounced. Writes a draft and never an attempt: attempts stay
-  // append-only and are written once, on submit, by the action below.
+  // AUTOSAVE. Writes a draft and never an attempt: attempts stay append-only
+  // and are written once, on submit, by the action below.
+  //
+  // Debounced while typing, and FLUSHED at every point the page might be about
+  // to stop existing. An 800ms debounce loses whatever was typed in the last
+  // 800ms when a student quits the browser, switches app, or locks the phone —
+  // which is precisely when they most need the draft. visibilitychange is the
+  // one event that fires reliably on a mobile app switch and on a tab close;
+  // blur and pagehide cover the rest.
   const draftTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => {
-    if (feedback || question.prior) return; // already answered; nothing to keep
+  const latest = useRef({ partAnswers, boxValues, working, selected });
+  latest.current = { partAnswers, boxValues, working, selected };
+
+  const saveNow = useCallback(() => {
+    if (feedback || question.prior) return;
+    const { partAnswers: a, boxValues: v, working: w, selected: sel } = latest.current;
     const typed =
-      Object.values(partAnswers).some((v) => v.trim() !== '') ||
-      Object.values(boxValues).some((vals) => vals.some((v) => v.trim() !== '')) ||
-      working.trim() !== '' ||
-      selected !== null;
+      Object.values(a).some((x) => x.trim() !== '') ||
+      Object.values(v).some((vals) => vals.some((x) => x.trim() !== '')) ||
+      w.trim() !== '' ||
+      sel !== null;
     if (!typed) return;
-    draftTimer.current = setTimeout(() => {
-      void saveDraft({
-        sessionId: question.sessionId,
-        questionIndex: question.index,
-        answers: partAnswers,
-        values: boxValues,
-        selected: selected ?? undefined,
-        working,
-      });
-    }, 800);
+    void saveDraft({
+      sessionId: question.sessionId,
+      questionIndex: question.index,
+      answers: a,
+      values: v,
+      selected: sel ?? undefined,
+      working: w,
+    });
+  }, [feedback, question.prior, question.sessionId, question.index]);
+
+  useEffect(() => {
+    if (feedback || question.prior) return;
+    draftTimer.current = setTimeout(saveNow, 800);
     return () => {
       if (draftTimer.current) clearTimeout(draftTimer.current);
     };
-  }, [
-    partAnswers,
-    boxValues,
-    working,
-    selected,
-    feedback,
-    question.prior,
-    question.sessionId,
-    question.index,
-  ]);
+  }, [partAnswers, boxValues, working, selected, feedback, question.prior, saveNow]);
+
+  useEffect(() => {
+    if (feedback || question.prior) return;
+    const flush = () => {
+      if (draftTimer.current) clearTimeout(draftTimer.current);
+      saveNow();
+    };
+    const onHidden = () => {
+      if (document.visibilityState === 'hidden') flush();
+    };
+    // A page restored from the back/forward cache carries the DOM as it was
+    // when the student left it, which is older than the draft they went on to
+    // save. Re-render from the server instead of trusting it.
+    const onShow = (e: PageTransitionEvent) => {
+      if (e.persisted) router.refresh();
+    };
+    window.addEventListener('blur', flush);
+    document.addEventListener('visibilitychange', onHidden);
+    window.addEventListener('pagehide', flush);
+    window.addEventListener('pageshow', onShow);
+    return () => {
+      window.removeEventListener('blur', flush);
+      document.removeEventListener('visibilitychange', onHidden);
+      window.removeEventListener('pagehide', flush);
+      window.removeEventListener('pageshow', onShow);
+    };
+  }, [feedback, question.prior, saveNow, router]);
 
   const submit = () => {
     if (!canSubmit) return;
@@ -480,6 +512,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               shape={slot.input.shape}
                               boxes={slot.input.boxes}
                               cols={slot.input.cols}
+                              chars={slot.input.chars}
                               values={boxValues[slot.ref] ?? []}
                               onChange={(vals) =>
                                 setBoxValues((prev) => ({ ...prev, [slot.ref]: vals }))

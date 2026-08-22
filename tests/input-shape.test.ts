@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FIXED_ARITY, isMultiValue, readInputShape } from '@/lib/grade/input-shape';
+import { boxWidthChars, FIXED_ARITY, isMultiValue, readInputShape } from '@/lib/grade/input-shape';
 import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
 
 describe('readInputShape — what input an answer wants', () => {
@@ -91,5 +91,35 @@ describe('composeAnswer — the record reads the way the papers write it', () =>
     expect(composeAnswer(['2', '3'], 'ratio')).toBe('2 : 3');
     expect(composeAnswer(['12', '24'], 'set')).toBe('{12, 24}');
     expect(composeAnswer(['260', '278'], 'column_vector')).toBe('[260, 278]');
+  });
+});
+
+// A fixed 64px box held about seven monospace characters, which is fine for a
+// coordinate and too narrow for a word in a set or a value in a ratio. The
+// width comes from what the student will TYPE, not from the mark scheme's
+// markup: the key writes \frac{9}{5} — eleven characters — and the student
+// types 9/5, which is three.
+describe('boxWidthChars — a box is as wide as its answer needs', () => {
+  const chars = (answer: string) => boxWidthChars(readInputShape(answer));
+
+  it('measures the typed form, not the KaTeX', () => {
+    // Four values, the longest typing as 9/5 or 11/5 — nothing near eleven.
+    expect(chars('$1.6, \\frac{9}{5}, 2.0, \\frac{11}{5}$')).toBe(5);
+  });
+
+  it('widens for a set of words', () => {
+    expect(chars('$\\{Mango, Coconut, Breadfruit\\}$')).toBe(10);
+  });
+
+  it('keeps short numeric answers compact', () => {
+    expect(chars('$(3, 4)$')).toBe(5);
+    expect(chars('1:2')).toBe(5);
+  });
+
+  // One width for the whole slot: a narrow box beside a wide one would say
+  // which answer is the short one.
+  it('sizes every box in a slot to the longest value', () => {
+    const uneven = readInputShape('$\\{2, 144000\\}$');
+    expect(boxWidthChars(uneven)).toBe(Math.max(5, '144000'.length));
   });
 });
