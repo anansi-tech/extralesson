@@ -1,6 +1,6 @@
 import 'katex/dist/katex.min.css';
 import Link from 'next/link';
-import { dbConnect, Question, Student } from '@/lib/db';
+import { dbConnect, Attempt, Question, Student } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
 import { renderVisual, type StoredVisual } from '@/lib/visuals';
@@ -46,10 +46,24 @@ export default async function WorkedPracticePage() {
   } | null>();
   if (!student) return null;
 
+  // Questions the student has already met in a session; this page is practice,
+  // not a replay of work they have done.
+  const attempted = await Attempt.distinct('question_id', { student_id: auth.student_id });
+
+  // ANY self-marked part qualifies, not questions made ENTIRELY of them.
+  //
+  // The $nin clause required that no slot anywhere in the question was
+  // auto-marked, and the generator does not write those: a question with a
+  // markable part goes to the daily session, so every one of the 309 questions
+  // carrying a "show that", an "explain" or a construction was excluded and
+  // this page had never once had anything on it. Those three are a real slice
+  // of the paper, and their character is exactly what this page is for — a
+  // written answer the student marks against the solution.
   const rows = await Question.find({
     status: 'approved',
     module: { $in: student.target_modules },
-    'parts.slots.response_mode': { $in: SELF_MARKED_MODES, $nin: ['answer'] },
+    'parts.slots.response_mode': { $in: SELF_MARKED_MODES },
+    _id: { $nin: attempted },
   })
     .select('module marks stimulus stem visual parts worked_solution rubric')
     .limit(20)
