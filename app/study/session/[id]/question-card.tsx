@@ -182,17 +182,32 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // brings it back over the page, and dismissing it returns them exactly where
   // they were, because the page never moved.
   const figureRef = useRef<HTMLDivElement | null>(null);
+  const submitRef = useRef<HTMLButtonElement | null>(null);
   const [figureAway, setFigureAway] = useState(false);
+  const [atSubmit, setAtSubmit] = useState(false);
   const [figureOpen, setFigureOpen] = useState(false);
   useEffect(() => {
-    const el = figureRef.current;
-    if (!el || typeof IntersectionObserver === 'undefined') return;
-    const io = new IntersectionObserver(([e]) => setFigureAway(!e.isIntersecting), {
-      threshold: 0.01,
-    });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [question.visualHtml]);
+    if (typeof IntersectionObserver === 'undefined') return;
+    const watch = (el: Element | null, set: (v: boolean) => void, want: boolean) => {
+      if (!el) return undefined;
+      const io = new IntersectionObserver(([e]) => set(e.isIntersecting === want), {
+        threshold: 0.01,
+      });
+      io.observe(el);
+      return io;
+    };
+    const a = watch(figureRef.current, setFigureAway, false);
+    // The recall button is pinned bottom-right and the submit button is the
+    // last thing on the card, so at the foot of a long question they sat on top
+    // of each other — measured at 390px, a 93x7px overlap across the submit
+    // button's corner. Once the student has scrolled to the submit button the
+    // whole card is behind them; the recall goes away rather than covering it.
+    const b = watch(submitRef.current, setAtSubmit, true);
+    return () => {
+      a?.disconnect();
+      b?.disconnect();
+    };
+  }, [question.visualHtml, feedback]);
 
   // Which box the caret was last in, so an inserted symbol lands there rather
   // than at the end. box === -1 is a slot with a single box.
@@ -507,6 +522,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               )}
                             </label>
                           )}
+                          {/* Input and its mark stay on one line at every
+                              width. Stacking the row on a phone put the tick
+                              underneath the box, reading as a separate line of
+                              the answer rather than as its verdict. */}
+                          <div className="flex min-w-0 flex-1 items-start gap-2">
                           {slot.input ? (
                             <TypedInput
                               shape={slot.input.shape}
@@ -542,11 +562,12 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                           )}
                           {partFeedback && (
                             <span
-                              className={`font-hand text-xl ${partFeedback.correct ? 'text-green-pen' : 'text-red-pen'}`}
+                              className={`shrink-0 pt-1.5 font-hand text-xl ${partFeedback.correct ? 'text-green-pen' : 'text-red-pen'}`}
                             >
                               {partFeedback.correct ? '✓' : '✗'}
                             </span>
                           )}
+                          </div>
                           </div>
                           <div className={p.slots.length > 1 ? 'sm:ml-auto sm:basis-[62%]' : ''}>
                             {partFeedback && !partFeedback.correct && partFeedback.reason && (
@@ -611,6 +632,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       {!feedback ? (
         reviewing ? null : (
         <button
+          ref={submitRef}
           onClick={submit}
           disabled={pending || !canSubmit}
           className="mt-5 w-full bg-red-pen p-3 font-black text-white shadow-[3px_3px_0_var(--ink)] disabled:opacity-50"
@@ -752,7 +774,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </div>
       )}
 
-      {question.visualHtml && figureAway && !figureOpen && (
+      {question.visualHtml && figureAway && !atSubmit && !figureOpen && (
         <button
           type="button"
           onClick={() => setFigureOpen(true)}
