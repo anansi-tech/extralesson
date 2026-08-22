@@ -27,8 +27,14 @@ import { createHash } from 'node:crypto';
  *       holding several instead of on the line they were joined into, and a
  *       whole number's trailing zeros are read as the ambiguity they are, so
  *       2540 satisfies 3 significant figures as well as 4
+ *   v6  a verdict means exactly what the score means. Method marks are no
+ *       longer awarded from a working box that belongs to the whole question,
+ *       so a wrong slot cannot be paid for by another slot's working; a
+ *       declared form that no rubric row pays for is reported and no longer
+ *       fails the answer; and a slot carrying no marks — self-marked, or with
+ *       no rubric row — no longer votes on correctness
  */
-export const GRADER_VERSION = 'v5';
+export const GRADER_VERSION = 'v6';
 
 /** An attempt stamped before this existed. Recorded, not guessed at. */
 export const GRADER_VERSION_UNKNOWN = 'unstamped';

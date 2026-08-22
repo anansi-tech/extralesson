@@ -43,16 +43,27 @@ describe('markStructured — documented heuristics', () => {
     expect(r.rubric_awarded).toEqual([]);
   });
 
+  // The working box belongs to the whole question, so these hold only where
+  // the question asks for ONE answer and the box can be attributed to it.
   it('wrong answer with working earns CK only (no worked step)', () => {
-    const r = markStructured(rubric, 'x = 2', 'x = 5', 'tried factoring');
+    const r = markStructured(rubric, 'x = 2', 'x = 5', 'tried factoring', undefined, undefined, undefined, true);
     expect(r.rubric_awarded).toEqual(['CK1']);
     expect(r.profile_marks).toEqual({ CK: 1, AK: 0, R: 0 });
   });
 
   it('wrong answer with a worked step earns CK and AK, never R', () => {
-    const r = markStructured(rubric, 'x = 2', 'x = 5', '3x - 6 = 9\nx = 5');
+    const r = markStructured(rubric, 'x = 2', 'x = 5', '3x - 6 = 9\nx = 5', undefined, undefined, undefined, true);
     expect(r.rubric_awarded).toEqual(['CK1', 'AK1']);
     expect(r.profile_marks).toEqual({ CK: 1, AK: 2, R: 0 });
+  });
+
+  // ...and nowhere else. One "=" typed for part (b) used to award the method
+  // marks on part (a) as well, which is how an attempt with two wrong answers
+  // scored 11 out of 11.
+  it('earns nothing from working that could belong to another slot', () => {
+    const r = markStructured(rubric, 'x = 2', 'x = 5', '3x - 6 = 9\nx = 5');
+    expect(r.rubric_awarded).toEqual([]);
+    expect(r.profile_marks).toEqual({ CK: 0, AK: 0, R: 0 });
   });
 });
 
@@ -86,12 +97,15 @@ describe('markStructuredParts — per-part equivalence (R1.5)', () => {
     expect(r.profile_marks).toEqual({ CK: 1, AK: 2, R: 2 });
   });
 
-  it('working earns CK within the missed part only, never R', () => {
+  // Two marked slots share one working box, so nothing in it can be credited
+  // to either: the student who wrote "3 × 8 = 30" for (b) did not thereby show
+  // method for (a).
+  it('earns no method marks when the working cannot be attributed to a slot', () => {
     const r = markStructuredParts(partRubric, parts, [
       { ref: 'a.i', answer: 'x = 9', working: '' },
       { ref: 'b.i', answer: '30', working: '3 × 8 = 30' },
     ]);
-    expect(r.rubric_awarded).toEqual(['CK1']);
+    expect(r.rubric_awarded).toEqual([]);
     expect(r.profile_marks.R).toBe(0);
   });
 
@@ -131,10 +145,17 @@ describe('format-aware marking (R1.6 §2)', () => {
     { code: 'AK1', profile: 'AK', criterion: 'value', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
   ];
 
+  // for_format on the rubric row is what puts the form on offer; without it a
+  // form miss is feedback, not a loss (see the standard-form group below).
   it('marks an equivalent value in the wrong form incorrect, and says so', () => {
+    const priced: RubricItem[] = [
+      ...rubric,
+      { code: 'R1', profile: 'R', criterion: 'exact form', mark_value: 1, slot_ref: 'a.i', part_label: 'a', for_format: true },
+    ];
     const parts = [{ label: 'a', slots: [{ label: 'i', answer: '1/3', answer_format: 'exact' as const }] }];
-    const r = markStructuredParts(rubric, parts, [{ ref: 'a.i', answer: '0.333', working: '' }]);
+    const r = markStructuredParts(priced, parts, [{ ref: 'a.i', answer: '0.333', working: '' }]);
     expect(r.correct).toBe(false);
+    expect(r.rubric_awarded).toEqual(['AK1']); // the value stands; the form mark does not
     expect(r.format_feedback).toContain('EXACT');
     // The mathematics was not wrong, so it must not read as a maths error.
     expect(r.format_feedback).toContain('Correct value');
@@ -153,10 +174,14 @@ describe('format-aware marking (R1.6 §2)', () => {
     expect(r.correct).toBe(true); // permissive equivalence, as before
   });
 
-  it('explains the form even when the value is also wrong-ish but close', () => {
+  // Nothing here pays for the form, so the answer stands and the student is
+  // told about the rounding anyway — feedback without a penalty they cannot see
+  // the source of.
+  it('explains the form even where no row pays for it', () => {
     const parts = [{ label: 'a', slots: [{ label: 'i', answer: '36.9', answer_format: 'dp:1' as const }] }];
     const r = markStructuredParts(rubric, parts, [{ ref: 'a.i', answer: '36.87', working: '' }]);
-    expect(r.correct).toBe(false);
+    expect(r.correct).toBe(true);
+    expect(r.rubric_awarded).toEqual(['AK1']);
     expect(r.format_feedback).toContain('1 decimal place');
   });
 });
@@ -238,14 +263,22 @@ describe('markStructured — a wrong form costs only the form mark', () => {
     expect(res.profile_marks).toEqual({ CK: 0, AK: 0, R: 0 });
   });
 
-  it('falls back to the ordinary heuristics when no row marks the form', () => {
+  // WHERE NOTHING PAYS FOR THE FORM, MISSING IT IS NOT A FAILURE.
+  //
+  // This used to assert correct:false while awarding every row — full marks
+  // beside "Not quite", which is what a student actually saw on c0c05d: 9 out
+  // of 9, every chip ticked, verdict wrong. 129 of the 256 slots declaring a
+  // format have no row marked for_format, so the form was never on offer.
+  // Saying so is feedback; failing the answer for it is a contradiction.
+  it('reports the form but keeps the answer correct when no row marks it', () => {
     const plain: RubricItem[] = [
       { code: 'CK1', profile: 'CK', criterion: 'CAO $0.000045$', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
       { code: 'R1', profile: 'R', criterion: 'Interprets the result', mark_value: 1, slot_ref: 'a.i', part_label: 'a' },
     ];
     const res = markStructured(plain, '4.5 \\times 10^{-5}', '0.000045', '', undefined, 'standard_form');
-    expect(res.correct).toBe(false);
-    expect(res.rubric_awarded).toEqual(['CK1', 'R1']); // value was right; nothing marked the form
+    expect(res.correct).toBe(true);
+    expect(res.rubric_awarded).toEqual(['CK1', 'R1']);
+    expect(res.format_feedback).toMatch(/^Correct value/);
   });
 
   it('leaves questions without a required form exactly as they were', () => {

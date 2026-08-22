@@ -85,8 +85,16 @@ export function markStructuredParts(
         slot.accept,
         slot.answer_format as AnswerFormat | undefined,
         input?.values,
+        markableSlots(parts).length === 1,
       );
-      if (!result.correct) allCorrect = false;
+      // ONLY A SLOT THAT CARRIES MARKS VOTES ON THE VERDICT.
+      //
+      // A self-marked slot is already skipped above. Five auto-marked slots in
+      // the bank carry no rubric row at all: nothing is on offer for them, so a
+      // miss there cost no marks and still failed the whole attempt, which is
+      // the same disagreement from the other side. The verdict now means
+      // exactly what the score means — every mark on offer was earned.
+      if (slotRubric.length > 0 && !result.correct) allCorrect = false;
       if (result.format_feedback && !formatFeedback) formatFeedback = result.format_feedback;
       awarded.push(...result.rubric_awarded.filter((c) => c !== 'R0'));
       profile_marks.CK += result.profile_marks.CK;
@@ -115,6 +123,23 @@ export function markStructured(
   accept?: string[],
   answerFormat?: AnswerFormat,
   enteredValues?: string[],
+  /**
+   * Whether the working box can be attributed to THIS slot.
+   *
+   * Working is one box for the whole question, and 424 of the 427 structured
+   * questions ask for more than one answer. Crediting every slot from it meant
+   * a single "=" anywhere awarded the method marks on slots the student got
+   * wrong and never worked — a student scored 11 out of 11 on a question where
+   * they had mixed metres with centimetres and mis-read a bound. A quarter of
+   * AK rows say CAO, "correct answer only", so awarding those without the
+   * answer contradicts the criterion the student is shown.
+   *
+   * So the heuristic applies only where the box belongs to the slot: a question
+   * with exactly one marked slot. Everywhere else a method mark needs the
+   * answer. Attributing working per slot properly is the real fix and is a
+   * bigger change than this one.
+   */
+  workingAttributable = false,
 ): MarkResult {
   const equivalent =
     enteredValues && enteredValues.length > 0
@@ -144,12 +169,22 @@ export function markStructured(
   let format_feedback: string | undefined;
   let correct = equivalent;
   let formOnlyMiss = false;
+  // A FORM ONLY COSTS SOMETHING IF A ROW PAYS FOR IT.
+  //
+  // R1.7 §B4 gives the form its own mark, and 129 of the 256 slots declaring a
+  // format have no row marked for_format. On those, missing the form took no
+  // marks — every row was still awarded — and yet set the answer incorrect, so
+  // the card read "9 out of 9" beside "Not quite". Where nothing is on offer
+  // for the form, saying so is feedback, not a verdict.
+  const formIsMarked = rubric.some((r) => r.for_format);
   if (equivalent && answerFormat) {
     const check = checkForm();
     if (!check.ok) {
-      correct = false;
-      formOnlyMiss = true;
       format_feedback = check.feedback;
+      if (formIsMarked) {
+        correct = false;
+        formOnlyMiss = true;
+      }
     }
   } else if (!equivalent && answerFormat && valueLooksRight(studentAnswer, canonicalAnswer)) {
     format_feedback = checkForm().feedback;
@@ -161,6 +196,7 @@ export function markStructured(
   const awarded = rubric.filter((r) => {
     if (formOnlyMiss) return !r.for_format; // the mathematics was right
     if (correct) return true;
+    if (!workingAttributable) return false; // cannot tell whose working this is
     if (r.profile === 'CK') return hasWorking;
     if (r.profile === 'AK') return hasWorkedStep;
     return false; // R requires a correct final answer
