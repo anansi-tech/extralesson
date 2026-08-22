@@ -17,7 +17,7 @@ import { estimatedMinutes } from '@/lib/session/builder';
 import { markSplit } from '@/lib/grade/assessable';
 import { boxWidthChars, isMultiValue, readInputShape, showsBoxCount } from '@/lib/grade/input-shape';
 import { inputAffordance } from '@/lib/grade/input-hints';
-import { PROFILE_GLOSS, PROFILE_MEANING } from '@/lib/study/profiles';
+import { PROFILE_GLOSS, PROFILE_GLOSS_SHORT, PROFILE_MEANING } from '@/lib/study/profiles';
 import QuestionCard, { type CardQuestion } from './question-card';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { constructActs, figureGivesAnswer } from '@/lib/targets/construct';
@@ -263,9 +263,20 @@ export default async function SessionPage({
                 </div>
               ))}
             </div>
-            <p className="mt-3 border-t border-dashed border-paper-deep pt-2 text-[11px] leading-snug text-dim">
-              {PROFILE_GLOSS} You will see the same three letters on a real mark scheme.
+            {/* Compressed, not hidden: the initials keep their meaning on the
+                same screen, and the sentence that explains where they come from
+                is one tap away. */}
+            <p className="mt-3 border-t border-dashed border-paper-deep pt-2 font-mono text-[11px] leading-snug text-dim">
+              {PROFILE_GLOSS_SHORT}
             </p>
+            <details className="mt-1">
+              <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">
+                Where these come from
+              </summary>
+              <p className="mt-1 text-[11px] leading-snug text-dim">
+                {PROFILE_GLOSS} You will see the same three letters on a real mark scheme.
+              </p>
+            </details>
           </section>
 
           <section className="mt-5">
@@ -305,9 +316,21 @@ export default async function SessionPage({
             </ul>
           </section>
 
+          {/* The next session, not the way out. A student who has just finished
+              one had only a link back to the landing page, so the thing to do
+              next was a decision rather than a button. */}
+          <form action={startSession} className="mt-8">
+            <input type="hidden" name="mode" value="adaptive" />
+            <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
+              Start the next session
+              <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
+                ABOUT {SESSION_MINUTES} MINUTES AT EXAM PACE
+              </small>
+            </button>
+          </form>
           <Link
             href="/study"
-            className="mt-8 block bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]"
+            className="mt-3 block text-center font-mono text-[11px] uppercase tracking-widest text-dim underline"
           >
             Back to your notebook
           </Link>

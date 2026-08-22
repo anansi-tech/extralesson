@@ -172,6 +172,71 @@ export default async function StudyDashboard({
           </div>
         </header>
 
+        {/* THE ACTION COMES FIRST.
+            It used to sit a full screen down — measured at 390px, y=877 —
+            behind 203 words and 22 numbers of analysis. A student opening the
+            app had to read where their marks were, why some of them waited, and
+            what the rate was waiting for, before finding the thing to press.
+            The analysis is worth reading; it is worth reading after you have
+            decided to work, so it now sits below the button rather than in
+            front of it. */}
+        {open ? (
+          <Link
+            href={`/study/session/${open.id}`}
+            className="mt-5 block bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]"
+          >
+            Carry on with your session
+            <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
+              {open.answered} OF {open.questions} DONE · {open.marksLeft} MARK
+              {open.marksLeft === 1 ? '' : 'S'} LEFT
+            </small>
+          </Link>
+        ) : isNewStudent ? (
+          // BEFORE THE FIRST ATTEMPT, THE DIAGNOSTIC LEADS.
+          //
+          // "Weakest topics first" has nothing to sort on when there is no
+          // attempt to sort by: every objective reads as equally unmeasured, so
+          // the session is chosen by blueprint weight alone. Putting the red
+          // button on it buried the twelve minutes that would make it work.
+          // This swaps back on its own once attempts exist.
+          <>
+            <form action={startSession} className="mt-5">
+              <input type="hidden" name="mode" value="diagnostic" />
+              <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
+                Start with a quick diagnostic
+                <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
+                  ABOUT {DIAGNOSTIC_MINUTES} MINUTES · FINDS WHERE TO START
+                </small>
+              </button>
+            </form>
+            <form action={startSession} className="mt-3">
+              <input type="hidden" name="mode" value="adaptive" />
+              <button className="w-full border-[1.5px] border-ink p-3 text-center font-semibold">
+                Or start a session now
+                <small className="block font-mono text-[10px] uppercase tracking-widest text-dim">
+                  About {SESSION_MINUTES} minutes at exam pace
+                </small>
+              </button>
+            </form>
+          </>
+        ) : (
+          <form action={startSession} className="mt-5">
+            <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
+              Start today&rsquo;s session
+              <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
+                ABOUT {SESSION_MINUTES} MINUTES AT EXAM PACE · WEAKEST TOPICS FIRST
+              </small>
+            </button>
+          </form>
+        )}
+        <p className="mt-2 text-center text-[11px] leading-snug text-dim">
+          {open
+            ? 'Your answers so far are saved. You can look back at any question you have already done.'
+            : isNewStudent
+              ? 'Eight quick questions across the syllabus. Nothing is scored or graded — it only puts your topics in order, so the sessions after it start in the right place.'
+              : 'One or two whole exam questions, priced the way the paper prices them — a Paper 2 question is 9 to 12 marks and takes most of the session.'}
+        </p>
+
         {leadWithReachable && (
           <section className="mt-6 border-[1.5px] border-ink bg-white p-5 shadow-[3px_3px_0_var(--ink)]">
             <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
@@ -180,12 +245,14 @@ export default async function StudyDashboard({
             <ul className="mt-2 space-y-2">
               {reachable.map((t) => (
                 <li key={t.code} className="flex items-baseline justify-between gap-3">
+                  {/* The title and the marks, and nothing else. The row used
+                      to carry the module, the topic strength and a gating note
+                      as well — five facts competing with the one that matters,
+                      three times over. Module and strength are in the
+                      per-module breakdown lower down; the gating is said once,
+                      below. */}
                   <span className="min-w-0">
                     <b>{t.title}</b>
-                    <span className="ml-2 font-mono text-[10px] text-dim">
-                      M{t.module} · {Math.round(t.mastery * 100)}% so far
-                      {m1Gated && t.module !== 1 && ' · after Module 1'}
-                    </span>
                   </span>
                   {/* "+8.0" on its own names no unit and reads as nothing to
                       a student who has never seen this page before. Same
@@ -203,37 +270,16 @@ export default async function StudyDashboard({
                 </li>
               ))}
             </ul>
+            {/* ONE line under the list. Three stacked paragraphs — what the
+                number means, why later modules wait, and what the rate is
+                waiting for — came to 102 words between a student and the
+                button. The rate has moved to the estimate, which is the thing
+                it is about. */}
             <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-[12px] leading-snug text-dim">
-              Each number is how much your overall grade estimate could rise if you mastered that
-              topic — the marks still sitting there, out of 100. Your sessions go here first.
+              Each number is the points your grade estimate could gain from that topic.
+              {gatedTopics.length > 0 &&
+                ' Module 1 comes first, so later modules wait — you can still practise any topic by name below.'}
             </p>
-            {gatedTopics.length > 0 && (
-              <p className="mt-2 text-[12px] leading-snug text-dim">
-                {gatedTopics.length === 1 ? 'One of these sits' : 'Some of these sit'} in a later
-                module. Module 1 comes first because the rest of the syllabus is built on it, so
-                today&rsquo;s session stays there until your Module 1 topics are stronger. You can
-                still practise{' '}
-                {gatedTopics.length === 1 ? gatedTopics[0].title : 'any of them'} by name below.
-              </p>
-            )}
-            {trajectory && !trajectory.flat ? (
-              <p className="mt-2 text-[12px] leading-snug">
-                At the rate you have been working —{' '}
-                <b>{trajectory.sessionsPerWeek.toFixed(1)} sessions a week</b>, each moving your
-                estimate about <b>{trajectory.perSession.toFixed(1)} points</b> — you are on track
-                for <b className="text-green-pen">{gradeLabel(trajectory.projectedGrade)}</b>,{' '}
-                {gradePlace(trajectory.projectedGrade)}, by the exam. That is your own rate over
-                your last {trajectory.sessionsMeasured} sessions, capped at the next grade up — a
-                direction, not a promise.
-              </p>
-            ) : trajectory ? (
-              <p className="mt-2 text-[12px] leading-snug text-dim">
-                Your estimate has not moved over your last {trajectory.sessionsMeasured} sessions.
-                The topics above are where it will move first.
-              </p>
-            ) : (
-              <p className="mt-2 text-[12px] leading-snug text-dim">{trajectoryWait(gap)}</p>
-            )}
           </section>
         )}
 
@@ -295,16 +341,36 @@ export default async function StudyDashboard({
               Paper 3 project assumed at neutral carry-over — estimates move as you practise.
             </div>
           )}
-          {/* The summary is short enough to be read standing up. Everything it
-              compressed is one tap away, for the parent who wants the whole
-              answer before paying for it. */}
-          <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-left text-[11px] leading-snug text-dim">
-            {coverage}
-          </p>
+          {/* The rate belongs with the estimate it moves, not under the list
+              of topics. */}
+          {trajectory && !trajectory.flat ? (
+            <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-left text-[12px] leading-snug">
+              At the rate you have been working —{' '}
+              <b>{trajectory.sessionsPerWeek.toFixed(1)} sessions a week</b>, each moving your
+              estimate about <b>{trajectory.perSession.toFixed(1)} points</b> — you are on track for{' '}
+              <b className="text-green-pen">{gradeLabel(trajectory.projectedGrade)}</b>,{' '}
+              {gradePlace(trajectory.projectedGrade)}, by the exam. That is your own rate over your
+              last {trajectory.sessionsMeasured} sessions, capped at the next grade up — a
+              direction, not a promise.
+            </p>
+          ) : trajectory ? (
+            <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-left text-[12px] leading-snug text-dim">
+              Your estimate has not moved over your last {trajectory.sessionsMeasured} sessions.
+            </p>
+          ) : (
+            <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-left text-[12px] leading-snug text-dim">
+              {trajectoryWait(gap)}
+            </p>
+          )}
+          {/* CUT 4 — the coverage sentence moved inside the detail it
+              introduced. It sat above the summary that opens it, so a student
+              read the explanation and then the offer to read the explanation.
+              Nothing is lost: it is the first line behind the tap. */}
           <details className="mt-2 text-left">
             <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">
               What we cover
             </summary>
+            <p className="mt-2 text-[11px] leading-snug text-dim">{coverage}</p>
             <ul className="mt-2 space-y-2">
               {coverageMore.map((line) => (
                 <li key={line} className="text-[11px] leading-snug text-dim">
@@ -335,62 +401,6 @@ export default async function StudyDashboard({
           </p>
         )}
 
-        {open ? (
-          <Link
-            href={`/study/session/${open.id}`}
-            className="mt-5 block bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]"
-          >
-            Carry on with your session
-            <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
-              {open.answered} OF {open.questions} DONE · {open.marksLeft} MARK
-              {open.marksLeft === 1 ? '' : 'S'} LEFT
-            </small>
-          </Link>
-        ) : isNewStudent ? (
-          // BEFORE THE FIRST ATTEMPT, THE DIAGNOSTIC LEADS.
-          //
-          // "Weakest topics first" has nothing to sort on when there is no
-          // attempt to sort by: every objective reads as equally unmeasured, so
-          // the session is chosen by blueprint weight alone. Putting the red
-          // button on it buried the twelve minutes that would make it work.
-          // This swaps back on its own once attempts exist.
-          <>
-            <form action={startSession} className="mt-5">
-              <input type="hidden" name="mode" value="diagnostic" />
-              <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
-                Start with a quick diagnostic
-                <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
-                  ABOUT {DIAGNOSTIC_MINUTES} MINUTES · FINDS WHERE TO START
-                </small>
-              </button>
-            </form>
-            <form action={startSession} className="mt-3">
-              <input type="hidden" name="mode" value="adaptive" />
-              <button className="w-full border-[1.5px] border-ink p-3 text-center font-semibold">
-                Or start a session now
-                <small className="block font-mono text-[10px] uppercase tracking-widest text-dim">
-                  About {SESSION_MINUTES} minutes at exam pace
-                </small>
-              </button>
-            </form>
-          </>
-        ) : (
-          <form action={startSession} className="mt-5">
-            <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
-              Start today&rsquo;s session
-              <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
-                ABOUT {SESSION_MINUTES} MINUTES AT EXAM PACE · WEAKEST TOPICS FIRST
-              </small>
-            </button>
-          </form>
-        )}
-        <p className="mt-2 text-center text-[11px] leading-snug text-dim">
-          {open
-            ? 'Your answers so far are saved. You can look back at any question you have already done.'
-            : isNewStudent
-              ? 'Eight quick questions across the syllabus. Nothing is scored or graded — it only puts your topics in order, so the sessions after it start in the right place.'
-              : 'One or two whole exam questions, priced the way the paper prices them — a Paper 2 question is 9 to 12 marks and takes most of the session.'}
-        </p>
 
         {/* The session above is the one the app chooses, and it stays the
             default. These are the three things a student knows about their own

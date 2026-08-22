@@ -17,7 +17,17 @@ export const PROFILE_MEANING: Record<Profile, string> = {
   R: 'explaining why',
 };
 
-/** Said once wherever the initials first appear on a surface. */
+/**
+ * The one-line gloss, always visible beside the initials.
+ *
+ * Three bare initials over three numbers is the state this was written to fix,
+ * so it is compressed rather than hidden: a student reading CK, AK and R for
+ * the first time gets what they mean on the same screen. The fuller version
+ * goes behind the detail below it, for the reader who wants the rest.
+ */
+export const PROFILE_GLOSS_SHORT =
+  'CK knowing what to do · AK the working · R explaining why';
+
 export const PROFILE_GLOSS =
   'CXC gives marks three ways: CK for knowing what to do, AK for doing the working, and R for explaining why.';
 
