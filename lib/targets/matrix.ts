@@ -3,7 +3,7 @@ import {
   REPRESENTATION_TARGETS,
   STRUCTURED_ARCHETYPE_TARGETS,
 } from './representation';
-import type { Archetype, ModuleNumber, Profile, Representation } from '@/lib/types';
+import type { TemplateName, Archetype, ModuleNumber, Profile, Representation } from '@/lib/types';
 
 // R1.5 §4 — separate P1 and P2 target matrices. Blueprints (2027) are
 // authoritative for marks/items; the corpus is authoritative for
@@ -57,6 +57,16 @@ export interface QuestionFacts {
   /** Declared by a slot with response_mode 'show_that' — never inferred. */
   has_show_that?: boolean;
   representation: Representation;
+  /**
+   * The visual template the question declares, when it has a figure.
+   *
+   * Coverage was counted by REPRESENTATION only, which cannot see a starved
+   * template inside a healthy category: 'graph' looked well served by 144
+   * coordinateGrids while the cumulative frequency curve sat at zero. Reading
+   * quartiles off an ogive is standard M3 statistics, and nothing in the
+   * recipe could ask for one.
+   */
+  template?: TemplateName;
   archetype: Archetype;
   difficulty: 1 | 2 | 3;
   marks: number;
@@ -78,6 +88,8 @@ export interface TopicRow {
 
 export interface Matrix {
   topics: TopicRow[];
+  /** Live questions per visual template, bank-wide. A template at zero is a gap. */
+  template_actuals: Partial<Record<TemplateName, number>>;
   p1_actual_total: number;
   p2_actual_total: number; // questions
   p2_marks_actual_total: number;
@@ -169,6 +181,7 @@ export function computeMatrix(
       3: { p1: { CK: 0, AK: 0, R: 0 }, p2: { CK: 0, AK: 0, R: 0 } },
     },
     mcq_visual_actual: 0,
+    template_actuals: {},
     multi_topic_actual: 0,
     d3_structured: 0,
     d3_integrated: 0,
@@ -201,6 +214,9 @@ export function computeMatrix(
     if (row) {
       row.representation_actuals[q.representation] =
         (row.representation_actuals[q.representation] ?? 0) + 1;
+    }
+    if (q.template) {
+      matrix.template_actuals[q.template] = (matrix.template_actuals[q.template] ?? 0) + 1;
     }
     const arch = matrix.archetype_actuals[q.kind];
     arch[q.archetype] = (arch[q.archetype] ?? 0) + 1;

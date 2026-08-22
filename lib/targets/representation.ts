@@ -77,9 +77,16 @@ export const REPRESENTATION_TARGETS: Record<string, RepresentationTarget[]> = {
     { representation: 'prose', share: 21, template_hints: [] },
   ],
   // M2.5 V&M 1 (n=7): mostly prose-notation + occasional vector figure
+  //
+  // The corpus note names a vector figure, and vectorFigure is a DIAGRAM in
+  // TEMPLATES_BY_REPRESENTATION — but this topic carried only prose and graph
+  // rows, so the template could never be chosen and the bank holds none. The
+  // visual share is split between the two visual kinds the note lists; an even
+  // split is a documented judgment on low n, as for M1-SETS.
   'M2-VM1': [
     { representation: 'prose', share: 80, template_hints: [] },
-    { representation: 'graph', share: 20, template_hints: ['coordinateGrid'] },
+    { representation: 'graph', share: 10, template_hints: ['coordinateGrid'] },
+    { representation: 'diagram', share: 10, template_hints: ['vectorFigure'] },
   ],
   // M3.1 Stats 2 (n=11): always visual (table 63 / chart 36)
   'M3-STAT2': [
@@ -107,14 +114,20 @@ export const REPRESENTATION_TARGETS: Record<string, RepresentationTarget[]> = {
     {
       representation: 'diagram',
       share: 85,
+      // coordinateGrid is a GRAPH, and it is listed here on purpose: validation
+      // allows a diagram to carry one when its params are a NAMED SKETCH —
+      // labelled points with no axes to read against — which is what a
+      // transformation question draws. See checkVisual in lib/validation.
       template_hints: ['triangleLabeled', 'circleCenter', 'bearingDiagram', 'compositeShape', 'coordinateGrid'],
     },
     { representation: 'graph', share: 15, template_hints: ['coordinateGrid'] },
   ],
-  // M3.4 V&M 2 (n=15): prose-notation / vector figure / grid
+  // M3.4 V&M 2 (n=15): prose-notation / vector figure / grid — the note lists
+  // the vector figure and the grid separately, and only the grid was reachable.
   'M3-VM2': [
     { representation: 'prose', share: 50, template_hints: [] },
-    { representation: 'graph', share: 50, template_hints: ['coordinateGrid'] },
+    { representation: 'graph', share: 25, template_hints: ['coordinateGrid'] },
+    { representation: 'diagram', share: 25, template_hints: ['vectorFigure'] },
   ],
 };
 

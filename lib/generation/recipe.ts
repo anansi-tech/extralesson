@@ -422,8 +422,23 @@ export function nextRecipe(
       ) as Representation;
     }
   }
-  const template_hints =
-    repTargets.find((r) => r.representation === representation)?.template_hints ?? [];
+  // TEMPLATE DEFICIT, INSIDE THE REPRESENTATION.
+  //
+  // The representation share is corpus-derived and stays as it is; what was
+  // missing is any pressure BETWEEN the templates that serve it. The hints were
+  // an unordered list, so a template the bank had none of competed on equal
+  // footing with one it had 144 of, and lost every time — 'graph' read as fully
+  // covered while the cumulative frequency curve sat at zero.
+  //
+  // Ordering the hints by what the bank actually holds makes the starved one
+  // the first thing the prompt names. It is the same deficit machinery as every
+  // other target here, one level finer, and it needs no new share constants:
+  // fewest-first is the whole rule.
+  const template_hints = [
+    ...(repTargets.find((r) => r.representation === representation)?.template_hints ?? []),
+  ].sort(
+    (a, b) => (matrix.template_actuals[a] ?? 0) - (matrix.template_actuals[b] ?? 0),
+  );
 
   // 6. Archetype: global per-kind targets minus actuals.
   const archetype = largestDeficit(

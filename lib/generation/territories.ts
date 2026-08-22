@@ -34,8 +34,8 @@ export const FLAVOUR: RegionalFlavour = {
     'roofing sheets', 'cement blocks', 'fabric', 'school supplies', 'phone credit',
   ],
   names: [
-    'Amara', 'Kemar', 'Shanice', 'David', 'Anisa', 'Rohan', 'Tamika', 'Jerome',
-    'Priya', 'Marlon', 'Chantelle', 'Rajesh', 'Nadia', 'Everton', 'Simone', 'Trevor',
+    'Amara', 'Kemar', 'Mona', 'David', 'Anisa', 'Rohan', 'Tamika', 'Jerome',
+    'Priya', 'Marlon', 'Chantelle', 'Rajesh', 'Nadia', 'Liam', 'Simone', 'Trevor',
   ],
 };
 
