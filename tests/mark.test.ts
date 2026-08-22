@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { markMcq, markStructured, markStructuredParts } from '@/lib/grade/mark';
+import { missReason } from '@/lib/grade/reason';
 import type { RubricItem } from '@/lib/types';
 
 const rubric: RubricItem[] = [
@@ -348,5 +349,34 @@ describe('markStructured — a form is checked per value', () => {
   it('leaves single-value slots exactly as they were', () => {
     expect(markStructured([formatRow], '73.7', '73.7', '', undefined, 'dp:1').rubric_awarded).toContain('R4');
     expect(markStructured([formatRow], '73.7', '74', '', undefined, 'dp:1').rubric_awarded).not.toContain('R4');
+  });
+});
+
+// A cross beside a box says something is wrong and nothing about what. The
+// commonest misses are not mathematical — a unit left in centimetres, three
+// values where four were asked for, a blank — and each is one sentence from
+// being useful. Found on d0dc6a, where "8m * 6cm" against "8 m × 6 m" was
+// correctly rejected and the student was told only "✗".
+describe('missReason — why a slot was marked wrong', () => {
+  it('names a unit error rather than calling the answer wrong', () => {
+    expect(missReason('8m * 6cm', '$8\\text{ m} \\times 6\\text{ m}$')).toMatch(/units/i);
+  });
+
+  it('names a quantity of the wrong kind', () => {
+    expect(missReason('72 cm', '$72\\text{ m}^2$')).toMatch(/length.*area/i);
+  });
+
+  it('counts the values a multi-value answer wanted', () => {
+    expect(missReason('3', '$(3, 4)$', ['3'])).toMatch(/needs 2 values.*gave 1/i);
+  });
+
+  it('says so when the box was left empty', () => {
+    expect(missReason('', '341.4')).toMatch(/blank/i);
+  });
+
+  // Never invent a diagnosis: where the marker simply disagrees about a value,
+  // say that and no more.
+  it('does not guess at what the student was thinking', () => {
+    expect(missReason('344.25', '341.4')).toBe('That is not the value this asks for.');
   });
 });

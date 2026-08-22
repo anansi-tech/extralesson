@@ -7,6 +7,7 @@ import { markMcq, markStructuredParts } from '@/lib/grade/mark';
 import { GRADER_VERSION, questionFingerprint } from '@/lib/grade/version';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
+import { missReason } from '@/lib/grade/reason';
 import { readInputShape } from '@/lib/grade/input-shape';
 import { renderMathHtml } from '@/lib/katex';
 import type { ProfileMarks, QuestionPart, RubricItem, TemplateName } from '@/lib/types';
@@ -46,7 +47,8 @@ export interface Feedback {
   correct: boolean;
   profile_marks: ProfileMarks;
   rubric_awarded: string[];
-  partResults: { label: string; correct: boolean }[];
+  /** Per slot: whether it earned its marks, and when it did not, why. */
+  partResults: { label: string; correct: boolean; reason?: string }[];
   feedbackTitleHtml: string;
   feedbackHtml: string;
   isMisconception: boolean;
@@ -139,11 +141,18 @@ export async function submitAnswer(input: {
         .map((slot) => {
           const ref = `${p.label}.${slot.label}`;
           const given = inputByRef.get(ref);
+          const correct = given?.values?.length
+            ? componentsEquivalent(given.values, slot.answer, slot.accept)
+            : answersEquivalentAny(given?.text ?? '', slot.answer, slot.accept);
           return {
             label: ref,
-            correct: given?.values?.length
-              ? componentsEquivalent(given.values, slot.answer, slot.accept)
-              : answersEquivalentAny(given?.text ?? '', slot.answer, slot.accept),
+            correct,
+            // Said beside the box, not only as a struck-through code in a strip
+            // at the bottom. A cross on its own reports that something is wrong
+            // and nothing about what.
+            reason: correct
+              ? undefined
+              : missReason(given?.text ?? '', slot.answer, given?.values),
           };
         }),
     );

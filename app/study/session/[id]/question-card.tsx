@@ -75,7 +75,14 @@ export interface CardQuestion {
     selected?: number;
     feedback: Feedback;
   };
-  rubricCodes: { code: string; profile: string; mark_value: number; part_label: string }[];
+  rubricCodes: {
+    code: string;
+    profile: string;
+    mark_value: number;
+    part_label: string;
+    /** Marked by the student against the solution, so never awarded here. */
+    selfMarked?: boolean;
+  }[];
 }
 
 type CardSlot = CardQuestion['parts'][number]['slots'][number];
@@ -509,6 +516,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                           )}
                           </div>
                           <div className={p.slots.length > 1 ? 'sm:ml-auto sm:basis-[62%]' : ''}>
+                            {partFeedback && !partFeedback.correct && partFeedback.reason && (
+                              <p className="mt-1 border-l-3 border-red-pen bg-[#FDF1F0] px-2 py-1 text-[12px] leading-snug">
+                                {partFeedback.reason}
+                              </p>
+                            )}
                             <SymbolStrip
                               symbols={slot.symbols ?? []}
                               disabled={!!feedback}
@@ -619,10 +631,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                   <span
                     key={r.code}
                     className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold ${
-                      got ? chipColor[r.profile] : 'bg-paper-deep text-dim line-through'
+                      r.selfMarked
+                        ? 'border border-dashed border-rule text-dim'
+                        : got
+                          ? chipColor[r.profile]
+                          : 'bg-paper-deep text-dim line-through'
                     }`}
                   >
-                    ({r.part_label}) {r.code} {got ? '✓' : '✗'}
+                    ({r.part_label}) {r.code} {r.selfMarked ? '— you mark' : got ? '✓' : '✗'}
                   </span>
                 );
               })}
