@@ -36,6 +36,20 @@ import { createHash } from 'node:crypto';
  */
 export const GRADER_VERSION = 'v6';
 
+/**
+ * What the METHOD marker was when a photographed working was judged.
+ *
+ * Versioned exactly like the grader and for the same reason: every prompt or
+ * model change re-runs against the golden set and is reported as a delta before
+ * it lands (R2 §6). "v0" means the pass has never run — the feature is off
+ * until the eval gate passes, and an attempt stamped v0 was marked
+ * deterministically and by nothing else.
+ *
+ * History:
+ *   v0  method marking not enabled; deterministic marking only
+ */
+export const MARKER_VERSION = 'v0';
+
 /** An attempt stamped before this existed. Recorded, not guessed at. */
 export const GRADER_VERSION_UNKNOWN = 'unstamped';
 

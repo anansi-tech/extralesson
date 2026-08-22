@@ -25,7 +25,8 @@ Three consequences, all binding:
 - One photo per **question**, not per slot. That is how a student writes, and how the real paper is answered.
 - Camera-first on mobile (`capture="environment"`), file upload on desktop. Must work at 390px alongside the existing submit control.
 - Taken **after** the student submits their typed answers, never before — the answers are the deterministic record, and photographing first would let the reveal influence them.
-- Optional per question. A student who wants only final-answer marking is unaffected, and spends nothing.
+- Optional per question, and **offered only where the working could still earn something**: rows the deterministic grader left unearned, excluding `CAO` rows and self-marked slots. A prompt on every question is a chore; a prompt on a question carrying three unearned method marks is an offer, and it is the honest signal as well as the cheap one — no model call is ever spent on a foregone conclusion. Measured on the attempts on record: the camera would be offered on 63% of structured attempts, carrying 126 method marks.
+- A student who wants only final-answer marking is unaffected, and spends nothing.
 - The student sees what we read back (§3) and may retake once. Two attempts at a photo, then it stands.
 
 **Storage.** The image is a means, not a record: transcribe, store the transcription, delete the image on a short TTL (7 days) so a retake or a dispute is possible and nothing lingers. Never store images alongside identifiable data beyond that window. This is minor-user data; the least we hold, the better.
@@ -74,7 +75,11 @@ No new page. No new vocabulary. The verdict/score/rubric consistency invariant a
 
 **The eval splits in two, because the two failures are independent and only one of them needs David.**
 
-*Reading* is measured against public data, with no founder time. Three datasets exist for handwritten mathematical expression recognition: **CROHME** (the standard benchmark), **HME100K** (74,502 training / 24,607 test images, 249 symbol classes, real photographs with colour variation, blur and complex backgrounds — i.e. phone-camera conditions), and **MathWriting** (LaTeX ground truth, normalised). Sample from one, measure Luna's accuracy, and set the §4 confidence threshold from measured error rather than a guess. **Licence discipline: internal evaluation only — never training, never redistribution, never in the repo.** MathWriting is CC BY-NC-SA 4.0; treat all three as read-only reference like the past papers.
+*Reading* is measured on **our own input**, not on a public benchmark. The public sets were considered and dropped: CROHME and MathWriting are single expressions reconstructed from stroke data, and HME100K is isolated expressions. None of them is multi-line working on lined paper photographed by a phone, which is the only input this feature ever sees — a benchmark that scores well on the wrong distribution would set the §4.4 threshold wrongly and give us confidence we had not earned.
+
+The golden set covers both legs instead, because it has to be written either way. Roughly half the ~30 workings are **handwritten and photographed**, giving transcription ground truth on real input and doubling as the end-to-end set of §6; the other half are **typed**, giving fast marking coverage and letting follow-through cases be constructed deliberately. **The §4.4 confidence threshold is set from the photographed half.**
+
+**Handwriting varies more than any single hand can show.** The founder writes like a maths teacher and the users are teenagers, so the same workings are copied out by 3–5 other people and **accuracy is reported split by writer**. A threshold calibrated on one neat hand is a threshold that fails in the field on the first student who writes like a student; the spread between writers is the number that says whether it will hold.
 
 *Marking* is measured on **typed** working, not photographs. Feed the marker typed transcriptions — correct working, working with an early slip and correct method after it, working that shows nothing, working that reaches the right answer by a wrong route — and check its rubric decisions against David's. Decoupling this from vision means the golden set costs an evening of typing rather than a weekend of handwriting and photographing, and it lets follow-through cases be constructed deliberately rather than hoped for.
 
@@ -109,7 +114,7 @@ Greps: `tesseract`, `ocr`, `stroke`, `handwriting-model`.
 2. Transcription stored, Zod-validated, shown to the student per part before any mark is reported.
 3. Method marking runs only over deterministically-unearned rows, never awards `CAO` rows, awards follow-through rows on the student's own values, abstains below confidence threshold, and cannot reduce any mark.
 4. Grader v6's single-marked-slot restriction is removed; method marks are real on multi-slot questions, and `audit-remark` reports the delta across stored attempts.
-5. Transcription accuracy measured against a public handwriting benchmark (internal evaluation only, nothing added to the repo) and the confidence threshold set from it; marking golden set of ~30 typed workings hand-marked by David; `eval-marker.ts` reports mark-level agreement overall, by profile, and by follow-through; 8–10 photographs confirm the two compose; the feature is off until >90% with zero false CAO awards.
+5. Transcription accuracy measured on the photographed half of the golden set, across 3–5 hands and reported split by writer, and the confidence threshold set from it; marking golden set of ~30 workings hand-marked by David; `eval-marker.ts` reports mark-level agreement overall, by profile, and by follow-through; 8–10 photographs confirm the two compose; the feature is off until >90% with zero false CAO awards.
 6. Cost per photographed question instrumented and visible in admin.
 7. Verdict / score / rubric-chip consistency holds with method marks included; drift test covers the transcription contract across model → validator → persistence.
 8. Mobile audit passes; tests green; kill-list greps clean.
@@ -117,7 +122,7 @@ Greps: `tesseract`, `ocr`, `stroke`, `handwriting-model`.
 ## 11. Sequencing
 
 1. Capture + transcription + show-back on Luna, marking off. Ship this alone — it is useful on its own (a student sees their working typed up beside the mark scheme) and it proves the vision leg in real use.
-2. Transcription eval against a public benchmark; set the confidence threshold from it. No founder time.
+2. The golden set: ~30 workings, about half handwritten and photographed (3–5 hands, not one) and about half typed. The photographed half sets the confidence threshold and is the end-to-end set; the typed half carries the deliberate follow-through cases.
 3. David types ~30 workings and hand-marks the rubric rows; method marking on Terra behind the gate; iterate the prompt against the eval, not against impressions.
 4. Remove the single-slot restriction, re-mark audit, report.
 5. Constructions.

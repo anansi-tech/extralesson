@@ -33,7 +33,7 @@ async function scaleDown(file: File): Promise<{ data: string; contentType: strin
   return { data: url.slice(url.indexOf(',') + 1), contentType: 'image/jpeg' };
 }
 
-export function WorkingPhoto({ attemptId }: { attemptId: string }) {
+export function WorkingPhoto({ attemptId, marks }: { attemptId: string; marks: number }) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [read, setRead] = useState<TranscriptionResult | null>(null);
   const [takesLeft, setTakesLeft] = useState(MAX_TAKES);
@@ -78,8 +78,9 @@ export function WorkingPhoto({ attemptId }: { attemptId: string }) {
 
       {!read && (
         <p className="mt-1 text-[12px] leading-snug text-dim">
-          Photograph what you wrote and we will type it up beside the mark scheme. Your marks
-          above do not change.
+          There {marks === 1 ? 'is 1 mark' : `are ${marks} marks`} here for the method, and we
+          cannot see your working. Photograph what you wrote and we will type it up beside the
+          mark scheme. Nothing you have already earned can change.
         </p>
       )}
 

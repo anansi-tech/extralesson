@@ -8,6 +8,7 @@ import { GRADER_VERSION, questionFingerprint } from '@/lib/grade/version';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
 import { missReason } from '@/lib/grade/reason';
+import { earnableByMethod } from '@/lib/grade/method-marks';
 import { readInputShape } from '@/lib/grade/input-shape';
 import { renderMathHtml } from '@/lib/katex';
 import type { ProfileMarks, QuestionPart, RubricItem, TemplateName } from '@/lib/types';
@@ -72,6 +73,12 @@ export interface Feedback {
    * record and the reveal must not influence what gets photographed.
    */
   attemptId: string;
+  /**
+   * How many rubric rows a photograph of the working could still earn. Zero
+   * means the camera is not offered: nothing is on offer, so it would cost the
+   * student their time and us a model call for a foregone conclusion.
+   */
+  earnableByMethod: number;
 }
 
 export async function submitAnswer(input: {
@@ -258,6 +265,10 @@ export async function submitAnswer(input: {
     formatFeedback: 'format_feedback' in result ? result.format_feedback : undefined,
     construction,
     attemptId: String(written._id),
+    earnableByMethod:
+      question.kind === 'structured'
+        ? earnableByMethod(question as never, result.rubric_awarded).length
+        : 0,
   };
 }
 

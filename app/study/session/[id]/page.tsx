@@ -427,6 +427,7 @@ export default async function SessionPage({
       selected: question.kind === 'mcq' ? Number(attempt.answer) : undefined,
       feedback: {
         attemptId: String(attempt._id),
+        earnableByMethod: 0, // a question already answered is not re-photographed
         correct: attempt.correct,
         profile_marks: attempt.profile_marks,
         rubric_awarded: attempt.rubric_awarded,
