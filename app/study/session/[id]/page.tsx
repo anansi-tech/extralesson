@@ -53,6 +53,7 @@ export default async function SessionPage({
     .sort({ ts: 1 })
     .lean<
       {
+        _id: unknown;
         profile_marks: ProfileMarks;
         correct: boolean;
         question_id: unknown;
@@ -425,6 +426,7 @@ export default async function SessionPage({
       answers,
       selected: question.kind === 'mcq' ? Number(attempt.answer) : undefined,
       feedback: {
+        attemptId: String(attempt._id),
         correct: attempt.correct,
         profile_marks: attempt.profile_marks,
         rubric_awarded: attempt.rubric_awarded,

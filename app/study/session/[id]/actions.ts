@@ -66,6 +66,12 @@ export interface Feedback {
    * drawn, because there is no stored picture of it.
    */
   construction?: { figureHtml: string; describes?: string; acts: string[] };
+  /**
+   * The attempt just written. A photograph of the working is attached to it
+   * afterwards (R2 §2), never before: the typed answers are the deterministic
+   * record and the reveal must not influence what gets photographed.
+   */
+  attemptId: string;
 }
 
 export async function submitAnswer(input: {
@@ -164,7 +170,7 @@ export async function submitAnswer(input: {
   await SessionDraft.deleteOne({ session_id: sessionId, question_index: questionIndex });
 
   // Append-only: attempts are never mutated (§3.5).
-  await Attempt.create({
+  const written = await Attempt.create({
     student_id: auth.student_id,
     question_id: session.question_ids[questionIndex],
     session_id: sessionId,
@@ -251,6 +257,7 @@ export async function submitAnswer(input: {
     isMisconception,
     formatFeedback: 'format_feedback' in result ? result.format_feedback : undefined,
     construction,
+    attemptId: String(written._id),
   };
 }
 

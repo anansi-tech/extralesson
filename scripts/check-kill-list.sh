@@ -19,15 +19,35 @@ else
 fi
 [ "${#FILES[@]}" -eq 0 ] && exit 0
 
-# Word-boundary matching throughout: "division" is not "vision", and
-# "uploaded" is not "upload". The banned spelling of KaTeX is included by name.
-BANNED='whatsapp|twilio|\bvision\b|\bupload\b|investigation|\bsba\b|tikz|jsxgraph|minhash|latex'
+# Word-boundary matching throughout: "division" is not "vision". The banned
+# spelling of KaTeX is included by name.
+#
+# ROUND 2 OPENED TWO OF THESE. "photo upload/vision" was an R1 gate because R1
+# had no examiner and a half-built camera would have been scope creep. R2 is
+# that examiner, so the words are now the round's subject rather than its
+# forbidden ground. The gate is not deleted, it MOVES: R2 brings its own list,
+# below, and everything R1 banned for a reason that still holds stays banned.
+#
+# "stroke" is deliberately NOT here even though R2 bans per-stroke capture: SVG
+# stroke attributes account for 50 legitimate hits across lib/visuals, so the
+# ban is written as the thing it actually forbids — capturing strokes, ink
+# formats, a bundled recogniser — rather than as a word the drawing code needs.
+BANNED='whatsapp|twilio|investigation|\bsba\b|tikz|jsxgraph|minhash|latex'
+BANNED_R2='tesseract|\bocr\b|per-stroke|inkml|handwriting-model'
 
 fail=0
 hits=$(grep -HniE "$BANNED" "${FILES[@]}" 2>/dev/null || true)
 if [ -n "$hits" ]; then
   echo "kill-list violation (CLAUDE.md forbids these in app/ lib/ scripts/ tests/):"
   echo "$hits" | sed 's/^/  /'
+  fail=1
+fi
+
+r2=$(grep -HniE "$BANNED_R2" "${FILES[@]}" 2>/dev/null || true)
+if [ -n "$r2" ]; then
+  echo "kill-list violation (ROUND_2_EXAMINER.md §9 — we read handwriting with a"
+  echo "model we call, and train, bundle and capture nothing):"
+  echo "$r2" | sed 's/^/  /'
   fail=1
 fi
 
