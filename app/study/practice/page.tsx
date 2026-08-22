@@ -1,6 +1,8 @@
 import 'katex/dist/katex.min.css';
 import Link from 'next/link';
 import { dbConnect, Attempt, Question, Student } from '@/lib/db';
+import { m1GateHolds, rankByNeed } from '@/lib/session/builder';
+import { loadStudyState } from '@/lib/study/state';
 import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
 import { renderVisual, type StoredVisual } from '@/lib/visuals';
@@ -22,6 +24,7 @@ export const dynamic = 'force-dynamic';
 const SELF_MARKED_MODES = ['show_that', 'explain', 'construct'];
 
 interface LeanQuestion {
+  objective_ids?: string[];
   _id: unknown;
   module: ModuleNumber;
   marks: number;
@@ -38,7 +41,22 @@ interface LeanQuestion {
   rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label: string }[];
 }
 
-export default async function WorkedPracticePage() {
+/**
+ * How many to put in front of a student who has come here to work.
+ *
+ * Listing everything made the page nineteen screens of exam questions, which is
+ * a catalogue: a student opening it wants something to start, not a library to
+ * browse. The rest is one tap away.
+ */
+const SHOWN = 6;
+
+export default async function WorkedPracticePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ all?: string }>;
+}) {
+  const { all } = await searchParams;
+  const showAll = all === '1';
   const auth = await requireSession();
   await dbConnect();
   const student = await Student.findById(auth.student_id).lean<{
@@ -59,17 +77,58 @@ export default async function WorkedPracticePage() {
   // this page had never once had anything on it. Those three are a real slice
   // of the paper, and their character is exactly what this page is for — a
   // written answer the student marks against the solution.
-  const rows = await Question.find({
+  const where = {
     status: 'approved',
     module: { $in: student.target_modules },
     'parts.slots.response_mode': { $in: SELF_MARKED_MODES },
     _id: { $nin: attempted },
-  })
-    .select('module marks stimulus stem visual parts worked_solution rubric')
-    .limit(20)
-    .lean<LeanQuestion[]>();
+  };
 
-  const questions: WorkedQuestion[] = rows.map((q) => ({
+  // RANK FIRST, FETCH SECOND.
+  //
+  // Every candidate is ranked, then the top few are loaded in full. Taking a
+  // page from the database and sorting THAT would order an arbitrary handful
+  // and still call it weakest-first — the ordering would be real and the claim
+  // about it false.
+  const ids = await Question.find(where).select('objective_ids module marks').lean<
+    { _id: unknown; objective_ids?: string[]; module: ModuleNumber; marks: number }[]
+  >();
+
+  // Ordered the way a session is ordered, by the session builder's own
+  // function: Module 1 while it gates, then topics never opened, then weight
+  // times what is missing. A practice page that ranked differently would send
+  // the student somewhere their session would not.
+  const state = await loadStudyState(auth.student_id, student.target_modules);
+  const ranked = rankByNeed(
+    ids.map((q) => ({
+      id: String(q._id),
+      objective_ids: q.objective_ids ?? [],
+      module: q.module,
+      kind: 'structured' as const,
+      marks: q.marks,
+    })),
+    {
+      perObjectiveMastery: state.perObjective,
+      topicWeightByPrefix: state.topicWeightByPrefix,
+      attemptedObjectives: state.attemptedObjectives,
+      m1Gated: m1GateHolds(student.target_modules, state.moduleMastery[1]),
+    },
+  );
+
+  // Deep enough that the six at the top are a real choice from the weakest
+  // topics, shallow enough that "show the other twelve" is still a page rather
+  // than a catalogue.
+  const POOL = 18;
+  const wanted = ranked.slice(0, showAll ? POOL : SHOWN).map((r) => r.id);
+  const total = Math.min(ranked.length, POOL);
+
+  const rows = await Question.find({ _id: { $in: wanted } })
+    .select('module marks stimulus stem visual parts worked_solution rubric')
+    .lean<LeanQuestion[]>();
+  const byId = new Map(rows.map((q) => [String(q._id), q]));
+  const shown = wanted.map((id) => byId.get(id)!).filter(Boolean);
+
+  const questions: WorkedQuestion[] = shown.map((q) => ({
     id: String(q._id),
     module: q.module,
     marks: q.marks,
@@ -150,7 +209,19 @@ export default async function WorkedPracticePage() {
             </p>
           </div>
         ) : (
-          questions.map((q) => <WorkedCard key={q.id} question={q} />)
+          <>
+            {questions.map((q) => (
+              <WorkedCard key={q.id} question={q} />
+            ))}
+            {!showAll && total > SHOWN && (
+              <Link
+                href="/study/practice?all=1"
+                className="mt-6 block border-[1.5px] border-ink p-3 text-center font-mono text-xs uppercase tracking-widest"
+              >
+                Show the other {total - SHOWN}
+              </Link>
+            )}
+          </>
         )}
       </div>
     </main>
