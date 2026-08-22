@@ -32,6 +32,8 @@ export interface CardQuestion {
       promptHtml?: string;
       /** The same prompt as plain text, for the input's accessible name. */
       promptText?: string;
+      /** What this box is for, read off the table it completes. */
+      cellName?: string;
       mode: string;
       /** What is legal to type here, and the symbols the keyboard hides. */
       hints?: string[];
@@ -103,6 +105,10 @@ function ordinalAnswer(slots: CardSlot[], ref: string): string {
  * loud is the only honest thing left to say.
  */
 function describeSlot(slots: CardSlot[], slot: CardSlot): string {
+  // The cell it fills, before anything positional: "Suitable beans ·
+  // Percentage of total harvest" says which box this is, where "first answer"
+  // says only where it sits in a list the student did not write.
+  if (slot.cellName) return slot.cellName;
   return isPositionalLabel(slot.label)
     ? ordinalAnswer(slots, slot.ref)
     : slot.label.replace(/[_-]+/g, ' ');
