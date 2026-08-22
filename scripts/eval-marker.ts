@@ -66,6 +66,9 @@ async function main() {
   // ---- READING ------------------------------------------------------------
   const byWriter = new Map<string, { lines: number; right: number }>();
   const buckets = new Map<string, { n: number; right: number }>();
+  // Photographs arrive one at a time; an entry without its image yet is not an
+  // error, it is work still to do.
+  const missing: string[] = [];
 
   for (const e of photo) {
     const q = await Question.findById(e.question_id).select('parts').lean<any>();
@@ -73,7 +76,12 @@ async function main() {
       console.log(`  ${e.id}: question not in the bank, skipped`);
       continue;
     }
-    const image = readFileSync(join(DIR, e.image!));
+    const imagePath = join(DIR, e.image!);
+    if (!existsSync(imagePath)) {
+      missing.push(e.id);
+      continue;
+    }
+    const image = readFileSync(imagePath);
     const read = await transcribeWorking({
       image: new Uint8Array(image),
       contentType: e.image!.endsWith('.png') ? 'image/png' : 'image/jpeg',
@@ -100,7 +108,10 @@ async function main() {
     byWriter.set(e.writer, w);
   }
 
-  if (photo.length > 0) {
+  if (missing.length > 0) {
+    console.log(`READING — ${missing.length} of ${photo.length} photograph(s) not taken yet: ${missing.join(', ')}\n`);
+  }
+  if (byWriter.size > 0) {
     console.log('READING — line accuracy by writer');
     for (const [writer, r] of [...byWriter].sort()) {
       console.log(`   ${writer.padEnd(10)} ${r.right}/${r.lines}  ${((100 * r.right) / r.lines).toFixed(0)}%`);
@@ -117,6 +128,8 @@ async function main() {
       console.log(`   ${band.padEnd(8)} ${b.right}/${b.n}  ${((100 * b.right) / b.n).toFixed(0)}%`);
     }
     console.log('   Set the threshold at the lowest band that still reads accurately.');
+  } else if (photo.length > 0) {
+    console.log('READING — no photographs to read yet, so the threshold cannot be set.');
   }
 
   // ---- MARKING ------------------------------------------------------------
