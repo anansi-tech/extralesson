@@ -209,17 +209,38 @@ describe('QuestionDraftZ — mcq (R1.5)', () => {
 describe('QuestionDraftZ — response_mode and answer_format (R1.6)', () => {
   // R1.8: response_mode and answer_format live on the slot, so an override
   // lands there rather than on the part that governs it.
-  const withPart = (over: Record<string, unknown>) => ({
-    ...validStructured,
-    marks: 3,
-    parts: [
-      {
-        ...validStructured.parts[0],
-        slots: [{ ...validStructured.parts[0].slots[0], ...over }],
-      },
-      validStructured.parts[1],
-    ],
-  });
+  // A slot declaring an answer_format must carry a rubric row that marks the
+  // form, so the fixture grows one — and the marks with it. A format nothing
+  // pays for is rejected now, which is the point of the rule.
+  const withPart = (over: Record<string, unknown>) => {
+    const pricesForm = typeof over.answer_format === 'string';
+    return {
+      ...validStructured,
+      marks: pricesForm ? 4 : 3,
+      parts: [
+        {
+          ...validStructured.parts[0],
+          marks: pricesForm ? 3 : 2,
+          slots: [{ ...validStructured.parts[0].slots[0], ...over }],
+        },
+        validStructured.parts[1],
+      ],
+      rubric: pricesForm
+        ? [
+            ...validStructured.rubric,
+            {
+              code: 'R2',
+              profile: 'R' as const,
+              criterion: "Expresses 'their' answer in the form the question demands",
+              mark_value: 1,
+              slot_ref: 'a.i',
+              part_label: 'a',
+              for_format: true,
+            },
+          ]
+        : validStructured.rubric,
+    };
+  };
 
   it('defaults response_mode to answer', () => {
     const first = validStructured.parts[0];
@@ -376,5 +397,59 @@ describe('a named sketch counts as a diagram', () => {
   it('refuses sketch: false under diagram, since the axes are the point', () => {
     const explicit = { named: { polygons: [{ points: ['A', 'B', 'C'] }], sketch: false } };
     expect(QuestionDraftZ.safeParse(withVisual('diagram', explicit)).success).toBe(false);
+  });
+});
+
+// R1.7 §B4 gives the form its own mark, and the generation contract has asked
+// for that row since v37 — but nothing enforced it, so the model complied about
+// half the time on every prompt version since (v46: 2 priced against 8
+// unpriced). 129 of the 256 slots declaring a format had no row paying for it,
+// so missing the form cost nothing and still failed the answer: c0c05d printed
+// "9 out of 9" beside "Not quite". A declared format nothing marks is a wish.
+describe('QuestionDraftZ — a declared form has to be paid for', () => {
+  const withFormat = (rubricExtra: unknown[]) => ({
+    ...validStructured,
+    marks: 3,
+    parts: [
+      {
+        ...validStructured.parts[0],
+        slots: [{ ...validStructured.parts[0].slots[0], answer_format: 'dp:1' }],
+      },
+      validStructured.parts[1],
+    ],
+    rubric: [...validStructured.rubric, ...rubricExtra],
+  });
+
+  it('rejects a format that no rubric row marks', () => {
+    const res = QuestionDraftZ.safeParse(withFormat([]));
+    expect(res.success).toBe(false);
+    if (!res.success) {
+      expect(JSON.stringify(res.error.issues)).toMatch(/no rubric row marks the form/);
+    }
+  });
+
+  it('accepts it once a row pays for it', () => {
+    const priced = withFormat([
+      {
+        code: 'R2',
+        profile: 'R' as const,
+        criterion: "Gives 'their' answer to 1 decimal place",
+        mark_value: 1,
+        slot_ref: 'a.i',
+        part_label: 'a',
+        for_format: true,
+      },
+    ]);
+    // The extra row is an extra mark, so the totals move with it.
+    const res = QuestionDraftZ.safeParse({
+      ...priced,
+      marks: 4,
+      parts: [{ ...priced.parts[0], marks: 3 }, priced.parts[1]],
+    });
+    expect(res.success).toBe(true);
+  });
+
+  it('accepts a question that declares no format at all', () => {
+    expect(QuestionDraftZ.safeParse(validStructured).success).toBe(true);
   });
 });
