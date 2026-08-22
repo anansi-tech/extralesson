@@ -37,7 +37,9 @@ describe('draft schema — the model can return every field the prompt asks for'
       rubric: [
         { code: 'CK1', profile: 'CK' as const, criterion: 'Uses the angle sum', mark_value: 2, slot_ref: 'a.i', part_label: 'a' },
         { code: 'R1', profile: 'R' as const, criterion: 'Explains the symmetry', mark_value: 3, slot_ref: 'b.i', part_label: 'b' },
-        { code: 'AK1', profile: 'AK' as const, criterion: 'Computes the exterior angle', mark_value: 2, slot_ref: 'c.i', part_label: 'c' },
+        { code: 'AK1', profile: 'AK' as const, criterion: 'Computes the exterior angle', mark_value: 1, slot_ref: 'c.i', part_label: 'c' },
+        // Part (c) declares dp:1, so a row has to pay for the form.
+        { code: 'R2', profile: 'R' as const, criterion: "Gives 'their' angle to 1 decimal place", mark_value: 1, slot_ref: 'c.i', part_label: 'c', for_format: true },
       ],
       worked_solution: 'Interior angles sum to $540°$.\n\nEach line of symmetry joins a vertex to the opposite midpoint.\n\nThe exterior angle is $72°$.',
       misconceptions: [{ trigger: '360°', name: 'Uses the exterior-angle sum', remediation: 'The interior sum is $(n-2)\\times 180°$.' }],

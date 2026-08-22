@@ -45,7 +45,7 @@ export interface FlaggableQuestion {
   stimulus?: string;
   stem: string;
   worked_solution?: string;
-  rubric?: { criterion?: string }[];
+  rubric?: { criterion?: string; slot_ref?: string; for_format?: boolean }[];
   visual?: {
     params?: { regions?: { constraints?: { a: number; b: number; c: number; op: string }[] }[] };
   };
@@ -53,7 +53,13 @@ export interface FlaggableQuestion {
     label: string;
     prompt: string;
     statement?: string;
-    slots?: { label: string; prompt?: string; answer?: string; response_mode?: string }[];
+    slots?: {
+      label: string;
+      prompt?: string;
+      answer?: string;
+      response_mode?: string;
+      answer_format?: string;
+    }[];
   }[];
 }
 
@@ -124,6 +130,25 @@ export function reviewFlags(q: FlaggableQuestion): ReviewFlag[] {
       flags.push({
         level: 'warn',
         text: `Part (${p.label}) has ${marked.length} answer boxes and does not say which is which`,
+      });
+    }
+  }
+
+  // A declared form that no row pays for. The validator rejects new ones; a few
+  // approved questions predate it and need a mark authored for the form, which
+  // moves what the question is worth and is therefore a human's call.
+  //
+  // Structured questions only, which here means "has a rubric": an MCQ is
+  // marked by the option its answer_key names, so it has no rows to pay for a
+  // form and a format on one of its slots is inert either way.
+  for (const p of (q.rubric ?? []).length > 0 ? parts : []) {
+    for (const s of p.slots ?? []) {
+      if ((s.response_mode ?? 'answer') !== 'answer' || !s.answer_format) continue;
+      const ref = `${p.label}.${s.label}`;
+      if ((q.rubric ?? []).some((r) => r.slot_ref === ref && r.for_format)) continue;
+      flags.push({
+        level: 'warn',
+        text: `(${p.label}) asks for a form (${s.answer_format}) that no rubric row marks — give it a mark or drop the demand`,
       });
     }
   }

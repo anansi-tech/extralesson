@@ -628,6 +628,30 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
           }
         }
       }
+      // A DECLARED FORM MUST BE PAID FOR, OR NOT DECLARED.
+      //
+      // R1.7 §B4 gives the form its own mark, and the generation contract has
+      // asked for that row since v37 — but nothing enforced it, so the model
+      // complied about half the time on every prompt version since (v46: 2
+      // priced against 8 unpriced). 129 of the 256 slots declaring a format had
+      // no row paying for it, which meant missing the form cost nothing and
+      // still failed the answer: "9 out of 9" printed beside "Not quite".
+      //
+      // An unpaid format is a wish, in the same sense as any other target the
+      // pipeline declares and never consumes. Either a row marks the form or
+      // the question does not claim to want one.
+      for (const [j, slot] of part.slots.entries()) {
+        if ((slot.response_mode ?? 'answer') !== 'answer') continue;
+        if (!slot.answer_format) continue;
+        const ref = `${part.label}.${slot.label}`;
+        if (q.rubric.some((r) => r.slot_ref === ref && r.for_format)) continue;
+        ctx.addIssue({
+          code: 'custom',
+          path: ['parts', i, 'slots', j, 'answer_format'],
+          message: `slot ${ref} declares answer_format '${slot.answer_format}' but no rubric row marks the form — add a row with for_format true, or drop the format`,
+        });
+      }
+
       const dupes = new Set(part.slots.map((s) => s.label));
       if (dupes.size !== part.slots.length) {
         ctx.addIssue({ code: 'custom', path: ['parts', i, 'slots'], message: 'slot labels must be unique within a part' });
