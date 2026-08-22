@@ -331,7 +331,7 @@ export default async function SessionPage({
       statement?: string;
       slots?: { label: string; prompt?: string; response_mode?: string; answer: string; accept?: string[] }[];
     }[];
-    rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string }[];
+    rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string; slot_ref?: string }[];
     answer_key?: number;
     worked_solution: string;
   } | null>();
@@ -449,6 +449,15 @@ export default async function SessionPage({
   // order they read the table put a percentage where a count belonged.
   const cellNames = slotCellNames(question.visual);
 
+  // Slots the student marks themselves; their rubric rows are not auto-awarded.
+  const selfMarkedRefs = new Set(
+    (question.parts ?? []).flatMap((p) =>
+      (p.slots ?? [])
+        .filter((slot) => (slot.response_mode ?? 'answer') !== 'answer')
+        .map((slot) => `${p.label}.${slot.label}`),
+    ),
+  );
+
   const questionSymbols = [
     ...new Set(
       (question.parts ?? []).flatMap((p) =>
@@ -547,6 +556,12 @@ export default async function SessionPage({
         profile: r.profile,
         mark_value: r.mark_value,
         part_label: r.part_label ?? 'a',
+        // A row hanging off a self-marked slot is never awarded here, so the
+        // strip struck it through and printed a cross — telling a student they
+        // had failed a row that was never on offer. It is out of the
+        // denominator too (lib/grade/assessable.ts), which is why the score can
+        // read 11 out of 11 with a cross beside it.
+        selfMarked: selfMarkedRefs.has(r.slot_ref ?? ''),
       })) ?? [],
   };
 
