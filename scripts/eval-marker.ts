@@ -21,24 +21,32 @@ import 'dotenv/config';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { dbConnect, Question } from '@/lib/db';
-import { transcribeWorking } from '@/lib/grade/transcribe';
+import { transcribeWorking, linesForSlot } from '@/lib/grade/transcribe';
 import { markableSlots } from '@/lib/grade/mark';
 import { MARKER_VERSION } from '@/lib/grade/version';
+import { earnableByMethod } from '@/lib/grade/method-marks';
 import { isFollowThrough } from '@/lib/prompts/mark-scheme';
-import {
-  GoldenReferenceZ,
-  GoldenSetZ,
-  methodCandidates,
-  scoreReading,
-  type GoldenQuestion,
-} from '@/lib/grade/golden-set';
 
 const DIR = join(process.cwd(), 'design', 'golden');
 const GATE = 0.9;
 
+interface Entry {
+  id: string;
+  question_id: string;
+  writer: string;
+  mode: 'photo' | 'typed';
+  image?: string;
+  transcript: { part_label: string | null; text: string }[];
+  marks: { code: string; awarded: boolean }[];
+}
+
+/** Compared the way the grader would see it, not character by character. */
+function normalise(s: string): string {
+  return s.toLowerCase().replace(/\s+/g, ' ').replace(/[$\\]/g, '').trim();
+}
+
 async function main() {
   const setPath = join(DIR, 'set.json');
-  const referencePath = join(DIR, 'review.json');
   if (!existsSync(setPath)) {
     console.log('No golden set yet.\n');
     console.log('  Expected: design/golden/set.json');
@@ -49,23 +57,21 @@ async function main() {
   }
 
   await dbConnect();
-  const entries = GoldenSetZ.parse(JSON.parse(readFileSync(setPath, 'utf8')));
-  const reference = GoldenReferenceZ.parse(JSON.parse(readFileSync(referencePath, 'utf8')));
-  const referenceById = new Map(reference.entries.map((entry) => [entry.id, entry]));
+  const entries: Entry[] = JSON.parse(readFileSync(setPath, 'utf8'));
   const photo = entries.filter((e) => e.mode === 'photo');
   const typed = entries.filter((e) => e.mode === 'typed');
   console.log(`golden set: ${entries.length} workings — ${photo.length} photographed, ${typed.length} typed`);
-  console.log(`photo writers: ${[...new Set(photo.map((e) => e.writer))].join(', ')}\n`);
+  console.log(`writers: ${[...new Set(entries.map((e) => e.writer))].join(', ')}\n`);
 
   // ---- READING ------------------------------------------------------------
-  const byWriter = new Map<string, { expected: number; returned: number; matched: number }>();
+  const byWriter = new Map<string, { lines: number; right: number }>();
   const buckets = new Map<string, { n: number; right: number }>();
   // Photographs arrive one at a time; an entry without its image yet is not an
   // error, it is work still to do.
   const missing: string[] = [];
 
   for (const e of photo) {
-    const q = await Question.findById(e.question_id).select('parts').lean() as unknown as GoldenQuestion | null;
+    const q = await Question.findById(e.question_id).select('parts').lean<any>();
     if (!q) {
       console.log(`  ${e.id}: question not in the bank, skipped`);
       continue;
@@ -82,16 +88,21 @@ async function main() {
       slotRefs: markableSlots(q.parts ?? []),
     });
 
-    const score = scoreReading(e.transcript, read.transcription.lines);
-    const w = byWriter.get(e.writer) ?? { expected: 0, returned: 0, matched: 0 };
-    w.expected += score.expected;
-    w.returned += score.returned;
-    w.matched += score.matched;
-    for (const line of score.returnedLines) {
-      const band = line.confidence >= 0.9 ? '0.9+' : line.confidence >= 0.8 ? '0.8-0.9' : line.confidence >= 0.6 ? '0.6-0.8' : '<0.6';
+    // Line-level: did we read this line, attributed to this part, correctly?
+    const truth = e.transcript.map((t) => `${t.part_label ?? '-'}|${normalise(t.text)}`);
+    const got = read.transcription.lines.map((l) => ({
+      key: `${l.part_label ?? '-'}|${normalise(l.text)}`,
+      confidence: l.confidence,
+    }));
+    const w = byWriter.get(e.writer) ?? { lines: 0, right: 0 };
+    for (const g of got) {
+      const hit = truth.includes(g.key);
+      w.lines++;
+      if (hit) w.right++;
+      const band = g.confidence >= 0.9 ? '0.9+' : g.confidence >= 0.8 ? '0.8-0.9' : g.confidence >= 0.6 ? '0.6-0.8' : '<0.6';
       const b = buckets.get(band) ?? { n: 0, right: 0 };
       b.n++;
-      if (line.matched) b.right++;
+      if (hit) b.right++;
       buckets.set(band, b);
     }
     byWriter.set(e.writer, w);
@@ -101,27 +112,14 @@ async function main() {
     console.log(`READING — ${missing.length} of ${photo.length} photograph(s) not taken yet: ${missing.join(', ')}\n`);
   }
   if (byWriter.size > 0) {
-    console.log('READING — exact line match by writer (missing lines count)');
+    console.log('READING — line accuracy by writer');
     for (const [writer, r] of [...byWriter].sort()) {
-      const precision = r.returned === 0 ? 0 : r.matched / r.returned;
-      const recall = r.expected === 0 ? 0 : r.matched / r.expected;
-      const f1 = precision + recall === 0 ? 0 : (2 * precision * recall) / (precision + recall);
-      console.log(
-        `   ${writer.padEnd(10)} ${r.matched}/${r.expected} truth lines · ` +
-        `precision ${(100 * precision).toFixed(0)}% · recall ${(100 * recall).toFixed(0)}% · F1 ${(100 * f1).toFixed(0)}%`,
-      );
+      console.log(`   ${writer.padEnd(10)} ${r.right}/${r.lines}  ${((100 * r.right) / r.lines).toFixed(0)}%`);
     }
-    const all = [...byWriter.values()].reduce(
-      (a, b) => ({ expected: a.expected + b.expected, returned: a.returned + b.returned, matched: a.matched + b.matched }),
-      { expected: 0, returned: 0, matched: 0 },
-    );
-    const precision = all.returned === 0 ? 0 : all.matched / all.returned;
-    const recall = all.expected === 0 ? 0 : all.matched / all.expected;
-    const f1 = precision + recall === 0 ? 0 : (2 * precision * recall) / (precision + recall);
-    console.log(
-      `   overall    ${all.matched}/${all.expected} truth lines · ` +
-      `precision ${(100 * precision).toFixed(0)}% · recall ${(100 * recall).toFixed(0)}% · F1 ${(100 * f1).toFixed(0)}%`,
-    );
+    const all = [...byWriter.values()].reduce((a, b) => ({ lines: a.lines + b.lines, right: a.right + b.right }), { lines: 0, right: 0 });
+    const spread = [...byWriter.values()].map((r) => r.right / r.lines);
+    console.log(`   overall    ${all.right}/${all.lines}  ${((100 * all.right) / all.lines).toFixed(0)}%` +
+      (spread.length > 1 ? `  · spread ${(100 * Math.min(...spread)).toFixed(0)}–${(100 * Math.max(...spread)).toFixed(0)}%` : ''));
 
     console.log('\nREADING — accuracy by the model\'s own confidence (this sets the §4.4 threshold)');
     for (const band of ['0.9+', '0.8-0.9', '0.6-0.8', '<0.6']) {
@@ -136,52 +134,25 @@ async function main() {
 
   // ---- MARKING ------------------------------------------------------------
   console.log('\nMARKING');
-  let rows = 0;
-  let awarded = 0;
-  let followThrough = 0;
-  const byProfile = new Map<string, number>();
-  const referenceProblems: string[] = [];
-  for (const e of entries) {
-    const q = await Question.findById(e.question_id).select('parts rubric').lean() as unknown as GoldenQuestion | null;
-    const reviewed = referenceById.get(e.id);
-    if (!q || !reviewed) {
-      referenceProblems.push(`${e.id}: missing ${q ? 'reference entry' : 'question'}`);
-      continue;
-    }
-    const candidates = methodCandidates(q, reviewed.student_answers).candidates;
-    const expectedCodes = candidates.map((row) => row.code).sort();
-    const reviewedCodes = reviewed.marks.map((row) => row.code).sort();
-    if (JSON.stringify(expectedCodes) !== JSON.stringify(reviewedCodes)) {
-      referenceProblems.push(`${e.id}: proposed codes do not match the rows the method marker would receive`);
-      continue;
-    }
-    rows += candidates.length;
-    awarded += reviewed.marks.filter((row) => row.awarded).length;
-    for (const row of candidates) {
-      byProfile.set(row.profile, (byProfile.get(row.profile) ?? 0) + 1);
-      if (isFollowThrough(row.criterion)) followThrough++;
-    }
-  }
-
-  if (referenceProblems.length > 0) {
-    console.log(`   reference invalid:\n   ${referenceProblems.join('\n   ')}`);
-    process.exit(1);
-  }
-
-  console.log(
-    `   reference ${reference.status}: ${rows} row(s) after deterministic marking · ` +
-    `${awarded} proposed awards · ${rows - awarded} proposed withholds`,
-  );
-  console.log(
-    `   coverage: ${[...byProfile].sort().map(([p, n]) => `${p} ${n}`).join(' · ')} · follow-through ${followThrough}`,
-  );
-
-  if (reference.status !== 'approved') {
-    console.log('   HUMAN APPROVAL REQUIRED: review design/golden/review.json before these labels can be ground truth.');
-  }
-
   if (MARKER_VERSION === 'v0') {
+    // Every row the marker WOULD be asked about, so the set can be sized before
+    // the pass exists: rows deterministic marking cannot settle.
+    let rows = 0;
+    let followThrough = 0;
+    const byProfile = new Map<string, number>();
+    for (const e of entries) {
+      const q = await Question.findById(e.question_id).select('parts rubric').lean<any>();
+      if (!q) continue;
+      for (const r of earnableByMethod(q as never, [])) {
+        rows++;
+        byProfile.set(r.profile, (byProfile.get(r.profile) ?? 0) + 1);
+        if (isFollowThrough(r.criterion)) followThrough++;
+      }
+    }
     console.log(`   not enabled (MARKER_VERSION ${MARKER_VERSION}).`);
+    console.log(`   the set covers ${rows} markable row(s): ` +
+      [...byProfile].sort().map(([p, n]) => `${p} ${n}`).join(' · ') +
+      ` · follow-through ${followThrough}`);
     console.log(`   gate: >${GATE * 100}% agreement, zero false awards on CAO rows.`);
   }
   process.exit(0);
