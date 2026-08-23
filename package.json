@@ -11,7 +11,9 @@
     "seed:topics": "tsx scripts/seed-topics.ts",
     "seed:blueprints": "tsx scripts/seed-blueprints.ts",
     "generate": "tsx scripts/generate.ts",
-    "check:figures": "tsx scripts/check-figures.ts"
+    "check:figures": "tsx scripts/check-figures.ts",
+    "golden:review": "tsx scripts/review-golden.ts",
+    "golden:eval": "tsx scripts/eval-marker.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.118",
