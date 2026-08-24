@@ -20,6 +20,7 @@
 import 'dotenv/config';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { goldenSetExists, loadGoldenSet } from './golden-set';
 import { dbConnect, Question } from '@/lib/db';
 import { transcribeWorking, linesForSlot } from '@/lib/grade/transcribe';
 import { markableSlots } from '@/lib/grade/mark';
@@ -30,15 +31,7 @@ import { isFollowThrough } from '@/lib/prompts/mark-scheme';
 const DIR = join(process.cwd(), 'design', 'golden');
 const GATE = 0.9;
 
-interface Entry {
-  id: string;
-  question_id: string;
-  writer: string;
-  mode: 'photo' | 'typed';
-  image?: string;
-  transcript: { part_label: string | null; text: string }[];
-  marks: { code: string; awarded: boolean }[];
-}
+
 
 /**
  * Compared the way the GRADER would see it, not character by character.
@@ -91,18 +84,21 @@ function cer(truth: string, got: string): number {
 }
 
 async function main() {
-  const setPath = join(DIR, 'set.json');
-  if (!existsSync(setPath)) {
+  if (!goldenSetExists()) {
     console.log('No golden set yet.\n');
-    console.log('  Expected: design/golden/set.json');
+    console.log('  Expected: design/golden/set.json (the working) and review.json (the verdicts)');
     console.log('  Format:   design/golden/README.md');
-    console.log('\nUntil it exists the gate cannot pass, so method marking stays off.');
+    console.log('\nUntil they exist the gate cannot pass, so method marking stays off.');
     console.log(`MARKER_VERSION is ${MARKER_VERSION} — the pass has never run.`);
     process.exit(0);
   }
 
   await dbConnect();
-  const entries: Entry[] = JSON.parse(readFileSync(setPath, 'utf8'));
+  // One loader owns the input/verdict split, and refuses a set that is not
+  // paired 1:1 or not approved.
+  const golden = loadGoldenSet();
+  const entries = golden.inputs;
+  console.log(`ground truth approved by ${golden.approval.reviewer} on ${String(golden.approval.reviewed_at).slice(0, 10)}`);
   const photo = entries.filter((e) => e.mode === 'photo');
   const typed = entries.filter((e) => e.mode === 'typed');
   console.log(`golden set: ${entries.length} workings — ${photo.length} photographed, ${typed.length} typed`);
@@ -214,8 +210,11 @@ async function main() {
         if (isFollowThrough(r.criterion)) followThrough++;
       }
     }
+    const decisions = [...golden.verdicts.values()].flat();
     console.log(`   not enabled (MARKER_VERSION ${MARKER_VERSION}).`);
-    console.log(`   the set covers ${rows} markable row(s): ` +
+    console.log(`   ground truth: ${decisions.length} decision(s) — ` +
+      `${decisions.filter((m) => m.awarded).length} award, ${decisions.filter((m) => !m.awarded).length} withhold`);
+    console.log(`   reachable rows in the bank for these questions: ${rows} — ` +
       [...byProfile].sort().map(([p, n]) => `${p} ${n}`).join(' · ') +
       ` · follow-through ${followThrough}`);
     console.log(`   gate: >${GATE * 100}% agreement, zero false awards on CAO rows.`);
