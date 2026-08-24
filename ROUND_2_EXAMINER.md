@@ -63,7 +63,11 @@ Four rules, encoded in the prompt and enforced in code:
 1. **`CAO` rows are never awarded by this pass.** "Correct answer only" means the answer, and the deterministic grader already settled that. 24% of AK criteria say CAO; they stay deterministic.
 2. **Follow-through is the point.** Where `isFollowThrough()` marks a row (criteria written with "their"), the row is earned when the method is right *given the student's own earlier value*, however wrong that value was. The marker is given those values explicitly so it is judging method, not arithmetic it has already been told is wrong.
 3. **No working, no method mark.** A row cannot be awarded from an absent or unattributable line. Silence earns nothing.
-4. **Low confidence abstains.** Below threshold, the row is not awarded and the student is told the working could not be read for that step — not that it was wrong.
+4. **Confidence is recorded, not gated on.** The original design abstained below a threshold. The reading eval killed that: on 15 real photographs across five hands, lines the reader rated 0.9+ — which is nearly all of them — were exactly right only 77% of the time, so there is no threshold that separates a good read from a bad one. Gating on a number that does not predict correctness would have felt like a safeguard and been none.
+
+   What replaces it is evidence we already hold. **The typed answer is the cross-check**: the deterministic grader knows what the student submitted for the slot, so a transcription that contradicts it is unreliable for that row and the row is withheld. Confidence is still stored on every line — it costs nothing and a later analysis may find a use for it — but nothing depends on it.
+
+   **The backstop is §1.1: this pass may only add marks.** A misread cannot take away what determinism awarded, so the worst a bad read can do is fail to add a mark the student had earned. That is the failure we choose.
 
 ## 5. What the student sees
 
@@ -87,7 +91,9 @@ The golden set covers both legs instead, because it has to be written either way
 
 No public dataset of rubric-marked CSEC scripts exists, and none is needed: the ground truth we require is "did this working earn AK2 **on this question**", which is specific to our bank and our rubric rows. David writing working for questions already in the bank is faster, more relevant and free. (Note in passing: CXC's own e-marking uses pre-marked "seed" scripts that examiners must score correctly before they are allowed to mark live. Our gate is the same mechanism, which is a good sign the design matches how the exam is actually run.)
 
-**Metric: mark-level agreement.** Per rubric row, does the marker agree with David? Not per question, not per attempt — per mark, because a mark is the unit CXC awards.
+**Metric: mark-level agreement, on the rows that were in contention.** Per rubric row, does the marker agree with David? Not per question, not per attempt — per mark, because a mark is the unit CXC awards.
+
+**The denominator is 128, not 220.** David judged the rows a photograph could actually decide; the 30 questions carry 220 reachable rows in total. Every agreement figure in this round is over those 128 and must be reported as such — an unqualified "90%" would later be read as covering all 220, which it does not.
 
 **Gate: >90% agreement, and zero false awards on `CAO` rows.** Below that, method marking stays off and the round is not done. Report agreement split by profile (CK/AK/R) and by whether the row was follow-through — a system that is 95% right on CK and 70% on follow-through has not earned the feature that matters.
 

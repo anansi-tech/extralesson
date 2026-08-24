@@ -21,6 +21,7 @@ import 'dotenv/config';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { goldenSetExists, loadGoldenSet } from './golden-set';
+import { markMethod, type MethodDecision } from '@/lib/grade/mark-method';
 import { dbConnect, Question } from '@/lib/db';
 import { transcribeWorking, linesForSlot } from '@/lib/grade/transcribe';
 import { markableSlots } from '@/lib/grade/mark';
@@ -111,6 +112,8 @@ async function main() {
   // error, it is work still to do.
   const missing: string[] = [];
   const unread: string[] = [];
+  /** Pages whose transcription differed from the truth, for attribution below. */
+  const readDiffered = new Set<string>();
 
   for (const e of photo) {
     const q = await Question.findById(e.question_id).select('parts').lean<any>();
@@ -157,6 +160,7 @@ async function main() {
       if (hit) b.right++;
       buckets.set(band, b);
     }
+    if (got.some((g) => !truth.includes(g.key)) || got.length !== truth.length) readDiffered.add(e.id);
     byWriter.set(e.writer, w);
   }
 
@@ -194,8 +198,98 @@ async function main() {
   }
 
   // ---- MARKING ------------------------------------------------------------
-  console.log('\nMARKING');
-  if (MARKER_VERSION === 'v0') {
+  //
+  // Scored on the 128 rows David judged — the rows a photograph could actually
+  // decide. The 30 questions carry 220 reachable rows in total, and every
+  // figure below is over the 128, never the 220.
+  console.log('\nMARKING — agreement on the 128 rows in contention (not all 220 reachable rows)');
+  {
+    const byProfile = new Map<string, { n: number; agree: number }>();
+    const ft = { n: 0, agree: 0 };
+    const plain = { n: 0, agree: 0 };
+    let n = 0;
+    let agree = 0;
+    let falseAward = 0;
+    const misreadLinked: string[] = [];
+    const disagreements: string[] = [];
+
+    for (const e of entries) {
+      const truth = golden.verdicts.get(e.id)!;
+      if (truth.length === 0) continue;
+      const q = await Question.findById(e.question_id).lean<any>();
+      if (!q) continue;
+
+      const rows = (q.rubric ?? []).filter((r: any) => truth.some((t) => t.code === r.code));
+      if (rows.length === 0) continue;
+
+      // The marker sees the working as transcribed for that part.
+      const workingByPart: Record<string, string[]> = {};
+      for (const line of e.transcript) {
+        const part = line.part_label ?? '';
+        if (!part) continue;
+        (workingByPart[part] ??= []).push(line.text);
+      }
+
+      let decisions: MethodDecision[];
+      try {
+        const out = await markMethod({
+          rows,
+          workingByPart,
+          typedAnswers: e.studentAnswers,
+          workedSolution: q.worked_solution,
+          questionStem: `${q.stimulus ?? ''} ${q.stem}`.trim(),
+        });
+        decisions = out.decisions;
+      } catch {
+        console.log(`   ${e.id}: marker returned nothing, rows counted as disagreement`);
+        decisions = [];
+      }
+
+      // Did the READ of this page differ from the truth? Used only to attribute
+      // a disagreement to a misreading rather than to a marking judgment.
+      const misread = e.mode === 'photo' && readDiffered.has(e.id);
+
+      for (const t of truth) {
+        const got = decisions.find((d) => d.code === t.code);
+        const row = rows.find((r: any) => r.code === t.code);
+        n++;
+        const ok = got ? got.awarded === t.awarded : false;
+        if (ok) agree++;
+        else {
+          disagreements.push(`${e.id}/${t.code} truth ${t.awarded ? 'award' : 'withhold'}` +
+            (got ? ` got ${got.awarded ? 'award' : 'withhold'}` : ' got nothing'));
+          if (misread) misreadLinked.push(`${e.id}/${t.code}`);
+          if (got?.awarded && !t.awarded) falseAward++;
+        }
+        const prof = row?.profile ?? '?';
+        const p = byProfile.get(prof) ?? { n: 0, agree: 0 };
+        p.n++;
+        if (ok) p.agree++;
+        byProfile.set(prof, p);
+        const bucket = row && isFollowThrough(row.criterion) ? ft : plain;
+        bucket.n++;
+        if (ok) bucket.agree++;
+      }
+    }
+
+    const pct = (a: number, b: number) => (b ? ((100 * a) / b).toFixed(0) + '%' : '—');
+    console.log(`   overall        ${agree}/${n}  ${pct(agree, n)}`);
+    for (const [prof, r] of [...byProfile].sort()) {
+      console.log(`   ${prof.padEnd(14)} ${r.agree}/${r.n}  ${pct(r.agree, r.n)}`);
+    }
+    console.log(`   follow-through ${ft.agree}/${ft.n}  ${pct(ft.agree, ft.n)}`);
+    console.log(`   other rows     ${plain.agree}/${plain.n}  ${pct(plain.agree, plain.n)}`);
+    console.log(`   false awards   ${falseAward}  (gate requires 0 on CAO rows; CAO rows are excluded upstream)`);
+    console.log(`   disagreements traceable to a misread: ${misreadLinked.length} of ${n - agree}`);
+    if (disagreements.length) {
+      console.log('   first few:');
+      for (const d of disagreements.slice(0, 8)) console.log(`      ${d}`);
+    }
+    const passes = n > 0 && agree / n > GATE && falseAward === 0;
+    console.log(`\n   ${passes ? 'PASS' : 'BELOW GATE'} — >${GATE * 100}% agreement on the 128 rows in contention.`);
+  }
+
+  if (false) {
     // Every row the marker WOULD be asked about, so the set can be sized before
     // the pass exists: rows deterministic marking cannot settle.
     let rows = 0;

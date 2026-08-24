@@ -47,8 +47,16 @@ export const GRADER_VERSION = 'v6';
  *
  * History:
  *   v0  method marking not enabled; deterministic marking only
+ *   v1  first pass over the golden set. 89% agreement on the 128 rows in
+ *       contention. Two failure modes fixed: a follow-through criterion's
+ *       printed number was being read as a value the student had to produce
+ *       rather than as the scheme's own, and a criterion naming an act was
+ *       being earned by a result merely consistent with it
+ *   v2  temperature 0. v1 returned a different verdict for the same working
+ *       between runs — 93%, 91% and one below the gate — so the gate outcome
+ *       depended on which run you looked at. A mark is not a sample
  */
-export const MARKER_VERSION = 'v0';
+export const MARKER_VERSION = 'v2';
 
 /** An attempt stamped before this existed. Recorded, not guessed at. */
 export const GRADER_VERSION_UNKNOWN = 'unstamped';
