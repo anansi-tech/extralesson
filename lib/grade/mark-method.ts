@@ -82,7 +82,16 @@ HOW TO DECIDE, and these override any instinct to be generous or strict:
    not the act. If you cannot point at the line where the student did the thing
    the row names, withhold.
 
-Give a reason of one clause. confidence is your confidence in the DECISION.
+THE REASON IS WRITTEN FOR THE STUDENT, and it is the only thing they get back
+when a row is withheld. One clause, addressed to them, naming the step you
+could not find: "we could not see where you divided by the scale factor", not
+"criterion not met". A student who is told what is missing can go and look at
+their page; a student told nothing has learnt nothing, and a withheld mark with
+no reason is indistinguishable from a marker that is simply wrong.
+
+Where you DID award, the reason names the line that earned it.
+
+confidence is your confidence in the DECISION.
 `;
 
 export async function markMethod(args: MethodMarkArgs): Promise<{

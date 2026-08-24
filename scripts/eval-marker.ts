@@ -26,7 +26,7 @@ import { dbConnect, Question } from '@/lib/db';
 import { transcribeWorking, linesForSlot } from '@/lib/grade/transcribe';
 import { markableSlots } from '@/lib/grade/mark';
 import { MARKER_VERSION } from '@/lib/grade/version';
-import { earnableByMethod } from '@/lib/grade/method-marks';
+
 import { isFollowThrough } from '@/lib/prompts/mark-scheme';
 
 const DIR = join(process.cwd(), 'design', 'golden');
@@ -202,117 +202,142 @@ async function main() {
   // Scored on the 128 rows David judged — the rows a photograph could actually
   // decide. The 30 questions carry 220 reachable rows in total, and every
   // figure below is over the 128, never the 220.
-  console.log('\nMARKING — agreement on the 128 rows in contention (not all 220 reachable rows)');
-  {
-    const byProfile = new Map<string, { n: number; agree: number }>();
-    const ft = { n: 0, agree: 0 };
-    const plain = { n: 0, agree: 0 };
-    let n = 0;
-    let agree = 0;
-    let falseAward = 0;
-    const misreadLinked: string[] = [];
-    const disagreements: string[] = [];
+  //
+  // FIVE RUNS, GATED ON THE WORST. The marker returns different verdicts for
+  // the same working between runs and temperature is not a setting a reasoning
+  // model accepts, so a single pass cannot decide anything: one run said 93%
+  // and the next said 91%. A gate a re-run can flip is not a gate.
+  const RUNS = 5;
+  console.log(`\nMARKING — ${RUNS} runs, gated on the worst. Agreement is over the 128 rows in`);
+  console.log('contention, not the 220 reachable rows.');
 
-    for (const e of entries) {
-      const truth = golden.verdicts.get(e.id)!;
-      if (truth.length === 0) continue;
-      const q = await Question.findById(e.question_id).lean<any>();
-      if (!q) continue;
+  interface RunStats {
+    n: number;
+    agree: number;
+    byProfile: Map<string, { n: number; agree: number }>;
+    ft: { n: number; agree: number };
+    plain: { n: number; agree: number };
+    falseAwardCao: number;
+    falseAwardMethod: number;
+    withheldShouldAward: number;
+    misread: number;
+    lines: string[];
+  }
 
-      const rows = (q.rubric ?? []).filter((r: any) => truth.some((t) => t.code === r.code));
-      if (rows.length === 0) continue;
+  async function runMarking(): Promise<RunStats> {
+    const st: RunStats = {
+      n: 0, agree: 0, byProfile: new Map(), ft: { n: 0, agree: 0 }, plain: { n: 0, agree: 0 },
+      falseAwardCao: 0, falseAwardMethod: 0, withheldShouldAward: 0, misread: 0, lines: [],
+    };
+    // A small pool: the wall clock is thirty calls a run, five runs deep.
+    const queue = [...entries];
+    const workers = Array.from({ length: 4 }, async () => {
+      for (;;) {
+        const e = queue.shift();
+        if (!e) return;
+        const truth = golden.verdicts.get(e.id)!;
+        if (truth.length === 0) continue;
+        const q = await Question.findById(e.question_id).lean<any>();
+        if (!q) continue;
+        const rows = (q.rubric ?? []).filter((r: any) => truth.some((t) => t.code === r.code));
+        if (rows.length === 0) continue;
 
-      // The marker sees the working as transcribed for that part.
-      const workingByPart: Record<string, string[]> = {};
-      for (const line of e.transcript) {
-        const part = line.part_label ?? '';
-        if (!part) continue;
-        (workingByPart[part] ??= []).push(line.text);
-      }
-
-      let decisions: MethodDecision[];
-      try {
-        const out = await markMethod({
-          rows,
-          workingByPart,
-          typedAnswers: e.studentAnswers,
-          workedSolution: q.worked_solution,
-          questionStem: `${q.stimulus ?? ''} ${q.stem}`.trim(),
-        });
-        decisions = out.decisions;
-      } catch {
-        console.log(`   ${e.id}: marker returned nothing, rows counted as disagreement`);
-        decisions = [];
-      }
-
-      // Did the READ of this page differ from the truth? Used only to attribute
-      // a disagreement to a misreading rather than to a marking judgment.
-      const misread = e.mode === 'photo' && readDiffered.has(e.id);
-
-      for (const t of truth) {
-        const got = decisions.find((d) => d.code === t.code);
-        const row = rows.find((r: any) => r.code === t.code);
-        n++;
-        const ok = got ? got.awarded === t.awarded : false;
-        if (ok) agree++;
-        else {
-          disagreements.push(`${e.id}/${t.code} truth ${t.awarded ? 'award' : 'withhold'}` +
-            (got ? ` got ${got.awarded ? 'award' : 'withhold'}` : ' got nothing'));
-          if (misread) misreadLinked.push(`${e.id}/${t.code}`);
-          if (got?.awarded && !t.awarded) falseAward++;
+        const workingByPart: Record<string, string[]> = {};
+        for (const line of e.transcript) {
+          const part = line.part_label ?? '';
+          if (part) (workingByPart[part] ??= []).push(line.text);
         }
-        const prof = row?.profile ?? '?';
-        const p = byProfile.get(prof) ?? { n: 0, agree: 0 };
-        p.n++;
-        if (ok) p.agree++;
-        byProfile.set(prof, p);
-        const bucket = row && isFollowThrough(row.criterion) ? ft : plain;
-        bucket.n++;
-        if (ok) bucket.agree++;
-      }
-    }
 
-    const pct = (a: number, b: number) => (b ? ((100 * a) / b).toFixed(0) + '%' : '—');
-    console.log(`   overall        ${agree}/${n}  ${pct(agree, n)}`);
-    for (const [prof, r] of [...byProfile].sort()) {
-      console.log(`   ${prof.padEnd(14)} ${r.agree}/${r.n}  ${pct(r.agree, r.n)}`);
-    }
-    console.log(`   follow-through ${ft.agree}/${ft.n}  ${pct(ft.agree, ft.n)}`);
-    console.log(`   other rows     ${plain.agree}/${plain.n}  ${pct(plain.agree, plain.n)}`);
-    console.log(`   false awards   ${falseAward}  (gate requires 0 on CAO rows; CAO rows are excluded upstream)`);
-    console.log(`   disagreements traceable to a misread: ${misreadLinked.length} of ${n - agree}`);
-    if (disagreements.length) {
-      console.log('   first few:');
-      for (const d of disagreements.slice(0, 8)) console.log(`      ${d}`);
-    }
-    const passes = n > 0 && agree / n > GATE && falseAward === 0;
-    console.log(`\n   ${passes ? 'PASS' : 'BELOW GATE'} — >${GATE * 100}% agreement on the 128 rows in contention.`);
+        let decisions: MethodDecision[] = [];
+        try {
+          decisions = (await markMethod({
+            rows,
+            workingByPart,
+            typedAnswers: e.studentAnswers,
+            workedSolution: q.worked_solution,
+            questionStem: `${q.stimulus ?? ''} ${q.stem}`.trim(),
+          })).decisions;
+        } catch {
+          /* counted as disagreement below */
+        }
+
+        const misread = e.mode === 'photo' && readDiffered.has(e.id);
+        for (const t of truth) {
+          const got = decisions.find((d) => d.code === t.code);
+          const row = rows.find((r: any) => r.code === t.code);
+          const isCao = row ? /\bCAO\b/.test(row.criterion) : false;
+          st.n++;
+          const ok = got ? got.awarded === t.awarded : false;
+          if (ok) st.agree++;
+          else {
+            if (misread) st.misread++;
+            if (got?.awarded && !t.awarded) {
+              // CAO is the deterministic grader's territory and a false award
+              // there is a hard fail; a method-row false award is tolerable and
+              // tracked. earnableByMethod excludes CAO upstream, so this counter
+              // exists to prove that holds rather than to assume it.
+              if (isCao) st.falseAwardCao++;
+              else st.falseAwardMethod++;
+            }
+            if (!got?.awarded && t.awarded) st.withheldShouldAward++;
+            st.lines.push(`${e.id}/${t.code} truth ${t.awarded ? 'award' : 'withhold'} got ${got ? (got.awarded ? 'award' : 'withhold') : 'nothing'}`);
+          }
+          const prof = row?.profile ?? '?';
+          const p = st.byProfile.get(prof) ?? { n: 0, agree: 0 };
+          p.n++; if (ok) p.agree++;
+          st.byProfile.set(prof, p);
+          const bucket = row && isFollowThrough(row.criterion) ? st.ft : st.plain;
+          bucket.n++; if (ok) bucket.agree++;
+        }
+      }
+    });
+    await Promise.all(workers);
+    return st;
   }
 
-  if (false) {
-    // Every row the marker WOULD be asked about, so the set can be sized before
-    // the pass exists: rows deterministic marking cannot settle.
-    let rows = 0;
-    let followThrough = 0;
-    const byProfile = new Map<string, number>();
-    for (const e of entries) {
-      const q = await Question.findById(e.question_id).select('parts rubric').lean<any>();
-      if (!q) continue;
-      for (const r of earnableByMethod(q as never, [])) {
-        rows++;
-        byProfile.set(r.profile, (byProfile.get(r.profile) ?? 0) + 1);
-        if (isFollowThrough(r.criterion)) followThrough++;
-      }
-    }
-    const decisions = [...golden.verdicts.values()].flat();
-    console.log(`   not enabled (MARKER_VERSION ${MARKER_VERSION}).`);
-    console.log(`   ground truth: ${decisions.length} decision(s) — ` +
-      `${decisions.filter((m) => m.awarded).length} award, ${decisions.filter((m) => !m.awarded).length} withhold`);
-    console.log(`   reachable rows in the bank for these questions: ${rows} — ` +
-      [...byProfile].sort().map(([p, n]) => `${p} ${n}`).join(' · ') +
-      ` · follow-through ${followThrough}`);
-    console.log(`   gate: >${GATE * 100}% agreement, zero false awards on CAO rows.`);
+  const runs: RunStats[] = [];
+  for (let i = 1; i <= RUNS; i++) {
+    const r = await runMarking();
+    runs.push(r);
+    console.log(`   run ${i}: ${r.agree}/${r.n} ${((100 * r.agree) / r.n).toFixed(0)}%` +
+      `  false awards CAO ${r.falseAwardCao} / method ${r.falseAwardMethod}` +
+      `  withheld-should-award ${r.withheldShouldAward}`);
   }
+
+  const spread = (pick: (r: RunStats) => number) => {
+    const v = runs.map(pick).sort((a, b) => a - b);
+    return { min: v[0], median: v[Math.floor(v.length / 2)], max: v[v.length - 1] };
+  };
+  const pct = (a: number, b: number) => (b ? ((100 * a) / b).toFixed(0) + '%' : '—');
+  const ag = spread((r) => r.agree / r.n);
+  const worst = runs.reduce((a, b) => (a.agree / a.n <= b.agree / b.n ? a : b));
+
+  console.log(`\n   agreement       min ${(100 * ag.min).toFixed(0)}%  median ${(100 * ag.median).toFixed(0)}%  max ${(100 * ag.max).toFixed(0)}%   (n=${worst.n})`);
+  for (const prof of [...worst.byProfile.keys()].sort()) {
+    const sp = spread((r) => (r.byProfile.get(prof)?.agree ?? 0) / (r.byProfile.get(prof)?.n ?? 1));
+    console.log(`   ${prof.padEnd(15)} min ${(100 * sp.min).toFixed(0)}%  median ${(100 * sp.median).toFixed(0)}%  max ${(100 * sp.max).toFixed(0)}%`);
+  }
+  const ftSp = spread((r) => r.ft.agree / r.ft.n);
+  console.log(`   follow-through  min ${(100 * ftSp.min).toFixed(0)}%  median ${(100 * ftSp.median).toFixed(0)}%  max ${(100 * ftSp.max).toFixed(0)}%   (n=${worst.ft.n})`);
+  const otherSp = spread((r) => r.plain.agree / r.plain.n);
+  console.log(`   other rows      min ${(100 * otherSp.min).toFixed(0)}%  median ${(100 * otherSp.median).toFixed(0)}%  max ${(100 * otherSp.max).toFixed(0)}%   (n=${worst.plain.n})`);
+
+  const caoSp = spread((r) => r.falseAwardCao);
+  const methodSp = spread((r) => r.falseAwardMethod);
+  const withheldSp = spread((r) => r.withheldShouldAward);
+  console.log(`\n   false award, CAO row     min ${caoSp.min} median ${caoSp.median} max ${caoSp.max}   <- hard fail at any count`);
+  console.log(`   false award, method row  min ${methodSp.min} median ${methodSp.median} max ${methodSp.max}   <- tolerable, tracked`);
+  console.log(`   withheld when it should have awarded: min ${withheldSp.min} median ${withheldSp.median} max ${withheldSp.max}   (${pct(withheldSp.median, worst.n)} of rows)`);
+  console.log('   The conservative direction is the one \u00a71.1 chose: a withheld row costs a');
+  console.log('   mark the student earned; a false award gives one they did not. Today they earn');
+  console.log('   no method marks at all on 424 of 427 questions.');
+  console.log(`   disagreements traceable to a misread (worst run): ${worst.misread} of ${worst.n - worst.agree}`);
+
+  const passes = ag.min > GATE && caoSp.max === 0;
+  console.log(`\n   ${passes ? 'PASS' : 'BELOW GATE'} — worst of ${RUNS} runs must exceed ${GATE * 100}% with no CAO false award.`);
+  console.log(`   worst run disagreements:`);
+  for (const l of worst.lines.slice(0, 10)) console.log(`      ${l}`);
+
   process.exit(0);
 }
 
