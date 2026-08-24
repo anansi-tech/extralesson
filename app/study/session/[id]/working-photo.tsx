@@ -36,6 +36,10 @@ async function scaleDown(file: File): Promise<{ data: string; contentType: strin
 export function WorkingPhoto({ attemptId, marks }: { attemptId: string; marks: number }) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [read, setRead] = useState<TranscriptionResult | null>(null);
+  const [method, setMethod] = useState<
+    { code: string; awarded: boolean; reason: string; mark_value: number }[]
+  >([]);
+  const [marksAdded, setMarksAdded] = useState(0);
   const [takesLeft, setTakesLeft] = useState(MAX_TAKES);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -50,6 +54,8 @@ export function WorkingPhoto({ attemptId, marks }: { attemptId: string; marks: n
         else {
           setRead(res.transcription);
           setTakesLeft(res.takesLeft);
+          setMethod(res.method);
+          setMarksAdded(res.marksAdded);
         }
       } catch {
         setError('That photo could not be prepared on this device.');
@@ -144,6 +150,41 @@ export function WorkingPhoto({ attemptId, marks }: { attemptId: string; marks: n
           ))}
           {read.notes && (
             <p className="mt-2 text-[12px] leading-snug text-dim">{read.notes}</p>
+          )}
+
+          {/* R2 §5. The marks the working earned, and — the part that makes
+              this worth photographing — WHY a row did not earn. "We could not
+              see where you divided by the scale factor" is something a student
+              can go and check against their page; a struck-through code is not.
+              The marker is more cautious than an examiner, so the reasons are
+              how a student can tell a real miss from one we could not see. */}
+          {method.length > 0 && (
+            <div className="mt-3 border-t border-dashed border-paper-deep pt-2">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+                {marksAdded > 0
+                  ? `Your working earned ${marksAdded} more mark${marksAdded === 1 ? '' : 's'}`
+                  : 'What your working earned'}
+              </div>
+              <ul className="mt-1 space-y-1">
+                {method.map((m) => (
+                  <li key={m.code} className="flex gap-2 text-[13px] leading-snug">
+                    <span
+                      className={`font-hand text-lg leading-none ${m.awarded ? 'text-green-pen' : 'text-dim'}`}
+                    >
+                      {m.awarded ? '✓' : '–'}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="font-mono text-[11px] text-dim">{m.code}</span>{' '}
+                      {m.reason}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-[12px] leading-snug text-dim">
+                These are added to what you had already earned. Nothing here can take a mark
+                away.
+              </p>
+            </div>
           )}
           <p className="mt-2 text-[12px] leading-snug text-dim">
             {takesLeft > 0

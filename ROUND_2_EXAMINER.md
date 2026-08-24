@@ -119,7 +119,9 @@ Greps: `tesseract`, `ocr`, `stroke`, `handwriting-model`.
 1. Capture works on a phone at 390px, after typed submission, with one retake; images deleted on TTL.
 2. Transcription stored, Zod-validated, shown to the student per part before any mark is reported.
 3. Method marking runs only over deterministically-unearned rows, never awards `CAO` rows, awards follow-through rows on the student's own values, abstains below confidence threshold, and cannot reduce any mark.
-4. Grader v6's single-marked-slot restriction is removed; method marks are real on multi-slot questions, and `audit-remark` reports the delta across stored attempts.
+4. Grader v6's single-marked-slot restriction is lifted WHERE THERE IS EVIDENCE: photographed working carries the part it was written under, so it can be attributed to a slot and method marks are real on multi-slot questions. The restriction on the TYPED working box stays, because nothing about it changed — it still belongs to the whole question and still cannot be attributed. `audit-remark` reports the size of the hole this fills.
+
+   **Two figures are carried forward, not tuned.** R agreement dips to 87% on n=23 — too small a sample to fit a prompt to, so it is tracked as the set grows. And withheld-when-it-should-have-awarded, 6–9 rows or about 6%, stays a reported metric in every eval run: the marker is stricter than a human examiner, and that bias must never become invisible.
 5. Transcription accuracy measured on the photographed half of the golden set, across 3–5 hands and reported split by writer, and the confidence threshold set from it; marking golden set of ~30 workings hand-marked by David; `eval-marker.ts` reports mark-level agreement overall, by profile, and by follow-through; 8–10 photographs confirm the two compose; the feature is off until >90% with zero false CAO awards.
 6. Cost per photographed question instrumented and visible in admin.
 7. Verdict / score / rubric-chip consistency holds with method marks included; drift test covers the transcription contract across model → validator → persistence.

@@ -1,4 +1,4 @@
-import { Attempt, Blueprint, Topic } from '@/lib/db';
+import { Attempt, Blueprint, Topic, Transcription } from '@/lib/db';
 import {
   bandFor,
   masteryByObjective,
@@ -76,8 +76,23 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
         } | null;
         profile_marks: { CK: number; AK: number; R: number };
         ts: Date;
+        _id: unknown;
       }[]
     >();
+
+  const reads = await Transcription.find({
+    attempt_id: { $in: attempts.map((a) => a._id) },
+  })
+    .select('attempt_id method_marks')
+    .lean<{ attempt_id: unknown; method_marks?: { awarded: boolean; mark_value: number }[] }[]>();
+  const methodByAttempt = new Map<string, number>();
+  for (const r of reads) {
+    const earned = (r.method_marks ?? [])
+      .filter((m: { awarded: boolean }) => m.awarded)
+      .reduce((n: number, m: { mark_value: number }) => n + m.mark_value, 0);
+    methodByAttempt.set(String(r.attempt_id), (methodByAttempt.get(String(r.attempt_id)) ?? 0) + earned);
+  }
+
   return attempts
     .filter((a) => a.question_id)
     .map((a) => {
@@ -86,7 +101,15 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
       // approximated by slot proportion, which is a different number whenever a
       // part's marks are not spread evenly across its slots.
       const marks = markSplit(a.question_id!).auto || a.question_id!.marks || 1;
-      const earned = a.profile_marks.CK + a.profile_marks.AK + a.profile_marks.R;
+      // Method marks earned from photographed working are added here rather
+      // than written back to the attempt, which is append-only. The attempt
+      // records what the student was told on submitting; this records what
+      // their working later showed, and mastery is the fold over both.
+      const earned =
+        a.profile_marks.CK +
+        a.profile_marks.AK +
+        a.profile_marks.R +
+        (methodByAttempt.get(String(a._id)) ?? 0);
       return {
         objective_ids: a.question_id!.objective_ids,
         score: Math.min(1, earned / marks),

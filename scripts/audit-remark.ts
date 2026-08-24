@@ -175,6 +175,33 @@ async function main() {
   }
   console.log('\nMASTERY — old against corrected, in memory only');
   for (const l of masteryLines) console.log(l);
+  // R2 §11.4 — what method marking is worth, on the attempts we actually have.
+  //
+  // The delta is not a re-marking figure: no stored attempt has a photograph,
+  // so replaying them changes nothing. What CAN be measured is the size of the
+  // hole method marking exists to fill — the marks these students showed the
+  // method for and could not be awarded, because grader v6 could not attribute
+  // a question-level working box to a slot.
+  const { earnableByMethod } = await import('@/lib/grade/method-marks');
+  const { Transcription } = await import('@/lib/db');
+  const photographed = await Transcription.countDocuments();
+  let reachable = 0;
+  let attemptsWithRows = 0;
+  for (const a of await Attempt.find().lean<{ question_id: unknown; rubric_awarded: string[] }[]>()) {
+    const q = await Question.findById(a.question_id).lean<{ kind: string } | null>();
+    if (!q || q.kind !== 'structured') continue;
+    const rows = earnableByMethod(q as never, a.rubric_awarded);
+    if (!rows.length) continue;
+    attemptsWithRows++;
+    reachable += rows.reduce((n, r) => n + r.mark_value, 0);
+  }
+  console.log('\nMETHOD MARKS — what photographing the working is worth');
+  console.log(`  attempts carrying unearned method marks: ${attemptsWithRows}`);
+  console.log(`  marks those attempts could still earn  : ${reachable}`);
+  console.log(`  attempts with a photograph so far      : ${photographed}`);
+  console.log('  Nothing is re-marked: an attempt is what the student was told at the time,');
+  console.log('  and a photograph taken later adds marks beside it rather than rewriting it.');
+
   console.log(`\nStudents: ${students.length}. Nothing was written.`);
   process.exit(0);
 }

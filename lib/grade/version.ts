@@ -56,8 +56,16 @@ export const GRADER_VERSION = 'v6';
  *       one below the gate) and temperature 0 was tried to stop it. The
  *       provider rejects temperature on a reasoning model, so the variance is
  *       inherent and the gate must be judged over repeated runs, not one
+ *   v3  enabled. Gate passed on the worst of five runs over the 128 rows in
+ *       contention: agreement 92/93/95 (min/median/max), zero CAO false awards
+ *       in every run, method-row false awards 0/1/2. Two figures carried
+ *       forward rather than tuned: R agreement dips to 87% on n=23, which is
+ *       too small a sample to fit a prompt to, and withheld-when-it-should-have-
+ *       awarded sits at 6-9 rows (~6%) — the marker is stricter than a human
+ *       examiner, which is the direction §1.1 chose and which stays reported in
+ *       every eval run so it cannot quietly become invisible
  */
-export const MARKER_VERSION = 'v2';
+export const MARKER_VERSION = 'v3';
 
 /** An attempt stamped before this existed. Recorded, not guessed at. */
 export const GRADER_VERSION_UNKNOWN = 'unstamped';

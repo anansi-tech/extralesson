@@ -38,6 +38,35 @@ const TranscriptionSchema = new Schema({
     output_tokens: { type: Number },
   },
   reader_model: { type: String, required: true },
+  /**
+   * METHOD MARKS EARNED BY THIS WORKING.
+   *
+   * They live here, not on the attempt, because an attempt is append-only: it
+   * is the record of what a student was told at the moment they submitted, and
+   * the photograph comes afterwards. Folding these in at read time (see
+   * loadAttemptRows) keeps that record intact and still lets the marks count.
+   *
+   * mark_value is copied rather than looked up so the fold is a sum, and so a
+   * later edit to the question's rubric cannot silently restate what a student
+   * was awarded — the same reason an attempt stores its own fingerprint.
+   */
+  method_marks: {
+    type: [
+      new Schema(
+        {
+          code: { type: String, required: true },
+          awarded: { type: Boolean, required: true },
+          reason: { type: String, required: true },
+          confidence: { type: Number },
+          mark_value: { type: Number, required: true },
+          profile: { type: String },
+        },
+        { _id: false },
+      ),
+    ],
+    default: [],
+  },
+  marker_version: { type: String },
   created_at: { type: Date, default: Date.now, required: true },
 });
 
