@@ -71,7 +71,31 @@ export interface TranscribeOutcome {
   model: string;
 }
 
+/**
+ * One retry, because the failure is transient and the cost of not retrying is
+ * paid by the student.
+ *
+ * Structured generation occasionally returns something that does not satisfy
+ * the schema — the same photograph succeeds on the next call. Without a retry
+ * that surfaces as "we could not read that photo" on a page that is perfectly
+ * readable, and the student is left believing their handwriting is the problem.
+ * Two attempts and then it stands: an unbounded retry is an unbounded bill.
+ */
+const READ_ATTEMPTS = 2;
+
 export async function transcribeWorking(args: TranscribeArgs): Promise<TranscribeOutcome> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= READ_ATTEMPTS; attempt++) {
+    try {
+      return await readOnce(args);
+    } catch (e) {
+      lastError = e;
+    }
+  }
+  throw lastError;
+}
+
+async function readOnce(args: TranscribeArgs): Promise<TranscribeOutcome> {
   const { image, contentType, slotRefs } = args;
 
   const result = await generateObject({
@@ -103,12 +127,41 @@ export async function transcribeWorking(args: TranscribeArgs): Promise<Transcrib
   });
 
   return {
-    transcription: result.object,
+    transcription: normaliseLabels(result.object),
     usage: {
       input_tokens: result.usage?.inputTokens,
       output_tokens: result.usage?.outputTokens,
     },
     model: READER_MODEL_ID,
+  };
+}
+
+/**
+ * THE PART IS THE PART, NOT THE SLOT REFERENCE.
+ *
+ * The reader is told the question's slots are "a.i", "b.i", so it labels lines
+ * with the whole reference. linesForSlot then compares that against the part
+ * label "a", matches nothing, and the slot is treated as having no working at
+ * all — and no working means no method mark (R2 §4.3). A correctly read page
+ * would have silently earned nothing.
+ *
+ * Found by running the eval against real photographs, which is what an eval is
+ * for. Split here, once, on the way in, so everything downstream sees a part
+ * label that is a part label.
+ */
+function normaliseLabels(t: TranscriptionResult): TranscriptionResult {
+  return {
+    ...t,
+    lines: t.lines.map((line) => {
+      const raw = (line.part_label ?? '').replace(/[()\s]/g, '');
+      if (!raw) return { ...line, part_label: null };
+      const [part, ...rest] = raw.split('.');
+      return {
+        ...line,
+        part_label: part.toLowerCase() || null,
+        slot_label: line.slot_label || (rest.length ? rest.join('.') : null),
+      };
+    }),
   };
 }
 
