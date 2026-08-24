@@ -5,8 +5,11 @@ import { dbConnect, Attempt, CapturedImage, Question, Transcription } from '@/li
 import { requireSession } from '@/lib/auth/session';
 import { markableSlots } from '@/lib/grade/mark';
 import { MAX_TAKES, transcribeWorking, type TranscriptionResult } from '@/lib/grade/transcribe';
-import { earnableByMethod } from '@/lib/grade/method-marks';
+import { earnableByMethod, constructionRows } from '@/lib/grade/method-marks';
+import { constructionChecks } from '@/lib/grade/construction';
+import { checkConstruction } from '@/lib/grade/check-construction';
 import type { RubricItem } from '@/lib/types';
+import type { StoredVisual } from '@/lib/visuals';
 import { markMethod, type MethodDecision } from '@/lib/grade/mark-method';
 import { MARKER_VERSION } from '@/lib/grade/version';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
@@ -83,6 +86,7 @@ export async function captureWorking(input: {
     stem: string;
     stimulus?: string;
     worked_solution?: string;
+    visual?: StoredVisual;
   } | null>();
   if (!question) return { error: 'That question could not be found.' };
   const slotRefs = question?.parts ? markableSlots(question.parts) : [];
@@ -134,7 +138,52 @@ export async function captureWorking(input: {
     }
   }
 
-  const byCode = new Map(unearned.map((r) => [r.code, r]));
+  // A PHOTOGRAPHED CONSTRUCTION (R2 §8).
+  //
+  // The right answer is a known set of coordinates from the figure's declared
+  // params, so this is comparison rather than judgment. Every check must be
+  // satisfied: a construct slot is marked as one drawing, and a curve through
+  // three of its four points is not the drawing the question asked for. Where
+  // it falls short the student is told exactly which check failed, which is
+  // more use than the mark either way.
+  const drawRows = constructionRows(question, attempt.rubric_awarded ?? []);
+  const checks = constructionChecks(question.visual);
+  if (drawRows.length > 0 && checks.length > 0) {
+    try {
+      const drawn = await checkConstruction({
+        image: bytes,
+        contentType,
+        checks,
+        questionStem: `${question.stimulus ?? ''} ${question.stem}`.trim(),
+      });
+      if (drawn.complete) {
+        for (const r of drawRows) {
+          decisions.push({
+            code: r.code,
+            awarded: true,
+            reason: `your graph shows all ${checks.length} things this asks for`,
+            confidence: 1,
+          });
+        }
+      } else {
+        const first = drawn.missing[0];
+        for (const r of drawRows) {
+          decisions.push({
+            code: r.code,
+            awarded: false,
+            reason: drawn.legible
+              ? `we could not see that ${first?.check.describes ?? 'the graph matches'}`
+              : 'we could not read the graph in this photograph — mark it yourself against the drawing below',
+            confidence: 0,
+          });
+        }
+      }
+    } catch {
+      // Unreadable falls back to the self-check list the student already has.
+    }
+  }
+
+  const byCode = new Map([...unearned, ...drawRows].map((r) => [r.code, r]));
   const methodMarks = decisions
     .filter((d) => byCode.has(d.code))
     .map((d) => ({

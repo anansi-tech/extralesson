@@ -109,6 +109,39 @@ Instrument it rather than trusting that estimate: record token usage per transcr
 
 A construction is the easier vision problem, not the harder one: the correct answer is a known set of coordinates from the template's own params, so checking a photographed graph is comparison against ground truth rather than open judgment. Scope to the plotted families (`coordinateGrid` line and curve, `travelGraph`, `cumulativeFrequency`), verify plotted points, shape and labelled intercepts against the declared params, and keep instrument constructions out. Success here raises the coverage figure above "about 90%" honestly — the first time that number moves because we assess more, not because we claim more.
 
+**Built, and what it is actually worth.** `lib/grade/construction.ts` derives the
+checks from the template's declared params and nothing else — a line becomes its
+intercept plus a point at x = 1 (the gradient is fixed by a second point rather
+than read off a photograph), a curve becomes its shape, turning point and each
+declared plotted point, a travel graph becomes its points and the direction of
+each segment, an ogive becomes points at the upper class boundary "and not the
+midpoint". `lib/grade/check-construction.ts` asks Luna only what it can SEE
+against those numbered statements and does the comparison in code. An absent or
+unsure observation counts as not satisfied, and unusable axes return
+`legible: false`, which leaves the slot with the self-check list it already had.
+
+**The coverage sentence moves, but by three points and not to ninety.** Measured
+over the live bank rather than estimated:
+
+| | |
+|---|---|
+| construct slots | 60 — 44 `coordinateGrid`, 15 `patternFigure`, 1 `travelGraph` |
+| ground-truthable from params | **41 of 60 (68%)**, averaging 7.8 checks each |
+| marks in those slots | 203, of which **143** a photograph can now check |
+| bank-wide automatic assessment | 80.3% → **83.5%** if every construction were photographed |
+
+Two-thirds is neither "most of them" nor "a third", so it is written as
+two-thirds. What stays self-marked: the 15 pattern figures (out of scope — not a
+plotted family), and 4 `coordinateGrid` slots in `named` mode whose vertices are
+lettered A, B, C with no coordinates in params. Those four could only be
+ground-truthed by reading the question prose, which is the second source that
+drifts, so they are left alone. `cumulativeFrequency` is implemented and has zero
+construct slots in the bank today; it costs nothing to have ready.
+
+And the ceiling is honest: 83.5% is what the whole bank would reach if every
+construction were photographed by every student. The realised figure will be
+lower, and it is the photographed rate that decides by how much.
+
 ## 9. Kill list (additions)
 
 No handwriting model or OCR training · no per-stroke or video capture · no live camera guidance · no marking without a stored transcription · no vision pass that can reduce a deterministically-earned mark · no image retained beyond the TTL · no parent report in this round · no instrument constructions · no second marking dialect (transcription targets the grader's existing conventions).
@@ -126,6 +159,7 @@ Greps: `tesseract`, `ocr`, `stroke`, `handwriting-model`.
 6. Cost per photographed question instrumented and visible in admin.
 7. Verdict / score / rubric-chip consistency holds with method marks included; drift test covers the transcription contract across model → validator → persistence.
 8. Mobile audit passes; tests green; kill-list greps clean.
+9. Constructions are checked against the template's declared params and no second source; a checked construction can only add the construct slot's rubric rows; an unreadable photograph or an unsure observation leaves the slot on its self-check list. The share of construct slots that can be ground-truthed is measured, not asserted (§8: 68%).
 
 ## 11. Sequencing
 

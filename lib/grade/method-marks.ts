@@ -45,3 +45,27 @@ export function earnableByMethod(q: MethodMarkQuestion, awarded: string[]): Rubr
     (r) => !earned.has(r.code) && autoRefs.has(r.slot_ref) && !CAO.test(r.criterion),
   );
 }
+
+/**
+ * ROWS A PHOTOGRAPHED CONSTRUCTION COULD EARN.
+ *
+ * A construct slot is self-marked, so earnableByMethod excludes it — there is
+ * nothing for a text marker to judge, because the answer is a drawing. R2 §8
+ * gives those rows a way to be earned after all: the correct drawing is a known
+ * set of coordinates from the figure's own params, so a photograph can be
+ * compared against it.
+ *
+ * Only rows the grader has not already awarded, and only on construct slots.
+ * The same asymmetric rule holds — this can add these rows, never remove them.
+ */
+export function constructionRows(q: MethodMarkQuestion, awarded: string[]): RubricItem[] {
+  const earned = new Set(awarded);
+  const constructRefs = new Set(
+    (q.parts ?? []).flatMap((p) =>
+      (p.slots ?? [])
+        .filter((s) => s.response_mode === 'construct')
+        .map((s) => `${p.label}.${s.label}`),
+    ),
+  );
+  return (q.rubric ?? []).filter((r) => !earned.has(r.code) && constructRefs.has(r.slot_ref));
+}
