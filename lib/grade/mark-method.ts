@@ -115,15 +115,19 @@ export async function markMethod(args: MethodMarkArgs): Promise<{
   const result = await generateObject({
     model,
     schema: MethodResultZ,
-    // A MARK IS NOT A SAMPLE.
+    // NO temperature here, and the absence is deliberate.
     //
-    // At the default temperature the same working, the same criterion and the
-    // same prompt returned a different verdict between runs: three passes over
-    // the golden set gave 93%, 91% and one below the gate, with the false-award
-    // count moving between 0 and 1. A student re-photographing the same page
-    // would have got a different mark, and the eval could be made to "pass" by
-    // running it again — which is the worst property a gate can have.
-    temperature: 0,
+    // The same working, criterion and prompt return different verdicts between
+    // runs — four passes over the golden set gave 93%, 92%, 91% and one below
+    // the gate, with false awards moving between 0 and 1. The obvious fix was
+    // temperature 0; the provider rejects it, because this is a reasoning model
+    // and temperature is not a knob it has. Setting it anyway logged a warning
+    // per call and changed nothing.
+    //
+    // So the variance is a property of the marker, not a setting we forgot, and
+    // it has to be handled where it lands: a single run cannot decide the gate,
+    // and the eval must be run repeatedly with the gate required to hold every
+    // time. Recorded here so the next person does not try temperature again.
     prompt:
       `You are marking one CSEC Mathematics candidate's written working against a mark scheme.\n\n` +
       `QUESTION: ${questionStem}\n\n` +

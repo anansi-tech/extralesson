@@ -52,9 +52,10 @@ export const GRADER_VERSION = 'v6';
  *       printed number was being read as a value the student had to produce
  *       rather than as the scheme's own, and a criterion naming an act was
  *       being earned by a result merely consistent with it
- *   v2  temperature 0. v1 returned a different verdict for the same working
- *       between runs — 93%, 91% and one below the gate — so the gate outcome
- *       depended on which run you looked at. A mark is not a sample
+ *   v2  no behavioural change: v1's verdicts vary between runs (93/92/91% and
+ *       one below the gate) and temperature 0 was tried to stop it. The
+ *       provider rejects temperature on a reasoning model, so the variance is
+ *       inherent and the gate must be judged over repeated runs, not one
  */
 export const MARKER_VERSION = 'v2';
 
