@@ -290,11 +290,14 @@ export default async function LandingPage() {
 
       <section className="rule-top">
         <div className="wrap faq">
-          <div className="eyebrow">Questions parents ask</div>
+          {/* Addressed to whoever is paying, like the offer above it: an aunt,
+              a grandmother, a godparent or a sponsor all read this, and none of
+              them is helped by being called a parent first. */}
+          <div className="eyebrow">Questions we get asked</div>
           <dl>
             <dt>Does it work on a basic phone?</dt>
             <dd>Yes. Any smartphone with a camera. Low data by design — no video streaming.</dd>
-            <dt>My child is re-sitting in January. Is this for them?</dt>
+            <dt>They&rsquo;re re-sitting in January — is this for them?</dt>
             <dd>
               Especially for them. January candidates re-sit Papers 1 and 2 (project marks carry over)
               — exactly what ExtraLesson trains. Ten focused weeks is enough to move a grade.
@@ -305,7 +308,7 @@ export default async function LandingPage() {
               the current public syllabus and marked to mark-scheme conventions, and reviewed by a
               former Caribbean high-school teacher (me).
             </dd>
-            <dt>What if it doesn&rsquo;t help my child?</dt>
+            <dt>What if it doesn&rsquo;t help?</dt>
             <dd>
               Full refund at launch if you&rsquo;re not satisfied — no questions, no forms.
               I&rsquo;m building this with the first hundred families, not just for them.
