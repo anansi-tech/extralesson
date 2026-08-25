@@ -107,6 +107,27 @@ async function main() {
     .sort((a, b) => (b.parts?.length ?? 0) - (a.parts?.length ?? 0))[0];
   if (longOne) byTemplate.set('__long__', { q: longOne, need: 0 });
 
+  // THE WIDEST INPUT INSIDE PROSE.
+  //
+  // A cloze gap whose slot wants several boxes — a coordinate, a column vector,
+  // a list — puts a multi-box input inline in a wrapping sentence, which is the
+  // narrowest place any input has to fit. It was uncovered here until the gap
+  // itself turned out to be broken, so the hardest case now has a row.
+  const clozeWide = qs
+    .flatMap((q) => (q.parts ?? []).map((p: any) => ({ q, p })))
+    .filter(({ p }) => p.statement)
+    .map(({ q, p }) => ({
+      q,
+      boxes: Math.max(
+        0,
+        ...p.slots
+          .filter((sl: any) => (sl.response_mode ?? 'answer') === 'answer')
+          .map((sl: any) => readInputShape(String(sl.answer)).boxes ?? 1),
+      ),
+    }))
+    .sort((a, b) => b.boxes - a.boxes)[0];
+  if (clozeWide && clozeWide.boxes > 1) byTemplate.set('__cloze__', { q: clozeWide.q, need: 0 });
+
   // Probe sessions, removed at the end. They hold no attempts, so nothing of
   // the student's is touched.
   const made: { id: string; label: string }[] = [];
