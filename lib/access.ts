@@ -14,6 +14,15 @@ import { accessEndsAt } from '@/lib/sittings';
  */
 export const FREE_SESSIONS: number = 2;
 
+/**
+ * The refund window, in days. Commercial policy rather than a mechanism — there
+ * is no code that enforces it — but it is STATED in two places, the offer and
+ * the terms, and those two said different things: "full refund at launch"
+ * against "within 14 days of paying". A number a page repeats is a number that
+ * drifts, so both read it from here.
+ */
+export const REFUND_DAYS = 14;
+
 export interface Access {
   sitting: string;
   granted_at: Date;

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { LegalPage } from '../legal';
-import { FREE_SESSIONS } from '@/lib/access';
+import { FREE_SESSIONS, REFUND_DAYS } from '@/lib/access';
 import { GRACE_DAYS } from '@/lib/sittings';
 import { landingCoverage } from '@/lib/landing-content';
 
@@ -76,9 +76,9 @@ export default function TermsPage() {
 
       <h2>Refunds</h2>
       <p>
-        If ExtraLesson is not what you expected, email us within 14 days of paying and we will
-        refund you. Refunds after that are up to us, and we would rather sort out whatever went
-        wrong.
+        If ExtraLesson is not what you expected, email us within {REFUND_DAYS} days of paying and
+        we will refund you. Refunds after that are up to us, and we would rather sort out whatever
+        went wrong.
       </p>
 
       <h2>Changes</h2>

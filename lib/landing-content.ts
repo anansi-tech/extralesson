@@ -9,7 +9,10 @@ import { seedBlueprints } from '@/lib/seed/blueprints';
 export const LANDING = {
   price: '$25',
   places: 100,
-  launchDate: 'NOVEMBER 1',
+  // No launch date and no countdown. It anchored the page to the January
+  // re-sit, which is not the sitting most students take, and a date-based
+  // urgency expires into a lie. The scarcity that is real is the cap above:
+  // 100 places, enforced where the money is taken.
   sittingNote: 'JANUARY RE-SIT & MAY/JUNE 2027',
   statAvgScore: '38%',
   statAvgScoreLabel: 'The average CSEC Maths score\n(May/June 2024, out of 200 marks)',

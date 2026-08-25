@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { IMAGE_TTL_DAYS } from '@/lib/db/transcription';
+import { REFUND_DAYS } from '@/lib/access';
 
 const read = (...p: string[]) => readFileSync(join(process.cwd(), ...p), 'utf8');
 const PRIVACY = read('app', 'privacy', 'page.tsx');
@@ -131,5 +132,56 @@ describe('buyer-facing surfaces address whoever is paying', () => {
   it('leaves the hero and the shared-link metadata alone, on purpose', () => {
     const hero = LANDING.slice(0, LANDING.indexOf('<section id="offer">'));
     expect(hero).toMatch(/Your child/);
+  });
+});
+
+// THE OFFER AND THE TERMS MUST STATE THE SAME REFUND WINDOW.
+//
+// They did not: the page said "full refund at launch" while the terms said 14
+// days from paying — a promise and its own small print disagreeing in public.
+// Both read the constant now, so the only way to change one is to change both.
+describe('refund window', () => {
+  // Comments stripped: a comment recording what the copy USED to say is not the
+  // copy saying it. Third time this has bitten — the rules are about what a
+  // reader sees.
+  const strip = (src: string) => src.replace(/\{?\/\*[\s\S]*?\*\/\}?/g, '');
+  const LANDING = strip(read('app', 'page.tsx'));
+  const TERMS_SRC = strip(read('app', 'terms', 'page.tsx'));
+
+  it('is read from one constant by both pages', () => {
+    expect(LANDING).toContain('REFUND_DAYS');
+    expect(TERMS_SRC).toContain('REFUND_DAYS');
+    expect(REFUND_DAYS).toBeGreaterThan(0);
+  });
+
+  it('is never typed as a literal beside the word refund', () => {
+    for (const src of [LANDING, TERMS_SRC]) {
+      expect(src.replace(/\s+/g, ' ')).not.toMatch(/\b14 days\b/);
+    }
+  });
+
+  it('no longer promises a refund tied to launching', () => {
+    expect(LANDING).not.toMatch(/refund at launch/i);
+  });
+});
+
+// NO DATE-BASED URGENCY.
+//
+// "Launches November 1" anchored the page to the January re-sit, which is not
+// the sitting most students take — and a dated claim expires into a lie. The
+// scarcity that is real is the Founding Families cap, which is enforced where
+// the money is taken rather than asserted in copy.
+describe('urgency', () => {
+  const LANDING = read('app', 'page.tsx');
+  const CONTENT = read('lib', 'landing-content.ts');
+  const visible = LANDING.replace(/\{\/\*[\s\S]*?\*\/\}/g, '');
+
+  it('states no launch date', () => {
+    expect(visible).not.toMatch(/LAUNCHES/);
+    expect(CONTENT).not.toMatch(/launchDate/);
+  });
+
+  it('keeps the cap, which is the scarcity that is real', () => {
+    expect(visible).toContain('LANDING.places');
   });
 });

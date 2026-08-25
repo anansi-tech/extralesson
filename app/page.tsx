@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './landing.css';
 import Link from 'next/link';
 import { LANDING, landingCoverage, paymentLink } from '@/lib/landing-content';
+import { REFUND_DAYS } from '@/lib/access';
 import { getSession } from '@/lib/auth/session';
 
 // Faithful port of design/extralesson-landing.html (ROUND_1 §7).
@@ -280,9 +281,12 @@ export default async function LandingPage() {
               one — whenever they want to. You&rsquo;ll hear how it&rsquo;s going from them, not
               from us.
             </p>
+            {/* The refund window is the terms' window, read from the same
+                constant. The page used to say "full refund at launch" while the
+                terms said 14 days from paying, which is a promise and its
+                small print disagreeing in public. */}
             <div className="cap">
-              LAUNCHES {LANDING.launchDate} · IN TIME FOR THE JANUARY SITTING · NOT SATISFIED AT
-              LAUNCH? FULL REFUND, NO QUESTIONS.
+              NOT SATISFIED? EMAIL US WITHIN {REFUND_DAYS} DAYS OF PAYING AND WE WILL REFUND YOU.
             </div>
           </div>
         </div>
@@ -310,8 +314,8 @@ export default async function LandingPage() {
             </dd>
             <dt>What if it doesn&rsquo;t help?</dt>
             <dd>
-              Full refund at launch if you&rsquo;re not satisfied — no questions, no forms.
-              I&rsquo;m building this with the first hundred families, not just for them.
+              Email us within {REFUND_DAYS} days of paying and we refund you — no questions, no
+              forms. I&rsquo;m building this with the first hundred families, not just for them.
             </dd>
           </dl>
         </div>
