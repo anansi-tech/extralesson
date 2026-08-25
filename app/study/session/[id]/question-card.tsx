@@ -257,6 +257,48 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // no attempt behind to move their mastery. A candidate leaves a blank and
   // hands the paper in, and the examiner marks the blank wrong — which is
   // exactly what an empty answer already scores here.
+  // HOW A SLOT IS ANSWERED, in ONE place.
+  //
+  // There are two layouts — a stacked box under the prompt, and a gap inside a
+  // cloze statement — and they are a difference of PRESENTATION. The cloze gap
+  // used to render its own plain input straight into partAnswers, so a slot
+  // whose shape wants several boxes (a coordinate, a column vector, a list, a
+  // set) was given one text box that filled() and the submit serialiser never
+  // read: the box counted as blank however much was typed, and what was typed
+  // was dropped on submit. Sixteen live slots could not be answered at all.
+  //
+  // Both layouts now branch the same way on slot.input, so a shape can never
+  // again be honoured in one place and forgotten in the other.
+  const slotAnswerInput = (
+    slot: { ref: string; input?: { shape: string; boxes?: number; cols?: number; chars?: number } },
+    opts: { describe: string; className: string; placeholder?: string },
+  ) =>
+    slot.input ? (
+      <TypedInput
+        shape={slot.input.shape}
+        boxes={slot.input.boxes}
+        cols={slot.input.cols}
+        chars={slot.input.chars}
+        values={boxValues[slot.ref] ?? []}
+        onChange={(vals) => setBoxValues((prev) => ({ ...prev, [slot.ref]: vals }))}
+        disabled={!!feedback}
+        slotRef={slot.ref}
+        describe={opts.describe}
+        onFocusBox={(box) => setFocus({ ref: slot.ref, box })}
+      />
+    ) : (
+      <input
+        id={`slot-${slot.ref}`}
+        value={partAnswers[slot.ref] ?? ''}
+        onChange={(e) => setPartAnswers((prev) => ({ ...prev, [slot.ref]: e.target.value }))}
+        disabled={!!feedback}
+        onFocus={() => setFocus({ ref: slot.ref, box: -1 })}
+        aria-label={opts.describe}
+        className={opts.className}
+        placeholder={opts.placeholder}
+      />
+    );
+
   const canSubmit =
     question.kind === 'mcq'
       ? selected !== null
@@ -451,17 +493,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                           dangerouslySetInnerHTML={{ __html: piece }}
                         />
                         {i < p.slots.length && (
-                          <input
-                            value={partAnswers[p.slots[i].ref] ?? ''}
-                            onChange={(e) =>
-                              setPartAnswers((prev) => ({ ...prev, [p.slots[i].ref]: e.target.value }))
-                            }
-                            disabled={!!feedback}
-                            id={`slot-${p.slots[i].ref}`}
-                            onFocus={() => setFocus({ ref: p.slots[i].ref, box: -1 })}
-                            aria-label={`Answer ${i + 1} in the statement for part (${p.label})`}
-                            className="min-h-11 w-24 border-0 border-b-[1.5px] border-ink bg-transparent px-1 py-2 text-center font-mono text-sm"
-                          />
+                          slotAnswerInput(p.slots[i], {
+                            describe: `Answer ${i + 1} in the statement for part (${p.label})`,
+                            className:
+                              'min-h-11 w-24 border-0 border-b-[1.5px] border-ink bg-transparent px-1 py-2 text-center font-mono text-sm',
+                          })
                         )}
                       </Fragment>
                     ))}
@@ -528,39 +564,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               underneath the box, reading as a separate line of
                               the answer rather than as its verdict. */}
                           <div className="flex min-w-0 flex-1 items-start gap-2">
-                          {slot.input ? (
-                            <TypedInput
-                              shape={slot.input.shape}
-                              boxes={slot.input.boxes}
-                              cols={slot.input.cols}
-                              chars={slot.input.chars}
-                              values={boxValues[slot.ref] ?? []}
-                              onChange={(vals) =>
-                                setBoxValues((prev) => ({ ...prev, [slot.ref]: vals }))
-                              }
-                              disabled={!!feedback}
-                              slotRef={slot.ref}
-                              describe={slotAriaLabel(p, slot)}
-                              onFocusBox={(box) => setFocus({ ref: slot.ref, box })}
-                            />
-                          ) : (
-                            <input
-                              id={`slot-${slot.ref}`}
-                              value={partAnswers[slot.ref] ?? ''}
-                              onChange={(e) =>
-                                setPartAnswers((prev) => ({ ...prev, [slot.ref]: e.target.value }))
-                              }
-                              disabled={!!feedback}
-                              onFocus={() => setFocus({ ref: slot.ref, box: -1 })}
-                              aria-label={slotAriaLabel(p, slot)}
-                              className="min-h-11 w-full border-[1.5px] border-ink p-2 font-mono text-sm"
-                              placeholder={
-                                p.slots.length > 1
-                                  ? `Answer to (${p.label})(${slot.label})`
-                                  : `Answer to (${p.label})`
-                              }
-                            />
-                          )}
+                          {slotAnswerInput(slot, {
+                            describe: slotAriaLabel(p, slot),
+                            className: 'min-h-11 w-full border-[1.5px] border-ink p-2 font-mono text-sm',
+                            placeholder:
+                              p.slots.length > 1
+                                ? `Answer to (${p.label})(${slot.label})`
+                                : `Answer to (${p.label})`,
+                          })}
                           {partFeedback && (
                             <span
                               className={`shrink-0 pt-1.5 font-hand text-xl ${partFeedback.correct ? 'text-green-pen' : 'text-red-pen'}`}
