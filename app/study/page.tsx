@@ -22,6 +22,7 @@ import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
 import { loadReviewable } from '@/lib/study/reviewable';
 import { FREE_SESSIONS } from '@/lib/access';
+import { sittingLabel } from '@/lib/sittings';
 import { paymentLink } from '@/lib/landing-content';
 import { BAND_LABEL } from '@/lib/study/profiles';
 import type { ModuleNumber } from '@/lib/types';
@@ -395,6 +396,26 @@ export default async function StudyDashboard({
         {/* THE PAYWALL, and what it does not take away. Everything already
             earned stays where it is — the notebook, the marks, the questions to
             look back at. What needs paying for is the NEXT session. */}
+        {/* An expired sitting is not a locked-out customer. Their notebook is
+            all still there; what has ended is the sitting they bought for. */}
+        {error === 'access-expired' && (
+          <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-red-pen">
+              That sitting has finished
+            </div>
+            <p className="mt-1 text-sm leading-snug">
+              Your access was for {sittingLabel(student.exam_sitting) ?? 'that sitting'}, and it
+              has passed. Everything you did is still here to read back. To keep practising for the
+              next sitting, get access again.
+            </p>
+            <a
+              href={paymentLink()}
+              className="mt-3 block bg-red-pen p-3 text-center font-black text-white shadow-[3px_3px_0_var(--ink)]"
+            >
+              Get access for the next sitting
+            </a>
+          </section>
+        )}
         {error === 'needs-access' && (
           <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
             <div className="font-mono text-[10px] uppercase tracking-widest text-red-pen">

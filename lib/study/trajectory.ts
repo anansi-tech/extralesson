@@ -1,3 +1,5 @@
+import { SITTINGS } from '@/lib/sittings';
+import type { ExamSitting } from '@/lib/types';
 import type { OverallGrade } from '@/lib/grade/predict';
 import type { StudyState, TopicState } from './state';
 
@@ -220,6 +222,7 @@ export function projectTrajectory(args: {
 
 /** The sitting a student is entered for, as a date to count down to. */
 export function examDateFor(sitting: string): Date {
-  // CXC sits the January paper in early January and May/June in early June.
-  return sitting === 'jan-2027' ? new Date('2027-01-11') : new Date('2027-06-01');
+  // One definition, in lib/sittings.ts, shared with the access expiry — a
+  // countdown and a paywall must not disagree about when the exam is.
+  return (SITTINGS[sitting as ExamSitting] ?? SITTINGS['may-june-2027']).paper;
 }

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { dbConnect, Attempt, Payment, PracticeSession, Student } from '@/lib/db';
-import { FREE_SESSIONS } from '@/lib/access';
+import { FREE_SESSIONS, hasAccess } from '@/lib/access';
 import { grantAccess, resolvePayment, revokeAccess } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -65,11 +65,13 @@ export default async function AccessPage() {
     }))
     .sort((a, b) => {
       // Waiting first: no access, free tier used up.
+      // Waiting means "has paid us nothing and cannot continue". An expired
+      // sitting is not waiting on anyone — it ended on its own.
       const wait = (r: typeof a) => (r.access ? 2 : r.sessions >= FREE_SESSIONS ? 0 : 1);
       return wait(a) - wait(b) || b.sessions - a.sessions;
     });
   const waiting = rows.filter((r) => !r.access && r.sessions >= FREE_SESSIONS).length;
-  const paid = rows.filter((r) => r.access).length;
+  const paid = rows.filter((r) => hasAccess(r.access)).length;
 
   return (
     <main className="ruled relative min-h-screen px-6 py-8">
@@ -147,9 +149,13 @@ export default async function AccessPage() {
                   {r.attempts} question{r.attempts === 1 ? '' : 's'}
                 </div>
               </div>
-              {r.access ? (
+              {r.access && hasAccess(r.access) ? (
                 <span className="font-mono text-[11px] uppercase tracking-widest text-green-pen">
                   access · {r.access.sitting}
+                </span>
+              ) : r.access ? (
+                <span className="font-mono text-[11px] uppercase tracking-widest text-dim">
+                  expired · {r.access.sitting}
                 </span>
               ) : r.sessions >= FREE_SESSIONS ? (
                 <span className="font-mono text-[11px] uppercase tracking-widest text-red-pen">

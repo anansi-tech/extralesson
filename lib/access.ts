@@ -1,4 +1,5 @@
 import { PracticeSession } from '@/lib/db';
+import { accessEndsAt } from '@/lib/sittings';
 
 /**
  * WHAT THE FREE TIER IS, IN ONE PLACE.
@@ -20,8 +21,23 @@ export interface Access {
   note?: string;
 }
 
-export function hasAccess(access: Access | null | undefined): boolean {
-  return Boolean(access?.sitting);
+/**
+ * Access runs until the sitting it was bought for, plus a grace period.
+ *
+ * An expired account is treated exactly as one that never paid: the paywall
+ * comes back on NEW sessions, and nothing already earned is touched. Somebody
+ * who sat CSEC in June and comes back in October is a new customer for the next
+ * sitting, not a locked-out one — their notebook is all still there.
+ *
+ * A sitting with no end date recorded does not expire. That can only happen if
+ * a sitting is added to the enum without a date in lib/sittings.ts, and of the
+ * two ways to be wrong, "a paying student keeps access slightly too long" beats
+ * "a paying student is locked out by an oversight".
+ */
+export function hasAccess(access: Access | null | undefined, now: Date = new Date()): boolean {
+  if (!access?.sitting) return false;
+  const endsAt = accessEndsAt(access.sitting);
+  return endsAt === null || now.getTime() <= endsAt.getTime();
 }
 
 /**
@@ -40,8 +56,14 @@ export async function canStartSession(
   studentId: string,
   access: Access | null | undefined,
   mode: string,
-): Promise<{ allowed: true } | { allowed: false; used: number }> {
-  if (hasAccess(access) || mode === 'diagnostic') return { allowed: true };
+  now: Date = new Date(),
+): Promise<{ allowed: true } | { allowed: false; used: number; expired: boolean }> {
+  if (hasAccess(access, now) || mode === 'diagnostic') return { allowed: true };
+  // An expired account falls back to the free tier EXACTLY as an unpaid one
+  // does — the counter is over every session ever started, so a student who
+  // studied through a sitting is already past it. The flag only changes which
+  // sentence they read.
+  const expired = Boolean(access?.sitting);
   const used = await freeSessionsUsed(studentId);
-  return used < FREE_SESSIONS ? { allowed: true } : { allowed: false, used };
+  return used < FREE_SESSIONS ? { allowed: true } : { allowed: false, used, expired };
 }

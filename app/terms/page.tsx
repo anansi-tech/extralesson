@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { LegalPage } from '../legal';
 import { FREE_SESSIONS } from '@/lib/access';
+import { GRACE_DAYS } from '@/lib/sittings';
 import { landingCoverage } from '@/lib/landing-content';
 
 export const metadata = { title: 'Terms — ExtraLesson' };
@@ -30,8 +31,14 @@ export default function TermsPage() {
       <h2>What access buys</h2>
       <p>
         Without paying you get the diagnostic and {FREE_SESSIONS} full sessions. Access is bought
-        for one exam sitting and gives you unlimited practice sessions. We do not charge again
-        automatically — there is no subscription and nothing renews.
+        for one exam sitting and gives you unlimited practice sessions{' '}
+        <b>until that sitting is over</b>, plus {GRACE_DAYS} days after it. We do not charge again
+        automatically — there is no subscription and nothing renews, so when access ends it simply
+        ends.
+      </p>
+      <p>
+        The grace period is there because the sitting does not finish the day your first paper
+        does. If you go on to a later sitting, you buy access for that one.
       </p>
       <p>
         Everything you have already done stays visible whether you have paid or not. Paying is what

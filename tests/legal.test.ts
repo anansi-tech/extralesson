@@ -51,10 +51,12 @@ describe('the terms state what the product does', () => {
     expect(TERMS.replace(/\s+/g, ' ')).toMatch(/withholds the mark rather than awarding it/i);
   });
 
-  it('does not promise access expires at the sitting, which nothing enforces', () => {
-    // hasAccess() checks only that a sitting was granted. If an expiry is ever
-    // built, this is where the wording changes with it.
-    expect(TERMS).not.toMatch(/until (the|your) (stated )?sitting/i);
-    expect(TERMS).not.toMatch(/expires/i);
+  it('promises the expiry the code now enforces, and reads the grace from it', () => {
+    // This used to assert the OPPOSITE: hasAccess() checked only that a sitting
+    // had been granted, so terms saying access ran out would have been a claim
+    // the product did not keep. The behaviour came first, then the sentence.
+    expect(TERMS.replace(/\s+/g, ' ')).toMatch(/until that sitting is over/i);
+    expect(TERMS).toContain('GRACE_DAYS');
+    expect(TERMS).not.toMatch(/plus 30 days/i);
   });
 });
