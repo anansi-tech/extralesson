@@ -14,6 +14,7 @@ vi.mock('ai', () => ({
 import { canGroundTruth, constructionChecks } from '@/lib/grade/construction';
 import type { ConstructionCheck } from '@/lib/grade/construction';
 import { checkConstruction } from '@/lib/grade/check-construction';
+import { MAX_BYTES } from '@/lib/grade/transcribe';
 
 // R2 §8. A construction's correct answer is a known set of coordinates, so a
 // photographed graph is checked by comparison rather than judged. The ground
@@ -155,5 +156,18 @@ describe('checkConstruction — reading is not marking', () => {
     const v = await checkConstruction({ ...args, checks: [] });
     expect(v.complete).toBe(false);
     expect(calls).toHaveLength(0);
+  });
+});
+
+// The two caps have to agree or the feature fails on exactly the dense pages
+// worth reading: capture accepts 1.5MB of JPEG, which is ~2MB base64 inside a
+// server action, and server actions default to a 1MB body.
+describe('the photograph fits through the door', () => {
+  it('allows a server-action body larger than the base64 of the biggest photo', async () => {
+    const { default: config } = await import('../next.config');
+    const limit = config.experimental?.serverActions?.bodySizeLimit;
+    expect(typeof limit).toBe('string');
+    const mb = Number(String(limit).replace(/mb$/i, ''));
+    expect(mb).toBeGreaterThan((MAX_BYTES * 4) / 3 / 1_000_000);
   });
 });

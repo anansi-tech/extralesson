@@ -28,6 +28,13 @@ import { reader, READER_MODEL_ID } from '@/lib/ai';
  */
 export const MAX_TAKES = 2;
 
+/**
+ * ~1.5MB after the device has scaled it down; a phone photo is far larger.
+ * Lives here rather than in the server action so the server-action body limit
+ * can be asserted against it — the two have to agree.
+ */
+export const MAX_BYTES = 1_500_000;
+
 export const TranscriptionLineZ = z.object({
   /**
    * The part this line belongs to, as the student labelled it. Real papers

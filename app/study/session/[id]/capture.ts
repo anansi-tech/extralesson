@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { dbConnect, Attempt, CapturedImage, Question, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { markableSlots } from '@/lib/grade/mark';
-import { MAX_TAKES, transcribeWorking, type TranscriptionResult } from '@/lib/grade/transcribe';
+import { MAX_BYTES, MAX_TAKES, transcribeWorking, type TranscriptionResult } from '@/lib/grade/transcribe';
 import { earnableByMethod, constructionRows } from '@/lib/grade/method-marks';
 import { constructionChecks } from '@/lib/grade/construction';
 import { checkConstruction } from '@/lib/grade/check-construction';
@@ -29,8 +29,6 @@ import { markableSlots as allSlots } from '@/lib/grade/mark';
  * the mark scheme, which is worth having on its own.
  */
 
-/** ~1.5MB after the device has scaled it down; a phone photo is far larger. */
-const MAX_BYTES = 1_500_000;
 
 const CaptureZ = z.object({
   attemptId: z.string().regex(/^[a-f0-9]{24}$/),
