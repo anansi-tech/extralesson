@@ -317,15 +317,29 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* TWO BLOCKS, NOT FOUR FRAGMENTS.
+          Four flex children scattered into an unreadable row on a narrow
+          screen. Who we are and the small print on the left, the one ACTION on
+          the right — a footer has exactly one thing to do and it should look
+          like it. */}
       <footer>
-        <div
-          className="wrap"
-          style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}
-        >
-          <div>EXTRALESSON · AN ANANSI TECHNOLOGY LLC PRODUCT</div>
+        <div className="wrap foot">
+          <div className="foot-info">
+            <div>EXTRALESSON · AN ANANSI TECHNOLOGY LLC PRODUCT</div>
+            <div>
+              {LANDING.contactEmail} ·{' '}
+              <Link className="authlink" href="/privacy">
+                Privacy
+              </Link>{' '}
+              ·{' '}
+              <Link className="authlink" href="/terms">
+                Terms
+              </Link>
+            </div>
+          </div>
           {/* Mirrored here because a phone scrolls past the header and never
               scrolls back up to look for a way in. */}
-          <div>
+          <div className="foot-action">
             {session ? (
               <Link className="authlink" href="/study">
                 Continue studying &rarr;
@@ -339,16 +353,6 @@ export default async function LandingPage() {
               </>
             )}
           </div>
-          <div>
-            <Link className="authlink" href="/privacy">
-              Privacy
-            </Link>{' '}
-            ·{' '}
-            <Link className="authlink" href="/terms">
-              Terms
-            </Link>
-          </div>
-          <div>{LANDING.contactEmail} · MADE FOR THE CARIBBEAN 🇬🇩</div>
         </div>
       </footer>
     </div>
