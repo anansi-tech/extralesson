@@ -12,6 +12,7 @@ import { SessionDraft } from '@/lib/db';
 import { SESSION_MINUTES } from '@/lib/session/builder';
 import { rankByVerdict, topicsSeen, verdictFor } from '@/lib/study/diagnostic';
 import { startSession } from '@/app/study/actions';
+import { loadReviewable } from '@/lib/study/reviewable';
 import { loadStudyState } from '@/lib/study/state';
 import { estimatedMinutes } from '@/lib/session/builder';
 import { markSplit } from '@/lib/grade/assessable';
@@ -91,6 +92,7 @@ export default async function SessionPage({
       loadStudyState(auth.student_id, targetModules),
     ]);
 
+    const reviewable = await loadReviewable(auth.student_id, { sessionId: String(id) });
     const questions = await Question.find({ _id: { $in: session.question_ids } })
       .select('objective_ids')
       .lean<{ _id: unknown; objective_ids: string[] }[]>();
@@ -301,6 +303,41 @@ export default async function SessionPage({
               })}
             </ul>
           </section>
+
+          {/* LOOK BACK AT WHAT YOU JUST DID.
+              The question, the mark scheme and the reasons are all still there —
+              a finished session simply stopped linking to them, so the review a
+              student learns most from ended when the session did. Read-only:
+              these open the same view paging back inside a session gives. */}
+          {reviewable.length > 0 && (
+            <section className="mt-5">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+                Look back at a question
+              </div>
+              <ul className="mt-1 space-y-1">
+                {reviewable.map((r) => (
+                  <li key={`${r.sessionId}:${r.index}`}>
+                    <Link
+                      href={`/study/session/${r.sessionId}?q=${r.index}`}
+                      className="flex min-h-11 items-baseline justify-between gap-2 border-b-[1.5px] border-rule text-[13px]"
+                    >
+                      <span className="underline">
+                        Question {r.index + 1}
+                        {r.photographed && (
+                          <span className="ml-1 font-mono text-[10px] tracking-widest text-dim">
+                            · PHOTO
+                          </span>
+                        )}
+                      </span>
+                      <span className="font-mono text-[12px] text-dim">
+                        {r.earned}/{r.marks}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <section className="mt-5">
             {/* This printed the syllabus codes — "M1.1.14 · M2.3.5" — under the

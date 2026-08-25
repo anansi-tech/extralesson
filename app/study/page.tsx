@@ -20,6 +20,7 @@ import { PracticeSession } from '@/lib/db';
 import { DIAGNOSTIC_MINUTES, m1GateHolds, SESSION_MINUTES } from '@/lib/session/builder';
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
+import { loadReviewable } from '@/lib/study/reviewable';
 import { BAND_LABEL } from '@/lib/study/profiles';
 import type { ModuleNumber } from '@/lib/types';
 import type { MasteryBand } from '@/lib/mastery/config';
@@ -89,9 +90,10 @@ export default async function StudyDashboard({
     .select('started_at')
     .lean<{ started_at: Date }[]>();
   // What the student can ask for, beyond the session the app would choose.
-  const [topicChoices, mistakes] = await Promise.all([
+  const [topicChoices, mistakes, reviewable] = await Promise.all([
     loadTopicChoices(student.target_modules),
     loadMistakes(auth.student_id),
+    loadReviewable(auth.student_id),
   ]);
   const revisitMarks = [...mistakes.lostByObjective.values()].reduce((a, b) => a + b, 0);
   const isNewStudent = mistakes.attemptedIds.size === 0;
@@ -163,6 +165,12 @@ export default async function StudyDashboard({
             )}
             <span className="font-mono text-[10px] uppercase tracking-widest text-dim">
               {student.syllabus_mode === 'legacy-jan' ? 'CSEC MATH · JAN RE-SIT' : 'CSEC MATH · MAY/JUNE 2027'}
+            </span>
+            {/* Which account is signed in. Obvious on one device with one
+                student; not obvious at all when a device is shared, or when
+                you are moving between admin and a test account. */}
+            <span className="max-w-[45vw] truncate font-mono text-[10px] tracking-widest text-dim">
+              {auth.email}
             </span>
             <form action={logout}>
               <button className="font-mono text-[10px] uppercase tracking-widest text-dim underline">
@@ -478,6 +486,44 @@ export default async function StudyDashboard({
             </form>
             )}
         </section>
+
+        {/* QUESTIONS YOU HAVE ALREADY DONE.
+            The attempt, the marks, the mark scheme and the reasons a photograph
+            earned are all stored; a finished session just stopped linking to
+            them. These open the read-only view paging back inside a session
+            already gives — no new attempt, nothing re-marked. */}
+        {reviewable.length > 0 && (
+          <section className="mt-5 border-[1.5px] border-ink bg-white p-3 shadow-[3px_3px_0_var(--ink)]">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+              Look back at a question
+            </div>
+            <p className="mt-1 text-[11px] leading-snug text-dim">
+              Read the mark scheme again, and what your working earned. Nothing here is re-marked.
+            </p>
+            <ul className="mt-2">
+              {reviewable.map((r) => (
+                <li key={`${r.sessionId}:${r.index}`}>
+                  <Link
+                    href={`/study/session/${r.sessionId}?q=${r.index}`}
+                    className="flex min-h-11 items-baseline justify-between gap-2 border-b-[1.5px] border-rule text-[13px]"
+                  >
+                    <span className="underline">
+                      {new Date(r.ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                      {r.photographed && (
+                        <span className="ml-1 font-mono text-[10px] tracking-widest text-dim">
+                          · PHOTO
+                        </span>
+                      )}
+                    </span>
+                    <span className="font-mono text-[12px] text-dim">
+                      {r.earned}/{r.marks}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <Link
           href="/study/practice"
