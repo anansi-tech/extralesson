@@ -191,10 +191,10 @@ export default async function LandingPage() {
             </div>
             <div className="step">
               <div className="sn">STEP 3</div>
-              <h3>You see everything</h3>
+              <h3>See where you stand</h3>
               <p>
-                Every Sunday, a plain-English report: sessions done, accuracy trend, predicted
-                grade, and what&rsquo;s next. No logins for parents. No mystery.
+                Sessions done, accuracy trend, predicted grade and what&rsquo;s next — all in your
+                notebook, updated after every question. No mystery about where the marks are going.
               </p>
             </div>
           </div>
@@ -248,7 +248,6 @@ export default async function LandingPage() {
             <div className="per">ONE PAYMENT · NO SUBSCRIPTION · USD</div>
             <ul>
               <li>Full CSEC Maths programme — diagnostic, daily sessions, examiner-style marking</li>
-              <li>Weekly parent report, every Sunday</li>
               <li>Predicted grade tracking from day one to exam day</li>
               <li>Founding Family price locked for life on everything we launch next</li>
               <li>Direct line to me — your feedback shapes the product</li>
@@ -271,8 +270,8 @@ export default async function LandingPage() {
             <h3>In Brooklyn? Toronto? London? 🌍</h3>
             <p>
               Sponsor a niece, nephew, or godchild back home. You pay from abroad, they study on any
-              phone on the island, and <b>you</b> get the Sunday report. It&rsquo;s the extra
-              lessons money your family already sends — finally with a report card attached.
+              phone on the island. It&rsquo;s the extra lessons money your family already sends —
+              going somewhere you can point at.
             </p>
           </div>
         </div>

@@ -31,4 +31,21 @@ if ! pnpm vitest run --silent >/tmp/el-pre-commit.log 2>&1; then
   echo "(bypass with --no-verify if you know why)"
   exit 1
 fi
-echo "tests pass"
+
+# EVERY TEST FILE ON DISK WAS ACTUALLY RUN.
+#
+# Vitest already fails a file it cannot parse and a file declaring no tests —
+# both exit 1, both refuse the commit. What nothing checks is a file that is
+# never COLLECTED: an include pattern edited, a directory renamed, a file that
+# quietly stops matching. That run is green and smaller, and green-and-smaller
+# is the one failure a passing suite cannot tell you about.
+on_disk=$(find tests -name '*.test.ts' | wc -l | tr -d ' ')
+collected=$(grep -oE 'Test Files +[0-9]+ passed \(([0-9]+)\)' /tmp/el-pre-commit.log \
+  | grep -oE '\(([0-9]+)\)' | tr -d '()')
+if [ -n "$collected" ] && [ "$on_disk" != "$collected" ]; then
+  echo "TEST COLLECTION MISMATCH — commit refused."
+  echo "  $on_disk test files on disk, $collected collected by vitest."
+  echo "  A file on disk that never runs makes a green suite mean less than it says."
+  exit 1
+fi
+echo "tests pass ($collected files)"

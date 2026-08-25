@@ -60,3 +60,26 @@ describe('the terms state what the product does', () => {
     expect(TERMS).not.toMatch(/plus 30 days/i);
   });
 });
+
+// THE LANDING PAGE MUST NOT SELL WHAT THE PRODUCT DOES NOT DO.
+//
+// It advertised a weekly parent report in three places, including a line in the
+// features list beside the price. The only email this app can send is a
+// password reset, and parent reports are on the kill list — so the page was
+// promising a feature that was not merely unbuilt but banned. Honest coverage
+// claims are the thing the rest of that page rests on.
+describe('the landing page promises only what exists', () => {
+  const LANDING = read('app', 'page.tsx');
+
+  it('does not advertise a weekly or Sunday report', () => {
+    expect(LANDING).not.toMatch(/sunday/i);
+    expect(LANDING).not.toMatch(/weekly .{0,20}report/i);
+    expect(LANDING).not.toMatch(/parent report/i);
+    expect(LANDING).not.toMatch(/report card/i);
+  });
+
+  it('still states the coverage limits, which are the claims that are true', () => {
+    expect(LANDING).toContain('coverage.displayPercent');
+    expect(LANDING).toMatch(/Paper 032/);
+  });
+});
