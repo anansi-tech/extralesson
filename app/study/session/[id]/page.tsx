@@ -1,7 +1,7 @@
 import 'katex/dist/katex.min.css';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { dbConnect, Attempt, PracticeSession, Question, Student, Topic } from '@/lib/db';
+import { dbConnect, Attempt, PracticeSession, Question, Student, Topic, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
 import { renderVisual } from '@/lib/visuals';
@@ -452,6 +452,22 @@ export default async function SessionPage({
   let prior: CardQuestion['prior'];
   if (reviewing) {
     const attempt = attempts[index];
+    // WHAT THE PHOTOGRAPH READ, KEPT. The image is gone after the TTL; the
+    // transcription and the per-row reasons are not, and they are the marks a
+    // student most wants to reread. One block per take, because a second
+    // photograph can have read a different page.
+    const takes = await Transcription.find({ attempt_id: attempt._id })
+      .sort({ take: 1 })
+      .select('lines legible notes method_marks take')
+      .lean<
+        {
+          take: number;
+          legible: boolean;
+          notes?: string;
+          lines: { text: string; part_label?: string | null; confidence: number }[];
+          method_marks?: { code: string; awarded: boolean; reason: string; mark_value: number }[];
+        }[]
+      >();
     const refs: string[] = (question.parts ?? []).flatMap((p) =>
       (p.slots ?? []).filter((sl) => (sl.response_mode ?? 'answer') === 'answer').map((sl) => `${p.label}.${sl.label}`),
     );
@@ -462,6 +478,23 @@ export default async function SessionPage({
     prior = {
       answers,
       selected: question.kind === 'mcq' ? Number(attempt.answer) : undefined,
+      working: takes.map((t) => ({
+        take: t.take,
+        of: takes.length,
+        lines: t.lines.map((l) => ({
+          text: l.text,
+          part_label: l.part_label ?? null,
+          confidence: l.confidence,
+        })),
+        legible: t.legible,
+        notes: t.notes,
+        method: (t.method_marks ?? []).map((m) => ({
+          code: m.code,
+          awarded: m.awarded,
+          reason: m.reason,
+        })),
+        earned: (t.method_marks ?? []).filter((m) => m.awarded).reduce((n, m) => n + m.mark_value, 0),
+      })),
       feedback: {
         attemptId: String(attempt._id),
         earnableByMethod: 0, // a question already answered is not re-photographed

@@ -57,6 +57,14 @@ R1 had no examiner, and half a camera would have been scope creep. R2
 The gate moved rather than lifted — R2 brings its own, below — and everything R1
 banned for a reason that still holds stays banned.
 
+**Image retention — asked and answered.** The 7-day TTL on captured images is
+not up for revisiting for a training corpus. It is handwriting from minors tied
+to identifiable accounts; the TTL is a kill-list item; and the TRANSCRIPTION —
+kept permanently, no TTL — is what evals replay against, so nothing we measure
+needs the pixels after they are read. A training corpus, if ever wanted, is
+collected deliberately with consent, never by quietly keeping student work handed
+over for a different purpose. Reasoning in `ROUND_2_EXAMINER.md` §8b.
+
 **Round 2 additions.** No handwriting model or OCR training · no per-stroke or video
 capture · no live camera guidance · no marking without a stored transcription · no
 vision pass that can reduce a deterministically-earned mark · no image retained beyond

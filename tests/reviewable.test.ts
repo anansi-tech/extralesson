@@ -53,3 +53,42 @@ describe('the read-only view it links to', () => {
     expect(SESSION_PAGE).toMatch(/if \(answered >= total && !reviewing\)/);
   });
 });
+
+// THE CAPTURE CONTROL IS WHAT A FINISHED QUESTION DOES NOT GET.
+//
+// The transcription and the per-row reasons were gated on !reviewing along with
+// the camera, so looking back showed neither. What was read is kept — the image
+// is not, after the TTL — and it is the part a student most wants to reread.
+describe('a reviewed question shows what the photograph earned', () => {
+  const CARD = readFileSync(
+    join(process.cwd(), 'app', 'study', 'session', '[id]', 'question-card.tsx'),
+    'utf8',
+  );
+
+  it('offers the camera only when not reviewing', () => {
+    expect(CARD).toMatch(/!reviewing && feedback\.earnableByMethod > 0 && \(\s*<WorkingPhoto/);
+  });
+
+  it('renders the stored takes when reviewing', () => {
+    expect(CARD).toMatch(/reviewing &&\s*question\.prior\?\.working\?\.map/);
+  });
+
+  it('shows what was read through the same renderer the live path uses', () => {
+    // One renderer, two moments — the live capture and the look back. A second
+    // copy of this markup is how the two drift.
+    expect(CARD.split('<WorkingRead').length - 1).toBe(1);
+    const photo = readFileSync(
+      join(process.cwd(), 'app', 'study', 'session', '[id]', 'working-photo.tsx'),
+      'utf8',
+    );
+    expect(photo.split('<WorkingRead').length - 1).toBe(1);
+  });
+
+  it('keeps the transcription when the image is already gone', () => {
+    // The 7-day TTL is on the image alone. Deliberate: see ROUND_2_EXAMINER §9.
+    const db = readFileSync(join(process.cwd(), 'lib', 'db', 'transcription.ts'), 'utf8');
+    const transcriptionSchema = db.slice(0, db.indexOf('CapturedImageSchema'));
+    expect(transcriptionSchema).not.toContain('expireAfterSeconds');
+    expect(db.slice(db.indexOf('CapturedImageSchema'))).toContain('expireAfterSeconds');
+  });
+});

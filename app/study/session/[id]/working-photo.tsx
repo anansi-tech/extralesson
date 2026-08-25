@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react';
 import { captureWorking } from './capture';
+import { WorkingRead } from './working-read';
 import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
 
 /**
@@ -63,19 +64,6 @@ export function WorkingPhoto({ attemptId, marks }: { attemptId: string; marks: n
     });
   };
 
-  // Grouped by the part each line belongs to, with an unlabelled line
-  // inheriting the part above it — the same rule the marker applies, so what a
-  // student is shown is what will be marked.
-  const byPart: { part: string; lines: { text: string; confidence: number }[] }[] = [];
-  let current: string | null = null;
-  for (const line of read?.lines ?? []) {
-    if (line.part_label) current = line.part_label;
-    const key = current ?? '—';
-    const last = byPart[byPart.length - 1];
-    if (last && last.part === key) last.lines.push(line);
-    else byPart.push({ part: key, lines: [line] });
-  }
-
   return (
     <div className="mt-4 border-t-[1.5px] border-rule pt-4">
       <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
@@ -121,77 +109,22 @@ export function WorkingPhoto({ attemptId, marks }: { attemptId: string; marks: n
       )}
 
       {read && (
-        <div className="mt-3">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
-            This is what we read
-          </div>
-          {!read.legible && (
-            <p className="mt-1 text-[12px] leading-snug text-dim">
-              We could not read this photograph. Nothing has changed — try again in better light,
-              or leave it.
-            </p>
-          )}
-          {byPart.map((group) => (
-            <div key={group.part} className="mt-2">
-              <div className="font-mono text-[11px] text-dim">
-                {group.part === '—' ? 'Not matched to a part' : `(${group.part})`}
-              </div>
-              <ul className="mt-0.5 border-l-3 border-paper-deep pl-3">
-                {group.lines.map((line, i) => (
-                  <li key={i} className="font-mono text-[13px] leading-snug">
-                    {line.text}
-                    {line.confidence < 0.6 && (
-                      <span className="ml-2 font-mono text-[10px] text-dim">hard to read</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          {read.notes && (
-            <p className="mt-2 text-[12px] leading-snug text-dim">{read.notes}</p>
-          )}
-
-          {/* R2 §5. The marks the working earned, and — the part that makes
-              this worth photographing — WHY a row did not earn. "We could not
-              see where you divided by the scale factor" is something a student
-              can go and check against their page; a struck-through code is not.
-              The marker is more cautious than an examiner, so the reasons are
-              how a student can tell a real miss from one we could not see. */}
-          {method.length > 0 && (
-            <div className="mt-3 border-t border-dashed border-paper-deep pt-2">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
-                {marksAdded > 0
-                  ? `Your working earned ${marksAdded} more mark${marksAdded === 1 ? '' : 's'}`
-                  : 'What your working earned'}
-              </div>
-              <ul className="mt-1 space-y-1">
-                {method.map((m) => (
-                  <li key={m.code} className="flex gap-2 text-[13px] leading-snug">
-                    <span
-                      className={`font-hand text-lg leading-none ${m.awarded ? 'text-green-pen' : 'text-dim'}`}
-                    >
-                      {m.awarded ? '✓' : '–'}
-                    </span>
-                    <span className="min-w-0">
-                      <span className="font-mono text-[11px] text-dim">{m.code}</span>{' '}
-                      {m.reason}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-2 text-[12px] leading-snug text-dim">
-                These are added to what you had already earned. Nothing here can take a mark
-                away.
-              </p>
-            </div>
-          )}
-          <p className="mt-2 text-[12px] leading-snug text-dim">
-            {takesLeft > 0
+        <WorkingRead
+          lines={read.lines}
+          legible={read.legible}
+          notes={read.notes}
+          method={method}
+          earnedLabel={
+            marksAdded > 0
+              ? `Your working earned ${marksAdded} more mark${marksAdded === 1 ? '' : 's'}`
+              : 'What your working earned'
+          }
+          footer={
+            takesLeft > 0
               ? 'If that is not what you wrote, take it again once.'
-              : 'That is the second photograph, so it stands.'}
-          </p>
-        </div>
+              : 'That is the second photograph, so it stands.'
+          }
+        />
       )}
     </div>
   );

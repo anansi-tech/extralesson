@@ -7,6 +7,7 @@ import { saveDraft, submitAnswer, type Feedback } from './actions';
 import { TypedInput } from './typed-input';
 import { HintLines, SymbolStrip } from './affordance';
 import { WorkingPhoto } from './working-photo';
+import { WorkingRead } from './working-read';
 import { isPositionalLabel } from '@/lib/notation';
 import { PROFILE_GLOSS } from '@/lib/study/profiles';
 
@@ -75,6 +76,16 @@ export interface CardQuestion {
     answers: Record<string, string>;
     selected?: number;
     feedback: Feedback;
+    /** What the photograph read and earned, one entry per take. Review only. */
+    working?: {
+      take: number;
+      of: number;
+      lines: { text: string; part_label: string | null; confidence: number }[];
+      legible: boolean;
+      notes?: string;
+      method: { code: string; awarded: boolean; reason: string }[];
+      earned: number;
+    }[];
   };
   rubricCodes: {
     code: string;
@@ -768,6 +779,37 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           {question.kind === 'structured' && !reviewing && feedback.earnableByMethod > 0 && (
             <WorkingPhoto attemptId={feedback.attemptId} marks={feedback.earnableByMethod} />
           )}
+
+          {/* LOOKING BACK AT WHAT THE PHOTOGRAPH EARNED.
+              This whole block used to be gated on !reviewing along with the
+              camera, so a finished question showed neither the transcription
+              nor the reasons — the marks a student most wants to reread. The
+              CAPTURE control is what a finished question does not get; what it
+              read is kept and shown. */}
+          {reviewing &&
+            question.prior?.working?.map((w) => (
+              <div key={w.take} className="mt-4 border-t-[1.5px] border-rule pt-4">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+                  Your working on paper
+                </div>
+                <WorkingRead
+                  lines={w.lines}
+                  legible={w.legible}
+                  notes={w.notes}
+                  method={w.method}
+                  heading={
+                    w.of > 1
+                      ? `${w.take === 1 ? 'First' : 'Second'} photograph — what we read`
+                      : undefined
+                  }
+                  earnedLabel={
+                    w.earned > 0
+                      ? `This earned ${w.earned} mark${w.earned === 1 ? '' : 's'}`
+                      : 'What this earned'
+                  }
+                />
+              </div>
+            ))}
 
           {reviewing ? (
             // No ?q= at all. The session resumes at the first unanswered

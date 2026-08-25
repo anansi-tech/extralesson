@@ -181,6 +181,29 @@ of inferred from wording, with a same-commit backfill and a generation-contract
 rule that a row on a slot carrying a follow-through sibling must declare which
 it is. The trigger to build it is real students' reports, not another audit.
 
+## 8b. Image retention: the 7-day TTL stands
+
+**Asked and answered, written down so it is not reopened by whoever wants a
+training corpus next.**
+
+The question was whether to keep photographs for future model training. No.
+
+- It is handwriting from **minors**, tied to identifiable accounts.
+- The TTL is a **kill-list item** — "no image retained beyond the TTL" — and
+  moving it because a future use looks attractive is exactly how a gate becomes
+  a preference.
+- The **transcription is the artifact evals replay against**, and it is kept
+  permanently with no TTL. `eval-marker.ts` reads text, not pixels. Nothing we
+  measure needs the image after it has been read.
+- A training corpus, if it is ever wanted, gets collected **deliberately and
+  with consent**. Not by quietly keeping student work that was handed over for
+  a different purpose.
+
+The split is therefore load-bearing and stays: `CapturedImage` carries
+`expireAfterSeconds: 7 days`, `Transcription` carries no TTL at all. A test
+asserts both. It is also why looking back at a finished question can still show
+what the photograph read weeks later — the image is gone and the reading is not.
+
 ## 9. Kill list (additions)
 
 No handwriting model or OCR training · no per-stroke or video capture · no live camera guidance · no marking without a stored transcription · no vision pass that can reduce a deterministically-earned mark · no image retained beyond the TTL · no parent report in this round · no instrument constructions · no second marking dialect (transcription targets the grader's existing conventions).
