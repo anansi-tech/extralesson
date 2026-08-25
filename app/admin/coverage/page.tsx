@@ -211,7 +211,7 @@ export default async function CoveragePage() {
             A student who never photographs anything costs nothing at all, so
             this is the whole of what reading handwriting has cost. */}
         <section className="mt-6 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+          <div className="section-label">
             Reading handwriting — measured cost
           </div>
           {cost.reads === 0 ? (

@@ -726,7 +726,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
           {feedback.construction && (
             <div className="mt-3">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+              <div className="section-label">
                 {feedback.construction.figureHtml
                   ? 'Your drawing should look like this'
                   : 'Your drawing should show this'}
@@ -759,7 +759,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           )}
 
           <div className="mt-3">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+            <div className="section-label">
               {feedback.correct
                 ? 'Worked solution'
                 : feedback.isMisconception
@@ -789,7 +789,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           {reviewing &&
             question.prior?.working?.map((w) => (
               <div key={w.take} className="mt-4 border-t-[1.5px] border-rule pt-4">
-                <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+                <div className="section-label">
                   Your working on paper
                 </div>
                 <WorkingRead

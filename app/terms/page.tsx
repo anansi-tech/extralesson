@@ -18,7 +18,7 @@ export default function TermsPage() {
     <LegalPage title="Terms" updated="25 August 2026">
       <p>
         ExtraLesson is CSEC Mathematics practice: original questions in exam style, marked the way
-        an examiner awards marks. It is made by Anansi Education.
+        an examiner awards marks. It is made by Anansi Technology LLC.
       </p>
 
       <h2>We are not CXC</h2>
@@ -88,7 +88,7 @@ export default function TermsPage() {
         tell paying students by email.
       </p>
 
-      <p className="text-[12px] text-dim">
+      <p className="text-dim">
         See also our{' '}
         <Link href="/privacy" className="underline">
           privacy page

@@ -80,7 +80,7 @@ export default function WorkedCard({ question }: { question: WorkedQuestion }) {
         </button>
       ) : (
         <div className="mt-5 border-t-[1.5px] border-dashed border-paper-deep pt-4">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+          <div className="section-label">
             Worked solution
           </div>
           <div
@@ -90,7 +90,7 @@ export default function WorkedCard({ question }: { question: WorkedQuestion }) {
 
           {question.rubric.length > 0 && (
             <>
-              <div className="mt-4 font-mono text-[10px] uppercase tracking-widest text-dim">
+              <div className="mt-4 section-label">
                 Mark scheme — self-mark honestly
               </div>
               <p className="mt-1 text-[11px] leading-snug text-dim">{PROFILE_GLOSS}</p>

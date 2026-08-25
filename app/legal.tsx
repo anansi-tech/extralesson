@@ -12,7 +12,7 @@ export function LegalPage({
   children: React.ReactNode;
 }) {
   return (
-    <main className="ruled relative min-h-screen px-5 py-10">
+    <main className="relative min-h-screen px-5 py-10">
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-prose">
         <Link href="/" className="font-mono text-[11px] uppercase tracking-widest text-dim underline">
@@ -22,9 +22,11 @@ export function LegalPage({
         <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-dim">
           Last updated {updated}
         </p>
-        <div className="mt-6 space-y-5 text-sm leading-relaxed [&_h2]:font-mono [&_h2]:text-[10px] [&_h2]:uppercase [&_h2]:tracking-widest [&_h2]:text-dim [&_li]:mt-1 [&_ul]:list-disc [&_ul]:pl-5">
-          {children}
-        </div>
+        {/* Prose set to the notebook's own rhythm: line-height and every
+            vertical gap are the rule spacing, so the lines sit ON the rules
+            rather than under and through them. h2 picks up the shared section
+            heading from globals.css — one definition, every page. */}
+        <div className="on-rules mt-6 text-sm [&_ul]:list-disc [&_ul]:pl-5">{children}</div>
         <p className="mt-8 border-t-[1.5px] border-rule pt-4 text-[12px] text-dim">
           Questions about this page:{' '}
           <a href={`mailto:${LANDING.contactEmail.toLowerCase()}`} className="underline">

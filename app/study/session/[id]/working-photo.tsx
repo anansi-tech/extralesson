@@ -66,7 +66,7 @@ export function WorkingPhoto({ attemptId, marks }: { attemptId: string; marks: n
 
   return (
     <div className="mt-4 border-t-[1.5px] border-rule pt-4">
-      <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+      <div className="section-label">
         Your working on paper
       </div>
 

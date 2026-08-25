@@ -322,7 +322,7 @@ export default async function LandingPage() {
           className="wrap"
           style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}
         >
-          <div>EXTRALESSON · AN ANANSI EDUCATION PRODUCT</div>
+          <div>EXTRALESSON · AN ANANSI TECHNOLOGY LLC PRODUCT</div>
           {/* Mirrored here because a phone scrolls past the header and never
               scrolls back up to look for a way in. */}
           <div>

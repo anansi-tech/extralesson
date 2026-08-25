@@ -340,7 +340,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
 
       {question.rubric && (
         <div className="mt-3">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-dim">Rubric</div>
+          <div className="section-label">Rubric</div>
           <ul className="mt-1 space-y-1">
             {question.rubric.map((r) => (
               <li key={r.code} className="flex items-baseline gap-2 text-sm">
@@ -361,7 +361,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
       )}
 
       <div className="mt-4">
-        <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+        <div className="section-label">
           Worked solution
         </div>
         <div
@@ -372,7 +372,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
 
       {question.misconceptions.length > 0 && (
         <div className="mt-4">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+          <div className="section-label">
             Misconceptions
           </div>
           <ul className="mt-1 space-y-1">

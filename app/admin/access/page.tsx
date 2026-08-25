@@ -104,7 +104,7 @@ export default async function AccessPage() {
 
         {unmatched.length > 0 && (
           <section className="mb-6 border-[1.5px] border-red-pen bg-[#FDF1F0] p-3">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-red-pen">
+            <div className="section-label is-alert">
               {unmatched.length} payment{unmatched.length === 1 ? '' : 's'} with no matching account
             </div>
             <p className="mt-1 text-[12px] leading-snug">

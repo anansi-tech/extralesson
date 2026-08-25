@@ -250,7 +250,7 @@ export default async function StudyDashboard({
 
         {leadWithReachable && (
           <section className="mt-6 border-[1.5px] border-ink bg-white p-5 shadow-[3px_3px_0_var(--ink)]">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+            <div className="section-label">
               Where your marks are
             </div>
             <ul className="mt-2 space-y-2">
@@ -304,7 +304,7 @@ export default async function StudyDashboard({
             // reads as a verdict when it means we have not seen them work yet.
             <>
               <div className="text-5xl font-black text-dim">&mdash;</div>
-              <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-dim">
+              <div className="mt-1 section-label">
                 Not yet estimated
               </div>
               <p className="mt-2 text-[11px] leading-snug text-dim">
@@ -318,7 +318,7 @@ export default async function StudyDashboard({
               <div className={`font-black text-red-pen ${leadWithReachable ? 'text-2xl' : 'text-5xl'}`}>
                 {prediction.overall_grade ? gradeLabel(prediction.overall_grade) : '—'}
               </div>
-              <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-dim">
+              <div className="mt-1 section-label">
                 Estimated overall grade
                 {prediction.overall_grade ? ` · ${gradePlace(prediction.overall_grade)}` : ''} ·
                 estimate only
@@ -332,13 +332,13 @@ export default async function StudyDashboard({
                     <div className={`font-black text-red-pen ${leadWithReachable ? 'text-xl' : 'text-4xl'}`}>
                       {m.letter ?? '—'}
                     </div>
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+                    <div className="section-label">
                       M{m.module} est.
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-dim">
+              <div className="mt-2 section-label">
                 {leadWithReachable ? 'Where you are today' : 'Overall estimate'}:{' '}
                 {prediction.overall_grade
                   ? `${gradeLabel(prediction.overall_grade)}, ${gradePlace(prediction.overall_grade)}`
@@ -400,7 +400,7 @@ export default async function StudyDashboard({
             all still there; what has ended is the sitting they bought for. */}
         {error === 'access-expired' && (
           <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-red-pen">
+            <div className="section-label is-alert">
               That sitting has finished
             </div>
             <p className="mt-1 text-sm leading-snug">
@@ -418,7 +418,7 @@ export default async function StudyDashboard({
         )}
         {error === 'needs-access' && (
           <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-red-pen">
+            <div className="section-label is-alert">
               That was your {FREE_SESSIONS} free sessions
             </div>
             <p className="mt-1 text-sm leading-snug">
@@ -541,7 +541,7 @@ export default async function StudyDashboard({
             already gives — no new attempt, nothing re-marked. */}
         {reviewable.length > 0 && (
           <section className="mt-5 border-[1.5px] border-ink bg-white p-3 shadow-[3px_3px_0_var(--ink)]">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+            <div className="section-label">
               Look back at a question
             </div>
             <p className="mt-1 text-[11px] leading-snug text-dim">

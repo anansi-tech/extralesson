@@ -55,7 +55,7 @@ export function WorkingRead({
 
   return (
     <div className="mt-3">
-      <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+      <div className="section-label">
         {heading ?? 'This is what we read'}
       </div>
       {!legible && (
@@ -90,7 +90,7 @@ export function WorkingRead({
           tell a real miss from one we could not see. */}
       {method.length > 0 && (
         <div className="mt-3 border-t border-dashed border-paper-deep pt-2">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+          <div className="section-label">
             {earnedLabel}
           </div>
           <ul className="mt-1 space-y-1">

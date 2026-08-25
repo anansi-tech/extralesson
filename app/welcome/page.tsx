@@ -26,7 +26,7 @@ export default function WelcomePage() {
         <h1 className="mt-6 text-2xl font-black leading-tight">Payment received.</h1>
 
         <section className="mt-5 border-[1.5px] border-ink bg-white p-4 shadow-[4px_4px_0_var(--ink)]">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-red-pen">
+          <div className="section-label is-alert">
             Use the same email address
           </div>
           <p className="mt-1 text-sm leading-snug">

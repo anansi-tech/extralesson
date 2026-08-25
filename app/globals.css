@@ -151,10 +151,84 @@ summary {
 }
 
 /* Ruled-paper background used across study/admin surfaces */
+/* THE NOTEBOOK RHYTHM, named once.
+   The ruled background repeats every 32px, and prose that is meant to sit ON
+   the lines has to use the same number for its line-height. It was a literal in
+   one place and absent from the other, so text landed under and through the
+   rules instead of on them. */
+:root {
+  --rule-gap: 32px;
+  /* Where the BASELINE falls inside a 32px line box at the 14px prose size.
+     Measured in Chrome rather than derived: it is a function of the font's own
+     ascent and descent, so it is a number to re-measure if the prose size or
+     the typeface changes, not one to calculate. Letters rest ON a rule only
+     when the rule is drawn at the baseline; drawn at the bottom of the line box
+     the text floats 11px above it, which is what "under and through the lines"
+     looked like. */
+  --rule-baseline: 21px;
+}
+
 .ruled {
   background-image: repeating-linear-gradient(
     to bottom,
-    transparent 0 31px,
-    var(--rule) 31px 32px
+    transparent 0 calc(var(--rule-gap) - 1px),
+    var(--rule) calc(var(--rule-gap) - 1px) var(--rule-gap)
   );
+}
+
+/* Prose written to sit on the rules. Every vertical measure is a multiple of
+   the gap, so a paragraph break keeps the following lines in phase — one line
+   of margin that is not a multiple and the rest of the page drifts. */
+.on-rules {
+  line-height: var(--rule-gap);
+  /* The rules are drawn from the TOP OF THE PROSE, not the top of the page.
+     Phase is the whole problem: a heading, a back-link and a wrapping title
+     above it are not multiples of the gap, and at a narrower width the title
+     wraps and shifts everything again. Starting the gradient where the prose
+     starts is in phase at every viewport by construction, rather than by a
+     magic number that holds at one width. */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 calc(var(--rule-gap) - 1px),
+    var(--rule) calc(var(--rule-gap) - 1px) var(--rule-gap)
+  );
+  background-position: 0 calc(var(--rule-baseline) + 1px - var(--rule-gap));
+}
+.on-rules > * + * {
+  margin-top: var(--rule-gap);
+}
+.on-rules li {
+  line-height: var(--rule-gap);
+}
+
+/* A SECTION HEADING, defined once and used everywhere.
+   These were 25 copies of the same utility string, small and dim enough to read
+   as a caption rather than a heading — on paper the eye slid past them. Ink
+   rather than grey, and the margin colour underneath so a section starts
+   visibly. Colour variants only, because a heading that means "something is
+   wrong" is still a heading. */
+.section-label,
+.on-rules h2 {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+  /* Drawn as a shadow rather than a border: a border adds 1.5px of height, and
+     on ruled prose that is 1.5px of drift on every heading down the page. */
+  box-shadow: 0 1.5px 0 var(--margin);
+  display: block;
+}
+/* On ruled prose the heading must occupy exactly one line of the rhythm. */
+.on-rules h2 {
+  line-height: var(--rule-gap);
+}
+.section-label.is-alert {
+  color: var(--red);
+  box-shadow: 0 1.5px 0 var(--red);
+}
+.section-label.is-done {
+  color: var(--green);
+  box-shadow: 0 1.5px 0 var(--green);
 }

@@ -177,7 +177,7 @@ export default async function SessionPage({
             </p>
 
             <section className="mt-5 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+              <div className="section-label">
                 Strongest to weakest
               </div>
               <ol className="mt-2">
@@ -202,7 +202,7 @@ export default async function SessionPage({
 
             {nextTopics.length > 0 && (
               <section className="mt-4 border-l-3 border-red-pen bg-[#FDF1F0] p-3">
-                <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+                <div className="section-label">
                   Your next session starts here
                 </div>
                 <ul className="mt-1">
@@ -254,7 +254,7 @@ export default async function SessionPage({
           </p>
 
           <section className="mt-5 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+            <div className="section-label">
               How you earned your marks
             </div>
             <div className="mt-2 flex flex-wrap gap-x-6 gap-y-3 text-center">
@@ -283,7 +283,7 @@ export default async function SessionPage({
           </section>
 
           <section className="mt-5">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+            <div className="section-label">
               Topic strength moved
             </div>
             <ul className="mt-2 space-y-1">
@@ -311,7 +311,7 @@ export default async function SessionPage({
               these open the same view paging back inside a session gives. */}
           {reviewable.length > 0 && (
             <section className="mt-5">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+              <div className="section-label">
                 Look back at a question
               </div>
               <ul className="mt-1 space-y-1">
@@ -344,7 +344,7 @@ export default async function SessionPage({
                 word "objectives". Both halves were ours rather than theirs: the
                 codes mean nothing without the syllabus open, and a student does
                 not call them objectives. */}
-            <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+            <div className="section-label">
               What this session covered
             </div>
             <ul className="mt-1 space-y-0.5 text-[13px] text-dim">

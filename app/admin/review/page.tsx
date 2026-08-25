@@ -256,7 +256,7 @@ export default async function ReviewPage({
 
         {find && (
           <div className="mb-6 border-[1.5px] border-dashed border-paper-deep bg-white p-3">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-dim">
+            <div className="section-label">
               {found.length === 0 ? 'nothing matched' : `${found.length} match${found.length === 1 ? '' : 'es'}`}
             </div>
             <ul className="mt-2 space-y-1">
