@@ -326,6 +326,15 @@ export default async function LandingPage() {
               </>
             )}
           </div>
+          <div>
+            <Link className="authlink" href="/privacy">
+              Privacy
+            </Link>{' '}
+            ·{' '}
+            <Link className="authlink" href="/terms">
+              Terms
+            </Link>
+          </div>
           <div>{LANDING.contactEmail} · MADE FOR THE CARIBBEAN 🇬🇩</div>
         </div>
       </footer>

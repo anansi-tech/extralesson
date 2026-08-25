@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useActionState, useState } from 'react';
 import { register, requestReset, signIn, type AuthState } from './actions';
 import { PASSWORD_MIN } from '@/lib/auth/password-policy';
@@ -134,6 +135,23 @@ export default function LoginForm() {
         <button type="button" onClick={() => setMode('reset')} className="w-full text-sm underline">
           Forgot your password?
         </button>
+      )}
+
+      {/* Shown where an account is actually being made, rather than on every
+          sign-in. Photographs of a student's handwriting are held for seven
+          days and the privacy page says so; this is the moment to read it. */}
+      {needsProfile && (
+        <p className="text-center text-[12px] leading-snug text-dim">
+          By creating an account you agree to our{' '}
+          <Link href="/terms" className="underline">
+            terms
+          </Link>{' '}
+          and{' '}
+          <Link href="/privacy" className="underline">
+            privacy page
+          </Link>
+          .
+        </p>
       )}
     </form>
   );
