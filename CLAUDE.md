@@ -72,6 +72,17 @@ R1 had no examiner, and half a camera would have been scope creep. R2
 The gate moved rather than lifted — R2 brings its own, below — and everything R1
 banned for a reason that still holds stays banned.
 
+**Who each surface addresses.** Buyer-facing surfaces — the offer, checkout
+captions, `/welcome`, the FAQ — address WHOEVER IS PAYING: no relationship, no
+geography, no "your child". The hero, page title and OG title keep "your child"
+and speak to the most likely first reader. The line is not about the word: a
+wrong assumption in the hero costs a moment, while in the offer it produced a
+real defect (the caption told a payer to sign up with their own checkout email,
+which would have created the account under the wrong person). Test for a new
+surface: does it ask the reader to DO something that depends on who they are —
+then address the payer; or does it ask for attention — then address the likely
+reader. Reasoning in `ROUND_2_EXAMINER.md` §8e.
+
 **Parent and sponsor reporting — declined, not deferred.** The kill-list entry
 reads as an unbuilt feature; it is a decision. A report going home shifts a
 fifteen-year-old's incentive from learning to looking good, and every steering

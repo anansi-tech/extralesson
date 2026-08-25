@@ -277,6 +277,36 @@ Written down because "no parent reports" on a kill list reads as an unbuilt
 feature, and the next person to want revenue from the buyer rather than the
 student will find only the ban and not the reason.
 
+## 8e. Who each surface is addressed to
+
+**Two audiences, and the line between them is not squeamishness about the word
+"parent" — it is what the surface is asking the reader to DO.**
+
+- **Buyer-facing surfaces address whoever is paying**: the offer, the checkout
+  captions, `/welcome`, the FAQ. No relationship assumed, no geography, no "your
+  child". A fifteen-year-old has no card, so the buyer is almost never the
+  student, and which relation they are — parent, guardian, grandmother, aunt,
+  godparent, sponsor — does not change what they need: what the money buys, that
+  it is for a named student, and how they will know it is working.
+- **The hero and the shared-link metadata speak to the most likely first
+  reader**: the page title, the OG title and the H1 keep "your child's own CXC
+  examiner". Their job is to stop a scroll, and the possessive is doing real
+  work there.
+
+**Why the cost differs, which is the whole reason both can be right.** A wrong
+assumption in the hero costs a reader a moment of "not me". The same assumption
+in the offer produced an actual defect: the checkout caption said to sign up
+with the address used at checkout, which is wrong whenever the payer and the
+student are different people — an aunt following it would have created the
+account under her own email and left the student without one. The cost of
+guessing wrong scales with what the surface asks for, and an offer asks for
+money and an email address.
+
+**The test for a new surface.** Is it asking the reader to do something that
+depends on who they are? Address whoever is paying. Is it asking for attention?
+Speak to the most likely reader. A heading is not the deciding factor; what
+happens if the reader is not who you assumed is.
+
 ## 9. Kill list (additions)
 
 No handwriting model or OCR training · no per-stroke or video capture · no live camera guidance · no marking without a stored transcription · no vision pass that can reduce a deterministically-earned mark · no image retained beyond the TTL · no parent report in this round · no instrument constructions · no second marking dialect (transcription targets the grader's existing conventions).
