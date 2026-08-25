@@ -12,7 +12,8 @@
     "seed:blueprints": "tsx scripts/seed-blueprints.ts",
     "generate": "tsx scripts/generate.ts",
     "check:figures": "tsx scripts/check-figures.ts",
-    "check:kill-list": "bash scripts/check-kill-list.sh"
+    "check:kill-list": "bash scripts/check-kill-list.sh",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.118",
