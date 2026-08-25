@@ -7,6 +7,7 @@ import { type SessionMode } from '@/lib/session/builder';
 import { planSession } from '@/lib/session/plan';
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
+import { canStartSession, type Access } from '@/lib/access';
 import type { ModuleNumber } from '@/lib/types';
 
 const MODES: SessionMode[] = ['adaptive', 'topic', 'revisit', 'diagnostic'];
@@ -22,8 +23,15 @@ export async function startSession(formData?: FormData): Promise<void> {
   await dbConnect();
   const student = await Student.findById(auth.student_id).lean<{
     target_modules: ModuleNumber[];
+    access?: Access | null;
   } | null>();
   if (!student) redirect('/study/login');
+
+  // THE ONE CHECK. Creating a session is where paying matters; nothing already
+  // earned is hidden, and the diagnostic stays free because it is how a student
+  // finds out where they are before we have shown them anything.
+  const gate = await canStartSession(auth.student_id, student.access, mode);
+  if (!gate.allowed) redirect('/study?error=needs-access');
 
   // Whatever the mode needs beyond the pool: the topic the student named, or
   // the marks they have actually lost.

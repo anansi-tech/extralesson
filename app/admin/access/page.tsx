@@ -1,0 +1,166 @@
+import Link from 'next/link';
+import { dbConnect, Attempt, PracticeSession, Student } from '@/lib/db';
+import { FREE_SESSIONS } from '@/lib/access';
+import { grantAccess, revokeAccess } from './actions';
+
+export const dynamic = 'force-dynamic';
+export const metadata = { title: 'Access — ExtraLesson admin' };
+
+const SITTINGS = [
+  { value: 'may-june-2027', label: 'May/June 2027' },
+  { value: 'jan-2027', label: 'Jan 2027 re-sit' },
+] as const;
+
+/**
+ * WHO HAS PAID, matched by hand against Stripe on the email the student used.
+ *
+ * The list is ordered by who is up against the free tier, because that is who
+ * is waiting: a student who has used their free sessions and cannot start
+ * another is the one whose payment needs matching now.
+ */
+export default async function AccessPage() {
+  await dbConnect();
+  const students = await Student.find()
+    .sort({ created_at: -1 })
+    .select('email name exam_sitting access created_at')
+    .lean<
+      {
+        _id: unknown;
+        email: string;
+        name: string;
+        exam_sitting: string;
+        access?: { sitting: string; granted_at: Date; source: string; note?: string } | null;
+        created_at: Date;
+      }[]
+    >();
+
+  const ids = students.map((s) => s._id);
+  const [sessionCounts, attemptCounts] = await Promise.all([
+    PracticeSession.aggregate<{ _id: unknown; n: number }>([
+      { $match: { student_id: { $in: ids }, mode: { $ne: 'diagnostic' } } },
+      { $group: { _id: '$student_id', n: { $sum: 1 } } },
+    ]),
+    Attempt.aggregate<{ _id: unknown; n: number }>([
+      { $match: { student_id: { $in: ids } } },
+      { $group: { _id: '$student_id', n: { $sum: 1 } } },
+    ]),
+  ]);
+  const sessionsBy = new Map(sessionCounts.map((r) => [String(r._id), r.n]));
+  const attemptsBy = new Map(attemptCounts.map((r) => [String(r._id), r.n]));
+
+  const rows = students
+    .map((s) => ({
+      ...s,
+      id: String(s._id),
+      sessions: sessionsBy.get(String(s._id)) ?? 0,
+      attempts: attemptsBy.get(String(s._id)) ?? 0,
+    }))
+    .sort((a, b) => {
+      // Waiting first: no access, free tier used up.
+      const wait = (r: typeof a) => (r.access ? 2 : r.sessions >= FREE_SESSIONS ? 0 : 1);
+      return wait(a) - wait(b) || b.sessions - a.sessions;
+    });
+  const waiting = rows.filter((r) => !r.access && r.sessions >= FREE_SESSIONS).length;
+  const paid = rows.filter((r) => r.access).length;
+
+  return (
+    <main className="ruled relative min-h-screen px-6 py-8">
+      <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
+      <div className="mx-auto max-w-3xl">
+        <header className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
+          <div className="text-xl font-black">
+            extra<em className="not-italic text-red-pen">lesson</em>
+            <span className="ml-2 font-mono text-xs uppercase tracking-widest text-dim">access</span>
+          </div>
+          <div className="flex items-baseline gap-4 font-mono text-xs text-dim">
+            <span>
+              <b className="text-ink">{paid}</b> with access ·{' '}
+              <b className={waiting > 0 ? 'text-red-pen' : 'text-ink'}>{waiting}</b> waiting
+            </span>
+            <Link href="/admin/coverage" className="underline">
+              coverage
+            </Link>
+            <Link href="/admin/review" className="underline">
+              review queue
+            </Link>
+          </div>
+        </header>
+
+        <p className="mb-5 max-w-prose text-[13px] leading-snug text-dim">
+          Free tier is the diagnostic plus {FREE_SESSIONS} sessions. Match a Stripe payment to the
+          email the student paid with, then grant. Nothing a student has already earned is ever
+          hidden — the gate is on starting a new session.
+        </p>
+
+        {rows.map((r) => (
+          <section key={r.id} className="mb-3 border-[1.5px] border-ink bg-white p-3">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <div className="min-w-0">
+                <div className="truncate font-mono text-[13px]">{r.email}</div>
+                <div className="font-mono text-[11px] text-dim">
+                  {r.name} · {r.exam_sitting} · {r.sessions} session{r.sessions === 1 ? '' : 's'} ·{' '}
+                  {r.attempts} question{r.attempts === 1 ? '' : 's'}
+                </div>
+              </div>
+              {r.access ? (
+                <span className="font-mono text-[11px] uppercase tracking-widest text-green-pen">
+                  access · {r.access.sitting}
+                </span>
+              ) : r.sessions >= FREE_SESSIONS ? (
+                <span className="font-mono text-[11px] uppercase tracking-widest text-red-pen">
+                  waiting
+                </span>
+              ) : (
+                <span className="font-mono text-[11px] uppercase tracking-widest text-dim">
+                  free tier
+                </span>
+              )}
+            </div>
+
+            {r.access ? (
+              <div className="mt-2 flex flex-wrap items-baseline justify-between gap-2 border-t border-dashed border-paper-deep pt-2">
+                <span className="font-mono text-[11px] text-dim">
+                  granted {new Date(r.access.granted_at).toISOString().slice(0, 10)} ·{' '}
+                  {r.access.source}
+                  {r.access.note ? ` · ${r.access.note}` : ''}
+                </span>
+                <form action={revokeAccess}>
+                  <input type="hidden" name="id" value={r.id} />
+                  <button className="min-h-11 font-mono text-[11px] uppercase tracking-widest text-red-pen underline">
+                    Revoke
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <form
+                action={grantAccess}
+                className="mt-2 flex flex-wrap items-center gap-2 border-t border-dashed border-paper-deep pt-2"
+              >
+                <input type="hidden" name="id" value={r.id} />
+                <select
+                  name="sitting"
+                  defaultValue={r.exam_sitting}
+                  className="min-h-11 border-[1.5px] border-ink bg-white px-2 font-mono text-[12px]"
+                >
+                  {SITTINGS.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  name="note"
+                  placeholder="Stripe payment id, or why"
+                  className="min-h-11 min-w-0 flex-1 border-[1.5px] border-ink px-2 font-mono text-[12px]"
+                />
+                <button className="min-h-11 bg-ink px-3 font-mono text-[11px] uppercase tracking-widest text-paper">
+                  Grant access
+                </button>
+              </form>
+            )}
+          </section>
+        ))}
+      </div>
+    </main>
+  );
+}

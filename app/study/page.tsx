@@ -21,6 +21,8 @@ import { DIAGNOSTIC_MINUTES, m1GateHolds, SESSION_MINUTES } from '@/lib/session/
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
 import { loadReviewable } from '@/lib/study/reviewable';
+import { FREE_SESSIONS } from '@/lib/access';
+import { paymentLink } from '@/lib/landing-content';
 import { BAND_LABEL } from '@/lib/study/profiles';
 import type { ModuleNumber } from '@/lib/types';
 import type { MasteryBand } from '@/lib/mastery/config';
@@ -390,6 +392,30 @@ export default async function StudyDashboard({
           </details>
         </section>
 
+        {/* THE PAYWALL, and what it does not take away. Everything already
+            earned stays where it is — the notebook, the marks, the questions to
+            look back at. What needs paying for is the NEXT session. */}
+        {error === 'needs-access' && (
+          <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-red-pen">
+              That was your {FREE_SESSIONS} free sessions
+            </div>
+            <p className="mt-1 text-sm leading-snug">
+              Everything you have done stays here — your marks, your topics, and every question you
+              have answered. To sit another session, get access for your exam sitting.
+            </p>
+            <a
+              href={paymentLink()}
+              className="mt-3 block bg-red-pen p-3 text-center font-black text-white shadow-[3px_3px_0_var(--ink)]"
+            >
+              Get access
+            </a>
+            <p className="mt-2 text-[11px] leading-snug text-dim">
+              Use <span className="font-mono">{auth.email}</span> when you pay, so we can match it
+              to this account.
+            </p>
+          </section>
+        )}
         {error === 'no-questions' && (
           <p className="mt-4 border-l-3 border-red-pen bg-[#FDF1F0] p-3 text-sm">
             {mode === 'topic'
