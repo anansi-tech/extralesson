@@ -46,10 +46,25 @@ boundaries · Vitest · KaTeX.
 
 ## Kill list — hard gates
 
-No code/imports/stubs for: WhatsApp/Twilio · parent reports · Stripe SDK/API/webhooks
-(payment-link href is exempt) · Investigation-type questions ·
+No code/imports/stubs for: WhatsApp/Twilio · parent reports · Stripe as a DEPENDENCY —
+no `stripe` npm package, no `@stripe/*`, no SDK, no outbound API call (exempt: the
+payment-link href, and a webhook handler verifying signatures with `node:crypto`
+alone) · Investigation-type questions ·
 SBA coaching · spaced repetition · streak REWARDS · CAPE or second subject ·
 in-app payments · Railway/cron · offline sync · native apps.
+
+**The Stripe webhook left this list, deliberately.** The ban read "Stripe
+SDK/API/webhooks" and the reason under it was that hand-matching is right at a
+hundred sales. By volume that is still true — but a student who pays at 9pm
+should not wait for someone to read an inbox, and `/admin/access` already exists
+as the fallback that makes automation safe: every grant is visible, revocable,
+and an unmatched payment surfaces there instead of vanishing. So the DEPENDENCY
+ban stands exactly as it was — no package, no SDK, no outbound call — and the
+exemption widened by one: a handler that verifies the signature with
+`node:crypto` and writes to our own database. Anything reaching for the npm
+package is still a violation, and the pre-commit grep now also fails on stripe
+appearing in `package.json`, because the rule was about the dependency and the
+grep only knew about imports. Reasoning in `ROUND_2_EXAMINER.md` §8c.
 
 **Photo capture and vision left this list in Round 2.** They were R1 gates because
 R1 had no examiner, and half a camera would have been scope creep. R2

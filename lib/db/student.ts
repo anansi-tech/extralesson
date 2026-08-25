@@ -17,15 +17,15 @@ const StudentSchema = new Schema({
   // that existed before this field and for every new one — nobody is granted
   // access by omission.
   //
-  // Granted by hand against a Stripe payment matched on email. There is no
-  // webhook and no auto-provisioning: at a hundred customers, matching by hand
-  // is the right amount of machinery, and the payment link is a plain href.
+  // Granted by the webhook on a matched payment, or by hand on /admin/access —
+  // refunds, mismatched emails, comps and undelivered events all end up there,
+  // which is what makes the automatic path safe to have.
   access: {
     type: new Schema(
       {
         sitting: { type: String, enum: ['jan-2027', 'may-june-2027'], required: true },
         granted_at: { type: Date, default: Date.now, required: true },
-        source: { type: String, enum: ['manual'], default: 'manual', required: true },
+        source: { type: String, enum: ['manual', 'stripe'], default: 'manual', required: true },
         note: { type: String },
       },
       { _id: false },

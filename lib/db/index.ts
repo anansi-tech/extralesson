@@ -3,6 +3,7 @@ export { Topic, type TopicDoc } from './topic';
 export { Blueprint, type BlueprintDoc } from './blueprint';
 export { Question, type QuestionDoc } from './question';
 export { Student, type StudentDoc } from './student';
+export { Payment, type PaymentDoc } from './payment';
 export { Attempt, type AttemptDoc } from './attempt';
 export { PracticeSession, type SessionDoc } from './session';
 export { SessionDraft, type SessionDraftDoc } from './session-draft';

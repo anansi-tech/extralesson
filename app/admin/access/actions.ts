@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { dbConnect, Student } from '@/lib/db';
+import { dbConnect, Payment, Student } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth/session';
 
 const IdZ = z.string().regex(/^[a-f0-9]{24}$/);
@@ -36,5 +36,19 @@ export async function revokeAccess(formData: FormData): Promise<void> {
   const id = IdZ.parse(String(formData.get('id')));
   await dbConnect();
   await Student.updateOne({ _id: id }, { $unset: { access: '' } });
+  revalidatePath('/admin/access');
+}
+
+/**
+ * An unmatched payment, dealt with. Marking it resolved is deliberately
+ * separate from granting: they are usually the same act, but a refund or a
+ * duplicate charge is resolved without anyone gaining access, and conflating
+ * them would hide that.
+ */
+export async function resolvePayment(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = IdZ.parse(String(formData.get('id')));
+  await dbConnect();
+  await Payment.updateOne({ _id: id }, { $set: { resolved_at: new Date() } });
   revalidatePath('/admin/access');
 }

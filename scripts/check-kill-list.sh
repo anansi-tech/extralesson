@@ -51,12 +51,21 @@ if [ -n "$r2" ]; then
   fail=1
 fi
 
-# Stripe is banned as a DEPENDENCY, not as a word: a payment-link href is
-# explicitly exempt, so only an import counts.
+# Stripe is banned as a DEPENDENCY, not as a word. Exempt: the payment-link
+# href, and a webhook handler verifying signatures with node:crypto alone.
+# This checked imports only, which is the part of the rule that was easy to
+# match rather than the rule — so the package.json check is here too.
 stripe=$(grep -HniE "(from|require)\s*\(?\s*['\"]stripe|@stripe/" "${FILES[@]}" 2>/dev/null || true)
 if [ -n "$stripe" ]; then
-  echo "kill-list violation (Stripe SDK import; a payment-link href is exempt):"
+  echo "kill-list violation (Stripe SDK import; the payment-link href and a"
+  echo "node:crypto webhook handler are exempt):"
   echo "$stripe" | sed 's/^/  /'
+  fail=1
+fi
+dep=$(grep -HnE "\"@?stripe[/\"]" package.json 2>/dev/null || true)
+if [ -n "$dep" ]; then
+  echo "kill-list violation (Stripe as a dependency in package.json):"
+  echo "$dep" | sed 's/^/  /'
   fail=1
 fi
 

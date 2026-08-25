@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { dbConnect, Attempt, PracticeSession, Student } from '@/lib/db';
+import { dbConnect, Attempt, Payment, PracticeSession, Student } from '@/lib/db';
 import { FREE_SESSIONS } from '@/lib/access';
-import { grantAccess, revokeAccess } from './actions';
+import { grantAccess, resolvePayment, revokeAccess } from './actions';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Access — ExtraLesson admin' };
@@ -32,6 +32,14 @@ export default async function AccessPage() {
         access?: { sitting: string; granted_at: Date; source: string; note?: string } | null;
         created_at: Date;
       }[]
+    >();
+
+  // Payments the webhook could not attach to an account. Recorded rather than
+  // dropped: someone has paid, and this is the only place that says so.
+  const unmatched = await Payment.find({ student_id: null, resolved_at: null })
+    .sort({ received_at: -1 })
+    .lean<
+      { _id: unknown; event_id: string; email?: string; amount_total?: number; currency?: string; received_at: Date }[]
     >();
 
   const ids = students.map((s) => s._id);
@@ -91,6 +99,43 @@ export default async function AccessPage() {
           email the student paid with, then grant. Nothing a student has already earned is ever
           hidden — the gate is on starting a new session.
         </p>
+
+        {unmatched.length > 0 && (
+          <section className="mb-6 border-[1.5px] border-red-pen bg-[#FDF1F0] p-3">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-red-pen">
+              {unmatched.length} payment{unmatched.length === 1 ? '' : 's'} with no matching account
+            </div>
+            <p className="mt-1 text-[12px] leading-snug">
+              Someone has paid and the email does not belong to a student. Find the account they
+              actually registered with and grant it below, or mark this resolved if it was a refund
+              or a duplicate.
+            </p>
+            <ul className="mt-2 space-y-2">
+              {unmatched.map((p) => (
+                <li
+                  key={String(p._id)}
+                  className="flex flex-wrap items-baseline justify-between gap-2 border-t border-dashed border-red-pen pt-2"
+                >
+                  <span className="font-mono text-[12px]">
+                    {p.email ?? 'no email on the payment'}
+                    <span className="ml-2 text-dim">
+                      {typeof p.amount_total === 'number'
+                        ? `${(p.amount_total / 100).toFixed(2)} ${(p.currency ?? '').toUpperCase()}`
+                        : ''}{' '}
+                      · {new Date(p.received_at).toISOString().slice(0, 10)} · {p.event_id}
+                    </span>
+                  </span>
+                  <form action={resolvePayment}>
+                    <input type="hidden" name="id" value={String(p._id)} />
+                    <button className="min-h-11 font-mono text-[11px] uppercase tracking-widest underline">
+                      Mark resolved
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {rows.map((r) => (
           <section key={r.id} className="mb-3 border-[1.5px] border-ink bg-white p-3">

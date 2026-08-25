@@ -204,6 +204,42 @@ The split is therefore load-bearing and stays: `CapturedImage` carries
 asserts both. It is also why looking back at a finished question can still show
 what the photograph read weeks later — the image is gone and the reading is not.
 
+## 8c. The Stripe webhook: why the gate moved
+
+The kill list banned Stripe "SDK/API/webhooks", and the reason written under it
+was that hand-matching is correct at a hundred customers. **By volume that is
+still true.** What changed is not the volume, it is the wait: a student who pays
+at 9pm on a Sunday should not sit on the free tier until someone reads an inbox.
+The cost of the manual path is not admin time, it is a paying student blocked
+from the thing they just bought.
+
+What makes automating it safe is that the manual path already exists.
+`/admin/access` lists every student, grants and revokes in one click, and shows
+the evidence behind each grant. So the webhook is not a single point of failure:
+if the signature check rejects, if the email does not match an account, if
+Stripe never delivers — the payment lands on that screen as UNMATCHED and gets
+resolved by hand, which is exactly the flow that was going to be the whole
+system. Automation on top of a working manual path is a different risk from
+automation instead of one.
+
+**The dependency ban did not move.** No `stripe` package, no `@stripe/*`, no
+SDK, no outbound API call. The exemption is a handler that verifies the
+signature with `node:crypto` and writes to our own database — which is all a
+webhook needs, since the signed payload contains everything we act on.
+
+Two consequences worth stating. Signature verification is ours: HMAC-SHA256 over
+`timestamp.body` with `STRIPE_WEBHOOK_SECRET`, compared with `timingSafeEqual`,
+with a five-minute tolerance so a captured request cannot be replayed later.
+And the sitting cannot be read from line items, because that needs an API call
+we do not make — so it is mapped from the payment link the student used
+(`STRIPE_LINK_SITTINGS`), falling back to the sitting they registered with, with
+the fallback recorded in the grant note so a wrong one is visible rather than
+silent.
+
+The pre-commit grep was also extended: it banned SDK imports, but the rule was
+about the DEPENDENCY, so `stripe` in `package.json` now fails too. The grep
+should catch what the rule says, not the part of it that was easy to match.
+
 ## 9. Kill list (additions)
 
 No handwriting model or OCR training · no per-stroke or video capture · no live camera guidance · no marking without a stored transcription · no vision pass that can reduce a deterministically-earned mark · no image retained beyond the TTL · no parent report in this round · no instrument constructions · no second marking dialect (transcription targets the grader's existing conventions).
