@@ -5,7 +5,7 @@ import { dbConnect, Attempt, CapturedImage, Question, Transcription } from '@/li
 import { requireSession } from '@/lib/auth/session';
 import { markableSlots } from '@/lib/grade/mark';
 import { MAX_BYTES, MAX_TAKES, transcribeWorking, type TranscriptionResult } from '@/lib/grade/transcribe';
-import { earnableByMethod, constructionRows } from '@/lib/grade/method-marks';
+import { earnableByMethod, constructionRows, alreadyEarnedByMethod } from '@/lib/grade/method-marks';
 import { constructionChecks } from '@/lib/grade/construction';
 import { checkConstruction } from '@/lib/grade/check-construction';
 import type { RubricItem } from '@/lib/types';
@@ -67,7 +67,11 @@ export async function captureWorking(input: {
   } | null>();
   if (!attempt) return { error: 'That answer could not be found.' };
 
-  const already = await Transcription.countDocuments({ attempt_id: attemptId });
+  // Earlier takes, for the take number AND for what they already paid for.
+  const earlier = await Transcription.find({ attempt_id: attemptId })
+    .select('method_marks')
+    .lean<{ method_marks?: { code: string; awarded: boolean }[] }[]>();
+  const already = earlier.length;
   if (already >= MAX_TAKES) {
     return { error: 'Two photographs is the limit for one question.' };
   }
@@ -109,7 +113,12 @@ export async function captureWorking(input: {
   // attributed, and this is it.
   //
   // It may only ADD marks. Nothing here can touch what the grader awarded.
-  const unearned = earnableByMethod(question, attempt.rubric_awarded ?? []);
+  // A retake normally re-reads the SAME working, so rows an earlier take
+  // already earned are settled: not re-judged, not re-paid, and not put at risk
+  // of a second opinion that reads "we could not see" beside a mark the student
+  // has already been given.
+  const settled = [...(attempt.rubric_awarded ?? []), ...alreadyEarnedByMethod(earlier)];
+  const unearned = earnableByMethod(question, settled);
   let decisions: MethodDecision[] = [];
   let usage: { input_tokens?: number; output_tokens?: number } = {};
   if (unearned.length > 0) {
@@ -144,7 +153,7 @@ export async function captureWorking(input: {
   // three of its four points is not the drawing the question asked for. Where
   // it falls short the student is told exactly which check failed, which is
   // more use than the mark either way.
-  const drawRows = constructionRows(question, attempt.rubric_awarded ?? []);
+  const drawRows = constructionRows(question, settled);
   const checks = constructionChecks(question.visual);
   if (drawRows.length > 0 && checks.length > 0) {
     try {

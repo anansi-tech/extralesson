@@ -9,6 +9,7 @@ import {
 } from '@/lib/mastery/fold';
 import { predictModule, predictOverall, type OverallPrediction } from '@/lib/grade/predict';
 import { markSplit } from '@/lib/grade/assessable';
+import { methodMarksEarned } from '@/lib/grade/method-marks';
 import { computeCoverage, type Coverage } from '@/lib/targets/coverage';
 import type { MasteryBand } from '@/lib/mastery/config';
 import type { ModuleNumber } from '@/lib/types';
@@ -84,14 +85,18 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
     attempt_id: { $in: attempts.map((a) => a._id) },
   })
     .select('attempt_id method_marks')
-    .lean<{ attempt_id: unknown; method_marks?: { awarded: boolean; mark_value: number }[] }[]>();
-  const methodByAttempt = new Map<string, number>();
+    .lean<{ attempt_id: unknown; method_marks?: { code: string; awarded: boolean; mark_value: number }[] }[]>();
+  // Grouped by attempt, then folded ONCE PER ROW: an attempt can carry two
+  // takes, and the second normally re-reads the same working as the first.
+  const takesByAttempt = new Map<string, typeof reads>();
   for (const r of reads) {
-    const earned = (r.method_marks ?? [])
-      .filter((m: { awarded: boolean }) => m.awarded)
-      .reduce((n: number, m: { mark_value: number }) => n + m.mark_value, 0);
-    methodByAttempt.set(String(r.attempt_id), (methodByAttempt.get(String(r.attempt_id)) ?? 0) + earned);
+    const key = String(r.attempt_id);
+    const list = takesByAttempt.get(key) ?? [];
+    list.push(r);
+    takesByAttempt.set(key, list);
   }
+  const methodByAttempt = new Map<string, number>();
+  for (const [id, takes] of takesByAttempt) methodByAttempt.set(id, methodMarksEarned(takes));
 
   return attempts
     .filter((a) => a.question_id)

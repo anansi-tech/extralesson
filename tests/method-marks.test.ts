@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { earnableByMethod } from '@/lib/grade/method-marks';
+import { earnableByMethod, methodMarksEarned } from '@/lib/grade/method-marks';
 import { MethodDecisionZ } from '@/lib/grade/mark-method';
 import type { RubricItem } from '@/lib/types';
 
@@ -65,5 +65,40 @@ describe('the method decision contract', () => {
 
     const noReason = MethodDecisionZ.safeParse({ code: 'AK3', awarded: false, confidence: 0.8 });
     expect(noReason.success).toBe(false);
+  });
+});
+
+// A RETAKE MUST NOT PAY TWICE.
+//
+// Two takes are offered so a blurry photograph can be replaced, which means the
+// second take usually reads THE SAME WORKING as the first and earns the same
+// rows again. Summing the takes turned an 8-mark paper into 12/12. A rubric row
+// is worth its marks once, however many photographs of it we read.
+describe('methodMarksEarned — one row, one payment', () => {
+  const take = (codes: string[]) => ({
+    method_marks: codes.map((code) => ({ code, awarded: true, mark_value: 1 })),
+  });
+
+  it('counts a row once when both takes earn it', () => {
+    expect(methodMarksEarned([take(['R1', 'R2']), take(['R1', 'R2'])])).toBe(2);
+  });
+
+  it('adds a row the second take earned and the first did not', () => {
+    expect(methodMarksEarned([take(['R1']), take(['R1', 'AK5'])])).toBe(2);
+  });
+
+  it('keeps the first take marks when the second earns nothing', () => {
+    expect(methodMarksEarned([take(['R1', 'R2', 'R3', 'AK5']), { method_marks: [] }])).toBe(4);
+  });
+
+  it('never lets a withheld row on a later take remove an earned one', () => {
+    const earned = { method_marks: [{ code: 'R1', awarded: true, mark_value: 1 }] };
+    const withheld = { method_marks: [{ code: 'R1', awarded: false, mark_value: 1 }] };
+    expect(methodMarksEarned([earned, withheld])).toBe(1);
+  });
+
+  it('respects a row worth more than one mark, once', () => {
+    const two = { method_marks: [{ code: 'AK1', awarded: true, mark_value: 2 }] };
+    expect(methodMarksEarned([two, two])).toBe(2);
   });
 });

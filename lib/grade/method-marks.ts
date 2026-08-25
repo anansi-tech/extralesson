@@ -69,3 +69,41 @@ export function constructionRows(q: MethodMarkQuestion, awarded: string[]): Rubr
   );
   return (q.rubric ?? []).filter((r) => !earned.has(r.code) && constructRefs.has(r.slot_ref));
 }
+
+/**
+ * WHAT PHOTOGRAPHED WORKING EARNED ON AN ATTEMPT, ACROSS EVERY TAKE.
+ *
+ * Two takes exist so a blurry photograph can be replaced, which means the
+ * second take normally reads the SAME working as the first and earns the same
+ * rows again. Summing the takes paid twice for one row and could carry an
+ * 8-mark paper to 12/12.
+ *
+ * A row is worth its marks once. The union of awarded codes is the earned set —
+ * so a later take can add a row the earlier one missed, and a later take that
+ * reads nothing (a wrong page, a dark photograph) takes nothing away. That is
+ * the same asymmetry the marking pass itself obeys, applied across takes.
+ */
+export function methodMarksEarned(
+  takes: { method_marks?: { code: string; awarded: boolean; mark_value: number }[] }[],
+): number {
+  const byCode = new Map<string, number>();
+  for (const t of takes) {
+    for (const m of t.method_marks ?? []) {
+      if (m.awarded) byCode.set(m.code, m.mark_value);
+    }
+  }
+  let total = 0;
+  for (const v of byCode.values()) total += v;
+  return total;
+}
+
+/** The rows earlier takes already paid for, so a later take never re-judges them. */
+export function alreadyEarnedByMethod(
+  takes: { method_marks?: { code: string; awarded: boolean }[] }[],
+): string[] {
+  const codes = new Set<string>();
+  for (const t of takes) {
+    for (const m of t.method_marks ?? []) if (m.awarded) codes.add(m.code);
+  }
+  return [...codes];
+}
