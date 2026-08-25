@@ -50,6 +50,17 @@ export interface Objective {
    * caveat that earned it.
    */
   partial_reason?: string;
+  /**
+   * R2 §8: this objective is unassessable from typed input alone, but a
+   * PHOTOGRAPHED construction can be checked against the figure's declared
+   * params, so the student earns it by photographing the graph they drew.
+   * Only ever set on the plotted families the templates can ground-truth —
+   * never on instrument constructions, which stay out of the round.
+   *
+   * Declared, not inferred: the alternative was pattern-matching the word
+   * "graph" in unassessable_reason, and prose is not structure.
+   */
+  photo_assessable?: true;
 }
 
 export interface RubricItem {

@@ -11,6 +11,10 @@ const ObjectiveSchema = new Schema(
     // means fully covered, which is correct for every objective written before
     // this field existed.
     partial_reason: { type: String },
+    // R2 §8: earnable by photographing the construction. Absent means no,
+    // which is correct for every objective written before this field existed
+    // and for every instrument construction, which stays out of the round.
+    photo_assessable: { type: Boolean },
   },
   { _id: false },
 );

@@ -39,6 +39,20 @@ export interface Coverage {
   partialCount: number;
   byModule: Record<ModuleNumber, number>;
   topics: TopicCoverage[];
+  /**
+   * R2 §8 — the same computation with the photographed constructions counted.
+   * A student who photographs the graph they drew is assessed on it, so they
+   * are not on the same coverage figure as one who does not, and printing one
+   * number for both would understate the first and overstate the second.
+   */
+  photographed: {
+    fraction: number;
+    percent: number;
+    displayPercent: number;
+    uncoveredMarks: number;
+    /** Raw marks a photograph moves from "not covered" to "marked". */
+    marksEarnedByPhoto: number;
+  };
 }
 
 // Structural, not the seed's `Objective`: documents read back from Mongo type
@@ -52,6 +66,7 @@ interface TopicLike {
     assessable?: boolean;
     unassessable_reason?: string;
     partial_reason?: string;
+    photo_assessable?: boolean;
   }[];
 }
 
@@ -85,10 +100,23 @@ export function computeCoverage(topics: TopicLike[], blueprints: BlueprintLike[]
     };
   });
 
+  // Objectives a photograph brings back in. Read off the DECLARED field, never
+  // off the wording of unassessable_reason — the reason is prose for a student
+  // and prose is not structure.
+  const photoBack = new Map(
+    topics.map((t) => [
+      t.code,
+      t.objectives.filter((o) => o.assessable === false && o.photo_assessable === true).length,
+    ]),
+  );
+
   const share = (r: TopicCoverage) => (r.total === 0 ? 1 : r.assessable / r.total);
+  const photoShare = (r: TopicCoverage) =>
+    r.total === 0 ? 1 : Math.min(1, (r.assessable + (photoBack.get(r.code) ?? 0)) / r.total);
 
   let num = 0;
   let den = 0;
+  let photoNum = 0;
   const byModule = {} as Record<ModuleNumber, number>;
   for (const m of [1, 2, 3] as const) {
     let mNum = 0;
@@ -96,6 +124,7 @@ export function computeCoverage(topics: TopicLike[], blueprints: BlueprintLike[]
     for (const r of rows.filter((r) => r.module === m)) {
       const w = weights.get(r.code) ?? 0;
       mNum += w * share(r);
+      photoNum += w * photoShare(r);
       mDen += w;
     }
     byModule[m] = mDen === 0 ? 1 : mNum / mDen;
@@ -104,15 +133,25 @@ export function computeCoverage(topics: TopicLike[], blueprints: BlueprintLike[]
   }
 
   const fraction = den === 0 ? 1 : num / den;
+  const photoFraction = den === 0 ? 1 : photoNum / den;
+  const uncovered = Math.round((1 - fraction) * FULL_PAPER_RAW_MARKS);
+  const photoUncovered = Math.round((1 - photoFraction) * FULL_PAPER_RAW_MARKS);
   const partialCount = rows.reduce((n, r) => n + r.partial.length, 0);
   return {
     fraction,
     percent: Math.round(fraction * 100),
     displayPercent: displayFigure(fraction * 100),
-    uncoveredMarks: Math.round((1 - fraction) * FULL_PAPER_RAW_MARKS),
+    uncoveredMarks: uncovered,
     partialCount,
     byModule,
     topics: rows,
+    photographed: {
+      fraction: photoFraction,
+      percent: Math.round(photoFraction * 100),
+      displayPercent: displayFigure(photoFraction * 100),
+      uncoveredMarks: photoUncovered,
+      marksEarnedByPhoto: uncovered - photoUncovered,
+    },
   };
 }
 
@@ -138,10 +177,12 @@ export function displayFigure(percent: number): number {
 
 /** Two or three short sentences. The version everybody actually reads. */
 export function coverageSummary(coverage: Coverage): string {
+  const photo = coverage.photographed;
   return (
-    `ExtraLesson practises about ${coverage.displayPercent}% of the marks in a CSEC Mathematics paper. ` +
-    `The rest is ruler-and-compasses construction — roughly ${coverage.uncoveredMarks} marks — which needs past papers. ` +
-    `We do not prepare you for Paper 032, the alternative to the school-based assessment that private candidates sit.`
+    `ExtraLesson practises about ${coverage.displayPercent}% of a CSEC Mathematics paper's marks, ` +
+    `and marks your graphs when you photograph them — ${photo.marksEarnedByPhoto} marks you earn no other way. ` +
+    `Construction with ruler and compasses, roughly ${photo.uncoveredMarks} marks, needs past papers. ` +
+    `We do not prepare private candidates for Paper 032, the school-based assessment alternative.`
   );
 }
 
@@ -152,12 +193,13 @@ export function coverageDetail(coverage: Coverage): string[] {
   ];
   if (coverage.partialCount > 0) {
     lines.push(
-      'On graph questions we set the drawing itself: you do it on graph paper, and once you have answered we show the finished graph with the list of things an examiner credits, for you to check against. We do not mark the drawing, so those marks stay out of your estimate.',
-      'On a few solid-geometry and region-shading questions we cover reading and interpreting only.',
+      'On graph questions we set the drawing itself: you do it on graph paper. Photograph what you drew and we check it — the intercept, the points you plotted, the shape of the curve — and those marks count. Without a photograph we show you the finished graph and the list of things an examiner credits, and you check it yourself, so they stay out of your estimate.',
+      'On a few solid-geometry questions we cover reading and interpreting only.',
     );
   }
   lines.push(
-    `Construction questions with ruler and compasses — roughly ${coverage.uncoveredMarks} marks — are not covered at all, so practise those with past papers.`,
+    `Photographing your graphs is worth about ${coverage.photographed.marksEarnedByPhoto} marks a paper. Nothing you photograph can lose you a mark: it can only add.`,
+    `Construction questions with ruler and compasses — roughly ${coverage.photographed.uncoveredMarks} marks — are not covered at all, so practise those with past papers.`,
     'Paper 032 is the alternative to the school-based assessment that private candidates sit. We do not prepare you for it.',
   );
   return lines;

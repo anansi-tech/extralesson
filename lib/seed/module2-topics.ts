@@ -211,6 +211,7 @@ export const module2Topics: SeedTopic[] = [
         text: 'Draw the graph of a quadratic function.',
         assessable: false as const,
         unassessable_reason: 'Requires drawing a graph on a supplied grid.',
+        photo_assessable: true as const,
       },
       {
         id: 'M2.3.16',

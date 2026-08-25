@@ -390,7 +390,8 @@ export const module1Topics: SeedTopic[] = [
         text: 'Draw graphs of linear functions.',
         notes:
           'Concept of linear function, types of linear function (y = c; x = k; y = mx + c; where m, c and k are real numbers). For example, y = 0 (x-axis); x = 0 (y-axis).',
-        partial_reason: 'We set the plotting on graph paper and show the finished graph to check against; the marks for the drawing itself are not machine-marked.',
+        partial_reason: 'We set the plotting on graph paper; photograph what you drew and we mark the drawing, otherwise you check it against the finished graph yourself.',
+        photo_assessable: true as const,
       },
       {
         id: 'M1.6.2',

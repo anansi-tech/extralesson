@@ -1,4 +1,4 @@
-import { computeCoverage } from '@/lib/targets/coverage';
+import { computeCoverage, type Coverage } from '@/lib/targets/coverage';
 import { module1Topics } from '@/lib/seed/module1-topics';
 import { module2Topics } from '@/lib/seed/module2-topics';
 import { module3Topics } from '@/lib/seed/module3-topics';
@@ -20,12 +20,15 @@ export const LANDING = {
 
 // R1.6 §3 — coverage stated up front, computed from the same syllabus seeds and
 // blueprint the mastery map uses, so marketing cannot drift from the product.
-export function landingCoverage(): { displayPercent: number; uncoveredMarks: number } {
-  const { displayPercent, uncoveredMarks } = computeCoverage(
+export function landingCoverage(): Pick<
+  Coverage,
+  'displayPercent' | 'uncoveredMarks' | 'photographed'
+> {
+  const { displayPercent, uncoveredMarks, photographed } = computeCoverage(
     [...module1Topics, ...module2Topics, ...module3Topics],
     seedBlueprints,
   );
-  return { displayPercent, uncoveredMarks };
+  return { displayPercent, uncoveredMarks, photographed };
 }
 
 export function paymentLink(): string {

@@ -48,6 +48,7 @@ export const module3Topics: SeedTopic[] = [
         notes: 'Appropriate scales for axes. Class boundaries as domain.',
         assessable: false as const,
         unassessable_reason: 'Requires drawing a cumulative frequency curve on a supplied grid.',
+        photo_assessable: true as const,
       },
       {
         id: 'M3.1.8',
@@ -80,7 +81,8 @@ export const module3Topics: SeedTopic[] = [
       {
         id: 'M3.2.1',
         text: 'Draw a graph to represent a linear inequality in two variables.',
-        partial_reason: 'We supply the shaded grid and assess reading it; the marks for drawing and shading need paper.',
+        partial_reason: 'We supply the shaded grid and assess reading it; photograph your shading and we mark the boundary too.',
+        photo_assessable: true as const,
       },
       {
         id: 'M3.2.2',
@@ -96,6 +98,7 @@ export const module3Topics: SeedTopic[] = [
         notes: 'y = ax^n where n = -1, -2 and +3 and a is a constant. Distance-time and speed-time.',
         assessable: false as const,
         unassessable_reason: 'Requires drawing a graph on a supplied grid.',
+        photo_assessable: true as const,
       },
       {
         id: 'M3.2.5',
