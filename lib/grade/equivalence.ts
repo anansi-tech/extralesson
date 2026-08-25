@@ -40,6 +40,10 @@ function preClean(raw: string): string {
     .replace(/\\left|\\right|\\,|\\;/g, '')
     .replace(/\$+/g, '') // KaTeX delimiters and bare dollar signs
     .replace(/\\text\{([^{}]*)\}/g, '$1') // \text{ and } wrappers carry no value
+    // A literal percent sign is written \% in KaTeX, which is where every
+    // authored answer comes from. It is the same sign, and it was the only
+    // escape the cleaner did not undo: "10\%" rejected both "10" and "10%".
+    .replace(/\\%/g, '%')
     .replace(/\\[dt]frac\b/g, '\\frac') // display/inline fractions are one fraction
     .replace(/[−–]/g, '-') // unicode minus / en-dash
     // One spelling per relation, whichever notation the writer reached for.

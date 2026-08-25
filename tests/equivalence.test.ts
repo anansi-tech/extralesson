@@ -331,3 +331,39 @@ describe('answersEquivalent — v4: characters the student cannot see', () => {
     expect(answersEquivalent('72 cm', '72 cm')).toBe(true);
   });
 });
+
+// THE KaTeX PERCENT ESCAPE CARRIES NO EXTRA MEANING.
+//
+// Answers are authored in KaTeX, where a literal percent sign is written \%.
+// The normaliser removed \text{}, \left, \right and the rest but not this one,
+// so a slot storing "$10\%$" rejected "10" and "10%" — the only two things a
+// student types — while accepting 0.1, because the escape was read as a value
+// on one side of the comparison and not the other. Found end to end: an
+// all-correct run on a live question scored 3 of 8.
+describe('\\% is the same sign as %', () => {
+  const cases: [string, string][] = [
+    ['$10\\%$', '10'],
+    ['$10\\%$', '10%'],
+    ['$12.5\\%$', '12.5'],
+    ['$12.5\\%$', '12.5%'],
+    ['20.2\\%', '20.2%'],
+    ['$37.5\\%$', '37.5'],
+  ];
+  for (const [stored, typed] of cases) {
+    it(`accepts ${typed} for ${stored}`, () => {
+      expect(answersEquivalent(stored, typed)).toBe(true);
+    });
+  }
+
+  it('still refuses a different quantity', () => {
+    expect(answersEquivalent('$10\\%$', '0.1%')).toBe(false);
+    expect(answersEquivalent('$10\\%$', '11%')).toBe(false);
+  });
+
+  it('accepts the answer with the percent sign left off, as every other unit is', () => {
+    // quantity.ts made this decision deliberately: an omitted unit the question
+    // itself supplied is not a wrong answer, and percent was the one place we
+    // used to refuse it.
+    expect(answersEquivalent('$10\\%$', '10')).toBe(true);
+  });
+});
