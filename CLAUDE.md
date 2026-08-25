@@ -72,6 +72,18 @@ R1 had no examiner, and half a camera would have been scope creep. R2
 The gate moved rather than lifted — R2 brings its own, below — and everything R1
 banned for a reason that still holds stays banned.
 
+**Parent and sponsor reporting — declined, not deferred.** The kill-list entry
+reads as an unbuilt feature; it is a decision. A report going home shifts a
+fifteen-year-old's incentive from learning to looking good, and every steering
+decision here — weakest-first, the revisit filter, the diagnostic ranking — is a
+fold over attempts that degrades the moment a student has reason to avoid the
+topics they are worst at. It would corrupt the adaptive system's input
+invisibly. The buyer is often not the student, which is exactly why the
+temptation is real. If it ever returns, the form is STUDENT-INITIATED SHARING,
+never a scheduled report that goes behind their back — the same line drawn for
+streaks and for revisiting mistakes: does the APP decide, or does the STUDENT
+ask? Reasoning in `ROUND_2_EXAMINER.md` §8d.
+
 **Image retention — asked and answered.** The 7-day TTL on captured images is
 not up for revisiting for a training corpus. It is handwriting from minors tied
 to identifiable accounts; the TTL is a kill-list item; and the TRANSCRIPTION —

@@ -269,9 +269,10 @@ export default async function LandingPage() {
           <div className="sponsor">
             <h3>In Brooklyn? Toronto? London? 🌍</h3>
             <p>
-              Sponsor a niece, nephew, or godchild back home. You pay from abroad, they study on any
-              phone on the island. It&rsquo;s the extra lessons money your family already sends —
-              going somewhere you can point at.
+              Sponsor a niece, nephew, or godchild back home. You pay from abroad, they study on
+              any phone on the island, and their access runs to the sitting. We won&rsquo;t send you
+              reports — they can show you their own marked working whenever they want, and
+              you&rsquo;ll hear how it&rsquo;s going from them, not from us.
             </p>
           </div>
         </div>

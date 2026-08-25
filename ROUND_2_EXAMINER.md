@@ -240,6 +240,43 @@ The pre-commit grep was also extended: it banned SDK imports, but the rule was
 about the DEPENDENCY, so `stripe` in `package.json` now fails too. The grep
 should catch what the rule says, not the part of it that was easy to match.
 
+## 8d. Parent and sponsor reporting: declined, not deferred
+
+**This is not a feature waiting for time. It is one we have decided against, and
+the reason is about what the product would become rather than what it would
+cost.**
+
+A report going home changes what a fifteen-year-old is doing here. The moment
+Sunday's email exists, the incentive stops being *learn the thing* and becomes
+*look like I learned the thing* — and the cheapest way to look good is to
+practise what you can already do, avoid the topics that would expose you, and
+stop photographing working that might come back marked wrong.
+
+That is not a soft objection. **Every steering decision this product makes runs
+on honest weakness data.** Weakest-first selection, the revisit filter over
+marks actually lost, the diagnostic's ranking, the reachable-marks panel: all of
+it is a fold over attempts, and all of it degrades the moment a student has a
+reason to avoid attempting the things they are worst at. A report would corrupt
+the input the adaptive system is built on, and it would corrupt it invisibly —
+the numbers would still look fine, they would just be measuring avoidance.
+
+The person paying is usually not the person studying, and that is precisely why
+the temptation is real: the parent or the overseas sponsor is the buyer, and a
+report is the obvious thing to sell them. We are declining to, and the landing
+page says so plainly rather than staying quiet about it — a sponsor is told they
+will hear how it is going from the student, not from us.
+
+**If it ever returns, the form is student-initiated sharing** — the student
+chooses to show a session, a summary, a marked page — and never a report that
+goes behind their back. The distinction is the same one drawn for streaks and
+for revisiting mistakes: does the APP decide, or does the STUDENT ask? A report
+sent on a schedule to someone else is the app deciding, about a person who is
+not in the room.
+
+Written down because "no parent reports" on a kill list reads as an unbuilt
+feature, and the next person to want revenue from the buyer rather than the
+student will find only the ban and not the reason.
+
 ## 9. Kill list (additions)
 
 No handwriting model or OCR training · no per-stroke or video capture · no live camera guidance · no marking without a stored transcription · no vision pass that can reduce a deterministically-earned mark · no image retained beyond the TTL · no parent report in this round · no instrument constructions · no second marking dialect (transcription targets the grader's existing conventions).
