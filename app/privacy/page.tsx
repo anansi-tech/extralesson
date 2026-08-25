@@ -14,8 +14,10 @@ export default function PrivacyPage() {
   return (
     <LegalPage title="Privacy" updated="25 August 2026">
       <p>
-        ExtraLesson is used by secondary school students, so this is written to be read rather than
-        agreed to. It says what we hold, how long we hold it, and who else sees it.
+        ExtraLesson is for students preparing for CSEC Mathematics. Most of them are at secondary
+        school and <b>many are under 18</b>, so this is written to be read by a sixteen-year-old
+        rather than agreed to by a lawyer. It says what we hold, how long we hold it, and who else
+        sees it. If you are a parent or guardian, the section at the end is for you.
       </p>
 
       <h2>What we store</h2>
@@ -99,11 +101,21 @@ export default function PrivacyPage() {
         access again.
       </p>
 
-      <h2>Students under 18</h2>
+      <h2>Students under 18, and their parents</h2>
       <p>
-        Most people using ExtraLesson are 14 to 18. A parent or guardian can email us to see what we
-        hold on their child or to have it deleted, and we will ask enough to be sure the account is
-        theirs before doing either.
+        This is a product for people sitting CSEC, so most of the students using it are between 14
+        and 18. We would rather say that plainly than write a policy that steps around it.
+      </p>
+      <p>
+        A <b>parent or guardian</b> can email us to ask what we hold on their child, to see it, or
+        to have the account and everything in it deleted. We will ask enough to be satisfied the
+        account is your child&rsquo;s before we do any of those — which is the same care we would
+        want taken over our own.
+      </p>
+      <p>
+        Nothing a student does here is shown to another student. There is no parent login — a
+        parent reaches us by email, as above — and no account can see any other account&rsquo;s
+        work.
       </p>
     </LegalPage>
   );
