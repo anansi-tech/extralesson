@@ -112,13 +112,10 @@
 .landing .offer li { padding: 8px 0; border-bottom: 1px solid #2e3646; font-size: 14.5px; display: flex; gap: 10px; }
 .landing .offer li:last-child { border-bottom: 0; }
 .landing .offer li::before { content: '✓'; color: #f0b429; font-weight: 700; }
+.landing .offer p { font-size: 14.5px; color: #c8cdd8; max-width: 420px; margin: 14px auto 0; text-align: left; }
 .landing .offer .cap { font-family: var(--mono); font-size: 10.5px; color: #a8aebd; margin-top: 14px; letter-spacing: .08em; }
 .landing .offer .btn { box-shadow: 4px 4px 0 #f0b429; }
 
-/* sponsor */
-.landing .sponsor { border: 1.5px dashed var(--red); border-radius: 16px; padding: 24px 22px; margin-top: 26px; }
-.landing .sponsor h3 { font-weight: 900; font-size: 19px; margin-bottom: 6px; }
-.landing .sponsor p { font-size: 14.5px; color: #3a4152; }
 
 /* faq */
 .landing .faq dt { font-weight: 800; font-size: 15.5px; margin-top: 18px; }

@@ -239,6 +239,13 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* THE OFFER IS ADDRESSED TO WHOEVER IS PAYING.
+          A fifteen-year-old has no card, so the buyer is almost never the
+          student — and which relation they are does not change what they need
+          to know. It used to speak to a student here and to an overseas
+          relative in a separate box below, which left the actual buyer working
+          out which voice meant them. Three things, in order: what the money
+          buys, who it is for, and how they will know it is working. */}
       <section id="offer">
         <div className="wrap">
           <div className="offer">
@@ -246,8 +253,13 @@ export default async function LandingPage() {
             <h2>Everything, through the January sitting.</h2>
             <div className="price">{LANDING.price}</div>
             <div className="per">ONE PAYMENT · NO SUBSCRIPTION · USD</div>
+            <p>
+              Most people paying for this are not the one sitting the exam. So: what it buys, who
+              it is for, and how you will know it is working.
+            </p>
             <ul>
               <li>Full CSEC Maths programme — diagnostic, daily sessions, examiner-style marking</li>
+              <li>One student, with access running to the sitting they are entered for</li>
               <li>Predicted grade tracking from day one to exam day</li>
               <li>Founding Family price locked for life on everything we launch next</li>
               <li>Direct line to me — your feedback shapes the product</li>
@@ -256,24 +268,22 @@ export default async function LandingPage() {
               Reserve your place — {LANDING.price}
               <small>SECURE CHECKOUT · CARD OR APPLE PAY</small>
             </a>
+            {/* The student's address, not the payer's — which is the whole
+                reason the field exists, and why saying so here costs nothing. */}
             <div className="cap">
-              AFTER PAYING, SIGN UP WITH THE SAME EMAIL ADDRESS YOU USED AT CHECKOUT — THAT IS HOW
-              WE MATCH YOUR PAYMENT TO YOUR ACCOUNT.
+              CHECKOUT ASKS FOR THE STUDENT&rsquo;S EMAIL ADDRESS, WHICH NEED NOT BE YOURS. THAT IS
+              THE ADDRESS THEY SIGN UP WITH, AND HOW THE PAYMENT REACHES THEIR ACCOUNT.
             </div>
+            <p>
+              How you will know it is working: they will show you. We do not send reports. They can
+              open their own marked working — every question, every mark, and the reason for each
+              one — whenever they want to. You&rsquo;ll hear how it&rsquo;s going from them, not
+              from us.
+            </p>
             <div className="cap">
               LAUNCHES {LANDING.launchDate} · IN TIME FOR THE JANUARY SITTING · NOT SATISFIED AT
               LAUNCH? FULL REFUND, NO QUESTIONS.
             </div>
-          </div>
-
-          <div className="sponsor">
-            <h3>In Brooklyn? Toronto? London? 🌍</h3>
-            <p>
-              Sponsor a niece, nephew, or godchild back home. You pay from abroad, they study on
-              any phone on the island, and their access runs to the sitting. We won&rsquo;t send you
-              reports — they can show you their own marked working whenever they want, and
-              you&rsquo;ll hear how it&rsquo;s going from them, not from us.
-            </p>
           </div>
         </div>
       </section>
