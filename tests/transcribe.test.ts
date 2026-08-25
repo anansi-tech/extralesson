@@ -114,3 +114,29 @@ describe('transcription contract — model, validator and store agree', () => {
     expect(readIndexes.some(([, o]) => typeof o?.expireAfterSeconds === 'number')).toBe(false);
   });
 });
+
+// THE EVAL AND PRODUCTION MUST GROUP THE SAME WAY.
+//
+// They did not. capture.ts grouped by line.part_label and dropped every
+// unlabelled line; eval-marker.ts used linesForSlot, which carries a label down
+// the page. The gate's 92/93/95% was therefore earned on a rule production did
+// not ship, and production's rule was the lossy one. Found while testing end to
+// end. These cases are the difference between them.
+describe('a continuation line belongs to the part above it', () => {
+  const page = t([
+    { part_label: 'c', slot_label: null, text: 'det M = 4', confidence: 0.9 },
+    { part_label: null, slot_label: null, text: 'M^-1 = 1/4 (0 -2)', confidence: 0.9 },
+    { part_label: null, slot_label: null, text: '(2 0)', confidence: 0.9 },
+  ]);
+
+  it('keeps every line a student wrote under one label', () => {
+    expect(linesForSlot(page, 'c')).toHaveLength(3);
+  });
+
+  it('is what the old grouping threw away', () => {
+    // The rule capture.ts used to apply, written out: label present or dropped.
+    const droppedUnlabelled = page.lines.filter((l) => l.part_label).map((l) => l.text);
+    expect(droppedUnlabelled).toHaveLength(1);
+    expect(linesForSlot(page, 'c').length).toBeGreaterThan(droppedUnlabelled.length);
+  });
+});

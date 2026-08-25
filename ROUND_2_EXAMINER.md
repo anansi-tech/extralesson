@@ -142,6 +142,45 @@ And the ceiling is honest: 83.5% is what the whole bank would reach if every
 construction were photographed by every student. The realised figure will be
 lower, and it is the photographed rate that decides by how much.
 
+## 8a. Carried forward: rubric rows need a declared credit field
+
+**Parked deliberately, with the reason written down so it is not re-decided by
+whoever reads the rubric next.**
+
+Found end to end on 9cc6c1. Two rows share slot `d.ii`:
+
+```
+R2  Applies "their" inverse matrix to Q' to reverse the combined transformation.
+R3  Concludes the original coordinates of the calibration point.
+```
+
+R2 says *their*. R3 says neither *their* nor CAO, so whether the conclusion
+follows the student's own chain or must reach the true answer was never stated —
+and the marker resolved the silence strictly, refusing a correct follow-through
+conclusion three runs in a row. The marker was not wrong; the rubric did not say.
+
+**Measured:** 884 of 2424 rubric rows (36%) sit on a slot beside a
+follow-through row while declaring neither. That figure OVERSTATES the harm —
+most are knowledge rows ("Recognises that $3n$ represents the increase in
+tiles") where neither concept applies. The damaging subset is rows that
+*conclude* a follow-through chain, and it is **unmeasured**, because separating
+them means pattern-matching criterion prose, which is the thing this fix exists
+to stop.
+
+**Why it is parked rather than built.** It fails safe: the marker withholds
+rather than over-awards, so no student is given a mark they did not earn. It is
+already inside the withheld-when-should-award ~6% that every eval run reports.
+And the subset that matters cannot be sized from the bank — only from students
+saying "I got that right". Building a schema change, a 2424-row backfill, a
+contract rule and a validator against an unmeasured subset would be sizing the
+fix by guess.
+
+**What it will be when it is built.** A declared field on the rubric row —
+`credit: 'follow_through' | 'cao' | 'independent'` — read by the marker instead
+of inferred from wording, with a same-commit backfill and a generation-contract
+rule that a row on a slot carrying a follow-through sibling must declare which
+it is. The trigger to build it is real students' reports, not another audit.
+
 ## 9. Kill list (additions)
 
 No handwriting model or OCR training · no per-stroke or video capture · no live camera guidance · no marking without a stored transcription · no vision pass that can reduce a deterministically-earned mark · no image retained beyond the TTL · no parent report in this round · no instrument constructions · no second marking dialect (transcription targets the grader's existing conventions).
@@ -159,6 +198,13 @@ Greps: `tesseract`, `ocr`, `stroke`, `handwriting-model`.
 6. Cost per photographed question instrumented and visible in admin.
 7. Verdict / score / rubric-chip consistency holds with method marks included; drift test covers the transcription contract across model → validator → persistence.
 8. Mobile audit passes; tests green; kill-list greps clean.
+
+   **One rule for which lines belong to which part.** capture.ts grouped by
+   `line.part_label` and dropped every unlabelled line; `eval-marker.ts` used
+   `linesForSlot`, which carries a label down the page. The gate's 92/93/95% was
+   earned on a rule production did not ship, and production's was the lossy one.
+   Production now calls `linesForSlot`, so the measured number and the shipped
+   behaviour are the same thing.
 9. Constructions are checked against the template's declared params and no second source; a checked construction can only add the construct slot's rubric rows; an unreadable photograph or an unsure observation leaves the slot on its self-check list. The share of construct slots that can be ground-truthed is measured, not asserted (§8: 68%).
 
 ## 11. Sequencing

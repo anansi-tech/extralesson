@@ -114,6 +114,26 @@ plus the Round 2 list above. Use word-boundary matching — "division" in faithf
 syllabus text is not a violation, and neither is an SVG `stroke`. Spell out "school-based assessment" / "investigative
 question" in comments instead of the banned tokens.
 
+## Next candidate, not yet built
+
+**Rubric rows need a declared credit field.** A row that says neither "their"
+nor CAO leaves it unstated whether it follows the student's own values or must
+reach the true answer, and the marker resolves that silence strictly — refusing
+a correct follow-through conclusion. 884 of 2424 rows (36%) sit beside a
+follow-through row while declaring neither; that overstates the harm, because
+most are knowledge rows, and the damaging subset is **unmeasured** and cannot be
+sized without pattern-matching criterion prose.
+
+Parked because it fails safe, sits inside the withheld-when-should-award ~6%
+already reported in every eval run, and will be sized by real students' "I got
+that right" reports rather than by another audit. When built:
+`credit: 'follow_through' | 'cao' | 'independent'` on the rubric row, read by
+the marker instead of inferred from wording, with a same-commit backfill and a
+generation-contract rule. Full reasoning in `ROUND_2_EXAMINER.md` §8a.
+
+This is the same failure mode as the streak and spaced-repetition lines below: a
+rule that was not written down got resolved to whatever the reader assumed.
+
 ## Working style
 
 First principles. Occam's razor. Surgical changes only — no scope creep, no speculative

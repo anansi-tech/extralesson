@@ -4,7 +4,13 @@ import { z } from 'zod';
 import { dbConnect, Attempt, CapturedImage, Question, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { markableSlots } from '@/lib/grade/mark';
-import { MAX_BYTES, MAX_TAKES, transcribeWorking, type TranscriptionResult } from '@/lib/grade/transcribe';
+import {
+  MAX_BYTES,
+  MAX_TAKES,
+  linesForSlot,
+  transcribeWorking,
+  type TranscriptionResult,
+} from '@/lib/grade/transcribe';
 import { earnableByMethod, constructionRows, alreadyEarnedByMethod } from '@/lib/grade/method-marks';
 import { constructionChecks } from '@/lib/grade/construction';
 import { checkConstruction } from '@/lib/grade/check-construction';
@@ -122,10 +128,22 @@ export async function captureWorking(input: {
   let decisions: MethodDecision[] = [];
   let usage: { input_tokens?: number; output_tokens?: number } = {};
   if (unearned.length > 0) {
+    // ONE RULE FOR WHICH LINES BELONG TO WHICH PART.
+    //
+    // This grouped by line.part_label and DROPPED every line the reader left
+    // unlabelled, while linesForSlot — which the eval harness has always used —
+    // carries a label down the page the way a candidate writes: the question
+    // number once, the working under it. So the gate was measured on one rule
+    // and production shipped another, and production's was the lossy one: a
+    // student who labels (c) and writes three lines under it had two of them
+    // thrown away before the marker ever saw them.
+    //
+    // linesForSlot wins because the eval's number was earned with it and
+    // because it is the rule that matches the paper. The duplicate is gone.
     const workingByPart: Record<string, string[]> = {};
-    for (const line of read.transcription.lines) {
-      const part = line.part_label ?? '';
-      if (part) (workingByPart[part] ??= []).push(line.text);
+    for (const part of question.parts ?? []) {
+      const lines = linesForSlot(read.transcription, part.label);
+      if (lines.length > 0) workingByPart[part.label] = lines;
     }
     const typed = splitStoredAnswer(String(attempt.answer), allSlots(question.parts ?? []));
     try {
