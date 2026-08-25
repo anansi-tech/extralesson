@@ -3,6 +3,7 @@ import { module1Topics } from '@/lib/seed/module1-topics';
 import { module2Topics } from '@/lib/seed/module2-topics';
 import { module3Topics } from '@/lib/seed/module3-topics';
 import { seedBlueprints } from '@/lib/seed/blueprints';
+import { SITTINGS } from '@/lib/sittings';
 
 // Landing-page content constants (ROUND_1 §7): dates and counts live here,
 // in one place. No fake counters anywhere.
@@ -13,7 +14,25 @@ export const LANDING = {
   // re-sit, which is not the sitting most students take, and a date-based
   // urgency expires into a lie. The scarcity that is real is the cap above:
   // 100 places, enforced where the money is taken.
-  sittingNote: 'JANUARY RE-SIT & MAY/JUNE 2027',
+  //
+  // The sittings are DERIVED, never typed. The page said "through the January
+  // sitting" two lines from a note listing both, and since expiry shipped that
+  // was not merely narrow but wrong: access runs to the sitting the STUDENT
+  // registered for. One list, from the same record the paywall reads.
+  sittingNote: Object.values(SITTINGS)
+    .map((s) => s.label)
+    .join(' & ')
+    .toUpperCase(),
+  /**
+   * Share of our mark-scheme marks awarded for the working rather than the
+   * final answer, measured over the approved structured bank on 2026-08-25:
+   * 3789 of 4481 marks sit on rows that are not CAO. Recorded here rather than
+   * queried on every render, and stated as a fact about OUR mark schemes,
+   * because that is what was counted.
+   */
+  statWorking: '84%',
+  statWorkingLabel:
+    'Of the marks in our mark schemes are for\nthe working, not the final answer',
   statAvgScore: '38%',
   statAvgScoreLabel: 'The average CSEC Maths score\n(May/June 2024, out of 200 marks)',
   statBenchmark: '56%',

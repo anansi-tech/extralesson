@@ -12,7 +12,7 @@ import { getSession } from '@/lib/auth/session';
 export const metadata: Metadata = {
   title: 'ExtraLesson — Your child’s own CXC examiner',
   description:
-    'AI-powered CSEC Maths tutoring that marks real working the way a CXC examiner does — step by step. Built by a Grenadian island scholar. Founding Families: $25 through the January sitting.',
+    'AI-powered CSEC Maths tutoring that marks real working the way a CXC examiner does — step by step. Built by a Grenadian island scholar. Founding Families: $25 for the sitting you are preparing for.',
   openGraph: {
     title: 'ExtraLesson — Your child’s own CXC examiner',
     description:
@@ -62,7 +62,7 @@ export default async function LandingPage() {
           <a className="btn" href="#offer">
             Become a Founding Family — {LANDING.price}
             <small>
-              FULL ACCESS THROUGH THE JANUARY SITTING · {LANDING.places} FAMILIES ONLY
+              FULL ACCESS THROUGH THE SITTING YOU CHOOSE · {LANDING.places} FAMILIES ONLY
             </small>
           </a>
           <div className="heronote">
@@ -82,11 +82,14 @@ export default async function LandingPage() {
               <div className="n red">{LANDING.statBenchmark}</div>
               <div className="l">{LANDING.statBenchmarkLabel}</div>
             </div>
+            {/* This was "Jan" — a date dressed as a statistic beside two real
+                ones, and an argument that expires. The urgency is not that a
+                date is close; it is that most of a paper's marks are in the
+                working, and every week of practice nobody marks is a week of
+                those marks going uncorrected. */}
             <div>
-              <div className="n">Jan</div>
-              <div className="l">
-                {'The re-sit is in January.\nPreparation starts now.'}
-              </div>
+              <div className="n">{LANDING.statWorking}</div>
+              <div className="l">{LANDING.statWorkingLabel}</div>
             </div>
           </div>
         </div>
@@ -251,7 +254,7 @@ export default async function LandingPage() {
         <div className="wrap">
           <div className="offer">
             <div className="eyebrow">Founding Families · {LANDING.places} places</div>
-            <h2>Everything, through the January sitting.</h2>
+            <h2>Everything, through the sitting you choose.</h2>
             <div className="price">{LANDING.price}</div>
             <div className="per">ONE PAYMENT · NO SUBSCRIPTION · USD</div>
             <p>
@@ -303,8 +306,10 @@ export default async function LandingPage() {
             <dd>Yes. Any smartphone with a camera. Low data by design — no video streaming.</dd>
             <dt>They&rsquo;re re-sitting in January — is this for them?</dt>
             <dd>
-              Especially for them. January candidates re-sit Papers 1 and 2 (project marks carry over)
-              — exactly what ExtraLesson trains. Ten focused weeks is enough to move a grade.
+              Especially for them. January candidates re-sit Papers 1 and 2 (project marks carry
+              over) — exactly what ExtraLesson trains. Whatever run-up is left, the marks move the
+              same way: fifteen minutes a day on the topics costing the most marks, with the
+              working marked rather than the answer ticked.
             </dd>
             <dt>Is this real CXC past papers?</dt>
             <dd>
