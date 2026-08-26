@@ -229,10 +229,18 @@ delivers nothing and looks like nothing is wrong.
 Recorded here so the round is not reported complete while these are open:
 Stripe custom field set to REQUIRED with a label naming the student's address ·
 after-payment redirect to `/welcome` · back-to-site URL in Stripe business
-details · `STRIPE_WEBHOOK_SECRET` and `STRIPE_LINK_SITTINGS` set in Vercel
-production · redeploy from a commit containing the ordering fix · one real test
-purchase paying with one address and entering a different student address ·
-operator granted access on `/admin/access`.
+details · `STRIPE_WEBHOOK_SECRET` set in Vercel production · redeploy from a
+commit containing the ordering fix · one real test purchase paying with one
+address and entering a different student address · operator granted access on
+`/admin/access`.
+
+- **`STRIPE_LINK_SITTINGS`: deliberately UNSET in production — do not set it.**
+  The links are price tiers, not sittings; the registered sitting wins
+  regardless. Reasoning in `lib/preflight.ts` and `.env.example`. Written as an
+  instruction rather than left off the list, because the next person who finds
+  `STRIPE_LINK_SITTINGS` referenced in the code will notice production lacks it
+  and set it to be thorough. An explicit do-not-set is a gate; an absence is an
+  invitation.
 
 Two Stripe settings that are PER-MODE, which is why a clean test run does not
 demonstrate them:
@@ -245,6 +253,13 @@ demonstrate them:
 **Known gap, not blocking.** The receipt goes to the PAYER, and `/welcome` is
 seen only by whoever clicked through from checkout. So a payer who is not the
 student gets no confirmation that the student's access is live — they have paid,
-and the only evidence they have of it working is the student telling them. This
-is consistent with §8d (we do not report to a third party on a student), and it
-is recorded rather than solved.
+and the only evidence they have of it working is the student telling them.
+
+**This is not §8d, and reading it as §8d is the dangerous direction.** §8d
+declined PROGRESS reports: telling a third party how a student is doing. A
+confirmation that a payment succeeded and an account is now active is a
+TRANSACTION fact about the payer's own purchase — it carries no information
+about a student's work, and §8d says nothing about it. Collapsing the two lets
+an unmet commercial obligation, telling the person who paid that their money
+worked, hide behind a principled refusal about a student's privacy. It is left
+unbuilt because there is no email path for it yet, not because it was declined.
