@@ -8,8 +8,35 @@ import { isProduction } from '@/lib/preflight';
 
 // Landing-page content constants (ROUND_1 §7): dates and counts live here,
 // in one place. No fake counters anywhere.
+/**
+ * THE SWITCH, when the hundred places fill.
+ *
+ * There is no automatic path and there will not be one: reading the remaining
+ * count needs the Stripe API call the kill list forbids. So the job is to make
+ * the change SMALL and findable rather than clever.
+ *
+ * Every NUMBER and the offer's NAME are here, and nothing on any surface states
+ * either by hand — a test enforces that. What is left is prose that has to be
+ * read and rewritten, not substituted, and it is listed so the switch is a
+ * checklist rather than a hunt:
+ *
+ *   1. NEXT_PUBLIC_STRIPE_PAYMENT_LINK -> the $45 live link, in Vercel.
+ *   2. price -> '$45'.
+ *   3. The cap comes off. `places` and the offer name below stop being true,
+ *      and `app/page.tsx` carries three lines that are Founding-Families
+ *      framing rather than a name to swap:
+ *        · the hero eyebrow "· N FAMILIES ONLY"
+ *        · the offer eyebrow "Founding Families · N places"
+ *        · the offer bullet "Founding Family price locked for life…"
+ *      The first two lose the cap clause; the third is a promise made to the
+ *      hundred and is deleted, not reworded.
+ *   4. Re-read the FAQ's "building this with the first N families".
+ */
 export const LANDING = {
   price: '$25',
+  /** The offer's name, so it is one change and not four. */
+  offerName: 'Founding Families',
+  offerMember: 'Founding Family',
   /**
    * A CAP IS A CLAIM ABOUT USAGE, so it is checked rather than asserted.
    *

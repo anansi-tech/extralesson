@@ -341,3 +341,45 @@ describe('landing statistics', () => {
     expect(LANDING_CONTENT.statBenchmark).not.toBe('56%');
   });
 });
+
+// THE PRICE AND THE CAP LIVE IN ONE PLACE.
+//
+// When the hundred places fill the page must switch to $45 in one push, and
+// there is no automatic path — reading the remaining count needs the Stripe API
+// call the kill list forbids. So the switch has to be a constant change rather
+// than a hunt, and a number typed onto a surface is what turns it back into a
+// hunt.
+describe('price and cap are stated only through LANDING', () => {
+  const strip = (src: string) => src.replace(/\{?\/\*[\s\S]*?\*\/\}?/g, '');
+  const LANDING_PAGE = strip(read('app', 'page.tsx'));
+
+  it('states the price nowhere by hand', () => {
+    expect(LANDING_PAGE).not.toMatch(/\$\d+/);
+    expect(LANDING_PAGE).toContain('LANDING.price');
+  });
+
+  it('states the cap nowhere by hand, in digits or in words', () => {
+    expect(LANDING_PAGE).not.toMatch(/\bhundred\b/i);
+    expect(LANDING_PAGE).not.toMatch(/\b100\b/);
+    expect(LANDING_PAGE).toContain('LANDING.places');
+  });
+
+  it('names the offer through the constant, so it is one change and not four', () => {
+    expect(LANDING_PAGE).not.toMatch(/Founding Famil/);
+    expect(LANDING_PAGE).toMatch(/LANDING\.offer(Name|Member)/);
+  });
+
+  it('keeps price and cap off every other surface', () => {
+    for (const f of [
+      ['app', 'welcome', 'page.tsx'],
+      ['app', 'terms', 'page.tsx'],
+      ['app', 'privacy', 'page.tsx'],
+      ['app', 'study', 'page.tsx'],
+      ['app', 'layout.tsx'],
+      ['lib', 'email.ts'],
+    ]) {
+      const src = strip(read(...f));
+      expect(src, f.join('/')).not.toMatch(/\$\d+|Founding Famil/);
+    }
+  });
+});
