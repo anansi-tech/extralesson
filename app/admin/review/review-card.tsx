@@ -148,7 +148,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
       {(question.backTo || question.pinned) && (
         <div className="mb-3 flex flex-wrap items-baseline gap-4 font-mono text-[11px] uppercase tracking-widest text-dim">
           {question.backTo && (
-            <Link href={`/admin/review?id=${question.backTo}`} className="underline">
+            <Link href={`/admin/review?id=${question.backTo}`} className="inline-flex min-h-11 items-center underline">
               ← back to {question.backTo.slice(-6)}
             </Link>
           )}

@@ -36,17 +36,17 @@ export default async function CoveragePage() {
             extra<em className="not-italic text-red-pen">lesson</em>
             <span className="ml-2 font-mono text-xs uppercase tracking-widest text-dim">coverage</span>
           </div>
-          <div className="flex items-baseline gap-4 font-mono text-xs text-dim">
+          <div className="flex flex-wrap items-center gap-x-4 font-mono text-xs text-dim">
             <span>
               <b className="text-ink">{approvedTotal}</b> approved · <b className="text-ink">{draftsRemaining}</b> draft
             </span>
-            <Link href="/admin/review" className="underline">
+            <Link href="/admin/review" className="inline-flex min-h-11 items-center underline">
               ← review queue
             </Link>
-            <Link href="/admin/access" className="underline">
+            <Link href="/admin/access" className="inline-flex min-h-11 items-center underline">
               access
             </Link>
-            <Link href="/study" className="underline">
+            <Link href="/study" className="inline-flex min-h-11 items-center underline">
               student app
             </Link>
           </div>

@@ -82,15 +82,15 @@ export default async function AccessPage() {
             extra<em className="not-italic text-red-pen">lesson</em>
             <span className="ml-2 font-mono text-xs uppercase tracking-widest text-dim">access</span>
           </div>
-          <div className="flex items-baseline gap-4 font-mono text-xs text-dim">
+          <div className="flex flex-wrap items-center gap-x-4 font-mono text-xs text-dim">
             <span>
               <b className="text-ink">{paid}</b> with access ·{' '}
               <b className={waiting > 0 ? 'text-red-pen' : 'text-ink'}>{waiting}</b> waiting
             </span>
-            <Link href="/admin/coverage" className="underline">
+            <Link href="/admin/coverage" className="inline-flex min-h-11 items-center underline">
               coverage
             </Link>
-            <Link href="/admin/review" className="underline">
+            <Link href="/admin/review" className="inline-flex min-h-11 items-center underline">
               review queue
             </Link>
           </div>
