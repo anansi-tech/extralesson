@@ -225,3 +225,33 @@ describe('sittings are derived, not named', () => {
     expect(LANDING).not.toMatch(/\b(ten|eight|twelve|10|12) (focused )?weeks\b/i);
   });
 });
+
+// THE CREDENTIAL IS THE SUBJECT, NOT THE BUILDING.
+//
+// "Former high school teacher" was true and vague. What matters to a buyer is
+// that it is the SAME subject, syllabus and exam: CSEC Mathematics, Forms 3 to
+// 5. Pinned because design/extralesson-landing.html — the file this page was
+// ported from — has twice been the stale copy that reintroduced old wording.
+describe('the founder credential', () => {
+  const LANDING = read('app', 'page.tsx');
+  const PORT_SOURCE = read('design', 'extralesson-landing.html');
+
+  it('names the subject and the forms taught', () => {
+    expect(LANDING.replace(/\s+/g, ' ')).toMatch(/CSEC Mathematics to Forms 3 to 5/);
+    expect(LANDING).toMatch(/TAUGHT CSEC MATHEMATICS, FORMS 3/);
+  });
+
+  it('is gone in its vague form from the page and its port source', () => {
+    for (const src of [LANDING, PORT_SOURCE]) {
+      expect(src.replace(/\s+/g, ' ')).not.toMatch(/high[- ]school teacher/i);
+    }
+  });
+
+  it('does not claim we hand out past papers, which we do not', () => {
+    // The founder taught WITH past papers; the product is original questions.
+    // The FAQ says so, and the founder paragraph must not undercut it.
+    const flat = LANDING.replace(/\s+/g, ' ');
+    expect(flat).toMatch(/CXC&rsquo;s papers are their copyright/);
+    expect(flat).not.toMatch(/the same past papers/i);
+  });
+});

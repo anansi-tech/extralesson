@@ -220,8 +220,9 @@ export default async function LandingPage() {
             <div>
               <div className="eyebrow">Why I built this</div>
               <p style={{ marginTop: 8 }}>
-                I sat these exams in Grenada. <b>Ten CXC subjects, island scholar.</b> Then I taught
-                high school for two years before leaving for engineering degrees, a PhD in computer
+                I sat these exams in Grenada. <b>Ten CXC subjects, island scholar.</b> Then I
+                taught <b>CSEC Mathematics to Forms 3 to 5</b> for two years — working past papers
+                with students, question by question — before engineering degrees, a PhD in computer
                 science and AI, and a career leading AI teams in the US.
               </p>
               <p>
@@ -231,12 +232,14 @@ export default async function LandingPage() {
                 <b>nobody teaches them how the exam is actually marked.</b>
               </p>
               <p>
-                So I built the examiner I wish every student had: patient, precise, available every
-                single day — and honest in red pen. My own family in Grenada tested it first.
+                So I built the examiner I wish every student had: that same question-by-question
+                practice, with the working marked — patient, precise, available every single day,
+                and honest in red pen. My own family in Grenada tested it first.
               </p>
               <div className="sig">David Noel</div>
               <div className="cred">
-                PHD COMPUTER SCIENCE · FORMER HIGH SCHOOL TEACHER · ISLAND SCHOLAR, GRENADA
+                PHD COMPUTER SCIENCE · TAUGHT CSEC MATHEMATICS, FORMS 3&ndash;5 · ISLAND SCHOLAR,
+                GRENADA
               </div>
             </div>
           </div>
@@ -315,7 +318,7 @@ export default async function LandingPage() {
             <dd>
               No — CXC&rsquo;s papers are their copyright. Our questions are original, written to
               the current public syllabus and marked to mark-scheme conventions, and reviewed by a
-              former Caribbean high-school teacher (me).
+              teacher who taught CSEC Mathematics in the Caribbean (me).
             </dd>
             <dt>What if it doesn&rsquo;t help?</dt>
             <dd>
