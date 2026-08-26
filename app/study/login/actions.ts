@@ -10,6 +10,7 @@ import { resetEmail, sendEmail } from '@/lib/email';
 import { externalBaseUrl } from '@/lib/base-url';
 import { hashPassword, passwordProblem, verifyPassword } from '@/lib/auth/password';
 import { setSessionCookie } from '@/lib/auth/session';
+import { grantFromPayment, pendingPaymentFor } from '@/lib/grant-from-payment';
 
 // Email and password. Round 1 was passwordless, and checking an inbox every
 // session was friction a student on a phone would not pay.
@@ -109,6 +110,19 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
     target_modules: targets,
     password_hash: await hashPassword(password),
   });
+
+  // PAY FIRST, REGISTER SECOND — the ordering the checkout caption invites.
+  // Stripe fired before this account existed, so the webhook could only record
+  // the payment as unmatched. It is matched now, and waiting for someone to
+  // read the admin screen would leave a paying student on the free tier.
+  const pending = await pendingPaymentFor(email);
+  if (pending) {
+    await grantFromPayment({
+      studentId: student._id,
+      registeredSitting: exam_sitting,
+      payment: pending,
+    });
+  }
 
   await setSessionCookie(String(student._id), email);
   redirect('/study');

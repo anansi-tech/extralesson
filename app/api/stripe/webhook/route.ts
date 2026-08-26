@@ -1,5 +1,6 @@
 import { dbConnect, Payment, Student } from '@/lib/db';
 import { emailFromSession, sittingFromLink, verifyStripeSignature } from '@/lib/stripe-webhook';
+import { grantFromPayment } from '@/lib/grant-from-payment';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -58,8 +59,9 @@ export async function POST(req: Request): Promise<Response> {
   const mapped = sittingFromLink(session, process.env.STRIPE_LINK_SITTINGS);
   const sitting = mapped ?? student?.exam_sitting ?? null;
 
+  let created;
   try {
-    await Payment.create({
+    created = await Payment.create({
       event_id: event.id,
       email,
       amount_total: typeof session.amount_total === 'number' ? session.amount_total : undefined,
@@ -72,23 +74,17 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ duplicate: true }, { status: 200 });
   }
 
-  if (!student || !sitting) {
-    // Recorded, not dropped. It shows on /admin/access as unmatched.
+  if (!student) {
+    // Recorded, not dropped. It shows on /admin/access as unmatched — and if
+    // this address registers later, register() finds it and grants there.
     return Response.json({ matched: false }, { status: 200 });
   }
 
-  await Student.updateOne(
-    { _id: student._id },
-    {
-      $set: {
-        access: {
-          sitting,
-          granted_at: new Date(),
-          source: 'stripe',
-          note: mapped ? `stripe ${event.id}` : `stripe ${event.id} · sitting from registration`,
-        },
-      },
-    },
-  );
+  // The same grant register() performs in the other ordering.
+  await grantFromPayment({
+    studentId: student._id,
+    registeredSitting: student.exam_sitting,
+    payment: { _id: created._id, event_id: event.id, sitting: mapped },
+  });
   return Response.json({ matched: true }, { status: 200 });
 }
