@@ -230,21 +230,17 @@ describe('sittings are derived, not named', () => {
 //
 // "Former high school teacher" was true and vague. What matters to a buyer is
 // that it is the SAME subject, syllabus and exam: CSEC Mathematics, Forms 3 to
-// 5. Pinned because design/extralesson-landing.html — the file this page was
-// ported from — has twice been the stale copy that reintroduced old wording.
+// 5.
 describe('the founder credential', () => {
   const LANDING = read('app', 'page.tsx');
-  const PORT_SOURCE = read('design', 'extralesson-landing.html');
 
   it('names the subject and the forms taught', () => {
     expect(LANDING.replace(/\s+/g, ' ')).toMatch(/CSEC Mathematics to Forms 3 to 5/);
     expect(LANDING).toMatch(/TAUGHT CSEC MATHEMATICS, FORMS 3/);
   });
 
-  it('is gone in its vague form from the page and its port source', () => {
-    for (const src of [LANDING, PORT_SOURCE]) {
-      expect(src.replace(/\s+/g, ' ')).not.toMatch(/high[- ]school teacher/i);
-    }
+  it('is gone in its vague form', () => {
+    expect(LANDING.replace(/\s+/g, ' ')).not.toMatch(/high[- ]school teacher/i);
   });
 
   it('does not claim we hand out past papers, which we do not', () => {
@@ -266,21 +262,23 @@ describe('the founder credential', () => {
 // ones as marketing.
 describe('public claims are ones we can show', () => {
   const LANDING = read('app', 'page.tsx').replace(/\{?\/\*[\s\S]*?\*\/\}?/g, '');
-  const PORT_SOURCE = read('design', 'extralesson-landing.html');
 
   it('makes no claim about who has tested or used it', () => {
-    for (const src of [LANDING, PORT_SOURCE]) {
-      const flat = src.replace(/\s+/g, ' ');
-      expect(flat).not.toMatch(/tested it first/i);
-      expect(flat).not.toMatch(/my own family/i);
-      expect(flat).not.toMatch(/\b(hundreds|thousands) of (students|families)/i);
-      expect(flat).not.toMatch(/used by \d/i);
-    }
+    const flat = LANDING.replace(/\s+/g, ' ');
+    expect(flat).not.toMatch(/tested it first/i);
+    expect(flat).not.toMatch(/my own family/i);
+    expect(flat).not.toMatch(/\b(hundreds|thousands) of (students|families)/i);
+    expect(flat).not.toMatch(/used by \d/i);
   });
 
   it('claims no result it has not produced', () => {
     expect(LANDING).not.toMatch(/\bproven\b/i);
     expect(LANDING).not.toMatch(/\bguarantee[sd]?\b/i);
+    // The hero said the feedback "turns a Grade IV into a Grade II". No student
+    // has sat an exam after using this, so there was nothing behind it. What it
+    // says now is what the product demonstrably does.
+    expect(LANDING).not.toMatch(/turns a Grade/i);
+    expect(LANDING.replace(/\s+/g, ' ')).toMatch(/the exact feedback an examiner would write/i);
   });
 
   it('keeps the limits, which are what make the rest believable', () => {

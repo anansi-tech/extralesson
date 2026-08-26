@@ -32,7 +32,7 @@ Standing rule: rotating `SESSION_SECRET` = global logout. Intentional; document 
 
 | Route | Purpose | Auth |
 |---|---|---|
-| `/` | Landing page (port of `/design/extralesson-landing.html`) | Public |
+| `/` | Landing page (originally a port of a design HTML file, since deleted — `app/page.tsx` is the source of truth) | Public |
 | `/study` | Student app | Magic-link session |
 | `/study/login` | Email → magic link | Public |
 | `/admin/review` | Question review queue | Admin allowlist |
@@ -144,7 +144,7 @@ One question per screen (stem, options/rubric with CK/AK/R chips, solution, misc
 
 ## 7. Landing page port — `/`
 
-Port `/design/extralesson-landing.html` faithfully to a server component (copy, structure, aesthetic preserved). CTA = plain `<a href>` to `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` — no Stripe SDK/API/webhooks. Content constants (dates, places count) in one file; no fake counters. Copy tweak permitted in this round only where exam facts changed: any M1/A1 mark language → CK/AK/R-neutral phrasing ("marked the way examiners award marks — step by step"). Basic SEO + OG image + sitemap.
+Port the landing design HTML faithfully to a server component (copy, structure, aesthetic preserved). **The design file was deleted after Round 2:** it had twice become the stale copy that reintroduced wording already fixed on the page — a wrong company name, a removed flag — and having two files to sweep made every copy change a two-file job that was silently one. `app/page.tsx` is the source of truth for the landing page. CTA = plain `<a href>` to `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` — no Stripe SDK/API/webhooks. Content constants (dates, places count) in one file; no fake counters. Copy tweak permitted in this round only where exam facts changed: any M1/A1 mark language → CK/AK/R-neutral phrasing ("marked the way examiners award marks — step by step"). Basic SEO + OG image + sitemap.
 
 ## 8. Kill list — hard gates
 

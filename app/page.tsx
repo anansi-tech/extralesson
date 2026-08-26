@@ -5,7 +5,9 @@ import { LANDING, landingCoverage, paymentLink } from '@/lib/landing-content';
 import { REFUND_DAYS } from '@/lib/access';
 import { getSession } from '@/lib/auth/session';
 
-// Faithful port of design/extralesson-landing.html (ROUND_1 §7).
+// Originally a faithful port of a design HTML file (ROUND_1 §7). That file is
+// deleted: it twice became the stale copy that reintroduced wording already
+// fixed here. This page is the source of truth for the landing copy.
 // Copy changed only where exam facts changed: the old M1/A1 mark language is
 // now CK/AK/R-neutral, and channel-specific report wording was neutralized.
 
@@ -57,7 +59,7 @@ export default async function LandingPage() {
           <p className="lede">
             ExtraLesson is AI-powered CSEC Maths tutoring that marks your child&rsquo;s{' '}
             <b>real working</b> the way a CXC examiner marks Paper 2 — mark by mark, with the exact
-            feedback that turns a Grade IV into a Grade II.
+            feedback an examiner would write.
           </p>
           <a className="btn" href="#offer">
             Become a Founding Family — {LANDING.price}
