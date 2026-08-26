@@ -15,6 +15,7 @@ import { hasShowThat, SHOW_THAT_SHARE } from '@/lib/targets/show-that';
 import { CONSTRUCT_SHARE } from '@/lib/targets/construct';
 import { STRUCTURED_ARCHETYPE_TARGETS } from '@/lib/targets/representation';
 import { TARGET_ACTS_PER_MARK, TARGET_CHAIN_DEPTH } from '@/lib/targets/difficulty';
+import { LANDING } from '@/lib/landing-content';
 
 interface Lean {
   kind: 'mcq' | 'structured';
@@ -28,7 +29,7 @@ interface Lean {
   representation: string;
   context_category?: string;
   parts?: { label: string; prompt: string; slots?: { label: string; depends_on?: string[]; response_mode?: string }[] }[];
-  rubric?: { mark_value: number; profile: 'CK' | 'AK' | 'R' }[];
+  rubric?: { mark_value: number; profile: 'CK' | 'AK' | 'R'; criterion: string }[];
 }
 
 function bar(n: number, of: number, width = 28): string {
@@ -98,6 +99,48 @@ async function main() {
     `MATRIX  P1 ${matrix.p1_actual_total}/${P1_TOTAL} items (${pct(matrix.p1_actual_total, P1_TOTAL)}) · ` +
       `P2 ${matrix.p2_marks_actual_total}/${P2_MARKS_TOTAL} marks (${pct(matrix.p2_marks_actual_total, P2_MARKS_TOTAL)})\n`,
   );
+
+  // --- what the marks are actually for -------------------------------------
+  //
+  // The landing page prints this share as a statistic, so it is measured here
+  // beside the counts it belongs with. A number stated in marketing and
+  // computed nowhere drifts the moment a batch of questions lands, and drifts
+  // silently — which is the one kind of wrong this report exists to prevent.
+  //
+  // CAO is a mark-scheme convention we author deliberately, so reading it off
+  // the criterion is reading a declared field's own vocabulary, not
+  // pattern-matching prose about the maths.
+  const approvedStructured = structured.filter((q) => q.status === 'approved');
+  const rubricRows = approvedStructured.flatMap((q) => q.rubric ?? []);
+  const rubricMarks = rubricRows.reduce((n, r) => n + r.mark_value, 0);
+  const answerMarks = rubricRows
+    .filter((r) => /\bCAO\b/.test(r.criterion))
+    .reduce((n, r) => n + r.mark_value, 0);
+  const workingMarks = rubricMarks - answerMarks;
+  const workingPct = rubricMarks === 0 ? 0 : (workingMarks / rubricMarks) * 100;
+  // FLOORED, not rounded — the same rule lib/targets/coverage.ts states for the
+  // coverage figure: a claim about ourselves should lag the truth and never
+  // lead it, and under-claiming by a point costs nothing. 84.6% is stated as
+  // 84%, and would be an overstatement at 85%.
+  const claimable = Math.floor(workingPct);
+  const claimed = Number(LANDING.statWorking.replace('%', ''));
+  console.log(
+    `MARKS   ${workingMarks}/${rubricMarks} for the working (${workingPct.toFixed(1)}%) · ` +
+      `${answerMarks} for the answer (CAO)`,
+  );
+  if (claimed > claimable) {
+    console.log(
+      `        ⚠ LANDING PAGE CLAIMS ${LANDING.statWorking} AND THE BANK SUPPORTS ${claimable}% — ` +
+        `that overstates it. Lower LANDING.statWorking in lib/landing-content.ts\n`,
+    );
+  } else if (claimable - claimed > 1) {
+    console.log(
+      `        landing page says ${LANDING.statWorking}, bank now supports ${claimable}% — ` +
+        `safe, but stale enough to raise\n`,
+    );
+  } else {
+    console.log(`        landing page says ${LANDING.statWorking} — supported\n`);
+  }
 
   // --- shape ---------------------------------------------------------------
   const paper = structured.filter((q) => q.shape === 'paper');
