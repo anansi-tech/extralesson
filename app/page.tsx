@@ -223,9 +223,9 @@ export default async function LandingPage() {
               <div className="eyebrow">Why I built this</div>
               <p style={{ marginTop: 8 }}>
                 I sat these exams in Grenada. <b>Ten CXC subjects, island scholar.</b> Then I
-                taught <b>CSEC Mathematics to Forms 3 to 5</b> for two years — working past papers
-                with students, question by question — before engineering degrees, a PhD in computer
-                science and AI, and a career leading AI teams in the US.
+                taught <b>CSEC Mathematics</b> for two years — working past papers with students,
+                question by question — before engineering degrees, a PhD in computer science and
+                AI, and a career leading AI teams in the US.
               </p>
               <p>
                 Every step of that road started with CXC passes. But the maths results haven&rsquo;t
@@ -240,8 +240,7 @@ export default async function LandingPage() {
               </p>
               <div className="sig">David Noel</div>
               <div className="cred">
-                PHD COMPUTER SCIENCE · TAUGHT CSEC MATHEMATICS, FORMS 3&ndash;5 · ISLAND SCHOLAR,
-                GRENADA
+                PHD COMPUTER SCIENCE · TAUGHT CSEC MATHEMATICS · ISLAND SCHOLAR, GRENADA
               </div>
             </div>
           </div>

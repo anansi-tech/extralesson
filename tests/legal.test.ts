@@ -229,14 +229,20 @@ describe('sittings are derived, not named', () => {
 // THE CREDENTIAL IS THE SUBJECT, NOT THE BUILDING.
 //
 // "Former high school teacher" was true and vague. What matters to a buyer is
-// that it is the SAME subject, syllabus and exam: CSEC Mathematics, Forms 3 to
-// 5.
+// that it is the SAME subject, syllabus and exam: CSEC Mathematics. The subject
+// names the level on its own — and it does so in every territory, which a year
+// group does not: some say forms, others say grades.
 describe('the founder credential', () => {
   const LANDING = read('app', 'page.tsx');
 
-  it('names the subject and the forms taught', () => {
-    expect(LANDING.replace(/\s+/g, ' ')).toMatch(/CSEC Mathematics to Forms 3 to 5/);
-    expect(LANDING).toMatch(/TAUGHT CSEC MATHEMATICS, FORMS 3/);
+  it('names the subject taught', () => {
+    expect(LANDING.replace(/\s+/g, ' ')).toMatch(/taught <b>CSEC Mathematics<\/b> for two years/);
+    expect(LANDING).toMatch(/TAUGHT CSEC MATHEMATICS · ISLAND SCHOLAR/);
+  });
+
+  it('names no year group, which is said differently across the region', () => {
+    expect(LANDING).not.toMatch(/Forms? \d/i);
+    expect(LANDING).not.toMatch(/FORMS 3/);
   });
 
   it('is gone in its vague form', () => {
