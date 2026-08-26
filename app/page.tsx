@@ -222,7 +222,7 @@ export default async function LandingPage() {
             <div>
               <div className="eyebrow">Why I built this</div>
               <p style={{ marginTop: 8 }}>
-                I sat these exams in Grenada. <b>Ten CXC subjects, island scholar.</b> Then I
+                I sat these exams in Grenada. <b>Ten CXC subjects, an island scholar.</b> Then I
                 taught <b>CSEC Mathematics</b> for two years — working past papers with students,
                 question by question — before engineering degrees, a PhD in computer science and
                 AI, and a career leading AI teams in the US.

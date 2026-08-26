@@ -245,6 +245,13 @@ describe('the founder credential', () => {
     expect(LANDING).not.toMatch(/FORMS 3/);
   });
 
+  it('claims to be an island scholar, never the island scholar', () => {
+    // There were several that year. The indefinite article is the whole of the
+    // difference between a credential and a claim of singularity.
+    expect(LANDING).not.toMatch(/the island scholar/i);
+    expect(LANDING.replace(/\s+/g, ' ')).toMatch(/an island scholar/);
+  });
+
   it('is gone in its vague form', () => {
     expect(LANDING.replace(/\s+/g, ' ')).not.toMatch(/high[- ]school teacher/i);
   });
