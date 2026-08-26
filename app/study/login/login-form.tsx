@@ -5,12 +5,22 @@ import { useActionState, useState } from 'react';
 import { register, requestReset, signIn, type AuthState } from './actions';
 import { PASSWORD_MIN } from '@/lib/auth/password-policy';
 
-const field = 'mt-1 w-full border-[1.5px] border-ink bg-white p-3 text-sm';
+// 16px, not 14: iOS Safari zooms the page on focusing any field whose computed
+// font-size is under 16px, and the zoom does not come back on blur. That is the
+// whole cause — nothing about the viewport meta or the layout.
+const field = 'mt-1 w-full border-[1.5px] border-ink bg-white p-3 text-base';
 
 export default function LoginForm() {
   // One form, three actions. Which one runs is decided by what the student is
   // doing, not by three separate pages they have to find their way between.
   const [mode, setMode] = useState<'signin' | 'reset'>('signin');
+  // HELD ON THE CLIENT, not returned in AuthState. React 19 resets an
+  // uncontrolled form once a form action has run — which is precisely when
+  // signIn answers needsProfile and this form turns into a registration, so the
+  // student was asked to type the password a second time on a phone. Email
+  // survived only because it is re-supplied via defaultValue; a password has no
+  // business making that round trip to be re-rendered.
+  const [password, setPassword] = useState('');
   const [signInState, signInAction, signingIn] = useActionState<AuthState, FormData>(signIn, {});
   const [registerState, registerAction, registering] = useActionState<AuthState, FormData>(register, {});
   const [resetState, resetAction, resetting] = useActionState<AuthState, FormData>(requestReset, {});
@@ -71,6 +81,8 @@ export default function LoginForm() {
           name="password"
           type="password"
           required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           minLength={needsProfile ? PASSWORD_MIN : undefined}
           autoComplete={needsProfile ? 'new-password' : 'current-password'}
           className={field}

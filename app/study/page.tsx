@@ -510,7 +510,7 @@ export default async function StudyDashboard({
                 id="topic"
                 name="topic"
                 defaultValue={topicChoices[0]?.code}
-                className="min-w-0 flex-1 border-[1.5px] border-ink bg-paper p-2 text-sm"
+                className="min-w-0 flex-1 border-[1.5px] border-ink bg-paper p-2 text-base"
               >
                 {topicChoices.map((t) => (
                   <option key={t.code} value={t.code}>

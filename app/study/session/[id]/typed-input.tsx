@@ -92,7 +92,7 @@ export function TypedInput({
         onFocus={() => onFocusBox(i)}
         aria-label={`${describe} — ${boxName(shape, i, cols)}`}
         style={{ width: `${Math.min(28, Math.max(chars, typed + 1)) + 2}ch` }}
-        className="min-h-11 min-w-16 max-w-full border-[1.5px] border-ink p-2 text-center font-mono text-sm"
+        className="min-h-11 min-w-16 max-w-full border-[1.5px] border-ink p-2 text-center font-mono text-base"
       />
     );
   };

@@ -577,7 +577,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                           <div className="flex min-w-0 flex-1 items-start gap-2">
                           {slotAnswerInput(slot, {
                             describe: slotAriaLabel(p, slot),
-                            className: 'min-h-11 w-full border-[1.5px] border-ink p-2 font-mono text-sm',
+                            className: 'min-h-11 w-full border-[1.5px] border-ink p-2 font-mono text-base',
                             placeholder:
                               p.slots.length > 1
                                 ? `Answer to (${p.label})(${slot.label})`

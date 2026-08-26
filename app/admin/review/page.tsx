@@ -234,7 +234,7 @@ export default async function ReviewPage({
             name="find"
             defaultValue={find ?? ''}
             placeholder="Find by id (d16f74) or by text (hire purchase, ferry, cumulative)"
-            className="w-full border-[1.5px] border-ink p-2 font-mono text-xs"
+            className="w-full border-[1.5px] border-ink p-2 font-mono text-base"
           />
 
           <button

@@ -210,7 +210,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                 <select
                   name="sitting"
                   defaultValue={r.exam_sitting}
-                  className="min-h-11 border-[1.5px] border-ink bg-white px-2 font-mono text-[12px]"
+                  className="min-h-11 border-[1.5px] border-ink bg-white px-2 font-mono text-base"
                 >
                   {SITTINGS.map((s) => (
                     <option key={s.value} value={s.value}>
@@ -222,7 +222,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                   name="note"
                   required
                   placeholder="comp · teacher · school · 2026-08-26"
-                  className="min-h-11 min-w-0 flex-1 border-[1.5px] border-ink px-2 font-mono text-[12px]"
+                  className="min-h-11 min-w-0 flex-1 border-[1.5px] border-ink px-2 font-mono text-base"
                 />
                 <button className="min-h-11 bg-ink px-3 font-mono text-[11px] uppercase tracking-widest text-paper">
                   Grant access

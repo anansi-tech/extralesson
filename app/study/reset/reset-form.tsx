@@ -18,7 +18,7 @@ export default function ResetForm({ token }: { token: string }) {
           required
           minLength={PASSWORD_MIN}
           autoComplete="new-password"
-          className="mt-1 w-full border-[1.5px] border-ink bg-white p-3 text-sm"
+          className="mt-1 w-full border-[1.5px] border-ink bg-white p-3 text-base"
         />
         <span className="mt-1 block text-[11px] text-dim">At least {PASSWORD_MIN} characters.</span>
       </label>
