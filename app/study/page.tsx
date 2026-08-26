@@ -21,6 +21,7 @@ import { DIAGNOSTIC_MINUTES, m1GateHolds, SESSION_MINUTES } from '@/lib/session/
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
 import { loadReviewable } from '@/lib/study/reviewable';
+import { shouldLeadWithReachable } from '@/lib/study/lead-panel';
 import { FREE_SESSIONS } from '@/lib/access';
 import { sittingLabel } from '@/lib/sittings';
 import { paymentLink } from '@/lib/landing-content';
@@ -138,8 +139,17 @@ export default async function StudyDashboard({
   // today's session will go while Module 1 is still the prerequisite.
   const m1Gated = m1GateHolds(student.target_modules, state.moduleMastery[1]);
   const gatedTopics = m1Gated ? reachable.filter((t) => t.module !== 1) : [];
-  const leadWithReachable =
-    reachable.length > 0 && (!prediction.estimable || prediction.overall_percent < 50);
+  // Not on a cold account: see lib/study/lead-panel.ts for why, and why it is
+  // gated on the FLAG rather than the panel's render site — the flag also
+  // demotes the estimate, so gating the render alone would leave the estimate
+  // squeezed to make room for something no longer there.
+  const leadWithReachable = shouldLeadWithReachable({
+    hasAnyAttempt: !isNewStudent,
+    reachableCount: reachable.length,
+    estimable: prediction.estimable,
+    overallPercent: prediction.overall_percent,
+  });
+
   // Stating what we cannot mark is a trust asset — it sits with the estimate it
   // qualifies, not in a footnote (R1.6 §3).
   const coverage = coverageSummary(state.coverage);
