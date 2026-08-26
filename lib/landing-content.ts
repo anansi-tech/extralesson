@@ -49,12 +49,22 @@ export const LANDING = {
    * THE PASS RATE. The figure this replaced — "56% of Caribbean students miss
    * the 5-subject benchmark incl. Maths" — had no source anyone could produce.
    *
-   * Source: CXC results release, August 2026 (Grades I–III, regional).
-   * NOT INDEPENDENTLY VERIFIED HERE: the report in design/reference/ is the
-   * May/June 2025 one, which gives 36.11 per cent for 2025 and 36.33 per cent
-   * for 2024. If the 2026 release is not to hand, this is the number to check
-   * first — it is the only figure on the page that rests on a source the repo
-   * cannot show.
+   * Source: CXC's August 2026 results release, as reported by Barbados Today,
+   * quoting Dr Manning directly — 42 per cent of candidates earned Grades I–III
+   * in CSEC Mathematics regionally in 2026.
+   *
+   * THE OTHER FIGURE IN THE ROOM, recorded so nobody has to rediscover it and
+   * wonder which is right. The CSEC Mathematics Subject Report for May/June
+   * 2025 gives 36.11 per cent for 2025, 36.33 per cent for 2024 and 36.88 per
+   * cent for 2022. THE SCOPES DIFFER: a subject report states the outcome for
+   * the one sitting it examines, while a figure quoted at a results release
+   * need not be on the same base — and the years differ besides. The gap
+   * between 36 and 42 is therefore not a one-year jump and must not be read as
+   * one.
+   *
+   * The page carries the 2026 release figure, cited to CXC in the label, which
+   * is whose figure it is. It is the only number here resting on a source this
+   * repo does not hold, which is why the chain is written out in full.
    */
   statBenchmark: '42%',
   statBenchmarkLabel: 'Of candidates passed CSEC Mathematics\nGrades I–III · CXC, August 2026',
