@@ -222,6 +222,10 @@ One task per commit, pushed after each, per CLAUDE.md working style.
 
 ## 9. Outside the repo, and not Claude Code's to do
 
+Before touching the webhook items: read the apex/www note beside
+`STRIPE_WEBHOOK_SECRET` in `.env.example`. An endpoint on the redirecting host
+delivers nothing and looks like nothing is wrong.
+
 Recorded here so the round is not reported complete while these are open:
 Stripe custom field set to REQUIRED with a label naming the student's address ·
 after-payment redirect to `/welcome` · back-to-site URL in Stripe business
