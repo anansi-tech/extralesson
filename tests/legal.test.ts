@@ -288,3 +288,43 @@ describe('public claims are ones we can show', () => {
     expect(flat).toMatch(/We do not send reports/i);
   });
 });
+
+// EVERY STATISTIC ON THE PAGE NAMES ITS SOURCE IN THE LABEL.
+//
+// The page carried "56% of Caribbean students miss the 5-subject benchmark",
+// which nobody could source, beside a mean mark labelled with the wrong year.
+// A number is a claim like any other: if it needs a footnote to defend, the
+// footnote goes in the label or the number goes.
+describe('landing statistics', () => {
+  const stats = [
+    [LANDING_CONTENT.statAvgScore, LANDING_CONTENT.statAvgScoreLabel],
+    [LANDING_CONTENT.statBenchmark, LANDING_CONTENT.statBenchmarkLabel],
+    [LANDING_CONTENT.statWorking, LANDING_CONTENT.statWorkingLabel],
+  ] as const;
+
+  it('states each as a percentage', () => {
+    for (const [n] of stats) expect(n).toMatch(/^\d+%$/);
+  });
+
+  it('cites a source and a date in every label of an external figure', () => {
+    // The third is measured from our own bank and says so; the two CXC figures
+    // must name CXC and a sitting or a date.
+    for (const [, label] of stats.slice(0, 2)) {
+      expect(label).toMatch(/CXC/);
+      expect(label).toMatch(/20\d\d/);
+    }
+    expect(LANDING_CONTENT.statWorkingLabel).toMatch(/our mark schemes/i);
+  });
+
+  it('does not call the mean mark a pass rate, or the pass rate a score', () => {
+    expect(LANDING_CONTENT.statAvgScoreLabel).toMatch(/mean mark/i);
+    expect(LANDING_CONTENT.statAvgScoreLabel).not.toMatch(/pass/i);
+    expect(LANDING_CONTENT.statBenchmarkLabel).toMatch(/passed/i);
+    expect(LANDING_CONTENT.statBenchmarkLabel).toMatch(/Grades I–III/);
+  });
+
+  it('has dropped the unsourceable benchmark figure', () => {
+    for (const [, label] of stats) expect(label).not.toMatch(/5-subject benchmark/i);
+    expect(LANDING_CONTENT.statBenchmark).not.toBe('56%');
+  });
+});

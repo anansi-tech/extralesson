@@ -33,10 +33,31 @@ export const LANDING = {
   statWorking: '84%',
   statWorkingLabel:
     'Of the marks in our mark schemes are for\nthe working, not the final answer',
+  /**
+   * THE MEAN MARK, not a pass rate. It was labelled "the average CSEC Maths
+   * score" for May/June 2024, which was both vague and the wrong year.
+   *
+   * Source: CXC CSEC Mathematics Subject Report, May/June 2025 (held in
+   * design/reference/, not in this repo's shipped code). Verified against the
+   * report text: "The mean score of 76.05 (38.02 per cent) was comparable with
+   * 76.71 (38.35 per cent) in 2024". Floored to 38%, as every claim about a
+   * measurement here is.
+   */
   statAvgScore: '38%',
-  statAvgScoreLabel: 'The average CSEC Maths score\n(May/June 2024, out of 200 marks)',
-  statBenchmark: '56%',
-  statBenchmarkLabel: 'Of Caribbean students miss the\n5-subject benchmark incl. Maths',
+  statAvgScoreLabel: 'Mean mark in CSEC Mathematics\n76.05 of 200 · CXC, May/June 2025',
+  /**
+   * THE PASS RATE. The figure this replaced — "56% of Caribbean students miss
+   * the 5-subject benchmark incl. Maths" — had no source anyone could produce.
+   *
+   * Source: CXC results release, August 2026 (Grades I–III, regional).
+   * NOT INDEPENDENTLY VERIFIED HERE: the report in design/reference/ is the
+   * May/June 2025 one, which gives 36.11 per cent for 2025 and 36.33 per cent
+   * for 2024. If the 2026 release is not to hand, this is the number to check
+   * first — it is the only figure on the page that rests on a source the repo
+   * cannot show.
+   */
+  statBenchmark: '42%',
+  statBenchmarkLabel: 'Of candidates passed CSEC Mathematics\nGrades I–III · CXC, August 2026',
   contactEmail: 'HELLO@ANANSI.XYZ',
 } as const;
 
