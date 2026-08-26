@@ -4,6 +4,7 @@ import { module2Topics } from '@/lib/seed/module2-topics';
 import { module3Topics } from '@/lib/seed/module3-topics';
 import { seedBlueprints } from '@/lib/seed/blueprints';
 import { SITTINGS } from '@/lib/sittings';
+import { isProduction } from '@/lib/preflight';
 
 // Landing-page content constants (ROUND_1 §7): dates and counts live here,
 // in one place. No fake counters anywhere.
@@ -84,6 +85,27 @@ export function landingCoverage(): Pick<
   return { displayPercent, uncoveredMarks, photographed };
 }
 
+/**
+ * NO SILENT FALLBACK IN PRODUCTION (ROUND_3 §1).
+ *
+ * '#offer' scrolls the reader back to the paragraph they just finished. It
+ * looks like a working button and it is a lost sale that leaves no trace — no
+ * error, no log line, nothing on the page to say the product cannot be bought.
+ * Boot refuses to start without the variable, so reaching here unset in
+ * production means something bypassed that, and the honest response is to fail
+ * where it happens rather than serve a dead CTA.
+ *
+ * Locally the fallback stays: a developer reading the landing page does not
+ * need a Stripe link to do it.
+ */
 export function paymentLink(): string {
-  return process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK || '#offer';
+  const link = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK?.trim();
+  if (link) return link;
+  if (isProduction()) {
+    throw new Error(
+      'NEXT_PUBLIC_STRIPE_PAYMENT_LINK is unset, so the offer has nowhere to go. ' +
+        'A dead button that looks alive is worse than a page that will not render.',
+    );
+  }
+  return '#offer';
 }
