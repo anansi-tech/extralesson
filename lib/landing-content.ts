@@ -25,7 +25,7 @@ export const LANDING = {
    * single price has no scarcity to claim, and a claim about usage that cannot
    * be shown does not go on this page (CLAUDE.md).
    */
-  price: '$45',
+  price: '$49',
   // No launch date and no countdown. It anchored the page to the January
   // re-sit, which is not the sitting most students take, and a date-based
   // urgency expires into a lie. The scarcity that is real is the cap above:

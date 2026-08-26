@@ -60,7 +60,7 @@ Report which is true before changing anything, and say how it was checked.
 Not "enforced" and not "pending a capture" — **removed**, because the tier it
 described was removed.
 
-The $25 Founding Families tier is gone and there is one price, $45, with no cap
+The $25 Founding Families tier is gone and there is one price, $49, with no cap
 and no cohort. Nobody had bought at $25, so it cost nothing on the day it was
 withdrawn and could not have been withdrawn later at all.
 
@@ -92,7 +92,7 @@ What stays, because it is right regardless: price lives in one constant, and
 tests fail if a price or a cap appears on any surface by hand. That refactor is
 what made this a small change instead of a hunt.
 
-Outside the repo: Vercel takes the $45 live link, and the $25 live link is
+Outside the repo: Vercel takes the $49 live link, and the $25 live link is
 deactivated in Stripe.
 
 ## 3. Teachers: the offer exists and the product has no idea

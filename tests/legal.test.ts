@@ -345,11 +345,10 @@ describe('landing statistics', () => {
 
 // THE PRICE AND THE CAP LIVE IN ONE PLACE.
 //
-// When the hundred places fill the page must switch to $45 in one push, and
-// there is no automatic path — reading the remaining count needs the Stripe API
-// call the kill list forbids. So the switch has to be a constant change rather
-// than a hunt, and a number typed onto a surface is what turns it back into a
-// hunt.
+// The price will change again, and there is one place to change it. A number
+// typed onto a surface is what turns that into a hunt — and the cap that used to
+// live here proved the point: it was stated in WORDS in the FAQ, where no search
+// for the digits would have found it.
 describe('price and cap are stated only through LANDING', () => {
   const strip = (src: string) => src.replace(/\{?\/\*[\s\S]*?\*\/\}?/g, '');
   const LANDING_PAGE = strip(read('app', 'page.tsx'));
