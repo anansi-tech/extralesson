@@ -149,11 +149,19 @@ export default async function StudyDashboard({
     <main className="ruled relative min-h-screen px-5 py-8">
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-xl">
-        <header className="flex items-baseline justify-between">
-          <div className="text-xl font-black">
+        {/* THE EMAIL IS THE ONLY THING HERE OF UNKNOWN LENGTH, so it is the
+            only thing allowed to give. It was capped at 45vw, which is nearly
+            half the row: the other three were squeezed under their own content
+            width and broke across lines — "REVIEW / QUEUE", "SIGN / OUT" — for
+            an address long enough to deserve truncating in the first place.
+            The fixed items no longer wrap, the address takes what is left and
+            truncates, and below that the row wraps as a whole rather than
+            squashing. */}
+        <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+          <div className="shrink-0 text-xl font-black">
             extra<em className="not-italic text-red-pen">lesson</em>
           </div>
-          <div className="flex items-baseline gap-3">
+          <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-end gap-x-3 gap-y-1">
             {/* Signing in lands an admin here, in the product, because an admin
                 is also a student and seeing what a student sees is the point of
                 having the account at all. This is the way across — without it
@@ -161,22 +169,25 @@ export default async function StudyDashboard({
             {isAdmin && (
               <Link
                 href="/admin/review"
-                className="font-mono text-[10px] uppercase tracking-widest text-red-pen underline"
+                className="shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-red-pen underline"
               >
                 Review queue
               </Link>
             )}
-            <span className="font-mono text-[10px] uppercase tracking-widest text-dim">
+            <span className="hidden shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-dim sm:inline">
               {student.syllabus_mode === 'legacy-jan' ? 'CSEC MATH · JAN RE-SIT' : 'CSEC MATH · MAY/JUNE 2027'}
             </span>
             {/* Which account is signed in. Obvious on one device with one
                 student; not obvious at all when a device is shared, or when
                 you are moving between admin and a test account. */}
-            <span className="max-w-[45vw] truncate font-mono text-[10px] tracking-widest text-dim">
+            <span
+              title={auth.email}
+              className="min-w-[14ch] max-w-full truncate font-mono text-[10px] tracking-widest text-dim"
+            >
               {auth.email}
             </span>
-            <form action={logout}>
-              <button className="font-mono text-[10px] uppercase tracking-widest text-dim underline">
+            <form action={logout} className="shrink-0">
+              <button className="whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-dim underline">
                 Sign out
               </button>
             </form>
