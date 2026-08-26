@@ -14,11 +14,11 @@ import { getSession } from '@/lib/auth/session';
 export const metadata: Metadata = {
   title: 'ExtraLesson — Your child’s own CXC examiner',
   description:
-    `AI-powered CSEC Maths tutoring that marks real working the way a CXC examiner does — step by step. Built by a Grenadian island scholar. ${LANDING.offerName}: ${LANDING.price} for the sitting you are preparing for.`,
+    `AI-powered CSEC Maths tutoring that marks real working the way a CXC examiner does — step by step. Built by a Grenadian island scholar. ${LANDING.price} for the sitting you are preparing for.`,
   openGraph: {
     title: 'ExtraLesson — Your child’s own CXC examiner',
     description:
-      `CSEC Maths tutoring that marks the way examiners award marks — step by step. ${LANDING.offerName}: ${LANDING.price}.`,
+      `CSEC Maths tutoring that marks the way examiners award marks — step by step. ${LANDING.price}.`,
     type: 'website',
   },
 };
@@ -62,10 +62,8 @@ export default async function LandingPage() {
             feedback an examiner would write.
           </p>
           <a className="btn" href="#offer">
-            Become a {LANDING.offerMember} — {LANDING.price}
-            <small>
-              FULL ACCESS THROUGH THE SITTING YOU CHOOSE · {LANDING.places} FAMILIES ONLY
-            </small>
+            Get full access — {LANDING.price}
+            <small>ONE PAYMENT · FULL ACCESS THROUGH THE SITTING YOU CHOOSE</small>
           </a>
           <div className="heronote">
             FOR CSEC MATHEMATICS · {LANDING.sittingNote} · WORKS ON ANY PHONE
@@ -256,9 +254,7 @@ export default async function LandingPage() {
       <section id="offer">
         <div className="wrap">
           <div className="offer">
-            <div className="eyebrow">
-              {LANDING.offerName} · {LANDING.places} places
-            </div>
+            <div className="eyebrow">CSEC Mathematics</div>
             <h2>Everything, through the sitting you choose.</h2>
             <div className="price">{LANDING.price}</div>
             <div className="per">ONE PAYMENT · NO SUBSCRIPTION · USD</div>
@@ -270,11 +266,10 @@ export default async function LandingPage() {
               <li>Full CSEC Maths programme — diagnostic, daily sessions, examiner-style marking</li>
               <li>One student, with access running to the sitting they are entered for</li>
               <li>Predicted grade tracking from day one to exam day</li>
-              <li>{LANDING.offerMember} price locked for life on everything we launch next</li>
               <li>Direct line to me — your feedback shapes the product</li>
             </ul>
             <a className="btn" href={paymentLink()}>
-              Reserve your place — {LANDING.price}
+              Get access — {LANDING.price}
               <small>SECURE CHECKOUT · CARD OR APPLE PAY</small>
             </a>
             {/* The student's address, not the payer's — which is the whole
@@ -325,8 +320,8 @@ export default async function LandingPage() {
             <dt>What if it doesn&rsquo;t help?</dt>
             <dd>
               Email us within {REFUND_DAYS} days of paying and we refund you — no questions, no
-              forms. I&rsquo;m building this with the first {LANDING.places} families, not just for
-              them.
+              forms. I&rsquo;m building this with the students using it, not just for them: tell me
+              when the marking is wrong and it gets fixed.
             </dd>
           </dl>
         </div>

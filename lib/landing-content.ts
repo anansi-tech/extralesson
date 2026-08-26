@@ -8,61 +8,27 @@ import { isProduction } from '@/lib/preflight';
 
 // Landing-page content constants (ROUND_1 §7): dates and counts live here,
 // in one place. No fake counters anywhere.
-/**
- * THE SWITCH, when the hundred places fill.
- *
- * There is no automatic path and there will not be one: reading the remaining
- * count needs the Stripe API call the kill list forbids. So the job is to make
- * the change SMALL and findable rather than clever.
- *
- * Every NUMBER and the offer's NAME are here, and nothing on any surface states
- * either by hand — a test enforces that. What is left is prose that has to be
- * read and rewritten, not substituted, and it is listed so the switch is a
- * checklist rather than a hunt:
- *
- *   1. NEXT_PUBLIC_STRIPE_PAYMENT_LINK -> the $45 live link, in Vercel.
- *   2. price -> '$45'.
- *   3. The cap comes off. `places` and the offer name below stop being true,
- *      and `app/page.tsx` carries three lines that are Founding-Families
- *      framing rather than a name to swap:
- *        · the hero eyebrow "· N FAMILIES ONLY"
- *        · the offer eyebrow "Founding Families · N places"
- *        · the offer bullet "Founding Family price locked for life…"
- *      The first two lose the cap clause; the third is a promise made to the
- *      hundred and is deleted, not reworded.
- *   4. Re-read the FAQ's "building this with the first N families".
- */
 export const LANDING = {
-  price: '$25',
-  /** The offer's name, so it is one change and not four. */
-  offerName: 'Founding Families',
-  offerMember: 'Founding Family',
   /**
-   * A CAP IS A CLAIM ABOUT USAGE, so it is checked rather than asserted.
+   * ONE PRICE, NO COHORT.
    *
-   * Checked in the Stripe dashboard on 25 Aug 2026: an "ExtraLesson — CSEC
-   * Mathematics" payment link priced $25.00 reads `Limited use: 1 of 100 used`,
-   * so Stripe refuses the hundred-and-first payment against it and this number
-   * is not a promise kept by remembering.
+   * There was a $25 Founding Families tier capped at 100 places, and it was
+   * removed before anyone bought at that price. The two prices were not the
+   * problem: the bullet promising "Founding Family price locked for life on
+   * everything we launch next" was. It committed a hundred people's pricing
+   * across every product Anansi ships, forever, in exchange for being early —
+   * a liability that cannot be unwound once sold, and one nobody had yet paid
+   * for. Removing it cost nothing on the day it was removed and could not have
+   * been removed later at all.
    *
-   * NOT YET ESTABLISHED: which MODE that link is in. The capture did not show
-   * the test/live indicator or the link id, and production is known to point at
-   * a test-mode link. Until that is confirmed, the cap is verified on "the link
-   * shown" rather than on the live one, and "99 remaining" is an unknown link's
-   * arithmetic. ROUND_3 §2.
-   *
-   * Two operational consequences, recorded because neither has an automatic
-   * path — reading remaining uses would need the API call the kill list
-   * forbids. When the hundred fill, the link stops working and this number and
-   * the copy around it have to come off by hand. And the claim is only true of
-   * the link the button actually points at: NEXT_PUBLIC_STRIPE_PAYMENT_LINK
-   * must be the live $25 link, not a test-mode one. ROUND_3 §2.
+   * The cap went with it, not because a cap is wrong but because an uncapped
+   * single price has no scarcity to claim, and a claim about usage that cannot
+   * be shown does not go on this page (CLAUDE.md).
    */
-  places: 100,
+  price: '$45',
   // No launch date and no countdown. It anchored the page to the January
   // re-sit, which is not the sitting most students take, and a date-based
   // urgency expires into a lie. The scarcity that is real is the cap above:
-  // 100 places, enforced where the money is taken.
   //
   // The sittings are DERIVED, never typed. The page said "through the January
   // sitting" two lines from a note listing both, and since expiry shipped that

@@ -55,50 +55,45 @@ softer version.
 
 Report which is true before changing anything, and say how it was checked.
 
-### Finding, 25 August 2026: a cap EXISTS on the link shown — mode not established
+### CLOSED, 26 August 2026: the claim is gone from the page
 
-Checked in the Stripe dashboard, which is the only place it can be checked,
-since the kill list forbids an API call and the payment link is a plain href.
+Not "enforced" and not "pending a capture" — **removed**, because the tier it
+described was removed.
 
-The **ExtraLesson — CSEC Mathematics** link priced $25.00 USD reads `Limited
-use: 1 of 100 used`, status Active, created 25 Aug 2:19 PM, quantity 1 and not
-adjustable. So a hundred-use cap exists and Stripe refuses the
-hundred-and-first payment against that link.
+The $25 Founding Families tier is gone and there is one price, $45, with no cap
+and no cohort. Nobody had bought at $25, so it cost nothing on the day it was
+withdrawn and could not have been withdrawn later at all.
 
-**What is NOT established: which mode that link is in.** The screenshot's crop
-does not show Stripe's test/live indicator or the link id, and production is
-separately known to point at a TEST link (`buy.stripe.com/test_…`). Those two
-facts cannot both be trusted at once — the capped link in the screenshot may be
-the test link, the live one, or neither. Until a capture showing the mode and
-the link id exists, the record is "a cap of 100 exists on the link shown".
+**The two prices were not the reason. This bullet was:**
 
-**The arithmetic inherits the same doubt.** `1 of 100 used` means 99 remain *on
-whichever link that is*. If it is the test link, the live link's usage is
-unknown and the "99 places remaining" figure is not a fact about what a buyer
-can still purchase.
+> Founding Family price locked for life on everything we launch next
 
-The copy stays on the page for now — a cap demonstrably exists and the claim is
-not known to be false — but this is a finding awaiting confirmation rather than
-a closed item, and §7's definition of done is not met by it.
+That committed a hundred people's pricing across every product Anansi ships,
+permanently, in exchange for being early. It is a liability that cannot be
+unwound once sold, and one nobody had yet paid for. It is deleted rather than
+reworded — a promise made to a cohort that no longer exists cannot be carried
+onto a standard offer.
 
-Two things the check turned up that the claim depends on, neither of them fixed
-by this finding:
+**Why the cap went with it**, rather than being kept at a higher number: an
+uncapped single price has no scarcity to claim. A cap is a claim about usage,
+and the rule in CLAUDE.md is that a claim about usage does not go on a public
+page unless it can be shown. With nothing capping anything, there is nothing to
+show — so there is nothing to say.
 
-1. **Production points at a TEST-MODE link** (`buy.stripe.com/test_…`), not the
-   live $25 one. A test link takes test cards only, so a real buyer's card is
-   declined — and the cap it carries is not the cap the page describes. The
-   number on the page is true of the live link and not yet true of the link a
-   visitor can click. This is a §9 item, outside the repo, but it is the
-   difference between the claim being honest and being decorative.
-2. **The preflight cannot tell.** It checks presence, not shape: a placeholder
-   or a test link is present and non-empty, so boot succeeds. §1 exists because
-   "a dead CTA that looks alive is worse than a page that says it is not open
-   yet", and both of these are dead CTAs that look alive.
+What came off the page: `100 FAMILIES ONLY` in the hero, `Founding Families ·
+100 places` on the offer, the "price locked for life" bullet, the cohort name
+everywhere it appeared, and the FAQ's "the first hundred families", which was
+rewritten rather than renumbered because it was about a founding cohort and not
+about a number of people. `Reserve your place` went too: it is the cap concept
+in verb form, and keeping the verb while deleting its evidence would have kept
+the claim.
 
-When the hundred fill, the link stops working and the copy has to come off by
-hand. There is no automatic path — reading remaining uses needs the API call the
-kill list forbids — so it is an operational step, recorded here rather than
-discovered by a buyer clicking a dead link.
+What stays, because it is right regardless: price lives in one constant, and
+tests fail if a price or a cap appears on any surface by hand. That refactor is
+what made this a small change instead of a hunt.
+
+Outside the repo: Vercel takes the $45 live link, and the $25 live link is
+deactivated in Stripe.
 
 ## 3. Teachers: the offer exists and the product has no idea
 
@@ -251,7 +246,8 @@ tell a third party how they are doing (§8d, declined and not deferred).
 1. A missing required environment variable in production is impossible to miss.
    `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` has no silent fallback there.
 2. The hundred-places claim is either enforced at Stripe or off the page, and
-   which one was chosen is recorded with the evidence.
+   which one was chosen is recorded with the evidence. **MET — off the page**:
+   the tier was removed, not the claim rehoused, and §2 records why.
 3. The teacher offer has a written rule covering seats, note convention and
    expiry, and no new schema.
 4. `tests/payment-ordering.test.ts` asserts behaviour against a real database

@@ -183,8 +183,9 @@ describe('urgency', () => {
     expect(CONTENT).not.toMatch(/launchDate/);
   });
 
-  it('keeps the cap, which is the scarcity that is real', () => {
-    expect(visible).toContain('LANDING.places');
+  it('keeps no cap, because there is no longer one to claim', () => {
+    // The cap is gone entirely; what remains true is that no number is typed.
+    expect(visible).not.toMatch(/\b100\b/);
   });
 });
 
@@ -358,15 +359,19 @@ describe('price and cap are stated only through LANDING', () => {
     expect(LANDING_PAGE).toContain('LANDING.price');
   });
 
-  it('states the cap nowhere by hand, in digits or in words', () => {
+  it('states no cap anywhere, in digits or in words', () => {
     expect(LANDING_PAGE).not.toMatch(/\bhundred\b/i);
     expect(LANDING_PAGE).not.toMatch(/\b100\b/);
-    expect(LANDING_PAGE).toContain('LANDING.places');
   });
 
-  it('names the offer through the constant, so it is one change and not four', () => {
+  it('makes no scarcity claim at all — one price, no cohort, no cap', () => {
+    // The $25 Founding Families tier is gone. An uncapped single price has no
+    // scarcity to claim, and a claim about usage that cannot be shown does not
+    // go on this page.
     expect(LANDING_PAGE).not.toMatch(/Founding Famil/);
-    expect(LANDING_PAGE).toMatch(/LANDING\.offer(Name|Member)/);
+    expect(LANDING_PAGE).not.toMatch(/FAMILIES ONLY/);
+    expect(LANDING_PAGE).not.toMatch(/\bplaces\b/);
+    expect(LANDING_PAGE).not.toMatch(/locked for life/);
   });
 
   it('keeps price and cap off every other surface', () => {
