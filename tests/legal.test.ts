@@ -255,3 +255,38 @@ describe('the founder credential', () => {
     expect(flat).not.toMatch(/the same past papers/i);
   });
 });
+
+// NO DECORATIVE CLAIMS (CLAUDE.md).
+//
+// "My own family in Grenada tested it first" was not true. The rule it produced
+// is that no claim about people, testing, usage or results goes on a public
+// page unless it can be shown — and that a claim needing a footnote gets cut
+// rather than softened. This page's persuasive strength is that its limits are
+// stated plainly; one invented detail makes a reader right to reread the honest
+// ones as marketing.
+describe('public claims are ones we can show', () => {
+  const LANDING = read('app', 'page.tsx').replace(/\{?\/\*[\s\S]*?\*\/\}?/g, '');
+  const PORT_SOURCE = read('design', 'extralesson-landing.html');
+
+  it('makes no claim about who has tested or used it', () => {
+    for (const src of [LANDING, PORT_SOURCE]) {
+      const flat = src.replace(/\s+/g, ' ');
+      expect(flat).not.toMatch(/tested it first/i);
+      expect(flat).not.toMatch(/my own family/i);
+      expect(flat).not.toMatch(/\b(hundreds|thousands) of (students|families)/i);
+      expect(flat).not.toMatch(/used by \d/i);
+    }
+  });
+
+  it('claims no result it has not produced', () => {
+    expect(LANDING).not.toMatch(/\bproven\b/i);
+    expect(LANDING).not.toMatch(/\bguarantee[sd]?\b/i);
+  });
+
+  it('keeps the limits, which are what make the rest believable', () => {
+    const flat = LANDING.replace(/\s+/g, ' ');
+    expect(flat).toMatch(/we do not cover at all/i);
+    expect(flat).toMatch(/not affiliated|CXC&rsquo;s papers are their copyright/i);
+    expect(flat).toMatch(/We do not send reports/i);
+  });
+});

@@ -72,6 +72,22 @@ R1 had no examiner, and half a camera would have been scope creep. R2
 The gate moved rather than lifted — R2 brings its own, below — and everything R1
 banned for a reason that still holds stays banned.
 
+**No decorative claims on a public page.** No claim about PEOPLE, TESTING, USAGE
+or RESULTS goes on a public page unless it is verifiably true. "My own family
+tested it first" was removed for being untrue; the test is not whether a claim is
+flattering or even plausible, but whether it can be shown. **If a claim would
+need a footnote to defend, cut it.** Do not replace it with a softer version —
+the paragraph is stronger without a substitute.
+
+The reason is specific to this page rather than general good manners. Its
+persuasive strength IS its honesty: it states the coverage limit, names the marks
+it cannot assess, says it is not CXC, and refuses to send reports. A single
+decorative claim puts every one of those in doubt, because a reader who catches
+one invented detail is right to reread the rest as marketing. Numbers already
+follow this rule mechanically — coverage and the 84% working-marks figure are
+computed and checked against the bank by `report-bank.ts` — and prose about
+people and results gets no weaker standard than prose about percentages.
+
 **Who each surface addresses.** Buyer-facing surfaces — the offer, checkout
 captions, `/welcome`, the FAQ — address WHOEVER IS PAYING: no relationship, no
 geography, no "your child". The hero, page title and OG title keep "your child"
