@@ -117,7 +117,7 @@ export const LANDING = {
    */
   statBenchmark: '42%',
   statBenchmarkLabel: 'Of candidates passed CSEC Mathematics\nGrades I–III · CXC, August 2026',
-  contactEmail: 'HELLO@ANANSI.XYZ',
+  contactEmail: 'EXTRALESSON@ANANSI.XYZ',
 } as const;
 
 // R1.6 §3 — coverage stated up front, computed from the same syllabus seeds and

@@ -383,3 +383,37 @@ describe('price and cap are stated only through LANDING', () => {
     }
   });
 });
+
+// ONE SUPPORT ADDRESS, STATED ONCE.
+//
+// It appears on the landing footer, /welcome and both legal pages, and it will
+// change again — a support address typed onto a surface is a surface that keeps
+// the old one after the change.
+describe('the support address', () => {
+  const strip = (src: string) => src.replace(/\{?\/\*[\s\S]*?\*\/\}?/g, '');
+
+  it('is written down in exactly one place', () => {
+    for (const f of [
+      ['app', 'page.tsx'],
+      ['app', 'welcome', 'page.tsx'],
+      ['app', 'legal.tsx'],
+      ['app', 'terms', 'page.tsx'],
+      ['app', 'privacy', 'page.tsx'],
+      ['lib', 'email.ts'],
+    ]) {
+      // No literal address on any surface — they all read the constant.
+      expect(strip(read(...f)), f.join('/')).not.toMatch(/[a-z0-9._%+-]+@anansi\.xyz/i);
+    }
+    expect(LANDING_CONTENT.contactEmail).toMatch(/^[A-Z0-9._%+-]+@ANANSI\.XYZ$/);
+  });
+
+  it('reaches every surface that offers help', () => {
+    for (const f of [
+      ['app', 'page.tsx'],
+      ['app', 'welcome', 'page.tsx'],
+      ['app', 'legal.tsx'],
+    ]) {
+      expect(read(...f), f.join('/')).toContain('LANDING.contactEmail');
+    }
+  });
+});
