@@ -55,17 +55,31 @@ softer version.
 
 Report which is true before changing anything, and say how it was checked.
 
-### Finding, 25 August 2026: ENFORCED, and the copy stays
+### Finding, 25 August 2026: a cap EXISTS on the link shown — mode not established
 
-Checked in the Stripe dashboard — the only place it can be checked, since the
-kill list forbids an API call and the payment link is a plain href.
+Checked in the Stripe dashboard, which is the only place it can be checked,
+since the kill list forbids an API call and the payment link is a plain href.
 
-The $25 **ExtraLesson — CSEC Mathematics** link reads `Limited use: 1 of 100
-used`, status Active, created 25 Aug 2:19 PM, quantity 1 and not adjustable. So
-`100 FAMILIES ONLY` and `Founding Families · 100 places` are enforced where the
-money is taken, exactly as `lib/landing-content.ts` claims. Under the
-no-decorative-claims rule the number stays on the page. **99 places remain**;
-one is already consumed.
+The **ExtraLesson — CSEC Mathematics** link priced $25.00 USD reads `Limited
+use: 1 of 100 used`, status Active, created 25 Aug 2:19 PM, quantity 1 and not
+adjustable. So a hundred-use cap exists and Stripe refuses the
+hundred-and-first payment against that link.
+
+**What is NOT established: which mode that link is in.** The screenshot's crop
+does not show Stripe's test/live indicator or the link id, and production is
+separately known to point at a TEST link (`buy.stripe.com/test_…`). Those two
+facts cannot both be trusted at once — the capped link in the screenshot may be
+the test link, the live one, or neither. Until a capture showing the mode and
+the link id exists, the record is "a cap of 100 exists on the link shown".
+
+**The arithmetic inherits the same doubt.** `1 of 100 used` means 99 remain *on
+whichever link that is*. If it is the test link, the live link's usage is
+unknown and the "99 places remaining" figure is not a fact about what a buyer
+can still purchase.
+
+The copy stays on the page for now — a cap demonstrably exists and the claim is
+not known to be false — but this is a finding awaiting confirmation rather than
+a closed item, and §7's definition of done is not met by it.
 
 Two things the check turned up that the claim depends on, neither of them fixed
 by this finding:

@@ -2,9 +2,25 @@ import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { REQUIRED_ENV, OPTIONAL_ENV, missingEnv, preflight, isProduction, type Env } from '@/lib/preflight';
+import {
+  REQUIRED_ENV,
+  OPTIONAL_ENV,
+  missingEnv,
+  preflight,
+  isProduction,
+  isPlaceholderLink,
+  isTestModeLink,
+  launchWarnings,
+  type Env,
+} from '@/lib/preflight';
 
-const full = (): Env => Object.fromEntries(REQUIRED_ENV.map((k) => [k, 'set']));
+// The payment link gets a plausible value rather than "set": it is the one
+// required variable whose SHAPE is checked, so a nonsense fixture would trip
+// the placeholder guard and hide what each test is actually asserting.
+const full = (): Env => ({
+  ...Object.fromEntries(REQUIRED_ENV.map((k) => [k, 'set'])),
+  NEXT_PUBLIC_STRIPE_PAYMENT_LINK: 'https://buy.stripe.com/14A3cx0IRfZ05sW7n04c806',
+});
 
 describe('missingEnv', () => {
   it('reports nothing when every required variable is set', () => {
@@ -103,5 +119,85 @@ describe('.env.example matches the code', () => {
     for (const k of ['NODE_ENV', 'VERCEL_URL', 'VERCEL_PROJECT_PRODUCTION_URL']) {
       expect(documented.has(k), `${k} is the platform's, not ours to document`).toBe(false);
     }
+  });
+});
+
+// PRESENT AND STILL USELESS (ROUND_3 §1, reopened once).
+//
+// The preflight guards absence. A placeholder link is present, non-empty, boots
+// clean, and is the dead-CTA-that-looks-alive the item exists to prevent — it
+// sat in a .env for weeks and was found by reading the file, not by any check.
+describe('isPlaceholderLink', () => {
+  it('rejects the value that was actually in .env', () => {
+    expect(isPlaceholderLink('https://buy.stripe.com/placeholder')).toBe(true);
+  });
+
+  it('rejects anything that is not an https URL', () => {
+    for (const v of ['not-a-url', 'buy.stripe.com/abc', 'http://buy.stripe.com/abc', 'TODO']) {
+      expect(isPlaceholderLink(v), v).toBe(true);
+    }
+  });
+
+  it('accepts a real link, live or test', () => {
+    expect(isPlaceholderLink('https://buy.stripe.com/14A3cx0IRfZ05sW7n04c806')).toBe(false);
+    expect(isPlaceholderLink('https://buy.stripe.com/test_14A3cx0IRfZ05sW7n04c806')).toBe(false);
+  });
+
+  it('does not require the buy.stripe.com host, which may one day be a custom domain', () => {
+    expect(isPlaceholderLink('https://pay.extralesson.app/abc123')).toBe(false);
+  });
+
+  it('leaves absence to the preflight rather than double-reporting it', () => {
+    expect(isPlaceholderLink(undefined)).toBe(false);
+    expect(isPlaceholderLink('  ')).toBe(false);
+  });
+});
+
+// THE DISCRIMINATOR IS THE `test_` PATH SEGMENT, and these tests exist to stop
+// it being "improved" into something fuzzier.
+describe('isTestModeLink', () => {
+  it('keys on the test_ segment', () => {
+    expect(isTestModeLink('https://buy.stripe.com/test_14A3cx0IRfZ05sW7n04c806')).toBe(true);
+    expect(isTestModeLink('https://buy.stripe.com/14A3cx0IRfZ05sW7n04c806')).toBe(false);
+  });
+
+  it('does not match the word "test" elsewhere in a live link', () => {
+    // A live id containing those letters is not a test link, and a fuzzier
+    // check would call it one.
+    expect(isTestModeLink('https://buy.stripe.com/1testABC')).toBe(false);
+    expect(isTestModeLink('https://buy.stripe.com/abc?ref=test_1')).toBe(false);
+    expect(isTestModeLink('https://test.example.com/abc')).toBe(false);
+  });
+});
+
+describe('launch warnings are the non-fatal half', () => {
+  const withLink = (link: string, nodeEnv = 'production'): Env => ({
+    ...full(),
+    NODE_ENV: nodeEnv,
+    NEXT_PUBLIC_STRIPE_PAYMENT_LINK: link,
+  });
+
+  it('warns about a test-mode link in production without stopping the boot', () => {
+    const env = withLink('https://buy.stripe.com/test_abc');
+    expect(() => preflight(env)).not.toThrow();
+    expect(launchWarnings(env)[0]).toMatch(/TEST-MODE/);
+  });
+
+  it('says nothing about a live link', () => {
+    expect(launchWarnings(withLink('https://buy.stripe.com/abc'))).toEqual([]);
+  });
+
+  it('says nothing outside production, where a test link is simply correct', () => {
+    expect(launchWarnings(withLink('https://buy.stripe.com/test_abc', 'development'))).toEqual([]);
+  });
+
+  it('REFUSES to boot production on a placeholder, which is never deliberate', () => {
+    expect(() => preflight(withLink('https://buy.stripe.com/placeholder'))).toThrow(
+      /not a usable link/,
+    );
+  });
+
+  it('boots locally on a placeholder — a developer does not need a Stripe link', () => {
+    expect(() => preflight(withLink('https://buy.stripe.com/placeholder', 'development'))).not.toThrow();
   });
 });

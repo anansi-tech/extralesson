@@ -74,8 +74,95 @@ export function isProduction(env: Env = process.env): boolean {
  * Outside production this reports and continues: a developer without an
  * AI_API_KEY should still be able to run the site.
  */
+/**
+ * A VALUE THAT IS PRESENT AND STILL USELESS.
+ *
+ * The preflight guards absence. These two guard shape, because
+ * "https://buy.stripe.com/placeholder" is present, non-empty, boots clean and
+ * is exactly the dead CTA that looks alive §1 exists to prevent — it sat in a
+ * .env for weeks and was only found by reading the file.
+ *
+ * Deliberately narrow. A Stripe payment link may one day be served from a
+ * custom domain, so this does NOT require the buy.stripe.com host; it rejects
+ * what cannot be a link at all, and what says it is a stand-in.
+ */
+export function isPlaceholderLink(value: string | undefined): boolean {
+  const v = value?.trim();
+  if (!v) return false; // absence is the preflight's job, not this one
+  let url: URL;
+  try {
+    url = new URL(v);
+  } catch {
+    return true; // not a URL at all
+  }
+  if (url.protocol !== 'https:') return true;
+  return /placeholder|example\.com|changeme|todo/i.test(v);
+}
+
+/**
+ * TEST MODE, BY SHAPE — and the shape is the `test_` path segment.
+ *
+ * A Stripe test payment link is https://buy.stripe.com/test_… . That segment IS
+ * the discriminator: not the word "test" anywhere in the string, not the
+ * absence of "live", not a guess from the key. Written down so nobody later
+ * "improves" this into something fuzzier that starts matching a live link whose
+ * id happens to contain those letters.
+ *
+ * A test link takes test cards only, so in production it means no real buyer
+ * can pay. It is NOT fatal: it is a deliberate state right up until launch day,
+ * and Vercel preview deployments run with NODE_ENV=production too, so failing
+ * on it would block the very testing it protects.
+ */
+export function isTestModeLink(value: string | undefined): boolean {
+  const v = value?.trim();
+  if (!v) return false;
+  try {
+    return new URL(v).pathname.startsWith('/test_');
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * What the operator should be told without the boot being stopped.
+ *
+ * Returned for the banner on /admin and logged once at boot. Two halves of the
+ * same warning on purpose: the banner is where it will be read on launch day,
+ * and the log line covers the 11pm redeploy where nobody opens that page — one
+ * greppable line, after the fact, costing nothing.
+ *
+ * Nothing goes on the public page. A test-mode notice rendered to a visitor is
+ * worse than the problem it reports.
+ */
+export function launchWarnings(env: Env = process.env): string[] {
+  const warnings: string[] = [];
+  if (isProduction(env) && isTestModeLink(env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK)) {
+    warnings.push(
+      'NEXT_PUBLIC_STRIPE_PAYMENT_LINK is a TEST-MODE Stripe link. Test cards only — ' +
+        'a real buyer cannot pay, and the hundred-place cap on the page is the test link\'s, ' +
+        'not the live one\'s. Swap it to the live link before launch.',
+    );
+  }
+  return warnings;
+}
+
 export function preflight(env: Env = process.env): string[] {
   const missing = missingEnv(env);
+
+  // Present but not a link. Fatal for the same reason absence is: it renders a
+  // button that goes nowhere and reports nothing. A placeholder is never a
+  // deliberate state, which is what separates it from a test-mode link below.
+  if (missing.length === 0 && isProduction(env) && isPlaceholderLink(env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK)) {
+    throw new Error(
+      'Refusing to start: NEXT_PUBLIC_STRIPE_PAYMENT_LINK is not a usable link ' +
+        `(${env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK}). A button that goes nowhere looks exactly ` +
+        'like one that works.',
+    );
+  }
+
+  // Not fatal, and said twice: once here for the logs, once on /admin.
+  for (const w of launchWarnings(env)) console.warn(`[preflight] ${w}`);
+
   if (missing.length === 0) return missing;
 
   const detail = missing.map((k) => `  - ${k}`).join('\n');

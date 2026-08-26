@@ -13,10 +13,16 @@ export const LANDING = {
   /**
    * A CAP IS A CLAIM ABOUT USAGE, so it is checked rather than asserted.
    *
-   * Verified in the Stripe dashboard on 25 Aug 2026: the $25 "ExtraLesson —
-   * CSEC Mathematics" payment link reads `Limited use: 1 of 100 used`. Stripe
-   * refuses the hundred-and-first payment; this number is not a promise we keep
-   * by remembering.
+   * Checked in the Stripe dashboard on 25 Aug 2026: an "ExtraLesson — CSEC
+   * Mathematics" payment link priced $25.00 reads `Limited use: 1 of 100 used`,
+   * so Stripe refuses the hundred-and-first payment against it and this number
+   * is not a promise kept by remembering.
+   *
+   * NOT YET ESTABLISHED: which MODE that link is in. The capture did not show
+   * the test/live indicator or the link id, and production is known to point at
+   * a test-mode link. Until that is confirmed, the cap is verified on "the link
+   * shown" rather than on the live one, and "99 remaining" is an unknown link's
+   * arithmetic. ROUND_3 §2.
    *
    * Two operational consequences, recorded because neither has an automatic
    * path — reading remaining uses would need the API call the kill list
