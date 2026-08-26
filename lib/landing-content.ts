@@ -10,6 +10,21 @@ import { isProduction } from '@/lib/preflight';
 // in one place. No fake counters anywhere.
 export const LANDING = {
   price: '$25',
+  /**
+   * A CAP IS A CLAIM ABOUT USAGE, so it is checked rather than asserted.
+   *
+   * Verified in the Stripe dashboard on 25 Aug 2026: the $25 "ExtraLesson —
+   * CSEC Mathematics" payment link reads `Limited use: 1 of 100 used`. Stripe
+   * refuses the hundred-and-first payment; this number is not a promise we keep
+   * by remembering.
+   *
+   * Two operational consequences, recorded because neither has an automatic
+   * path — reading remaining uses would need the API call the kill list
+   * forbids. When the hundred fill, the link stops working and this number and
+   * the copy around it have to come off by hand. And the claim is only true of
+   * the link the button actually points at: NEXT_PUBLIC_STRIPE_PAYMENT_LINK
+   * must be the live $25 link, not a test-mode one. ROUND_3 §2.
+   */
   places: 100,
   // No launch date and no countdown. It anchored the page to the January
   // re-sit, which is not the sitting most students take, and a date-based

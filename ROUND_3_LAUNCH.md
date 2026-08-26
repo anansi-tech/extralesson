@@ -55,6 +55,37 @@ softer version.
 
 Report which is true before changing anything, and say how it was checked.
 
+### Finding, 25 August 2026: ENFORCED, and the copy stays
+
+Checked in the Stripe dashboard — the only place it can be checked, since the
+kill list forbids an API call and the payment link is a plain href.
+
+The $25 **ExtraLesson — CSEC Mathematics** link reads `Limited use: 1 of 100
+used`, status Active, created 25 Aug 2:19 PM, quantity 1 and not adjustable. So
+`100 FAMILIES ONLY` and `Founding Families · 100 places` are enforced where the
+money is taken, exactly as `lib/landing-content.ts` claims. Under the
+no-decorative-claims rule the number stays on the page. **99 places remain**;
+one is already consumed.
+
+Two things the check turned up that the claim depends on, neither of them fixed
+by this finding:
+
+1. **Production points at a TEST-MODE link** (`buy.stripe.com/test_…`), not the
+   live $25 one. A test link takes test cards only, so a real buyer's card is
+   declined — and the cap it carries is not the cap the page describes. The
+   number on the page is true of the live link and not yet true of the link a
+   visitor can click. This is a §9 item, outside the repo, but it is the
+   difference between the claim being honest and being decorative.
+2. **The preflight cannot tell.** It checks presence, not shape: a placeholder
+   or a test link is present and non-empty, so boot succeeds. §1 exists because
+   "a dead CTA that looks alive is worse than a page that says it is not open
+   yet", and both of these are dead CTAs that look alive.
+
+When the hundred fill, the link stops working and the copy has to come off by
+hand. There is no automatic path — reading remaining uses needs the API call the
+kill list forbids — so it is an operational step, recorded here rather than
+discovered by a buyer clicking a dead link.
+
 ## 3. Teachers: the offer exists and the product has no idea
 
 The launch message offers ExtraLesson free to any teacher using it with a
