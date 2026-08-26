@@ -45,7 +45,8 @@ export async function POST(req: Request): Promise<Response> {
   if (existing) return Response.json({ duplicate: true }, { status: 200 });
 
   const session = event.data.object;
-  const email = emailFromSession(session);
+  const read = emailFromSession(session);
+  const email = read?.email ?? null;
   const student = email
     ? await Student.findOne({ email }).select('exam_sitting access').lean<{
         _id: unknown;
@@ -53,11 +54,10 @@ export async function POST(req: Request): Promise<Response> {
       } | null>()
     : null;
 
-  // Which sitting was bought. Unmapped falls back to the one they registered
-  // with, and says so in the note — a wrong sitting should be visible on the
-  // admin screen, not silently chosen.
+  // What the link SAYS, kept as evidence. The sitting granted is the one the
+  // student registered for — see grantFromPayment for why that is not a
+  // preference but an asymmetry.
   const mapped = sittingFromLink(session, process.env.STRIPE_LINK_SITTINGS);
-  const sitting = mapped ?? student?.exam_sitting ?? null;
 
   let created;
   try {
@@ -66,7 +66,8 @@ export async function POST(req: Request): Promise<Response> {
       email,
       amount_total: typeof session.amount_total === 'number' ? session.amount_total : undefined,
       currency: typeof session.currency === 'string' ? session.currency : undefined,
-      sitting: sitting ?? undefined,
+      sitting: mapped ?? undefined,
+      email_source: read?.source,
       student_id: student?._id,
     });
   } catch {
@@ -84,7 +85,12 @@ export async function POST(req: Request): Promise<Response> {
   await grantFromPayment({
     studentId: student._id,
     registeredSitting: student.exam_sitting,
-    payment: { _id: created._id, event_id: event.id, sitting: mapped },
+    payment: {
+      _id: created._id,
+      event_id: event.id,
+      sitting: mapped,
+      email_source: read?.source,
+    },
   });
   return Response.json({ matched: true }, { status: 200 });
 }

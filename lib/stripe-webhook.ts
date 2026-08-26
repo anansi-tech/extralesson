@@ -71,29 +71,40 @@ export function verifyStripeSignature(
 
 /**
  * The email the student typed into the payment link's custom field, falling
- * back to the one Stripe collected for the receipt. The fallback is not
- * sloppiness: an unmatched payment costs someone a manual grant while a student
- * waits, and the receipt email is the same person more often than not.
+ * back to the one Stripe collected for the receipt.
+ *
+ * THE FALLBACK IS TOLERATED, NOT DESIRED, so it reports itself. It is kept
+ * because an unmatched payment costs a student a wait and the receipt address
+ * is the same person more often than not. But with the Stripe field set to
+ * Required it can now only fire when that field is missing or misconfigured —
+ * which is exactly the §8e defect, the aunt getting the account and the nephew
+ * not, arriving silently and looking like a clean match. The caller writes the
+ * source into the grant note so one misconfigured field surfaces on
+ * /admin/access after the FIRST sale rather than the twentieth.
  */
-export function emailFromSession(session: Record<string, unknown>): string | null {
+export type EmailSource = 'custom_field' | 'payer';
+
+export function emailFromSession(
+  session: Record<string, unknown>,
+): { email: string; source: EmailSource } | null {
   const fields = (session.custom_fields as { text?: { value?: string } }[] | undefined) ?? [];
   for (const f of fields) {
     const v = f?.text?.value?.trim();
-    if (v && v.includes('@')) return v.toLowerCase();
+    if (v && v.includes('@')) return { email: v.toLowerCase(), source: 'custom_field' };
   }
   const details = session.customer_details as { email?: string } | undefined;
   const fallback = details?.email?.trim();
-  return fallback ? fallback.toLowerCase() : null;
+  return fallback ? { email: fallback.toLowerCase(), source: 'payer' } : null;
 }
 
 /**
- * Which sitting was bought. Line items would need an API call we do not make,
- * so this maps the PAYMENT LINK the student used — one link per sitting —
- * configured as `plink_abc=may-june-2027,plink_xyz=jan-2027`.
+ * What the payment link SAYS the sitting is — evidence, never authority.
  *
- * Unmapped returns null, and the caller falls back to the sitting the student
- * registered with, recording that it did so: a wrong sitting should be visible
- * on the admin screen rather than silently chosen.
+ * The sitting granted is always the one the student registered for. This is
+ * read only so a disagreement can be recorded in the grant note and seen on
+ * /admin/access. Today it returns null for every payment, because the two live
+ * links are price tiers rather than sittings and STRIPE_LINK_SITTINGS is
+ * deliberately unset.
  */
 export function sittingFromLink(
   session: Record<string, unknown>,

@@ -83,19 +83,23 @@ describe('verifyStripeSignature', () => {
 });
 
 describe('emailFromSession', () => {
-  it('prefers the payment link custom field', () => {
+  it('prefers the payment link custom field, and says that is where it came from', () => {
     expect(
       emailFromSession({
         custom_fields: [{ text: { value: 'Student@Example.com ' } }],
         customer_details: { email: 'payer@example.com' },
       }),
-    ).toBe('student@example.com');
+    ).toEqual({ email: 'student@example.com', source: 'custom_field' });
   });
 
-  it('falls back to the receipt email rather than leaving it unmatched', () => {
-    expect(emailFromSession({ customer_details: { email: 'Payer@Example.com' } })).toBe(
-      'payer@example.com',
-    );
+  it('falls back to the receipt email, and REPORTS the fallback', () => {
+    // Tolerated, not desired. With the Stripe field Required this can only fire
+    // on a misconfiguration, which is the §8e defect arriving quietly — so the
+    // source is carried into the grant note.
+    expect(emailFromSession({ customer_details: { email: 'Payer@Example.com' } })).toEqual({
+      email: 'payer@example.com',
+      source: 'payer',
+    });
   });
 
   it('ignores a custom field that is not an email', () => {

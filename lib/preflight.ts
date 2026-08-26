@@ -31,14 +31,13 @@ export const OPTIONAL_ENV: Record<string, string> = {
   // Inferred from VERCEL_URL when unset; only a custom domain needs it set.
   NEXT_PUBLIC_BASE_URL: 'inferred from VERCEL_URL when unset',
   BASE_URL: 'audit scripts only, never the app',
-  // DELIBERATELY UNSET. The two payment links are PRICE TIERS — $25 Founding
-  // Families and $49 standard — not sittings. Both sell the same thing, so
-  // which link was used says nothing about whether the student sits January or
-  // May/June. The sitting falls back to the one the student picked at signup,
-  // which is the better source anyway: the student knows which exam they are
-  // sitting and the payment link does not. This would only be worth setting if
-  // sitting-specific links ever existed.
-  STRIPE_LINK_SITTINGS: 'deliberately unset — the links are price tiers, not sittings',
+  // DELIBERATELY UNSET, and it would not change the granted sitting if it were
+  // set. The two payment links are PRICE TIERS — $25 Founding Families and $49
+  // standard — not sittings, so which link was used says nothing about which
+  // exam the student sits. The sitting granted is ALWAYS the one the student
+  // registered for; a mapped link is evidence, and a disagreement is written
+  // into the grant note for /admin/access rather than resolved quietly.
+  STRIPE_LINK_SITTINGS: 'deliberately unset — links are price tiers; evidence only, never authority',
   // Set by the platform, not by us.
   NODE_ENV: 'set by the runtime',
   VERCEL_URL: 'set by Vercel',

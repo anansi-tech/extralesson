@@ -1,5 +1,6 @@
 import { Payment, Student } from '@/lib/db';
 import type { ExamSitting } from '@/lib/types';
+import type { EmailSource } from '@/lib/stripe-webhook';
 
 /**
  * A PAYMENT AND AN ACCOUNT HAVE FOUND EACH OTHER.
@@ -16,13 +17,42 @@ import type { ExamSitting } from '@/lib/types';
  */
 export async function grantFromPayment(args: {
   studentId: unknown;
-  /** The sitting the student registered for; used when the link is unmapped. */
+  /** The sitting the student registered for. This is the sitting granted. */
   registeredSitting: ExamSitting;
-  payment: { _id: unknown; event_id: string; sitting?: string | null };
+  payment: {
+    _id: unknown;
+    event_id: string;
+    /** What the payment LINK said, when a mapping exists. Evidence only. */
+    sitting?: string | null;
+    email_source?: EmailSource | null;
+  };
 }): Promise<'granted'> {
   const { studentId, registeredSitting, payment } = args;
-  const sitting = (payment.sitting as ExamSitting | undefined) ?? registeredSitting;
-  const fromRegistration = !payment.sitting;
+
+  // THE REGISTERED SITTING WINS, ALWAYS.
+  //
+  // The links are price tiers — both sell the same thing — so a payment link
+  // carries no information about which exam anyone sits. The student knows;
+  // the payer often is not the student and may not.
+  //
+  // The failure is also asymmetric, which decides it even if links ever do
+  // become per-sitting products. Granting May/June to a January student is
+  // generous: they keep access past their paper. Granting January to a May/June
+  // student locks them out in February, before the exam they are revising for,
+  // and they read that as the product taking their money and closing. Of the
+  // two ways to be wrong, only one costs a student their sitting.
+  const sitting = registeredSitting;
+
+  // A mapped link that DISAGREES is recorded rather than resolved quietly —
+  // the same principle the webhook already held: a wrong sitting must be
+  // visible on /admin/access, not chosen silently.
+  const notes = [`stripe ${payment.event_id}`];
+  if (payment.sitting && payment.sitting !== registeredSitting) {
+    notes.push(`link says ${payment.sitting}`);
+  }
+  if (payment.email_source === 'payer') {
+    notes.push('payer address, no student field');
+  }
 
   await Student.updateOne(
     { _id: studentId },
@@ -32,9 +62,7 @@ export async function grantFromPayment(args: {
           sitting,
           granted_at: new Date(),
           source: 'stripe',
-          note: fromRegistration
-            ? `stripe ${payment.event_id} · sitting from registration`
-            : `stripe ${payment.event_id}`,
+          note: notes.join(' · '),
         },
       },
     },
@@ -55,5 +83,10 @@ export async function grantFromPayment(args: {
 export async function pendingPaymentFor(email: string) {
   return Payment.findOne({ email: email.toLowerCase(), student_id: null, resolved_at: null })
     .sort({ received_at: 1 })
-    .lean<{ _id: unknown; event_id: string; sitting?: string | null } | null>();
+    .lean<{
+      _id: unknown;
+      event_id: string;
+      sitting?: string | null;
+      email_source?: EmailSource | null;
+    } | null>();
 }
