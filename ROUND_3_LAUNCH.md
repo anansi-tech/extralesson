@@ -124,6 +124,57 @@ Answer, in the spec and in the note convention:
 if teachers actually arrive. This item is a decision and a note convention, and
 it should cost almost no code.
 
+### The answers, 26 August 2026
+
+**Seats. Free means the TEACHER'S OWN ACCOUNT, at full access — not the free
+tier. Their students pay $25.** When a teacher asks for thirty seats the answer
+is "your account is free, your students pay". The launch message is worded
+"free for you" and never "free for teachers", so the generous reading is not
+available to be read in: the offer names the person, not the category.
+
+**One exception, capped at ONE.** A pilot of a single class, for a single
+teacher. Not a standing offer, never advertised, and offered one-to-one only
+after a teacher has already said yes — so it is never the thing that persuaded
+them. It is written down with a named teacher, a named class, a fixed end at the
+sitting, and the exchange stated: seats in return for telling us when the
+marking is wrong.
+
+The reason that exchange is worth seats is on the record. CLAUDE.md parks the
+rubric-credit defect — rows that declare neither "their" nor CAO, which the
+marker resolves strictly — explicitly pending real students' "I got that right"
+reports, and no such reports exist. A class of thirty using it against real
+homework is the only instrument that produces them.
+
+The cap is **one**, written here as a number rather than an intention, because
+"a pilot" without one becomes two and then a programme, and the second one is
+always easier to justify than the first.
+
+**Note convention. The first token is the CLASS of grant**, so a comp is
+distinguishable from a sale at a glance and six months later:
+
+```
+stripe <event id>                         a sale
+comp · teacher · <school> · <YYYY-MM-DD>  a teacher's own account
+comp · pilot · <teacher> · <n of N>       a pilot seat
+comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required
+```
+
+The date is when the grant was AGREED, not when it was typed. **`comp` with no
+reason is not acceptable** — the note is the only evidence a grant has, and a
+bare "comp" six months on is indistinguishable from a mistake.
+
+**Expiry. A teacher comp is granted on the LATEST sitting in
+`lib/sittings.ts`.** No schema change, no new field, no code: the operator picks
+it from the dropdown that already exists. A comp that quietly dies in July is a
+teacher telling other teachers the thing stopped working, and the latest sitting
+is the longest runway available without inventing a second kind of access.
+
+The consequence, so it is not discovered later: **when a 2028 sitting is added,
+teacher grants need a manual sweep.** That sweep is a task somebody does, not an
+automated renewal — nothing here renews anything, and nothing should start.
+
+**Comps are granted on `/admin/access` and nowhere else.**
+
 ## 4. Regression coverage for the payment orderings
 
 `tests/payment-ordering.test.ts` does not test behaviour. It reads the source

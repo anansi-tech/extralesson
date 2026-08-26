@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { FREE_SESSIONS, hasAccess } from '@/lib/access';
 import { GRACE_DAYS, accessEndsAt } from '@/lib/sittings';
@@ -77,5 +79,37 @@ describe('expiry', () => {
 
   it('an expired grant reads exactly like never having paid', () => {
     expect(may('2028-01-01T00:00:00Z')).toBe(hasAccess(null));
+  });
+});
+
+// THE NOTE IS THE ONLY EVIDENCE A GRANT HAS (ROUND_3 §3).
+//
+// A sale carries a Stripe event id and traces itself. A comp traces nothing, so
+// the convention is the whole audit trail — and a convention that lives only in
+// a spec file is not one the operator follows at 9pm. These assert it is where
+// notes are typed, and that the field cannot be left empty.
+describe('the grant note convention', () => {
+  const ADMIN = readFileSync(
+    join(process.cwd(), 'app', 'admin', 'access', 'page.tsx'),
+    'utf8',
+  );
+
+  it('shows all four classes of grant on the screen that writes them', () => {
+    for (const token of ['stripe <event id>', 'comp · teacher', 'comp · pilot', 'comp · other']) {
+      expect(ADMIN, token).toContain(token);
+    }
+  });
+
+  it('will not accept a grant with no note at all', () => {
+    // A bare grant six months on is indistinguishable from a mistake.
+    expect(ADMIN).toMatch(/name="note"\s*\n\s*required/);
+  });
+
+  it('says the date is when the grant was agreed, not typed', () => {
+    expect(ADMIN.replace(/\s+/g, ' ')).toMatch(/when the grant was <b>agreed<\/b>, not typed/);
+  });
+
+  it('tells the operator teacher comps go on the latest sitting', () => {
+    expect(ADMIN.replace(/\s+/g, ' ')).toMatch(/latest sitting/);
   });
 });

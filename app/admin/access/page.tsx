@@ -96,11 +96,30 @@ export default async function AccessPage() {
           </div>
         </header>
 
-        <p className="mb-5 max-w-prose text-[13px] leading-snug text-dim">
+        <p className="mb-3 max-w-prose text-[13px] leading-snug text-dim">
           Free tier is the diagnostic plus {FREE_SESSIONS} sessions. Match a Stripe payment to the
           email the student paid with, then grant. Nothing a student has already earned is ever
           hidden — the gate is on starting a new session.
         </p>
+        {/* The note is the only evidence a grant has. The convention lives here
+            because here is where notes are typed; the reasoning is ROUND_3 §3. */}
+        <details className="mb-5 max-w-prose text-[13px] text-dim">
+          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest">
+            Note convention — first token is the class of grant
+          </summary>
+          <pre className="mt-2 overflow-x-auto whitespace-pre bg-white p-3 font-mono text-[11px] leading-relaxed">
+{`stripe <event id>                         a sale
+comp · teacher · <school> · <YYYY-MM-DD>  a teacher's own account
+comp · pilot · <teacher> · <n of N>       a pilot seat
+comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
+          </pre>
+          <p className="mt-2 leading-snug">
+            The date is when the grant was <b>agreed</b>, not typed. A bare &ldquo;comp&rdquo; with
+            no reason is not acceptable — six months on it is indistinguishable from a mistake.
+            Teacher comps are granted on the <b>latest sitting</b> in the dropdown: a comp that
+            quietly dies in July is a teacher telling other teachers the thing stopped working.
+          </p>
+        </details>
 
         {unmatched.length > 0 && (
           <section className="mb-6 border-[1.5px] border-red-pen bg-[#FDF1F0] p-3">
@@ -201,7 +220,8 @@ export default async function AccessPage() {
                 </select>
                 <input
                   name="note"
-                  placeholder="Stripe payment id, or why"
+                  required
+                  placeholder="comp · teacher · school · 2026-08-26"
                   className="min-h-11 min-w-0 flex-1 border-[1.5px] border-ink px-2 font-mono text-[12px]"
                 />
                 <button className="min-h-11 bg-ink px-3 font-mono text-[11px] uppercase tracking-widest text-paper">
