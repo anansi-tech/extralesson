@@ -235,8 +235,7 @@ export default async function LandingPage() {
               </p>
               <p>
                 So I built the examiner I wish every student had: that same question-by-question
-                practice, with the working marked — patient, precise, available every single day,
-                and honest in red pen.
+                practice, with the working marked — patient, precise, available every single day.
               </p>
               <div className="sig">David Noel</div>
               <div className="cred">
