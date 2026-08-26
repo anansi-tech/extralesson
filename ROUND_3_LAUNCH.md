@@ -233,3 +233,18 @@ details · `STRIPE_WEBHOOK_SECRET` and `STRIPE_LINK_SITTINGS` set in Vercel
 production · redeploy from a commit containing the ordering fix · one real test
 purchase paying with one address and entering a different student address ·
 operator granted access on `/admin/access`.
+
+Two Stripe settings that are PER-MODE, which is why a clean test run does not
+demonstrate them:
+
+- **Settings › Business › Customer emails › Successful payments: ON in LIVE
+  mode.** Off means no receipt reaches a real buyer.
+- **Settings › Business › Business details complete** — legal name, support
+  address, support email, privacy policy URL. These are required on receipts.
+
+**Known gap, not blocking.** The receipt goes to the PAYER, and `/welcome` is
+seen only by whoever clicked through from checkout. So a payer who is not the
+student gets no confirmation that the student's access is live — they have paid,
+and the only evidence they have of it working is the student telling them. This
+is consistent with §8d (we do not report to a third party on a student), and it
+is recorded rather than solved.
