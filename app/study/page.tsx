@@ -139,12 +139,11 @@ export default async function StudyDashboard({
   // today's session will go while Module 1 is still the prerequisite.
   const m1Gated = m1GateHolds(student.target_modules, state.moduleMastery[1]);
   const gatedTopics = m1Gated ? reachable.filter((t) => t.module !== 1) : [];
-  // Not on a cold account: see lib/study/lead-panel.ts for why, and why it is
-  // gated on the FLAG rather than the panel's render site — the flag also
-  // demotes the estimate, so gating the render alone would leave the estimate
-  // squeezed to make room for something no longer there.
+  // Needs an ESTIMATE, not an attempt: see lib/study/lead-panel.ts. Gated on
+  // the FLAG rather than the panel's render site, because the flag also demotes
+  // the estimate — gating the render alone would leave the estimate squeezed to
+  // make room for something no longer there.
   const leadWithReachable = shouldLeadWithReachable({
-    hasAnyAttempt: !isNewStudent,
     reachableCount: reachable.length,
     estimable: prediction.estimable,
     overallPercent: prediction.overall_percent,
