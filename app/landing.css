@@ -121,7 +121,7 @@
 .landing .faq dt { font-weight: 800; font-size: 15.5px; margin-top: 18px; }
 .landing .faq dd { font-size: 14px; color: #3a4152; margin-top: 4px; margin-left: 0; }
 
-.landing footer { border-top: 1.5px solid var(--ink); padding: 28px 0 44px; font-family: var(--mono); font-size: 10.5px; color: var(--dim); }
+.landing footer { border-top: 1.5px solid var(--ink); padding: 16px 0 20px; font-family: var(--mono); font-size: 10.5px; color: var(--dim); }
 /* Two groups, so the row keeps a shape when it wraps. */
 .landing footer .foot { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 12px 24px; }
 .landing footer .foot-info { line-height: 2; }
