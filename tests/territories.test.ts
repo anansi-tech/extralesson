@@ -121,3 +121,32 @@ describe('thousands are grouped with a space', () => {
     expect(normaliseDigitGroups('x + 400')).toBe('x + 400');
   });
 });
+
+// THE DEALING IS WHAT A MONEY QUESTION TURNS ON.
+//
+// Livelihoods and goods name who and what; neither can express "compound
+// interest year on year" or "a hire-purchase agreement". Banking, wages and
+// retail are 54% of the corpus and 9% of our bank, and the vocabulary for them
+// did not exist here — the generator had nothing to reach for.
+//
+// These words are CXC's own: the syllabus says hire purchase 10 times,
+// depreciation 11, interest 16, loan 9, and names Business Studies among the
+// disciplines it links to.
+describe('dealings', () => {
+  it('carries the transactions the syllabus itself names', () => {
+    const all = FLAVOUR.dealings.join(' ');
+    for (const w of ['hire-purchase', 'compound interest', 'depreciation', 'salary', 'sales tax']) {
+      expect(all, w).toContain(w);
+    }
+  });
+
+  it('reaches the prompt, or it is a list nothing reads', () => {
+    const g = flavourGuidance([], undefined);
+    expect(g).toContain('hire-purchase');
+    expect(g).toMatch(/the DEALING is what the question turns on/);
+  });
+
+  it('still says nothing about currency, which lib/money.ts owns', () => {
+    expect(FLAVOUR.dealings.join(' ')).not.toMatch(/currency|dollar|EC\$|J\$/i);
+  });
+});

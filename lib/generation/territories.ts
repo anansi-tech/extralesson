@@ -19,6 +19,12 @@ export interface RegionalFlavour {
   goods: string[];
   /** Given names, so people in questions are not all called the same thing. */
   names: string[];
+  /**
+   * The transactions the questions are ABOUT. Livelihoods and goods name who
+   * and what; these name the dealing, which is what the banking, wages and
+   * retail settings actually turn on — and those are 54% of the corpus.
+   */
+  dealings: string[];
 }
 
 // MEASURED AGAINST THE PAPERS, 2026-08-26.
@@ -61,6 +67,27 @@ export const FLAVOUR: RegionalFlavour = {
   names: [
     'Amara', 'Kemar', 'Mona', 'David', 'Anisa', 'Rohan', 'Tamika', 'Jerome',
     'Priya', 'Marlon', 'Chantelle', 'Rajesh', 'Nadia', 'Liam', 'Simone', 'Trevor',
+  ],
+  // NAMED BY THE SYLLABUS ITSELF, not inferred from the papers. CXC's own
+  // wording, with occurrence counts across design/syllabus-2027.pdf:
+  // depreciation 11, hire purchase 10, interest 16 (simple 9 / compound 7),
+  // loan 9, utility 4, demand and supply 3, discount 3, plus salary, wages,
+  // taxes, invoice, budget, insurance, mortgage, currency. Its cross-discipline
+  // notes point the same way — "demand and supply functions of business
+  // studies" (p37), Business Studies among the disciplines graphs link to
+  // (p34).
+  //
+  // This is the register the corpus says we are short of — banking 28% of the
+  // papers against 1% of our bank — named by the examiner rather than guessed.
+  dealings: [
+    'a hire-purchase agreement', 'a bank loan repaid monthly', 'a savings account',
+    'simple interest over a fixed term', 'compound interest year on year',
+    'depreciation on a vehicle', 'an appreciating property value',
+    'a monthly salary with deductions', 'overtime at a higher rate',
+    'a fortnightly wage', 'a marked price with a discount', 'a bill with sales tax',
+    'an electricity bill read from a meter', 'a phone plan with a monthly cap',
+    'a household budget', 'an insurance premium',
+    'demand and supply at different prices',
   ],
 };
 
@@ -112,7 +139,7 @@ export function flavourGuidance(
   const avoid = used.length ? ` Not these, which this topic has just used: ${used.slice(0, 10).join(', ')}.` : '';
   void category;
   void seed;
-  return `SETTING DETAIL: the person or business in this question is ONE of these, and nothing else — ${FLAVOUR.livelihoods.join(', ')}. Pick the one the mathematics suits and vary it question to question; the list is there so the bank is not all farmers.${avoid} Do NOT name a country or a city: sixteen territories sit this paper and a stem that names one is a stem about one of them. Name a place only where the question genuinely needs it, such as a scale drawing of a named site. Goods and materials to draw on: ${FLAVOUR.goods.join(', ')}. Given names: ${FLAVOUR.names.slice(0, 12).join(', ')}.`;
+  return `SETTING DETAIL: the person or business in this question is ONE of these, and nothing else — ${FLAVOUR.livelihoods.join(', ')}. Pick the one the mathematics suits and vary it question to question; the list is there so the bank is not all farmers.${avoid} Do NOT name a country or a city: sixteen territories sit this paper and a stem that names one is a stem about one of them. Name a place only where the question genuinely needs it, such as a scale drawing of a named site. Goods and materials to draw on: ${FLAVOUR.goods.join(', ')}. Where the topic is about money, the DEALING is what the question turns on — draw on: ${FLAVOUR.dealings.join(', ')}. Given names: ${FLAVOUR.names.slice(0, 12).join(', ')}.`;
 }
 
 export function recentActors(texts: string[]): string[] {
