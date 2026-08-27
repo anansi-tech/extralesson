@@ -183,7 +183,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
           rejecting, and nothing on the page used to say which those were. */}
       <div className="mb-3 space-y-1">
         {question.objectives.map((o) => (
-          <div key={o.id} className="flex items-baseline gap-2 text-[13px]">
+          <div key={o.id} className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[13px]">
             <span className="shrink-0 font-mono text-xs font-semibold">{o.id}</span>
             <span
               className={`shrink-0 rounded px-1 py-0.5 font-mono text-[10px] ${
@@ -199,7 +199,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
                 : `${o.approvedOthers} other approved`}
               {o.draftOthers > 0 ? ` · ${o.draftOthers} more in draft` : ''}
             </span>
-            <span className="min-w-0 text-dim">{o.text}</span>
+            <span className="min-w-0 basis-full text-dim sm:flex-1 sm:basis-auto">{o.text}</span>
           </div>
         ))}
       </div>
