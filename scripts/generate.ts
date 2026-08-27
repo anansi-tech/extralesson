@@ -23,6 +23,7 @@ import { McqLooseZ, StructuredLooseZ } from '@/lib/generation/draft-schema';
 import { checkDuplicate } from '@/lib/generation/dedup';
 import { reviewFlags, type FlaggableQuestion } from '@/lib/admin/review-flags';
 import { CONTEXT_FREE_MCQ_SHARE } from '@/lib/generation/contexts';
+import { neediestContext } from '@/lib/generation/context-targets';
 import { verifyQuestionVisual } from '@/lib/visuals/verify';
 import { lintCriteria } from '@/lib/prompts/mark-scheme';
 import { paramsDocFor } from '@/lib/visuals';
@@ -188,6 +189,20 @@ async function main() {
         .lean<{ stem: string; stimulus?: string; context_category?: string }[]>();
       const existingStems = recent.map((q) => [q.stimulus, q.stem].filter(Boolean).join(' '));
 
+      // WHICH SETTING THIS TOPIC IS SHORT OF (R4 calibration). Counted over the
+      // topic's whole bank, not the last ten, because a share converges against
+      // the total or it does not converge at all. The target is per topic and
+      // measured from the papers; see lib/generation/context-targets.ts.
+      const settingCounts = await Question.aggregate<{ _id: string; n: number }>([
+        { $match: { topic_code: context.topic_code, status: { $in: ['draft', 'approved'] },
+                    context_category: { $nin: [null, 'none'] } } },
+        { $group: { _id: '$context_category', n: { $sum: 1 } } },
+      ]);
+      const neediest = neediestContext(
+        context.topic_code,
+        Object.fromEntries(settingCounts.map((r) => [r._id, r.n])),
+      );
+
       // R1.8 Part 0: the papers write most Paper 1 items as bare symbolic work.
       // Aim for half, measured against what this paper already holds rather
       // than by coin flip, so the share converges instead of drifting.
@@ -220,6 +235,7 @@ async function main() {
           existingStems,
           recentContexts: recent,
           contextFree,
+          wantContext: contextFree ? null : neediest,
         }),
       });
 

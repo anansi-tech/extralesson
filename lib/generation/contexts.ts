@@ -56,7 +56,11 @@ export function recentContexts(recent: Recent[]): ContextCategory[] {
 }
 
 /** Prompt block naming what this topic has just used, and what to avoid. */
-export function contextGuidance(recent: Recent[], wantContextFree: boolean): string {
+export function contextGuidance(
+  recent: Recent[],
+  wantContextFree: boolean,
+  want?: string | null,
+): string {
   if (wantContextFree) {
     return `SETTING: none. Write this item as bare mathematics — symbols, no story, no names, no places. The real Paper 1 is largely context-free ("3x^2 x 2x^3 =", "the determinant of the 2x2 identity matrix is"), and a manufactured setting on a one-mark item wastes the student's reading time. Set "context_category" to "none".`;
   }
@@ -64,5 +68,12 @@ export function contextGuidance(recent: Recent[], wantContextFree: boolean): str
   const avoid = used.length
     ? ` This topic has just used ${used.join(', ')} — choose something else.`
     : '';
+  // ONE CATEGORY, NAMED. Listing all fifteen and saying "avoid the last few"
+  // spreads evenly; the papers do not. This is the setting the topic is
+  // furthest short of against its OWN measured target, so the share converges
+  // rather than drifting (lib/generation/context-targets.ts).
+  if (want) {
+    return `SETTING: use ${want}. Set "context_category" to "${want}". This topic is short of that setting measured against the real papers, so write the mathematics into it naturally — if it genuinely cannot carry ${want}, choose the nearest setting that can and set the field to what you actually used.${avoid} Caribbean settings, drawn widely, and do not open with "The coordinate grid shows" or "At a school fair".`;
+  }
   return `SETTING: choose ONE context_category from ${CONTEXT_CATEGORIES.filter((c) => c !== 'none').join(', ')} and set the field to it.${avoid} Caribbean settings, drawn widely: a fortnightly pay packet, a ferry timetable, a fish market scale, a rainfall record, a hardware order, a school sports day. Do not open with "The coordinate grid shows" or "At a school fair".`;
 }

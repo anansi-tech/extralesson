@@ -1,0 +1,252 @@
+{
+ "M1-ALG1": {
+  "sample": 9,
+  "shares": {
+   "agriculture": 0.053,
+   "banking": 0.289,
+   "construction": 0.01,
+   "fishing": 0.005,
+   "household": 0.053,
+   "manufacturing": 0.046,
+   "retail": 0.169,
+   "school": 0.024,
+   "sport": 0.065,
+   "tourism": 0.022,
+   "transport": 0.159,
+   "wages": 0.106
+  },
+  "source": "bank-wide fallback"
+ },
+ "M1-CONS": {
+  "sample": 229,
+  "shares": {
+   "agriculture": 0.022,
+   "banking": 0.467,
+   "household": 0.057,
+   "manufacturing": 0.031,
+   "retail": 0.218,
+   "sport": 0.022,
+   "tourism": 0.022,
+   "transport": 0.013,
+   "wages": 0.148
+  },
+  "source": "own sample"
+ },
+ "M1-GRAPHS": {
+  "sample": 5,
+  "shares": {
+   "agriculture": 0.053,
+   "banking": 0.289,
+   "construction": 0.01,
+   "fishing": 0.005,
+   "household": 0.053,
+   "manufacturing": 0.046,
+   "retail": 0.169,
+   "school": 0.024,
+   "sport": 0.065,
+   "tourism": 0.022,
+   "transport": 0.159,
+   "wages": 0.106
+  },
+  "source": "bank-wide fallback"
+ },
+ "M1-MEAS": {
+  "sample": 29,
+  "shares": {
+   "agriculture": 0.103,
+   "banking": 0.103,
+   "household": 0.069,
+   "retail": 0.034,
+   "sport": 0.034,
+   "tourism": 0.138,
+   "transport": 0.517
+  },
+  "source": "own sample"
+ },
+ "M1-NTC": {
+  "sample": 24,
+  "shares": {
+   "agriculture": 0.083,
+   "banking": 0.167,
+   "manufacturing": 0.083,
+   "retail": 0.167,
+   "sport": 0.083,
+   "transport": 0.167,
+   "wages": 0.25
+  },
+  "source": "own sample"
+ },
+ "M1-SETS": {
+  "sample": 11,
+  "shares": {
+   "agriculture": 0.053,
+   "banking": 0.289,
+   "construction": 0.01,
+   "fishing": 0.005,
+   "household": 0.053,
+   "manufacturing": 0.046,
+   "retail": 0.169,
+   "school": 0.024,
+   "sport": 0.065,
+   "tourism": 0.022,
+   "transport": 0.159,
+   "wages": 0.106
+  },
+  "source": "bank-wide fallback"
+ },
+ "M2-ALG2": {
+  "sample": 4,
+  "shares": {
+   "agriculture": 0.053,
+   "banking": 0.289,
+   "construction": 0.01,
+   "fishing": 0.005,
+   "household": 0.053,
+   "manufacturing": 0.046,
+   "retail": 0.169,
+   "school": 0.024,
+   "sport": 0.065,
+   "tourism": 0.022,
+   "transport": 0.159,
+   "wages": 0.106
+  },
+  "source": "bank-wide fallback"
+ },
+ "M2-GEO1": {
+  "sample": 7,
+  "shares": {
+   "agriculture": 0.053,
+   "banking": 0.289,
+   "construction": 0.01,
+   "fishing": 0.005,
+   "household": 0.053,
+   "manufacturing": 0.046,
+   "retail": 0.169,
+   "school": 0.024,
+   "sport": 0.065,
+   "tourism": 0.022,
+   "transport": 0.159,
+   "wages": 0.106
+  },
+  "source": "bank-wide fallback"
+ },
+ "M2-RFG1": {
+  "sample": 7,
+  "shares": {
+   "agriculture": 0.053,
+   "banking": 0.289,
+   "construction": 0.01,
+   "fishing": 0.005,
+   "household": 0.053,
+   "manufacturing": 0.046,
+   "retail": 0.169,
+   "school": 0.024,
+   "sport": 0.065,
+   "tourism": 0.022,
+   "transport": 0.159,
+   "wages": 0.106
+  },
+  "source": "bank-wide fallback"
+ },
+ "M2-STAT1": {
+  "sample": 31,
+  "shares": {
+   "agriculture": 0.194,
+   "manufacturing": 0.226,
+   "school": 0.129,
+   "sport": 0.387,
+   "transport": 0.065
+  },
+  "source": "own sample"
+ },
+ "M2-VM1": {
+  "sample": 2,
+  "shares": {
+   "agriculture": 0.053,
+   "banking": 0.289,
+   "construction": 0.01,
+   "fishing": 0.005,
+   "household": 0.053,
+   "manufacturing": 0.046,
+   "retail": 0.169,
+   "school": 0.024,
+   "sport": 0.065,
+   "tourism": 0.022,
+   "transport": 0.159,
+   "wages": 0.106
+  },
+  "source": "bank-wide fallback"
+ },
+ "M3-GEO2": {
+  "sample": 0,
+  "shares": {
+   "agriculture": 0.053,
+   "banking": 0.289,
+   "construction": 0.01,
+   "fishing": 0.005,
+   "household": 0.053,
+   "manufacturing": 0.046,
+   "retail": 0.169,
+   "school": 0.024,
+   "sport": 0.065,
+   "tourism": 0.022,
+   "transport": 0.159,
+   "wages": 0.106
+  },
+  "source": "bank-wide fallback"
+ },
+ "M3-RFG2": {
+  "sample": 0,
+  "shares": {
+   "agriculture": 0.053,
+   "banking": 0.289,
+   "construction": 0.01,
+   "fishing": 0.005,
+   "household": 0.053,
+   "manufacturing": 0.046,
+   "retail": 0.169,
+   "school": 0.024,
+   "sport": 0.065,
+   "tourism": 0.022,
+   "transport": 0.159,
+   "wages": 0.106
+  },
+  "source": "bank-wide fallback"
+ },
+ "M3-STAT2": {
+  "sample": 3,
+  "shares": {
+   "agriculture": 0.053,
+   "banking": 0.289,
+   "construction": 0.01,
+   "fishing": 0.005,
+   "household": 0.053,
+   "manufacturing": 0.046,
+   "retail": 0.169,
+   "school": 0.024,
+   "sport": 0.065,
+   "tourism": 0.022,
+   "transport": 0.159,
+   "wages": 0.106
+  },
+  "source": "bank-wide fallback"
+ },
+ "M3-VM2": {
+  "sample": 0,
+  "shares": {
+   "agriculture": 0.053,
+   "banking": 0.289,
+   "construction": 0.01,
+   "fishing": 0.005,
+   "household": 0.053,
+   "manufacturing": 0.046,
+   "retail": 0.169,
+   "school": 0.024,
+   "sport": 0.065,
+   "tourism": 0.022,
+   "transport": 0.159,
+   "wages": 0.106
+  },
+  "source": "bank-wide fallback"
+ }
+}

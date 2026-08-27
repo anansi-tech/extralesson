@@ -75,3 +75,32 @@ describe('buildDraftPrompt — Part 0 item shapes and distractors', () => {
     expect(p).toContain('bare mathematics');
   });
 });
+
+// A TARGET THE RECIPE DOES NOT CONSUME IS A WISH.
+//
+// The bank ran banking at 1% against the papers' 29% because nothing pulled
+// toward it: the guidance only said "avoid what you just used", which spreads
+// evenly rather than the way the papers do.
+describe('the context target reaches the prompt', () => {
+  it('names ONE category when the recipe has chosen one', () => {
+    const g = contextGuidance([], false, 'banking');
+    expect(g).toContain('use banking');
+    expect(g).toContain('"context_category" to "banking"');
+  });
+
+  it('lets the model refuse a setting the mathematics cannot carry', () => {
+    // Forcing it would be the R1.8 stapling failure: a context bolted onto
+    // mathematics that does not want it.
+    expect(contextGuidance([], false, 'banking')).toMatch(/cannot carry banking/);
+  });
+
+  it('falls back to the open list when there is no target', () => {
+    const g = contextGuidance([], false, null);
+    expect(g).not.toContain('use banking');
+    expect(g).toContain('choose ONE context_category');
+  });
+
+  it('still writes bare symbolic items when the paper wants them', () => {
+    expect(contextGuidance([], true, 'banking')).toContain('SETTING: none');
+  });
+});

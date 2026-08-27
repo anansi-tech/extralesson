@@ -113,6 +113,8 @@ export function buildDraftPrompt(args: {
   recentContexts?: { context_category?: string }[];
   /** True when this Paper 1 item should be bare symbolic work. */
   contextFree?: boolean;
+  /** The setting this topic is furthest short of, or null for no steer. */
+  wantContext?: string | null;
 }): string {
   const { topicTitle, objectives, recipe, context, module, visualContract } = args;
   // The dedup gate rejects a repeat only after we have paid to generate it, and
@@ -131,7 +133,7 @@ ${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 200)}`).join('\n')}`
     : '';
   const patterns = paperPatterns(recipe, context, objectives);
   const documentedErrors = misconceptionGuidance(recipe.objective_ids);
-  const setting = contextGuidance(args.recentContexts ?? [], args.contextFree ?? false);
+  const setting = contextGuidance(args.recentContexts ?? [], args.contextFree ?? false, args.wantContext);
   // Seeded by the objectives, so two questions on different objectives are not
   // offered the same six livelihoods to choose from.
   const territory = args.contextFree
