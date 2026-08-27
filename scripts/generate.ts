@@ -202,9 +202,15 @@ async function main() {
           .lean<{ stem: string; stimulus?: string }[]>()
       ).map((q) => [q.stimulus, q.stem].filter(Boolean).join(' '));
 
+      const topicObjectivePrefixes = objectives.map((o) => o.id);
       const settingCounts = await Question.aggregate<{ _id: string; n: number }>([
-        { $match: { topic_code: context.topic_code, status: { $in: ['draft', 'approved'] },
-                    context_category: { $nin: [null, 'none'] } } },
+        {
+          $match: {
+            objective_ids: { $in: topicObjectivePrefixes },
+            status: { $in: ['draft', 'approved'] },
+            context_category: { $nin: [null, 'none'] },
+          },
+        },
         { $group: { _id: '$context_category', n: { $sum: 1 } } },
       ]);
       const neediest = neediestContext(
