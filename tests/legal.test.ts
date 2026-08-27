@@ -408,7 +408,7 @@ describe('the support address', () => {
       // No literal address on any surface — they all read the constant.
       expect(strip(read(...f)), f.join('/')).not.toMatch(/[a-z0-9._%+-]+@anansi\.xyz/i);
     }
-    expect(LANDING_CONTENT.contactEmail).toMatch(/^[A-Z0-9._%+-]+@ANANSI\.XYZ$/);
+    expect(LANDING_CONTENT.contactEmail).toMatch(/^[a-z0-9._%+-]+@anansi\.xyz$/);
   });
 
   it('reaches every surface that offers help', () => {

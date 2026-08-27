@@ -29,8 +29,8 @@ export function LegalPage({
         <div className="on-rules mt-6 text-sm [&_ul]:list-disc [&_ul]:pl-5">{children}</div>
         <p className="mt-8 border-t-[1.5px] border-rule pt-4 text-[12px] text-dim">
           Questions about this page:{' '}
-          <a href={`mailto:${LANDING.contactEmail.toLowerCase()}`} className="underline">
-            {LANDING.contactEmail.toLowerCase()}
+          <a href={`mailto:${LANDING.contactEmail}`} className="underline">
+            {LANDING.contactEmail}
           </a>
         </p>
       </div>

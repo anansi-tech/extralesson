@@ -124,7 +124,7 @@
 .landing footer { border-top: 1.5px solid var(--ink); padding: 28px 0 44px; font-family: var(--mono); font-size: 10.5px; color: var(--dim); }
 /* Two groups, so the row keeps a shape when it wraps. */
 .landing footer .foot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 18px; }
-.landing footer .foot-info { display: grid; gap: 6px; line-height: 1.6; }
+.landing footer .foot-info { line-height: 2; }
 /* The only action down here, and it should not look like small print. */
 .landing footer .foot-action { color: var(--ink); }
-.landing footer .foot-action .authlink { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; margin-left: 8px; border: 1.5px solid var(--ink); color: var(--ink); font-weight: 700; text-decoration: none; }
+.landing footer .foot-action .authlink { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1.5px solid var(--ink); color: var(--ink); font-weight: 700; text-decoration: none; }

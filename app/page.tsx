@@ -335,17 +335,18 @@ export default async function LandingPage() {
       <footer>
         <div className="wrap foot">
           <div className="foot-info">
-            <div>EXTRALESSON · AN ANANSI TECHNOLOGY LLC PRODUCT</div>
-            <div>
-              {LANDING.contactEmail} ·{' '}
-              <Link className="authlink" href="/privacy">
-                Privacy
-              </Link>{' '}
-              ·{' '}
-              <Link className="authlink" href="/terms">
-                Terms
-              </Link>
-            </div>
+            &copy; {new Date().getFullYear()} Anansi Technology LLC ·{' '}
+            <a className="authlink" href={`mailto:${LANDING.contactEmail}`}>
+              {LANDING.contactEmail}
+            </a>{' '}
+            ·{' '}
+            <Link className="authlink" href="/privacy">
+              Privacy
+            </Link>{' '}
+            ·{' '}
+            <Link className="authlink" href="/terms">
+              Terms
+            </Link>
           </div>
           {/* Mirrored here because a phone scrolls past the header and never
               scrolls back up to look for a way in. */}
@@ -355,12 +356,9 @@ export default async function LandingPage() {
                 Continue studying &rarr;
               </Link>
             ) : (
-              <>
-                Already have an account?{' '}
-                <Link className="authlink" href="/study/login">
-                  Sign in
-                </Link>
-              </>
+              <Link className="authlink" href="/study/login">
+                Sign in
+              </Link>
             )}
           </div>
         </div>

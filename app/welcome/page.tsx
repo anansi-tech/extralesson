@@ -51,8 +51,8 @@ export default function WelcomePage() {
 
         <p className="mt-4 text-[12px] leading-snug text-dim">
           Access usually appears within a minute. If it has not after a few minutes, email{' '}
-          <a href={`mailto:${LANDING.contactEmail.toLowerCase()}`} className="underline">
-            {LANDING.contactEmail.toLowerCase()}
+          <a href={`mailto:${LANDING.contactEmail}`} className="underline">
+            {LANDING.contactEmail}
           </a>{' '}
           with the address you paid with and we will sort it out by hand.
         </p>

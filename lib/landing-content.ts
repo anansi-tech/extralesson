@@ -30,7 +30,7 @@ export const LANDING = {
   // subject report gives 36.11% — different measure and year, not comparable.
   statBenchmark: '42%',
   statBenchmarkLabel: 'Of candidates passed CSEC Mathematics\nGrades I–III · CXC, August 2026',
-  contactEmail: 'EXTRALESSON@ANANSI.XYZ',
+  contactEmail: 'extralesson@anansi.xyz',
 } as const;
 
 // Coverage computed from the same seeds the mastery map uses, so marketing
