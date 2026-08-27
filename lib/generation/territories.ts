@@ -175,14 +175,32 @@ export function flavourGuidance(
   }`;
 }
 
+/**
+ * Nouns that take an actor's grammatical position without being one. Maths
+ * prose is full of them, and an actor measurement that counts "results" is one
+ * nothing can be steered on.
+ */
+const NOT_AN_ACTOR = new Set([
+  'results', 'result', 'values', 'value', 'figures', 'figure', 'data', 'numbers',
+  'number', 'points', 'point', 'graph', 'table', 'diagram', 'chart', 'grid',
+  'information', 'cost', 'price', 'total', 'distance', 'time', 'speed', 'amount',
+  'sum', 'mass', 'area', 'volume', 'length', 'width', 'height', 'rate', 'answer',
+  'question', 'visual', 'curve', 'line', 'shape', 'region', 'scale',
+]);
+
 export function recentActors(texts: string[]): string[] {
   const found: string[] = [];
   for (const text of texts.slice(0, FLAVOUR_MEMORY)) {
     const m = text
       .replace(/\$[^$]*\$/g, ' ')
-      .match(/\b(?:A|An|The|At a|At an|In a|During a|On a)\s+([a-z][a-z' -]{2,28}?)\s+(?:plans|records|is|are|has|have|sells|makes|buys|uses|prepares|wants|needs|orders|packs|runs|owns|tracks|models|compares|charges|delivers|offers|installs|designs|builds|stores|ships|collects|measures|surveys|begins|opens|operates|produces|supplies|manages|hires|rents|plants|harvests|bakes|repairs|transports|imports|exports|stocks|sews|paints|mixes|fills|loads|serves|cuts|weighs|counts)\b/);
+      .match(/\b(?:A|An|The|At a|At an|In a|During a|On a)\s+([a-z][a-z' -]{2,28}?)\s+(?:plans|records|sells|makes|buys|uses|prepares|wants|needs|orders|packs|runs|owns|tracks|models|compares|charges|delivers|offers|installs|designs|builds|stores|ships|collects|measures|surveys|begins|opens|operates|produces|supplies|manages|hires|rents|plants|harvests|bakes|repairs|transports|imports|exports|stocks|sews|paints|mixes|fills|loads|serves|cuts|weighs|counts)\b/);
     const actor = m?.[1]?.trim().toLowerCase();
-    if (actor && !found.includes(actor)) found.push(actor);
+    if (!actor || NOT_AN_ACTOR.has(actor) || found.includes(actor)) continue;
+    // A phrase whose head noun is not an actor is not one either: "graph for
+    // this information" was being counted as somebody.
+    const head = actor.split(' ').pop()!;
+    if (NOT_AN_ACTOR.has(head)) continue;
+    found.push(actor);
   }
   return found;
 }

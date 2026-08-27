@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FLAVOUR, FLAVOUR_MEMORY, flavourGuidance, recentFlavour, NAMES, leastUsedName } from '@/lib/generation/territories';
+import { FLAVOUR, FLAVOUR_MEMORY, flavourGuidance, recentFlavour, NAMES, leastUsedName, recentActors } from '@/lib/generation/territories';
 import { renderMathHtml, renderAnswerHtml } from '@/lib/katex';
 import { answersEquivalent } from '@/lib/grade/equivalence';
 import { formatThousands, normaliseDigitGroups, stripMoney } from '@/lib/money';
@@ -195,5 +195,36 @@ describe('the prompt gets one name or none', () => {
 
   it('forbids naming anyone when no name was chosen', () => {
     expect(flavourGuidance([], undefined, '', null)).toContain('Do not name a person');
+  });
+});
+
+// AN ACTOR IS A PERSON OR A BUSINESS, NOT A NOUN IN AN ACTOR'S POSITION.
+//
+// Measured over the last batch, recentActors reported "results" and "graph for
+// this information" as actors. The cause was is/are/has/have in the verb list:
+// copulas attach to any noun, so "the results are shown" and "the total is 40"
+// both parsed as somebody doing something. A measurement that over-reports is
+// one nothing can be steered on.
+describe('recentActors counts actors only', () => {
+  it('ignores abstract nouns standing where an actor stands', () => {
+    for (const s of [
+      'The results are shown in the table below.',
+      'The total is 40 and the values are given.',
+      'Draw a graph for this information.',
+      'The diagram is not drawn to scale.',
+    ]) {
+      expect(recentActors([s]), s).toEqual([]);
+    }
+  });
+
+  it('still finds a real actor', () => {
+    expect(recentActors(['A bank teller records the deposits.'])).toEqual(['bank teller']);
+    expect(recentActors(['The shop supervisor orders more stock.'])).toEqual(['shop supervisor']);
+    expect(recentActors(['A market vendor sells mangoes.'])).toEqual(['market vendor']);
+  });
+
+  it('rejects a phrase whose head noun is not an actor', () => {
+    // "graph for this information" has a role-shaped position and a noun head.
+    expect(recentActors(['A graph for this information records the totals.'])).toEqual([]);
   });
 });
