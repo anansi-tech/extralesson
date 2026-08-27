@@ -88,17 +88,30 @@ export const REPRESENTATION_TARGETS: Record<string, RepresentationTarget[]> = {
     { representation: 'graph', share: 10, template_hints: ['coordinateGrid'] },
     { representation: 'diagram', share: 10, template_hints: ['vectorFigure'] },
   ],
-  // M3.1 Stats 2 (n=11): always visual (table 63 / chart 36)
+  // M3.1 Stats 2 (n=11): always visual (table 63 / chart 36), plus a graph row
+  // added below for the ogive.
   'M3-STAT2': [
-    { representation: 'table', share: 64, template_hints: ['dataTable'] },
+    { representation: 'table', share: 55, template_hints: ['dataTable'] },
+    // THE OGIVE'S ONLY ROUTE INTO THE BANK.
+    //
+    // M3.1.7 draw a cumulative frequency curve, M3.1.8 analyse statistical
+    // diagrams, M3.1.9 the proportion above or below a value — three objectives
+    // that are all ogive work, and they live HERE. The note below used to say
+    // ogives stayed reachable through M3-RFG2's graph row, and that was simply
+    // untrue: M3-RFG2's objectives are inequalities and function graphs, so a
+    // recipe there never asks for one. The template existed, the objectives
+    // existed, nothing joined them, and the bank held zero.
+    //
+    // The 15% is a judgment on low n, like the M1-SETS and M2-VM1 splits: a
+    // sample of 11 gives no graph row at all, but three of eleven objectives
+    // being ogive work is better evidence of what the paper does than a sample
+    // that small.
+    { representation: 'graph', share: 15, template_hints: ['cumulativeFrequency'] },
     // No cumulativeFrequency here: an ogive is a GRAPH in
     // TEMPLATES_BY_REPRESENTATION, so a question declaring 'chart' and drawing
-    // one is rejected by the schema every time. It sat here harmlessly while
-    // the model could pick either of the other two instead, and became a loop
-    // the moment a recipe narrowed the hints to one template. Ogives stay
-    // reachable through M3-RFG2, whose 85% graph row carries the same template
-    // under the representation it belongs to.
-    { representation: 'chart', share: 36, template_hints: ['histogram', 'pieChart'] },
+    // one is rejected by the schema every time. That still holds — it belongs
+    // in the graph row above, which is where it now is.
+    { representation: 'chart', share: 30, template_hints: ['histogram', 'pieChart'] },
   ],
   // M3.2 RFG 2 (n=13): grid 38 / graph 38 / prose 15, residual→graph
   'M3-RFG2': [
