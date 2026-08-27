@@ -115,6 +115,8 @@ export function buildDraftPrompt(args: {
   contextFree?: boolean;
   /** The setting this topic is furthest short of, or null for no steer. */
   wantContext?: string | null;
+  /** The one name this question may use, or null for none. */
+  wantName?: string | null;
 }): string {
   const { topicTitle, objectives, recipe, context, module, visualContract } = args;
   // The dedup gate rejects a repeat only after we have paid to generate it, and
@@ -138,7 +140,7 @@ ${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 200)}`).join('\n')}`
   // offered the same six livelihoods to choose from.
   const territory = args.contextFree
     ? ''
-    : flavourGuidance(args.existingStems ?? [], undefined, recipe.objective_ids.join(','));
+    : flavourGuidance(args.existingStems ?? [], undefined, recipe.objective_ids.join(','), args.wantName);
   const kind = recipe.kind;
   const objectiveBlock = objectives
     .map((o) => `- ${o.id}: ${o.text}${o.notes ? `\n  Notes: ${o.notes}` : ''}`)

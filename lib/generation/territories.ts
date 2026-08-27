@@ -17,8 +17,6 @@ export interface RegionalFlavour {
   livelihoods: string[];
   /** Produce, goods and materials that appear in a Caribbean question. */
   goods: string[];
-  /** Given names, so people in questions are not all called the same thing. */
-  names: string[];
   /**
    * The transactions the questions are ABOUT. Livelihoods and goods name who
    * and what; these name the dealing, which is what the banking, wages and
@@ -41,6 +39,40 @@ export interface RegionalFlavour {
 //
 // Goods were 13 of 18 produce. Agriculture stays — it does appear — but as one
 // register among several rather than the default one.
+/**
+ * ONE FLAT LIST. Least-used selection over a single list already spreads
+ * evenly, and a name's origin has no downstream effect on anything, so pools
+ * would be a mechanism without a purpose.
+ */
+export const NAMES = [
+  'Liam', 'Cairo', 'David', 'Shari', 'Amari', 'Ayden', 'Aniyah', 'Damion',
+  'Aliyah', 'Mickel', 'Mikayla', 'Stoney', 'Michael', 'Brian', 'Mallissa',
+  'Amara', 'Kemar', 'Mona', 'Anisa', 'Rohan', 'Tamika', 'Jerome', 'Priya',
+  'Marlon', 'Chantelle', 'Rajesh', 'Nadia', 'Simone', 'Trevor', 'Johnson',
+];
+
+/**
+ * The name the bank has used least, counted over existing stems. Deterministic:
+ * ties break by list order, so the same bank always yields the same choice.
+ *
+ * Only the CHOSEN name goes to the prompt. Handing over twelve and asking for
+ * variety is what let the model concentrate on a few — a list is an invitation,
+ * one name is an instruction.
+ */
+export function leastUsedName(stems: string[]): string {
+  const hay = stems.join(' \u0000 ');
+  let best = NAMES[0];
+  let bestCount = Infinity;
+  for (const name of NAMES) {
+    const n = (hay.match(new RegExp(`\\b${name}\\b`, 'g')) ?? []).length;
+    if (n < bestCount) {
+      bestCount = n;
+      best = name;
+    }
+  }
+  return best;
+}
+
 export const FLAVOUR: RegionalFlavour = {
   livelihoods: [
     // Salaried and commercial, which is where the papers mostly sit.
@@ -63,10 +95,6 @@ export const FLAVOUR: RegionalFlavour = {
     'roofing sheets', 'cement blocks', 'floor tiles', 'fabric',
     // Produce, kept in proportion rather than dominating.
     'mangoes', 'plantains', 'coconuts', 'nutmeg', 'saltfish',
-  ],
-  names: [
-    'Amara', 'Kemar', 'Mona', 'David', 'Anisa', 'Rohan', 'Tamika', 'Jerome',
-    'Priya', 'Marlon', 'Chantelle', 'Rajesh', 'Nadia', 'Liam', 'Simone', 'Trevor',
   ],
   // NAMED BY THE SYLLABUS ITSELF, not inferred from the papers. CXC's own
   // wording, with occurrence counts across design/syllabus-2027.pdf:
@@ -97,7 +125,7 @@ export const FLAVOUR_MEMORY = 8;
 /** Flavour words a topic has used recently, so generation reaches elsewhere. */
 export function recentFlavour(texts: string[]): string[] {
   const used: string[] = [];
-  const all = [...FLAVOUR.livelihoods, ...FLAVOUR.goods, ...FLAVOUR.names];
+  const all = [...FLAVOUR.livelihoods, ...FLAVOUR.goods, ...NAMES];
   for (const text of texts.slice(0, FLAVOUR_MEMORY)) {
     for (const word of all) {
       const bare = word.replace(/^an? /, '');
@@ -134,12 +162,17 @@ export function flavourGuidance(
   recentTexts: string[],
   category: ContextCategory | undefined,
   seed = '',
+  name?: string | null,
 ): string {
   const used = [...new Set([...recentFlavour(recentTexts), ...recentActors(recentTexts)])];
   const avoid = used.length ? ` Not these, which this topic has just used: ${used.slice(0, 10).join(', ')}.` : '';
   void category;
   void seed;
-  return `SETTING DETAIL: the person or business in this question is ONE of these, and nothing else — ${FLAVOUR.livelihoods.join(', ')}. Pick the one the mathematics suits and vary it question to question; the list is there so the bank is not all farmers.${avoid} Do NOT name a country or a city: sixteen territories sit this paper and a stem that names one is a stem about one of them. Name a place only where the question genuinely needs it, such as a scale drawing of a named site. Goods and materials to draw on: ${FLAVOUR.goods.join(', ')}. Where the topic is about money, the DEALING is what the question turns on — draw on: ${FLAVOUR.dealings.join(', ')}. Given names: ${FLAVOUR.names.slice(0, 12).join(', ')}.`;
+  return `SETTING DETAIL: the person or business in this question is ONE of these, and nothing else — ${FLAVOUR.livelihoods.join(', ')}. Pick the one the mathematics suits and vary it question to question; the list is there so the bank is not all farmers.${avoid} Do NOT name a country or a city: sixteen territories sit this paper and a stem that names one is a stem about one of them. Name a place only where the question genuinely needs it, such as a scale drawing of a named site. Goods and materials to draw on: ${FLAVOUR.goods.join(', ')}. Where the topic is about money, the DEALING is what the question turns on — draw on: ${FLAVOUR.dealings.join(', ')}. ${
+    name
+      ? `If a person is named, the name is ${name} and no other. A role or a business may stay unnamed — do not add a name merely to use it.`
+      : 'Do not name a person.'
+  }`;
 }
 
 export function recentActors(texts: string[]): string[] {

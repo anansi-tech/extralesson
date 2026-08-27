@@ -24,6 +24,7 @@ import { checkDuplicate } from '@/lib/generation/dedup';
 import { reviewFlags, type FlaggableQuestion } from '@/lib/admin/review-flags';
 import { CONTEXT_FREE_MCQ_SHARE } from '@/lib/generation/contexts';
 import { neediestContext } from '@/lib/generation/context-targets';
+import { leastUsedName } from '@/lib/generation/territories';
 import { verifyQuestionVisual } from '@/lib/visuals/verify';
 import { lintCriteria } from '@/lib/prompts/mark-scheme';
 import { paramsDocFor } from '@/lib/visuals';
@@ -193,6 +194,14 @@ async function main() {
       // topic's whole bank, not the last ten, because a share converges against
       // the total or it does not converge at all. The target is per topic and
       // measured from the papers; see lib/generation/context-targets.ts.
+      // Every stem in the bank, for least-used name selection. A name spreads
+      // against the whole bank or it does not spread.
+      const allStems = (
+        await Question.find({ status: { $in: ['draft', 'approved'] } })
+          .select('stem stimulus')
+          .lean<{ stem: string; stimulus?: string }[]>()
+      ).map((q) => [q.stimulus, q.stem].filter(Boolean).join(' '));
+
       const settingCounts = await Question.aggregate<{ _id: string; n: number }>([
         { $match: { topic_code: context.topic_code, status: { $in: ['draft', 'approved'] },
                     context_category: { $nin: [null, 'none'] } } },
@@ -236,6 +245,10 @@ async function main() {
           recentContexts: recent,
           contextFree,
           wantContext: contextFree ? null : neediest,
+          // One name, chosen by least use across the whole bank, or none at all
+          // for a bare symbolic item. Handing the model a list is what let it
+          // concentrate on a few.
+          wantName: contextFree ? null : leastUsedName(allStems),
         }),
       });
 

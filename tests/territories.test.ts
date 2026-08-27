@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FLAVOUR, FLAVOUR_MEMORY, flavourGuidance, recentFlavour } from '@/lib/generation/territories';
+import { FLAVOUR, FLAVOUR_MEMORY, flavourGuidance, recentFlavour, NAMES, leastUsedName } from '@/lib/generation/territories';
 import { renderMathHtml, renderAnswerHtml } from '@/lib/katex';
 import { answersEquivalent } from '@/lib/grade/equivalence';
 import { formatThousands, normaliseDigitGroups, stripMoney } from '@/lib/money';
@@ -12,7 +12,7 @@ describe('regional flavour, not place names', () => {
   it('offers generic livelihoods, goods and names', () => {
     expect(FLAVOUR.livelihoods.length).toBeGreaterThan(10);
     expect(FLAVOUR.goods.length).toBeGreaterThan(10);
-    expect(FLAVOUR.names.length).toBeGreaterThan(10);
+    expect(NAMES.length).toBeGreaterThan(10);
   });
 
   // Measured against the papers 2026-08-26: banking 31%, retail 20%, transport
@@ -64,7 +64,7 @@ describe('regional flavour, not place names', () => {
   });
 
   it('remembers only the recent past', () => {
-    const many = Array.from({ length: 30 }, (_, i) => `${FLAVOUR.names[i % FLAVOUR.names.length]} buys fabric.`);
+    const many = Array.from({ length: 30 }, (_, i) => `${NAMES[i % NAMES.length]} buys fabric.`);
     expect(recentFlavour(many).length).toBeLessThanOrEqual(FLAVOUR_MEMORY + FLAVOUR.goods.length);
   });
 });
@@ -148,5 +148,52 @@ describe('dealings', () => {
 
   it('still says nothing about currency, which lib/money.ts owns', () => {
     expect(FLAVOUR.dealings.join(' ')).not.toMatch(/currency|dollar|EC\$|J\$/i);
+  });
+});
+
+// ONE NAME, CHOSEN — not twelve, offered.
+describe('leastUsedName', () => {
+  it('picks the name the bank has used least', () => {
+    const stems = ['Liam sells fabric.', 'Liam buys tiles.', 'Cairo counts stock.'];
+    // Every other name has zero uses; list order breaks the tie deterministically.
+    expect(leastUsedName(stems)).toBe('David');
+  });
+
+  it('is deterministic — the same bank yields the same name', () => {
+    const stems = ['Liam and Cairo and David met.'];
+    expect(leastUsedName(stems)).toBe(leastUsedName(stems));
+  });
+
+  it('moves on once a name has been used', () => {
+    const used: string[] = [];
+    for (let i = 0; i < 4; i++) used.push(leastUsedName(used.map((n) => `${n} runs a stall.`)));
+    expect(new Set(used).size, 'four picks should be four different names').toBe(4);
+  });
+
+  it('matches whole words, so Amara is not a use of Amari', () => {
+    const stems = Array(5).fill('Amari packs boxes.');
+    expect(leastUsedName(stems)).not.toBe('Amari');
+  });
+
+  it('is one flat list with no pools', () => {
+    expect(Array.isArray(NAMES)).toBe(true);
+    expect(NAMES).toContain('Johnson');
+    expect(new Set(NAMES).size, 'no duplicates').toBe(NAMES.length);
+  });
+});
+
+describe('the prompt gets one name or none', () => {
+  it('names exactly the chosen one, and forbids inventing others', () => {
+    const g = flavourGuidance([], undefined, '', 'Mikayla');
+    expect(g).toContain('the name is Mikayla and no other');
+    expect(g).not.toMatch(/Amara, Kemar/);
+  });
+
+  it('says not to add a name where none is needed', () => {
+    expect(flavourGuidance([], undefined, '', 'Mikayla')).toMatch(/do not add a name merely to use it/i);
+  });
+
+  it('forbids naming anyone when no name was chosen', () => {
+    expect(flavourGuidance([], undefined, '', null)).toContain('Do not name a person');
   });
 });

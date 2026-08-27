@@ -22,10 +22,15 @@ import TARGETS from './context-targets.json';
  * Statistics, where the papers use match scores and production runs — the R1.8
  * stapling failure wearing a new costume.
  *
- * A topic whose corpus sample is too thin to give a distribution carries the
- * bank-wide figure, and the JSON records `source: "bank-wide fallback"` so the
- * data says which it is rather than leaving the reader to guess.
+ * A topic whose corpus sample is too thin gets NO TARGET, and reverts to the
+ * open list with avoid-recent. A near-zero sample is not missing data — it is
+ * the finding that the papers set those topics without context. Every one of
+ * the nine is symbolic: Vectors, Matrices, Algebra 2, Geometry 2. Inheriting
+ * the bank-wide figure would have stapled a hire-purchase agreement onto a
+ * matrix transformation, which is the thing the per-topic split exists to stop.
+ * The JSON still records `source` so the data says which it is.
  */
+export const MIN_SAMPLE = 12;
 export interface ContextTarget {
   source: 'own sample' | 'bank-wide fallback';
   sample: number;
@@ -49,6 +54,9 @@ export function neediestContext(
 ): ContextCategory | null {
   const target = targetFor(topicCode);
   if (!target) return null;
+  // No steer where the corpus had nothing to say. See above: silence is the
+  // measurement, not a gap in it.
+  if (target.source === 'bank-wide fallback' || target.sample < MIN_SAMPLE) return null;
   const shares = target.shares as Record<string, number>;
   if (Object.keys(shares).length === 0) return null;
   return largestDeficit(shares, actual as Record<string, number>) as ContextCategory;
