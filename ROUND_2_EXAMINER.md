@@ -312,6 +312,18 @@ happens if the reader is not who you assumed is.
 No handwriting model or OCR training · no per-stroke or video capture · no live camera guidance · no marking without a stored transcription · no vision pass that can reduce a deterministically-earned mark · no image retained beyond the TTL · no parent report in this round · no instrument constructions · no second marking dialect (transcription targets the grader's existing conventions).
 Greps: `tesseract`, `ocr`, `stroke`, `handwriting-model`.
 
+**Amended 26 August 2026 — scope.** "No handwriting model or OCR training" is
+about the SHIPPED PRODUCT: no bundled recogniser, no model trained on student
+work, no stroke capture. The vision model we call is the answer for reading
+handwriting and remains so.
+
+It was never about reading printed reference material locally. It stopped a
+calibration measurement over our own past-paper PDFs, which is not what it
+guards — a local script that reads reference documents to tune the generator
+ships nothing and is unrestricted, by any means including the same vision path
+the product uses. The gate is on what the product CONTAINS, not on what we are
+allowed to look at.
+
 ## 10. Definition of done
 
 1. Capture works on a phone at 390px, after typed submission, with one retake; images deleted on TTL.

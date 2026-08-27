@@ -124,10 +124,23 @@ capture · no live camera guidance · no marking without a stored transcription 
 vision pass that can reduce a deterministically-earned mark · no image retained beyond
 the TTL · no parent report · no instrument constructions · no second marking dialect
 (transcription targets the grader's existing conventions).
-Greps: `tesseract`, `ocr`, `per-stroke`, `inkml`, `handwriting-model`. Note that
-`stroke` itself is NOT a banned word — SVG stroke attributes account for fifty
-legitimate hits in `lib/visuals` — so the ban is written as the thing it forbids:
-capturing strokes, ink formats, or a bundled recogniser.
+**What this ban is FOR, since it was read too widely once.** It exists to stop us
+building a HANDWRITING-RECOGNITION SYSTEM INTO THE PRODUCT — bundling a
+recogniser, training a model on student work, capturing strokes. The shipped
+answer for reading handwriting is the vision model we call, and nothing else.
+
+It says nothing about LOCAL ONE-OFF ANALYSIS OF REFERENCE MATERIAL. Reading our
+own past-paper PDFs on this machine to calibrate the generator is unrestricted —
+by any means, including the same vision path the product uses, because a clean
+printed page is an easier version of a task we already do. Nothing about it
+ships. The ban stopped a corpus measurement once, which is the wrong shape
+entirely: the gate is on what the PRODUCT contains, not on what we may look at.
+
+Greps: `tesseract`, `ocr`, `per-stroke`, `inkml`, `handwriting-model` — enforced
+in `app/ lib/ scripts/ tests/`, which is the shipped surface. Note that `stroke`
+itself is NOT a banned word — SVG stroke attributes account for fifty legitimate
+hits in `lib/visuals` — so the ban is written as the thing it forbids: capturing
+strokes, ink formats, or a bundled recogniser.
 
 **Streaks — the line, drawn on purpose.** A streak as a STATISTIC is permitted: days
 in a row printed beside sessions, questions and marks attempted, in the same type, as

@@ -33,6 +33,10 @@ fi
 # ban is written as the thing it actually forbids — capturing strokes, ink
 # formats, a bundled recogniser — rather than as a word the drawing code needs.
 BANNED='whatsapp|twilio|investigation|\bsba\b|tikz|jsxgraph|minhash|latex'
+# These guard the SHIPPED PRODUCT: no bundled recogniser, no model trained on
+# student work, no stroke capture. They say nothing about reading our own
+# reference PDFs locally to calibrate the generator — that ships nothing. Scope
+# amended 2026-08-26, ROUND_2_EXAMINER.md §9.
 BANNED_R2='tesseract|\bocr\b|per-stroke|inkml|handwriting-model'
 
 fail=0
