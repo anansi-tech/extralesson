@@ -21,17 +21,42 @@ export interface RegionalFlavour {
   names: string[];
 }
 
+// MEASURED AGAINST THE PAPERS, 2026-08-26.
+//
+// The lists were subsistence-heavy — market vendor, fisherman, saltfish,
+// callaloo, sugar cane — while the papers are commercial and modern. Counting
+// context markers across the readable corpus (the 2027 specimen, the subject
+// report and seven past papers; the other twenty are scans with no text layer
+// and running text recognition over scans is a kill-list item, so 9 of 29
+// documents is the honest base):
+//
+//   banking/credit 31% · retail 20% · transport 14% · bills 12% · wages 8%
+//   agriculture 6.5% · appliances 6% · restaurant/tourism 2% · fishing 0%
+//
+// Goods were 13 of 18 produce. Agriculture stays — it does appear — but as one
+// register among several rather than the default one.
 export const FLAVOUR: RegionalFlavour = {
   livelihoods: [
-    'a market vendor', 'a fisherman', 'a farmer', 'a seamstress', 'a taxi driver',
-    'a shopkeeper', 'a baker', 'a mason', 'a hotel worker', 'a bus conductor',
-    'a mechanic', 'a hairdresser', 'a carpenter', 'a nurse', 'a teacher',
-    'a delivery rider', 'a boat operator', 'a stall holder', 'a plumber', 'a tailor',
+    // Salaried and commercial, which is where the papers mostly sit.
+    'a sales clerk', 'a bank teller', 'a supermarket cashier', 'a nurse',
+    'a teacher', 'a hotel receptionist', 'a call centre agent', 'a security guard',
+    'a shop supervisor', 'a delivery driver', 'a taxi driver', 'a bus conductor',
+    'a mechanic', 'a hairdresser', 'a restaurant server',
+    // Trades and self-employment, still common and still on the papers.
+    'a seamstress', 'a mason', 'a carpenter', 'a plumber',
+    // Agriculture and fishing, kept but no longer the default register.
+    'a farmer', 'a market vendor', 'a fisherman',
   ],
   goods: [
-    'mangoes', 'breadfruit', 'saltfish', 'plantains', 'coconuts', 'cocoa', 'nutmeg',
-    'sugar cane', 'callaloo', 'yams', 'sweet potatoes', 'peppers', 'bananas',
-    'roofing sheets', 'cement blocks', 'fabric', 'school supplies', 'phone credit',
+    // Retail stock, appliances and services — the papers' usual objects.
+    'a refrigerator', 'a gas stove', 'a laptop', 'a mobile phone', 'a television',
+    'a washing machine', 'school uniforms', 'exercise books', 'phone credit',
+    'a monthly data plan', 'an electricity bill', 'a water bill', 'bus fares',
+    'a restaurant meal', 'a hotel booking',
+    // Materials, for construction and measurement settings.
+    'roofing sheets', 'cement blocks', 'floor tiles', 'fabric',
+    // Produce, kept in proportion rather than dominating.
+    'mangoes', 'plantains', 'coconuts', 'nutmeg', 'saltfish',
   ],
   names: [
     'Amara', 'Kemar', 'Mona', 'David', 'Anisa', 'Rohan', 'Tamika', 'Jerome',

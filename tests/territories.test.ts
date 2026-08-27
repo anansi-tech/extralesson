@@ -11,8 +11,31 @@ import { svgPlainLabel } from '@/lib/visuals/svg';
 describe('regional flavour, not place names', () => {
   it('offers generic livelihoods, goods and names', () => {
     expect(FLAVOUR.livelihoods.length).toBeGreaterThan(10);
-    expect(FLAVOUR.goods).toContain('breadfruit');
+    expect(FLAVOUR.goods.length).toBeGreaterThan(10);
     expect(FLAVOUR.names.length).toBeGreaterThan(10);
+  });
+
+  // Measured against the papers 2026-08-26: banking 31%, retail 20%, transport
+  // 14%, bills 12%, wages 8%, agriculture 6.5%, fishing 0%. The lists were
+  // subsistence-heavy — goods were 13 of 18 produce — which set a register the
+  // papers do not use. Agriculture stays because it does appear; it is the
+  // DOMINANCE that was wrong, so that is what this pins.
+  it('keeps agriculture present without letting it dominate', () => {
+    const all = [...FLAVOUR.livelihoods, ...FLAVOUR.goods];
+    const agri = all.filter((x) =>
+      /farmer|market vendor|fisherman|mango|plantain|coconut|nutmeg|saltfish/.test(x),
+    );
+    expect(agri.length, 'agriculture should still appear').toBeGreaterThan(3);
+    expect(agri.length / all.length, 'but not as the default register').toBeLessThan(0.3);
+  });
+
+  it('carries the commercial register the papers mostly use', () => {
+    const all = [...FLAVOUR.livelihoods, ...FLAVOUR.goods].join(' ');
+    // Banking, wages, bills and retail are 71% of the papers' markers and had
+    // no vocabulary here at all — the generator had nothing to reach for.
+    for (const word of ['bank teller', 'electricity bill', 'data plan', 'sales clerk']) {
+      expect(all, word).toContain(word);
+    }
   });
 
   it('tells generation not to name a country or a city', () => {
