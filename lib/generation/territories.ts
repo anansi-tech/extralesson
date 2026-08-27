@@ -52,6 +52,44 @@ export const NAMES = [
 ];
 
 /**
+ * HOW OFTEN A QUESTION NAMES A PERSON, measured over Paper 2.
+ *
+ * Prose guidance said a role may stay unnamed and not to add a name merely to
+ * use one. The generator read that as never, and went twenty for twenty
+ * unnamed. A rate is not a judgment the model should be making sentence by
+ * sentence, so it is decided in the recipe and arrives as an instruction.
+ *
+ * scripts/calibration/naming.py over 14 Paper 2 papers, 178 question-sized
+ * chunks: 19.1% name a person, 80.9% do not. Of the named ones, 79% name
+ * exactly ONE person, 12% two, 9% three or more, and only 9% carry the name
+ * across parts — so the default when naming is one person, mentioned where the
+ * question needs them and not threaded through every part.
+ *
+ * The detection is grammatical — a capitalised token followed by a person verb
+ * — so it misses possessives and verbs outside that list. 19% is a FLOOR rather
+ * than an exact figure, which is the right direction for a target: it will not
+ * over-name.
+ */
+export const NAMING_RATE = 0.19;
+
+/** Whether a question names one of ours. NAMES is declared, so this reads a
+ *  list we own rather than guessing at what looks like a name. */
+export function namesAPerson(text: string): boolean {
+  return NAMES.some((n) => new RegExp(`\\b${n}\\b`).test(text));
+}
+
+/**
+ * Should this question name someone? Below the measured rate it should, above
+ * it should not — the same shape as the setting deficit, and for the same
+ * reason: a share converges against the total or it does not converge.
+ */
+export function shouldNamePerson(stems: string[], rate = NAMING_RATE): boolean {
+  if (stems.length === 0) return true;
+  const named = stems.filter(namesAPerson).length;
+  return named / stems.length < rate;
+}
+
+/**
  * The name the bank has used least, counted over existing stems. Deterministic:
  * ties break by list order, so the same bank always yields the same choice.
  *
@@ -170,8 +208,8 @@ export function flavourGuidance(
   void seed;
   return `SETTING DETAIL: the person or business in this question is ONE of these, and nothing else — ${FLAVOUR.livelihoods.join(', ')}. Pick the one the mathematics suits and vary it question to question; the list is there so the bank is not all farmers.${avoid} Do NOT name a country or a city: sixteen territories sit this paper and a stem that names one is a stem about one of them. Name a place only where the question genuinely needs it, such as a scale drawing of a named site. Goods and materials to draw on: ${FLAVOUR.goods.join(', ')}. Where the topic is about money, the DEALING is what the question turns on — draw on: ${FLAVOUR.dealings.join(', ')}. ${
     name
-      ? `If a person is named, the name is ${name} and no other. A role or a business may stay unnamed — do not add a name merely to use it.`
-      : 'Do not name a person.'
+      ? `Name exactly ONE person in this question and call them ${name}, no other name. Mention them where the question needs them — the papers rarely thread a name through every part.`
+      : 'Name nobody. Refer to the person by their role — "a bank teller", "the shop supervisor" — throughout.'
   }`;
 }
 

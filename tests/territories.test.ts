@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { FLAVOUR, FLAVOUR_MEMORY, flavourGuidance, recentFlavour, NAMES, leastUsedName, recentActors } from '@/lib/generation/territories';
+import {
+  FLAVOUR,
+  FLAVOUR_MEMORY,
+  flavourGuidance,
+  recentFlavour,
+  NAMES,
+  leastUsedName,
+  recentActors,
+  shouldNamePerson,
+  namesAPerson,
+  NAMING_RATE,
+} from '@/lib/generation/territories';
 import { renderMathHtml, renderAnswerHtml } from '@/lib/katex';
 import { answersEquivalent } from '@/lib/grade/equivalence';
 import { formatThousands, normaliseDigitGroups, stripMoney } from '@/lib/money';
@@ -183,18 +194,21 @@ describe('leastUsedName', () => {
 });
 
 describe('the prompt gets one name or none', () => {
-  it('names exactly the chosen one, and forbids inventing others', () => {
+  it('names exactly the chosen one, and offers no list to choose from', () => {
     const g = flavourGuidance([], undefined, '', 'Mikayla');
-    expect(g).toContain('the name is Mikayla and no other');
+    expect(g).toContain('call them Mikayla');
     expect(g).not.toMatch(/Amara, Kemar/);
   });
 
-  it('says not to add a name where none is needed', () => {
-    expect(flavourGuidance([], undefined, '', 'Mikayla')).toMatch(/do not add a name merely to use it/i);
+  it('gives an instruction, not a judgment', () => {
+    // The wording this replaced — "a role may stay unnamed, do not add a name
+    // merely to use it" — asked the model to decide, and it decided never.
+    const g = flavourGuidance([], undefined, '', 'Mikayla');
+    expect(g).not.toMatch(/may stay unnamed|merely to use it/i);
   });
 
   it('forbids naming anyone when no name was chosen', () => {
-    expect(flavourGuidance([], undefined, '', null)).toContain('Do not name a person');
+    expect(flavourGuidance([], undefined, '', null)).toContain('Name nobody');
   });
 });
 
@@ -226,5 +240,40 @@ describe('recentActors counts actors only', () => {
   it('rejects a phrase whose head noun is not an actor', () => {
     // "graph for this information" has a role-shaped position and a noun head.
     expect(recentActors(['A graph for this information records the totals.'])).toEqual([]);
+  });
+});
+
+// NAMING IS A RATE THE RECIPE DECIDES, NOT A JUDGMENT THE PROMPT MAKES.
+//
+// Prose said a role may stay unnamed and not to add a name merely to use one.
+// The generator read that as never and went twenty for twenty unnamed. Measured
+// over 14 Paper 2 papers and 178 question chunks: 19.1% name a person, and of
+// those 79% name exactly one.
+describe('the naming rate', () => {
+  it('names somebody while the bank is below the measured rate', () => {
+    expect(shouldNamePerson([])).toBe(true);
+    expect(shouldNamePerson(Array(20).fill('A nurse records the times.'))).toBe(true);
+  });
+
+  it('stops once the rate is met, so it converges instead of drifting', () => {
+    const mixed = [...Array(4).fill('Amara buys fabric.'), ...Array(16).fill('A nurse records.')];
+    expect(shouldNamePerson(mixed)).toBe(false);
+  });
+
+  it('reads NAMES, a list we declare, rather than guessing what looks like a name', () => {
+    expect(namesAPerson('Kemar sells mangoes.')).toBe(true);
+    expect(namesAPerson('A nurse records the times.')).toBe(false);
+    // Not a substring match: Amari is not a use of Amara.
+    expect(namesAPerson('Amarillo is a place.')).toBe(false);
+  });
+
+  it('tells the prompt to name exactly one, or nobody at all', () => {
+    expect(flavourGuidance([], undefined, '', 'Mikayla')).toMatch(/exactly ONE person/);
+    expect(flavourGuidance([], undefined, '', null)).toMatch(/Name nobody/);
+  });
+
+  it('is a floor, not an exact figure — the detection misses possessives', () => {
+    expect(NAMING_RATE).toBeGreaterThan(0.1);
+    expect(NAMING_RATE).toBeLessThan(0.3);
   });
 });

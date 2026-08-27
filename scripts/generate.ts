@@ -24,7 +24,7 @@ import { checkDuplicate } from '@/lib/generation/dedup';
 import { reviewFlags, type FlaggableQuestion } from '@/lib/admin/review-flags';
 import { CONTEXT_FREE_MCQ_SHARE } from '@/lib/generation/contexts';
 import { neediestContext } from '@/lib/generation/context-targets';
-import { leastUsedName } from '@/lib/generation/territories';
+import { leastUsedName, shouldNamePerson } from '@/lib/generation/territories';
 import { verifyQuestionVisual } from '@/lib/visuals/verify';
 import { lintCriteria } from '@/lib/prompts/mark-scheme';
 import { paramsDocFor } from '@/lib/visuals';
@@ -254,7 +254,13 @@ async function main() {
           // One name, chosen by least use across the whole bank, or none at all
           // for a bare symbolic item. Handing the model a list is what let it
           // concentrate on a few.
-          wantName: contextFree ? null : leastUsedName(allStems),
+          // Named or not is a RATE, decided here against the measured 19% of
+          // Paper 2, not a judgment left to the prompt — prose guidance is what
+          // produced twenty unnamed questions in a row. When it is yes, the
+          // name is the least-used one; when no, the prompt is told to name
+          // nobody rather than left to decide.
+          wantName:
+            contextFree || !shouldNamePerson(allStems) ? null : leastUsedName(allStems),
         }),
       });
 
