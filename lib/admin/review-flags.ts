@@ -72,6 +72,28 @@ export function reviewFlags(q: FlaggableQuestion): ReviewFlag[] {
     ...parts.flatMap((p) => [p.prompt, p.statement ?? '', ...(p.slots ?? []).flatMap((s) => [s.prompt ?? '', s.answer ?? ''])]),
   ].join(' ');
 
+  // OUR WORDS FOR OUR MACHINERY, IN THE STUDENT'S TEXT.
+  //
+  // "Visual" is what we call a figure in the schema and the prompt; a student
+  // calls it the graph or the table. The generator was told "the stem must
+  // explicitly refer to the visual" and did exactly that — six of six ogive
+  // drafts said "the visual is a model of the curve required in part (a)",
+  // which also narrates our self-check arrangement inside the question. Same
+  // class as copybook/notebook in CLAUDE.md: an internal word reaching a reader
+  // who has no idea what it means.
+  if (/\bthe visual\b|\bvisuals?\b/i.test(text)) {
+    flags.push({
+      level: 'warn',
+      text: 'Student-facing text says "visual" — our word for a figure. A student reads "the graph", "the table", "the diagram".',
+    });
+  }
+  if (/model answer|use it to check|required in part \(?[a-z]\)?/i.test(text)) {
+    flags.push({
+      level: 'warn',
+      text: 'Student-facing text explains what the figure is FOR. The paper prints a figure; it does not narrate our marking arrangements.',
+    });
+  }
+
   // The method is named where we WORK, not where the student reads.
   const method = [q.worked_solution ?? '', ...(q.rubric ?? []).map((r) => r.criterion ?? '')].join(' ');
   // Visual params are Mixed at the database boundary, so nothing about their
