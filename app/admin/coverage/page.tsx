@@ -1,6 +1,5 @@
 import 'katex/dist/katex.min.css';
 import { readingCost } from '@/lib/admin/reading-cost';
-import Link from 'next/link';
 import { getCoverage } from '@/lib/admin/coverage';
 import {
   P1_TOTAL,
@@ -40,15 +39,6 @@ export default async function CoveragePage() {
             <span>
               <b className="text-ink">{approvedTotal}</b> approved · <b className="text-ink">{draftsRemaining}</b> draft
             </span>
-            <Link href="/admin/review" className="inline-flex min-h-11 items-center underline">
-              ← review queue
-            </Link>
-            <Link href="/admin/access" className="inline-flex min-h-11 items-center underline">
-              access
-            </Link>
-            <Link href="/study" className="inline-flex min-h-11 items-center underline">
-              student app
-            </Link>
           </div>
         </header>
 

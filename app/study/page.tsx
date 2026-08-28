@@ -195,14 +195,15 @@ export default async function StudyDashboard({
           <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-end gap-x-3 gap-y-1">
             {/* Signing in lands an admin here, in the product, because an admin
                 is also a student and seeing what a student sees is the point of
-                having the account at all. This is the way across — without it
-                the review queue was reachable only by typing the URL. */}
+                having the account at all. This is the way across, and it opens
+                ACCESS: that is the screen being watched when a payment lands at
+                9pm, and the admin nav reaches the rest in one hop. */}
             {isAdmin && (
               <Link
-                href="/admin/review"
+                href="/admin/access"
                 className="shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-red-pen underline"
               >
-                Review queue
+                Admin
               </Link>
             )}
             <span className="hidden shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-dim sm:inline">

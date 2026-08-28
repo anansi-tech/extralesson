@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { dbConnect, Attempt, Payment, PracticeSession, Student } from '@/lib/db';
 import { FREE_SESSIONS, hasAccess } from '@/lib/access';
 import { grantAccess, resolvePayment, revokeAccess } from './actions';
@@ -87,12 +86,6 @@ export default async function AccessPage() {
               <b className="text-ink">{paid}</b> with access ·{' '}
               <b className={waiting > 0 ? 'text-red-pen' : 'text-ink'}>{waiting}</b> waiting
             </span>
-            <Link href="/admin/coverage" className="inline-flex min-h-11 items-center underline">
-              coverage
-            </Link>
-            <Link href="/admin/review" className="inline-flex min-h-11 items-center underline">
-              review queue
-            </Link>
           </div>
         </header>
 

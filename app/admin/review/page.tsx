@@ -228,9 +228,6 @@ export default async function ReviewPage({
             </span>
           </div>
           <div className="font-mono text-xs text-dim">
-            <Link href="/study" className="mr-3 underline">
-              ← student app
-            </Link>
             <b className="text-ink">{draftsRemaining}</b> drafts remaining ·{' '}
             <b className="text-ink">{approvedTotal}</b> approved ·{' '}
             {/* Against the matrix, which is the target — "/400" was a question
@@ -329,9 +326,6 @@ export default async function ReviewPage({
                 {onTarget.join(', ')} on target
               </span>
             )}
-            <Link href="/admin/coverage" className="ml-auto font-mono text-[11px] underline">
-              coverage detail →
-            </Link>
           </div>
         </section>
 
