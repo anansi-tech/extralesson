@@ -35,9 +35,8 @@ export default async function TopicsPage() {
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-3xl">
         <header className="mb-6">
-          <div className="text-xl font-black">
-            extra<em className="not-italic text-red-pen">lesson</em>
-            <span className="ml-2 font-mono text-xs uppercase tracking-widest text-dim">
+          <div>
+            <span className="font-mono text-xs uppercase tracking-widest text-dim">
               syllabus graph · read only
             </span>
           </div>

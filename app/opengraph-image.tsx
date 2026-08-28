@@ -1,15 +1,15 @@
 import { ImageResponse } from 'next/og';
 
-// The mark comes from app/lockup.tsx, which is the one place the path lives
-// now that the header draws it too. Satori cannot take a React SVG child, so
-// it is handed over as a data URI built from the same constant.
-import { MARK_PATH } from './lockup';
+// THE REAL LOCKUP, not a wordmark rebuilt here.
+//
+// Satori takes an <img> but not an inline <svg>, so the lockup is handed over
+// as a data URI — drawn from the same three paths app/lockup.tsx gives the
+// headers. It used to set "extra" and "lesson" as styled text, which Satori
+// rendered in a generic sans because it has no Fraunces: the one card most
+// likely to be somebody's first sight of the brand showed the wrong wordmark.
+import { lockupSvgMarkup } from './lockup';
 
-const MARK_RED = '#C1121F';
-const mark = (stroke: number) =>
-  `data:image/svg+xml;base64,${Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="${MARK_PATH}" fill="none" stroke="${MARK_RED}" stroke-width="${stroke}" stroke-linecap="butt" stroke-linejoin="miter"/></svg>`,
-  ).toString('base64')}`;
+const LOCKUP = `data:image/svg+xml;base64,${Buffer.from(lockupSvgMarkup()).toString('base64')}`;
 
 export const alt = 'ExtraLesson — Your child’s own CXC examiner. In red pen.';
 export const size = { width: 1200, height: 630 };
@@ -32,13 +32,7 @@ export default function OgImage() {
           fontSize: 40,
         }}
       >
-        {/* Symbol then wordmark, the horizontal lockup's own order. */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-          <img src={mark(11)} width={86} height={86} alt="" />
-          <span style={{ display: 'flex', fontSize: 44, fontWeight: 900 }}>
-            extra<span style={{ color: '#C1121F' }}>lesson</span>
-          </span>
-        </div>
+        <img src={LOCKUP} width={306} height={80} alt="" />
         <div style={{ display: 'flex', fontSize: 92, fontWeight: 900, lineHeight: 1.05, marginTop: 30 }}>
           Your child&rsquo;s own CXC examiner.
         </div>

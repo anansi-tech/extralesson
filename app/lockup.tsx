@@ -33,7 +33,13 @@ export const LOCKUP_MIN_PX = 120;
 /** The mark on its own goes smaller, but not below this. */
 export const MARK_MIN_PX = 32;
 
-const LOCKUP_RATIO = 102.368 / 391.645;
+/** lockup.svg's own box and the two transforms that place its parts. */
+const LOCKUP_W = 391.645;
+const LOCKUP_H = 102.368;
+const LOCKUP_VIEWBOX = '0 0 391.645 102.368';
+const RADICAL_TRANSFORM = 'translate(23.862,20.262) scale(0.82)';
+const WORDMARK_TRANSFORM = 'translate(75.334,76.022) scale(0.026,-0.026)';
+const LOCKUP_RATIO = LOCKUP_H / LOCKUP_W;
 
 type Tone = 'ink' | 'reversed';
 
@@ -42,6 +48,24 @@ const TONES: Record<Tone, { radical: string; extra: string; lesson: string }> = 
   ink: { radical: '#c1121f', extra: '#1e2430', lesson: '#c1121f' },
   reversed: { radical: '#fbf7ee', extra: '#fbf7ee', lesson: '#ff6b6b' },
 };
+
+/**
+ * The lockup as SVG MARKUP, for somewhere that cannot take a React child.
+ *
+ * next/og renders through Satori, which takes an <img> but not an inline
+ * <svg> element — and it has no Fraunces, so the wordmark rebuilt there as
+ * styled text came out in a generic sans. Same three paths as the component
+ * above; only the renderer differs.
+ */
+export function lockupSvgMarkup(tone: Tone = 'ink'): string {
+  const c = TONES[tone];
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${LOCKUP_W}" height="${LOCKUP_H}" viewBox="${LOCKUP_VIEWBOX}">` +
+    `<g transform="${RADICAL_TRANSFORM}"><path d="${MARK_PATH}" fill="none" stroke="${c.radical}" stroke-width="11" stroke-linecap="butt" stroke-linejoin="miter"/></g>` +
+    `<g transform="${WORDMARK_TRANSFORM}"><path d="${EXTRA_PATH}" fill="${c.extra}"/><path d="${LESSON_PATH}" fill="${c.lesson}"/></g>` +
+    `</svg>`
+  );
+}
 
 export function Lockup({
   width = 150,
@@ -59,10 +83,10 @@ export function Lockup({
       aria-label="ExtraLesson"
       width={width}
       height={Math.round(width * LOCKUP_RATIO)}
-      viewBox='0 0 391.645 102.368'
+      viewBox={LOCKUP_VIEWBOX}
       className={className}
     >
-      <g transform='translate(23.862,20.262) scale(0.82)'>
+      <g transform={RADICAL_TRANSFORM}>
         <path
           d={MARK_PATH}
           fill="none"
@@ -72,7 +96,7 @@ export function Lockup({
           strokeLinejoin="miter"
         />
       </g>
-      <g transform='translate(75.334,76.022) scale(0.026,-0.026)'>
+      <g transform={WORDMARK_TRANSFORM}>
         <path d={EXTRA_PATH} fill={c.extra} />
         <path d={LESSON_PATH} fill={c.lesson} />
       </g>

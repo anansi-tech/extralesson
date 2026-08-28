@@ -221,9 +221,8 @@ export default async function ReviewPage({
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-3xl">
         <header className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
-          <div className="text-xl font-black">
-            extra<em className="not-italic text-red-pen">lesson</em>
-            <span className="ml-2 font-mono text-xs uppercase tracking-widest text-dim">
+          <div>
+            <span className="font-mono text-xs uppercase tracking-widest text-dim">
               review queue
             </span>
           </div>

@@ -24,8 +24,7 @@ const ROUTES = [
 export function AdminNav() {
   const pathname = usePathname();
   return (
-    <nav className="border-b-[1.5px] border-ink bg-white">
-      <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-x-1 px-6">
+    <nav className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1">
         {ROUTES.map((r) => {
           const current = pathname === r.href || pathname.startsWith(`${r.href}/`);
           return (
@@ -52,7 +51,6 @@ export function AdminNav() {
         >
           student app →
         </Link>
-      </div>
     </nav>
   );
 }

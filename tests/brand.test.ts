@@ -1,8 +1,24 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const at = (...p: string[]) => join(process.cwd(), ...p);
+
+function tsxFiles(dir: string): string[] {
+  return readdirSync(dir).flatMap((entry) => {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) return tsxFiles(full);
+    return full.endsWith('.tsx') ? [full] : [];
+  });
+}
+
+/**
+ * The wordmark built out of markup: "extra" beside a differently-coloured
+ * "lesson". Prose saying ExtraLesson in a sentence is not this, and the small
+ * mono back-link on the legal pages is not either — neither is the two-tone
+ * drawing that only the outlined lockup gets right.
+ */
+const TWO_TONE_WORDMARK = /extra\s*<(em|span|b|strong)/i;
 const read = (...p: string[]) => readFileSync(at(...p), 'utf8');
 
 // THE MARK IS DRAWN IN TWO PLACES, AND THEY MUST NOT DRIFT.
@@ -20,19 +36,24 @@ describe('the mark', () => {
     expect(component).toBe(source);
   });
 
-  it('is written down once — the OG image imports it rather than keeping a copy', () => {
+  it('is written down once — nothing outside the component holds the path', () => {
     const og = read('app', 'opengraph-image.tsx');
-    expect(og).toMatch(/import \{ MARK_PATH \} from '\.\/lockup'/);
-    expect(og, 'the OG image has its own copy of the path again').not.toMatch(/MARK_PATH\s*=\s*'M/);
+    expect(og, 'the OG image has its own copy of the path again').not.toMatch(/'M6 44/);
   });
 
   it('is drawn in the red the tokens name', () => {
     expect(read('public', 'brand', 'mark.svg').toLowerCase()).toContain('#c1121f');
-    expect(read('app', 'opengraph-image.tsx').toUpperCase()).toContain('#C1121F');
+    expect(read('app', 'lockup.tsx').toLowerCase()).toContain('#c1121f');
   });
 
-  it('appears in the OG image, which used to be wordmark only', () => {
-    expect(read('app', 'opengraph-image.tsx')).toMatch(/<img[^>]+src=\{mark\(/);
+  it('appears in the OG card as the real lockup, not a rebuilt wordmark', () => {
+    const og = read('app', 'opengraph-image.tsx');
+    expect(og).toMatch(/import \{ lockupSvgMarkup \} from '\.\/lockup'/);
+    expect(og).toMatch(/<img src=\{LOCKUP\}/);
+    // Satori has no Fraunces, so text here renders in a generic sans.
+    expect(og, 'the OG card is setting the wordmark as text again').not.toMatch(
+      /extra\s*<(span|em|b)/i,
+    );
   });
 });
 
@@ -131,12 +152,47 @@ describe('what ships beside the app', () => {
     expect(existsSync(at('public', 'brand', 'fraunces-var.ttf'))).toBe(false);
   });
 
-  it('draws the lockup in every header, not a rebuilt wordmark', () => {
-    for (const page of [['app', 'page.tsx'], ['app', 'study', 'page.tsx'], ['app', 'welcome', 'page.tsx']]) {
-      const src = read(...page);
-      expect(src, page.join('/')).toMatch(/<(Lockup|Mark)[\s/>]/);
-      // The text wordmark it replaces, in any of the three spellings used.
-      expect(src, page.join('/')).not.toMatch(/extra<em/);
+  // ENUMERATED, NOT LISTED.
+  //
+  // The first version of this named the three files it had just been pointed
+  // at, so the six other headers still rendering the wordmark as text passed
+  // it without complaint. It walks app/ now: a header added next month is
+  // covered without anyone remembering to add it here.
+  it('has the wordmark nowhere but the component', () => {
+    const offenders = tsxFiles(at('app'))
+      .filter((f) => !f.endsWith(join('app', 'lockup.tsx')))
+      .filter((f) => TWO_TONE_WORDMARK.test(readFileSync(f, 'utf8')))
+      .map((f) => f.slice(process.cwd().length + 1));
+    expect(
+      offenders,
+      `these build the wordmark out of markup instead of using <Lockup>: ${offenders.join(', ')}`,
+    ).toEqual([]);
+  });
+
+  it('draws it in every page that has a header', () => {
+    // A page with a header is one that opens a <main> or a <header> of its
+    // own; the lockup either sits in it or in the layout above it.
+    const withLockup = tsxFiles(at('app')).filter((f) =>
+      /<(Lockup|Mark)[\s/>]/.test(readFileSync(f, 'utf8')),
+    );
+    expect(withLockup.length, 'no page draws the lockup at all').toBeGreaterThan(4);
+    for (const page of [
+      ['app', 'page.tsx'],
+      ['app', 'welcome', 'page.tsx'],
+      ['app', 'study', 'page.tsx'],
+      ['app', 'study', 'login', 'page.tsx'],
+      ['app', 'study', 'reset', 'page.tsx'],
+      ['app', 'admin', 'layout.tsx'],
+    ]) {
+      expect(read(...page), page.join('/')).toMatch(/<(Lockup|Mark)[\s/>]/);
+    }
+  });
+
+  // The four admin pages draw it through the layout, and must not go back to
+  // carrying their own.
+  it('leaves the admin pages to the layout', () => {
+    for (const name of ['access', 'review', 'coverage', 'topics']) {
+      expect(read('app', 'admin', name, 'page.tsx'), name).not.toMatch(/<(Lockup|Mark)[\s/>]/);
     }
   });
 });

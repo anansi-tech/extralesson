@@ -1,4 +1,5 @@
 import ResetForm from './reset-form';
+import { Lockup } from '../../lockup';
 
 export const metadata = { title: 'Set a new password — ExtraLesson' };
 export const dynamic = 'force-dynamic';
@@ -14,9 +15,7 @@ export default async function ResetPage({
     <main className="ruled relative min-h-screen px-5 py-10">
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-sm">
-        <div className="text-xl font-black">
-          extra<em className="not-italic text-red-pen">lesson</em>
-        </div>
+        <Lockup width={150} />
         <h1 className="mt-6 text-2xl font-black">
           Set a new password<span className="text-red-pen">.</span>
         </h1>

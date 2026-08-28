@@ -1,6 +1,7 @@
 import { requireAdmin } from '@/lib/auth/session';
 import { launchWarnings } from '@/lib/preflight';
 import { AdminNav } from './admin-nav';
+import { Lockup, Mark } from '../lockup';
 
 // Every /admin/* route is allowlist-gated (ROUND_1 §2).
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -29,7 +30,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
         </div>
       )}
-      <AdminNav />
+      {/* The lockup sits with the nav rather than on each page: the layout is
+          where the shared chrome lives, and four copies is four things to
+          forget. Same 360px rule as the notebook header — the mark alone
+          where the row would otherwise wrap. */}
+      <div className="border-b-[1.5px] border-ink bg-white">
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-x-4 px-6">
+          <Lockup width={130} className="hidden shrink-0 sm:block" />
+          <Mark size={32} className="shrink-0 sm:hidden" />
+          <AdminNav />
+        </div>
+      </div>
       {children}
     </>
   );
