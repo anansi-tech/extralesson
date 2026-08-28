@@ -9,6 +9,10 @@
 // change could silently regress:
 //   1. no figure label smaller than MIN_LABEL_PX
 //   2. no tap target shorter than TAP_MIN
+//   3. no GIVEN TABLE wider than the frame it sits in — a table reflows, and
+//      one that has to scroll instead hides the data the question is answered
+//      from. This is what a stimulus table exists to guarantee, so it is the
+//      thing worth asserting about it.
 // Exits non-zero when either fails, so a new visual template cannot land below
 // the legible floor without someone being told.
 //
@@ -52,6 +56,17 @@ const PROBE = `(() => {
       frameW: frame ? Math.round(frame.getBoundingClientRect().width) : null,
       scrollW: frame ? frame.scrollWidth : null });
   });
+  var tables = [];
+  Array.prototype.forEach.call(document.querySelectorAll('.figure-frame table'), function (tb) {
+    var frame = tb.closest('.figure-frame');
+    tables.push({
+      w: Math.round(tb.getBoundingClientRect().width),
+      cols: tb.querySelectorAll('thead th').length,
+      rows: tb.querySelectorAll('tbody tr').length,
+      frameW: frame ? Math.round(frame.getBoundingClientRect().width) : null,
+      scrollW: frame ? frame.scrollWidth : null
+    });
+  });
   var inputs = Array.prototype.slice.call(document.querySelectorAll('input:not([type=hidden])'));
   var lastInput = inputs.length ? inputs[inputs.length - 1].getBoundingClientRect() : null;
   var figBox = document.querySelector('.figure-frame');
@@ -59,7 +74,7 @@ const PROBE = `(() => {
   return {
     overflow: document.documentElement.scrollWidth - vw,
     height: document.documentElement.scrollHeight,
-    targets: targets, figures: figs,
+    targets: targets, figures: figs, tables: tables,
     figureToLastInput: (figR && lastInput) ? Math.round(lastInput.bottom - figR.bottom) : null,
     hasRecall: !!document.querySelector('button')
   };
@@ -75,6 +90,7 @@ interface Row {
   height: number;
   small: { tag: string; cls: string; w: number; h: number }[];
   reach: number | null;
+  table: { cols: number; rows: number; frameW: number | null; scrollW: number | null } | null;
 }
 
 async function main() {
@@ -85,7 +101,7 @@ async function main() {
   // One representative live question per visual template, plus the widest
   // question with no figure at all.
   const qs = await Question.find({ status: 'approved', kind: 'structured' })
-    .select('visual stem stimulus parts marks')
+    .select('visual stimulus_table stem stimulus parts marks')
     .lean<any[]>();
   const byTemplate = new Map<string, any>();
   for (const q of qs) {
@@ -101,6 +117,16 @@ async function main() {
     // Keep the one that has to be widest — the hardest case for that template.
     if (!byTemplate.has(t) || need > (byTemplate.get(t).need ?? 0)) byTemplate.set(t, { q, need });
   }
+  // THE WIDEST GIVEN TABLE. Most columns is the hardest case to reflow, and it
+  // is the case that was broken: a seven-column frequency table set as typeset
+  // maths ran 758px wide in a 300px column.
+  const widestTable = qs
+    .filter((q) => q.stimulus_table)
+    .sort(
+      (a, b) => (b.stimulus_table?.headers?.length ?? 0) - (a.stimulus_table?.headers?.length ?? 0),
+    )[0];
+  if (widestTable) byTemplate.set('__table__', { q: widestTable, need: 0 });
+
   // A long question with typed inputs, for tap targets and figure reachability.
   const longOne = qs
     .filter((q) => q.marks >= 12 && (q.parts ?? []).length >= 4 && q.visual)
@@ -163,6 +189,7 @@ async function main() {
       height: r.height,
       small: r.targets.filter((t: any) => t.h < TAP_MIN),
       reach: r.figureToLastInput,
+      table: r.tables[0] ?? null,
     });
   }
   await PracticeSession.deleteMany({ _id: { $in: made.map((m) => m.id) } });
@@ -174,11 +201,17 @@ async function main() {
   let failLabel = 0;
   let failTap = 0;
   let failOverflow = 0;
+  let failTable = 0;
   for (const r of rows.sort((a, b) => (a.minLabel ?? 99) - (b.minLabel ?? 99))) {
     const bad = r.minLabel !== null && r.minLabel < MIN_LABEL_PX;
     if (bad) failLabel++;
     if (r.small.length) failTap++;
     if (r.overflow > 1) failOverflow++;
+    // A given table that has to scroll is hiding data the question is answered
+    // from, which no amount of legible labelling makes acceptable.
+    if (r.table && r.table.scrollW !== null && r.table.frameW !== null && r.table.scrollW > r.table.frameW + 1) {
+      failTable++;
+    }
     const scrolls = r.scrollW && r.frameW && r.scrollW > r.frameW + 1 ? `${r.scrollW}px` : 'no';
     console.log(
       `  ${(bad ? '! ' : '  ') + r.label.padEnd(19)}${String(r.minLabel ?? '-').padStart(9)}px   ` +
@@ -189,14 +222,26 @@ async function main() {
   const reach = rows.find((r) => r.label === '__long__')?.reach;
   console.log(`\n  figure bottom to last input on the longest question: ${reach ?? '-'}px`);
   console.log(`  horizontal page overflow: ${failOverflow === 0 ? 'none' : failOverflow + ' page(s) !'}`);
+  // The __table__ row specifically: every row with a table is CHECKED above,
+  // but this line is about the given table, and the dataTable visual sorts
+  // ahead of it.
+  const table = rows.find((r) => r.label === '__table__')?.table;
+  console.log(
+    `  widest given table: ${
+      table
+        ? `${table.cols} columns, ${table.rows} rows in ${table.frameW}px — ` +
+          `${table.scrollW !== null && table.frameW !== null && table.scrollW > table.frameW + 1 ? `SCROLLS at ${table.scrollW}px !` : 'reflows, no scroll'}`
+        : '-'
+    }`,
+  );
 
-  const failed = failLabel + failTap + failOverflow;
+  const failed = failLabel + failTap + failOverflow + failTable;
   if (failed === 0) {
     console.log(`\n  PASS — every label at or above ${MIN_LABEL_PX}px, every target at or above ${TAP_MIN}px.`);
   } else {
     console.log(
       `\n  FAIL — ${failLabel} page(s) below the label floor, ${failTap} with an undersized target, ` +
-        `${failOverflow} overflowing.`,
+        `${failOverflow} overflowing, ${failTable} with a table that scrolls.`,
     );
   }
   process.exit(failed === 0 ? 0 : 1);
