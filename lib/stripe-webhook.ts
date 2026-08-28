@@ -102,9 +102,8 @@ export function emailFromSession(
  *
  * The sitting granted is always the one the student registered for. This is
  * read only so a disagreement can be recorded in the grant note and seen on
- * /admin/access. Today it returns null for every payment, because the two live
- * links are price tiers rather than sittings and STRIPE_LINK_SITTINGS is
- * deliberately unset.
+ * /admin/access. Today it returns null for every payment: a link sells access,
+ * not a sitting, and STRIPE_LINK_SITTINGS is deliberately unset.
  */
 export function sittingFromLink(
   session: Record<string, unknown>,

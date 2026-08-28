@@ -31,9 +31,9 @@ export async function grantFromPayment(args: {
 
   // THE REGISTERED SITTING WINS, ALWAYS.
   //
-  // The links are price tiers — both sell the same thing — so a payment link
-  // carries no information about which exam anyone sits. The student knows;
-  // the payer often is not the student and may not.
+  // A payment link sells access, not a sitting, so it carries no information
+  // about which exam anyone sits. The student knows; the payer often is not
+  // the student and may not.
   //
   // The failure is also asymmetric, which decides it even if links ever do
   // become per-sitting products. Granting May/June to a January student is

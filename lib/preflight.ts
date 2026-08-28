@@ -34,7 +34,7 @@ export const OPTIONAL_ENV: Record<string, string> = {
   // granted is ALWAYS the one they registered for. A mapped link is evidence,
   // and a disagreement is written into the grant note for /admin/access
   // rather than resolved quietly.
-  STRIPE_LINK_SITTINGS: 'deliberately unset — links are price tiers; evidence only, never authority',
+  STRIPE_LINK_SITTINGS: 'deliberately unset — a link is evidence of payment, never authority over the sitting',
   // Set by the platform, not by us.
   NODE_ENV: 'set by the runtime',
   VERCEL_URL: 'set by Vercel',
@@ -114,8 +114,8 @@ export function launchWarnings(env: Env = process.env): string[] {
   if (isProduction(env) && isTestModeLink(env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK)) {
     warnings.push(
       'NEXT_PUBLIC_STRIPE_PAYMENT_LINK is a TEST-MODE Stripe link. Test cards only — ' +
-        'a real buyer cannot pay, and the hundred-place cap on the page is the test link\'s, ' +
-        'not the live one\'s. Swap it to the live link before launch.',
+        'a real buyer cannot pay, and no payment reaches the live account. ' +
+        'Swap it to the live link before launch.',
     );
   }
   return warnings;

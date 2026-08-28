@@ -170,9 +170,8 @@ describe('refund window', () => {
 // NO DATE-BASED URGENCY.
 //
 // "Launches November 1" anchored the page to the January re-sit, which is not
-// the sitting most students take — and a dated claim expires into a lie. The
-// scarcity that is real is the Founding Families cap, which is enforced where
-// the money is taken rather than asserted in copy.
+// the sitting most students take — and a dated claim expires into a lie. There
+// is no scarcity to assert either: one price, uncapped.
 describe('urgency', () => {
   const LANDING = read('app', 'page.tsx');
   const CONTENT = read('lib', 'landing-content.ts');
