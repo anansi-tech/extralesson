@@ -1,6 +1,7 @@
 import { dbConnect, Attempt, Payment, PracticeSession, Student } from '@/lib/db';
 import { FREE_SESSIONS, hasAccess } from '@/lib/access';
 import { grantAccess, resolvePayment, revokeAccess } from './actions';
+import { DeleteAccount } from './delete-account';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Access — ExtraLesson admin' };
@@ -225,6 +226,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
           </section>
         ))}
       </div>
+      <DeleteAccount />
     </main>
   );
 }

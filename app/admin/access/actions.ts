@@ -4,6 +4,12 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { dbConnect, Payment, Student } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth/session';
+import { deleteStudent, type DeletionCounts } from '@/lib/delete-student';
+
+export type DeleteAccountState =
+  | { status: 'idle' }
+  | { status: 'error'; message: string }
+  | { status: 'done'; message: string; counts: DeletionCounts; at: string };
 
 const IdZ = z.string().regex(/^[a-f0-9]{24}$/);
 const SittingZ = z.enum(['jan-2027', 'may-june-2027']);
@@ -51,4 +57,32 @@ export async function resolvePayment(formData: FormData): Promise<void> {
   await dbConnect();
   await Payment.updateOne({ _id: id }, { $set: { resolved_at: new Date() } });
   revalidatePath('/admin/access');
+}
+
+/**
+ * DELETE AN ACCOUNT AND EVERYTHING ATTACHED.
+ *
+ * Deliberately not a button beside Revoke. A destructive action sitting next
+ * to a routine one is how the wrong row goes, so this asks for the address to
+ * be TYPED: revoking is a click, deleting is a sentence you have to mean.
+ *
+ * The counts come back to the caller rather than going to a log. An audit row
+ * naming the deleted address would leave the person in the database after they
+ * asked to leave it, which is the thing the deletion was for.
+ */
+export async function deleteStudentAccount(
+  _previous: DeleteAccountState,
+  formData: FormData,
+): Promise<DeleteAccountState> {
+  await requireAdmin();
+  const typed = String(formData.get('email') ?? '');
+  const confirm = String(formData.get('confirm') ?? '');
+  if (typed.trim().toLowerCase() !== confirm.trim().toLowerCase()) {
+    return { status: 'error', message: 'The two addresses do not match.' };
+  }
+  await dbConnect();
+  const result = await deleteStudent(typed);
+  if (!result.ok) return { status: 'error', message: result.reason };
+  revalidatePath('/admin/access');
+  return { status: 'done', message: 'Account deleted.', counts: result.counts, at: new Date().toISOString() };
 }

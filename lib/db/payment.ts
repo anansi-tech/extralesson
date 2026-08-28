@@ -26,6 +26,13 @@ const PaymentSchema = new Schema({
   student_id: { type: Schema.Types.ObjectId, ref: 'Student' },
   /** Set by hand on the admin screen once a mismatch has been sorted out. */
   resolved_at: { type: Date },
+  /**
+   * Why this row looks the way it does. Written when an account is deleted and
+   * the payment is kept: student_id and email go, the money stays, and without
+   * a line saying so the row reads as a webhook that failed to match anyone.
+   * Nothing here names a person — that is the point of the deletion.
+   */
+  note: { type: String },
   received_at: { type: Date, default: Date.now, required: true },
 });
 
