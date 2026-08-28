@@ -144,7 +144,12 @@ export function TypedInput({
     );
   }
 
-  // list, set, roots — the count is not shown, so it grows on demand.
+  // list, set, roots — the count is not shown, so the list grows itself: one
+  // empty box after whatever has been filled, and a new one the moment that
+  // gains content. There is no manual "add a box" control. It appended an
+  // empty box BEYOND the trailing empty one, which is a box the rule above
+  // would never add, and as a 44px tap target under the row it took thumbs
+  // aimed at the last box — a student clicked into a box and saw one appear.
   const open = shape === 'set' ? '{' : '';
   const close = shape === 'set' ? '}' : '';
   const between = shape === 'roots' ? 'or' : ',';
@@ -160,21 +165,6 @@ export function TypedInput({
         ))}
         {close && punct(close)}
       </div>
-      {!disabled && (
-        // KEPT AWAY FROM THE BOXES ON PURPOSE. This is a 44px tap target that
-        // appends a box, and it sat 4px under one — wider than the box on both
-        // sides — so a thumb aimed at the bottom of a box hit it instead and a
-        // student saw a box appear from clicking into one. The list grows on
-        // its own when the last box is filled, so this is the rare path and
-        // does not need to be the near one.
-        <button
-          type="button"
-          onClick={() => onChange([...values, ''].slice(0, 24))}
-          className="ml-1 mt-4 min-h-11 font-mono text-[11px] text-dim underline"
-        >
-          + another box
-        </button>
-      )}
       {shape === 'set' && (
         <p className="mt-1 font-mono text-[11px] text-dim">Order does not matter.</p>
       )}
