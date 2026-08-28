@@ -1,5 +1,20 @@
 import { ImageResponse } from 'next/og';
 
+// THE MARK, INLINE.
+//
+// It is one path, and it is drawn here rather than read from
+// public/brand/mark.svg because a serverless bundle traces imports, not stray
+// file reads — a runtime read of public/ is the kind of thing that works in
+// dev and returns nothing in production. The copy is pinned by
+// tests/brand.test.ts, which fails if this and the source drawing diverge, so
+// the duplication cannot go stale quietly.
+const MARK_PATH = 'M6 44 L30 68 L62 12 L96 12';
+const MARK_RED = '#C1121F';
+const mark = (stroke: number) =>
+  `data:image/svg+xml;base64,${Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="${MARK_PATH}" fill="none" stroke="${MARK_RED}" stroke-width="${stroke}" stroke-linecap="butt" stroke-linejoin="miter"/></svg>`,
+  ).toString('base64')}`;
+
 export const alt = 'ExtraLesson — Your child’s own CXC examiner. In red pen.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
@@ -21,8 +36,12 @@ export default function OgImage() {
           fontSize: 40,
         }}
       >
-        <div style={{ display: 'flex', fontSize: 44, fontWeight: 900 }}>
-          extra<span style={{ color: '#C1121F' }}>lesson</span>
+        {/* Symbol then wordmark, the horizontal lockup's own order. */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
+          <img src={mark(11)} width={86} height={86} alt="" />
+          <span style={{ display: 'flex', fontSize: 44, fontWeight: 900 }}>
+            extra<span style={{ color: '#C1121F' }}>lesson</span>
+          </span>
         </div>
         <div style={{ display: 'flex', fontSize: 92, fontWeight: 900, lineHeight: 1.05, marginTop: 30 }}>
           Your child&rsquo;s own CXC examiner.
