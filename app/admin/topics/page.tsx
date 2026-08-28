@@ -35,11 +35,9 @@ export default async function TopicsPage() {
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-3xl">
         <header className="mb-6">
-          <div>
-            <span className="font-mono text-xs uppercase tracking-widest text-dim">
-              syllabus graph · read only
-            </span>
-          </div>
+          <p className="font-mono text-xs uppercase tracking-widest text-dim">
+            Read only — the seeded syllabus graph and the paper allocations it is built from.
+          </p>
         </header>
 
         <section>

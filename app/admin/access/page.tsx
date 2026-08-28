@@ -85,9 +85,6 @@ export default async function AccessPage() {
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-3xl">
         <header className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
-          <div>
-            <span className="font-mono text-xs uppercase tracking-widest text-dim">access</span>
-          </div>
           <div className="flex flex-wrap items-center gap-x-4 font-mono text-xs text-dim">
             <span>
               <b className="text-ink">{paid}</b> with access ·{' '}

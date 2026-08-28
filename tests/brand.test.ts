@@ -173,7 +173,7 @@ describe('what ships beside the app', () => {
     // A page with a header is one that opens a <main> or a <header> of its
     // own; the lockup either sits in it or in the layout above it.
     const withLockup = tsxFiles(at('app')).filter((f) =>
-      /<(Lockup|Mark)[\s/>]/.test(readFileSync(f, 'utf8')),
+      /<Lockup[\s/>]/.test(readFileSync(f, 'utf8')),
     );
     expect(withLockup.length, 'no page draws the lockup at all').toBeGreaterThan(4);
     for (const page of [
@@ -184,15 +184,28 @@ describe('what ships beside the app', () => {
       ['app', 'study', 'reset', 'page.tsx'],
       ['app', 'admin', 'layout.tsx'],
     ]) {
-      expect(read(...page), page.join('/')).toMatch(/<(Lockup|Mark)[\s/>]/);
+      expect(read(...page), page.join('/')).toMatch(/<Lockup[\s/>]/);
     }
   });
 
   // The four admin pages draw it through the layout, and must not go back to
   // carrying their own.
+  // A radical is an operator: alone it reads as an unfinished sum, not a logo.
+  // Where a header cannot hold the lockup it takes a second row instead.
+  it('never shows the mark on its own', () => {
+    const offenders = tsxFiles(at('app'))
+      .filter((f) => !f.endsWith(join('app', 'lockup.tsx')))
+      .filter((f) => /<Mark[\s/>]/.test(readFileSync(f, 'utf8')))
+      .map((f) => f.slice(process.cwd().length + 1));
+    expect(offenders, `the mark is standing alone in: ${offenders.join(', ')}`).toEqual([]);
+    expect(read('app', 'lockup.tsx'), 'a <Mark> component is back').not.toMatch(
+      /export function Mark\b/,
+    );
+  });
+
   it('leaves the admin pages to the layout', () => {
     for (const name of ['access', 'review', 'coverage', 'topics']) {
-      expect(read('app', 'admin', name, 'page.tsx'), name).not.toMatch(/<(Lockup|Mark)[\s/>]/);
+      expect(read('app', 'admin', name, 'page.tsx'), name).not.toMatch(/<Lockup[\s/>]/);
     }
   });
 });

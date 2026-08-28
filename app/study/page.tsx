@@ -4,7 +4,7 @@ import { loadStudyState } from '@/lib/study/state';
 import { coverageDetail, coverageSummary } from '@/lib/targets/coverage';
 import { paperShape } from '@/lib/exam/paper-shape';
 import Link from 'next/link';
-import { Lockup, Mark } from '../lockup';
+import { Lockup } from '../lockup';
 import { logout, startSession } from './actions';
 import { openSession } from '@/lib/study/open-session';
 import { loadProgress } from '@/lib/study/progress';
@@ -190,13 +190,11 @@ export default async function StudyDashboard({
             truncates, and below that the row wraps as a whole rather than
             squashing. */}
         <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-          {/* The lockup needs 120px and the rest of this row is fixed
-              content that will not give, so at 360px the mark stands alone
-              and the wordmark returns at the first breakpoint. */}
-          <div className="shrink-0">
-            <Lockup width={140} className="hidden sm:block" />
-            <Mark size={32} className="sm:hidden" />
-          </div>
+          {/* The lockup at every width. The mark alone is an operator with
+              nothing after it and reads as a stray glyph rather than a logo,
+              so where the row cannot hold both it takes a second line — which
+              costs less than a header that looks unfinished. */}
+          <Lockup width={140} className="shrink-0" />
           <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-end gap-x-3 gap-y-1">
             {/* Signing in lands an admin here, in the product, because an admin
                 is also a student and seeing what a student sees is the point of
@@ -216,10 +214,15 @@ export default async function StudyDashboard({
             </span>
             {/* Which account is signed in. Obvious on one device with one
                 student; not obvious at all when a device is shared, or when
-                you are moving between admin and a test account. */}
+                you are moving between admin and a test account — so it is
+                kept from sm up, where there is room for it.
+
+                Below that it is the widest thing in the row by far, at 14ch of
+                the 320 available, and it is what the lockup needs back. On
+                your own phone you already know whose account this is. */}
             <span
               title={auth.email}
-              className="min-w-[14ch] max-w-full truncate font-mono text-[10px] tracking-widest text-dim"
+              className="hidden min-w-[14ch] max-w-full truncate font-mono text-[10px] tracking-widest text-dim sm:inline"
             >
               {auth.email}
             </span>

@@ -30,7 +30,15 @@ const LESSON_PATH = 'M5637.1 1432L5637.1 187Q5637.1 151 5643.1 135.5Q5649.1 120 
  * radical. Recorded in public/brand/README.md as the lockup's floor.
  */
 export const LOCKUP_MIN_PX = 120;
-/** The mark on its own goes smaller, but not below this. */
+/**
+ * The mark on its own goes smaller, but not below this — as an ICON, which is
+ * where it belongs: the favicon, the avatar, the app icon.
+ *
+ * There is deliberately no <Mark> component. A radical is an operator and
+ * expects something after it, so alone in a header it reads as an unfinished
+ * sum rather than as a logo. Where a header cannot hold the lockup it takes a
+ * second row instead; tests/brand.test.ts holds that.
+ */
 export const MARK_MIN_PX = 32;
 
 /** lockup.svg's own box and the two transforms that place its parts. */
@@ -100,40 +108,6 @@ export function Lockup({
         <path d={EXTRA_PATH} fill={c.extra} />
         <path d={LESSON_PATH} fill={c.lesson} />
       </g>
-    </svg>
-  );
-}
-
-/**
- * The mark alone, for where the lockup cannot have its 120px.
- * mark.svg's own 100x100 box and stroke.
- */
-export function Mark({
-  size = MARK_MIN_PX,
-  tone = 'ink',
-  className,
-}: {
-  size?: number;
-  tone?: Tone;
-  className?: string;
-}) {
-  return (
-    <svg
-      role="img"
-      aria-label="ExtraLesson"
-      width={size}
-      height={size}
-      viewBox="0 0 100 100"
-      className={className}
-    >
-      <path
-        d={MARK_PATH}
-        fill="none"
-        stroke={TONES[tone].radical}
-        strokeWidth={11}
-        strokeLinecap="butt"
-        strokeLinejoin="miter"
-      />
     </svg>
   );
 }

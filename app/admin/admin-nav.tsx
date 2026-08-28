@@ -15,18 +15,36 @@ import { usePathname } from 'next/navigation';
 // A client component only because a server layout cannot know the pathname,
 // and knowing which route is current is the whole job.
 const ROUTES = [
-  { href: '/admin/access', label: 'access' },
-  { href: '/admin/review', label: 'review' },
-  { href: '/admin/coverage', label: 'coverage' },
-  { href: '/admin/topics', label: 'topics' },
+  { href: '/admin/access', label: 'access', title: 'access' },
+  { href: '/admin/review', label: 'review', title: 'review queue' },
+  { href: '/admin/coverage', label: 'coverage', title: 'coverage' },
+  { href: '/admin/topics', label: 'topics', title: 'syllabus graph' },
 ] as const;
+
+const currentRoute = (pathname: string) =>
+  ROUTES.find((r) => pathname === r.href || pathname.startsWith(`${r.href}/`));
+
+/**
+ * Which screen this is, beside the lockup. It used to sit on each page, which
+ * meant four copies of the same line and a header that could disagree with the
+ * nav under it.
+ */
+export function AdminTitle() {
+  const route = currentRoute(usePathname());
+  if (!route) return null;
+  return (
+    <span className="truncate font-mono text-xs uppercase tracking-widest text-dim">
+      {route.title}
+    </span>
+  );
+}
 
 export function AdminNav() {
   const pathname = usePathname();
   return (
     <nav className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1">
         {ROUTES.map((r) => {
-          const current = pathname === r.href || pathname.startsWith(`${r.href}/`);
+          const current = r === currentRoute(pathname);
           return (
             <Link
               key={r.href}
@@ -47,7 +65,7 @@ export function AdminNav() {
             typing the URL as the only route to the student app. */}
         <Link
           href="/study"
-          className="ml-auto inline-flex min-h-11 items-center px-3 font-mono text-[11px] uppercase tracking-widest text-dim underline"
+          className="inline-flex min-h-11 items-center px-3 sm:ml-auto font-mono text-[11px] uppercase tracking-widest text-dim underline"
         >
           student app →
         </Link>
