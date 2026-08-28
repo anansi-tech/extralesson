@@ -1,14 +1,10 @@
 import { ImageResponse } from 'next/og';
 
-// THE MARK, INLINE.
-//
-// It is one path, and it is drawn here rather than read from
-// public/brand/mark.svg because a serverless bundle traces imports, not stray
-// file reads — a runtime read of public/ is the kind of thing that works in
-// dev and returns nothing in production. The copy is pinned by
-// tests/brand.test.ts, which fails if this and the source drawing diverge, so
-// the duplication cannot go stale quietly.
-const MARK_PATH = 'M6 44 L30 68 L62 12 L96 12';
+// The mark comes from app/lockup.tsx, which is the one place the path lives
+// now that the header draws it too. Satori cannot take a React SVG child, so
+// it is handed over as a data URI built from the same constant.
+import { MARK_PATH } from './lockup';
+
 const MARK_RED = '#C1121F';
 const mark = (stroke: number) =>
   `data:image/svg+xml;base64,${Buffer.from(

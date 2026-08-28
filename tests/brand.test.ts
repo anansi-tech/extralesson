@@ -12,12 +12,18 @@ const read = (...p: string[]) => readFileSync(at(...p), 'utf8');
 // kind of thing that works in dev and returns nothing in production. The copy
 // is fine; a copy nobody checks is not.
 describe('the mark', () => {
-  it('is the same path in the OG image as in the source drawing', () => {
+  it('is the same path on screen as in the source drawing', () => {
     const source = read('public', 'brand', 'mark.svg').match(/ d="([^"]+)"/)?.[1];
-    const og = read('app', 'opengraph-image.tsx').match(/MARK_PATH = '([^']+)'/)?.[1];
+    const component = read('app', 'lockup.tsx').match(/MARK_PATH = '([^']+)'/)?.[1];
     expect(source, 'public/brand/mark.svg has no path').toBeTruthy();
-    expect(og, 'opengraph-image.tsx has no MARK_PATH').toBeTruthy();
-    expect(og).toBe(source);
+    expect(component, 'app/lockup.tsx has no MARK_PATH').toBeTruthy();
+    expect(component).toBe(source);
+  });
+
+  it('is written down once — the OG image imports it rather than keeping a copy', () => {
+    const og = read('app', 'opengraph-image.tsx');
+    expect(og).toMatch(/import \{ MARK_PATH \} from '\.\/lockup'/);
+    expect(og, 'the OG image has its own copy of the path again').not.toMatch(/MARK_PATH\s*=\s*'M/);
   });
 
   it('is drawn in the red the tokens name', () => {
@@ -27,6 +33,48 @@ describe('the mark', () => {
 
   it('appears in the OG image, which used to be wordmark only', () => {
     expect(read('app', 'opengraph-image.tsx')).toMatch(/<img[^>]+src=\{mark\(/);
+  });
+});
+
+// THE LOCKUP IS ONE COPY OF THREE PATHS.
+//
+// The reversed variant is not a second drawing — it is these same paths in
+// three different colours, which is all lockup-reversed.svg changes. Pinned
+// against both source files so the screen and public/brand/ cannot drift.
+describe('the lockup on screen matches the source drawing', () => {
+  const component = read('app', 'lockup.tsx');
+  const paths = (svg: string) => [...svg.matchAll(/<path d="([^"]+)"/g)].map((m) => m[1]);
+
+  it('carries the same three paths as lockup.svg, in the same order', () => {
+    const source = paths(read('public', 'brand', 'lockup.svg'));
+    expect(source).toHaveLength(3);
+    const [radical, extra, lesson] = source;
+    expect(component).toContain(`MARK_PATH = '${radical}'`);
+    expect(component).toContain(`EXTRA_PATH = '${extra}'`);
+    expect(component).toContain(`LESSON_PATH = '${lesson}'`);
+  });
+
+  it('reproduces the reversed variant by colour alone', () => {
+    const normal = read('public', 'brand', 'lockup.svg');
+    const reversed = read('public', 'brand', 'lockup-reversed.svg');
+    const strip = (svg: string) => svg.replace(/#[0-9a-fA-F]{6}/g, 'COLOUR');
+    // If these ever stop matching, the reversed lockup has become its own
+    // drawing and a colour prop can no longer stand in for it.
+    expect(strip(reversed)).toBe(strip(normal));
+    for (const colour of ['#fbf7ee', '#ff6b6b']) expect(component).toContain(colour);
+  });
+
+  it('keeps the geometry that makes the bar overhang the e', () => {
+    const source = read('public', 'brand', 'lockup.svg');
+    for (const transform of [...source.matchAll(/<g transform="([^"]+)"/g)].map((m) => m[1])) {
+      expect(component, transform).toContain(transform);
+    }
+    expect(component).toContain(source.match(/viewBox="([^"]+)"/)![1]);
+  });
+
+  it('records the floor below which it is not used', () => {
+    expect(component).toMatch(/LOCKUP_MIN_PX = 120/);
+    expect(read('public', 'brand', 'README.md')).toContain('120px');
   });
 });
 
@@ -83,8 +131,12 @@ describe('what ships beside the app', () => {
     expect(existsSync(at('public', 'brand', 'fraunces-var.ttf'))).toBe(false);
   });
 
-  it('leaves the page header as text rather than a picture of text', () => {
-    const header = read('app', 'page.tsx');
-    expect(header).toMatch(/extra<em>lesson<\/em>/);
+  it('draws the lockup in every header, not a rebuilt wordmark', () => {
+    for (const page of [['app', 'page.tsx'], ['app', 'study', 'page.tsx'], ['app', 'welcome', 'page.tsx']]) {
+      const src = read(...page);
+      expect(src, page.join('/')).toMatch(/<(Lockup|Mark)[\s/>]/);
+      // The text wordmark it replaces, in any of the three spellings used.
+      expect(src, page.join('/')).not.toMatch(/extra<em/);
+    }
   });
 });

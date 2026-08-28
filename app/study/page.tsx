@@ -4,6 +4,7 @@ import { loadStudyState } from '@/lib/study/state';
 import { coverageDetail, coverageSummary } from '@/lib/targets/coverage';
 import { paperShape } from '@/lib/exam/paper-shape';
 import Link from 'next/link';
+import { Lockup, Mark } from '../lockup';
 import { logout, startSession } from './actions';
 import { openSession } from '@/lib/study/open-session';
 import { loadProgress } from '@/lib/study/progress';
@@ -189,8 +190,12 @@ export default async function StudyDashboard({
             truncates, and below that the row wraps as a whole rather than
             squashing. */}
         <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-          <div className="shrink-0 text-xl font-black">
-            extra<em className="not-italic text-red-pen">lesson</em>
+          {/* The lockup needs 120px and the rest of this row is fixed
+              content that will not give, so at 360px the mark stands alone
+              and the wordmark returns at the first breakpoint. */}
+          <div className="shrink-0">
+            <Lockup width={140} className="hidden sm:block" />
+            <Mark size={32} className="sm:hidden" />
           </div>
           <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-end gap-x-3 gap-y-1">
             {/* Signing in lands an admin here, in the product, because an admin

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './landing.css';
 import Link from 'next/link';
+import { Lockup } from './lockup';
 import { LANDING, landingCoverage, paymentLink } from '@/lib/landing-content';
 import { hasAccess, REFUND_DAYS, type Access } from '@/lib/access';
 import { dbConnect, Student } from '@/lib/db';
@@ -49,7 +50,7 @@ export default async function LandingPage() {
         <div className="wrap">
           <div className="toprow">
             <div className="logo">
-              extra<em>lesson</em>
+              <Lockup width={150} />
             </div>
             {/* Quiet on purpose. The page's job is still to convert, so this
                 must be findable by someone looking for it and must not compete

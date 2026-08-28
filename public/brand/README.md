@@ -44,12 +44,38 @@ Below these the mark stops reading and the wordmark's serifs fill in:
 
 `fraunces-var.ttf` is deliberately absent. The app loads Fraunces through
 `next/font`, and a second copy in the repo is a font to keep in sync for
-nothing. The page header renders the wordmark as HTML text in Fraunces rather
-than as an image, which is correct — it stays selectable, scales with the
-reader's own type size, and needs no asset. Do not swap it for a picture of
-itself.
+nothing.
 
-`app/opengraph-image.tsx` inlines the mark's single path rather than reading
-this folder at runtime: a serverless bundle traces imports, not stray file
-reads. That copy is pinned by `tests/brand.test.ts`, which fails if it and
-`mark.svg` diverge.
+## Where the lockup is drawn
+
+`app/lockup.tsx` is the only place any of this is drawn on screen, and the
+landing, notebook and welcome headers all use it. It holds ONE copy of the
+three paths; the reversed lockup is a colour prop, not a second drawing, which
+is all `lockup-reversed.svg` itself changes. `app/opengraph-image.tsx` imports
+the mark from there rather than keeping its own. `tests/brand.test.ts` pins the
+paths, the two group transforms and the viewBox against the files here, so the
+screen and this folder cannot drift.
+
+It is inlined rather than served as an `<img>`: no second request, nothing that
+can 404, and it inherits no styling it should not. It stops being selectable
+text, which is the ordinary trade for a logo — hence `role="img"` and
+`aria-label="ExtraLesson"`.
+
+**The header used to render the wordmark as HTML text, and this note used to
+say that was correct and must not be changed.** It was wrong. The √e reading
+depends on the bar overhanging the e with a few pixels of clearance at the
+floor, and that clearance is a property of the outlined wordmark's own metrics.
+Rebuilt in CSS against a webfont it lands differently per browser and reads as
+a tick colliding with a letter — and the lockups sat in this folder unused,
+which defeats having drawn them.
+
+## Where the mark stands in alone
+
+The notebook header at 360px has **44px** free beside its fixed right-hand
+group — measured, not guessed — so the lockup cannot have its 120px there and
+the row wraps if it is forced. That header shows the mark alone below the first
+breakpoint and the full lockup from `sm` up. The landing and welcome headers
+have the room and carry the lockup at every width.
+
+Every header currently sits on paper, so all three use the ink tone.
+`lockup-reversed.svg` is for a header on ink, and nothing is on ink today.
