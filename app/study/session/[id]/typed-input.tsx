@@ -161,10 +161,16 @@ export function TypedInput({
         {close && punct(close)}
       </div>
       {!disabled && (
+        // KEPT AWAY FROM THE BOXES ON PURPOSE. This is a 44px tap target that
+        // appends a box, and it sat 4px under one — wider than the box on both
+        // sides — so a thumb aimed at the bottom of a box hit it instead and a
+        // student saw a box appear from clicking into one. The list grows on
+        // its own when the last box is filled, so this is the rare path and
+        // does not need to be the near one.
         <button
           type="button"
           onClick={() => onChange([...values, ''].slice(0, 24))}
-          className="mt-1 min-h-11 font-mono text-[11px] text-dim underline"
+          className="ml-1 mt-4 min-h-11 font-mono text-[11px] text-dim underline"
         >
           + another box
         </button>
