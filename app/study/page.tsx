@@ -22,7 +22,7 @@ import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
 import { loadReviewable } from '@/lib/study/reviewable';
 import { shouldLeadWithReachable } from '@/lib/study/lead-panel';
-import { FREE_SESSIONS } from '@/lib/access';
+import { DIAGNOSTIC_INTERVAL_DAYS, diagnosticOpensAt, FREE_SESSIONS } from '@/lib/access';
 import { sittingLabel } from '@/lib/sittings';
 import { paymentLink } from '@/lib/landing-content';
 import { BAND_LABEL } from '@/lib/study/profiles';
@@ -101,6 +101,14 @@ export default async function StudyDashboard({
   ]);
   const revisitMarks = [...mistakes.lostByObjective.values()].reduce((a, b) => a + b, 0);
   const isNewStudent = mistakes.attemptedIds.size === 0;
+
+  // ONE DIAGNOSTIC PER STUDENT. Offering a button that would be refused is
+  // worse than not offering it, and "new student" is counted from ATTEMPTS —
+  // someone who started a diagnostic and answered nothing is still new by that
+  // measure, so both offers below read this rather than isNewStudent.
+  const diagnosticOpensAtDate = await diagnosticOpensAt(auth.student_id);
+  const diagnosticOpen =
+    diagnosticOpensAtDate === null || Date.now() >= diagnosticOpensAtDate.getTime();
 
   // What the trajectory is still waiting for, named rather than guessed at.
   const gap = trajectoryGap({
@@ -231,6 +239,7 @@ export default async function StudyDashboard({
           // button on it buried the twelve minutes that would make it work.
           // This swaps back on its own once attempts exist.
           <>
+            {diagnosticOpen && (
             <form action={startSession} className="mt-5">
               <input type="hidden" name="mode" value="diagnostic" />
               <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
@@ -240,6 +249,7 @@ export default async function StudyDashboard({
                 </small>
               </button>
             </form>
+            )}
             <form action={startSession} className="mt-3">
               <input type="hidden" name="mode" value="adaptive" />
               <button className="w-full border-[1.5px] border-ink p-3 text-center font-semibold">
@@ -436,6 +446,19 @@ export default async function StudyDashboard({
             </a>
           </section>
         )}
+        {/* The diagnostic ranks topics; it is not a supply of questions. Sitting
+            it again the same week would rank the same topics from the same
+            eight answers. */}
+        {error === 'diagnostic-taken' && (
+          <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+            <div className="section-label is-alert">You have already done the diagnostic</div>
+            <p className="mt-1 text-sm leading-snug">
+              It ranks your topics, and it has — your sessions start where it put you. Another one
+              this term would rank the same topics from the same answers. It opens again after{' '}
+              {DIAGNOSTIC_INTERVAL_DAYS} days, for coming back to after a term away.
+            </p>
+          </section>
+        )}
         {error === 'needs-access' && (
           <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
             <div className="section-label is-alert">
@@ -540,7 +563,7 @@ export default async function StudyDashboard({
               </button>
             </form>
 
-            {!isNewStudent && (
+            {!isNewStudent && diagnosticOpen && (
             <form action={startSession} className="mt-3">
               <input type="hidden" name="mode" value="diagnostic" />
               <button className="w-full border-[1.5px] border-rule p-3 text-left text-sm text-dim">

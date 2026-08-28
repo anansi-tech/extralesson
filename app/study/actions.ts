@@ -31,7 +31,7 @@ export async function startSession(formData?: FormData): Promise<void> {
   // earned is hidden, and the diagnostic stays free because it is how a student
   // finds out where they are before we have shown them anything.
   const gate = await canStartSession(auth.student_id, student.access, mode);
-  if (!gate.allowed) redirect(`/study?error=${gate.expired ? 'access-expired' : 'needs-access'}`);
+  if (!gate.allowed) redirect(`/study?error=${gate.reason}`);
 
   // Whatever the mode needs beyond the pool: the topic the student named, or
   // the marks they have actually lost.

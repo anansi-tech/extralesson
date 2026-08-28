@@ -50,9 +50,35 @@ export function hasAccess(access: Access | null | undefined, now: Date = new Dat
 }
 
 /**
+ * How long before a second diagnostic opens.
+ *
+ * The diagnostic is free, and free plus UNLIMITED made it unlimited free MCQ
+ * practice: a second door onto the bank for anyone willing to keep starting
+ * one. It is one per student now. The interval is for the student who comes
+ * back after a term away and whose ranking is genuinely stale — not a second
+ * go at eight questions this week. Long on purpose: a re-take that felt
+ * routine would be the same hole with a delay in front of it.
+ */
+export const DIAGNOSTIC_INTERVAL_DAYS = 90;
+
+/**
+ * When this student's next diagnostic opens, or null if they have never sat
+ * one. Read from started_at, which every session carries and is indexed by.
+ */
+export async function diagnosticOpensAt(studentId: string): Promise<Date | null> {
+  const last = await PracticeSession.findOne({ student_id: studentId, mode: 'diagnostic' })
+    .sort({ started_at: -1 })
+    .select('started_at')
+    .lean<{ started_at: Date } | null>();
+  if (!last?.started_at) return null;
+  return new Date(last.started_at.getTime() + DIAGNOSTIC_INTERVAL_DAYS * 24 * 60 * 60 * 1000);
+}
+
+/**
  * Sessions that count against the free tier: the ones the student chose to sit.
  * A diagnostic is free and stays free — it is how a new student finds out where
  * they are, and charging for that means charging before we have shown anything.
+ * It is capped rather than priced; see DIAGNOSTIC_INTERVAL_DAYS.
  */
 export async function freeSessionsUsed(studentId: string): Promise<number> {
   return PracticeSession.countDocuments({
@@ -61,18 +87,38 @@ export async function freeSessionsUsed(studentId: string): Promise<number> {
   });
 }
 
+/**
+ * The refusal carries the reason, and the reason IS the error code the hub
+ * reads. It was a boolean before, which could only ever say two things.
+ */
+export type SessionGate =
+  | { allowed: true }
+  | { allowed: false; reason: 'needs-access' | 'access-expired'; used: number }
+  | { allowed: false; reason: 'diagnostic-taken'; opensAt: Date };
+
 export async function canStartSession(
   studentId: string,
   access: Access | null | undefined,
   mode: string,
   now: Date = new Date(),
-): Promise<{ allowed: true } | { allowed: false; used: number; expired: boolean }> {
-  if (hasAccess(access, now) || mode === 'diagnostic') return { allowed: true };
+): Promise<SessionGate> {
+  // The diagnostic is not behind the paywall and never has been; it is behind
+  // its own cap, which applies to a paying student too. Someone who has paid
+  // has whole sessions to sit and does not need the diagnostic as a source of
+  // questions either.
+  if (mode === 'diagnostic') {
+    const opensAt = await diagnosticOpensAt(studentId);
+    if (opensAt === null || now.getTime() >= opensAt.getTime()) return { allowed: true };
+    return { allowed: false, reason: 'diagnostic-taken', opensAt };
+  }
+  if (hasAccess(access, now)) return { allowed: true };
   // An expired account falls back to the free tier EXACTLY as an unpaid one
   // does — the counter is over every session ever started, so a student who
-  // studied through a sitting is already past it. The flag only changes which
+  // studied through a sitting is already past it. The reason only changes which
   // sentence they read.
   const expired = Boolean(access?.sitting);
   const used = await freeSessionsUsed(studentId);
-  return used < FREE_SESSIONS ? { allowed: true } : { allowed: false, used, expired };
+  return used < FREE_SESSIONS
+    ? { allowed: true }
+    : { allowed: false, reason: expired ? 'access-expired' : 'needs-access', used };
 }
