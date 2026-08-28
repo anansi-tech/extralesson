@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import './landing.css';
 import Link from 'next/link';
 import { LANDING, landingCoverage, paymentLink } from '@/lib/landing-content';
-import { REFUND_DAYS } from '@/lib/access';
+import { hasAccess, REFUND_DAYS, type Access } from '@/lib/access';
+import { dbConnect, Student } from '@/lib/db';
 import { getSession } from '@/lib/auth/session';
 
 // Originally a faithful port of a design HTML file (ROUND_1 §7). That file is
@@ -30,6 +31,20 @@ export const metadata: Metadata = {
 export default async function LandingPage() {
   const coverage = landingCoverage();
   const session = await getSession();
+  // A STUDENT WHO HAS PAID MUST NOT BE SOLD TO AGAIN.
+  //
+  // The header knew someone was signed in and nothing asked whether they had
+  // bought anything, so a paying student met two buy buttons and a checkout
+  // that would have charged them a second time. Signed in WITHOUT access still
+  // sees the offer: they are exactly who it is for.
+  let signedInWithAccess = false;
+  if (session) {
+    await dbConnect();
+    const student = await Student.findById(session.student_id)
+      .select('access')
+      .lean<{ access?: Access | null } | null>();
+    signedInWithAccess = hasAccess(student?.access);
+  }
   return (
     <div className="landing">
       <header className="hero">
@@ -61,10 +76,17 @@ export default async function LandingPage() {
             <b>real working</b> the way a CXC examiner marks Paper 2 — mark by mark, with the exact
             feedback an examiner would write.
           </p>
-          <a className="btn" href="#offer">
-            Get full access — {LANDING.price}
-            <small>ONE PAYMENT · FULL ACCESS THROUGH THE SITTING YOU CHOOSE</small>
-          </a>
+          {signedInWithAccess ? (
+            <Link className="btn" href="/study">
+              Continue studying
+              <small>YOUR ACCESS IS ACTIVE · PICK UP WHERE YOU LEFT OFF</small>
+            </Link>
+          ) : (
+            <a className="btn" href="#offer">
+              Get full access — {LANDING.price}
+              <small>ONE PAYMENT · FULL ACCESS THROUGH THE SITTING YOU CHOOSE</small>
+            </a>
+          )}
           <div className="heronote">
             FOR CSEC MATHEMATICS · {LANDING.sittingNote} · WORKS ON ANY PHONE
           </div>
@@ -251,49 +273,70 @@ export default async function LandingPage() {
           relative in a separate box below, which left the actual buyer working
           out which voice meant them. Three things, in order: what the money
           buys, who it is for, and how they will know it is working. */}
-      <section id="offer">
-        <div className="wrap">
-          <div className="offer">
-            <div className="eyebrow">CSEC Mathematics</div>
-            <h2>Everything, through the sitting you choose.</h2>
-            <div className="price">{LANDING.price}</div>
-            <div className="per">ONE PAYMENT · NO SUBSCRIPTION · USD</div>
-            <p>
-              Most people paying for this are not the one sitting the exam. So: what it buys, who
-              it is for, and how you will know it is working.
-            </p>
-            <ul>
-              <li>Full CSEC Maths programme — diagnostic, daily sessions, examiner-style marking</li>
-              <li>One student, with access running to the sitting they are entered for</li>
-              <li>Predicted grade tracking from day one to exam day</li>
-              <li>Direct line to me — your feedback shapes the product</li>
-            </ul>
-            <a className="btn" href={paymentLink()}>
-              Get access — {LANDING.price}
-              <small>SECURE CHECKOUT · CARD OR APPLE PAY</small>
-            </a>
-            {/* The student's address, not the payer's — which is the whole
-                reason the field exists, and why saying so here costs nothing. */}
-            <div className="cap">
-              CHECKOUT ASKS FOR THE STUDENT&rsquo;S EMAIL ADDRESS, WHICH NEED NOT BE YOURS. THAT IS
-              THE ADDRESS THEY SIGN UP WITH, AND HOW THE PAYMENT REACHES THEIR ACCOUNT.
-            </div>
-            <p>
-              How you will know it is working: they will show you. We do not send reports. They can
-              open their own marked working — every question, every mark, and the reason for each
-              one — whenever they want to. You&rsquo;ll hear how it&rsquo;s going from them, not
-              from us.
-            </p>
-            {/* The refund window is the terms' window, read from the same
-                constant. The page used to say "full refund at launch" while the
-                terms said 14 days from paying, which is a promise and its
-                small print disagreeing in public. */}
-            <div className="cap">
-              NOT SATISFIED? EMAIL US WITHIN {REFUND_DAYS} DAYS OF PAYING AND WE WILL REFUND YOU.
+      {signedInWithAccess ? (
+        // In place of the offer, not beside it: the one thing a student who has
+        // already paid came here to find is the way back in.
+        <section id="offer">
+          <div className="wrap">
+            <div className="offer">
+              <div className="eyebrow">You already have access</div>
+              <h2>Everything is where you left it.</h2>
+              <p>
+                Your marks, your topics and every question you have answered are all still there.
+                Nothing here is for sale to you — this page is for people deciding.
+              </p>
+              <Link className="btn" href="/study">
+                Continue studying
+                <small>YOUR SESSIONS, YOUR NOTEBOOK, YOUR PREDICTED GRADE</small>
+              </Link>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        <section id="offer">
+          <div className="wrap">
+            <div className="offer">
+              <div className="eyebrow">CSEC Mathematics</div>
+              <h2>Everything, through the sitting you choose.</h2>
+              <div className="price">{LANDING.price}</div>
+              <div className="per">ONE PAYMENT · NO SUBSCRIPTION · USD</div>
+              <p>
+                Most people paying for this are not the one sitting the exam. So: what it buys, who
+                it is for, and how you will know it is working.
+              </p>
+              <ul>
+                <li>Full CSEC Maths programme — diagnostic, daily sessions, examiner-style marking</li>
+                <li>One student, with access running to the sitting they are entered for</li>
+                <li>Predicted grade tracking from day one to exam day</li>
+                <li>Direct line to me — your feedback shapes the product</li>
+              </ul>
+              <a className="btn" href={paymentLink()}>
+                Get access — {LANDING.price}
+                <small>SECURE CHECKOUT · CARD OR APPLE PAY</small>
+              </a>
+              {/* The student's address, not the payer's — which is the whole
+                  reason the field exists, and why saying so here costs nothing. */}
+              <div className="cap">
+                CHECKOUT ASKS FOR THE STUDENT&rsquo;S EMAIL ADDRESS, WHICH NEED NOT BE YOURS. THAT IS
+                THE ADDRESS THEY SIGN UP WITH, AND HOW THE PAYMENT REACHES THEIR ACCOUNT.
+              </div>
+              <p>
+                How you will know it is working: they will show you. We do not send reports. They can
+                open their own marked working — every question, every mark, and the reason for each
+                one — whenever they want to. You&rsquo;ll hear how it&rsquo;s going from them, not
+                from us.
+              </p>
+              {/* The refund window is the terms' window, read from the same
+                  constant. The page used to say "full refund at launch" while the
+                  terms said 14 days from paying, which is a promise and its
+                  small print disagreeing in public. */}
+              <div className="cap">
+                NOT SATISFIED? EMAIL US WITHIN {REFUND_DAYS} DAYS OF PAYING AND WE WILL REFUND YOU.
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="rule-top">
         <div className="wrap faq">
