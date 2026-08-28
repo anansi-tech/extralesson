@@ -121,44 +121,6 @@ export function m1GateHolds(targetModules: ModuleNumber[], m1Mastery: number): b
   return targetModules.includes(1) && m1Mastery <= M1_PREREQ_THRESHOLD;
 }
 
-export interface NeedArgs {
-  perObjectiveMastery: Map<string, number>;
-  topicWeightByPrefix: Map<string, number>;
-  attemptedObjectives?: Set<string>;
-  m1Gated?: boolean;
-}
-
-/**
- * WHAT THE STUDENT NEEDS MOST, IN ORDER.
- *
- * Module 1 first while it gates, then topics never opened, then the weight of
- * the topic times how much of it is still missing. Exported because worked
- * practice picks from a different pool and must pick the same way: two copies
- * of "weakest first" would answer differently within a week, and a student
- * would be sent to one topic by their session and another by the practice page
- * with nothing to explain the difference.
- */
-export function rankByNeed<T extends CandidateQuestion>(candidates: T[], args: NeedArgs): T[] {
-  const { perObjectiveMastery, topicWeightByPrefix, attemptedObjectives, m1Gated = false } = args;
-  const started = new Set([...(attemptedObjectives ?? [])].map(objectivePrefix));
-  return candidates
-    .map((c) => ({
-      c,
-      priority: c.objective_ids.reduce((sum, id) => {
-        const mastery = perObjectiveMastery.get(id) ?? 0;
-        return sum + (1 - mastery) * (topicWeightByPrefix.get(objectivePrefix(id)) ?? 1);
-      }, 0),
-      unstarted: c.objective_ids.some((id) => !started.has(objectivePrefix(id))),
-    }))
-    .sort((a, b) => {
-      if (m1Gated && (a.c.module === 1) !== (b.c.module === 1)) return a.c.module === 1 ? -1 : 1;
-      if (a.unstarted !== b.unstarted) return a.unstarted ? -1 : 1;
-      if (b.priority !== a.priority) return b.priority - a.priority;
-      return a.c.id < b.c.id ? -1 : 1;
-    })
-    .map((x) => x.c);
-}
-
 export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
   const {
     candidates,

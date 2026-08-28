@@ -4,7 +4,6 @@ import {
   estimatedMinutes,
   hasMarkableParts,
   m1GateHolds,
-  rankByNeed,
   SESSION_MINUTES,
   type CandidateQuestion,
 } from '@/lib/session/builder';
@@ -504,58 +503,5 @@ describe('m1GateHolds — one condition, used by the page and the builder', () =
     const m1Mastery = M1_PREREQ_THRESHOLD - 0.1;
     const picked = buildSession({ ...base, m1Mastery, mode: 'topic', focusPrefixes: ['M2.4.'] });
     expect(picked.map((p) => p.id)).toEqual(['m2']);
-  });
-});
-
-// Worked practice picks from a different pool — questions with a self-marked
-// part — and has to pick the same WAY, or a student is sent to one topic by
-// their session and another by the practice page with nothing explaining the
-// difference. Both call this.
-describe('rankByNeed — one ordering, shared by the session and the practice page', () => {
-  const q = (id: string, module: 1 | 2, objective: string) => ({
-    id,
-    module,
-    objective_ids: [objective],
-    kind: 'structured' as const,
-    marks: 4,
-  });
-
-  it('puts Module 1 first while the gate holds', () => {
-    const order = rankByNeed([q('m2', 2, 'M2.4.1'), q('m1', 1, 'M1.1.1')], {
-      perObjectiveMastery: new Map(),
-      topicWeightByPrefix: new Map([
-        ['M2.4.', 13],
-        ['M1.1.', 7],
-      ]),
-      m1Gated: true,
-    });
-    expect(order.map((x) => x.id)).toEqual(['m1', 'm2']);
-  });
-
-  it('then a topic never opened, then weight times what is missing', () => {
-    const order = rankByNeed(
-      [q('opened', 1, 'M1.1.1'), q('unopened', 1, 'M1.3.1'), q('lightest', 1, 'M1.9.1')],
-      {
-        perObjectiveMastery: new Map([['M1.1.1', 0.15]]),
-        topicWeightByPrefix: new Map([
-          ['M1.1.', 10],
-          ['M1.3.', 7.5],
-          ['M1.9.', 1],
-        ]),
-        attemptedObjectives: new Set(['M1.1.1']),
-      },
-    );
-    // Both untouched topics outrank the opened one; between them, weight decides.
-    expect(order.map((x) => x.id)).toEqual(['unopened', 'lightest', 'opened']);
-  });
-
-  it('is deterministic when nothing separates two questions', () => {
-    const args = {
-      perObjectiveMastery: new Map(),
-      topicWeightByPrefix: new Map([['M1.1.', 5]]),
-    };
-    const a = rankByNeed([q('b', 1, 'M1.1.1'), q('a', 1, 'M1.1.1')], args);
-    const b = rankByNeed([q('a', 1, 'M1.1.1'), q('b', 1, 'M1.1.1')], args);
-    expect(a.map((x) => x.id)).toEqual(b.map((x) => x.id));
   });
 });

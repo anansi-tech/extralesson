@@ -197,8 +197,8 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     }
     // String equality settles values. It cannot settle the prose that a
     // "show that" derivation or an "explain" reason answers with — but those
-    // are shown to students in worked practice, so they are checked too, by
-    // the reader rather than by the rules (R1.6 §1).
+    // are revealed to the student inside the session to self-mark, so they are
+    // checked too, by the reader rather than by the rules (R1.6 §1).
     const mode = p.slot.response_mode ?? 'answer';
     if (mode === 'answer' && answersEquivalentAny(s, p.slot.answer, p.slot.accept)) continue;
 

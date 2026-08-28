@@ -592,16 +592,6 @@ export default async function StudyDashboard({
           </section>
         )}
 
-        <Link
-          href="/study/practice"
-          className="mt-3 block border-[1.5px] border-ink bg-white p-3 text-center font-mono text-[11px] uppercase tracking-widest shadow-[3px_3px_0_var(--ink)]"
-        >
-          Worked practice
-          <small className="block font-sans text-[10px] normal-case tracking-normal text-dim">
-            &ldquo;Show that&rdquo;, &ldquo;explain&rdquo; and drawing questions — you mark these yourself
-          </small>
-        </Link>
-
         {progress.sessionsCompleted > 0 && (
           <section className="mt-5 border-[1.5px] border-ink bg-white p-3 shadow-[3px_3px_0_var(--ink)]">
             <div className="grid grid-cols-4 gap-2 text-center">
