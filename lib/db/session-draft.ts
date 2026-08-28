@@ -23,7 +23,6 @@ const SessionDraftSchema = new Schema({
   values: { type: Schema.Types.Mixed, default: {} },
   /** The chosen option on an MCQ. */
   selected: { type: Number },
-  working: { type: String, default: '' },
   updated_at: { type: Date, default: Date.now, required: true },
 });
 

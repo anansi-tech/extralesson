@@ -591,7 +591,6 @@ export default async function SessionPage({
         answers?: Record<string, string>;
         values?: Record<string, string[]>;
         selected?: number;
-        working?: string;
       } | null>();
 
   const card: CardQuestion = {
@@ -606,7 +605,6 @@ export default async function SessionPage({
           answers: draftRow.answers ?? {},
           values: draftRow.values ?? {},
           selected: draftRow.selected,
-          working: draftRow.working ?? '',
         }
       : undefined,
     kind: question.kind,

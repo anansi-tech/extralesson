@@ -172,14 +172,14 @@ describe('round trip — a correctly formatted answer marks correct', () => {
 
   for (const [format, canonical, wellFormed, wrongForm] of cases) {
     it(`${format}: "${wellFormed}" earns every mark`, () => {
-      const res = markStructured(rubric, canonical, wellFormed, '', undefined, format);
+      const res = markStructured(rubric, canonical, wellFormed, undefined, format);
       expect(res.correct, `${format} rejected its own canonical form`).toBe(true);
       expect(res.rubric_awarded).toEqual(['CK1', 'R1']);
       expect(res.format_feedback).toBeUndefined();
     });
 
     it(`${format}: "${wrongForm}" keeps the value marks and loses the form mark`, () => {
-      const res = markStructured(rubric, canonical, wrongForm, '', undefined, format);
+      const res = markStructured(rubric, canonical, wrongForm, undefined, format);
       expect(res.correct).toBe(false);
       expect(res.rubric_awarded).toEqual(['CK1']);
       expect(res.format_feedback).toMatch(/^Correct value/);

@@ -8,11 +8,11 @@ import type { AnswerFormat, ProfileMarks, RubricItem } from '@/lib/types';
 // heuristics only. Full examiner (LLM) marking is Round 2 — do not extend.
 //
 // Heuristics for structured questions:
-// - Correct final answer            -> every rubric criterion is awarded.
-// - Wrong answer, working shown     -> CK criteria awarded (the student
-//   engaged the concept); AK criteria awarded only when the working contains
-//   at least one worked step (an '=' sign or 2+ lines).
-// - R criteria are never awarded without a correct final answer.
+// - Correct final answer -> every rubric criterion is awarded.
+// - Wrong answer         -> nothing. A method mark needs the working, and the
+//   working is PHOTOGRAPHED (R2): the typed box that used to feed this could
+//   only ever be attributed on a question with one marked slot, which is 4 of
+//   446, so on the rest its label promised marks it could not award.
 
 export interface MarkResult {
   correct: boolean;
@@ -37,7 +37,6 @@ export interface SlotInput {
   /** 'a.i' — the part label and the slot label. */
   ref: string;
   answer: string;
-  working: string;
   /**
    * One entry per box, when the slot was rendered as a typed input. Present
    * means the student never typed a delimiter, so marking compares values by
@@ -81,11 +80,9 @@ export function markStructuredParts(
           : [{ code: 'R0', profile: 'R', criterion: 'answer', mark_value: 0, slot_ref: ref, part_label: part.label }],
         slot.answer,
         input?.answer ?? '',
-        input?.working ?? '',
         slot.accept,
         slot.answer_format as AnswerFormat | undefined,
         input?.values,
-        markableSlots(parts).length === 1,
       );
       // ONLY A SLOT THAT CARRIES MARKS VOTES ON THE VERDICT.
       //
@@ -119,27 +116,9 @@ export function markStructured(
   rubric: RubricItem[],
   canonicalAnswer: string,
   studentAnswer: string,
-  working: string,
   accept?: string[],
   answerFormat?: AnswerFormat,
   enteredValues?: string[],
-  /**
-   * Whether the working box can be attributed to THIS slot.
-   *
-   * Working is one box for the whole question, and 424 of the 427 structured
-   * questions ask for more than one answer. Crediting every slot from it meant
-   * a single "=" anywhere awarded the method marks on slots the student got
-   * wrong and never worked — a student scored 11 out of 11 on a question where
-   * they had mixed metres with centimetres and mis-read a bound. A quarter of
-   * AK rows say CAO, "correct answer only", so awarding those without the
-   * answer contradicts the criterion the student is shown.
-   *
-   * So the heuristic applies only where the box belongs to the slot: a question
-   * with exactly one marked slot. Everywhere else a method mark needs the
-   * answer. Attributing working per slot properly is the real fix and is a
-   * bigger change than this one.
-   */
-  workingAttributable = false,
 ): MarkResult {
   const equivalent =
     enteredValues && enteredValues.length > 0
@@ -189,17 +168,9 @@ export function markStructured(
   } else if (!equivalent && answerFormat && valueLooksRight(studentAnswer, canonicalAnswer)) {
     format_feedback = checkForm().feedback;
   }
-  const trimmed = working.trim();
-  const hasWorking = trimmed.length > 0;
-  const hasWorkedStep = trimmed.includes('=') || trimmed.split('\n').filter((l) => l.trim()).length >= 2;
-
   const awarded = rubric.filter((r) => {
     if (formOnlyMiss) return !r.for_format; // the mathematics was right
-    if (correct) return true;
-    if (!workingAttributable) return false; // cannot tell whose working this is
-    if (r.profile === 'CK') return hasWorking;
-    if (r.profile === 'AK') return hasWorkedStep;
-    return false; // R requires a correct final answer
+    return correct;
   });
 
   const profile_marks: ProfileMarks = { CK: 0, AK: 0, R: 0 };

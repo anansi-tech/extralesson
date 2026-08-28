@@ -58,9 +58,10 @@ describe('the question fingerprint', () => {
   });
 
   it('names a grader version that changes when marking does', () => {
-    // Bumped whenever a verdict could change: v6 makes the verdict mean what
-    // the score means — no method marks from another slot's working, no failure
-    // for a form nothing pays for, and no vote from a slot carrying no marks.
-    expect(GRADER_VERSION).toBe('v6');
+    // Bumped whenever a verdict could change: v7 removes the typed working
+    // box and the last heuristic that read it, so a wrong answer earns nothing
+    // from the deterministic marker and a method mark comes from the
+    // photograph.
+    expect(GRADER_VERSION).toBe('v7');
   });
 });

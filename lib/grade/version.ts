@@ -33,8 +33,15 @@ import { createHash } from 'node:crypto';
  *       declared form that no rubric row pays for is reported and no longer
  *       fails the answer; and a slot carrying no marks — self-marked, or with
  *       no rubric row — no longer votes on correctness
+ *   v7  the typed working box is gone, and with it the last heuristic that
+ *       read it. It could only be attributed on a question with exactly one
+ *       marked slot — 4 of 446 — so on the rest its label promised method
+ *       marks it could not award, and a student typing there was spending
+ *       time on nothing. A method mark now comes from the PHOTOGRAPH, which
+ *       is read against the criterion it claims (MARKER_VERSION). A wrong
+ *       answer earns nothing from the deterministic marker.
  */
-export const GRADER_VERSION = 'v6';
+export const GRADER_VERSION = 'v7';
 
 /**
  * What the METHOD marker was when a photographed working was judged.

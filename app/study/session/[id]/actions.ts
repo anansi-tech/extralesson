@@ -40,7 +40,6 @@ const SubmitZ = z.object({
     )
     .min(1)
     .max(40),
-  working: z.string().max(10000).default(''),
   durationMs: z.number().int().min(0).max(60 * 60 * 1000).catch(0),
 });
 
@@ -85,13 +84,12 @@ export async function submitAnswer(input: {
   sessionId: string;
   questionIndex: number;
   answers: { label: string; answer: string; values?: string[] }[];
-  working?: string;
   durationMs?: number;
 }): Promise<Feedback | { error: string }> {
   const auth = await requireSession();
-  const parsed = SubmitZ.safeParse({ working: '', durationMs: 0, ...input });
+  const parsed = SubmitZ.safeParse({ durationMs: 0, ...input });
   if (!parsed.success) return { error: 'Invalid submission.' };
-  const { sessionId, questionIndex, answers, working, durationMs } = parsed.data;
+  const { sessionId, questionIndex, answers, durationMs } = parsed.data;
 
   await dbConnect();
   const session = await PracticeSession.findOne({
@@ -146,7 +144,7 @@ export async function submitAnswer(input: {
       const reading = readInputShape(slot.answer);
       return { ...a, values, text: composeAnswer(values, reading.shape, reading) };
     });
-    const inputs = entered.map((a) => ({ ref: a.label, answer: a.text, working, values: a.values }));
+    const inputs = entered.map((a) => ({ ref: a.label, answer: a.text, values: a.values }));
     result = markStructuredParts(question.rubric ?? [], parts, inputs);
     const inputByRef = new Map(entered.map((a) => [a.label, a]));
     partResults = parts.flatMap((p) =>
@@ -280,7 +278,6 @@ const DraftZ = z.object({
   answers: z.record(z.string().regex(ANSWER_REF_RE), z.string().max(2000)).default({}),
   values: z.record(z.string().regex(ANSWER_REF_RE), z.array(z.string().max(200)).max(24)).default({}),
   selected: z.number().int().min(0).max(9).optional(),
-  working: z.string().max(10000).default(''),
 });
 
 /**
@@ -296,12 +293,11 @@ export async function saveDraft(input: {
   answers?: Record<string, string>;
   values?: Record<string, string[]>;
   selected?: number;
-  working?: string;
 }): Promise<{ ok: boolean }> {
   const auth = await requireSession();
   const parsed = DraftZ.safeParse(input);
   if (!parsed.success) return { ok: false };
-  const { sessionId, questionIndex, answers, values, selected, working } = parsed.data;
+  const { sessionId, questionIndex, answers, values, selected } = parsed.data;
 
   await dbConnect();
   // The session has to be this student's, or a draft is a way to write to
@@ -311,7 +307,7 @@ export async function saveDraft(input: {
 
   await SessionDraft.updateOne(
     { session_id: sessionId, question_index: questionIndex },
-    { $set: { answers, values, selected, working, updated_at: new Date() } },
+    { $set: { answers, values, selected, updated_at: new Date() } },
     { upsert: true },
   );
   return { ok: true };

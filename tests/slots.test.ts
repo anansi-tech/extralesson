@@ -89,10 +89,10 @@ describe('slots — marking is per slot', () => {
 
   it('marks the transformation description, which used to be self-marked prose', () => {
     const res = markStructuredParts(rubric, q.parts, [
-      { ref: 'a.type', answer: 'enlargement', working: '' },
-      { ref: 'a.centre', answer: '(1,2)', working: '' },
-      { ref: 'a.factor', answer: '3', working: '' },
-      { ref: 'b.i', answer: '9', working: '' },
+      { ref: 'a.type', answer: 'enlargement' },
+      { ref: 'a.centre', answer: '(1,2)' },
+      { ref: 'a.factor', answer: '3' },
+      { ref: 'b.i', answer: '9' },
     ]);
     expect(res.profile_marks).toEqual({ CK: 1, AK: 3, R: 0 });
     expect(res.rubric_awarded).toEqual(['CK1', 'AK1', 'AK2', 'AK3']);
@@ -100,10 +100,10 @@ describe('slots — marking is per slot', () => {
 
   it('gives partial credit when one descriptor is wrong', () => {
     const res = markStructuredParts(rubric, q.parts, [
-      { ref: 'a.type', answer: 'enlargement', working: '' },
-      { ref: 'a.centre', answer: '(0, 0)', working: '' },
-      { ref: 'a.factor', answer: '3', working: '' },
-      { ref: 'b.i', answer: '9', working: '' },
+      { ref: 'a.type', answer: 'enlargement' },
+      { ref: 'a.centre', answer: '(0, 0)' },
+      { ref: 'a.factor', answer: '3' },
+      { ref: 'b.i', answer: '9' },
     ]);
     expect(res.correct).toBe(false);
     expect(res.rubric_awarded).toContain('CK1');
@@ -115,10 +115,10 @@ describe('slots — marking is per slot', () => {
     // b.ii is prose the student self-marks; b.i is still marked here.
     expect(markableSlots(q.parts)).toEqual(['a.type', 'a.centre', 'a.factor', 'b.i']);
     const res = markStructuredParts(rubric, q.parts, [
-      { ref: 'a.type', answer: 'enlargement', working: '' },
-      { ref: 'a.centre', answer: '(1, 2)', working: '' },
-      { ref: 'a.factor', answer: '3', working: '' },
-      { ref: 'b.i', answer: '9', working: '' },
+      { ref: 'a.type', answer: 'enlargement' },
+      { ref: 'a.centre', answer: '(1, 2)' },
+      { ref: 'a.factor', answer: '3' },
+      { ref: 'b.i', answer: '9' },
     ]);
     expect(res.correct).toBe(true);
     expect(res.rubric_awarded).not.toContain('R1'); // self-marked, never awarded here

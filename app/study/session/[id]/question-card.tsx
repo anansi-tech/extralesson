@@ -71,7 +71,6 @@ export interface CardQuestion {
     answers: Record<string, string>;
     values: Record<string, string[]>;
     selected?: number;
-    working: string;
   };
   prior?: {
     answers: Record<string, string>;
@@ -161,7 +160,6 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       ? splitPriorValues(question.prior.answers, question.parts ?? [])
       : (question.draft?.values ?? {}),
   );
-  const [working, setWorking] = useState(question.prior ? '' : (question.draft?.working ?? ''));
   const [feedback, setFeedback] = useState<Feedback | null>(question.prior?.feedback ?? null);
   const [error, setError] = useState<string>();
   const [pending, startTransition] = useTransition();
@@ -182,7 +180,6 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         ? splitPriorValues(question.prior.answers, question.parts ?? [])
         : (question.draft?.values ?? {}),
     );
-    setWorking(question.prior ? '' : (question.draft?.working ?? ''));
     setFeedback(question.prior?.feedback ?? null);
     setError(undefined);
     startedAt.current = Date.now();
@@ -341,21 +338,20 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // Values and feedback only. `prior` is a PROP, already describing the
   // question ARRIVING, so a guard reading it here would refuse to save the
   // draft of the question being left.
-  const latest = useRef({ partAnswers, boxValues, working, selected, feedback });
-  latest.current = { partAnswers, boxValues, working, selected, feedback };
+  const latest = useRef({ partAnswers, boxValues, selected, feedback });
+  latest.current = { partAnswers, boxValues, selected, feedback };
 
   // The question is passed IN, not read from props: the card is re-rendered
   // rather than remounted between questions, so a save fired on the way out
   // would write question 2's answers under question 3's index.
   const saveDraftFor = useCallback((sessionId: string, questionIndex: number) => {
-    const { partAnswers: a, boxValues: v, working: w, selected: sel, feedback: fb } = latest.current;
+    const { partAnswers: a, boxValues: v, selected: sel, feedback: fb } = latest.current;
     // Feedback is STATE, so at cleanup it is still the outgoing question's.
     // A submitted question has an attempt and needs no draft.
     if (fb) return;
     const typed =
       Object.values(a).some((x) => x.trim() !== '') ||
       Object.values(v).some((vals) => vals.some((x) => x.trim() !== '')) ||
-      w.trim() !== '' ||
       sel !== null;
     if (!typed) return null;
     return saveDraft({
@@ -364,7 +360,6 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       answers: a,
       values: v,
       selected: sel ?? undefined,
-      working: w,
     });
   }, []);
 
@@ -379,7 +374,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     return () => {
       if (draftTimer.current) clearTimeout(draftTimer.current);
     };
-  }, [partAnswers, boxValues, working, selected, feedback, question.prior, saveNow]);
+  }, [partAnswers, boxValues, selected, feedback, question.prior, saveNow]);
 
   useEffect(() => {
     if (feedback || question.prior) return;
@@ -450,7 +445,6 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         sessionId: question.sessionId,
         questionIndex: question.index,
         answers,
-        working,
         durationMs: Date.now() - startedAt.current,
       });
       if ('error' in res) setError(res.error);
@@ -526,19 +520,6 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
       {question.kind === 'structured' && (
         <div className="mt-4 space-y-4">
-          <label className="block">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-dim">
-              Your working (optional — it can earn method marks)
-            </span>
-            <textarea
-              value={working}
-              onChange={(e) => setWorking(e.target.value)}
-              disabled={!!feedback}
-              rows={4}
-              className="mt-1 w-full border border-dashed border-[#B9C4D6] bg-[#FFFDF6] p-2 font-hand text-lg"
-              placeholder="Show your steps…"
-            />
-          </label>
           {question.parts.map((p) => {
             return (
               <div key={p.label}>
