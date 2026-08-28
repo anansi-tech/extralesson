@@ -21,12 +21,19 @@ import { NAMES, NAMING_RATE, namesAPerson, recentActors } from '@/lib/generation
 /**
  * WHAT THE STEERING CHANGES WERE WORTH, MEASURED AGAINST THE DAY THEY LANDED.
  *
- * Four changes went in together and none had been generated against: the
- * naming rate read off the papers, the flat NAMES list with least-used
- * selection, the dealings vocabulary, and template deficit ordering. There was
- * no batch to run them through — the bank had passed its pool target and every
- * assessable objective was covered, so a run would have been a deliberate
- * over-target batch to confirm mechanisms already proven in principle.
+ * TWO OF THE FOUR HAVE BEEN GENERATED AGAINST; TWO HAVE NOT.
+ *
+ * Measured by cohort: the 20 questions written on 27 Aug ran with the dealings
+ * vocabulary and template deficit ordering live, and both worked — banking
+ * went 1% to 40% of that cohort and every cumulativeFrequency question in the
+ * bank came from it. The naming rate and the flat NAMES list landed AFTER that
+ * batch, so they are still unexercised: 0 of those 20 name anybody.
+ *
+ * The bank-wide figures below are diluted by 589 older questions and read
+ * almost unmoved either way, which is why the cohort split matters more than
+ * the total. There is no batch queued to finish the job: the bank has passed
+ * its pool target and every assessable objective is covered, so a run would be
+ * a deliberate over-target batch.
  *
  * So the baseline is recorded instead. Whenever the next real batch happens,
  * and for whatever reason, these read as a DELTA rather than as numbers nobody
