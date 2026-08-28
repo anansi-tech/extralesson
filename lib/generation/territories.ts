@@ -220,6 +220,23 @@ const NOT_AN_ACTOR = new Set([
   'question', 'visual', 'curve', 'line', 'shape', 'region', 'scale',
 ]);
 
+/**
+ * Words that never appear INSIDE an actor.
+ *
+ * Half the verb list doubles as a noun — charges, orders, designs, packs,
+ * records, measures — so "The table shows the charges" matches with "charges"
+ * as the verb and "table shows the" as the actor. A real one is one or two
+ * content words: "market vendor", "school canteen", "taxi driver". None of
+ * them carries a determiner, a preposition or a copula, and a phrase that does
+ * is a sentence fragment rather than somebody.
+ */
+const NOT_IN_AN_ACTOR = new Set([
+  'the', 'a', 'an', 'of', 'for', 'in', 'on', 'at', 'to', 'and', 'or',
+  'is', 'are', 'was', 'were', 'be', 'been', 'shows', 'shown', 'showing',
+  'this', 'that', 'these', 'those', 'her', 'his', 'their', 'its', 'each',
+  'one', 'two', 'three', 'four', 'five', 'first', 'second', 'third',
+]);
+
 export function recentActors(texts: string[]): string[] {
   const found: string[] = [];
   for (const text of texts.slice(0, FLAVOUR_MEMORY)) {
@@ -228,10 +245,11 @@ export function recentActors(texts: string[]): string[] {
       .match(/\b(?:A|An|The|At a|At an|In a|During a|On a)\s+([a-z][a-z' -]{2,28}?)\s+(?:plans|records|sells|makes|buys|uses|prepares|wants|needs|orders|packs|runs|owns|tracks|models|compares|charges|delivers|offers|installs|designs|builds|stores|ships|collects|measures|surveys|begins|opens|operates|produces|supplies|manages|hires|rents|plants|harvests|bakes|repairs|transports|imports|exports|stocks|sews|paints|mixes|fills|loads|serves|cuts|weighs|counts)\b/);
     const actor = m?.[1]?.trim().toLowerCase();
     if (!actor || NOT_AN_ACTOR.has(actor) || found.includes(actor)) continue;
-    // A phrase whose head noun is not an actor is not one either: "graph for
-    // this information" was being counted as somebody.
-    const head = actor.split(' ').pop()!;
-    if (NOT_AN_ACTOR.has(head)) continue;
+    // EVERY word is tested, not just the head. "table shows the" ends in a
+    // determiner and begins with a thing that is never an actor, and only the
+    // second of those was being caught.
+    const words = actor.split(/[\s-]+/);
+    if (words.some((w) => NOT_AN_ACTOR.has(w) || NOT_IN_AN_ACTOR.has(w))) continue;
     found.push(actor);
   }
   return found;

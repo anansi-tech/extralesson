@@ -241,6 +241,30 @@ describe('recentActors counts actors only', () => {
     // "graph for this information" has a role-shaped position and a noun head.
     expect(recentActors(['A graph for this information records the totals.'])).toEqual([]);
   });
+
+  // HALF THE VERB LIST DOUBLES AS A NOUN.
+  //
+  // "The table shows the charges" matches with "charges" as the verb and
+  // "table shows the" as the actor — a sentence fragment, counted as somebody
+  // in the standing measurement. Eight approved questions produced one, and a
+  // distribution with prose in its tail cannot be trusted at the margin.
+  it('rejects a fragment that a noun-verb dragged in', () => {
+    for (const s of [
+      'The table shows the charges for one ticket.',
+      'The grid shows two orders received by a school canteen.',
+      'The dot patterns shown are designs for score cards.',
+      'The rectangular part of the plan measures 7.0 cm by 4.5 cm.',
+      'The paving slabs are supplied in packs which cover 12 m^2.',
+      'A second section of the ramp makes the same angle with the ground.',
+    ]) {
+      expect(recentActors([s]), s).toEqual([]);
+    }
+  });
+
+  it('keeps a two-word role, which is what a real actor looks like', () => {
+    expect(recentActors(['A taxi driver records the distance.'])).toEqual(['taxi driver']);
+    expect(recentActors(['A school canteen orders bread.'])).toEqual(['school canteen']);
+  });
 });
 
 // NAMING IS A RATE THE RECIPE DECIDES, NOT A JUDGMENT THE PROMPT MAKES.
