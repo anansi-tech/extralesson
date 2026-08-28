@@ -23,7 +23,58 @@ export interface ReviewableQuestion {
   /** True when a photograph of the working added marks to this one. */
   photographed: boolean;
   ts: Date;
+  /** So a row can say WHICH question it is once several share a date heading. */
+  objectiveIds: string[];
 }
+
+/** One day's worth, newest day first. */
+export interface ReviewableDay {
+  /** YYYY-MM-DD, in the viewer's own reckoning of the day. */
+  day: string;
+  on: Date;
+  questions: ReviewableQuestion[];
+  earned: number;
+  marks: number;
+}
+
+/**
+ * GROUPED BY DAY, NOT BY SESSION.
+ *
+ * A session is fifteen minutes and holds one or two questions — measured on
+ * the live bank, 30 questions across 29 sessions for the heaviest user — so a
+ * heading per session is a heading per question, and the page gets longer
+ * rather than shorter. Days collapse it properly: the same students sit at 1
+ * to 5 days, so the list opens as one day's questions and a few headings.
+ */
+export function groupReviewableByDay(rows: ReviewableQuestion[]): ReviewableDay[] {
+  const byDay = new Map<string, ReviewableQuestion[]>();
+  for (const r of rows) {
+    const d = new Date(r.ts);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    byDay.set(key, [...(byDay.get(key) ?? []), r]);
+  }
+  return [...byDay.entries()]
+    .sort((a, b) => (a[0] < b[0] ? 1 : -1))
+    .map(([day, questions]) => ({
+      day,
+      on: new Date(questions[0].ts),
+      questions,
+      earned: questions.reduce((n, q) => n + q.earned, 0),
+      marks: questions.reduce((n, q) => n + q.marks, 0),
+    }));
+}
+
+/**
+ * How far back the list reaches.
+ *
+ * Twelve was the length of a flat list nobody wanted to scroll. Grouped by day
+ * and collapsed, an older day costs one line, and the cap had started to lie:
+ * a heading saying "9 questions" meant nine WITHIN THE WINDOW, on a day that
+ * held twenty-five. Forty covers the heaviest live account with room, and the
+ * work is the same — the query already reads the attempts, this only decides
+ * how many rows come back.
+ */
+const DEFAULT_LIMIT = 40;
 
 interface Options {
   /** Restrict to one session — the summary lists only its own questions. */
@@ -33,7 +84,7 @@ interface Options {
 
 export async function loadReviewable(
   studentId: string,
-  { sessionId, limit = 12 }: Options = {},
+  { sessionId, limit = DEFAULT_LIMIT }: Options = {},
 ): Promise<ReviewableQuestion[]> {
   const sessions = await PracticeSession.find(
     sessionId ? { _id: sessionId, student_id: studentId } : { student_id: studentId },
@@ -56,11 +107,17 @@ export async function loadReviewable(
     question_id: { $in: [...new Set(sessions.flatMap((s) => s.question_ids.map(String)))] },
   })
     .sort({ ts: -1 })
-    .populate('question_id', 'marks parts rubric')
+    .populate('question_id', 'marks parts rubric objective_ids')
     .lean<
       {
         _id: unknown;
-        question_id: { _id: unknown; marks: number; parts?: unknown[]; rubric?: unknown[] } | null;
+        question_id: {
+          _id: unknown;
+          marks: number;
+          parts?: unknown[];
+          rubric?: unknown[];
+          objective_ids?: string[];
+        } | null;
         session_id: unknown;
         profile_marks: { CK: number; AK: number; R: number };
         ts: Date;
@@ -95,6 +152,7 @@ export async function loadReviewable(
       marks: markSplit(a.question_id as never).auto || a.question_id.marks || 1,
       photographed: method > 0,
       ts: a.ts,
+      objectiveIds: a.question_id.objective_ids ?? [],
     });
     if (out.length >= limit) break;
   }

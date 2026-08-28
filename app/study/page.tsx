@@ -20,7 +20,7 @@ import { PracticeSession } from '@/lib/db';
 import { DIAGNOSTIC_MINUTES, m1GateHolds, SESSION_MINUTES } from '@/lib/session/builder';
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
-import { loadReviewable } from '@/lib/study/reviewable';
+import { groupReviewableByDay, loadReviewable } from '@/lib/study/reviewable';
 import { shouldLeadWithReachable } from '@/lib/study/lead-panel';
 import { DIAGNOSTIC_INTERVAL_DAYS, diagnosticOpensAt, FREE_SESSIONS } from '@/lib/access';
 import { sittingLabel } from '@/lib/sittings';
@@ -99,6 +99,20 @@ export default async function StudyDashboard({
     loadMistakes(auth.student_id),
     loadReviewable(auth.student_id),
   ]);
+  const reviewDays = groupReviewableByDay(reviewable);
+  // A row under a shared date heading can no longer be told apart by its date,
+  // so it says its TOPIC — which is what a student looking back is holding on
+  // to. The titles are already loaded for the topic picker; no extra query.
+  const titleByPrefix = new Map(
+    topicChoices.flatMap((t) => t.prefixes.map((prefix) => [prefix, t.title] as const)),
+  );
+  const topicOf = (objectiveIds: string[]): string | undefined => {
+    for (const id of objectiveIds) {
+      const title = titleByPrefix.get(id.slice(0, id.lastIndexOf('.') + 1));
+      if (title) return title;
+    }
+    return undefined;
+  };
   const revisitMarks = [...mistakes.lostByObjective.values()].reduce((a, b) => a + b, 0);
   const isNewStudent = mistakes.attemptedIds.size === 0;
 
@@ -597,28 +611,47 @@ export default async function StudyDashboard({
             <p className="mt-1 text-[11px] leading-snug text-dim">
               Read the mark scheme again, and what your working earned. Nothing here is re-marked.
             </p>
-            <ul className="mt-2">
-              {reviewable.map((r) => (
-                <li key={`${r.sessionId}:${r.index}`}>
-                  <Link
-                    href={`/study/session/${r.sessionId}?q=${r.index}`}
-                    className="flex min-h-11 items-baseline justify-between gap-2 border-b-[1.5px] border-rule text-[13px]"
-                  >
-                    <span className="underline">
-                      {new Date(r.ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                      {r.photographed && (
-                        <span className="ml-1 font-mono text-[10px] tracking-widest text-dim">
-                          · PHOTO
+            {/* <details> rather than state: the page is a server component,
+                the most recent day is open because that is what a student is
+                nearly always after, and every earlier day is one line until
+                they ask for it. */}
+            {reviewDays.map((d, i) => (
+              <details key={d.day} open={i === 0} className="mt-2 border-t-[1.5px] border-rule pt-2">
+                <summary className="flex min-h-11 cursor-pointer items-baseline justify-between gap-2 text-[13px]">
+                  <span className="font-semibold">
+                    {d.on.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                    <span className="ml-2 font-mono text-[10px] uppercase tracking-widest text-dim">
+                      {d.questions.length} question{d.questions.length === 1 ? '' : 's'}
+                    </span>
+                  </span>
+                  <span className="font-mono text-[12px] text-dim">
+                    {d.earned}/{d.marks}
+                  </span>
+                </summary>
+                <ul className="mb-1">
+                  {d.questions.map((r) => (
+                    <li key={`${r.sessionId}:${r.index}`}>
+                      <Link
+                        href={`/study/session/${r.sessionId}?q=${r.index}`}
+                        className="flex min-h-11 items-baseline justify-between gap-2 border-b-[1.5px] border-rule pl-3 text-[13px]"
+                      >
+                        <span className="min-w-0 truncate underline">
+                          {topicOf(r.objectiveIds) ?? 'Question'}
+                          {r.photographed && (
+                            <span className="ml-1 font-mono text-[10px] tracking-widest text-dim">
+                              · PHOTO
+                            </span>
+                          )}
                         </span>
-                      )}
-                    </span>
-                    <span className="font-mono text-[12px] text-dim">
-                      {r.earned}/{r.marks}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                        <span className="shrink-0 font-mono text-[12px] text-dim">
+                          {r.earned}/{r.marks}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ))}
           </section>
         )}
 
