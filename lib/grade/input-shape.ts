@@ -115,6 +115,22 @@ const NUMBERISH = /^-?\d+(?:\.\d+)?(?:\s*\/\s*-?\d+(?:\.\d+)?)?$/;
  * PAIRS. Splitting on every comma tears them in half and offers the student
  * four boxes holding "(Mango" and "H)".
  */
+/**
+ * A piece of a split answer, tidied the way the whole answer is.
+ *
+ * bare() strips the $ delimiters at the ENDS of the answer, so splitting
+ * "$16.8$ kg, $8.4$ kg" left the inner ones stranded inside the values —
+ * "16.8$ kg" — both in the boxes and in what the marker compares against. An
+ * ESCAPED \$ is money and stays: the papers write \$1 860 and that is a value,
+ * not a delimiter.
+ */
+function tidyPiece(piece: string): string {
+  return piece
+    .replace(/(^|[^\\])\$/g, '$1')
+    .replace(/^\\[,;!\s]+|\\[,;!\s]+$/g, '')
+    .trim();
+}
+
 function splitTopLevel(s: string, sep: string): string[] {
   const out: string[] = [];
   let depth = 0;
@@ -130,7 +146,7 @@ function splitTopLevel(s: string, sep: string): string[] {
     } else current += ch;
   }
   out.push(current);
-  return out.map((p) => p.trim()).filter(Boolean);
+  return out.map(tidyPiece).filter(Boolean);
 }
 
 /**
@@ -254,9 +270,17 @@ export function readInputShape(rawAnswer: string): ShapeReading {
   }
 
   // A root list is unordered by nature; "or" is how the papers write it.
-  if (/\bor\b/.test(lower) && lower.includes('=')) {
-    const roots = s.split(/\s+or\s+/i).map((r) => r.trim()).filter(Boolean);
-    return { shape: 'roots', boxes: roots.length, ordered: false, values: roots };
+  //
+  // The pieces have to LOOK like roots. "or" is an ordinary English word, so
+  // matching on it alone split a described answer — "the common region on or
+  // below both lines…" — into two boxes each holding half a sentence, and made
+  // that half-sentence what the marker compared against.
+  if (/\bor\b/.test(lower)) {
+    const roots = s.split(/\s+or\s+/i).map(tidyPiece).filter(Boolean);
+    const rootish =
+      roots.length >= 2 &&
+      roots.every((r) => r.includes('=') && r.length <= 40 && r.split(/\s+/).length <= 6 && !/[.;]$/.test(r));
+    if (rootish) return { shape: 'roots', boxes: roots.length, ordered: false, values: roots };
   }
 
   if (/(<|>|\\le\b|\\ge\b|\\leq\b|\\geq\b|≤|≥)/.test(s)) {

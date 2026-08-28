@@ -123,3 +123,45 @@ describe('boxWidthChars — a box is as wide as its answer needs', () => {
     expect(boxWidthChars(uneven)).toBe(Math.max(5, '144000'.length));
   });
 });
+
+// A DELIMITER IS NOT PART OF THE VALUE.
+//
+// bare() strips the $ at the ENDS of an answer, so splitting a list left the
+// inner ones stranded inside the values — "16.8$ kg" — in the boxes and in
+// what the marker compares against. Eight approved slots carried one.
+describe('a split value carries no leftover notation', () => {
+  const values = (a: string) => readInputShape(a).values;
+
+  it('drops the maths delimiters between values', () => {
+    expect(values('$16.8$ kg, $8.4$ kg')).toEqual(['16.8 kg', '8.4 kg']);
+    expect(values('$t=1$ or $t=2$')).toEqual(['t=1', 't=2']);
+  });
+
+  it('keeps an ESCAPED dollar, which is money and not a delimiter', () => {
+    expect(values('\\$1 860, \\$3 150')).toEqual(['\\$1 860', '\\$3 150']);
+  });
+
+  it('drops a thin-space command left at the edge of a value', () => {
+    expect(values('$n=6,\\ W=2$')).toEqual(['n=6', 'W=2']);
+  });
+});
+
+// "OR" IS AN ORDINARY ENGLISH WORD.
+//
+// Matching on it alone read a described answer — "the common region on or
+// below both lines" — as two roots, and made half a sentence the thing the
+// marker compared against.
+describe('roots are told apart from prose that says "or"', () => {
+  it('reads a real pair of roots', () => {
+    expect(readInputShape('x = 2 or x = -1/3').shape).toBe('roots');
+    expect(readInputShape('$t=\\frac{5-\\sqrt{5}}{2}$ or $t=\\frac{5+\\sqrt{5}}{2}$').boxes).toBe(2);
+  });
+
+  it('does not split a sentence that happens to contain "or"', () => {
+    const prose =
+      'Solid boundary lines $3x+2y=24$ and $x+y=10$ are drawn. The common region on or below both lines in the first quadrant is shaded.';
+    const r = readInputShape(prose);
+    expect(r.shape).not.toBe('roots');
+    expect(r.boxes).toBe(1);
+  });
+});
