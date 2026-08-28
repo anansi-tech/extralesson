@@ -101,6 +101,18 @@ summary {
   font-size: 1.08em;
 }
 
+/* A frequency table set as a display-math array is far wider than a phone —
+   758px of table in a 300px column — and with no scroll container it pushed
+   the whole page 430px sideways at 390px, carrying the last class interval
+   out past the card's edge. It scrolls within its own bounds now. Alignment
+   is deliberately left alone: the array already starts flush at the block's
+   left edge, so centring costs nothing here, and 93 questions set a centred
+   equation in a worked solution with the same block. */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 .katex .mord,
 .katex .mbin {
   -webkit-text-stroke: 0.018em currentColor;
