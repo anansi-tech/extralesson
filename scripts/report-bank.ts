@@ -16,6 +16,37 @@ import { CONSTRUCT_SHARE } from '@/lib/targets/construct';
 import { STRUCTURED_ARCHETYPE_TARGETS } from '@/lib/targets/representation';
 import { TARGET_ACTS_PER_MARK, TARGET_CHAIN_DEPTH } from '@/lib/targets/difficulty';
 import { LANDING } from '@/lib/landing-content';
+import { NAMES, NAMING_RATE, namesAPerson, recentActors } from '@/lib/generation/territories';
+
+/**
+ * WHAT THE STEERING CHANGES WERE WORTH, MEASURED AGAINST THE DAY THEY LANDED.
+ *
+ * Four changes went in together and none had been generated against: the
+ * naming rate read off the papers, the flat NAMES list with least-used
+ * selection, the dealings vocabulary, and template deficit ordering. There was
+ * no batch to run them through — the bank had passed its pool target and every
+ * assessable objective was covered, so a run would have been a deliberate
+ * over-target batch to confirm mechanisms already proven in principle.
+ *
+ * So the baseline is recorded instead. Whenever the next real batch happens,
+ * and for whatever reason, these read as a DELTA rather than as numbers nobody
+ * can place. Measured over the APPROVED bank, which is what a student sees.
+ */
+const STEERING_BASELINE = {
+  on: '2026-08-28',
+  approved: 609,
+  namedShare: 0.077,
+  namesInUse: 8,
+  banking: 0.021,
+  wages: 0.007,
+  agriculture: 0.112,
+  cumulativeFrequency: 6,
+  distinctActors: 80,
+  topFiveActors: 0.385,
+} as const;
+
+/** Measured on the papers, and what the recipe steers toward. */
+const PAPER_SHARES = { banking: 0.31, wages: 0.08, agriculture: 0.065 } as const;
 
 interface Lean {
   kind: 'mcq' | 'structured';
@@ -28,6 +59,9 @@ interface Lean {
   objective_ids: string[];
   representation: string;
   context_category?: string;
+  stimulus?: string;
+  stem?: string;
+  visual?: { template?: string };
   parts?: { label: string; prompt: string; slots?: { label: string; depends_on?: string[]; response_mode?: string }[] }[];
   rubric?: { mark_value: number; profile: 'CK' | 'AK' | 'R'; criterion: string }[];
 }
@@ -226,6 +260,83 @@ async function main() {
       `  ${row.code.padEnd(12)} ${String(n).padStart(3)} questions · P1 ${row.p1_actual}/${row.p1_target} · P2 ${row.p2_marks_actual}/${row.p2_marks_target} marks`,
     );
   }
+
+  // STEERING, against the baseline recorded at the top of this file.
+  //
+  // Every figure is over the APPROVED bank. A change that has never been
+  // generated against reads exactly as its baseline, which is the point: the
+  // day these move is the day a batch actually exercised them.
+  const live = qs.filter((q) => q.status === 'approved');
+  const text = (q: Lean) =>
+    [q.stimulus ?? '', q.stem ?? '', ...(q.parts ?? []).map((p) => p.prompt)].join(' ');
+  const share = (n: number) => n / Math.max(1, live.length);
+  const delta = (now: number, then: number) => {
+    const d = now - then;
+    return Math.abs(d) < 0.0005 ? 'unmoved' : `${d > 0 ? '+' : ''}${(d * 100).toFixed(1)}pp`;
+  };
+  const line = (label: string, now: string, was: string, target: string, moved: string) =>
+    console.log(`  ${label.padEnd(30)} ${now.padStart(8)}   was ${was.padStart(7)}   target ${target.padStart(7)}   ${moved}`);
+
+  console.log(`\nSTEERING  against the baseline of ${STEERING_BASELINE.on} (${STEERING_BASELINE.approved} approved)`);
+
+  const named = live.filter((q) => namesAPerson(text(q))).length;
+  line(
+    'questions naming a person',
+    `${(share(named) * 100).toFixed(1)}%`,
+    `${(STEERING_BASELINE.namedShare * 100).toFixed(1)}%`,
+    `${(NAMING_RATE * 100).toFixed(0)}%`,
+    delta(share(named), STEERING_BASELINE.namedShare),
+  );
+
+  const inUse = NAMES.filter((n) => live.some((q) => new RegExp(`\\b${n}\\b`).test(text(q)))).length;
+  line(
+    'names of ' + NAMES.length + ' ever used',
+    `${inUse}`,
+    `${STEERING_BASELINE.namesInUse}`,
+    `${NAMES.length}`,
+    inUse === STEERING_BASELINE.namesInUse ? 'unmoved' : `${inUse > STEERING_BASELINE.namesInUse ? '+' : ''}${inUse - STEERING_BASELINE.namesInUse}`,
+  );
+
+  for (const key of ['banking', 'wages', 'agriculture'] as const) {
+    const n = live.filter((q) => q.context_category === key).length;
+    line(
+      `setting: ${key}`,
+      `${(share(n) * 100).toFixed(1)}%`,
+      `${(STEERING_BASELINE[key] * 100).toFixed(1)}%`,
+      `${(PAPER_SHARES[key] * 100).toFixed(0)}%`,
+      delta(share(n), STEERING_BASELINE[key]),
+    );
+  }
+
+  const cf = live.filter((q) => q.visual?.template === 'cumulativeFrequency').length;
+  line(
+    'template: cumulativeFrequency',
+    `${cf}`,
+    `${STEERING_BASELINE.cumulativeFrequency}`,
+    'deficit',
+    cf === STEERING_BASELINE.cumulativeFrequency ? 'unmoved' : `${cf > STEERING_BASELINE.cumulativeFrequency ? '+' : ''}${cf - STEERING_BASELINE.cumulativeFrequency}`,
+  );
+
+  const actorCounts = new Map<string, number>();
+  for (const q of live) for (const a of recentActors([text(q)])) actorCounts.set(a, (actorCounts.get(a) ?? 0) + 1);
+  const ranked = [...actorCounts.values()].sort((a, b) => b - a);
+  const mentions = ranked.reduce((t, n) => t + n, 0);
+  const topFive = mentions === 0 ? 0 : ranked.slice(0, 5).reduce((t, n) => t + n, 0) / mentions;
+  line(
+    'distinct actors',
+    `${actorCounts.size}`,
+    `${STEERING_BASELINE.distinctActors}`,
+    'more',
+    actorCounts.size === STEERING_BASELINE.distinctActors ? 'unmoved' : `${actorCounts.size > STEERING_BASELINE.distinctActors ? '+' : ''}${actorCounts.size - STEERING_BASELINE.distinctActors}`,
+  );
+  line(
+    'top-5 actor concentration',
+    `${(topFive * 100).toFixed(1)}%`,
+    `${(STEERING_BASELINE.topFiveActors * 100).toFixed(1)}%`,
+    'lower',
+    delta(topFive, STEERING_BASELINE.topFiveActors),
+  );
+
   process.exit(0);
 }
 
