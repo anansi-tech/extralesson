@@ -22,6 +22,8 @@ Every paper uses this pattern repeatedly (multiple times per paper, 1–3 marks 
 - `constructed`/drawing parts: not generated at all (see §3).
 - Mastery/prediction must count only marks it can actually assess (see §4).
 
+> **Later (R3): the worked-practice surface was removed.** It was built for questions that are self-marked END TO END, and the bank holds none — every question with a self-marked part also has a markable one — so the filter was loosened to "any self-marked part" and the page served the same pool as daily sessions, with no access check on it. Self-marked parts are revealed and self-marked inside the session instead. The rest of this section stands: `response_mode` and the exclusion from auto-grading are unchanged.
+
 ## 2. CRITICAL — answer-format requirements conflict with our permissive equivalence
 
 Papers demand specific forms: EXACT form, standard form, lowest terms, integer estimate, correct to 1 s.f., 3 s.f., 1 d.p. for angles, "in the form y = mx + c", "in the form a√b". Our equivalence layer deliberately treats fractions and decimals as equal — correct for general marking, **wrong when the form is the thing being tested**.
