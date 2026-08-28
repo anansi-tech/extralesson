@@ -43,7 +43,11 @@ export function SymbolStrip({
     // Labelled, and in the ink the inputs are drawn in. Set in the faint rule
     // colour with no label, it read as decoration: a student finished two
     // geometry sessions without noticing the degree sign was a button.
-    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+    // mt-3 rather than tight to the inputs: these are 44px buttons that write
+    // into the box above them, and at 6px a thumb aimed at the last input hit
+    // the degree sign instead. TAP_GAP_MIN in scripts/audit-mobile.ts is the
+    // floor this clears.
+    <div className="mt-3 flex flex-wrap items-center gap-1.5">
       <span className="font-mono text-[10px] uppercase tracking-widest text-dim">Insert</span>
       {symbols.map((ch) => (
         <button

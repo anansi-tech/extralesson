@@ -8,7 +8,9 @@
 // This drives real Chrome at 360x740 and MEASURES. It asserts two things a
 // change could silently regress:
 //   1. no figure label smaller than MIN_LABEL_PX
-//   2. no tap target shorter than TAP_MIN
+//   2. no tap target shorter than TAP_MIN, and no button within TAP_GAP_MIN
+//      of a field — size alone is half the rule, and the half it leaves out is
+//      how a 44px button 4px under an input took taps meant for the input
 //   3. no GIVEN TABLE wider than the frame it sits in — a table reflows, and
 //      one that has to scroll instead hides the data the question is answered
 //      from. This is what a stimulus table exists to guarantee, so it is the
@@ -31,16 +33,44 @@ const BASE = process.env.BASE_URL ?? 'http://localhost:3000';
 const W = 360;
 const H = 740;
 const TAP_MIN = 44; // Apple HIG; Material asks 48
+// AND FAR ENOUGH APART. Two 44px targets 4px apart are one thumb: the size
+// floor was met and a button sat 4px under a list's input box, so a tap aimed
+// at the box appended one instead. Material asks 8dp between targets; that is
+// the floor here, and size alone is half a rule.
+const TAP_GAP_MIN = 8;
 
 /** Measured in the page, as a string because tsx injects helpers into functions. */
 const PROBE = `(() => {
+  var TAP_GAP_MIN = ${TAP_GAP_MIN};
   var vw = document.documentElement.clientWidth;
   function rect(e) { var b = e.getBoundingClientRect(); return { w: Math.round(b.width), h: Math.round(b.height) }; }
   var targets = [];
   Array.prototype.forEach.call(document.querySelectorAll('input:not([type=hidden]), button, select, textarea'), function (e) {
     var r = rect(e);
-    if (r.h > 0 && r.w > 0) targets.push({ tag: e.tagName.toLowerCase(), cls: String(e.className || '').slice(0, 24), w: r.w, h: r.h });
+    var b = e.getBoundingClientRect();
+    if (r.h > 0 && r.w > 0) targets.push({ tag: e.tagName.toLowerCase(), cls: String(e.className || '').slice(0, 24), w: r.w, h: r.h,
+      text: (e.textContent || e.getAttribute('aria-label') || '').replace(/\s+/g, ' ').slice(0, 24),
+      left: b.left, right: b.right, top: b.top, bottom: b.bottom });
   });
+  // A BUTTON BESIDE A FIELD, close enough to take a thumb aimed at the field.
+  // Only pairs that line up — overlapping on one axis with a small gap on the
+  // other — because that is the miss a thumb actually makes; diagonal
+  // neighbours and side-by-side boxes of the SAME field are not the hazard.
+  var tight = [];
+  for (var i = 0; i < targets.length; i++) {
+    for (var j = i + 1; j < targets.length; j++) {
+      var a = targets[i], c = targets[j];
+      var isButton = function (t) { return t.tag === 'button'; };
+      if (isButton(a) === isButton(c)) continue;
+      var dx = Math.max(0, Math.max(a.left, c.left) - Math.min(a.right, c.right));
+      var dy = Math.max(0, Math.max(a.top, c.top) - Math.min(a.bottom, c.bottom));
+      if (dx > 0 && dy > 0) continue;
+      var gap = Math.round(Math.max(dx, dy));
+      if (gap < TAP_GAP_MIN) {
+        tight.push({ gap: gap, a: a.tag + (a.text ? ' "' + a.text + '"' : ''), b: c.tag + (c.text ? ' "' + c.text + '"' : '') });
+      }
+    }
+  }
   var figs = [];
   Array.prototype.forEach.call(document.querySelectorAll('.figure-frame svg'), function (sv) {
     var b = sv.getBoundingClientRect();
@@ -74,7 +104,7 @@ const PROBE = `(() => {
   return {
     overflow: document.documentElement.scrollWidth - vw,
     height: document.documentElement.scrollHeight,
-    targets: targets, figures: figs, tables: tables,
+    targets: targets, figures: figs, tables: tables, tight: tight,
     figureToLastInput: (figR && lastInput) ? Math.round(lastInput.bottom - figR.bottom) : null,
     hasRecall: !!document.querySelector('button')
   };
@@ -91,6 +121,7 @@ interface Row {
   small: { tag: string; cls: string; w: number; h: number }[];
   reach: number | null;
   table: { cols: number; rows: number; frameW: number | null; scrollW: number | null } | null;
+  tight: { gap: number; a: string; b: string }[];
 }
 
 async function main() {
@@ -190,6 +221,7 @@ async function main() {
       small: r.targets.filter((t: any) => t.h < TAP_MIN),
       reach: r.figureToLastInput,
       table: r.tables[0] ?? null,
+      tight: r.tight,
     });
   }
   await PracticeSession.deleteMany({ _id: { $in: made.map((m) => m.id) } });
@@ -202,11 +234,13 @@ async function main() {
   let failTap = 0;
   let failOverflow = 0;
   let failTable = 0;
+  let failGap = 0;
   for (const r of rows.sort((a, b) => (a.minLabel ?? 99) - (b.minLabel ?? 99))) {
     const bad = r.minLabel !== null && r.minLabel < MIN_LABEL_PX;
     if (bad) failLabel++;
     if (r.small.length) failTap++;
     if (r.overflow > 1) failOverflow++;
+    if (r.tight.length) failGap++;
     // A given table that has to scroll is hiding data the question is answered
     // from, which no amount of legible labelling makes acceptable.
     if (r.table && r.table.scrollW !== null && r.table.frameW !== null && r.table.scrollW > r.table.frameW + 1) {
@@ -225,6 +259,13 @@ async function main() {
   // The __table__ row specifically: every row with a table is CHECKED above,
   // but this line is about the given table, and the dataTable visual sorts
   // ahead of it.
+  const tight = rows.flatMap((r) => r.tight.map((t) => ({ ...t, page: r.label })));
+  if (tight.length === 0) {
+    console.log(`  closest button to a field: at or above the ${TAP_GAP_MIN}px floor everywhere`);
+  } else {
+    console.log(`  buttons within ${TAP_GAP_MIN}px of a field: ${tight.length} !`);
+    for (const t of tight) console.log(`    ${t.page}: ${t.gap}px between ${t.a} and ${t.b}`);
+  }
   const table = rows.find((r) => r.label === '__table__')?.table;
   console.log(
     `  widest given table: ${
@@ -235,13 +276,17 @@ async function main() {
     }`,
   );
 
-  const failed = failLabel + failTap + failOverflow + failTable;
+  const failed = failLabel + failTap + failOverflow + failTable + failGap;
   if (failed === 0) {
-    console.log(`\n  PASS — every label at or above ${MIN_LABEL_PX}px, every target at or above ${TAP_MIN}px.`);
+    console.log(
+      `\n  PASS — every label at or above ${MIN_LABEL_PX}px, every target at or above ${TAP_MIN}px ` +
+        `and at least ${TAP_GAP_MIN}px from the nearest button.`,
+    );
   } else {
     console.log(
       `\n  FAIL — ${failLabel} page(s) below the label floor, ${failTap} with an undersized target, ` +
-        `${failOverflow} overflowing, ${failTable} with a table that scrolls.`,
+        `${failOverflow} overflowing, ${failTable} with a table that scrolls, ` +
+        `${failGap} with a button inside the ${TAP_GAP_MIN}px gap floor.`,
     );
   }
   process.exit(failed === 0 ? 0 : 1);
