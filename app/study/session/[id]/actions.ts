@@ -143,7 +143,8 @@ export async function submitAnswer(input: {
       const slot = slotByRef.get(a.label);
       const values = a.values?.map((v) => v.trim()).filter(Boolean) ?? [];
       if (!slot?.answer || values.length === 0) return { ...a, values: undefined, text: a.answer };
-      return { ...a, values, text: composeAnswer(values, readInputShape(slot.answer).shape) };
+      const reading = readInputShape(slot.answer);
+      return { ...a, values, text: composeAnswer(values, reading.shape, reading) };
     });
     const inputs = entered.map((a) => ({ ref: a.label, answer: a.text, working, values: a.values }));
     result = markStructuredParts(question.rubric ?? [], parts, inputs);

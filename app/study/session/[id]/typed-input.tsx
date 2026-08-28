@@ -30,6 +30,13 @@ interface Props {
   shape: string;
   /** Fixed-arity shapes only; absent when showing it would give the answer. */
   boxes?: number;
+  /**
+   * The elements are ordered PAIRS — a sample space, {(1,H),(2,H)}. Printed
+   * with their brackets, two boxes at a time, so a student can see they are
+   * entering pairs. How many pairs is still withheld: a new empty pair appears
+   * when the last one is filled, the same rule the boxes follow.
+   */
+  pairs?: boolean;
   cols?: number;
   /** How many characters wide each box starts; it grows past this as typed. */
   chars?: number;
@@ -55,6 +62,7 @@ function boxName(shape: string, i: number, cols: number): string {
 export function TypedInput({
   shape,
   boxes,
+  pairs,
   cols = 1,
   chars = 5,
   values,
@@ -66,7 +74,19 @@ export function TypedInput({
 }: Props) {
   const fixed = boxes !== undefined;
   const filled = values.filter((v) => v.trim() !== '').length;
-  const count = fixed ? boxes! : Math.max(GROW_FROM, filled + 1, values.length);
+  // Pairs grow a PAIR at a time, so the row is always whole: one empty pair
+  // after the last complete one.
+  // A pair is only complete when BOTH of its boxes hold something, so a
+  // half-typed pair does not open the next one.
+  const wholePairs = values.reduce(
+    (n, _, i) => (i % 2 === 1 && values[i - 1]?.trim() && values[i]?.trim() ? n + 1 : n),
+    0,
+  );
+  const count = fixed
+    ? boxes!
+    : pairs
+      ? Math.max(2, (wholePairs + 1) * 2, values.length + (values.length % 2))
+      : Math.max(GROW_FROM, filled + 1, values.length);
 
   const set = (i: number, v: string) => {
     const next = [...values];
@@ -140,6 +160,27 @@ export function TypedInput({
           ))}
         </div>
         <span aria-hidden className="w-2 border-y-[1.5px] border-r-[1.5px] border-ink" />
+      </div>
+    );
+  }
+
+  if (pairs) {
+    const open = shape === 'set' ? '{' : '';
+    const close = shape === 'set' ? '}' : '';
+    return (
+      <div className="mt-1 flex flex-wrap items-center gap-1">
+        {open && punct(open)}
+        {Array.from({ length: Math.ceil(count / 2) }, (_, g) => (
+          <span key={g} className="flex items-center gap-1">
+            {g > 0 && punct(',')}
+            {punct('(')}
+            {box(g * 2)}
+            {punct(',')}
+            {box(g * 2 + 1)}
+            {punct(')')}
+          </span>
+        ))}
+        {close && punct(close)}
       </div>
     );
   }

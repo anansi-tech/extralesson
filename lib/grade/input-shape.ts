@@ -45,6 +45,17 @@ export interface ShapeReading {
   values: string[];
   /** Columns, for a matrix — the grid cannot be laid out without it. */
   cols?: number;
+  /**
+   * WHEN THE ELEMENTS ARE THEMSELVES GROUPS: {(1,H),(2,H)}, {{1,2},{1,3}}.
+   *
+   * `values` stays FLAT and in reading order, so one box per value and the
+   * positional comparison both work unchanged. This says where the boundaries
+   * fall — [2,2] for two pairs — so the input can print the brackets around
+   * each group and the composed answer can put them back.
+   */
+  groups?: number[];
+  /** The bracket printed around each group. */
+  groupKind?: '(' | '{';
 }
 
 /**
@@ -110,7 +121,9 @@ function splitTopLevel(s: string, sep: string): string[] {
   let current = '';
   for (const ch of s) {
     if ('([{'.includes(ch)) depth++;
-    else if (')]}'.includes(ch)) depth--;
+    // Clamped at zero: an unbalanced close used to drive the depth negative,
+    // and every later comma then read as top level.
+    else if (')]}'.includes(ch)) depth = Math.max(0, depth - 1);
     if (ch === sep && depth <= 0) {
       out.push(current);
       current = '';
@@ -138,6 +151,55 @@ function isValue(piece: string): boolean {
   const p = piece.trim().toLowerCase();
   if (p === '') return false;
   return NUMBERISH.test(p) || parseQuantity(p) !== null || parseNumeric(p) !== null;
+}
+
+/**
+ * The contents of a leading bracket, but only when it closes at the very END.
+ * "{1,2}" wraps; "{1,3}, {2,3}" does not — it is two groups side by side.
+ */
+function wrapped(s: string, open: '{' | '('): string | null {
+  const close = open === '{' ? '}' : ')';
+  const body = s.replace(/^\\?\s*/, '');
+  if (!body.startsWith(open)) return null;
+  let depth = 0;
+  for (let i = 0; i < body.length; i++) {
+    const ch = body[i];
+    if (ch === open) depth++;
+    else if (ch === close) {
+      depth--;
+      if (depth === 0) {
+        // Anything after the closing bracket means it did not wrap the whole.
+        return body.slice(i + 1).replace(/^\\/, '').trim() === '' ? body.slice(1, i).replace(/\\$/, '') : null;
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Members that are each a group — (1,H) or {1,2} — flattened to their values
+ * with the boundaries recorded. Null when they are plain values, which is the
+ * ordinary case and must keep behaving exactly as before.
+ */
+function asGroups(
+  members: string[],
+): { boxes: number; values: string[]; groups: number[]; groupKind: '(' | '{' } | null {
+  if (members.length === 0) return null;
+  const kinds = new Set<'(' | '{'>();
+  const inner: string[][] = [];
+  for (const m of members) {
+    const paren = wrapped(m, '(');
+    const brace = wrapped(m, '{');
+    const body = paren ?? brace;
+    if (body === null) return null;
+    kinds.add(paren !== null ? '(' : '{');
+    const parts = splitTopLevel(body, ',');
+    if (parts.length < 2) return null; // a bracket round one value is not a group
+    inner.push(parts);
+  }
+  if (kinds.size !== 1) return null;
+  const values = inner.flat();
+  return { boxes: values.length, values, groups: inner.map((g) => g.length), groupKind: [...kinds][0] };
 }
 
 export function readInputShape(rawAnswer: string): ShapeReading {
@@ -168,10 +230,27 @@ export function readInputShape(rawAnswer: string): ShapeReading {
       : { shape: 'column_vector', boxes: rows.length, ordered: true, values: cells };
   }
 
-  const set = s.match(/^\\?\{([\s\S]*)\\?\}$/);
-  if (set) {
-    const members = splitTopLevel(set[1].replace(/\\$/, ''), ',');
+  // A SET, only when the outer brace really does wrap the whole answer.
+  //
+  // The match is greedy, so on a LIST of sets — {6,10}, {2,6,10}, ... — it took
+  // the first brace to the last one and handed the split a string with
+  // unbalanced braces. Every comma then read as top level: eleven values, some
+  // of them carrying a stray brace, both in the boxes and in the mark scheme
+  // the marker compares against.
+  const set = wrapped(s, '{');
+  if (set !== null) {
+    const members = splitTopLevel(set, ',');
+    const grouped = asGroups(members);
+    if (grouped) return { shape: 'set', ordered: false, ...grouped };
     return { shape: 'set', boxes: Math.max(1, members.length), ordered: false, values: members };
+  }
+
+  // SEVERAL GROUPS SIDE BY SIDE, with no outer brace: {1,3}, {2,3}, {3,4}.
+  // The papers write an enumeration of subsets this way. Unordered, like the
+  // braced form it is a shorthand for.
+  const bare_groups = asGroups(splitTopLevel(s, ','));
+  if (bare_groups && bare_groups.groups.length >= 2) {
+    return { shape: 'set', ordered: false, ...bare_groups };
   }
 
   // A root list is unordered by nature; "or" is how the papers write it.

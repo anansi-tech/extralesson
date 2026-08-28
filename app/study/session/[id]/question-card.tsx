@@ -46,7 +46,7 @@ export interface CardQuestion {
        * never the answer, and `boxes` only where the count is part of the
        * question rather than part of the answer.
        */
-      input?: { shape: string; boxes?: number; cols?: number; chars?: number };
+      input?: { shape: string; boxes?: number; cols?: number; chars?: number; pairs?: boolean };
     }[];
   }[];
   optionsHtml?: string[];
@@ -292,13 +292,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // Both layouts now branch the same way on slot.input, so a shape can never
   // again be honoured in one place and forgotten in the other.
   const slotAnswerInput = (
-    slot: { ref: string; input?: { shape: string; boxes?: number; cols?: number; chars?: number } },
+    slot: { ref: string; input?: { shape: string; boxes?: number; cols?: number; chars?: number; pairs?: boolean } },
     opts: { describe: string; className: string; placeholder?: string },
   ) =>
     slot.input ? (
       <TypedInput
         shape={slot.input.shape}
         boxes={slot.input.boxes}
+        pairs={slot.input.pairs}
         cols={slot.input.cols}
         chars={slot.input.chars}
         values={boxValues[slot.ref] ?? []}

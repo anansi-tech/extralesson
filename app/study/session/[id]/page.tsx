@@ -655,6 +655,12 @@ export default async function SessionPage({
               ? {
                   shape: reading.shape,
                   boxes: showsBoxCount(reading) ? reading.boxes : undefined,
+                  // THAT the elements are pairs, never HOW MANY there are. An
+                  // outcome in a sample space is always two values, so saying
+                  // so tells the student nothing they are being asked for —
+                  // while the number of pairs still grows on demand, exactly
+                  // as the boxes do.
+                  pairs: reading.groups?.every((g) => g === 2) && reading.groupKind === '(',
                   cols: reading.cols,
                   // Wide enough for the longest value in the slot, so a box is
                   // never a clue to the length of its own answer.
