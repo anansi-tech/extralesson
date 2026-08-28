@@ -25,9 +25,10 @@ import { reviewFlags, type FlaggableQuestion } from '@/lib/admin/review-flags';
 import { CONTEXT_FREE_MCQ_SHARE } from '@/lib/generation/contexts';
 import { neediestContext } from '@/lib/generation/context-targets';
 import { leastUsedName, shouldNamePerson } from '@/lib/generation/territories';
-import { verifyQuestionVisual } from '@/lib/visuals/verify';
+import { verifyQuestionVisual, verifyStimulusTable } from '@/lib/visuals/verify';
 import { lintCriteria } from '@/lib/prompts/mark-scheme';
 import { paramsDocFor } from '@/lib/visuals';
+import { figureGivesAnswer } from '@/lib/targets/construct';
 import type { ModuleNumber } from '@/lib/types';
 
 const ArgsZ = z.object({
@@ -171,6 +172,13 @@ async function main() {
       tally(context.topic_code).attempts++;
       const visualContract =
         recipe.representation === 'prose' ? '' : paramsDocFor(context.template_hints);
+      // When the figure IS the answer it is withheld, so the data behind it has
+      // to be given as a table of its own rather than described in prose.
+      const stimulusTableContract =
+        recipe.representation !== 'prose' &&
+        context.template_hints.some((t) => figureGivesAnswer(t as never))
+          ? paramsDocFor(['dataTable'])
+          : '';
       // What this topic already holds, so the model writes something else. Read
       // fresh each attempt: a draft inserted a moment ago counts.
       //
@@ -247,6 +255,7 @@ async function main() {
           context,
           module,
           visualContract,
+          stimulusTableContract,
           existingStems,
           recentContexts: recent,
           contextFree,
@@ -368,6 +377,23 @@ async function main() {
         }
         if (vres.advisories.length > 0) {
           console.log(`  · visual note: ${vres.advisories.join(' | ')}`);
+        }
+      }
+
+      // The given table answers to the same gate: a table whose rows do not
+      // match its headers is a question nobody can answer.
+      if (draft.stimulus_table) {
+        const tres = verifyStimulusTable(draft.stimulus_table, {
+          stimulus: draft.stimulus,
+          stem: draft.stem,
+          partPrompts: draft.parts.flatMap((p) => [p.prompt, ...p.slots.map((s) => s.prompt ?? '')]),
+          slotRefs: draft.parts.flatMap((p) => p.slots.map((s) => `${p.label}.${s.label}`)),
+        });
+        if (!tres.ok) {
+          rejected++;
+          lost(context.topic_code, 'visual-verify');
+          console.log(`  ✗ stimulus table verify: ${tres.issues.join(' | ')}`);
+          continue;
         }
       }
 

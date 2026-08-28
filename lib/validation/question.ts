@@ -357,26 +357,28 @@ function checkRenderable(q: Record<string, unknown>, ctx: z.RefinementCtx): void
   }
 
   // Figure and table labels are drawn as plain text; KaTeX never runs on them.
-  const params = (q.visual as { params?: Record<string, unknown> } | undefined)?.params ?? {};
   const LABEL_KEYS = ['label', 'name', 'caption', 'universe_label', 't_label', 'v_label', 'set_a', 'set_b', 'set_c'];
-  const walk = (value: unknown, path: (string | number)[]): void => {
+  const walkLabels = (root: string[], value: unknown, path: (string | number)[]): void => {
     if (typeof value === 'string') {
       const key = String(path[path.length - 1]);
       if (LABEL_KEYS.includes(key) || key === 'headers' || typeof path[path.length - 1] === 'number') {
-        for (const issue of labelIssues(value)) at(['visual', 'params', ...path], issue);
+        for (const issue of labelIssues(value)) at([...root, ...path], issue);
       }
       return;
     }
     if (Array.isArray(value)) {
       const key = String(path[path.length - 1]);
-      if (key === 'headers' || key === 'labels') value.forEach((v, i) => walk(v, [...path, i]));
+      if (key === 'headers' || key === 'labels') value.forEach((v, i) => walkLabels(root, v, [...path, i]));
       return;
     }
     if (value && typeof value === 'object') {
-      for (const [k, v] of Object.entries(value)) walk(v, [...path, k]);
+      for (const [k, v] of Object.entries(value)) walkLabels(root, v, [...path, k]);
     }
   };
-  walk(params, []);
+  walkLabels(['visual', 'params'], (q.visual as { params?: Record<string, unknown> } | undefined)?.params ?? {}, []);
+  // The stimulus table is drawn by the same template, so its labels answer to
+  // the same rule as any other table's.
+  walkLabels(['stimulus_table'], q.stimulus_table ?? {}, []);
 }
 
 const QuestionBaseZ = z.object({
@@ -385,6 +387,8 @@ const QuestionBaseZ = z.object({
   stimulus: z.string().min(1).optional(), // shared context (KaTeX-safe)
   stem: z.string().min(10),
   visual: VisualZ.optional(),
+  // R3 — dataTable params, verified by the visual gate like any other table.
+  stimulus_table: z.record(z.unknown()).optional(),
   archetype: ArchetypeZ,
   // R1.8 §2. Declared here because Zod STRIPS what it does not know: the
   // pipeline set shape on the candidate, validation dropped it silently, and
@@ -441,6 +445,25 @@ function checkVisualConsistency(
   }
 }
 
+/**
+ * A stimulus table is for the question whose visual slot is ALREADY TAKEN. With
+ * the slot free, a table belongs in it — that is what the other 80 table
+ * questions do — and a second home for the same thing would split the
+ * convention and the coverage counts that read it.
+ */
+function checkStimulusTable(
+  q: { visual?: unknown; stimulus_table?: unknown },
+  ctx: z.RefinementCtx,
+) {
+  if (q.stimulus_table && !q.visual) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['stimulus_table'],
+      message: 'stimulus_table is for a question whose visual slot is taken; use visual.dataTable',
+    });
+  }
+}
+
 function checkPartLabels(parts: { label: string }[], ctx: z.RefinementCtx) {
   const expected = PART_LABELS.slice(0, parts.length);
   if (parts.map((p) => p.label).join('') !== expected.join('')) {
@@ -464,6 +487,7 @@ export const McqQuestionZ = QuestionBaseZ.extend({
   .superRefine((q, ctx) => {
     checkRenderable(q, ctx);
     checkVisualConsistency(q, ctx);
+    checkStimulusTable(q, ctx);
     checkPartLabels(q.parts, ctx);
     if (q.parts[0].marks !== q.marks) {
       ctx.addIssue({ code: 'custom', path: ['parts'], message: 'mcq part marks must equal marks' });
@@ -487,6 +511,7 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
   .superRefine((q, ctx) => {
     checkRenderable(q, ctx);
     checkVisualConsistency(q, ctx);
+    checkStimulusTable(q, ctx);
     checkPartLabels(q.parts, ctx);
     if (q.parts.reduce((s, p) => s + p.marks, 0) !== q.marks) {
       ctx.addIssue({

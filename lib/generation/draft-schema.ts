@@ -46,6 +46,11 @@ export const PartLooseZ = z.object({
 });
 export const VisualLooseZ = z.object({ template: z.string(), params: z.record(z.unknown()) }).nullable();
 
+// R3 — the GIVEN data table, for a question whose visual slot holds a figure
+// the student draws. Loose like the rest; the strict boundary and the visual
+// gate check it afterwards.
+export const StimulusTableLooseZ = z.record(z.unknown()).nullish();
+
 export const McqLooseZ = z.object({
   context_category: z.string().nullish(),
   stimulus: z.string().nullable(),
@@ -54,6 +59,7 @@ export const McqLooseZ = z.object({
   answer_key: z.number(),
   profile: z.enum(['CK', 'AK', 'R']),
   visual: VisualLooseZ,
+  stimulus_table: StimulusTableLooseZ,
   parts: z.array(PartLooseZ),
   worked_solution: z.string(),
   misconceptions: z.array(MisconceptionLooseZ),
@@ -64,6 +70,7 @@ export const StructuredLooseZ = z.object({
   stimulus: z.string().nullable(),
   stem: z.string(),
   visual: VisualLooseZ,
+  stimulus_table: StimulusTableLooseZ,
   parts: z.array(PartLooseZ),
   rubric: z.array(
     z.object({

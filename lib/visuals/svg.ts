@@ -74,6 +74,20 @@ export function svgPlainLabel(raw: string): string {
     .replace(/\\parallel/g, '∥')
     .replace(/\\times/g, '×')
     .replace(/\\vec\{([^{}]+)\}/g, '$1⃗')
+    // Relations, BEFORE the backslashes are stripped. Without these, \le fell
+    // through to the strip below and became the word "le": one approved table
+    // printed its class intervals as "0 le t < 5". The guard is "not followed
+    // by a letter" rather than a word boundary, because \le25 is written
+    // without a space and \left must not be caught.
+    .replace(/\\leq(?![a-zA-Z])/g, '≤')
+    .replace(/\\le(?![a-zA-Z])/g, '≤')
+    .replace(/\\geq(?![a-zA-Z])/g, '≥')
+    .replace(/\\ge(?![a-zA-Z])/g, '≥')
+    .replace(/\\neq(?![a-zA-Z])/g, '≠')
+    .replace(/\\approx(?![a-zA-Z])/g, '≈')
+    .replace(/\\pm(?![a-zA-Z])/g, '±')
+    .replace(/\\lt(?![a-zA-Z])/g, '<')
+    .replace(/\\gt(?![a-zA-Z])/g, '>')
     .replace(/\\/g, '');
   const withMoney = restoreMoney(cleaned);
 

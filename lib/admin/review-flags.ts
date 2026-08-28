@@ -72,6 +72,18 @@ export function reviewFlags(q: FlaggableQuestion): ReviewFlag[] {
     ...parts.flatMap((p) => [p.prompt, p.statement ?? '', ...(p.slots ?? []).flatMap((s) => [s.prompt ?? '', s.answer ?? ''])]),
   ].join(' ');
 
+  // A TABLE SET AS A KaTeX ARRAY. An array is typeset at a fixed width and
+  // cannot reflow, so six questions put a grouped frequency table 758px wide
+  // into a 300px column and a phone lost the last class interval off the edge
+  // of the paper. Data belongs in the dataTable visual, or in stimulus_table
+  // when the visual slot already holds a figure the student draws.
+  if (/\\begin\{array\}/.test(text)) {
+    flags.push({
+      level: 'warn',
+      text: 'A table is set as a KaTeX array, which cannot reflow to a phone. Use the dataTable visual, or stimulus_table when the visual slot is taken.',
+    });
+  }
+
   // OUR WORDS FOR OUR MACHINERY, IN THE STUDENT'S TEXT.
   //
   // "Visual" is what we call a figure in the schema and the prompt; a student

@@ -1,4 +1,4 @@
-import { verifyQuestionVisual } from '@/lib/visuals/verify';
+import { verifyQuestionVisual, verifyStimulusTable } from '@/lib/visuals/verify';
 import { independentSolve, type SolveOutcome } from './solve';
 import type { QuestionDraft } from '@/lib/validation/question';
 
@@ -23,6 +23,16 @@ export async function approvalGate(
     });
     if (!vres.ok) {
       return { ok: false, reason: `visual verify failed: ${vres.issues.join(' | ')}` };
+    }
+  }
+  if (draft.stimulus_table) {
+    const tres = verifyStimulusTable(draft.stimulus_table, {
+      stimulus: draft.stimulus,
+      stem: draft.stem,
+      partPrompts: draft.parts.map((p) => p.prompt),
+    });
+    if (!tres.ok) {
+      return { ok: false, reason: `stimulus table verify failed: ${tres.issues.join(' | ')}` };
     }
   }
   const outcome = await solve(draft);

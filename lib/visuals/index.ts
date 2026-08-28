@@ -96,6 +96,25 @@ export function renderVisual(visual: StoredVisual, context?: VerifyContext): str
   return `${svg}<p class="figure-note">Not drawn to scale</p>`;
 }
 
+/**
+ * The GIVEN data of a question whose one visual slot is already spoken for.
+ *
+ * An ogive question shows a grouped frequency table and asks for the curve.
+ * The curve IS the answer, so it is withheld from the student (see
+ * figureGivesAnswer) and the table it is drawn from has nowhere to live: six
+ * questions set it as a KaTeX array in the stimulus prose, which cannot
+ * reflow and left a phone scrolling sideways with the last class interval off
+ * the paper. It is a dataTable like any other — only its home is different,
+ * which is why every path here goes through the ordinary template.
+ */
+export function renderStimulusTable(params: unknown, context?: VerifyContext): string {
+  return renderVisual({ template: 'dataTable', params: params as never }, context);
+}
+
+export function describeStimulusTable(params: unknown, context?: VerifyContext): string {
+  return describeVisual({ template: 'dataTable', params: params as never }, context);
+}
+
 export function describeVisual(visual: StoredVisual, context?: VerifyContext): string {
   const t = TEMPLATES[visual.template];
   const params = t.paramsSchema.parse(visual.params);

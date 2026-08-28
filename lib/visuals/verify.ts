@@ -39,6 +39,14 @@ function figureLabels(params: unknown): Set<string> {
   return out;
 }
 
+/** The stimulus table is verified exactly as a dataTable in the visual slot. */
+export function verifyStimulusTable(
+  params: unknown,
+  context: VerifyContext,
+): VisualVerifyResult {
+  return verifyQuestionVisual({ template: 'dataTable', params: params as never }, context);
+}
+
 export function verifyQuestionVisual(
   visual: StoredVisual,
   context: VerifyContext,

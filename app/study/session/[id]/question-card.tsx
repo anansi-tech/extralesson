@@ -17,6 +17,7 @@ export interface CardQuestion {
   total: number;
   kind: 'mcq' | 'structured';
   stimulusHtml?: string;
+  stimulusTableHtml?: string;
   stemHtml: string;
   visualHtml?: string;
   /** The narrowest this figure stays readable at; it scrolls below that. */
@@ -421,6 +422,19 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           className="question-prose mb-3 border-l-3 border-paper-deep pl-3 text-[15px]"
           dangerouslySetInnerHTML={{ __html: question.stimulusHtml }}
         />
+      )}
+
+      {question.stimulusTableHtml && (
+        // The GIVEN data, in the figure frame but with NO minimum width. A
+        // table reflows to whatever sheet it is on — phone, desktop, paper —
+        // which is the whole reason it lives here instead of in the prose as
+        // an array that cannot.
+        <div className="figure-frame mt-3">
+          <div
+            className="figure-inner [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
+            dangerouslySetInnerHTML={{ __html: question.stimulusTableHtml }}
+          />
+        </div>
       )}
 
       <div className="flex items-baseline justify-between">

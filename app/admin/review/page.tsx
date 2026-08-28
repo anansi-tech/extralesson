@@ -2,7 +2,7 @@ import 'katex/dist/katex.min.css';
 import { dbConnect, Question } from '@/lib/db';
 import { getCoverage, getNextDraftId } from '@/lib/admin/coverage';
 import { renderAnswerHtml, renderMathHtml } from '@/lib/katex';
-import { renderVisual } from '@/lib/visuals';
+import { renderVisual, renderStimulusTable } from '@/lib/visuals';
 import { legibleMinWidth, MAX_FIGURE_PX } from '@/lib/visuals/legibility';
 import {
   P1_TOTAL,
@@ -66,6 +66,7 @@ export default async function ReviewPage({
         stimulus?: string;
         stem: string;
         visual?: { template?: string; params?: unknown };
+        stimulus_table?: unknown;
         archetype?: string;
         representation?: string;
         options?: string[];
@@ -87,6 +88,24 @@ export default async function ReviewPage({
         gen_meta?: { recipe?: unknown; dedup_score?: number; prompt_version?: string };
         status: string;
       };
+    // The GIVEN data table. Never withheld: unlike the figure it is not the
+    // answer to anything, it is what the question is answered FROM.
+    let stimulusTableHtml: string | undefined;
+    if (raw.stimulus_table) {
+      try {
+        stimulusTableHtml = renderStimulusTable(raw.stimulus_table, {
+          stimulus: raw.stimulus,
+          stem: raw.stem,
+          partPrompts: (raw.parts ?? []).flatMap((p) => [
+            p.prompt,
+            ...(p.slots ?? []).map((slot) => slot.prompt ?? ''),
+          ]),
+        });
+      } catch {
+        stimulusTableHtml = undefined;
+      }
+    }
+
       let visualHtml: string | undefined;
       if (raw.visual?.template) {
         try {
@@ -133,6 +152,7 @@ export default async function ReviewPage({
         representation: raw.representation,
         stimulusHtml: raw.stimulus ? renderMathHtml(raw.stimulus) : undefined,
         stemHtml: renderMathHtml(raw.stem),
+        stimulusTableHtml,
         visualHtml,
         figureMinWidth: visualHtml ? (legibleMinWidth(visualHtml) ?? undefined) : undefined,
         figureMaxWidth: MAX_FIGURE_PX,

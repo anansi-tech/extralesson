@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { dbConnect, Attempt, PracticeSession, Question, Student, Topic, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
-import { renderVisual } from '@/lib/visuals';
+import { renderVisual, renderStimulusTable } from '@/lib/visuals';
 import { planSession, topicPrefixesOf } from '@/lib/session/plan';
 import { legibleMinWidth, MAX_FIGURE_PX } from '@/lib/visuals/legibility';
 import { slotCellNames } from '@/lib/visuals/slot-names';
@@ -383,6 +383,7 @@ export default async function SessionPage({
     stimulus?: string;
     stem: string;
     visual?: { template?: string; params?: unknown };
+    stimulus_table?: unknown;
     options?: string[];
     marks: number;
     parts?: {
@@ -409,6 +410,24 @@ export default async function SessionPage({
     !reviewing &&
     (question.parts ?? []).some((p) => (p.slots ?? []).some((slot) => slot.response_mode === 'construct')) &&
     figureGivesAnswer(question.visual?.template as never);
+
+  // The GIVEN data table. Never withheld: unlike the figure it is not the
+  // answer to anything, it is what the question is answered FROM.
+  let stimulusTableHtml: string | undefined;
+  if (question.stimulus_table) {
+    try {
+      stimulusTableHtml = renderStimulusTable(question.stimulus_table, {
+        stimulus: question.stimulus,
+        stem: question.stem,
+        partPrompts: (question.parts ?? []).flatMap((p) => [
+          p.prompt,
+          ...(p.slots ?? []).map((slot) => slot.prompt ?? ''),
+        ]),
+      });
+    } catch {
+      stimulusTableHtml = undefined;
+    }
+  }
 
   let visualHtml: string | undefined;
   if (question.visual?.template && !withholdsFigure) {
@@ -593,6 +612,7 @@ export default async function SessionPage({
     kind: question.kind,
     stimulusHtml: question.stimulus ? renderMathHtml(question.stimulus) : undefined,
     stemHtml: renderMathHtml(question.stem),
+    stimulusTableHtml,
     visualHtml,
     // How narrow this figure may be drawn before its labels stop being
     // readable. The card holds it and scrolls rather than shrinking past it.

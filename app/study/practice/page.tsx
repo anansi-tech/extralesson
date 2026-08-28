@@ -5,7 +5,7 @@ import { m1GateHolds, rankByNeed } from '@/lib/session/builder';
 import { loadStudyState } from '@/lib/study/state';
 import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
-import { renderVisual, type StoredVisual } from '@/lib/visuals';
+import { renderVisual, renderStimulusTable, type StoredVisual } from '@/lib/visuals';
 import WorkedCard, { type WorkedQuestion } from './worked-card';
 import type { ModuleNumber, TemplateName } from '@/lib/types';
 
@@ -31,6 +31,7 @@ interface LeanQuestion {
   stimulus?: string;
   stem: string;
   visual?: { template: TemplateName; params: Record<string, unknown> };
+  stimulus_table?: Record<string, unknown>;
   parts?: {
     label: string;
     prompt: string;
@@ -123,7 +124,7 @@ export default async function WorkedPracticePage({
   const total = Math.min(ranked.length, POOL);
 
   const rows = await Question.find({ _id: { $in: wanted } })
-    .select('module marks stimulus stem visual parts worked_solution rubric')
+    .select('module marks stimulus stem visual stimulus_table parts worked_solution rubric')
     .lean<LeanQuestion[]>();
   const byId = new Map(rows.map((q) => [String(q._id), q]));
   const shown = wanted.map((id) => byId.get(id)!).filter(Boolean);
@@ -134,6 +135,16 @@ export default async function WorkedPracticePage({
     marks: q.marks,
     stimulusHtml: q.stimulus ? renderMathHtml(q.stimulus) : undefined,
     stemHtml: renderMathHtml(q.stem),
+    stimulusTableHtml: q.stimulus_table
+      ? renderStimulusTable(q.stimulus_table, {
+          stimulus: q.stimulus,
+          stem: q.stem,
+          partPrompts: (q.parts ?? []).flatMap((p) => [
+            p.prompt,
+            ...(p.slots ?? []).map((slot) => slot.prompt ?? ''),
+          ]),
+        })
+      : undefined,
     visualHtml: q.visual?.template
       ? renderVisual(q.visual as StoredVisual, {
           stimulus: q.stimulus,

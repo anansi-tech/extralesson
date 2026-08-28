@@ -88,6 +88,11 @@ const QuestionSchema = new Schema({
   // R1.8 Part 0: the setting, for keeping the bank varied and measurable.
   context_category: { type: String },
   visual: { type: VisualSchema, default: undefined }, // R1.5 §3
+  // R3 — the GIVEN data table, for a question whose one visual slot is already
+  // holding a figure that is the ANSWER. Params are dataTable's; it renders
+  // through the same template, so a table reflows to a phone instead of being
+  // set as a KaTeX array in the stimulus prose that cannot.
+  stimulus_table: { type: Schema.Types.Mixed, default: undefined },
   parts: { type: [PartSchema], default: [] }, // R1.5 §2; backfilled for old rows
   archetype: {
     type: String,

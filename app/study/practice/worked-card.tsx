@@ -8,6 +8,7 @@ export interface WorkedQuestion {
   module: number;
   marks: number;
   stimulusHtml?: string;
+  stimulusTableHtml?: string;
   stemHtml: string;
   visualHtml?: string;
   parts: { label: string; promptHtml: string; marks: number; mode: string }[];
@@ -30,6 +31,15 @@ export default function WorkedCard({ question }: { question: WorkedQuestion }) {
           className="question-prose mb-3 border-l-3 border-paper-deep pl-3 text-[15px]"
           dangerouslySetInnerHTML={{ __html: question.stimulusHtml }}
         />
+      )}
+
+      {question.stimulusTableHtml && (
+        <div className="figure-frame mt-3">
+          <div
+            className="figure-inner [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
+            dangerouslySetInnerHTML={{ __html: question.stimulusTableHtml }}
+          />
+        </div>
       )}
 
       <div className="flex items-baseline justify-between">

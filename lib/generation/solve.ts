@@ -4,7 +4,7 @@ import { model } from '@/lib/ai';
 import { buildSolvePrompt } from '@/lib/prompts/question-gen';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { adjudicateAnswers } from './adjudicate';
-import { describeVisual, type StoredVisual } from '@/lib/visuals';
+import { describeVisual, describeStimulusTable, type StoredVisual } from '@/lib/visuals';
 import type { QuestionDraft } from '@/lib/validation/question';
 import { symbolicVerdict } from '@/lib/grade/checkable';
 
@@ -91,9 +91,15 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     stem: draft.stem,
     partPrompts: (draft.kind === 'structured' ? draft.parts : []).map((p) => p.prompt),
   };
-  const visualText = draft.visual
-    ? describeVisual(draft.visual as StoredVisual, questionContext)
-    : undefined;
+  // Both the figure and the given table are data the question carries, and a
+  // solver that cannot see the table cannot answer the question it belongs to.
+  const visualText =
+    [
+      draft.visual ? describeVisual(draft.visual as StoredVisual, questionContext) : undefined,
+      draft.stimulus_table ? describeStimulusTable(draft.stimulus_table, questionContext) : undefined,
+    ]
+      .filter(Boolean)
+      .join('\n') || undefined;
 
   if (draft.kind === 'mcq') {
     const { object: sol } = await generateObject({

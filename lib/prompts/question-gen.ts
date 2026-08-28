@@ -12,7 +12,7 @@ import { flavourGuidance } from '@/lib/generation/territories';
 // change — it is recorded in gen_meta.prompt_version on every insert — and on
 // any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
 // since that is what makes older drafts unlike newer ones.
-export const PROMPT_VERSION = 'v46';
+export const PROMPT_VERSION = 'v47';
 
 // ---- Style spec Part A ----
 // Carried from the fingerprint branch's calibrated pilot language (the
@@ -107,6 +107,11 @@ export function buildDraftPrompt(args: {
   module: 1 | 2 | 3;
   /** Per-template params documentation from lib/visuals (empty for prose). */
   visualContract: string;
+  /**
+   * dataTable's params documentation, supplied only when this question's
+   * figure is one the STUDENT DRAWS — see the STIMULUS TABLE section.
+   */
+  stimulusTableContract?: string;
   /** Stems already in the bank for this topic, so the model can avoid them. */
   existingStems?: string[];
   /** Recent questions on this topic, for the setting ledger (R1.8 Part 0). */
@@ -145,6 +150,17 @@ ${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 200)}`).join('\n')}`
   const objectiveBlock = objectives
     .map((o) => `- ${o.id}: ${o.text}${o.notes ? `\n  Notes: ${o.notes}` : ''}`)
     .join('\n');
+
+  // A figure the student DRAWS is withheld from them (figureGivesAnswer), so
+  // the data it is drawn FROM has to arrive some other way. Six questions
+  // reached the bank with it set as a KaTeX array in the stimulus prose, which
+  // cannot reflow: on a phone the last class interval sat off the paper.
+  const stimulusTableSection = args.stimulusTableContract
+    ? `STIMULUS TABLE (hard requirement): the figure above is one the STUDENT DRAWS, so it is withheld from them and the data it is drawn from must be GIVEN separately. Emit "stimulus_table" as dataTable params — the same contract as the template — and never as a table in the stimulus prose.
+${args.stimulusTableContract}
+- LAY IT OUT DOWN THE PAGE: one row per class or category, the quantities as columns ("Waiting time, t (minutes)" | "Frequency"). Not across the page with a column per class. A table read downwards fits a phone, a desktop and a printed sheet; one laid across does not, and every other table in the bank is built this way.
+- The stimulus prose introduces the data in words and does not repeat the table in text.`
+    : '';
 
   const visualSection =
     recipe.representation === 'prose'
@@ -268,6 +284,7 @@ ${territory ? `${territory}
 ${partsSection}
 
 ${visualSection}
+${stimulusTableSection}
 ${bankSection ? `\n${bankSection}` : ''}
 ${patterns ? `\n${patterns}` : ''}
 
@@ -282,10 +299,12 @@ RULES:
 - DELIMITERS, exactly these two and no others: inline maths is $...$ and display maths is \\[ ... \\]. NEVER $$ ... $$ — our renderer splits on single $, so a $$ block leaves a stray delimiter that pairs with the next one and swallows the prose between them as maths. Never \\( ... \\) either. Every $ you open must be closed in the SAME field.
 - A CLOZE GAP {} MUST SIT OUTSIDE MATHS. The statement is split at {} before it is typeset, so each piece must be able to stand alone: write "the gradient is {}" or "$n(A \\cap B) =$ {}", never "$n(A \\cap B) = {}$", which leaves both halves with one unmatched $.
 - AN ANSWER MAY NOT CONTAIN A SEMICOLON INSIDE MATHS. Answers are split on ";" to separate one value from the next, so a semicolon inside $...$ or inside an array tears the expression in half. Use a comma, or separate the values into their own slots.
+- NEVER SET A TABLE AS A KaTeX ARRAY. No \\begin{array} in a stimulus, stem, part or worked solution to lay out data in rows and columns: an array is typeset at a fixed width and cannot reflow, so on a phone it runs off the paper and takes the last column with it. A table is either the visual (dataTable) or, when the visual slot already holds a figure the student draws, "stimulus_table".
 - A FIGURE OR TABLE LABEL IS PLAIN TEXT: "Frequency", "Time t (s)", "U", "A". No $ and no commands — labels are drawn into SVG and printed into table headers, neither of which runs KaTeX.
 - DELIMITERS, exactly two and no others: inline maths is $...$ and display maths is \\[ ... \\]. NEVER $$ ... $$ — the renderer splits on single $, so a $$ block leaves a stray delimiter that pairs with the next one and swallows the prose between them as maths. Every $ you open must close in the SAME field.
 - A CLOZE GAP {} MUST SIT OUTSIDE MATHS. The statement is split at {} before it is typeset, so each piece must stand alone: write \"the gradient is {}\" or \"$n(A \\cap B) =$ {}\", never \"$n(A \\cap B) = {}$\", which leaves both halves with one unmatched $.
 - AN ANSWER MAY NOT CONTAIN A SEMICOLON INSIDE MATHS. Answers are split on \";\" to separate one value from the next, so a semicolon inside $...$ or inside an array tears the expression in half. Use a comma, or give each value its own slot.
+- NEVER SET A TABLE AS A KaTeX ARRAY. No \\begin{array} in a stimulus, stem, part or worked solution to lay out data in rows and columns: an array is typeset at a fixed width and cannot reflow, so on a phone it runs off the paper and takes the last column with it. A table is either the visual (dataTable) or, when the visual slot already holds a figure the student draws, "stimulus_table".
 - A FIGURE OR TABLE LABEL IS PLAIN TEXT: \"Frequency\", \"Time t (s)\", \"U\", \"A\". No $ and no commands — labels are drawn into SVG and printed into table headers, and neither runs KaTeX.
 - Math is KaTeX-safe: inline math in $...$ (never \\( ... \\)), and a column vector or matrix already carries its own brackets — never put parentheses around one, escape backslashes correctly in JSON. Matrices are notation in stem/parts, never visuals.
 - AN UNDERLINED DIGIT is written \\underline{2} inside maths — $3\\underline{2}01_4$ — and works the same in a stem, a slot statement, a figure label and a table cell. It is not decoration: "state the value of the underlined digit in $3\\underline{2}01_4$" is a place-value question in base 4, and without the underline there is nothing to point at.
