@@ -426,6 +426,9 @@ export default async function StudyDashboard({
         {/* THE PAYWALL, and what it does not take away. Everything already
             earned stays where it is — the notebook, the marks, the questions to
             look back at. What needs paying for is the NEXT session. */}
+        {/* Checkout opens in a new tab on every path: the study page stays
+            open underneath, and rel="noopener" keeps the Stripe tab from
+            reaching back through window.opener on a payment path. */}
         {/* An expired sitting is not a locked-out customer. Their notebook is
             all still there; what has ended is the sitting they bought for. */}
         {error === 'access-expired' && (
@@ -440,6 +443,8 @@ export default async function StudyDashboard({
             </p>
             <a
               href={paymentLink()}
+              target="_blank"
+              rel="noopener"
               className="mt-3 block bg-red-pen p-3 text-center font-black text-white shadow-[3px_3px_0_var(--ink)]"
             >
               Get access for the next sitting
@@ -470,6 +475,8 @@ export default async function StudyDashboard({
             </p>
             <a
               href={paymentLink()}
+              target="_blank"
+              rel="noopener"
               className="mt-3 block bg-red-pen p-3 text-center font-black text-white shadow-[3px_3px_0_var(--ink)]"
             >
               Get access

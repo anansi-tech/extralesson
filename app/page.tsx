@@ -307,7 +307,11 @@ export default async function LandingPage() {
                 <li>Predicted grade tracking from day one to exam day</li>
                 <li>Direct line to me — your feedback shapes the product</li>
               </ul>
-              <a className="btn" href={paymentLink()}>
+{/* Checkout opens in a new tab, so the page stays open underneath and
+                  abandoning it is closing a tab rather than navigating away.
+                  rel="noopener" is required, not cosmetic: without it the
+                  Stripe tab can reach back through window.opener. */}
+              <a className="btn" href={paymentLink()} target="_blank" rel="noopener">
                 Get access — {LANDING.price}
                 <small>SECURE CHECKOUT · CARD OR APPLE PAY</small>
               </a>
