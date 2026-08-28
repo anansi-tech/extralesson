@@ -15,10 +15,19 @@ const IdZ = z.string().regex(/^[a-f0-9]{24}$/);
 const SittingZ = z.enum(['jan-2027', 'may-june-2027']);
 
 /**
- * Access is granted BY HAND, against a payment matched on the email the student
- * used. There is no webhook and no auto-provisioning: at a hundred customers,
- * matching by hand is the right amount of machinery, and a wrong grant is
- * undone here in one click rather than debugged in a delivery log.
+ * GRANTING BY HAND, FOR EVERYTHING THE AUTOMATIC PATH DOES NOT COVER.
+ *
+ * The webhook grants access on its own when a payment carries an address that
+ * matches an account, which is the ordinary case and needs nobody awake for
+ * it. This screen is the rest: a typo'd address, a payment made before the
+ * student registered, a refund to undo, a comp to give, an event Stripe never
+ * delivered. Those are not failures of the automatic path so much as the cases
+ * no automatic path can settle — somebody has to decide who a payment belongs
+ * to, and it is the same somebody either way.
+ *
+ * Keeping it means a wrong grant is undone in one click rather than debugged
+ * in a delivery log, and an unmatched payment surfaces here instead of
+ * vanishing.
  *
  * The note is where the evidence goes — a Stripe payment id, "comp", "refunded
  * 3 Sep". It is why a grant can be explained six months later.

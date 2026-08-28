@@ -12,7 +12,14 @@ const SITTINGS = [
 ] as const;
 
 /**
- * WHO HAS PAID, matched by hand against Stripe on the email the student used.
+ * WHO HAS PAID, and who the webhook could not settle on its own.
+ *
+ * A payment carrying an address that matches an account is granted
+ * automatically; this screen is where the rest arrives — a typo'd address, a
+ * payment made before the student registered, a refund, a comp. It is also the
+ * fallback that makes the automatic path safe to run at all: every grant is
+ * visible and revocable here, and an unmatched payment surfaces instead of
+ * vanishing.
  *
  * The list is ordered by who is up against the free tier, because that is who
  * is waiting: a student who has used their free sessions and cannot start
