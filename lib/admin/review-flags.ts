@@ -73,10 +73,9 @@ export function reviewFlags(q: FlaggableQuestion): ReviewFlag[] {
   ].join(' ');
 
   // A TABLE SET AS A KaTeX ARRAY. An array is typeset at a fixed width and
-  // cannot reflow, so six questions put a grouped frequency table 758px wide
-  // into a 300px column and a phone lost the last class interval off the edge
-  // of the paper. Data belongs in the dataTable visual, or in stimulus_table
-  // when the visual slot already holds a figure the student draws.
+  // cannot reflow, so a phone loses the last column off the edge of the paper.
+  // Data belongs in the dataTable visual, or in stimulus_table when the visual
+  // slot already holds a figure the student draws.
   if (/\\begin\{array\}/.test(text)) {
     flags.push({
       level: 'warn',

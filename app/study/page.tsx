@@ -103,9 +103,9 @@ export default async function StudyDashboard({
   const isNewStudent = mistakes.attemptedIds.size === 0;
 
   // ONE DIAGNOSTIC PER STUDENT. Offering a button that would be refused is
-  // worse than not offering it, and "new student" is counted from ATTEMPTS —
-  // someone who started a diagnostic and answered nothing is still new by that
-  // measure, so both offers below read this rather than isNewStudent.
+  // worse than not offering it. Both offers below read this rather than
+  // isNewStudent, which counts ATTEMPTS: someone who started a diagnostic and
+  // answered nothing still reads as new.
   const diagnosticOpensAtDate = await diagnosticOpensAt(auth.student_id);
   const diagnosticOpen =
     diagnosticOpensAtDate === null || Date.now() >= diagnosticOpensAtDate.getTime();

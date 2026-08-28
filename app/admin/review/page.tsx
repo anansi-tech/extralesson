@@ -88,8 +88,7 @@ export default async function ReviewPage({
         gen_meta?: { recipe?: unknown; dedup_score?: number; prompt_version?: string };
         status: string;
       };
-    // The GIVEN data table. Never withheld: unlike the figure it is not the
-    // answer to anything, it is what the question is answered FROM.
+    // The GIVEN data table, never withheld — see the study session page.
     let stimulusTableHtml: string | undefined;
     if (raw.stimulus_table) {
       try {

@@ -247,10 +247,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
       )}
 
       {question.stimulusTableHtml && (
-        // The GIVEN data, in the figure frame but with NO minimum width. A
-        // table reflows to whatever sheet it is on — phone, desktop, paper —
-        // which is the whole reason it lives here instead of in the prose as
-        // an array that cannot.
+        // Same frame as the study card, and with no minimum width so it reflows.
         <div className="figure-frame mt-3">
           <div
             className="figure-inner [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"

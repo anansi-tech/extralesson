@@ -446,10 +446,10 @@ function checkVisualConsistency(
 }
 
 /**
- * A stimulus table is for the question whose visual slot is ALREADY TAKEN. With
- * the slot free, a table belongs in it — that is what the other 80 table
- * questions do — and a second home for the same thing would split the
- * convention and the coverage counts that read it.
+ * A stimulus table is for the question whose visual slot is ALREADY TAKEN.
+ * With the slot free a table belongs in it, as the bank's other table
+ * questions do; a second home would split the convention and the coverage
+ * counts that read it.
  */
 function checkStimulusTable(
   q: { visual?: unknown; stimulus_table?: unknown },

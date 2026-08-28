@@ -52,19 +52,14 @@ export function hasAccess(access: Access | null | undefined, now: Date = new Dat
 /**
  * How long before a second diagnostic opens.
  *
- * The diagnostic is free, and free plus UNLIMITED made it unlimited free MCQ
- * practice: a second door onto the bank for anyone willing to keep starting
- * one. It is one per student now. The interval is for the student who comes
- * back after a term away and whose ranking is genuinely stale — not a second
- * go at eight questions this week. Long on purpose: a re-take that felt
- * routine would be the same hole with a delay in front of it.
+ * Free plus unlimited made the diagnostic unlimited free MCQ practice, so it
+ * is one per student. The interval is long on purpose: it is for someone
+ * returning after a term away, and a re-take that felt routine would be the
+ * same hole with a delay in front of it.
  */
 export const DIAGNOSTIC_INTERVAL_DAYS = 90;
 
-/**
- * When this student's next diagnostic opens, or null if they have never sat
- * one. Read from started_at, which every session carries and is indexed by.
- */
+/** When this student's next diagnostic opens, or null if they never sat one. */
 export async function diagnosticOpensAt(studentId: string): Promise<Date | null> {
   const last = await PracticeSession.findOne({ student_id: studentId, mode: 'diagnostic' })
     .sort({ started_at: -1 })
@@ -87,10 +82,7 @@ export async function freeSessionsUsed(studentId: string): Promise<number> {
   });
 }
 
-/**
- * The refusal carries the reason, and the reason IS the error code the hub
- * reads. It was a boolean before, which could only ever say two things.
- */
+/** The refusal's reason IS the error code the hub reads. */
 export type SessionGate =
   | { allowed: true }
   | { allowed: false; reason: 'needs-access' | 'access-expired'; used: number }
@@ -102,10 +94,8 @@ export async function canStartSession(
   mode: string,
   now: Date = new Date(),
 ): Promise<SessionGate> {
-  // The diagnostic is not behind the paywall and never has been; it is behind
-  // its own cap, which applies to a paying student too. Someone who has paid
-  // has whole sessions to sit and does not need the diagnostic as a source of
-  // questions either.
+  // Not a paywall but a cap, so it applies to a paying student too: they have
+  // whole sessions to sit and do not need the diagnostic for questions.
   if (mode === 'diagnostic') {
     const opensAt = await diagnosticOpensAt(studentId);
     if (opensAt === null || now.getTime() >= opensAt.getTime()) return { allowed: true };

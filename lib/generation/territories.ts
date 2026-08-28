@@ -2,15 +2,13 @@ import type { ContextCategory } from '@/lib/types';
 
 // R1.8 correction — what this module is FOR.
 //
-// The repetitiveness diagnosis held: 28 of 34 questions naming a place were set
-// in St Lucia or Grenada. The remedy did not. Measured against the papers, a
-// real question names no country and no city at all — the settings are generic
-// ("a vendor", "a farmer", "the school"), because sixteen territories sit the
-// same paper and a paper that named one would be a paper about that one.
+// Measured against the papers, a real question names no country and no city:
+// the settings are generic ("a vendor", "a farmer", "the school"), because
+// sixteen territories sit the same paper and one that named a territory would
+// be a paper about it.
 //
-// So this module drives VARIETY — the flavour of a setting and the names in it
-// — and never currency, which lib/money.ts owns, and never a place name in a
-// stem unless a question genuinely needs one.
+// So this drives VARIETY — the flavour of a setting and the names in it — and
+// never currency, which lib/money.ts owns, nor a place name in a stem.
 
 export interface RegionalFlavour {
   /** Everyday work and trade a stem can be built from, region-wide. */
@@ -54,26 +52,22 @@ export const NAMES = [
 /**
  * HOW OFTEN A QUESTION NAMES A PERSON, measured over Paper 2.
  *
- * Prose guidance said a role may stay unnamed and not to add a name merely to
- * use one. The generator read that as never, and went twenty for twenty
- * unnamed. A rate is not a judgment the model should be making sentence by
- * sentence, so it is decided in the recipe and arrives as an instruction.
+ * A rate is not a judgment to leave to the model sentence by sentence, so it
+ * is decided in the recipe and arrives as an instruction: prose guidance that
+ * a role MAY stay unnamed was read as never, twenty for twenty.
  *
  * scripts/calibration/naming.py over 14 Paper 2 papers, 178 question-sized
- * chunks: 19.1% name a person, 80.9% do not. Of the named ones, 79% name
- * exactly ONE person, 12% two, 9% three or more, and only 9% carry the name
- * across parts — so the default when naming is one person, mentioned where the
- * question needs them and not threaded through every part.
+ * chunks: 19.1% name a person. Of those, 79% name exactly ONE and only 9%
+ * carry the name across parts, so the default when naming is one person where
+ * the question needs them.
  *
- * The detection is grammatical — a capitalised token followed by a person verb
- * — so it misses possessives and verbs outside that list. 19% is a FLOOR rather
- * than an exact figure, which is the right direction for a target: it will not
- * over-name.
+ * Detection is grammatical — a capitalised token followed by a person verb —
+ * so it misses possessives and other verbs. 19% is a FLOOR, which is the right
+ * direction for a target: it will not over-name.
  */
 export const NAMING_RATE = 0.19;
 
-/** Whether a question names one of ours. NAMES is declared, so this reads a
- *  list we own rather than guessing at what looks like a name. */
+/** Whether a question names one of ours — read from NAMES, never guessed. */
 export function namesAPerson(text: string): boolean {
   return NAMES.some((n) => new RegExp(`\\b${n}\\b`).test(text));
 }

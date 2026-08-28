@@ -151,10 +151,9 @@ ${existing.map((s) => `- ${s.replace(/\s+/g, ' ').slice(0, 200)}`).join('\n')}`
     .map((o) => `- ${o.id}: ${o.text}${o.notes ? `\n  Notes: ${o.notes}` : ''}`)
     .join('\n');
 
-  // A figure the student DRAWS is withheld from them (figureGivesAnswer), so
-  // the data it is drawn FROM has to arrive some other way. Six questions
-  // reached the bank with it set as a KaTeX array in the stimulus prose, which
-  // cannot reflow: on a phone the last class interval sat off the paper.
+  // A figure the student DRAWS is withheld (figureGivesAnswer), so the data it
+  // is drawn FROM has to arrive some other way. Set as a KaTeX array in prose
+  // it cannot reflow, and a phone loses the last column off the paper.
   const stimulusTableSection = args.stimulusTableContract
     ? `STIMULUS TABLE (hard requirement): the figure above is one the STUDENT DRAWS, so it is withheld from them and the data it is drawn from must be GIVEN separately. Emit "stimulus_table" as dataTable params — the same contract as the template — and never as a table in the stimulus prose.
 ${args.stimulusTableContract}

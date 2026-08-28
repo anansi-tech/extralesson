@@ -47,8 +47,7 @@ export const PartLooseZ = z.object({
 export const VisualLooseZ = z.object({ template: z.string(), params: z.record(z.unknown()) }).nullable();
 
 // R3 — the GIVEN data table, for a question whose visual slot holds a figure
-// the student draws. Loose like the rest; the strict boundary and the visual
-// gate check it afterwards.
+// the student draws. Loose like the rest; the strict boundary checks it.
 export const StimulusTableLooseZ = z.record(z.unknown()).nullish();
 
 export const McqLooseZ = z.object({

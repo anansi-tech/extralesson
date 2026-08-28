@@ -167,19 +167,13 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const [pending, startTransition] = useTransition();
   const startedAt = useRef(Date.now());
 
-  // Moving to another question resets the card to whatever that question is:
-  // their own answers if they are looking back at one they have done, their
-  // saved draft if they started it, and blank otherwise.
+  // Moving to another question resets the card to that question: the prior
+  // attempt if there is one, else the saved draft, else blank. It mirrors the
+  // useState initialisers, which run only on MOUNT and so never run on an
+  // in-app move.
   //
-  // The draft half is what makes flushing worth anything. This read the prior
-  // attempt only, so a student who typed, went back and returned was shown an
-  // empty box whether or not the draft had been saved. It mirrors the useState
-  // initialisers above, which only run on MOUNT and so never ran on an in-app
-  // move. boxValues is reset here for the same reason: left alone, the typed
-  // slots of one question stayed on screen over the next.
-  //
-  // `question.draft` is deliberately NOT a dependency: it is a fresh object on
-  // every render, and depending on it would reset the card mid-keystroke.
+  // `question.draft` is deliberately NOT a dependency: a fresh object every
+  // render, it would reset the card mid-keystroke.
   useEffect(() => {
     setSelected(question.prior?.selected ?? question.draft?.selected ?? null);
     setPartAnswers(question.prior?.answers ?? question.draft?.answers ?? {});
@@ -343,21 +337,19 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // one event that fires reliably on a mobile app switch and on a tab close;
   // blur and pagehide cover the rest.
   const draftTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Values and feedback only. `prior` is a PROP: on the render that moves to
-  // another question it already describes the question ARRIVING, so a guard
-  // that read it here refused to save the draft of the question being left
-  // whenever the next one happened to be answered.
+  // Values and feedback only. `prior` is a PROP, already describing the
+  // question ARRIVING, so a guard reading it here would refuse to save the
+  // draft of the question being left.
   const latest = useRef({ partAnswers, boxValues, working, selected, feedback });
   latest.current = { partAnswers, boxValues, working, selected, feedback };
 
-  // The question a draft belongs to is passed IN rather than read from the
-  // current props. When the card moves to the next question it is re-rendered,
-  // not remounted, so a save fired on the way out would otherwise write what
-  // was typed for question 2 under question 3's index.
+  // The question is passed IN, not read from props: the card is re-rendered
+  // rather than remounted between questions, so a save fired on the way out
+  // would write question 2's answers under question 3's index.
   const saveDraftFor = useCallback((sessionId: string, questionIndex: number) => {
     const { partAnswers: a, boxValues: v, working: w, selected: sel, feedback: fb } = latest.current;
-    // Feedback is STATE, so at cleanup time it is still the outgoing
-    // question's: a submitted question has an attempt and needs no draft.
+    // Feedback is STATE, so at cleanup it is still the outgoing question's.
+    // A submitted question has an attempt and needs no draft.
     if (fb) return;
     const typed =
       Object.values(a).some((x) => x.trim() !== '') ||
@@ -417,33 +409,23 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
   // FLUSH WHEN THE CARD STOPS SHOWING THIS QUESTION.
   //
-  // blur, visibilitychange and pagehide all mean "the tab is going away", and
-  // not one of them fires on a navigation INSIDE the app: the previous/next
-  // links, the back control, or browser back — which is how a student actually
-  // moves. So the draft was only ever saved reliably when they LEFT, which is
-  // the case a working student never hits, and typing was lost on ordinary
-  // navigation.
-  //
-  // Unmount alone would not catch it either: QuestionCard is rendered without
-  // a key, so moving between questions re-renders the same instance. This
-  // effect is keyed on the question, so its cleanup runs on every move — and
-  // it captures the session and index it was set up with, which is the
-  // question the values in `latest` were typed for. State has not been reset
-  // at cleanup time; the effect below does that afterwards.
+  // blur, visibilitychange and pagehide all mean "the tab is going away" and
+  // none fires on navigation INSIDE the app — the previous/next links, the
+  // back control, browser back — which is how a student moves. Unmount would
+  // not catch it either: QuestionCard has no key, so moving between questions
+  // re-renders the same instance. Keyed on the question, so the cleanup runs
+  // on every move with the session and index it was set up with.
   useEffect(() => {
     const sessionId = question.sessionId;
     const index = question.index;
-    // Captured with the effect, so all three describe the question being
-    // SHOWN — which by cleanup time is the one being left.
+    // Captured with the effect, so it describes the question being left.
     const wasReview = !!question.prior;
     return () => {
       if (wasReview) return; // revisiting writes nothing
       if (draftTimer.current) clearTimeout(draftTimer.current);
-      // Saving is only half of it. The page being left is ALREADY in the
-      // client router cache without this draft in it, so browser back would
-      // restore that payload and show an empty box even though the draft is
-      // safely stored — which is what a hard reload proves. refresh() drops
-      // the cache, so coming back re-fetches and the values are there.
+      // The page being left is already in the client router cache WITHOUT
+      // this draft, so browser back would restore that payload and show an
+      // empty box. refresh() drops the cache so the return trip re-fetches.
       void saveDraftFor(sessionId, index)?.then(() => router.refresh());
     };
   }, [question.sessionId, question.index, question.prior, saveDraftFor, router]);
@@ -489,10 +471,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       )}
 
       {question.stimulusTableHtml && (
-        // The GIVEN data, in the figure frame but with NO minimum width. A
-        // table reflows to whatever sheet it is on — phone, desktop, paper —
-        // which is the whole reason it lives here instead of in the prose as
-        // an array that cannot.
+        // The GIVEN data, in the figure frame but with NO minimum width: a
+        // table reflows to the sheet it is on, which is why it lives here
+        // rather than in the prose as an array that cannot.
         <div className="figure-frame mt-3">
           <div
             className="figure-inner [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"

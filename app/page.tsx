@@ -31,12 +31,10 @@ export const metadata: Metadata = {
 export default async function LandingPage() {
   const coverage = landingCoverage();
   const session = await getSession();
-  // A STUDENT WHO HAS PAID MUST NOT BE SOLD TO AGAIN.
-  //
-  // The header knew someone was signed in and nothing asked whether they had
-  // bought anything, so a paying student met two buy buttons and a checkout
-  // that would have charged them a second time. Signed in WITHOUT access still
-  // sees the offer: they are exactly who it is for.
+  // A STUDENT WHO HAS PAID MUST NOT BE SOLD TO AGAIN. The header knew they
+  // were signed in and nothing asked about access, so a paying student met two
+  // buy buttons and a checkout that would charge them twice. Signed in WITHOUT
+  // access still sees the offer: they are who it is for.
   let signedInWithAccess = false;
   if (session) {
     await dbConnect();
@@ -274,8 +272,7 @@ export default async function LandingPage() {
           out which voice meant them. Three things, in order: what the money
           buys, who it is for, and how they will know it is working. */}
       {signedInWithAccess ? (
-        // In place of the offer, not beside it: the one thing a student who has
-        // already paid came here to find is the way back in.
+        // In place of the offer, not beside it: what they came for is the door.
         <section id="offer">
           <div className="wrap">
             <div className="offer">

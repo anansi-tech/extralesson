@@ -1,14 +1,12 @@
 /**
  * THE VARIABLES THAT FAIL SILENTLY (ROUND_3 §1).
  *
- * Three of these break the business without breaking a page.
- * NEXT_PUBLIC_STRIPE_PAYMENT_LINK is the worst: unset, the landing page renders
- * perfectly, the button looks right, and it scrolls the reader back to the
- * paragraph they just read. No error, no log line, no way to tell from the page
- * that the product cannot be bought. ADMIN_EMAILS locks the operator out of
- * /admin/access, which is the fallback every automatic path depends on.
- * STRIPE_WEBHOOK_SECRET rejects every delivery with 400 — loudly, in a place
- * nobody is looking.
+ * Three break the business without breaking a page. Unset,
+ * NEXT_PUBLIC_STRIPE_PAYMENT_LINK leaves a landing page that renders perfectly
+ * and cannot be bought from. ADMIN_EMAILS locks the operator out of
+ * /admin/access, the fallback every automatic path depends on.
+ * STRIPE_WEBHOOK_SECRET rejects every delivery with 400, in a place nobody is
+ * looking.
  */
 export const REQUIRED_ENV = [
   'MONGODB_URI',
@@ -31,12 +29,11 @@ export const OPTIONAL_ENV: Record<string, string> = {
   // Inferred from VERCEL_URL when unset; only a custom domain needs it set.
   NEXT_PUBLIC_BASE_URL: 'inferred from VERCEL_URL when unset',
   BASE_URL: 'audit scripts only, never the app',
-  // DELIBERATELY UNSET, and it would not change the granted sitting if it were
-  // set. The two payment links are PRICE TIERS — $25 Founding Families and $49
-  // standard — not sittings, so which link was used says nothing about which
-  // exam the student sits. The sitting granted is ALWAYS the one the student
-  // registered for; a mapped link is evidence, and a disagreement is written
-  // into the grant note for /admin/access rather than resolved quietly.
+  // DELIBERATELY UNSET, and setting it would not change the granted sitting.
+  // A payment link says nothing about which exam a student sits: the sitting
+  // granted is ALWAYS the one they registered for. A mapped link is evidence,
+  // and a disagreement is written into the grant note for /admin/access
+  // rather than resolved quietly.
   STRIPE_LINK_SITTINGS: 'deliberately unset — links are price tiers; evidence only, never authority',
   // Set by the platform, not by us.
   NODE_ENV: 'set by the runtime',
@@ -56,35 +53,13 @@ export function isProduction(env: Env = process.env): boolean {
 }
 
 /**
- * WHY A HARD FAILURE AT BOOT RATHER THAN A BANNER ON /admin.
- *
- * The spec offered both. A banner loses on three counts:
- *
- * 1. It cannot show the failure that most needs showing. ADMIN_EMAILS missing
- *    is exactly the case that locks the operator out of /admin — the banner
- *    would live behind the door it is warning about.
- * 2. It requires somebody to look, and the failure mode being guarded against
- *    IS that nobody looks. The page renders perfectly; that is the whole
- *    problem.
- * 3. On Vercel a boot failure keeps the previous good deployment serving. So
- *    the blast radius of failing loudly is "the new deploy does not go out",
- *    against "the new deploy is live and cannot take money". The loud failure
- *    is the smaller loss, and it is the one somebody notices within a minute.
- *
- * Outside production this reports and continues: a developer without an
- * AI_API_KEY should still be able to run the site.
- */
-/**
  * A VALUE THAT IS PRESENT AND STILL USELESS.
  *
- * The preflight guards absence. These two guard shape, because
- * "https://buy.stripe.com/placeholder" is present, non-empty, boots clean and
- * is exactly the dead CTA that looks alive §1 exists to prevent — it sat in a
- * .env for weeks and was only found by reading the file.
- *
- * Deliberately narrow. A Stripe payment link may one day be served from a
- * custom domain, so this does NOT require the buy.stripe.com host; it rejects
- * what cannot be a link at all, and what says it is a stand-in.
+ * The preflight guards absence; this guards shape, because a placeholder link
+ * is present, non-empty, boots clean and is exactly the dead CTA that looks
+ * alive. Deliberately narrow: a payment link may one day be served from a
+ * custom domain, so the buy.stripe.com host is NOT required — this rejects
+ * only what cannot be a link, and what says it is a stand-in.
  */
 export function isPlaceholderLink(value: string | undefined): boolean {
   const v = value?.trim();
@@ -146,6 +121,19 @@ export function launchWarnings(env: Env = process.env): string[] {
   return warnings;
 }
 
+/**
+ * WHY A HARD FAILURE AT BOOT RATHER THAN A BANNER ON /admin.
+ *
+ * A banner cannot show the failure that most needs showing — ADMIN_EMAILS
+ * missing locks the operator out of the very page it would appear on — and it
+ * requires somebody to look, when the failure mode IS that nobody looks. On
+ * Vercel a boot failure keeps the previous good deployment serving, so failing
+ * loudly costs "the new deploy does not go out" instead of "the new deploy is
+ * live and cannot take money".
+ *
+ * Outside production this reports and continues, so a developer without an
+ * AI_API_KEY can still run the site.
+ */
 export function preflight(env: Env = process.env): string[] {
   const missing = missingEnv(env);
 

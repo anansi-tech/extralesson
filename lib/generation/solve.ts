@@ -91,8 +91,7 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     stem: draft.stem,
     partPrompts: (draft.kind === 'structured' ? draft.parts : []).map((p) => p.prompt),
   };
-  // Both the figure and the given table are data the question carries, and a
-  // solver that cannot see the table cannot answer the question it belongs to.
+  // A solver that cannot see the given table cannot answer the question.
   const visualText =
     [
       draft.visual ? describeVisual(draft.visual as StoredVisual, questionContext) : undefined,

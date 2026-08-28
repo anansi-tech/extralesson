@@ -99,13 +99,10 @@ export function renderVisual(visual: StoredVisual, context?: VerifyContext): str
 /**
  * The GIVEN data of a question whose one visual slot is already spoken for.
  *
- * An ogive question shows a grouped frequency table and asks for the curve.
- * The curve IS the answer, so it is withheld from the student (see
- * figureGivesAnswer) and the table it is drawn from has nowhere to live: six
- * questions set it as a KaTeX array in the stimulus prose, which cannot
- * reflow and left a phone scrolling sideways with the last class interval off
- * the paper. It is a dataTable like any other — only its home is different,
- * which is why every path here goes through the ordinary template.
+ * An ogive question asks for the curve, so the curve is withheld (see
+ * figureGivesAnswer) and the table it is drawn from has nowhere else to live.
+ * It is a dataTable like any other — only its home differs, which is why this
+ * goes through the ordinary template.
  */
 export function renderStimulusTable(params: unknown, context?: VerifyContext): string {
   return renderVisual({ template: 'dataTable', params: params as never }, context);
