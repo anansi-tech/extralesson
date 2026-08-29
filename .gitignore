@@ -32,6 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...except the example, which is the point of having one. `.env*` swallowed it,
+# so a fresh clone had no .env.example while CLAUDE.md and the README both told
+# the reader to see it. It carries names and reasons, never values.
+!.env.example
 
 # vercel
 .vercel
