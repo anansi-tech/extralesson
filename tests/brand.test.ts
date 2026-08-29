@@ -188,8 +188,6 @@ describe('what ships beside the app', () => {
     }
   });
 
-  // The four admin pages draw it through the layout, and must not go back to
-  // carrying their own.
   // A radical is an operator: alone it reads as an unfinished sum, not a logo.
   // Where a header cannot hold the lockup it takes a second row instead.
   it('never shows the mark on its own', () => {
@@ -203,9 +201,33 @@ describe('what ships beside the app', () => {
     );
   });
 
+  // The four admin pages draw it through the layout, and must not go back to
+  // carrying their own.
   it('leaves the admin pages to the layout', () => {
     for (const name of ['access', 'review', 'coverage', 'topics']) {
       expect(read('app', 'admin', name, 'page.tsx'), name).not.toMatch(/<Lockup[\s/>]/);
     }
+  });
+});
+
+// THE ADMIN NAV IS THE FOUR ROUTES.
+//
+// "student app" is an exit, not a peer of them, and it was the fifth item that
+// made the bar wrap to a third row at 360. It lives at the foot of the layout
+// now — where you look when you are done with a screen — and the four stay
+// wrapped and visible rather than hidden behind a scroll.
+describe('the admin bar carries routes only', () => {
+  it('keeps the exit out of the nav', () => {
+    const nav = read('app', 'admin', 'admin-nav.tsx');
+    expect(nav, 'the exit is back in the nav').not.toMatch(/href="\/study"/);
+    expect((nav.match(/href=\{r\.href\}/g) ?? []).length).toBe(1);
+  });
+
+  it('puts it at the foot of the layout, after the content', () => {
+    const layout = read('app', 'admin', 'layout.tsx');
+    expect(layout).toMatch(/href="\/study"/);
+    expect(layout.indexOf('{children}')).toBeLessThan(layout.indexOf('href="/study"'));
+    // 44px, like every other target.
+    expect(layout).toMatch(/min-h-11[^"]*"[\s\S]{0,200}?student app/i);
   });
 });

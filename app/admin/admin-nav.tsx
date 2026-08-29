@@ -61,14 +61,6 @@ export function AdminNav() {
             </Link>
           );
         })}
-        {/* The way back. Deleting coverage's own link would otherwise leave
-            typing the URL as the only route to the student app. */}
-        <Link
-          href="/study"
-          className="inline-flex min-h-11 items-center px-3 sm:ml-auto font-mono text-[11px] uppercase tracking-widest text-dim underline"
-        >
-          student app →
-        </Link>
     </nav>
   );
 }

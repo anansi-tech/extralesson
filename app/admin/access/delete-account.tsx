@@ -20,7 +20,7 @@ export function DeleteAccount() {
   );
 
   return (
-    <section className="mt-8 border-[1.5px] border-red-pen bg-white p-4">
+    <section className="mx-auto max-w-3xl mt-8 border-[1.5px] border-red-pen bg-white p-4">
       <div className="section-label is-alert">Delete an account</div>
       <p className="mt-1 text-[13px] leading-snug">
         Everything the student has: attempts, sessions, drafts, photographs and the readings of

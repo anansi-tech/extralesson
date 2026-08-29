@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { requireAdmin } from '@/lib/auth/session';
 import { launchWarnings } from '@/lib/preflight';
 import { AdminNav, AdminTitle } from './admin-nav';
@@ -30,16 +31,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
         </div>
       )}
-      {/* TWO ROWS BELOW sm, ON PURPOSE. Four links and "student app" are
-          about 400px of content and there are 320 to put them in, so the bar
-          wraps at 360 whatever the logo does. Left to itself the last link
-          took ml-auto to the far right of whichever row it landed on, which is
-          the gap that reads as broken. So the rows are declared: the lockup
-          and the page label, then the nav. From sm up they are one row again.
+      {/* TWO ROWS BELOW sm, ON PURPOSE: the lockup and the page label, then
+          the four routes. From sm up they are one row again.
+
+          It was three rows, and "student app" was the whole reason — five
+          items in 320px of space. It is an EXIT rather than a peer of the four
+          routes, so it went to the foot of the page instead, which is where
+          you look when you are done with a screen. The four stay wrapped and
+          visible: hiding them behind a scroll would undo the reason the nav
+          exists.
 
           The lockup shows at every width. A radical is an operator — alone in
-          a header it reads as unfinished rather than as a logo — so the header
-          takes the extra row instead. */}
+          a header it reads as unfinished rather than as a logo. */}
       <div className="border-b-[1.5px] border-ink bg-white">
         <div className="mx-auto max-w-3xl px-6 sm:flex sm:items-center sm:gap-x-4">
           <div className="flex min-w-0 items-center gap-x-3 py-2 sm:py-0">
@@ -50,6 +53,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </div>
       {children}
+      {/* THE WAY OUT, AT THE FOOT. After the content, because that is when you
+          want it — and one row of chrome saved at the top of every admin
+          screen. 44px like every other target (ROUND_1 §5). */}
+      <div className="mx-auto max-w-3xl px-6 pb-10">
+        <Link
+          href="/study"
+          className="inline-flex min-h-11 items-center border-t-[1.5px] border-rule pt-3 font-mono text-[11px] uppercase tracking-widest text-dim underline"
+        >
+          ← student app
+        </Link>
+      </div>
     </>
   );
 }
