@@ -228,8 +228,8 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
             )}
           </section>
         ))}
+        <DeleteAccount />
       </div>
-      <DeleteAccount />
     </main>
   );
 }
