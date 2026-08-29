@@ -22,6 +22,10 @@ export const metadata: Metadata = {
     description:
       `CSEC Maths tutoring that marks the way examiners award marks — step by step. ${LANDING.price}.`,
     type: 'website',
+    // A page's openGraph REPLACES the layout's rather than merging into it, so
+    // the url declared there does not reach the one page anybody shares. It is
+    // repeated here for that reason, resolved against metadataBase.
+    url: '/',
   },
 };
 
