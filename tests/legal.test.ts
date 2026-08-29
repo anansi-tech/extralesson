@@ -131,9 +131,36 @@ describe('buyer-facing surfaces address whoever is paying', () => {
     expect(flat).toMatch(/from them, not from us/i);
   });
 
-  it('leaves the hero and the shared-link metadata alone, on purpose', () => {
+  // THE HERO ASSUMES NOTHING ABOUT WHO OPENED THE LINK.
+  //
+  // It used to say "Your child's own CXC examiner" on the reasoning that a
+  // parent is the most likely first reader. The pick was defensible; the
+  // premise was not. A link travels, and the page is opened by students,
+  // parents and teachers with no way to tell which — so a hero addressed to
+  // one of them tells the other two the product is for somebody else.
+  //
+  // "Your own" is read correctly by all three: a student is addressed, a
+  // parent understands it is for their child, a teacher thinks of their class.
+  it('addresses the reader directly in the hero and the shared-link metadata', () => {
     const hero = LANDING.slice(0, LANDING.indexOf('<section id="offer">'));
-    expect(hero).toMatch(/Your child/);
+    expect(hero).toMatch(/Your own/);
+    for (const assumed of [/your child/i, /parent/i]) {
+      expect(hero, String(assumed)).not.toMatch(assumed);
+    }
+    // The title a shared link carries, in all four places it is written.
+    for (const file of [
+      ['app', 'page.tsx'],
+      ['app', 'layout.tsx'],
+      ['app', 'opengraph-image.tsx'],
+    ]) {
+      expect(read(...file), file.join('/')).not.toMatch(/Your child/i);
+    }
+  });
+
+  // A minor's data is a parent or guardian's to ask about, and saying so needs
+  // the word. This is the one surface where "child" is exactly right.
+  it('keeps the word where it means a guardian\'s rights over a minor', () => {
+    expect(read('app', 'privacy', 'page.tsx')).toMatch(/parent or guardian/i);
   });
 });
 

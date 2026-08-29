@@ -40,7 +40,7 @@ export const metadata: Metadata = {
    * does not follow redirects gets fifteen bytes of text/plain.
    */
   metadataBase: new URL(externalBaseUrl()),
-  title: "ExtraLesson — Your child's own CXC examiner",
+  title: "ExtraLesson — Your own CXC examiner",
   description:
     "AI-powered CSEC Maths tutoring that marks the way examiners award marks — step by step. Built by a Grenadian island scholar.",
   /**

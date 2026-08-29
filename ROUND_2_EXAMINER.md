@@ -288,10 +288,13 @@ student will find only the ban and not the reason.
   student, and which relation they are — parent, guardian, grandmother, aunt,
   godparent, sponsor — does not change what they need: what the money buys, that
   it is for a named student, and how they will know it is working.
-- **The hero and the shared-link metadata speak to the most likely first
-  reader**: the page title, the OG title and the H1 keep "your child's own CXC
-  examiner". Their job is to stop a scroll, and the possessive is doing real
-  work there.
+- **Attention-facing surfaces address the reader directly and assume nothing
+  about who they are**: the H1, the lede, the how-it-works and diagnostic
+  paragraphs, the page title, the OG title and the OG image. "Your own CXC
+  examiner". A student reads it as addressed to them; a parent reads it and
+  understands it is for their child; a teacher reads it and thinks of their
+  class. It is the only version that does not depend on knowing who opened the
+  link.
 
 **Why the cost differs, which is the whole reason both can be right.** A wrong
 assumption in the hero costs a reader a moment of "not me". The same assumption
@@ -302,10 +305,32 @@ account under her own email and left the student without one. The cost of
 guessing wrong scales with what the surface asks for, and an offer asks for
 money and an email address.
 
-**The test for a new surface.** Is it asking the reader to do something that
-depends on who they are? Address whoever is paying. Is it asking for attention?
-Speak to the most likely reader. A heading is not the deciding factor; what
-happens if the reader is not who you assumed is.
+**The test for a new surface.** Is it asking the reader to DO something that
+depends on who they are? Address whoever is paying. Is it asking for ATTENTION?
+Address the reader directly and assume nothing. A heading is not the deciding
+factor; what happens if the reader is not who you assumed is.
+
+**Amended 28 August 2026 — the first half was wrong, and wrong in its premise
+rather than its conclusion.** It read "speak to the most likely first reader"
+and picked a parent, so the hero said "your child's own CXC examiner". The
+reasoning about cost still holds exactly as written below: a wrong guess in the
+hero costs a moment, the same guess in the offer cost a student their account.
+What did not hold is that there is a most likely first reader to speak to.
+
+A link travels. The page is opened by students, by parents, and by teachers who
+were sent it, and nothing about the arrival says which. A hero addressed to one
+of the three tells the other two that the product is for somebody else — so the
+guess was not merely sometimes wrong, it was wrong in a way that reads as
+exclusion to two thirds of the people who see it.
+
+The fix is not a better guess about who arrives first. It is to stop guessing:
+a surface asking for attention addresses the reader directly, and every reader
+resolves "your own" correctly by themselves. Do not reintroduce an assumption
+about who opens the link — that is the thing that failed, not the choice of
+parent over student.
+
+The buyer-facing half is unchanged and still load-bearing. Those surfaces ask
+the reader to act, and what they must do genuinely depends on who they are.
 
 ## 9. Kill list (additions)
 

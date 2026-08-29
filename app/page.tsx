@@ -14,11 +14,11 @@ import { getSession } from '@/lib/auth/session';
 // now CK/AK/R-neutral, and channel-specific report wording was neutralized.
 
 export const metadata: Metadata = {
-  title: 'ExtraLesson — Your child’s own CXC examiner',
+  title: 'ExtraLesson — Your own CXC examiner',
   description:
     `AI-powered CSEC Maths tutoring that marks real working the way a CXC examiner does — step by step. Built by a Grenadian island scholar. ${LANDING.price} for the sitting you are preparing for.`,
   openGraph: {
-    title: 'ExtraLesson — Your child’s own CXC examiner',
+    title: 'ExtraLesson — Your own CXC examiner',
     description:
       `CSEC Maths tutoring that marks the way examiners award marks — step by step. ${LANDING.price}.`,
     type: 'website',
@@ -70,12 +70,12 @@ export default async function LandingPage() {
             )}
           </div>
           <h1>
-            Your child&rsquo;s own
+            Your own
             <br />
             CXC examiner.<span className="pen"> In red pen.</span>
           </h1>
           <p className="lede">
-            ExtraLesson is AI-powered CSEC Maths tutoring that marks your child&rsquo;s{' '}
+            ExtraLesson is AI-powered CSEC Maths tutoring that marks your{' '}
             <b>real working</b> the way a CXC examiner marks Paper 2 — mark by mark, with the exact
             feedback an examiner would write.
           </p>
@@ -132,8 +132,8 @@ export default async function LandingPage() {
                 students bleed marks they didn&rsquo;t know they were losing.
               </p>
               <p>
-                Your child works <b>on paper, by hand</b> — the way the real exam works — and gets
-                it marked like an examiner would:
+                You work <b>on paper, by hand</b> — the way the real exam works — and it gets
+                marked like an examiner would:
               </p>
               <ul className="marklist">
                 <li>
@@ -150,8 +150,8 @@ export default async function LandingPage() {
                 </li>
               </ul>
               <p>
-                Fifteen minutes a day, aimed at the topics worth the most marks for <b>your</b>{' '}
-                child.
+                Fifteen minutes a day, aimed at the topics worth the most marks for{' '}
+                <b>you</b>.
               </p>
             </div>
             <div className="phone">
@@ -206,8 +206,8 @@ export default async function LandingPage() {
               <div className="sn">STEP 1</div>
               <h3>Diagnose</h3>
               <p>
-                A short placement test maps your child against the full CSEC syllabus and sets a
-                predicted grade — the one number we all work to move.
+                A short placement test maps you against the full CSEC syllabus and sets a
+                predicted grade — the one number everything here works to move.
               </p>
             </div>
             <div className="step">

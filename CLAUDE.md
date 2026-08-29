@@ -88,16 +88,23 @@ follow this rule mechanically — coverage and the 84% working-marks figure are
 computed and checked against the bank by `report-bank.ts` — and prose about
 people and results gets no weaker standard than prose about percentages.
 
-**Who each surface addresses.** Buyer-facing surfaces — the offer, checkout
-captions, `/welcome`, the FAQ — address WHOEVER IS PAYING: no relationship, no
-geography, no "your child". The hero, page title and OG title keep "your child"
-and speak to the most likely first reader. The line is not about the word: a
-wrong assumption in the hero costs a moment, while in the offer it produced a
-real defect (the caption told a payer to sign up with their own checkout email,
-which would have created the account under the wrong person). Test for a new
-surface: does it ask the reader to DO something that depends on who they are —
-then address the payer; or does it ask for attention — then address the likely
-reader. Reasoning in `ROUND_2_EXAMINER.md` §8e.
+**Who each surface addresses.** A surface that asks for ATTENTION addresses the
+reader directly and assumes nothing about who they are — the hero, lede, page
+title, OG title and OG image all say "your own CXC examiner". A surface that
+asks the reader to ACT addresses WHOEVER IS PAYING: the offer, checkout
+captions, `/welcome`, the FAQ — no relationship, no geography, no "your child".
+
+The rule used to say the hero should speak to "the most likely first reader"
+and picked a parent. **It failed on its premise, not its conclusion**: a link
+travels, and the page is opened by students, parents and teachers with no way
+to tell which, so a hero addressed to one told the other two the product was
+for somebody else. Do not reintroduce a guess about who arrives first — the fix
+is to stop guessing, not to guess better. The cost reasoning is unchanged and
+still decides the act/attention line: a wrong assumption in the hero costs a
+moment, while in the offer it produced a real defect (the caption told a payer
+to sign up with their own checkout email, which would have created the account
+under the wrong person). "Child" stays on the privacy page, where it means a
+guardian's rights over a minor's data. Reasoning in `ROUND_2_EXAMINER.md` §8e.
 
 **Parent and sponsor reporting — declined, not deferred.** The kill-list entry
 reads as an unbuilt feature; it is a decision. A report going home shifts a

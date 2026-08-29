@@ -11,7 +11,7 @@ import { lockupSvgMarkup } from './lockup';
 
 const LOCKUP = `data:image/svg+xml;base64,${Buffer.from(lockupSvgMarkup()).toString('base64')}`;
 
-export const alt = 'ExtraLesson — Your child’s own CXC examiner. In red pen.';
+export const alt = 'ExtraLesson — Your own CXC examiner. In red pen.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -34,7 +34,7 @@ export default function OgImage() {
       >
         <img src={LOCKUP} width={306} height={80} alt="" />
         <div style={{ display: 'flex', fontSize: 92, fontWeight: 900, lineHeight: 1.05, marginTop: 30 }}>
-          Your child&rsquo;s own CXC examiner.
+          Your own CXC examiner.
         </div>
         <div style={{ display: 'flex', fontSize: 92, fontWeight: 900, color: '#C1121F' }}>
           In red pen.
