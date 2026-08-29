@@ -43,8 +43,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
           The lockup shows at every width. A radical is an operator — alone in
           a header it reads as unfinished rather than as a logo. */}
-      <div className="border-b-[1.5px] border-ink bg-white">
-        <div className="mx-auto max-w-3xl px-6 sm:flex sm:items-center sm:gap-x-4">
+      <div className="border-b-[1.5px] border-ink bg-white px-6">
+        <div className="mx-auto max-w-3xl sm:flex sm:items-center sm:gap-x-4">
           <div className="flex min-w-0 items-center gap-x-3 py-2 sm:py-0">
             <Lockup width={130} className="shrink-0" />
             <AdminTitle />
@@ -56,13 +56,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* THE WAY OUT, AT THE FOOT. After the content, because that is when you
           want it — and one row of chrome saved at the top of every admin
           screen. 44px like every other target (ROUND_1 §5). */}
-      <div className="mx-auto max-w-3xl px-6 pb-10">
-        <Link
-          href="/study"
-          className="inline-flex min-h-11 items-center border-t-[1.5px] border-rule pt-3 font-mono text-[11px] uppercase tracking-widest text-dim underline"
-        >
-          ← student app
-        </Link>
+      {/* px-6 OUTSIDE the constrained box and max-w-3xl inside, which is the
+          order the pages use. The other way round puts the padding within the
+          3xl cap, and on anything wider than 768 that sits the chrome 24px
+          inside the content it is meant to line up with. */}
+      <div className="px-6 pb-10">
+        <div className="mx-auto max-w-3xl">
+          <Link
+            href="/study"
+            className="inline-flex min-h-11 items-center border-t-[1.5px] border-rule pt-3 font-mono text-[11px] uppercase tracking-widest text-dim underline"
+          >
+            ← student app
+          </Link>
+        </div>
       </div>
     </>
   );
