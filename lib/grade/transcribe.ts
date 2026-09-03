@@ -25,8 +25,8 @@ export const TranscriptionLineZ = z.object({
 
 /** The final answer the student wrote for one slot, as the grader would parse it. */
 export const TranscribedAnswerZ = z.object({
-  /** The slot ref exactly as it was listed to the reader: 'a', 'b.ii'. */
-  slot_label: z.string().max(30),
+  /** Exactly as it was listed to the reader: 'a.i', 'b.ii'. */
+  slot_ref: z.string().max(30),
   text: z.string().max(200),
 });
 
@@ -104,7 +104,7 @@ async function readOnce(args: TranscribeArgs): Promise<TranscribeOutcome> {
               `line cannot be attributed, set part_label to null.\n\n` +
               `${CONVENTIONS}\n\n` +
               `In answers, give the student's FINAL answer for each slot listed above that ` +
-              `has one, written the same way: slot_label is the slot exactly as listed, text ` +
+              `has one, written the same way: slot_ref is the slot exactly as listed, text ` +
               `is what they wrote as their answer — the value they boxed, underlined or wrote ` +
               `last for that slot, even if it is wrong. Leave out a slot with no final answer. ` +
               `Never work one out.\n\n` +

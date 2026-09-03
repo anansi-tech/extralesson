@@ -7,7 +7,7 @@ import { isMultiValue, readInputShape } from './input-shape';
  */
 export function prefillFromRead(
   parts: { label: string; slots: { label: string; answer?: string; response_mode?: string }[] }[],
-  answers: { slot_label: string; text: string }[],
+  answers: { slot_ref: string; text: string }[],
 ): Record<string, string> {
   const single = new Set(
     parts.flatMap((p) =>
@@ -20,7 +20,7 @@ export function prefillFromRead(
   const out: Record<string, string> = {};
   for (const a of answers) {
     const text = a.text.trim();
-    if (single.has(a.slot_label) && text) out[a.slot_label] = text;
+    if (single.has(a.slot_ref) && text) out[a.slot_ref] = text;
   }
   return out;
 }

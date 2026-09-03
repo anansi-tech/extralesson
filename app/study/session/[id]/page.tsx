@@ -459,9 +459,10 @@ export default async function SessionPage({
   if (reviewing) {
     const attempt = attempts[index];
     // The image is gone after the TTL; the transcription and the per-row
-    // reasons are not, and they are what a student most wants to reread. One
-    // block per take, because a second photograph can have read a different page.
-    const takes = await Transcription.find({ attempt_id: attempt._id })
+    // reasons are not, and they are what a student most wants to reread. Only
+    // the take that was marked: a read a second photograph replaced before
+    // submit earned nothing and is not shown as if it had.
+    const takes = await Transcription.find({ attempt_id: attempt._id, marker_version: { $exists: true } })
       .sort({ take: 1 })
       .select('lines legible notes method_marks take')
       .lean<

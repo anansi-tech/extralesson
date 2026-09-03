@@ -46,7 +46,7 @@ describe('reads are keyed on the question in the session', () => {
     expect(paths).toContain('answers');
     expect(paths).toContain('construction');
     const answer = (Transcription.schema.path('answers') as unknown as { schema: { paths: object } }).schema;
-    expect(Object.keys(answer.paths)).toEqual(expect.arrayContaining(['slot_label', 'text']));
+    expect(Object.keys(answer.paths)).toEqual(expect.arrayContaining(['slot_ref', 'text']));
     const drawing = (Transcription.schema.path('construction') as unknown as { schema: { paths: object } }).schema;
     expect(Object.keys(drawing.paths)).toEqual(expect.arrayContaining(['complete', 'missing', 'legible']));
   });

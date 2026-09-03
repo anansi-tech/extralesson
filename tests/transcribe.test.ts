@@ -97,12 +97,12 @@ describe('transcription contract — model, validator and store agree', () => {
     const parsed = TranscriptionZ.parse({
       lines: [],
       legible: true,
-      answers: [{ slot_label: 'a.i', text: '3/4' }],
+      answers: [{ slot_ref: 'a.i', text: '3/4' }],
     });
-    expect(parsed.answers).toEqual([{ slot_label: 'a.i', text: '3/4' }]);
+    expect(parsed.answers).toEqual([{ slot_ref: 'a.i', text: '3/4' }]);
     expect(TranscriptionZ.parse({ lines: [], legible: true }).answers).toEqual([]);
     const stored = (Transcription.schema.path('answers') as unknown as { schema: { paths: object } }).schema;
-    expect(Object.keys(stored.paths)).toEqual(expect.arrayContaining(['slot_label', 'text']));
+    expect(Object.keys(stored.paths)).toEqual(expect.arrayContaining(['slot_ref', 'text']));
   });
 
   // R2 §1.2 — the transcription is a claim about the image, never a mark. If a

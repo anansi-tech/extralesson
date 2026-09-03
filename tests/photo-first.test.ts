@@ -11,7 +11,7 @@ vi.mock('@/lib/auth/session', () => ({
 // A COUNTING STUB. What is under test is where the image goes and how often,
 // never what the model sees in it.
 const calls: { image: boolean; kind: 'read' | 'drawing' | 'mark' }[] = [];
-let readerAnswers: { slot_label: string; text: string }[] = [];
+let readerAnswers: { slot_ref: string; text: string }[] = [];
 vi.mock('ai', () => ({
   generateObject: async (opts: { schema: unknown; messages?: { content: unknown }[] }) => {
     const content = opts.messages?.[0]?.content; // markMethod sends a prompt, not messages
@@ -124,8 +124,8 @@ afterAll(async () => {
 beforeEach(() => {
   calls.length = 0;
   readerAnswers = [
-    { slot_label: 'a.i', text: '5' },
-    { slot_label: 'b.i', text: '1, 2, 3, 6' },
+    { slot_ref: 'a.i', text: '5' },
+    { slot_ref: 'b.i', text: '1, 2, 3, 6' },
   ];
 });
 
@@ -145,7 +145,7 @@ describe('photo first — ROUND_4 Task 1', () => {
     const read = await db.Transcription.findOne({ session_id: sessionId, question_index: 0 }).lean<Record<string, unknown> | null>();
     expect(read?.attempt_id).toBeUndefined();
     expect(read?.answers).toEqual(
-      expect.arrayContaining([{ slot_label: 'a.i', text: '5' }, { slot_label: 'b.i', text: '1, 2, 3, 6' }]),
+      expect.arrayContaining([{ slot_ref: 'a.i', text: '5' }, { slot_ref: 'b.i', text: '1, 2, 3, 6' }]),
     );
     expect(read?.method_marks).toEqual([]);
     expect(imageCalls()).toBe(1);
@@ -177,7 +177,7 @@ describe('photo first — ROUND_4 Task 1', () => {
   it('a second read replaces the prefill, and a third is refused', async () => {
     const sessionId = await session(await question());
     await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
-    readerAnswers = [{ slot_label: 'a.i', text: '7' }];
+    readerAnswers = [{ slot_ref: 'a.i', text: '7' }];
     const second = await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
     expect(second).toMatchObject({ take: 2, takesLeft: 0, prefill: { 'a.i': '7' } });
     const draft = await db.SessionDraft.findOne({ session_id: sessionId, question_index: 0 }).lean<{ answers: Record<string, string> } | null>();

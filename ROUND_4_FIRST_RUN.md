@@ -53,16 +53,18 @@ paper → photo → read (vision) → prefilled answers → student confirms →
 - No reveal before submit.
 - Vision only adds marks. Deterministic marking is untouched.
 - Image TTL is 7 days. `MAX_TAKES` = 2 now bounds *reads*, pre- or post-submit.
-- **One vision call per photo.** Transcription and, on construct questions,
-  the drawing check both run at read time and are stored. Submit runs the
-  marking model over stored text. The image is never sent to a model twice.
+- **The image goes to a model at read time only, never at submit.**
+  Transcription and, on construct questions, the drawing check both run at
+  read time and are stored. Submit runs the marking model over stored text.
 
 **Schema** (same-commit backfill, as always)
 
 - `Transcription`: `attempt_id` becomes optional; add `session_id`,
   `question_index`. Unique index moves to `{session_id, question_index, take}`.
-  Add `answers: [{slot_label, text}]` — the reader's final answer per slot.
+  Add `answers: [{slot_ref, text}]` — the reader's final answer per slot.
   Add `construction: {complete, missing, legible}` — stored drawing check.
+  Add `expires_at` on a read with no attempt, set to the draft's TTL and unset
+  when `markWorking` links it: a read nobody submits expires with the draft.
 - `CapturedImage`: same two keys added, `attempt_id` optional.
 - Backfill: every existing row has an attempt; derive `session_id` and
   `question_index` from it.
