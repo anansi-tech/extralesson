@@ -121,11 +121,14 @@ describe('transcription contract — model, validator and store agree', () => {
       { expireAfterSeconds?: number } | undefined,
     ][];
     expect(imageIndexes.some(([, o]) => typeof o?.expireAfterSeconds === 'number')).toBe(true);
+    // The one TTL a reading carries is on expires_at, which markWorking unsets
+    // the moment the read is linked to an attempt: only scratch expires.
     const readIndexes = Transcription.schema.indexes() as [
       Record<string, unknown>,
       { expireAfterSeconds?: number } | undefined,
     ][];
-    expect(readIndexes.some(([, o]) => typeof o?.expireAfterSeconds === 'number')).toBe(false);
+    const ttl = readIndexes.filter(([, o]) => typeof o?.expireAfterSeconds === 'number');
+    expect(ttl.map(([k]) => Object.keys(k))).toEqual([['expires_at']]);
   });
 });
 

@@ -1,4 +1,5 @@
 import { Schema, model, models, type InferSchemaType } from 'mongoose';
+import { DRAFT_TTL_DAYS } from './session-draft';
 
 /**
  * WHAT WE READ OFF A STUDENT'S PAGE — never a mark (ROUND_2 §1). Stored so the
@@ -77,10 +78,15 @@ const TranscriptionSchema = new Schema({
   },
   marker_version: { type: String },
   created_at: { type: Date, default: Date.now, required: true },
+  /** Set on a read with no attempt yet; unset once linked. Scratch expires with the draft. */
+  expires_at: { type: Date },
 });
 
 TranscriptionSchema.index({ session_id: 1, question_index: 1, take: 1 }, { unique: true });
 TranscriptionSchema.index({ attempt_id: 1 });
+TranscriptionSchema.index({ expires_at: 1 }, { expireAfterSeconds: 0 });
+
+export const readExpiry = () => new Date(Date.now() + DRAFT_TTL_DAYS * 24 * 60 * 60 * 1000);
 
 export type TranscriptionDoc = InferSchemaType<typeof TranscriptionSchema>;
 export const Transcription =

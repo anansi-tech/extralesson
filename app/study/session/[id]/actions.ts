@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { dbConnect, Attempt, PracticeSession, Question, SessionDraft } from '@/lib/db';
+import { dbConnect, Attempt, PracticeSession, Question, SessionDraft, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { markMcq, markStructuredParts } from '@/lib/grade/mark';
 import { GRADER_VERSION, questionFingerprint } from '@/lib/grade/version';
@@ -15,6 +15,7 @@ import type { ProfileMarks, QuestionPart, RubricItem, TemplateName } from '@/lib
 import { ANSWER_REF_RE } from '@/lib/notation';
 import { renderVisual } from '@/lib/visuals';
 import { constructActs, constructFamily, figureGivesAnswer } from '@/lib/targets/construct';
+import { markWorking, type CaptureResult } from './mark-working';
 
 const SubmitZ = z.object({
   sessionId: z.string().regex(/^[a-f0-9]{24}$/),
@@ -70,6 +71,8 @@ export interface Feedback {
    * model call for a foregone conclusion.
    */
   earnableByMethod: number;
+  /** A page photographed before submit, now linked to the attempt and marked. */
+  working?: CaptureResult;
 }
 
 export async function submitAnswer(input: {
@@ -237,6 +240,11 @@ export async function submitAnswer(input: {
     }
   }
 
+  // A read taken before submit is marked now, from what was stored then.
+  const photographed = await Transcription.exists({ session_id: sessionId, question_index: questionIndex });
+  const working = photographed ? (await markWorking(String(written._id))) ?? undefined : undefined;
+  const earnedByPhoto = working?.method.filter((m) => m.awarded).map((m) => m.code) ?? [];
+
   return {
     correct: result.correct,
     profile_marks: result.profile_marks,
@@ -250,8 +258,9 @@ export async function submitAnswer(input: {
     attemptId: String(written._id),
     earnableByMethod:
       question.kind === 'structured'
-        ? earnableByMethod(question as never, result.rubric_awarded).length
+        ? earnableByMethod(question as never, [...result.rubric_awarded, ...earnedByPhoto]).length
         : 0,
+    working,
   };
 }
 

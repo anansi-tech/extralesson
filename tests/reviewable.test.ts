@@ -85,10 +85,15 @@ describe('a reviewed question shows what the photograph earned', () => {
   });
 
   it('keeps the transcription when the image is already gone', () => {
-    // The 7-day TTL is on the image alone. Deliberate: see ROUND_2_EXAMINER §9.
+    // The 7-day TTL is on the image alone (ROUND_2_EXAMINER §9). The one clock
+    // a reading carries is expires_at, set on a read taken before submit and
+    // unset the moment it is linked to an attempt (ROUND_4 Task 1).
     const db = readFileSync(join(process.cwd(), 'lib', 'db', 'transcription.ts'), 'utf8');
     const transcriptionSchema = db.slice(0, db.indexOf('CapturedImageSchema'));
-    expect(transcriptionSchema).not.toContain('expireAfterSeconds');
+    const ttls = transcriptionSchema.match(/index\(\{ (\w+): 1 \}, \{ expireAfterSeconds/g) ?? [];
+    expect(ttls).toEqual(['index({ expires_at: 1 }, { expireAfterSeconds']);
     expect(db.slice(db.indexOf('CapturedImageSchema'))).toContain('expireAfterSeconds');
+    const mark = readFileSync(join(process.cwd(), 'app', 'study', 'session', '[id]', 'mark-working.ts'), 'utf8');
+    expect(mark).toMatch(/\$unset: \{ expires_at/);
   });
 });
