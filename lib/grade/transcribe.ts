@@ -23,8 +23,17 @@ export const TranscriptionLineZ = z.object({
   confidence: z.number().min(0).max(1),
 });
 
+/** The final answer the student wrote for one slot, as the grader would parse it. */
+export const TranscribedAnswerZ = z.object({
+  /** The slot ref exactly as it was listed to the reader: 'a', 'b.ii'. */
+  slot_label: z.string().max(30),
+  text: z.string().max(200),
+});
+
 export const TranscriptionZ = z.object({
   lines: z.array(TranscriptionLineZ).max(80),
+  /** Prefill for the answer boxes (ROUND_4 Task 1). A slot with no final answer is absent. */
+  answers: z.array(TranscribedAnswerZ).max(20).default([]),
   legible: z.boolean(),
   notes: z.string().max(200).optional(),
 });
@@ -94,6 +103,11 @@ async function readOnce(args: TranscribeArgs): Promise<TranscribeOutcome> {
               `no label of its own belongs to the same part as the line above it. If a ` +
               `line cannot be attributed, set part_label to null.\n\n` +
               `${CONVENTIONS}\n\n` +
+              `In answers, give the student's FINAL answer for each slot listed above that ` +
+              `has one, written the same way: slot_label is the slot exactly as listed, text ` +
+              `is what they wrote as their answer — the value they boxed, underlined or wrote ` +
+              `last for that slot, even if it is wrong. Leave out a slot with no final answer. ` +
+              `Never work one out.\n\n` +
               `confidence is your confidence in READING that line, from 0 to 1. Set ` +
               `legible to false if the photograph cannot be read at all, and use notes ` +
               `for anything that would explain a gap — a cut-off page, a shadow.`,

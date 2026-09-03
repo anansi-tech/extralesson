@@ -86,9 +86,23 @@ describe('transcription contract — model, validator and store agree', () => {
     for (const field of Object.keys(TranscriptionLineZ.shape)) {
       expect(stored, `a line's ${field} is validated but not stored`).toContain(field);
     }
-    for (const field of ['legible', 'notes', 'take', 'reader_model']) {
+    for (const field of ['legible', 'notes', 'take', 'reader_model', 'answers']) {
       expect(Object.keys(Transcription.schema.paths)).toContain(field);
     }
+  });
+
+  // ROUND_4 Task 1: the reader's final answer per slot is what prefills the
+  // boxes, so it is validated as a slot ref and text and stored as the same.
+  it('reads a final answer per slot, and stores it under the same two names', () => {
+    const parsed = TranscriptionZ.parse({
+      lines: [],
+      legible: true,
+      answers: [{ slot_label: 'a.i', text: '3/4' }],
+    });
+    expect(parsed.answers).toEqual([{ slot_label: 'a.i', text: '3/4' }]);
+    expect(TranscriptionZ.parse({ lines: [], legible: true }).answers).toEqual([]);
+    const stored = (Transcription.schema.path('answers') as unknown as { schema: { paths: object } }).schema;
+    expect(Object.keys(stored.paths)).toEqual(expect.arrayContaining(['slot_label', 'text']));
   });
 
   // R2 §1.2 — the transcription is a claim about the image, never a mark. If a

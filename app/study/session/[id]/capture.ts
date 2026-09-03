@@ -202,6 +202,7 @@ export async function captureWorking(input: {
     attempt_id: attemptId,
     question_id: attempt.question_id,
     lines: read.transcription.lines,
+    answers: read.transcription.answers,
     legible: read.transcription.legible,
     notes: read.transcription.notes,
     take,
