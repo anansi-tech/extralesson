@@ -16,8 +16,8 @@ export const MAX_TAKES = 2;
 export const MAX_BYTES = 1_500_000;
 
 export const TranscriptionLineZ = z.object({
-  /** As the student labelled it; a line with no label inherits the one above. */
-  part_label: z.string().max(4).nullable(),
+  /** As the student labelled it, or the whole slot ref; normaliseLabels splits it. */
+  part_label: z.string().max(30).nullable(),
   slot_label: z.string().max(30).nullable(),
   text: z.string().max(400),
   confidence: z.number().min(0).max(1),
