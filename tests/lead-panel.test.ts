@@ -1,5 +1,7 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { shouldLeadWithReachable } from '@/lib/study/lead-panel';
+import { leadPanel, shouldLeadWithReachable } from '@/lib/study/lead-panel';
 
 const leading = { reachableCount: 3, estimable: true, overallPercent: 30 };
 
@@ -36,5 +38,32 @@ describe('shouldLeadWithReachable', () => {
     expect(
       shouldLeadWithReachable({ reachableCount: 0, estimable: true, overallPercent: 10 }),
     ).toBe(false);
+  });
+});
+
+// ROUND_4 Task 2: before the first question, the first question leads and the
+// diagnostic sits beneath it; after it, the dashboard is as it was.
+describe('leadPanel — the first question comes first', () => {
+
+  it('leads with the first question until one exists, however new the student', () => {
+    expect(leadPanel({ open: false, firstTaken: false, isNewStudent: true })).toBe('first');
+    expect(leadPanel({ open: false, firstTaken: false, isNewStudent: false })).toBe('first');
+  });
+
+  it('is the dashboard as before once it exists', () => {
+    expect(leadPanel({ open: false, firstTaken: true, isNewStudent: true })).toBe('diagnostic');
+    expect(leadPanel({ open: false, firstTaken: true, isNewStudent: false })).toBe('session');
+  });
+
+  it('always resumes an open session, including the first question itself', () => {
+    expect(leadPanel({ open: true, firstTaken: false, isNewStudent: true })).toBe('resume');
+  });
+
+  it('is what /study renders, with the diagnostic under the first question', () => {
+    const page = readFileSync(join(process.cwd(), 'app', 'study', 'page.tsx'), 'utf8');
+    expect(page).toMatch(/firstTaken: await firstQuestionTaken\(auth\.student_id\)/);
+    const first = page.slice(page.indexOf("lead === 'first' ? ("), page.indexOf("lead === 'diagnostic' ? ("));
+    expect(first).toMatch(/name="mode" value="first"[\s\S]*Mark one question now[\s\S]*name="mode" value="diagnostic"/);
+    expect(page).toContain("error === 'first-taken'");
   });
 });

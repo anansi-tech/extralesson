@@ -22,8 +22,8 @@ import { DIAGNOSTIC_MINUTES, m1GateHolds, SESSION_MINUTES } from '@/lib/session/
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
 import { groupReviewableByDay, loadReviewable } from '@/lib/study/reviewable';
-import { shouldLeadWithReachable } from '@/lib/study/lead-panel';
-import { DIAGNOSTIC_INTERVAL_DAYS, diagnosticOpensAt, FREE_SESSIONS } from '@/lib/access';
+import { leadPanel, shouldLeadWithReachable } from '@/lib/study/lead-panel';
+import { DIAGNOSTIC_INTERVAL_DAYS, diagnosticOpensAt, firstQuestionTaken, FREE_SESSIONS } from '@/lib/access';
 import { sittingLabel } from '@/lib/sittings';
 import { paymentLink } from '@/lib/landing-content';
 import { BAND_LABEL } from '@/lib/study/profiles';
@@ -121,6 +121,11 @@ export default async function StudyDashboard({
   const diagnosticOpensAtDate = await diagnosticOpensAt(auth.student_id);
   const diagnosticOpen =
     diagnosticOpensAtDate === null || Date.now() >= diagnosticOpensAtDate.getTime();
+  const lead = leadPanel({
+    open: Boolean(open),
+    firstTaken: await firstQuestionTaken(auth.student_id),
+    isNewStudent,
+  });
 
   // What the trajectory is still waiting for, named rather than guessed at.
   const gap = trajectoryGap({
@@ -217,7 +222,7 @@ export default async function StudyDashboard({
         {/* THE ACTION COMES FIRST. The analysis is worth reading, but after
             you have decided to work — so it sits below the button, not in
             front of it. */}
-        {open ? (
+        {lead === 'resume' && open ? (
           <Link
             href={`/study/session/${open.id}`}
             className="mt-5 block bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]"
@@ -228,7 +233,32 @@ export default async function StudyDashboard({
               {open.marksLeft === 1 ? '' : 'S'} LEFT
             </small>
           </Link>
-        ) : isNewStudent ? (
+        ) : lead === 'first' ? (
+          // THE FIRST FIVE MINUTES SHOW WHAT THIS IS: one exam question, the
+          // working photographed and marked. The diagnostic comes second.
+          <>
+            <form action={startSession} className="mt-5">
+              <input type="hidden" name="mode" value="first" />
+              <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
+                Mark one question now
+                <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
+                  ONE EXAM QUESTION · PHOTOGRAPH YOUR WORKING · MARKED LIKE THE PAPER
+                </small>
+              </button>
+            </form>
+            {diagnosticOpen && (
+              <form action={startSession} className="mt-3">
+                <input type="hidden" name="mode" value="diagnostic" />
+                <button className="w-full border-[1.5px] border-ink p-3 text-center font-semibold">
+                  Or start with the diagnostic
+                  <small className="block font-mono text-[10px] uppercase tracking-widest text-dim">
+                    About {DIAGNOSTIC_MINUTES} minutes · finds where to start
+                  </small>
+                </button>
+              </form>
+            )}
+          </>
+        ) : lead === 'diagnostic' ? (
           // BEFORE THE FIRST ATTEMPT, THE DIAGNOSTIC LEADS: weakest-first has
           // nothing to sort on with no attempts, so the session falls back to
           // blueprint weight alone. Swaps back on its own once attempts exist.
@@ -265,11 +295,13 @@ export default async function StudyDashboard({
           </form>
         )}
         <p className="mt-2 text-center text-[11px] leading-snug text-dim">
-          {open
+          {lead === 'resume'
             ? 'Your answers so far are saved. You can look back at any question you have already done.'
-            : isNewStudent
-              ? 'Eight quick questions across the syllabus. Nothing is scored or graded — it only puts your topics in order, so the sessions after it start in the right place.'
-              : 'One or two whole exam questions, priced the way the paper prices them — a Paper 2 question is 9 to 12 marks and takes most of the session.'}
+            : lead === 'first'
+              ? 'One structured question. Work it on paper, photograph the page, and it is marked the way an examiner marks it — the answer and the method. Free, and not one of your sessions.'
+              : lead === 'diagnostic'
+                ? 'Eight quick questions across the syllabus. Nothing is scored or graded — it only puts your topics in order, so the sessions after it start in the right place.'
+                : 'One or two whole exam questions, priced the way the paper prices them — a Paper 2 question is 9 to 12 marks and takes most of the session.'}
         </p>
 
         {leadWithReachable && (
@@ -446,6 +478,15 @@ export default async function StudyDashboard({
               It ranks your topics, and it has — your sessions start where it put you. Another one
               this term would rank the same topics from the same answers. It opens again after{' '}
               {DIAGNOSTIC_INTERVAL_DAYS} days, for coming back to after a term away.
+            </p>
+          </section>
+        )}
+        {error === 'first-taken' && (
+          <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+            <div className="section-label is-alert">You have had your first question</div>
+            <p className="mt-1 text-sm leading-snug">
+              It was one question to show how marking works, and it is done. A session gives you
+              whole exam questions marked the same way.
             </p>
           </section>
         )}
