@@ -505,3 +505,52 @@ describe('m1GateHolds — one condition, used by the page and the builder', () =
     expect(picked.map((p) => p.id)).toEqual(['m2']);
   });
 });
+
+// ROUND_4 Task 2. A new student's first action is ONE structured question with
+// method marks to earn, photographed: the examiner is the product, and this
+// is the first thing they meet.
+describe("buildSession — 'first' is one question that shows the examiner", () => {
+  const base = { perObjectiveMastery: new Map<string, number>(), m1Mastery: 0, targetModules: [1, 2, 3] as (1 | 2 | 3)[], topicWeightByPrefix: weights, mode: 'first' as const };
+  const withRows = (c: CandidateQuestion, method_rows: number) => ({ ...c, method_rows });
+
+  it('returns exactly one structured question with earnable method rows', () => {
+    const picked = buildSession({
+      ...base,
+      candidates: [
+        withRows(q('mcq', 1, 'M1.1.1', 'mcq'), 0),
+        withRows(q('s-cao', 1, 'M1.1.2', 'structured', 9), 0),
+        withRows(q('s-method', 1, 'M1.1.3', 'structured', 9), 2),
+      ],
+    });
+    expect(picked.map((p) => p.id)).toEqual(['s-method']);
+  });
+
+  it('takes the top-ranked one, the way adaptive would rank it', () => {
+    const picked = buildSession({
+      ...base,
+      targetModules: [2, 3],
+      candidates: [
+        withRows(q('light', 3, 'M3.1.1', 'structured', 9), 1),
+        withRows(q('heavy', 2, 'M2.3.1', 'structured', 9), 1),
+      ],
+    });
+    expect(picked.map((p) => p.id)).toEqual(['heavy']); // M2.3 weighs 10, M3.1 weighs 6
+  });
+
+  it('keeps to the target modules', () => {
+    const picked = buildSession({
+      ...base,
+      targetModules: [2],
+      candidates: [withRows(q('m1', 1, 'M1.1.1', 'structured', 9), 3)],
+    });
+    expect(picked).toEqual([]);
+  });
+
+  it('returns nothing rather than a question with nothing for a photograph to earn', () => {
+    const picked = buildSession({
+      ...base,
+      candidates: [withRows(q('s', 1, 'M1.1.1', 'structured', 9), 0), q('bare', 1, 'M1.1.2', 'structured', 9)],
+    });
+    expect(picked).toEqual([]);
+  });
+});

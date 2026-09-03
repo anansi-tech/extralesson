@@ -1,5 +1,5 @@
 import { dbConnect, Attempt, Payment, PracticeSession, Student } from '@/lib/db';
-import { FREE_SESSIONS, hasAccess } from '@/lib/access';
+import { FREE_MODES, FREE_SESSIONS, hasAccess } from '@/lib/access';
 import { grantAccess, resolvePayment, revokeAccess } from './actions';
 import { DeleteAccount } from './delete-account';
 
@@ -43,7 +43,7 @@ export default async function AccessPage() {
   const ids = students.map((s) => s._id);
   const [sessionCounts, attemptCounts] = await Promise.all([
     PracticeSession.aggregate<{ _id: unknown; n: number }>([
-      { $match: { student_id: { $in: ids }, mode: { $ne: 'diagnostic' } } },
+      { $match: { student_id: { $in: ids }, mode: { $nin: FREE_MODES } } },
       { $group: { _id: '$student_id', n: { $sum: 1 } } },
     ]),
     Attempt.aggregate<{ _id: unknown; n: number }>([

@@ -51,22 +51,30 @@ export async function diagnosticOpensAt(studentId: string): Promise<Date | null>
 }
 
 /**
- * Sessions that count against the free tier: the ones the student chose to
- * sit. A diagnostic stays free — charging for it means charging before we have
- * shown anything — and is capped instead; see DIAGNOSTIC_INTERVAL_DAYS.
+ * Free and capped rather than counted: charging for either means charging
+ * before we have shown anything. The diagnostic is one per DIAGNOSTIC_INTERVAL_DAYS;
+ * the first question is one per student, ever (ROUND_4 Task 2).
  */
+export const FREE_MODES = ['diagnostic', 'first'];
+
+/** Sessions that count against the free tier: the ones the student chose to sit. */
 export async function freeSessionsUsed(studentId: string): Promise<number> {
   return PracticeSession.countDocuments({
     student_id: studentId,
-    mode: { $ne: 'diagnostic' },
+    mode: { $nin: FREE_MODES },
   });
+}
+
+export async function firstQuestionTaken(studentId: string): Promise<boolean> {
+  return Boolean(await PracticeSession.exists({ student_id: studentId, mode: 'first' }));
 }
 
 /** The refusal's reason IS the error code the hub reads. */
 export type SessionGate =
   | { allowed: true }
   | { allowed: false; reason: 'needs-access' | 'access-expired'; used: number }
-  | { allowed: false; reason: 'diagnostic-taken'; opensAt: Date };
+  | { allowed: false; reason: 'diagnostic-taken'; opensAt: Date }
+  | { allowed: false; reason: 'first-taken' };
 
 export async function canStartSession(
   studentId: string,
@@ -80,6 +88,9 @@ export async function canStartSession(
     const opensAt = await diagnosticOpensAt(studentId);
     if (opensAt === null || now.getTime() >= opensAt.getTime()) return { allowed: true };
     return { allowed: false, reason: 'diagnostic-taken', opensAt };
+  }
+  if (mode === 'first') {
+    return (await firstQuestionTaken(studentId)) ? { allowed: false, reason: 'first-taken' } : { allowed: true };
   }
   if (hasAccess(access, now)) return { allowed: true };
   // An expired account falls back to the free tier EXACTLY as an unpaid one

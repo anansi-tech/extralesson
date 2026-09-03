@@ -13,7 +13,7 @@ export const SESSION_MINUTES = 15;
  * student who knows something about their own week — today's class topic, or
  * the questions they got wrong rather than ones they have never seen.
  */
-export type SessionMode = 'adaptive' | 'topic' | 'revisit' | 'diagnostic';
+export type SessionMode = 'adaptive' | 'topic' | 'revisit' | 'diagnostic' | 'first';
 
 /**
  * Twelve minutes buys about eight items: enough to RANK topics so weakest-first
@@ -39,6 +39,8 @@ export interface CandidateQuestion {
   marks: number;
   /** Response modes present on this question's parts — see ROUND_1_6 §1. */
   response_modes?: string[];
+  /** Rubric rows a photograph of the working could earn; 'first' needs one. */
+  method_rows?: number;
 }
 
 // A question belongs in the session when it has anything to mark; self-marked
@@ -108,7 +110,7 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
 
   // The gate belongs to the mode that chose for the student: holding M3 back
   // would overrule a student who named a topic or asked for their own mistakes.
-  const m1Gated = mode === 'adaptive' && m1GateHolds(targetModules, m1Mastery);
+  const m1Gated = (mode === 'adaptive' || mode === 'first') && m1GateHolds(targetModules, m1Mastery);
 
   const startedPrefixes = new Set(
     [...(attemptedObjectives ?? [])].map(objectivePrefix),
@@ -116,6 +118,9 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
 
   const eligible = (c: CandidateQuestion): boolean => {
     if (!hasMarkableParts(c)) return false;
+    // The first question shows the examiner: structured, photographed, with
+    // method marks to earn (ROUND_4 Task 2). Ranked as adaptive would rank it.
+    if (mode === 'first' && (c.kind !== 'structured' || !(c.method_rows ?? 0))) return false;
     if (mode === 'topic') {
       return (focusPrefixes ?? []).some((prefix) =>
         c.objective_ids.some((id) => id.startsWith(prefix)),
@@ -163,6 +168,8 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
       if (b.priority !== a.priority) return b.priority - a.priority;
       return a.id < b.id ? -1 : 1;
     });
+
+  if (mode === 'first') return scored.slice(0, 1);
 
   // Degrade gracefully when one pool runs dry, and deprioritize objectives
   // already picked so a session spreads instead of repeating one.

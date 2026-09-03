@@ -9,7 +9,8 @@ import { planSession, topicPrefixesOf } from '@/lib/session/plan';
 import { legibleMinWidth, MAX_FIGURE_PX } from '@/lib/visuals/legibility';
 import { slotCellNames } from '@/lib/visuals/slot-names';
 import { SessionDraft } from '@/lib/db';
-import { SESSION_MINUTES } from '@/lib/session/builder';
+import { DIAGNOSTIC_MINUTES, SESSION_MINUTES } from '@/lib/session/builder';
+import { diagnosticOpensAt } from '@/lib/access';
 import { rankByVerdict, topicsSeen, verdictFor } from '@/lib/study/diagnostic';
 import { startSession } from '@/app/study/actions';
 import { loadReviewable } from '@/lib/study/reviewable';
@@ -125,6 +126,83 @@ export default async function SessionPage({
         const prev = before.topics.find((b) => b.code === t.code);
         return { code: t.code, title: t.title, from: prev?.mastery ?? 0, to: t.mastery };
       });
+
+    // The first question says one thing: what the working earned, and that
+    // the diagnostic is next (ROUND_4 Task 2). No ranking, no estimate.
+    if (session.mode === 'first') {
+      const marked = reviewable[0];
+      const earned = marked?.earned ?? totals.CK + totals.AK + totals.R;
+      const outOf = marked?.marks ?? attempts.length;
+      const opensAt = await diagnosticOpensAt(auth.student_id);
+      const diagnosticOpen = opensAt === null || Date.now() >= opensAt.getTime();
+      return (
+        <main className="ruled relative min-h-screen px-5 py-8">
+          <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
+          <div className="mx-auto max-w-xl">
+            <h1 className="text-2xl font-black">
+              Marked<span className="text-red-pen">.</span>
+            </h1>
+            <section className="mt-5 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+              <div className="section-label">What that question earned</div>
+              <div className="mt-2 text-5xl font-black text-red-pen">
+                {earned}
+                <span className="text-2xl text-dim">/{outOf}</span>
+              </div>
+              <p className="mt-2 text-[12px] leading-snug text-dim">
+                {marked?.photographed
+                  ? 'Marks for the answer, and marks for the method we read off your page.'
+                  : 'Marks for the answer. Method marks need the working: photograph the page next time.'}
+              </p>
+              {marked && (
+                <Link
+                  href={`/study/session/${marked.sessionId}?q=${marked.index}`}
+                  className="mt-3 block font-mono text-[11px] uppercase tracking-widest underline"
+                >
+                  Look at the marking
+                </Link>
+              )}
+            </section>
+
+            <section className="mt-5 border-l-3 border-red-pen bg-[#FDF1F0] p-3">
+              <div className="section-label">Next: the diagnostic</div>
+              <p className="mt-1 text-sm leading-snug">
+                Eight quick questions across the syllabus. Nothing is graded — it puts your topics in
+                order, so the sessions after it start in the right place.
+              </p>
+            </section>
+
+            {diagnosticOpen ? (
+              <form action={startSession} className="mt-5">
+                <input type="hidden" name="mode" value="diagnostic" />
+                <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
+                  Start the diagnostic
+                  <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
+                    ABOUT {DIAGNOSTIC_MINUTES} MINUTES · FINDS WHERE TO START
+                  </small>
+                </button>
+              </form>
+            ) : (
+              <form action={startSession} className="mt-5">
+                <input type="hidden" name="mode" value="adaptive" />
+                <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
+                  Start a session
+                  <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
+                    ABOUT {SESSION_MINUTES} MINUTES AT EXAM PACE
+                  </small>
+                </button>
+              </form>
+            )}
+
+            <Link
+              href="/study"
+              className="mt-3 block text-center font-mono text-[11px] uppercase tracking-widest text-dim underline"
+            >
+              Back to your notebook
+            </Link>
+          </div>
+        </main>
+      );
+    }
 
     // A diagnostic reports the RANKING it went to get, never a grade: eight
     // items is far below the mark gate a prediction needs. Nor a score out of

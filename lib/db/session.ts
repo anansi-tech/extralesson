@@ -9,7 +9,7 @@ const SessionSchema = new Schema({
   // answered nothing else tells it apart from an ordinary session.
   mode: {
     type: String,
-    enum: ['adaptive', 'topic', 'revisit', 'diagnostic'],
+    enum: ['adaptive', 'topic', 'revisit', 'diagnostic', 'first'],
     default: 'adaptive',
   },
   started_at: { type: Date, default: Date.now, required: true },

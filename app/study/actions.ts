@@ -10,7 +10,7 @@ import { loadTopicChoices } from '@/lib/study/topics';
 import { canStartSession, type Access } from '@/lib/access';
 import type { ModuleNumber } from '@/lib/types';
 
-const MODES: SessionMode[] = ['adaptive', 'topic', 'revisit', 'diagnostic'];
+const MODES: SessionMode[] = ['adaptive', 'topic', 'revisit', 'diagnostic', 'first'];
 
 export async function startSession(formData?: FormData): Promise<void> {
   const requested = String(formData?.get('mode') ?? 'adaptive');

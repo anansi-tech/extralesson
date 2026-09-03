@@ -2,6 +2,8 @@ import { Question } from '@/lib/db';
 import { buildSession, type CandidateQuestion, type SessionMode } from './builder';
 import { loadStudyState } from '@/lib/study/state';
 import { loadMistakes } from '@/lib/study/mistakes';
+import { earnableByMethod } from '@/lib/grade/method-marks';
+import type { RubricItem } from '@/lib/types';
 import type { ModuleNumber } from '@/lib/types';
 
 /**
@@ -25,7 +27,7 @@ export async function planSession(args: PlanArgs): Promise<CandidateQuestion[]> 
   const [state, raw, mistakes] = await Promise.all([
     loadStudyState(studentId, targetModules),
     Question.find({ status: 'approved' })
-      .select('objective_ids module kind marks parts')
+      .select(mode === 'first' ? 'objective_ids module kind marks parts rubric' : 'objective_ids module kind marks parts')
       .lean<
         {
           _id: unknown;
@@ -33,7 +35,8 @@ export async function planSession(args: PlanArgs): Promise<CandidateQuestion[]> 
           module: ModuleNumber;
           kind: 'mcq' | 'structured';
           marks: number;
-          parts?: { slots?: { response_mode?: string }[] }[];
+          parts?: { label: string; slots?: { label: string; response_mode?: string }[] }[];
+          rubric?: RubricItem[];
         }[]
       >(),
     mode === 'revisit' ? loadMistakes(studentId, now) : null,
@@ -49,6 +52,7 @@ export async function planSession(args: PlanArgs): Promise<CandidateQuestion[]> 
       response_modes: (c.parts ?? []).flatMap((p) =>
         (p.slots ?? []).map((slot) => slot.response_mode ?? 'answer'),
       ),
+      method_rows: c.rubric ? earnableByMethod(c, []).length : undefined,
     })),
     perObjectiveMastery: state.perObjective,
     attemptedObjectives: state.attemptedObjectives,
