@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { dbConnect, Attempt, CapturedImage, Question, Transcription } from '@/lib/db';
+import { dbConnect, Attempt, CapturedImage, PracticeSession, Question, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { markableSlots } from '@/lib/grade/mark';
 import {
@@ -59,10 +59,17 @@ export async function captureWorking(input: {
   const attempt = await Attempt.findOne({ _id: attemptId, student_id: auth.student_id }).lean<{
     _id: unknown;
     question_id: unknown;
+    session_id: unknown;
     rubric_awarded: string[];
     answer: string | number;
   } | null>();
   if (!attempt) return { error: 'That answer could not be found.' };
+  const session = await PracticeSession.findById(attempt.session_id)
+    .select('question_ids')
+    .lean<{ question_ids: unknown[] } | null>();
+  const questionIndex =
+    session?.question_ids.findIndex((q) => String(q) === String(attempt.question_id)) ?? -1;
+  if (questionIndex < 0) return { error: 'That answer could not be found.' };
 
   // Earlier takes, for the take number AND for what they already paid for.
   const earlier = await Transcription.find({ attempt_id: attemptId })
@@ -190,6 +197,8 @@ export async function captureWorking(input: {
 
   await Transcription.create({
     student_id: auth.student_id,
+    session_id: attempt.session_id,
+    question_index: questionIndex,
     attempt_id: attemptId,
     question_id: attempt.question_id,
     lines: read.transcription.lines,
@@ -206,6 +215,8 @@ export async function captureWorking(input: {
   // database's own clock (lib/db/transcription.ts).
   await CapturedImage.create({
     student_id: auth.student_id,
+    session_id: attempt.session_id,
+    question_index: questionIndex,
     attempt_id: attemptId,
     take,
     data: bytes,

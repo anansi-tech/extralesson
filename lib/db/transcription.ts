@@ -16,11 +16,34 @@ const LineSchema = new Schema(
   { _id: false },
 );
 
+/**
+ * A READ IS KEYED ON THE QUESTION IN THE SESSION, NOT ON THE ATTEMPT: photo
+ * first means the page is read before any attempt exists (ROUND_4 Task 1).
+ * attempt_id is set once, by markWorking, when the answers are handed in.
+ */
 const TranscriptionSchema = new Schema({
   student_id: { type: Schema.Types.ObjectId, ref: 'Student', required: true },
-  attempt_id: { type: Schema.Types.ObjectId, ref: 'Attempt', required: true },
+  session_id: { type: Schema.Types.ObjectId, ref: 'PracticeSession', required: true },
+  question_index: { type: Number, required: true },
+  attempt_id: { type: Schema.Types.ObjectId, ref: 'Attempt' },
   question_id: { type: Schema.Types.ObjectId, ref: 'Question', required: true },
   lines: { type: [LineSchema], required: true },
+  /** The reader's final answer per slot ref, in the grader's conventions — the prefill. */
+  answers: {
+    type: [new Schema({ slot_label: { type: String, required: true }, text: { type: String, required: true } }, { _id: false })],
+    default: [],
+  },
+  /** The drawing check, run at read time and decided from at submit; never re-read. */
+  construction: {
+    type: new Schema(
+      {
+        complete: { type: Boolean, required: true },
+        legible: { type: Boolean, required: true },
+        missing: { type: [new Schema({ describes: String, note: String }, { _id: false })], default: [] },
+      },
+      { _id: false },
+    ),
+  },
   legible: { type: Boolean, required: true },
   notes: { type: String },
   /** Which read this is: a student may retake once (R2 §2). */
@@ -56,7 +79,8 @@ const TranscriptionSchema = new Schema({
   created_at: { type: Date, default: Date.now, required: true },
 });
 
-TranscriptionSchema.index({ attempt_id: 1, take: 1 }, { unique: true });
+TranscriptionSchema.index({ session_id: 1, question_index: 1, take: 1 }, { unique: true });
+TranscriptionSchema.index({ attempt_id: 1 });
 
 export type TranscriptionDoc = InferSchemaType<typeof TranscriptionSchema>;
 export const Transcription =
@@ -71,7 +95,9 @@ export const IMAGE_TTL_DAYS = 7;
 
 const CapturedImageSchema = new Schema({
   student_id: { type: Schema.Types.ObjectId, ref: 'Student', required: true },
-  attempt_id: { type: Schema.Types.ObjectId, ref: 'Attempt', required: true },
+  session_id: { type: Schema.Types.ObjectId, ref: 'PracticeSession', required: true },
+  question_index: { type: Number, required: true },
+  attempt_id: { type: Schema.Types.ObjectId, ref: 'Attempt' },
   take: { type: Number, default: 1, required: true },
   /** JPEG bytes, already scaled down on the device before they were sent. */
   data: { type: Buffer, required: true },
@@ -83,7 +109,7 @@ CapturedImageSchema.index(
   { created_at: 1 },
   { expireAfterSeconds: IMAGE_TTL_DAYS * 24 * 60 * 60 },
 );
-CapturedImageSchema.index({ attempt_id: 1, take: 1 }, { unique: true });
+CapturedImageSchema.index({ session_id: 1, question_index: 1, take: 1 }, { unique: true });
 
 export type CapturedImageDoc = InferSchemaType<typeof CapturedImageSchema>;
 export const CapturedImage =

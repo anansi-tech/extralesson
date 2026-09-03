@@ -57,6 +57,8 @@ async function seed() {
   await db.SessionDraft.create({ session_id: session._id, question_index: 0, answers: { 'a.i': '2' } });
   await db.Transcription.create({
     student_id: student._id,
+    session_id: session._id,
+    question_index: 0,
     attempt_id: attempt._id,
     question_id: question,
     lines: [{ text: 'working', confidence: 1 }],
@@ -65,6 +67,8 @@ async function seed() {
   });
   await db.CapturedImage.create({
     student_id: student._id,
+    session_id: session._id,
+    question_index: 0,
     attempt_id: attempt._id,
     data: Buffer.from([1, 2, 3]),
     content_type: 'image/jpeg',
