@@ -1,16 +1,9 @@
 import { Schema, model, models, type InferSchemaType } from 'mongoose';
 
 /**
- * WHAT WE READ OFF A STUDENT'S PAGE.
- *
- * R2 §1.2 — transcription is separated from marking and the transcription is
- * stored. Two calls, two artifacts: this is a claim about the image that the
- * student can check, and marking is a judgment over it. Because it persists,
- * every future marking change replays against it, the way audit-remark.ts
- * replays a grader change against stored attempts.
- *
- * Never a mark. Nothing here decides anything; it is the evidence a decision is
- * made from, and it is shown to the student before any mark is reported.
+ * WHAT WE READ OFF A STUDENT'S PAGE — never a mark (ROUND_2 §1). Stored so the
+ * student can check the claim we made about their image, and so every future
+ * marking change replays against it. Shown before any mark is reported.
  */
 const LineSchema = new Schema(
   {
@@ -39,16 +32,9 @@ const TranscriptionSchema = new Schema({
   },
   reader_model: { type: String, required: true },
   /**
-   * METHOD MARKS EARNED BY THIS WORKING.
-   *
-   * They live here, not on the attempt, because an attempt is append-only: it
-   * is the record of what a student was told at the moment they submitted, and
-   * the photograph comes afterwards. Folding these in at read time (see
-   * loadAttemptRows) keeps that record intact and still lets the marks count.
-   *
-   * mark_value is copied rather than looked up so the fold is a sum, and so a
-   * later edit to the question's rubric cannot silently restate what a student
-   * was awarded — the same reason an attempt stores its own fingerprint.
+   * METHOD MARKS EARNED BY THIS WORKING — not on the attempt, which is
+   * append-only; loadAttemptRows folds them in at read time. mark_value is
+   * COPIED so a later rubric edit cannot restate what a student was awarded.
    */
   method_marks: {
     type: [
@@ -77,13 +63,9 @@ export const Transcription =
   models.Transcription ?? model('Transcription', TranscriptionSchema);
 
 /**
- * THE PHOTOGRAPH ITSELF, HELD BRIEFLY AND THEN NOT AT ALL.
- *
- * R2 §2 — the image is a means, not a record. It is kept only long enough for a
- * retake or a dispute and then deleted by the database, not by a job someone
- * has to remember to run. This is a sixteen-year-old's handwriting photographed
- * in their home; the least we hold, the better, and holding it on a timer we do
- * not control is the version of that promise that survives us forgetting.
+ * THE PHOTOGRAPH IS A MEANS, NOT A RECORD: a minor's work, kept only long
+ * enough for a retake or a dispute, then deleted by the DATABASE rather than by
+ * a job someone has to remember to run. ROUND_2 §2, §8b.
  */
 export const IMAGE_TTL_DAYS = 7;
 

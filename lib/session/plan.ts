@@ -5,12 +5,9 @@ import { loadMistakes } from '@/lib/study/mistakes';
 import type { ModuleNumber } from '@/lib/types';
 
 /**
- * Choosing the questions for a session, in ONE place.
- *
- * Starting a session and previewing one have to agree, or the diagnostic's
- * closing promise — "your next session starts here" — is a guess about code
- * somewhere else. buildSession is pure and deterministic, so the same inputs
- * give the same questions: previewing is running it, not predicting it.
+ * Choosing the questions for a session, in ONE place: starting a session and
+ * previewing one have to agree. buildSession is pure and deterministic, so
+ * previewing is running it rather than predicting it.
  */
 export interface PlanArgs {
   studentId: string;

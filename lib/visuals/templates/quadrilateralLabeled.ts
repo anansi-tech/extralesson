@@ -2,14 +2,10 @@ import { z } from 'zod';
 import { line, pathArc, polar, polygon, round, svgOpen, text } from '../svg';
 import { valueStatedInText, type VisualTemplate } from '../types';
 
-// R1.8 §4.5 — the labelled quadrilateral of Section I geometry: a trapezium
-// with its parallel sides marked and two angles given, a parallelogram, a kite,
-// a rectangle. This is the 2019 PQRS figure and its relatives.
-//
-// polygonMarkedAngle cannot do it: that template places vertices on a
-// circumcircle, and a general trapezium is not cyclic, so parallel sides can
-// never be guaranteed. The shape decides the placement here instead — which is
-// why parallelism is true by construction rather than asserted in a label.
+// R1.8 §4.5 — the labelled quadrilateral of Section I geometry: trapezium,
+// parallelogram, kite, rectangle. polygonMarkedAngle cannot do it, because it
+// places vertices on a circumcircle and a general trapezium is not cyclic; here
+// the shape decides the placement, so parallelism is true by construction.
 
 const LabelZ = z.string().min(1).max(4);
 
@@ -57,9 +53,8 @@ const H = 420;
 
 /**
  * Vertices in order, clockwise from the top left. Each shape is drawn to look
- * like itself — a trapezium visibly tapers, a kite is symmetric about its
- * vertical axis — because the figure is a labelled sketch and its job is to
- * show the relationship the question is about.
+ * like itself — a trapezium visibly tapers, a kite is symmetric — because the
+ * figure is a labelled sketch of the relationship the question is about.
  */
 function vertices(shape: QuadrilateralLabeledParams['shape']): [number, number][] {
   const cx = W / 2;
@@ -138,7 +133,6 @@ function parallelMark(a: [number, number], b: [number, number], count: number): 
     const off = (k - (count - 1) / 2) * 7;
     const px = mx + off * ux;
     const py = my + off * uy;
-    // an arrowhead pointing along the side
     const back = 6;
     const wing = 4.5;
     const [nx, ny] = [-uy, ux];
@@ -167,7 +161,6 @@ export const quadrilateralLabeled: VisualTemplate<QuadrilateralLabeledParams> = 
     const parts: string[] = [svgOpen(W, H)];
     parts.push(polygon(v, true));
 
-    // vertex labels, pushed outward from the centre
     p.labels.forEach((label, i) => {
       const [ux, uy] = unit(v[i][0] - cx, v[i][1] - cy);
       parts.push(text(v[i][0] + 22 * ux, v[i][1] + 22 * uy + 5, label, { size: 15, italic: true, halo: true }));
@@ -185,7 +178,6 @@ export const quadrilateralLabeled: VisualTemplate<QuadrilateralLabeledParams> = 
       parts.push(line(v[a][0], v[a][1], v[b][0], v[b][1]));
     }
 
-    // equal-length ticks
     for (const t of p.equalTicks) {
       const a = v[t.side];
       const b = v[(t.side + 1) % 4];
@@ -199,7 +191,6 @@ export const quadrilateralLabeled: VisualTemplate<QuadrilateralLabeledParams> = 
       }
     }
 
-    // marked angles
     for (const a of p.angles) {
       const label = a.variable ?? (a.value !== undefined ? `${a.value}°` : undefined);
       const i = a.vertex;
@@ -220,7 +211,6 @@ export const quadrilateralLabeled: VisualTemplate<QuadrilateralLabeledParams> = 
       }
     }
 
-    // side labels, pushed outward
     for (const s of p.sides) {
       const label = s.variable ?? (s.value !== undefined ? `${s.value}${s.unit ? ` ${s.unit}` : ''}` : undefined);
       if (label === undefined) continue;

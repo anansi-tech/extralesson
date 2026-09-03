@@ -1,23 +1,7 @@
 /**
- * THE √e LOCKUP, INLINED.
- *
- * Inlined rather than served as an <img>: no second request, nothing that can
- * 404, and it inherits no styling it should not. The trade is that it stops
- * being selectable text, which is the ordinary trade for a logo — so it
- * carries role="img" and a label, and the page title still says the name.
- *
- * WHY NOT THE MARK BESIDE HTML TEXT. The √e reading depends on the bar
- * overhanging the e with a few pixels of clearance at the floor, and that
- * clearance comes from the outlined wordmark's own metrics. Rebuilt in CSS
- * against a webfont it lands differently per browser and reads as a tick
- * colliding with a letter.
- *
- * ONE COPY OF EACH PATH. The reversed lockup is not a second drawing: it is
- * these same three paths in three different colours, which is all that
- * lockup-reversed.svg changes. The radical is also mark.svg exactly, and
- * app/opengraph-image.tsx imports it from here rather than keeping its own.
- * tests/brand.test.ts pins all of it against public/brand/, so the screen and
- * the source files cannot drift.
+ * Inlined rather than served as an image: no second request, nothing that can
+ * 404, and role="img" pays for the lost selectable text. ONE COPY OF EACH
+ * PATH, pinned by tests/brand.test.ts against public/brand/.
  */
 
 /** mark.svg, and the lockup's own radical — the same drawing. */
@@ -27,17 +11,13 @@ const LESSON_PATH = 'M5637.1 1432L5637.1 187Q5637.1 151 5643.1 135.5Q5649.1 120 
 
 /**
  * Below this the wordmark's serifs fill in and the bar stops reading as a
- * radical. Recorded in public/brand/README.md as the lockup's floor.
+ * radical. public/brand/README.md records it as the lockup's floor.
  */
 export const LOCKUP_MIN_PX = 120;
 /**
- * The mark on its own goes smaller, but not below this — as an ICON, which is
- * where it belongs: the favicon, the avatar, the app icon.
- *
- * There is deliberately no <Mark> component. A radical is an operator and
- * expects something after it, so alone in a header it reads as an unfinished
- * sum rather than as a logo. Where a header cannot hold the lockup it takes a
- * second row instead; tests/brand.test.ts holds that.
+ * The mark alone goes smaller, but only as an ICON. There is deliberately no
+ * mark-only component: a radical is an operator and expects something after
+ * it, so alone in a header it reads as an unfinished sum, not a logo.
  */
 export const MARK_MIN_PX = 32;
 
@@ -58,12 +38,9 @@ const TONES: Record<Tone, { radical: string; extra: string; lesson: string }> = 
 };
 
 /**
- * The lockup as SVG MARKUP, for somewhere that cannot take a React child.
- *
- * next/og renders through Satori, which takes an <img> but not an inline
- * <svg> element — and it has no Fraunces, so the wordmark rebuilt there as
- * styled text came out in a generic sans. Same three paths as the component
- * above; only the renderer differs.
+ * The lockup as SVG MARKUP, for somewhere that cannot take a React child:
+ * next/og renders through Satori, which takes an image element but not an
+ * inline svg, and has no Fraunces to rebuild the wordmark as styled text.
  */
 export function lockupSvgMarkup(tone: Tone = 'ink'): string {
   const c = TONES[tone];

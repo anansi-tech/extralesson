@@ -1,14 +1,7 @@
 /**
- * WHAT WE READ, AND WHAT IT EARNED.
- *
- * One renderer for two moments: straight after a photograph is taken, and again
- * whenever the student looks back at that question. It was written inline in
- * WorkingPhoto, which is a client component holding capture state, so looking
- * back at a finished question showed neither the transcription nor the marks
- * the working earned — the marks a student most wants to reread.
- *
- * Presentation only. It takes what is stored and shows it; it captures nothing,
- * marks nothing, and has no state of its own.
+ * One renderer for two moments: straight after a photograph is taken, and
+ * whenever the student looks back at that question. Presentation only — it
+ * captures nothing, marks nothing, and holds no state of its own.
  */
 export interface ReadLine {
   text: string;
@@ -82,12 +75,10 @@ export function WorkingRead({
       ))}
       {notes && <p className="mt-2 text-[12px] leading-snug text-dim">{notes}</p>}
 
-      {/* R2 §5. The marks the working earned, and — the part that makes this
-          worth photographing — WHY a row did not earn. "We could not see where
-          you divided by the scale factor" is something a student can go and
-          check against their page; a struck-through code is not. The marker is
-          more cautious than an examiner, so the reasons are how a student can
-          tell a real miss from one we could not see. */}
+      {/* WHY a row did not earn is what makes photographing worth it: "we could
+          not see where you divided by the scale factor" is something a student
+          can check against their page. The marker is cautious (ROUND_2 §5), so
+          the reason separates a miss from a misread. */}
       {method.length > 0 && (
         <div className="mt-3 border-t border-dashed border-paper-deep pt-2">
           <div className="section-label">

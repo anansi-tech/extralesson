@@ -1,13 +1,8 @@
 import { Attempt, PracticeSession, Question } from '@/lib/db';
 
-// A session the student started and has not finished. Coming back to the
-// landing page used to offer only "start today's session", which either
-// abandoned the half-finished one or built a second — and told them nothing
-// about what was left of it.
-//
-// What is left is reported in MARKS as well as questions. A session is a budget
-// of work priced at exam pace, so "1 of 2 done" understates a session whose
-// remaining question is worth 12 marks.
+// A session the student started and has not finished. What is left is reported
+// in MARKS as well as questions: a session is a budget of work priced at exam
+// pace, so "1 of 2 done" understates one whose remaining question is 12 marks.
 export interface OpenSession {
   id: string;
   questions: number;

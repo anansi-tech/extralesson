@@ -1,27 +1,15 @@
 import { Attempt, Question } from '@/lib/db';
 
 /**
- * WHAT THE STUDENT ACTUALLY GOT WRONG.
- *
- * Every attempt records the rubric rows it earned, and every rubric row names
- * the slot it hangs off, and every slot names its objective. So the marks a
- * student has lost are already in the database, per objective, and nothing has
- * ever read them for selection. This reads them.
- *
- * NOT SPACED REPETITION, which the Round 1 kill list bans and which this is
- * deliberately not. There is no schedule here: no interval per item, no ease
- * factor, no due date, no queue that says what must be reviewed today, and no
- * prompt when it is not done. The student asks for a revisit session; this
- * decides what goes in it. That is selection, exactly like weakest-first, and
- * the delay below is not an interval — it is one rule about freshness.
+ * WHAT THE STUDENT ACTUALLY GOT WRONG, per objective, folded out of attempts.
+ * NOT SPACED REPETITION, which the kill list bans: no interval, ease factor,
+ * due date or queue. The STUDENT asks for a revisit; this only chooses.
  */
 
 /**
- * How recently missed is too recently missed.
- *
  * A question answered wrong an hour ago is not a memory test, it is the same
- * sitting. Three days is long enough that recalling the answer is no longer
- * the easy path, and short enough to be reachable in a week of study.
+ * sitting. Three days is long enough that recalling the answer is no longer the
+ * easy path, and short enough to be reachable in a week of study.
  */
 export const REVISIT_DELAY_DAYS = 3;
 

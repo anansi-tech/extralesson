@@ -9,15 +9,9 @@ const scrypt = promisify(scryptCb) as (
   keylen: number,
 ) => Promise<Buffer>;
 
-// Password storage. scrypt from node:crypto — a real password KDF, memory-hard
-// by construction, and already in the runtime, so this adds no dependency to a
-// surface where a supply-chain problem would be a credential problem.
-//
-// Round 1 was passwordless because a magic link is safer than a password a
-// student will reuse. It was replaced because checking email every session is
-// friction a sixteen-year-old on a phone will not pay, and a teacher moving
-// between devices pays it repeatedly. The friction was losing us the session,
-// which costs more than the risk the link avoided.
+// scrypt from node:crypto — a real password KDF, memory-hard by construction,
+// and already in the runtime, so this adds no dependency to a surface where a
+// supply-chain problem would be a credential problem.
 
 const KEYLEN = 64;
 const SALT_BYTES = 16;

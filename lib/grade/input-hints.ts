@@ -1,20 +1,9 @@
 import type { InputShape } from './input-shape';
 
 /**
- * WHAT IS LEGAL TO TYPE, SAID WHERE THE TYPING HAPPENS.
- *
- * The marker accepts far more than a student can guess: sqrt(2) for a surd,
- * 0.75 for three quarters, 72 for 72 cm, <= for ≤. None of that is discoverable
- * from an empty box, so a student types what they can reach and hopes. Every
- * one of those is a mark riding on a guess about software.
- *
- * The hints are derived from the SAME answer the shape is read from, so they
- * appear only where they apply — under the box, not on a help page nobody
- * opens.
- *
- * THE EXAMPLES ARE CONSTANTS. The answer decides WHICH hint shows; it never
- * supplies the numbers in it, or the hint would print the answer under the box
- * a student is trying to answer.
+ * WHAT IS LEGAL TO TYPE, SAID WHERE THE TYPING HAPPENS — an empty box makes
+ * every form the marker accepts a guess, and a mark rides on it. THE EXAMPLES
+ * ARE CONSTANTS: a hint must never print the answer to the box it sits under.
  */
 export interface InputAffordance {
   /** At most two lines. More than that is a help page again. */
@@ -31,13 +20,8 @@ interface Rule {
   symbols?: string[];
   /**
    * THE PROMISE THE HINT MAKES, as [what a student types, what the scheme says].
-   *
-   * A hint is a claim about the marker. Written as prose beside a regex, the
-   * two drift: the hint kept promising that a percent could be written without
-   * its sign long after anyone had checked, and the only thing standing behind
-   * the promise was that someone had once been right. Every promise here is
-   * asserted against the real marker in tests/input-hints.test.ts, so a hint
-   * that stops being true fails the build instead of misleading a student.
+   * A hint is a claim about the marker, and prose beside a regex drifts from it,
+   * so every promise is asserted against the real marker in the tests.
    */
   promise?: [string, string];
 }
@@ -90,12 +74,9 @@ export const HINT_PROMISES: { hint: string; typed: string; canonical: string }[]
 ).map((r) => ({ hint: r.hint ?? '', typed: r.promise![0], canonical: r.promise![1] }));
 
 /**
- * A unit the student may leave off, which the marker supplies from the question.
- *
- * The unit is the SLOT'S OWN — a hint under a mass answer that talks about
- * centimetres is describing a different question, and a student reading it has
- * to work out whether it applies to them. The number stays a constant, because
- * the one thing a hint must never print is the answer.
+ * The unit is the SLOT'S OWN — a hint under a mass answer talking about
+ * centimetres describes a different question. The number stays a constant,
+ * because the one thing a hint must never print is the answer.
  */
 const EXAMPLE_VALUES = [72, 45];
 
@@ -132,9 +113,8 @@ export function inputAffordance(answer: string, shape: InputShape): InputAfforda
     for (const s of rule.symbols ?? []) if (!symbols.includes(s)) symbols.push(s);
   }
 
-  // The degree sign IS the unit, and percent is the unit. Adding "the unit is
-  // optional" underneath "the degree sign is optional" says one thing twice and
-  // spends the second line saying it.
+  // The degree sign IS the unit, and so is percent; "the unit is optional"
+  // underneath would say one thing twice and spend the second line saying it.
   const unitAlreadySaid = hints.some((h) => h.includes('degree sign') || h.includes('Percent'));
   if (shape === 'quantity' && !unitAlreadySaid && hints.length < MAX_HINTS) {
     const hint = unitHint(answer);

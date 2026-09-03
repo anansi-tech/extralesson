@@ -1,18 +1,9 @@
 import type { ExamSitting } from '@/lib/types';
 
 /**
- * THE SITTINGS, AND WHEN EACH ONE IS OVER.
- *
- * One definition for both things we do with a sitting date: count down to the
- * paper, and end access after it. They were about to be two — trajectory.ts
- * already held the paper dates — and two sources for the same fact is how a
- * countdown and a paywall come to disagree about when an exam is.
- *
- * `paper` is the date to count down to. `ends` is the last day of the sitting
- * WINDOW, deliberately the end of the month rather than a specific paper date:
- * CXC sits several papers across a period, timetables move, and a student
- * revising for a paper on the 24th should not lose access on the 11th. The
- * grace period on top means this never needs to be precise.
+ * THE SITTINGS, AND WHEN EACH ONE IS OVER. One definition for the countdown and
+ * for ending access, so the two cannot disagree. `ends` is the last day of the
+ * sitting WINDOW, not a paper date: CXC sits several papers and timetables move.
  */
 export const SITTINGS: Record<ExamSitting, { label: string; paper: Date; ends: Date }> = {
   'jan-2027': {
@@ -34,12 +25,10 @@ export const SITTINGS: Record<ExamSitting, { label: string; paper: Date; ends: D
  */
 export const GRACE_DAYS = 30;
 
-/** The sitting's label, for a student who needs telling which one theirs was. */
 export function sittingLabel(sitting: string): string | null {
   return SITTINGS[sitting as ExamSitting]?.label ?? null;
 }
 
-/** When access bought for this sitting stops working. */
 export function accessEndsAt(sitting: string): Date | null {
   const s = SITTINGS[sitting as ExamSitting];
   if (!s) return null;

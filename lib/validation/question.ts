@@ -10,14 +10,9 @@ import {
 } from './renderable';
 import type { Representation, ResponseMode, TemplateName } from '@/lib/types';
 
-// Boundary validation for questions (R1.5 §2). Every question write —
-// generation pipeline output, admin edits — passes through here.
-//
-// A model asked for an optional field returns it as null, not by omitting it:
-// structured output fills every declared key. So at this boundary an optional
-// field means "null or absent", and .optional() alone rejects half of what
-// arrives. R1.7 shipped for_format as .optional() and every structured draft
-// generated afterwards failed on rubric rows that simply had no form mark.
+// Boundary validation for every question write (ROUND_1_5 §2). A model asked
+// for an optional field returns it as null rather than omitting it, so here an
+// optional field means "null or absent" and .optional() alone rejects half.
 const optional = <T extends z.ZodTypeAny>(schema: T) =>
   schema.nullish().transform((v) => (v === null ? undefined : v));
 
@@ -62,8 +57,7 @@ export const TemplateNameZ = z.enum([
   'dataTable',
 ]);
 
-// Which templates satisfy which representation (R1.5 §2: visual must be
-// type-consistent). Matrices are NOT visuals — KaTeX notation in stem/parts.
+// Matrices are NOT visuals — they are KaTeX notation in the stem or parts.
 /** A grid drawn from question-named points, without axes — a schematic. */
 export function isNamedSketch(params: Record<string, unknown> | undefined): boolean {
   const named = params?.named as { sketch?: boolean } | undefined;
@@ -113,9 +107,6 @@ export const RubricItemZ = z
       profile: z.enum(['CK', 'AK', 'R']),
       criterion: z.string().min(1),
       mark_value: z.number().int().min(1),
-      // R1.8 Part 1: rows are earned by a slot. part_label is derived from it
-      // and kept, because the review card, the matrices and the grader all read
-      // it and none of them need to know about slots.
       slot_ref: z.string().regex(SLOT_REF_RE),
       part_label: z.string().regex(/^[a-j]$/),
       for_format: optional(z.boolean()),
@@ -151,13 +142,9 @@ export function slotRefsNamedByVisual(visual: unknown): Set<string> {
 }
 
 /**
- * Wording that promises a figure on the page.
- *
- * The first version required the noun to follow "the" directly, so it read
- * "the grid below" and missed "the coordinate grid below" — and matched
- * "use the grid" but not "use the information and the graph". Five approved
- * questions sat behind that gap. Adjectives are allowed between the article
- * and the noun now, which is how people actually write.
+ * Wording that promises a figure on the page. Adjectives may sit between the
+ * article and the noun, because that is how people write: requiring the noun to
+ * follow "the" directly missed "the coordinate grid below".
  */
 const SHOWN_FIGURE =
   /\b(?:use\s+the\s+[a-z' ]{0,24}?(?:grid|graph|diagram|figure|sketch)|the\s+[a-z' ]{0,24}?(?:grid|graph|diagram|figure|sketch)\s+(?:shows?|below|above|provided|is\s+for|represents)|shown\s+below|below\s+shows|as\s+shown)/i;
@@ -170,11 +157,9 @@ export const AnswerFormatZ = z.union([
   z.string().regex(/^(sf|dp):\d$/),
 ]);
 
-// A part's response mode is a property of what it ASKS, so we read it from the
-// wording rather than trusting the label. A "Show that" part carries its answer
-// in the stem: auto-marked, it would pass a student who typed the given result
-// and wrote no working — the R1.6 §1 failure. Only ever strengthens the model's
-// label, never weakens it.
+// A part's response mode is a property of what it ASKS, so it is read from the
+// wording rather than the label: a "Show that" carries its answer in the stem,
+// so auto-marking it passes a student who wrote no working (ROUND_1_6 §1).
 const SHOW_THAT_RE = /^\s*(?:\(?[a-j]\)?[\s.:]*)?(?:show|prove|verify|deduce)\s+that\b/i;
 const EXPLAIN_RE = /^\s*(?:\(?[a-j]\)?[\s.:]*)?(?:explain|justify|give\s+(?:a|one|two)?\s*reasons?|state\s+(?:a|one)\s+reason|why\b|comment\s+on)/i;
 
@@ -185,7 +170,6 @@ export function modeFromWording(prompt: string, declared: ResponseMode): Respons
   return declared;
 }
 
-// R1.8 Part 1 — an answerable slot inside a lettered part.
 export const SlotZ = z.object({
   // 'i'..'x' for sub-parts, 'r5.S' for a table cell, and descriptive keys for
   // the several-named-things case — which are as long as the words they name:
@@ -193,61 +177,34 @@ export const SlotZ = z.object({
   label: z.string().regex(SLOT_LABEL_RE),
   prompt: optional(z.string().min(1)),
   answer: z.string().min(1), // values-only convention
-  // Mark-scheme accept list: alternative correct forms of THIS part's answer
-  // (real schemes write "edge (accept: line segment)"). Grading and the solve
-  // gate treat any listed form as correct.
+  // Alternative correct forms of THIS answer, as real schemes write them
+  // ("edge (accept: line segment)"). Grading treats any listed form as correct.
   accept: optional(z.array(z.string().min(1)).max(4)),
-  // R1.6 §1, moved to the slot in R1.8: a part may mix an auto-marked value
-  // with a reason the student self-marks, and only the reason leaves the
-  // graded pool.
+  // A part may mix an auto-marked value with a reason the student self-marks,
+  // and only the reason leaves the graded pool (ROUND_1_6 §1).
   response_mode: defaulted(ResponseModeZ, 'answer'),
-  // R1.6 §2: set whenever the stem demands a particular form.
-  //
-  // A value we do not recognise drops out rather than failing the question. The
-  // model reaches for real demands we have no checker for — one run lost seven
-  // attempts to "set_builder_notation" — and the demand still reaches the
-  // student through the part's wording, which is where they read it. Losing a
-  // whole question over the label would be the expensive way to be strict.
-  // Generation reports what it dropped, so the drift stays visible.
+  // Set whenever the stem demands a particular form (ROUND_1_6 §2). A value we
+  // do not recognise drops out rather than failing the question — the demand
+  // still reaches the student through the wording, and generation reports it.
   answer_format: z.preprocess(
     (v) => (AnswerFormatZ.safeParse(v).success ? v : undefined),
     AnswerFormatZ.optional(),
   ),
   rubric_codes: z.array(z.string()).default([]),
-  // Which earlier slots' results this slot uses, as "part.slot" refs.
-  //
-  // Declared rather than inferred. Chain depth is the property that makes a
-  // paper question hard without making it longer, and reading it out of the
-  // wording only works while the wording announces it — which the real papers
-  // do not do: "hence" appears once or twice in a whole paper. Measuring
-  // prose would have collapsed the moment we stopped mandating the word,
-  // while the dependency it stood for was unchanged.
+  // Which earlier slots' results this slot uses, as "part.slot" refs. DECLARED,
+  // never inferred: the real papers rarely announce a chain ("hence" appears
+  // once or twice in a whole paper), so prose measurement would measure us.
   depends_on: defaulted(z.array(z.string().regex(SLOT_REF_RE)).max(6), []),
-  // Which syllabus objective this slot assesses.
-  //
-  // Integration — one scenario chaining several skills — is the hardest class
-  // the papers set, and it has to be counted from something we DECLARE. Real
-  // Paper 2 questions demand 2.04 distinct skills on average and 30% demand
-  // three or more; ours ran at 0.96 and 6% for difficulty 3, no harder on this
-  // axis than difficulty 1. Counting skills out of prose would measure our
-  // vocabulary, so each slot names its objective instead.
+  // Declared so integration — one scenario chaining several skills — is counted
+  // from something we own: real Paper 2 questions demand 2.04 distinct skills
+  // on average, ours 0.96, and counting from prose would measure our vocabulary.
   objective_id: optional(z.string().regex(OBJECTIVE_ID_RE)),
 });
 
 /**
- * A part is an instruction plus the slots it governs. A part written the old
- * way — one answer on the part itself — lifts into a single slot here, so every
- * question already in the bank stays valid and reviewable without being
- * rewritten. That is the whole reason to make this change at 123 approved.
- */
-/**
  * A sentence the student completes in place, with {} where each answer goes.
- *
- * The papers set this repeatedly — "The regular octagon has {} lines of
- * symmetry and rotational symmetry of order {}." — and it is a different item
- * from the two questions it would otherwise be split into: the sentence is the
- * context, and reading it as one statement is part of the work. We already had
- * this for a table cell; prose needed it too.
+ * The papers set these as ONE item: the sentence is the context, and reading it
+ * as one statement is part of the work.
  */
 const CLOZE_GAP = '{}';
 
@@ -261,9 +218,8 @@ export const PartZ = z
       prompt: z.string().min(1),
       marks: z.number().int().min(1),
       slots: z.array(SlotZ).min(1).max(8),
-      // A statement the student completes in place; {} marks each gap, one per
-      // slot, in order. The part's prompt still says what to do ("Complete the
-      // statement below"), exactly as the papers print it.
+      // {} marks each gap, one per slot, in order. The part's prompt still says
+      // what to do ("Complete the statement below"), as the papers print it.
       statement: optional(z.string().min(1).max(300)),
     })
     .superRefine((part, ctx) => {
@@ -287,8 +243,6 @@ export const PartZ = z
       ...part,
       slots: part.slots.map((slot) => ({
         ...slot,
-        // A slot's mode comes from what IT asks, falling back to the part's
-        // instruction when the slot carries no prompt of its own.
         response_mode: modeFromWording(slot.prompt ?? part.prompt, slot.response_mode),
       })),
   }));
@@ -297,9 +251,8 @@ const PART_LABELS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 
 /**
  * Every string a student will see has to survive the renderer that shows it.
- * This is the layer the August formatting audit found missing: the defects it
- * catalogued were all storable, so every fix had been a database fix and the
- * next batch reproduced them.
+ * Checked at this boundary because a storable defect makes every fix a database
+ * fix, and the next batch reproduces it.
  */
 function checkRenderable(q: Record<string, unknown>, ctx: z.RefinementCtx): void {
   const at = (path: (string | number)[], message: string) =>
@@ -390,10 +343,8 @@ const QuestionBaseZ = z.object({
   // R3 — dataTable params, verified by the visual gate like any other table.
   stimulus_table: z.record(z.unknown()).optional(),
   archetype: ArchetypeZ,
-  // R1.8 §2. Declared here because Zod STRIPS what it does not know: the
-  // pipeline set shape on the candidate, validation dropped it silently, and
-  // every paper-shaped question reached the database as a drill item. Same
-  // class as the depends_on bug, pointing the other way.
+  // Declared because Zod STRIPS what it does not know: an undeclared field the
+  // pipeline sets is dropped silently on the way to the database.
   shape: defaulted(z.enum(['paper', 'drill']), 'drill'),
   representation: RepresentationZ,
   difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
@@ -428,10 +379,9 @@ function checkVisualConsistency(
     });
     return;
   }
-  // A coordinateGrid whose points are named by the question and drawn in
-  // sketch mode has no axes, gridlines or scale: it IS a diagram, and calling
-  // it a graph would misreport the bank's composition. A plotted grid the
-  // student reads values off is a graph, as before.
+  // A coordinateGrid named by the question and drawn in sketch mode has no
+  // axes, gridlines or scale: it IS a diagram, and calling it a graph would
+  // misreport the bank's composition.
   const namedSketch =
     q.visual.template === 'coordinateGrid' &&
     isNamedSketch(q.visual.params);
@@ -446,10 +396,9 @@ function checkVisualConsistency(
 }
 
 /**
- * A stimulus table is for the question whose visual slot is ALREADY TAKEN.
- * With the slot free a table belongs in it, as the bank's other table
- * questions do; a second home would split the convention and the coverage
- * counts that read it.
+ * A stimulus table is only for a question whose visual slot is ALREADY TAKEN.
+ * With the slot free a table belongs in it: a second home would split the
+ * convention and the coverage counts that read it.
  */
 function checkStimulusTable(
   q: { visual?: unknown; stimulus_table?: unknown },
@@ -555,14 +504,10 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
         }
       }
     }
-    // CONSTRUCT-THEN-INTERROGATE (R1.9). A construct slot asks the student to
-    // draw on graph paper. It is self-marked, so a question made of one is
-    // standalone drawing practice with nothing marked and nothing recorded —
-    // which is not what the papers set and not what we are adding. What they
-    // set is a drawing the REST of the question interrogates, so the shape is
-    // the requirement: it opens the question, there is only one, the question
-    // carries the figure we will show as the model answer, and auto-marked
-    // slots follow it.
+    // CONSTRUCT-THEN-INTERROGATE (ROUND_1_9): the papers set a drawing the REST
+    // of the question interrogates, so the shape is the requirement — one
+    // construct slot, opening the question, with marked slots after it. A
+    // construction alone is self-marked, so nothing would be marked at all.
     const constructSlots = q.parts.flatMap((part, i) =>
       part.slots.map((slot, j) => ({ slot, i, j, partIndex: i })).filter((x) => x.slot.response_mode === 'construct'),
     );
@@ -589,11 +534,10 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
           message: 'a construct question must carry the figure it asks the student to draw',
         });
       }
-      // ...and must not talk about it. Where the figure IS the answer it is
-      // withheld until the student has committed, so a stem promising "the
-      // graph below" points at nothing and contradicts the part asking them to
-      // draw it. 35 of 58 construct questions did this before it was gated.
-      // A pattern of figures is exempt: those figures are the premise.
+      // Where the figure IS the answer it is withheld until the student commits,
+      // so a stem promising a figure below points at nothing and contradicts the
+      // part asking them to draw it. Pattern figures are exempt — those are the
+      // question's premise, not its answer.
       if (figureGivesAnswer((q.visual as { template?: TemplateName } | undefined)?.template)) {
         const said = [q.stimulus ?? '', q.stem].join(' ').match(SHOWN_FIGURE);
         if (said) {
@@ -614,28 +558,10 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
       }
     }
     for (const [i, part] of q.parts.entries()) {
-      // TWO BOXES UNDER ONE INSTRUCTION MUST SAY WHICH IS WHICH.
-      //
-      // notation.ts already states the contract — the label is a KEY, and the
-      // wording the student reads lives in the slot prompt — but nothing
-      // enforced it, so parts reached students as an instruction followed by
-      // unexplained boxes (i) and (ii). The student then has to infer the order
-      // from the wording of the instruction, and a student who infers it the
-      // other way round has correct answers marked wrong.
-      //
-      // A DESCRIPTIVE LABEL IS ITSELF THE WORDING — "centre", "factor",
-      // "modal_class" are the paper's own names for the things asked for, and
-      // the card shows them beside their box. Only a POSITIONAL label — i, ii,
-      // a bare letter or number — names nothing, and a part built out of those
-      // needs its prompts.
-      //
-      // A cloze part is exempt: its gaps sit inside the prose, so their
-      // position IS their label.
-      //
-      // A figure that names the boxes is the third exemption, for the same
-      // reason as the statement: a completable table prints each gap with the
-      // key of the slot that fills it, so cell (ii) and box (ii) are visibly
-      // the same thing and the wording lives in the table.
+      // TWO BOXES UNDER ONE INSTRUCTION MUST SAY WHICH IS WHICH: a positional
+      // label names nothing, and a student who infers the order the other way
+      // round has correct answers marked wrong. A descriptive label, a cloze
+      // statement and a figure that names the boxes already are the wording.
       const markedSlots = part.slots.filter((sl) => (sl.response_mode ?? 'answer') === 'answer');
       const namedByFigure = slotRefsNamedByVisual(q.visual);
       if (!part.statement && markedSlots.length > 1) {
@@ -653,18 +579,10 @@ export const StructuredQuestionZ = QuestionBaseZ.extend({
           }
         }
       }
-      // A DECLARED FORM MUST BE PAID FOR, OR NOT DECLARED.
-      //
-      // R1.7 §B4 gives the form its own mark, and the generation contract has
-      // asked for that row since v37 — but nothing enforced it, so the model
-      // complied about half the time on every prompt version since (v46: 2
-      // priced against 8 unpriced). 129 of the 256 slots declaring a format had
-      // no row paying for it, which meant missing the form cost nothing and
-      // still failed the answer: "9 out of 9" printed beside "Not quite".
-      //
-      // An unpaid format is a wish, in the same sense as any other target the
-      // pipeline declares and never consumes. Either a row marks the form or
-      // the question does not claim to want one.
+      // A DECLARED FORM MUST BE PAID FOR, OR NOT DECLARED. An unpaid format is
+      // a wish, like any target the pipeline declares and never consumes: it
+      // costs nothing to miss and still fails the answer, printing "9 out of 9"
+      // beside "Not quite". Either a row marks the form, or it is not asked for.
       for (const [j, slot] of part.slots.entries()) {
         if ((slot.response_mode ?? 'answer') !== 'answer') continue;
         if (!slot.answer_format) continue;

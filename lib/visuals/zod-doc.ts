@@ -1,8 +1,7 @@
 import { z } from 'zod';
 
-// Compact human/model-readable documentation of a Zod schema, used to inject
-// each template's params contract into the v5 draft prompt. Derived from the
-// schema itself so the contract can never drift from validation.
+// Each template's params contract, injected into the draft prompt. Derived
+// from the schema itself, so the contract cannot drift from validation.
 export function zodDoc(schema: z.ZodTypeAny): string {
   return describe(schema);
 }

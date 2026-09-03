@@ -13,11 +13,10 @@ import { symbolicVerdict } from '@/lib/grade/checkable';
 // receives stimulus + a TEXT rendering of the visual params — never SVG,
 // never the draft's answers.
 
-// R1.7: the solve pass already receives the figure as text, so it is the one
-// place that reads figure and question together with fresh eyes. Three distinct
-// mismatch classes have now reached a review queue — a length on the wrong
-// side, a figure that rendered blank, a sketch asked to show coordinates — and
-// a rule per class does not scale. One field, in a call we already make.
+// The solve pass is the one place that reads figure and question together with
+// fresh eyes, so one verdict field covers every mismatch class: a rule per class
+// (a length on the wrong side, a blank render, a sketch asked for coordinates)
+// does not scale.
 const FigureCheckZ = z.object({
   verdict: z.enum(['consistent', 'contradicts', 'under_determined']),
   note: z.string().max(240).default(''),
@@ -38,13 +37,10 @@ const StructuredSolveZ = z.object({
       // that omits the field cannot silently fail every question.
       new_work: z.boolean().default(true),
       new_work_note: z.string().max(200).default(''),
-      // Whether the answer is simply legible in the figure. Distinct from
-      // new_work, which counts reading a value off a graph as work — and it is,
-      // for a one-mark "state the coordinates of P". It stops being work when
-      // the rubric is paying for the derivation instead: a feasible region
-      // whose optimum the candidate is meant to find by testing vertices, and
-      // can instead read off the corner of the shading. Default false so a
-      // solver that omits the field cannot fail every question.
+      // Distinct from new_work: reading a value off a graph IS work for a
+      // one-mark "state the coordinates of P", and stops being work where the
+      // rubric pays for a derivation the student can read off instead. Default
+      // false so a solver that omits the field cannot fail every question.
       read_off_figure: z.boolean().default(false),
     }),
   ),
@@ -136,10 +132,8 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
           // "the whole of part (a)" and answered once for several slots.
           label: p.slots.length === 1 ? p.label : `${p.label}.${slot.label}`,
           // A cloze part's instruction is only "Complete the statement below",
-          // and the statement is the question. Without it the solver has
-          // nothing to work from and answers "cannot be determined" — which
-          // reads as a disagreement and auto-rejects a perfectly good draft.
-          // Each gap is shown in place, with THIS slot's gap marked.
+          // so without the statement the solver answers "cannot be determined"
+          // and a perfectly good draft is auto-rejected as a disagreement.
           prompt: p.statement
             ? `${p.prompt} "${clozeWithGapMarked(p.statement, si)}" — give the answer for gap ${si + 1}.`
             : slot.prompt
@@ -152,10 +146,9 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     }),
   });
 
-  // "(a)", "a)", " A " and "a" are one label. The prompt asks for the bare
-  // letter, and a run was lost entirely to the model echoing the parenthesised
-  // form from the parts list — a formatting difference is not a disagreement.
   // "(a)", "a)", " A " and "a" are one label; "a.ii" and "(a)(ii)" are one slot.
+  // A formatting difference is not a disagreement, and a whole run was lost to
+  // the model echoing the parenthesised form from the parts list.
   const bareLabel = (l: string) =>
     l
       .trim()
@@ -214,10 +207,9 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   }
 
   // A part that demands nothing is a part the student cannot get wrong, and no
-  // structural check can see it: depends_on proves the parts CONNECT, and a
-  // question whose (b) restates its own premise and whose (c) inverts (a)
-  // satisfies that perfectly. The solver has just done the work, so it is the
-  // only reader that knows what each part actually cost.
+  // structural check sees it: depends_on proves the parts CONNECT, which a (b)
+  // restating its own premise satisfies. Only the solver, having just done the
+  // work, knows what each part cost.
   const emptyParts: string[] = [];
   for (const p of askable) {
     if ((p.slot.response_mode ?? 'answer') !== 'answer') continue;
@@ -231,19 +223,14 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     notes.push(...emptyParts);
   }
 
-  // A slot we mark by string equality, whose answer the figure already shows,
-  // while its rubric pays for the work of deriving it. The rubric is then
-  // marking a derivation the question never made the student do — which is how
-  // a linear-programming question can award three marks for testing the
-  // vertices of a region whose optimum is the visibly highest corner.
-  //
-  // Gated on two marks or more, because reading a value off a graph is a real
-  // one-mark demand and the papers set it constantly.
+  // A slot whose answer the figure already shows, while its rubric pays for
+  // deriving it, marks a derivation the question never made the student do.
+  // Gated at two marks or more: reading a value off a graph is a real one-mark
+  // demand and the papers set it constantly.
   const rubricMarksFor = (ref: string) =>
     (draft.rubric ?? [])
       .filter((r) => bareLabel(r.slot_ref) === bareLabel(ref))
       .reduce((sum, r) => sum + r.mark_value, 0);
-  //
   // A construct question is exempt: it asks the student to DRAW the figure and
   // then read it, so an answer legible in the figure is the design, not a
   // defect. Its reads are checked against the equation instead.
@@ -262,14 +249,10 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   }
 
   // Deterministic verification is AUTHORITATIVE where it applies; the solve
-  // pass is a second opinion everywhere else.
-  //
-  // The solve pass is independent in PROMPT only — same model, same blind spot
-  // — so a systematic error survives both passes agreeing. A composite-function
-  // question reached review with fg(x) computed as gf(x), both passes content,
-  // and the correct answer listed in the misconception panel as the error. No
-  // amount of asking again would have caught it; arithmetic catches it in
-  // milliseconds.
+  // pass is a second opinion everywhere else, and independent in PROMPT only —
+  // same model, same blind spot — so a systematic error survives both passes
+  // agreeing. A composite-function question passed both with fg(x) computed as
+  // gf(x). Asking again never catches that; arithmetic catches it at once.
   const symbolic = symbolicVerdict(draft);
   if (symbolic.failures.length > 0) {
     agrees = false;

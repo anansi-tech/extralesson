@@ -1,13 +1,8 @@
 import { Question } from '@/lib/db';
 
-// Finding one question again.
-//
-// The queue hands out the next draft and nothing else, so a question David had
-// just seen — or one mentioned in a report by the last six characters of its id,
-// which is how every script here prints them — could not be opened at all.
-//
-// One box takes both: anything that looks like part of an id is matched as an
-// id, and everything else is matched as text against what a student would read.
+// The queue hands out the next draft and nothing else, so one box has to reopen
+// a named question: scripts print ids by their last six characters, so a term
+// shaped like part of an id is matched as one, everything else as text.
 export interface FoundQuestion {
   id: string;
   status: string;

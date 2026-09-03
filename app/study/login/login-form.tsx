@@ -14,12 +14,10 @@ export default function LoginForm() {
   // One form, three actions. Which one runs is decided by what the student is
   // doing, not by three separate pages they have to find their way between.
   const [mode, setMode] = useState<'signin' | 'reset'>('signin');
-  // HELD ON THE CLIENT, not returned in AuthState. React 19 resets an
-  // uncontrolled form once a form action has run — which is precisely when
-  // signIn answers needsProfile and this form turns into a registration, so the
-  // student was asked to type the password a second time on a phone. Email
-  // survived only because it is re-supplied via defaultValue; a password has no
-  // business making that round trip to be re-rendered.
+  // HELD ON THE CLIENT, not returned in AuthState: React 19 resets an
+  // uncontrolled form once a form action has run — exactly when signIn answers
+  // needsProfile and this form becomes a registration, which had the student
+  // typing the password a second time on a phone.
   const [password, setPassword] = useState('');
   const [signInState, signInAction, signingIn] = useActionState<AuthState, FormData>(signIn, {});
   const [registerState, registerAction, registering] = useActionState<AuthState, FormData>(register, {});

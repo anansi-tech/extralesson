@@ -1,15 +1,11 @@
 import katex from 'katex';
 import { protectMoney, restoreMoney, restoreMoneyForMath } from '@/lib/money';
 
-// Render a KaTeX-safe string (inline math delimited by $...$) to HTML.
-// Server-side only; output is injected with dangerouslySetInnerHTML and the
+// Server-side only: output is injected with dangerouslySetInnerHTML, so the
 // non-math segments are HTML-escaped here first.
-// A column vector of fractions set its two rows almost touching, and its
-// brackets too small to enclose them: at the default spacing the total height
-// falls below the point where KaTeX reaches for a taller delimiter, so the two
-// faults have one cause. \arraystretch is the standard way to open an array up
-// and KaTeX reads it as a macro; at 1.4 the rows separate AND the brackets grow
-// to fit, while a matrix of plain integers stays compact.
+// At 1.4 an array opens up past the height where KaTeX reaches for a taller
+// delimiter, which is what a column vector of fractions needs; a matrix of
+// plain integers stays compact.
 const KATEX_MACROS = { '\\arraystretch': '1.4' } as const;
 
 function escapeHtml(s: string): string {
@@ -20,19 +16,13 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;');
 }
 
-// Money must never act as a math delimiter. It is stored escaped (\$) and
-// swapped for a sentinel before splitting on $...$, restored afterwards; see
-// lib/money.ts, which is the only place this is decided.
 // Money is understood in exactly one place: lib/money.ts. Content stores an
 // escaped \$ and the renderer emits a bare $, so the segmenter below never
 // meets a dollar sign it could mistake for a delimiter.
 
-// Answer-shaped values — part answers, accept lists, final_answer, and
-// misconception triggers. The values-only convention means these hold a bare
-// value with no $ delimiters ("P=M^2-2M", "r=\sqrt[3]{\frac{3V}{4\pi}}"), so
-// renderMathHtml alone leaves them as raw source. Each ";"-separated value is
-// typeset when it is an expression and left as text when it is a phrase
-// ("obtuse angle", "No", "5 pieces", "\$51").
+// Answer-shaped values hold a bare value with no $ delimiters, which
+// renderMathHtml alone would leave as raw source. Each ";"-separated value is
+// typeset when it is an expression and left as text when it is a phrase.
 export function renderAnswerHtml(raw: string): string {
   return raw
     .split(';')
@@ -42,25 +32,18 @@ export function renderAnswerHtml(raw: string): string {
 }
 
 function renderOneAnswer(raw: string): string {
-  // \( ... \) is the other inline math delimiter; KaTeX's parser rejects it,
-  // so an answer written that way used to fall through to verbatim text and
-  // show the student \begin{pmatrix}.
+  // \( ... \) is the other inline math delimiter, and KaTeX's parser rejects it.
   const value = raw.replace(/\\[()]/g, '$').trim();
   if (value === '') return '';
-  // Already delimited, or carries currency: the prose renderer handles both.
-  // Already delimited? Ask that question of the value with its MONEY removed:
-  // "\\begin{pmatrix}\\$1&\\$2\\end{pmatrix}" contains $...$ as a substring —
-  // the two escaped prices — so it read as already-delimited and was handed to
-  // the prose renderer, which found no maths in it and printed the source.
+  // Ask "already delimited?" of the value with its MONEY removed: two escaped
+  // prices inside one expression contain $...$ as a substring.
   const withoutMoney = value.replace(/\\\$/g, '');
   if (/\$[^$]+\$/.test(withoutMoney)) return renderMathHtml(value);
   // Money with no delimiters: prose keeps it as prose, but an expression that
-  // happens to contain a price — a matrix of them — is still an expression and
-  // was reaching the page as source.
+  // happens to contain a price is still an expression.
   if (/\\\$/.test(value)) {
     // A bare price is a VALUE and stays readable text; a matrix of prices is an
-    // EXPRESSION and must be typeset. The difference is structure beyond the
-    // money itself — a command or an environment, not just digits.
+    // EXPRESSION and must be typeset. The difference is structure beyond money.
     const structured = /\\(?!\$)[a-zA-Z]+/.test(value);
     return renderMathHtml(structured && looksLikeExpression(value) ? `$${value}$` : value);
   }
@@ -77,33 +60,27 @@ function renderOneAnswer(raw: string): string {
   }
 }
 
-// An expression carries math signals and no prose words. Backslash commands
-// are removed first so \frac and \sqrt don't read as words.
 // English words that join quantities in an answer: "14 m by 6 m", "3 to 4".
 // A run of three letters already marks a value as prose; these are the short
-// ones that slipped through and were typeset as maths, which renders them as
-// italic variables with the spaces closed up — "14mby6m".
+// ones, which typeset as italic variables with the spaces closed up.
 const CONNECTOR = /\b(?:by|to|per|and|or|each)\b/i;
 
 function looksLikeExpression(raw: string): boolean {
-  // Words inside \text{} are prose the AUTHOR put inside maths on purpose —
-  // "10\text{ grid units}", "...\right|=1\text{ and }...". Stripping the
-  // command but leaving its contents left "grid units" and "and" behind, which
-  // read as prose and sent the whole value to the page as raw source.
+  // Words inside \text{} are prose the AUTHOR put inside maths on purpose, so
+  // leaving their contents behind makes the whole value read as prose.
   const value = raw.replace(/\\(?:text|mbox|operatorname)\{[^{}]*\}/g, ' ');
   if (!/[\\^_=+\-*/]|\d/.test(value)) return false;
   if (CONNECTOR.test(value)) return false;
   const letters = value
-    .replace(/\\(?:begin|end)\{[a-zA-Z*]+\}/g, '') // environments: pmatrix, cases
-    .replace(/\\[a-zA-Z]+/g, '') // commands: \frac, \sqrt, \pi
+    .replace(/\\(?:begin|end)\{[a-zA-Z*]+\}/g, '')
+    .replace(/\\[a-zA-Z]+/g, '')
     .replace(/[^a-zA-Z]+/g, ' ');
   return !/[a-zA-Z]{3,}/.test(letters);
 }
 
 export function renderMathHtml(text: string): string {
-  // \[ ... \] is display math, and a worked solution reaches for it to set a
-  // table of values as an array. Split those out first and render them in
-  // display mode; everything else goes through the inline pipeline below.
+  // \[ ... \] is display math, which a worked solution reaches for to set a
+  // table of values as an array.
   return text
     .split(/(\\\[[\s\S]*?\\\])/g)
     .map((block) =>
@@ -130,8 +107,7 @@ function renderInline(text: string): string {
   // Money first: an escaped \$ becomes a sentinel, so the segmentation below
   // cannot mistake it for a delimiter, and it comes back as a bare $ at the end.
   return protectMoney(text)
-    // \( ... \) is the other inline math delimiter and models reach for it
-    // freely; unrecognised, it reaches the student as raw source.
+    // \( ... \) is the other inline delimiter and models reach for it freely.
     .replace(/\\[()]/g, '$')
     // Math that already carries brackets — a column vector, a coordinate pair —
     // renders as ((7, 1)) when an author wraps it in parentheses as well.
@@ -153,11 +129,9 @@ function renderInline(text: string): string {
           return escapeHtml(restoreMoney(seg));
         }
       }
-      // Authored whitespace is preserved as-is, NOT rewritten into markup:
-      // callers render this inside `.question-prose` (white-space: pre-wrap),
-      // so line breaks between steps and the double space at a sentence
-      // boundary both survive. KaTeX resets white-space internally, so math
-      // is unaffected.
+      // Authored whitespace is preserved as-is, never rewritten into markup:
+      // callers render this inside a pre-wrap block, so line breaks between
+      // steps survive. KaTeX resets white-space internally, so math is safe.
       return escapeHtml(restoreMoney(seg));
     })
     .join('');

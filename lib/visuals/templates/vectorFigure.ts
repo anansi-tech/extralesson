@@ -2,10 +2,9 @@ import { z } from 'zod';
 import { INK, line, polygon, round, svgOpen, text } from '../svg';
 import type { VisualTemplate } from '../types';
 
-// Plane figure carrying labelled vector arrows — the Section II vectors
-// configuration. The TEMPLATE places the vertices (well-proportioned,
-// non-degenerate); the model supplies labels, the arrows between named
-// points, and the ratio-divided points those questions turn on.
+// The TEMPLATE places the vertices, well-proportioned and non-degenerate; the
+// model supplies only labels, the arrows between named points, and the
+// ratio-divided points those questions turn on.
 
 const NameZ = z.string().min(1).max(12);
 
@@ -32,7 +31,6 @@ export const VectorFigureParamsZ = z.object({
     )
     .max(6)
     .default([]),
-  // Pairs of segments marked equal in length (a single tick through each).
   equalMarks: z.array(z.object({ first: SegmentZ, second: SegmentZ })).max(4).default([]),
 });
 
@@ -91,9 +89,8 @@ function vertexPositions(shape: Shape): Pt[] {
   return raw.map(([x, y]) => [ox + (x - minX) * s, H - oy - (y - minY) * s]);
 }
 
-// Screen position of every declared name. Points may sit on a segment whose
-// endpoints are themselves points, so resolve in passes; whatever is left
-// over is unreachable (a forward reference, a cycle, or an unknown name).
+// A point may sit on a segment whose endpoints are themselves points, so names
+// resolve in passes; whatever is left over is unreachable.
 function resolve(p: VectorFigureParams): { pos: Map<string, Pt>; unresolved: string[] } {
   const labels = labelsOf(p);
   const verts = vertexPositions(p.shape);
@@ -185,13 +182,10 @@ export const vectorFigure: VisualTemplate<VectorFigureParams> = {
     const parts: string[] = [svgOpen(W, H)];
     parts.push(polygon(verts, true));
 
-    // equal-length tick marks
     for (const pair of p.equalMarks) {
       parts.push(...tickMarks(pos, pair.first), ...tickMarks(pos, pair.second));
     }
 
-    // vector arrows: line to the `to` end, filled arrowhead there, label
-    // beside the midpoint on the outward side.
     for (const v of p.vectors) {
       const a = pos.get(v.from);
       const b = pos.get(v.to);
@@ -214,7 +208,6 @@ export const vectorFigure: VisualTemplate<VectorFigureParams> = {
       }
     }
 
-    // ratio-divided points: small filled dot plus label
     for (const pt of p.points) {
       const q = pos.get(pt.label);
       if (!q) continue;
@@ -223,7 +216,6 @@ export const vectorFigure: VisualTemplate<VectorFigureParams> = {
       parts.push(text(q[0] + 16 * ux, q[1] + 16 * uy + 5, pt.label, { size: 14, italic: true }));
     }
 
-    // vertex labels, pushed outward from the centre
     labels.forEach((label, i) => {
       if (i >= verts.length) return;
       const [ux, uy] = unit(verts[i][0] - centre[0], verts[i][1] - centre[1]);

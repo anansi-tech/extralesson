@@ -15,9 +15,8 @@ const AttemptSchema = new Schema({
   },
   correct: { type: Boolean, required: true },
   duration_ms: { type: Number, required: true },
-  // What marked this, and what it marked. Without them a marking change can be
-  // described but not audited: nothing records which marker produced a verdict,
-  // or whether the question has been edited since it was produced.
+  // What marked this, and what it marked: without them a marking change can be
+  // described but not audited.
   grader_version: { type: String },
   question_fingerprint: { type: String },
   ts: { type: Date, default: Date.now, required: true },

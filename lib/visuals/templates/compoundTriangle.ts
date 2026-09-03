@@ -2,22 +2,11 @@ import { z } from 'zod';
 import { line, pathArc, polar, polygon, round, svgOpen, text } from '../svg';
 import { valueStatedInText, type VisualTemplate } from '../types';
 
-// Two triangles in one figure. Neither of the two shapes the papers keep
-// setting can be drawn by triangleLabeled, which knows about one triangle, or
-// by two of them side by side, which cannot share anything.
-//
-//   'adjacent' — two triangles sharing a SIDE. Three points on level ground and
-//   a vertical above the last of them: the angle-of-elevation-from-two-
-//   observation-points figure, where the shared vertical is the height being
-//   found and the second observation point is what makes it solvable.
-//
-//   'nested' — two triangles sharing a VERTEX. A smaller triangle cut off by a
-//   line parallel to the base: the similar-triangles figure, where the shared
-//   apex is the reason the ratios hold.
-//
-// Angles are addressed as (at, from, to) rather than by vertex index. At a
-// shared vertex there is more than one angle, and a template that could not say
-// WHICH would be drawing something other than what the question asks about.
+// Two triangles in one figure, which triangleLabeled cannot draw: 'adjacent'
+// share a SIDE (the vertical in the angle-of-elevation-from-two-points figure),
+// 'nested' share a VERTEX (the apex of the similar-triangles figure). Angles are
+// addressed as (at, from, to) because a shared vertex carries more than one
+// angle, and a template that could not say WHICH would draw the wrong thing.
 
 const ArrangementZ = z.enum(['adjacent', 'nested']);
 
@@ -56,14 +45,9 @@ const W = 640;
 const H = 420;
 
 /**
- * Vertex placement, and with it the meaning of each label index.
- *
- * adjacent: 0,1,2 lie on level ground with 3 vertically above 2, so the two
- * triangles are (0,2,3) and (1,2,3) sharing the side 2-3.
- *
- * nested: 0 is the apex, 1 and 2 the base, and 3 and 4 sit on the two sloping
- * sides so that 3-4 is parallel to 1-2; the triangles are (0,1,2) and (0,3,4)
- * sharing the vertex 0.
+ * Vertex placement, and with it the meaning of each label index. adjacent:
+ * 0,1,2 on level ground with 3 above 2, triangles (0,2,3) and (1,2,3). nested:
+ * 0 the apex, 1-2 the base, 3-4 on the sloping sides and parallel to 1-2.
  */
 function vertices(arrangement: CompoundTriangleParams['arrangement']): [number, number][] {
   if (arrangement === 'adjacent') {
@@ -108,11 +92,9 @@ function expectedLabelCount(arrangement: CompoundTriangleParams['arrangement']):
 }
 
 /**
- * Points that lie on one straight line of the figure, in order along it. Any
- * pair drawn from a run is a real segment even when it is not listed above: the
- * ground of the 'adjacent' figure runs A-B-C, so the arm from A to C is the
- * ground itself, and an elevation measured at A is measured against exactly
- * that. The 'nested' sides run apex-cut-base for the same reason.
+ * Points on one straight line of the figure, in order along it. Any pair drawn
+ * from a run is a real segment even when it is not listed above: the ground of
+ * the 'adjacent' figure runs A-B-C, so an elevation at A is measured against it.
  */
 function collinearRuns(arrangement: CompoundTriangleParams['arrangement']): number[][] {
   return arrangement === 'adjacent'
@@ -165,7 +147,6 @@ export const compoundTriangle: VisualTemplate<CompoundTriangleParams> = {
       parts.push(line(v[3][0], v[3][1], v[4][0], v[4][1]));
     }
 
-    // Vertex labels, pushed away from the figure's middle.
     const cx = v.reduce((s, q) => s + q[0], 0) / v.length;
     const cy = v.reduce((s, q) => s + q[1], 0) / v.length;
     p.labels.forEach((label, i) => {

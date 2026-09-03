@@ -7,11 +7,8 @@ import { hasAccess, REFUND_DAYS, type Access } from '@/lib/access';
 import { dbConnect, Student } from '@/lib/db';
 import { getSession } from '@/lib/auth/session';
 
-// Originally a faithful port of a design HTML file (ROUND_1 §7). That file is
-// deleted: it twice became the stale copy that reintroduced wording already
-// fixed here. This page is the source of truth for the landing copy.
-// Copy changed only where exam facts changed: the old M1/A1 mark language is
-// now CK/AK/R-neutral, and channel-specific report wording was neutralized.
+// This page, not any design file, is the source of truth for the landing copy
+// (ROUND_1 §7).
 
 export const metadata: Metadata = {
   title: 'ExtraLesson — Your own CXC examiner',
@@ -29,17 +26,15 @@ export const metadata: Metadata = {
   },
 };
 
-// Reading the session cookie makes this page render per request rather than
-// statically. That is the cost of the header knowing who you are, and it is
-// worth paying: without it, everyone who has already bought the product finds
-// two Stripe buttons and no way in.
+// Reading the session cookie renders this page per request rather than
+// statically — the cost of the header knowing who you are. Without it everyone
+// who has already bought the product finds two buy buttons and no way in.
 export default async function LandingPage() {
   const coverage = landingCoverage();
   const session = await getSession();
-  // A STUDENT WHO HAS PAID MUST NOT BE SOLD TO AGAIN. The header knew they
-  // were signed in and nothing asked about access, so a paying student met two
-  // buy buttons and a checkout that would charge them twice. Signed in WITHOUT
-  // access still sees the offer: they are who it is for.
+  // A STUDENT WHO HAS PAID MUST NOT BE SOLD TO AGAIN: without an access check
+  // they meet two buy buttons and a checkout that would charge them twice.
+  // Signed in WITHOUT access still sees the offer — they are who it is for.
   let signedInWithAccess = false;
   if (session) {
     await dbConnect();
@@ -107,11 +102,9 @@ export default async function LandingPage() {
               <div className="n red">{LANDING.statBenchmark}</div>
               <div className="l">{LANDING.statBenchmarkLabel}</div>
             </div>
-            {/* This was "Jan" — a date dressed as a statistic beside two real
-                ones, and an argument that expires. The urgency is not that a
-                date is close; it is that most of a paper's marks are in the
-                working, and every week of practice nobody marks is a week of
-                those marks going uncorrected. */}
+            {/* Not a date: an argument that expires. The urgency is that most
+                of a paper's marks are in the working, and a week nobody marks
+                them is a week uncorrected. */}
             <div>
               <div className="n">{LANDING.statWorking}</div>
               <div className="l">{LANDING.statWorkingLabel}</div>
@@ -269,13 +262,9 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* THE OFFER IS ADDRESSED TO WHOEVER IS PAYING.
-          A fifteen-year-old has no card, so the buyer is almost never the
-          student — and which relation they are does not change what they need
-          to know. It used to speak to a student here and to an overseas
-          relative in a separate box below, which left the actual buyer working
-          out which voice meant them. Three things, in order: what the money
-          buys, who it is for, and how they will know it is working. */}
+      {/* THE OFFER IS ADDRESSED TO WHOEVER IS PAYING — no relationship, no
+          geography (ROUND_2 §8e). Three things, in order: what the money buys,
+          who it is for, and how they will know it is working. */}
       {signedInWithAccess ? (
         // In place of the offer, not beside it: what they came for is the door.
         <section id="offer">
@@ -312,10 +301,10 @@ export default async function LandingPage() {
                 <li>Predicted grade tracking from day one to exam day</li>
                 <li>Direct line to me — your feedback shapes the product</li>
               </ul>
-{/* Checkout opens in a new tab, so the page stays open underneath and
-                  abandoning it is closing a tab rather than navigating away.
-                  rel="noopener" is required, not cosmetic: without it the
-                  Stripe tab can reach back through window.opener. */}
+{/* Checkout opens in a new tab, so abandoning it closes a tab rather
+                  than navigating away. The noopener marking is required, not
+                  cosmetic: without it the payment tab can reach back through
+                  window.opener. */}
               <a className="btn" href={paymentLink()} target="_blank" rel="noopener">
                 Get access — {LANDING.price}
                 <small>SECURE CHECKOUT · CARD OR APPLE PAY</small>
@@ -333,9 +322,7 @@ export default async function LandingPage() {
                 from us.
               </p>
               {/* The refund window is the terms' window, read from the same
-                  constant. The page used to say "full refund at launch" while the
-                  terms said 14 days from paying, which is a promise and its
-                  small print disagreeing in public. */}
+                  constant, so they cannot disagree. */}
               <div className="cap">
                 NOT SATISFIED? EMAIL US WITHIN {REFUND_DAYS} DAYS OF PAYING AND WE WILL REFUND YOU.
               </div>
@@ -376,11 +363,9 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* TWO BLOCKS, NOT FOUR FRAGMENTS.
-          Four flex children scattered into an unreadable row on a narrow
-          screen. Who we are and the small print on the left, the one ACTION on
-          the right — a footer has exactly one thing to do and it should look
-          like it. */}
+      {/* TWO BLOCKS, NOT FOUR FRAGMENTS: four flex children scatter on a
+          narrow screen. Who we are and the small print left, the ACTION
+          right. */}
       <footer>
         <div className="wrap foot">
           <div className="foot-info">

@@ -4,18 +4,9 @@ import { reader, READER_MODEL_ID } from '@/lib/ai';
 import type { ConstructionCheck } from './construction';
 
 /**
- * CHECKING A PHOTOGRAPHED CONSTRUCTION AGAINST WHAT THE PARAMS SAY.
- *
- * R2 §8, and the same two-leg shape as marking written work: the model READS
- * the drawing — is this point on the curve, does it open upwards — and the
- * comparison against ground truth is done here, in code, from the figure's own
- * declared params. The model is never asked whether the construction is
- * correct; it is asked what it can see.
- *
- * Same asymmetric rule as everything else in this round: this can only ADD
- * marks. A photograph that cannot be read, or a check the reader is unsure of,
- * leaves the slot exactly where it was — with the self-check list the student
- * already has (R2 §1.3). Nothing here removes anything.
+ * The model READS the drawing; the comparison against ground truth happens
+ * here, and it is never asked whether the construction is correct. This can
+ * only ADD marks — an unreadable photograph changes nothing. See ROUND_2 §8.
  */
 const ObservationZ = z.object({
   index: z.number(),
@@ -30,7 +21,6 @@ const ReadingZ = z.object({
 });
 
 export interface ConstructionVerdict {
-  /** Every check the drawing satisfies. */
   satisfied: ConstructionCheck[];
   /** Checks the drawing does not satisfy, each with what the reader saw. */
   missing: { check: ConstructionCheck; note: string }[];

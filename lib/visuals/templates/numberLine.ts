@@ -2,12 +2,9 @@ import { z } from 'zod';
 import { line, polygon, round, svgOpen, text, ticks } from '../svg';
 import { valueStatedInText, type VisualTemplate } from '../types';
 
-// Number line with tick marks, optional labeled points, and optional
-// solution-set ray/segment (for inequalities).
 export const NumberLineParamsZ = z.object({
-  // Not integers: an inequality line from -2.5 to 2.5 is ordinary, and the
-  // template already carries its own `step`, so the ticks were never tied to
-  // whole-number bounds.
+  // Not integers: an inequality line from -2.5 to 2.5 is ordinary, and `step`
+  // already carries the tick spacing.
   min: z.number().min(-100).max(100),
   max: z.number().min(-100).max(100),
   step: z.number().positive().max(50).default(1),
@@ -53,7 +50,6 @@ export const numberLine: VisualTemplate<NumberLineParams> = {
 
   render(p) {
     const parts: string[] = [svgOpen(W, H)];
-    // main line with arrowheads
     parts.push(line(PAD - 14, Y, W - PAD + 14, Y));
     parts.push(polygon([[W - PAD + 20, Y], [W - PAD + 10, Y - 4], [W - PAD + 10, Y + 4]], true));
     parts.push(polygon([[PAD - 20, Y], [PAD - 10, Y - 4], [PAD - 10, Y + 4]], true));

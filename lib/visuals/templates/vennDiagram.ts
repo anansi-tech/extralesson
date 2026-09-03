@@ -3,14 +3,10 @@ import { circle, svgOpen, text } from '../svg';
 import type { VisualTemplate } from '../types';
 import { numbersInText, valueStatedInText } from '../types';
 
-// Venn diagram: two or three overlapping labelled set circles inside a
-// universal-set rectangle (labelled U or ξ). Named venn2 until R1.8, which was
-// a lie the file told about itself — the third set and all seven of its regions
-// have been supported throughout, and the name had us counting the template as
-// two-set-only when auditing coverage against the papers. Region values are
-// strings so they can be counts ("12") or expressions ("x", "x - 3"). Empty
-// string = region shown blank. In the 3-set layout, aAndB means "A and B
-// only" (not C), etc.
+// Two or three overlapping labelled set circles inside a universal-set
+// rectangle. Region values are strings so they can be counts ("12") or
+// expressions ("x - 3"), and an empty string shows the region blank. In the
+// 3-set layout aAndB means "A and B only", not C.
 const RegionZ = z.string().max(16);
 
 export const VennDiagramParamsZ = z.object({
@@ -65,7 +61,6 @@ export const vennDiagram: VisualTemplate<VennDiagramParams> = {
     const three = Boolean(p.set_c);
     const H = three ? 460 : 400;
     const parts: string[] = [svgOpen(W, H)];
-    // universal-set rectangle
     parts.push(
       `<rect x="10" y="10" width="${W - 20}" height="${H - 20}" fill="none" />`,
     );

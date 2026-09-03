@@ -14,9 +14,8 @@ import { computeCoverage, type Coverage } from '@/lib/targets/coverage';
 import type { MasteryBand } from '@/lib/mastery/config';
 import type { ModuleNumber } from '@/lib/types';
 
-// All mastery/progress state is a fold over append-only attempts (§3.5).
-// This module assembles that fold for the dashboard, session builder, and
-// prediction — nothing here writes.
+// All mastery/progress state is a fold over append-only attempts (ROUND_1
+// §3.5); nothing here writes.
 
 export interface TopicState {
   code: string;
@@ -101,15 +100,12 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
   return attempts
     .filter((a) => a.question_id)
     .map((a) => {
-      // Denominator counts only the marks we actually award (R1.6 §1/§4), read
-      // off the rubric rows that sit on auto-marked slots. It used to be
-      // approximated by slot proportion, which is a different number whenever a
-      // part's marks are not spread evenly across its slots.
+      // Denominator counts only the marks we actually award (ROUND_1_6 §1/§4),
+      // read off the rubric rows that sit on auto-marked slots.
       const marks = markSplit(a.question_id!).auto || a.question_id!.marks || 1;
-      // Method marks earned from photographed working are added here rather
-      // than written back to the attempt, which is append-only. The attempt
-      // records what the student was told on submitting; this records what
-      // their working later showed, and mastery is the fold over both.
+      // Method marks from photographed working are added here rather than
+      // written back to the attempt, which is append-only: the attempt records
+      // what the student was told, and mastery is the fold over both.
       const earned =
         a.profile_marks.CK +
         a.profile_marks.AK +

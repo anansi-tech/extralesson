@@ -125,13 +125,10 @@ export default async function ReviewPage({
         status: raw.status,
         promptVersion: raw.gen_meta?.prompt_version,
         flags: reviewFlags(raw as never),
-        // What this question is evidence FOR. When it is the only evidence for
+        // What this question is evidence FOR: when it is the only evidence for
         // an objective, a marginal question is worth editing rather than
-        // rejecting — and that is invisible without the count.
-        //
-        // Counted BESIDES this question. The totals include it, so an approved
-        // question that is the only evidence for its objective would otherwise
-        // report "1 other approved" — pointing at itself.
+        // rejecting. Counted BESIDES this question, or one that is the only
+        // evidence for its objective would report "1 other" — pointing at itself.
         objectives: raw.objective_ids.map((id) => {
           const row = objectiveRows.find((r) => r.objectives.some((o) => o.id === id));
           const o = row?.objectives.find((x) => x.id === id);
@@ -224,10 +221,8 @@ export default async function ReviewPage({
           <div className="font-mono text-xs text-dim">
             <b className="text-ink">{draftsRemaining}</b> drafts remaining ·{' '}
             <b className="text-ink">{approvedTotal}</b> approved ·{' '}
-            {/* Against the matrix, which is the target — "/400" was a question
-                count from Round 1, restated here rather than read, and it read
-                456/400 as if the bank were finished while the two pools it is
-                actually measured against say 102% and 185%. */}
+            {/* Against the matrix, which is the target: what it replaced
+                was a count restated here, rather than read. */}
             <b className={matrix.p1_actual_total >= P1_TOTAL ? 'text-green-pen' : 'text-ink'}>
               P1 {Math.round((matrix.p1_actual_total / P1_TOTAL) * 100)}%
             </b>{' '}
@@ -297,11 +292,8 @@ export default async function ReviewPage({
           </div>
         )}
 
-        {/* DEFICITS ONLY.
-            The full picture lives at /admin/coverage. Under a review card it
-            was a dashboard: fourteen P1 topics reading 11/11 tell a reviewer
-            nothing about the question in front of them, and the four lines that
-            did matter were somewhere inside them. What is on target is worth
+        {/* DEFICITS ONLY. The full picture lives on the coverage page; under
+            a review card it was a dashboard, and what is on target is worth
             exactly two words. */}
         <section className="mb-6 border-l-3 border-paper-deep bg-white p-3 text-sm">
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">

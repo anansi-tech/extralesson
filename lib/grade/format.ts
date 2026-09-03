@@ -2,14 +2,10 @@ import { parseNumeric } from './equivalence';
 import { normaliseDigitGroups, stripMoney } from '@/lib/money';
 import type { AnswerFormat } from '@/lib/types';
 
-// R1.6 §2 — format-aware marking.
-//
-// The equivalence layer deliberately treats 1/2 and 0.5 as the same answer,
-// which is right for general marking and wrong when the FORM is what is being
-// tested: "give your answer in exact form", "correct to 3 significant
-// figures", "in the form a√b". When a part declares an answer_format, a
-// candidate whose value is right but whose form is wrong is marked incorrect,
-// with feedback that says so rather than implying the maths was wrong.
+// Format-aware marking — see ROUND_1_6 §2. Equivalence treats 1/2 and 0.5 as
+// one answer, which is wrong when the FORM is what is tested. A right value in
+// a wrong form is marked incorrect, with feedback saying the form was wrong
+// rather than implying the mathematics was.
 
 export interface FormatCheck {
   ok: boolean;
@@ -17,9 +13,8 @@ export interface FormatCheck {
   feedback?: string;
 }
 
-// A fraction reaches us written either way — "3/4" from a student typing, and
-// \frac{3}{4} from a canonical answer written in KaTeX. They are one object,
-// and a form check that only knows the first marks a correct answer wrong.
+// A fraction arrives as "3/4" from a student and \frac{3}{4} from a canonical
+// answer. A check that knows only the first marks a correct answer wrong.
 function asFraction(raw: string): [number, number] | null {
   const v = value_(raw);
   const katex = v.match(/^(-?)\\[dt]?frac\s*\{\s*(-?\d+)\s*\}\s*\{\s*(-?\d+)\s*\}$/);
@@ -37,15 +32,13 @@ const DECIMAL = /^-?\d+\.\d+$/;
 // Surface tidy-up only. Kept separate from label stripping because
 // equation_form is a claim about the whole expression, including its "=".
 function clean(raw: string): string {
-  // Money and thousands grouping are understood in lib/money.ts. A student may
-  // write 17 400 or 17,400; the papers write the first and neither is a
-  // mathematical error, so the form check sees the same number either way.
+  // A student may write 17 400 or 17,400 and the papers write the first;
+  // neither is a mathematical error, so the check sees one number either way.
   return normaliseDigitGroups(stripMoney(raw)).trim().replace(/\s+/g, ' ').trim();
 }
 
-// KaTeX dressing is not part of the number either. A canonical answer is
-// written "$203.0\text{ m}^2$" and a student types "203.0 m^2"; both state a
-// value of 203.0.
+// KaTeX dressing is not part of the number: "$203.0\text{ m}^2$" and
+// "203.0 m^2" state the same value.
 function bareMath(s: string): string {
   return s
     .replace(/^\$+|\$+$/g, '')
@@ -57,17 +50,9 @@ function bareMath(s: string): string {
 }
 
 /**
- * A UNIT IS NOT PART OF THE NUMBER WHOSE FORM IS BEING JUDGED.
- *
- * "73.7°" is one decimal place and "203.0 m^2" is one decimal place, but the
- * check could not read a number out of either — it required bare digits — so it
- * reported the form wrong and withheld the format mark from every answer that
- * carried a unit. Measured before the fix: 59 of the 256 slots declaring a
- * format had a canonical answer that failed ITS OWN declared format. The mark
- * scheme's own answer could not have earned the mark.
- *
- * The lookbehind is what keeps "2\pi" intact: a unit follows a DIGIT, and the
- * "pi" there follows a backslash.
+ * A UNIT IS NOT PART OF THE NUMBER WHOSE FORM IS JUDGED: requiring bare digits
+ * withheld the mark from 59 of the 256 format-declaring slots, whose canonical
+ * answers failed their own format. The lookbehind keeps "2\pi" intact.
  */
 const TRAILING_UNIT = /(?<=\d)\s*(?:%|°|[a-z]{1,3}(?:\/[a-z]{1,3})?(?:\^\{?[23]\}?)?)$/i;
 
@@ -83,15 +68,9 @@ function value_(raw: string): string {
 }
 
 /**
- * The numeral a rounding instruction is about.
- *
- * "Correct to 1 decimal place" is a claim about the NUMBER, and an answer may
- * carry more than the number: a bearing is "53.1° north of east" and a rate is
- * "1.93 m^2 per litre". Reading the whole string as a numeral failed on those
- * and reported the form wrong.
- *
- * Only the numeric form checks use this. "Exact form" and standard form are
- * claims about the whole expression and must keep it.
+ * The numeral a rounding instruction is about — an answer may carry more than
+ * the number ("53.1° north of east"). Only the numeric form checks use this:
+ * exact and standard form are claims about the whole expression and keep it.
  */
 function numeral(raw: string): string {
   const v = value_(raw);
@@ -105,24 +84,10 @@ function decimalPlaces(s: string): number | null {
   return m ? m[1].length : null;
 }
 
-// Significant figures in a written numeral: leading zeros never count,
-// trailing zeros after a decimal point do.
 /**
- * How many significant figures a numeral is written to — as a RANGE, because
- * for a whole number that is genuinely what it is.
- *
- * A trailing zero in an integer is a placeholder or a significant digit and the
- * numeral cannot say which: 2540 is 2541 to three figures, and it is also a
- * count of exactly 2540 to four. Both readings are correct, so both are
- * accepted, and the range says so instead of picking one.
- *
- * This was resolved the other way — "count them as written" — and it rejected
- * a correctly rounded answer. 037d54 asks for the amount due after three years
- * correct to 3 s.f.; the amount is $2 541, three figures makes it $2 540, and
- * the mark scheme's own answer could not earn the mark it defines.
- *
- * A decimal point removes the ambiguity: 25.40 states four figures, and 0.0250
- * states three. There the range is a single number.
+ * A RANGE, because a trailing zero in an integer is a placeholder or a
+ * significant digit and the numeral cannot say which: 2540 is three figures
+ * and also four, so both are accepted. A decimal point removes the ambiguity.
  */
 function significantFigureRange(s: string): [number, number] | null {
   const t = numeral(s).replace(/^-/, '');

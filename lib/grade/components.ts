@@ -2,21 +2,9 @@ import { answersEquivalentAny } from './equivalence';
 import { readInputShape } from './input-shape';
 
 /**
- * Marking an answer the student entered as SEPARATE VALUES.
- *
- * When the input is typed to the answer's shape, the student fills one box per
- * value and never types a delimiter — so the marker never parses one. Each box
- * is compared against the value in the SAME POSITION of the mark scheme.
- *
- * That position is the point. answersEquivalent() matches a multi-part answer
- * as an UNORDERED set, which is right for roots and sets and wrong for
- * everything else, and it cannot tell them apart from a single string. It was
- * accepting a coordinate written backwards, a matrix with its entries
- * scrambled, and shares handed to the wrong people — 220 slots in the live bank
- * where a student could be told a wrong answer was right.
- *
- * Order is structural here: box 1 is compared with value 1 because it IS box 1.
- * Only the shapes that genuinely carry no order match as a set.
+ * Each box is compared with the value in the SAME POSITION of the mark scheme;
+ * only shapes that carry no order match as a set. Matching every answer as an
+ * unordered set called a backwards coordinate right, across 220 live slots.
  */
 export function componentsEquivalent(
   entered: string[],
@@ -56,7 +44,6 @@ export function componentsEquivalent(
     if (key.ordered) {
       return entered.every((v, i) => answersEquivalentAny(v, key.values[i]));
     }
-    // Unordered: every entered value must claim a distinct value of the key.
     const used = new Array<boolean>(key.values.length).fill(false);
     return entered.every((v) => {
       const i = key.values.findIndex((k, j) => !used[j] && answersEquivalentAny(v, k));
@@ -69,9 +56,7 @@ export function componentsEquivalent(
 }
 
 /**
- * The values joined for the attempt record, in the notation the papers use.
  * Storage and display only — marking never reads this back apart again.
- *
  * `groups` puts the brackets back where the answer has them, so a record of
  * {(1,H),(2,H)} does not read as four loose values.
  */

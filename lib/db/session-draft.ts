@@ -1,18 +1,9 @@
 import { Schema, model, models, type InferSchemaType } from 'mongoose';
 
 /**
- * WHAT A STUDENT HAS TYPED AND NOT YET HANDED IN.
- *
- * A Paper 2 question is nine to twelve marks and twenty minutes at exam pace,
- * and it is worked on a phone. A call, a flat battery or a closed tab lost all
- * of it, which is a reason to stop using the app rather than a reason to
- * remember to submit.
- *
- * SEPARATE FROM ATTEMPTS ON PURPOSE. `attempts` is append-only and is the
- * record of what a student was actually told (§3.5); every mastery figure folds
- * over it. A draft is none of those things — it is scratch, it is overwritten
- * on every keystroke, and it is deleted the moment the answer is submitted and
- * an attempt exists. Nothing here is ever marked or counted.
+ * What a student has typed and not handed in, so a closed tab does not lose a
+ * twenty-minute question. Separate from attempts on purpose: those are
+ * append-only and folded over (ROUND_1 §3.5); a draft is never marked.
  */
 const SessionDraftSchema = new Schema({
   session_id: { type: Schema.Types.ObjectId, ref: 'PracticeSession', required: true },

@@ -3,9 +3,7 @@ import { computeMatrix, type Matrix, type QuestionFacts } from '@/lib/targets/ma
 import { hasShowThat } from '@/lib/targets/show-that';
 import type { ModuleNumber, Profile } from '@/lib/types';
 
-// R1.5 §4 — separate P1/P2 target matrices replace the combined coverage.
-// Deficits are reported by module, objective, paper, difficulty, profile,
-// archetype, and representation.
+// ROUND_1_5 §4 — separate P1/P2 target matrices replace the combined coverage.
 
 interface LeanQuestion {
   _id: unknown;
@@ -78,14 +76,9 @@ export interface CoverageBundle {
   approvedTotal: number;
   objectiveApproved: Map<string, number>;
   /**
-   * Approved PLUS draft, which is what generation must steer by.
-   *
-   * The floor in ROUND_1_5_FINAL §4 is counted in approved questions, and a
-   * run that steered on approved alone never moved: nothing it wrote was
-   * approved yet, so the least-covered objective stayed the least-covered one
-   * for the whole run and every question landed on it. A draft rejected in
-   * review returns its objective to the deficit, so counting drafts here costs
-   * nothing and stops a run repeating itself fifty times.
+   * Approved PLUS draft, which is what generation must steer by: a run steering
+   * on approved alone never moved, because nothing it wrote was approved yet and
+   * every question landed on the same least-covered objective.
    */
   objectiveCovered: Map<string, number>;
   /** Per-topic objective coverage, for the surface that hid this. */

@@ -1,31 +1,17 @@
-// Can this string survive the renderer?
-//
-// Every formatting defect found in the August audit — $$ blocks, prose swallowed
-// between stray delimiters, cloze gaps inside maths, semicolons tearing an
-// answer in half, $ in an SVG label, a control character where \vec belonged —
-// reached the database because NOTHING checked. The generator asked for
-// KaTeX-safe output, the model mostly complied, and the only place a mistake
-// surfaced was a reviewer's screen. Every repair was therefore a database
-// repair, and the next batch brought the same classes back.
-//
-// These are the renderer's own contracts, stated as checks:
-//   lib/katex.ts renderMathHtml   — splits on a single $, and on \[...\]
-//   lib/katex.ts renderAnswerHtml — splits on ";" BEFORE typesetting
-//   the cloze surfaces            — split the statement on {} BEFORE typesetting
-//   lib/visuals/svg.ts            — draws labels as plain text, never KaTeX
+// Can this string survive the renderer? These are the renderer's own contracts,
+// stated as checks, so a defect is caught before the database rather than on a
+// reviewer's screen: renderMathHtml splits on a single $ and on \[...\];
+// renderAnswerHtml splits on ";" BEFORE typesetting; the cloze surfaces split
+// the statement on {}; lib/visuals/svg.ts draws labels as plain text.
 
 /** Money is stored escaped (\$) and is not a delimiter; drop it before counting. */
 const bare = (s: string) => s.replace(/\\\$/g, '');
 
-// Every control character except the newline, which is the only one a question
-// legitimately contains.
-//
-// TAB and DEL were both outside the old class and both reached review. A tab is
-// never formatting here — it is what a JSON escape leaves behind when a maths
-// command loses its second backslash, so a theta written with one arrives as a
-// tab followed by "heta" and renders as the word. The same swallows \times,
-// \neq, \rho and \frac, whose escapes are \t, \n, \r and \f, so the class has
-// to be everything rather than the codes noticed so far.
+// Every control character except the newline, the only one a question
+// legitimately contains. A tab here is what a JSON escape leaves behind when a
+// maths command loses its second backslash — \theta arrives as tab + "heta" —
+// and \times, \neq, \rho and \frac fail the same way, so the class has to be
+// everything rather than the codes noticed so far.
 const CONTROL = new RegExp('[\\u0000-\\u0009\\u000B-\\u001F\\u007F]');
 
 /** The one check every field needs, whatever else is checked about it. */
@@ -36,13 +22,9 @@ function controlIssues(text: string): string[] {
 }
 
 /**
- * A math span holding a sentence of prose is a mis-paired delimiter.
- *
- * Parity is not enough. Two stray $ — one left open in part (c), one in part
- * (d) — balance each other, so the count is even and every span after the first
- * of them is shifted: the prose between them is typeset as maths and a whole
- * part renders as gibberish. That is the same failure as a $$ block, reached by
- * a different route, and counting delimiters cannot see it.
+ * A math span holding a sentence of prose is a mis-paired delimiter. Parity is
+ * not enough: two stray $ balance each other, so every span after the first is
+ * shifted and prose is typeset as maths. Counting delimiters cannot see it.
  */
 function proseInsideMath(text: string): boolean {
   return bare(text)
@@ -64,8 +46,7 @@ function proseInsideMath(text: string): boolean {
 
 /**
  * A command stranded in prose. "exceeded 35\%." outside any $...$ prints the
- * backslash to the student, because prose is escaped and never typeset. It is
- * what a repair leaves behind when it closes the wrong side of a broken span.
+ * backslash to the student, because prose is escaped and never typeset.
  */
 function strandedCommands(text: string): string[] {
   const prose = bare(text)

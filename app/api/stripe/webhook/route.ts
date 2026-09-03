@@ -6,17 +6,9 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /**
- * PAYMENT -> ACCESS, without waiting for someone to read an inbox.
- *
- * No Stripe package and no call back to Stripe: the signed payload carries
- * everything acted on here (CLAUDE.md; ROUND_2_EXAMINER §8c). What makes this
- * safe to automate is that /admin/access already does the same job by hand, so
- * every way this can fail ends with a human resolving it there rather than with
- * a paying student stuck and no record of why.
- *
- * Always 200 once the signature is good. A 500 makes Stripe retry, and every
- * failure here is one a retry cannot fix — a wrong email is still wrong the
- * second time. The payment is recorded either way, which is the actual repair.
+ * PAYMENT -> ACCESS. No Stripe package and no outbound call: the signed payload
+ * carries everything acted on here — ROUND_2 §8c. Always 200 once the signature
+ * verifies, since no failure here is one a retry fixes; /admin/access resolves.
  */
 export async function POST(req: Request): Promise<Response> {
   const raw = await req.text();
@@ -38,8 +30,7 @@ export async function POST(req: Request): Promise<Response> {
 
   await dbConnect();
 
-  // IDEMPOTENT ON THE EVENT ID. Stripe retries until it gets a 2xx, and a
-  // retry after a slow response must not grant twice. The unique index is what
+  // IDEMPOTENT ON THE EVENT ID: a retry must not grant twice. The unique index
   // enforces it — two concurrent deliveries race, and one loses on write.
   const existing = await Payment.findOne({ event_id: event.id }).lean();
   if (existing) return Response.json({ duplicate: true }, { status: 200 });
@@ -54,9 +45,8 @@ export async function POST(req: Request): Promise<Response> {
       } | null>()
     : null;
 
-  // What the link SAYS, kept as evidence. The sitting granted is the one the
-  // student registered for — see grantFromPayment for why that is not a
-  // preference but an asymmetry.
+  // What the link SAYS, kept as evidence only; the sitting granted is the one
+  // the student registered for — see grantFromPayment.
   const mapped = sittingFromLink(session, process.env.STRIPE_LINK_SITTINGS);
 
   let created;

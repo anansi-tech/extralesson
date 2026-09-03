@@ -1,11 +1,7 @@
 /**
- * READING A DIAGNOSTIC.
- *
- * A diagnostic asks about one question a topic. That supports a grouping —
- * these held up, these did not — and it does not support a ranking finer than
- * that, a score, or a grade. Eight items is far below the marks a prediction
- * needs, and a grade here would be the invented confidence taken out of the
- * landing page.
+ * A diagnostic asks about one question a topic. That supports a grouping — these
+ * held up, these did not — and not a finer ranking, a score, or a grade: eight
+ * items is far below the marks a prediction needs.
  */
 export type TopicVerdict = 'HELD UP' | 'MIXED' | 'STRUGGLED';
 
@@ -41,17 +37,9 @@ export function verdictFor(seen: SeenTopic | undefined): TopicVerdict | null {
 }
 
 /**
- * Topics in the order the diagnostic actually supports.
- *
- * By VERDICT, never by overall topic mastery. Mastery folds every attempt the
- * student has ever made, so ordering by it and labelling with this session's
- * evidence stacked two different measurements in one list — the topic printed
- * top read STRUGGLED while the one below it read HELD UP, because the top one
- * carried marks from earlier work the diagnostic never touched.
- *
- * Inside a group the syllabus order is kept. One question cannot separate two
- * topics that both held up, and sorting them by a difference that small would
- * be presenting noise as a finding.
+ * By VERDICT, never by topic mastery, which folds every attempt ever made and
+ * would stack two measurements in one list. Syllabus order inside a group,
+ * since one question cannot separate two topics that both held up.
  */
 export function rankByVerdict<T extends { module: number; order: number }>(
   topics: T[],

@@ -18,19 +18,9 @@ export type MasteryBand = 'STRONG' | 'BUILDING' | 'WEAK' | 'NOT_STARTED';
 // exceeds this, sessions order M1 topics before M2/M3.
 export const M1_PREREQ_THRESHOLD = 0.5;
 
-// How much work an estimate needs before we are willing to state one.
-//
-// A fresh account has zero mastery, and zero mastery arithmetic produces U/U/U
-// and an overall VI — which reads as a verdict on the student when it means we
-// have never seen them work. Below this many attempts the UI states that there
-// is no estimate yet instead of printing the arithmetic.
-//
-// Measured in assessable MARKS, not questions (R1.8 §2). It was eight
-// questions, which was one session of the old shape; once a session is one or
-// two paper-shaped questions, the same rule in the same unit would state a
-// grade off a single question. Marks is the unit the evidence was always in:
-// eight mixed questions of the old bank carried roughly this many.
-//
-// Kept here rather than in the session builder because it is a claim about
-// evidence, not about sessions — the two are deliberately no longer equal.
+// How much work an estimate needs before we state one: zero-mastery arithmetic
+// produces a grade that reads as a verdict on a student we have never seen
+// work. Measured in assessable MARKS, not questions (R1.8 §2), because a
+// session is now one or two paper-shaped questions and counting those would
+// state a grade off one. It is a claim about evidence, not about sessions.
 export const MIN_MARKS_FOR_PREDICTION = 35;

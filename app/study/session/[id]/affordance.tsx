@@ -1,12 +1,9 @@
 'use client';
 
 /**
- * The two things a student cannot learn from an empty box: which characters
- * they are allowed to use, and how to type the ones their keyboard hides.
- *
- * Both sit under the input they belong to. A help page would be read by nobody
- * and would have to describe every case at once; this describes only the case
- * in front of them.
+ * The two things a student cannot learn from an empty box: which characters are
+ * allowed, and how to type the ones their keyboard hides. Both sit under the
+ * input they belong to, so only the case in front of them is described.
  */
 
 export function HintLines({ hints }: { hints: string[] }) {
@@ -24,10 +21,8 @@ export function HintLines({ hints }: { hints: string[] }) {
 
 /**
  * Characters a phone keyboard does not carry, inserted at the cursor.
- *
- * onMouseDown is prevented so the button never takes focus: the caret has to
- * still be in the box when the character arrives, or every symbol would land
- * at the end of whatever was typed.
+ * onMouseDown is prevented so the button never takes focus: the caret must
+ * still be in the box, or every symbol lands at the end of what was typed.
  */
 export function SymbolStrip({
   symbols,
@@ -40,13 +35,11 @@ export function SymbolStrip({
 }) {
   if (symbols.length === 0 || disabled) return null;
   return (
-    // Labelled, and in the ink the inputs are drawn in. Set in the faint rule
-    // colour with no label, it read as decoration: a student finished two
-    // geometry sessions without noticing the degree sign was a button.
-    // mt-3 rather than tight to the inputs: these are 44px buttons that write
-    // into the box above them, and at 6px a thumb aimed at the last input hit
-    // the degree sign instead. TAP_GAP_MIN in scripts/audit-mobile.ts is the
-    // floor this clears.
+    // Labelled, and in the ink the inputs are drawn in: in the faint rule colour
+    // with no label it read as decoration, and a student finished two geometry
+    // sessions without noticing the degree sign was a button. mt-3, not tight to
+    // the inputs — at 6px a thumb aimed at the last input hit the degree sign;
+    // TAP_GAP_MIN in scripts/audit-mobile.ts is the floor this clears.
     <div className="mt-3 flex flex-wrap items-center gap-1.5">
       <span className="font-mono text-[10px] uppercase tracking-widest text-dim">Insert</span>
       {symbols.map((ch) => (

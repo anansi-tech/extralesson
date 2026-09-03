@@ -6,19 +6,9 @@ import { WorkingRead } from './working-read';
 import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
 
 /**
- * PHOTOGRAPH THE WORKING, AND SEE WHAT WE READ.
- *
- * R2 §2 and §3. The camera opens straight onto the page on a phone; on a
- * desktop the same control takes a file. It appears only after the typed
- * answers have been submitted, because those are the deterministic record and
- * the reveal must not influence what gets photographed.
- *
- * The photo is scaled down HERE, on the device, before it is sent. A modern
- * phone camera produces four megabytes of a page that needs a few hundred
- * kilobytes to read, and the difference is a student's data allowance.
- *
- * Nothing here marks anything. What comes back is what we read, shown per part,
- * so a student can see exactly what the marker will be working from.
+ * The camera appears only after the typed answers are submitted: those are the
+ * deterministic record, and the reveal must not steer what is photographed.
+ * Scaled down on the device, to spend less of a student's data. ROUND_2 §2–§3.
  */
 const LONG_EDGE = 1400;
 const QUALITY = 0.75;

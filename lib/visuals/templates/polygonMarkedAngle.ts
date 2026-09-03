@@ -2,10 +2,9 @@ import { z } from 'zod';
 import { pathArc, polar, polygon, round, svgOpen, text } from '../svg';
 import { valueStatedInText, type VisualTemplate } from '../types';
 
-// Convex polygon (4–8 sides), regular or irregular, with vertex labels and
-// some interior angles marked (value or variable). Vertices are placed by the
-// template on a circle — a deterministic angular jitter gives the irregular
-// look while keeping the polygon convex (any cyclic polygon is convex).
+// Vertices are placed by the template on a circle: a deterministic angular
+// jitter gives the irregular look while keeping the polygon convex, since any
+// cyclic polygon is convex.
 
 export const PolygonMarkedAngleParamsZ = z.object({
   sides: z.number().int().min(4).max(8),

@@ -1,28 +1,15 @@
 'use client';
 
 /**
- * AN INPUT SHAPED LIKE THE ANSWER.
- *
- * One box per value, with the brackets, commas and colons PRINTED rather than
- * typed. A student on a phone never reaches for a character the keyboard does
- * not carry and never guesses which delimiter the marker will accept — and
- * because each value arrives separately, the marker compares them by position
- * instead of splitting a string back apart.
- *
- * How many boxes is itself part of the answer for some shapes. A coordinate is
- * a pair and a column vector has the rows the question named, so those are laid
- * out fixed. A list is not: rendering "list the factors of 24" as eight boxes
- * would answer the question. Those start at three and grow on demand.
+ * One box per value, with brackets, commas and colons PRINTED rather than
+ * typed: the marker compares by position instead of splitting a string, and
+ * only fixed-arity shapes show the count — the rest would give the answer.
  */
 
 /**
- * How many boxes a growable input opens with.
- *
- * ONE, plus an empty one after whatever has been filled. Opening with three
- * put two spare boxes under a two-value answer and read as a question asking
- * for three things — a student filled two, left the third, and reasonably
- * assumed the blank had cost them. Growing from one says nothing about the
- * length of an answer whose length is the point.
+ * ONE, plus an empty box after whatever has been filled. Opening with three
+ * reads as a question asking for three things, so a student who fills two
+ * assumes the blank has cost them.
  */
 const GROW_FROM = 1;
 
@@ -31,10 +18,9 @@ interface Props {
   /** Fixed-arity shapes only; absent when showing it would give the answer. */
   boxes?: number;
   /**
-   * The elements are ordered PAIRS — a sample space, {(1,H),(2,H)}. Printed
-   * with their brackets, two boxes at a time, so a student can see they are
-   * entering pairs. How many pairs is still withheld: a new empty pair appears
-   * when the last one is filled, the same rule the boxes follow.
+   * The elements are ordered PAIRS — a sample space. Printed with their
+   * brackets, two at a time; how many pairs is still withheld, a new empty
+   * pair appearing when the last one is filled.
    */
   pairs?: boolean;
   cols?: number;
@@ -74,8 +60,6 @@ export function TypedInput({
 }: Props) {
   const fixed = boxes !== undefined;
   const filled = values.filter((v) => v.trim() !== '').length;
-  // Pairs grow a PAIR at a time, so the row is always whole: one empty pair
-  // after the last complete one.
   // A pair is only complete when BOTH of its boxes hold something, so a
   // half-typed pair does not open the next one.
   const wholePairs = values.reduce(
@@ -95,11 +79,8 @@ export function TypedInput({
     onChange(next);
   };
 
-  // Sized from the longest answer this slot expects, and growing past it as the
-  // student types: a fixed 64px box held about seven characters, which was too
-  // narrow for a word in a set and for the values a ratio carries. The ch unit
-  // is the width of a digit in the box's own monospace face, so the arithmetic
-  // is the same on a phone and on a desktop.
+  // The ch unit is the width of a digit in the box's own monospace face, so
+  // the sizing is the same on a phone and on a desktop.
   const box = (i: number) => {
     const typed = (values[i] ?? '').length;
     return (
@@ -186,11 +167,8 @@ export function TypedInput({
   }
 
   // list, set, roots — the count is not shown, so the list grows itself: one
-  // empty box after whatever has been filled, and a new one the moment that
-  // gains content. There is no manual "add a box" control. It appended an
-  // empty box BEYOND the trailing empty one, which is a box the rule above
-  // would never add, and as a 44px tap target under the row it took thumbs
-  // aimed at the last box — a student clicked into a box and saw one appear.
+  // empty box after whatever has been filled. No manual "add a box" control:
+  // it sat under the row and took thumbs aimed at the last box.
   const open = shape === 'set' ? '{' : '';
   const close = shape === 'set' ? '}' : '';
   const between = shape === 'roots' ? 'or' : ',';

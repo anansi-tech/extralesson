@@ -1,21 +1,8 @@
-// Predicted outcome v1 (ROUND_1 §6.6): honest arithmetic, no ML.
-// Everything here is an ESTIMATE and the UI must label it so.
-//
-// Documented assumptions:
-// - Per module, weighted contribution = P1 (30) + P2 (50) driven by
-//   blueprint-weighted module mastery, i.e. mastery × 80.
-// - The Paper 3 project (school-based assessment, 20 weighted) is assumed at a
-//   neutral carry-over of 60% — students in this round have no project data;
-//   60% ≈ a middling moderated project.
-// - Module letter bands (A–C) are our assumptions, not published CXC cut
-//   scores: A ≥ 75, B ≥ 60, C ≥ 45 (of the 100 weighted module marks).
-//   Below C we report 'U' (ungraded estimate).
-// - Overall six-point-scale bands are likewise assumptions: I ≥ 75,
-//   II ≥ 65, III ≥ 50, IV ≥ 35, V ≥ 20, VI below.
-// - R1.6 §4: the estimate is computed over the marks we can actually assess
-//   and reports that basis. Construction and drawing marks, and show_that /
-//   explain parts, are never extrapolated across — a strong student on the
-//   marks we test is not evidence about the marks we do not.
+// Predicted outcome (ROUND_1 §6.6): honest arithmetic, no ML, and every figure
+// is an ESTIMATE the UI must label as one. The band cut-offs below and the 60%
+// neutral project carry-over are OUR assumptions, not published CXC cut scores.
+// The estimate covers only the marks we can assess and reports that basis;
+// marks we cannot assess are never extrapolated across — see ROUND_1_6 §4.
 
 import { MIN_MARKS_FOR_PREDICTION } from '@/lib/mastery/config';
 
@@ -72,10 +59,9 @@ export interface OverallPrediction {
   modules: ModulePrediction[];
   overall_percent: number; // mean of module totals
   /**
-   * null when the student has not done enough work to estimate from. Nullable
-   * on purpose: a flag beside a letter is easy to read past, and printing "U"
-   * or "VI" at a student who has answered nothing is a verdict we have not
-   * earned. Every surface must decide what to show instead.
+   * Null when the student has not done enough work: printing "U" or "VI" at
+   * someone who has answered nothing is a verdict we have not earned. Every
+   * surface must decide what to show instead.
    */
   overall_grade: OverallGrade | null;
   /** Assessable marks this rests on, and whether that was enough (§2). */
@@ -85,8 +71,8 @@ export interface OverallPrediction {
   coverage: number;
 }
 
-// Overall estimate: modules combined with equal weight (each module is 100
-// weighted marks of the 300 total, Assessment Grid A).
+// Modules combine with equal weight: each is 100 weighted marks of the 300
+// total, Assessment Grid A.
 export function predictOverall(
   modules: ModulePrediction[],
   marksAttempted: number,
@@ -112,8 +98,8 @@ export function predictOverall(
   else if (pct >= 20) grade = 'V';
   else grade = 'VI';
   const coverage = modules.reduce((s, m) => s + m.coverage, 0) / modules.length;
-  // The arithmetic is still computed and still honest; what we withhold is the
-  // CLAIM, until there is enough work behind it to make one.
+  // The arithmetic is still computed; what we withhold is the CLAIM, until
+  // there is enough work behind it to make one.
   return {
     modules: estimable ? modules : withheld(modules),
     overall_percent: round1(pct),

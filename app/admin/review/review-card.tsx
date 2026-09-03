@@ -89,15 +89,11 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
     setError(undefined);
   }, [question.id, question.editJson]);
 
-  // Acting moves the queue on, so the question just judged would otherwise be
-  // unreachable — including the one judged by a keystroke, which is the easy
-  // way to approve the wrong thing. `from` carries its id to the next page,
-  // where it becomes a way back.
-  // Drop `from` from the address bar once it has been rendered. It is true for
-  // exactly one view — the one immediately after acting — and leaving it there
-  // means a refresh hours later still offers a way back to a question you
-  // finished with. history.replaceState rather than the router, so the link
-  // already on screen stays and nothing re-renders.
+  // Acting moves the queue on, so the question just judged — a keystroke is the
+  // easy way to approve the wrong thing — would otherwise be unreachable, and
+  // `from` carries its id to the next page as the way back. It is dropped once
+  // rendered because it is true for that one view: a refresh hours later should
+  // not still offer it. replaceState, so the link on screen stays put.
   useEffect(() => {
     if (!question.backTo) return;
     const url = new URL(window.location.href);
@@ -179,9 +175,8 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
         </ul>
       )}
 
-      {/* The objectives this question is evidence for. A question that is the
-          ONLY approved evidence for an objective is worth editing rather than
-          rejecting, and nothing on the page used to say which those were. */}
+      {/* The objectives this question is evidence for: one that is the ONLY
+          approved evidence for it is worth editing rather than rejecting. */}
       <div className="mb-3 space-y-1">
         {question.objectives.map((o) => (
           <div key={o.id} className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[13px]">

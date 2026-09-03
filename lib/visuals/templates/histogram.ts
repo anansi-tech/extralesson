@@ -46,7 +46,6 @@ export const histogram: VisualTemplate<HistogramParams> = {
     const yFor = (v: number) => PAD_T + plotH - (v / yMax) * plotH;
 
     if (p.title) parts.push(text(W / 2, 24, p.title, { size: 15 }));
-    // axes
     parts.push(line(PAD_L, PAD_T, PAD_L, PAD_T + plotH));
     parts.push(line(PAD_L, PAD_T + plotH, PAD_L + plotW, PAD_T + plotH));
     for (const t of ticks(0, yMax, p.y_step)) {
@@ -55,13 +54,11 @@ export const histogram: VisualTemplate<HistogramParams> = {
       parts.push(text(PAD_L - 10, y + 4, String(t), { size: 11, anchor: 'end' }));
       if (t > 0) parts.push(line(PAD_L, y, PAD_L + plotW, y, true));
     }
-    // boundary ticks along the x-axis
     for (const b of p.boundaries) {
       const x = xFor(b);
       parts.push(line(x, PAD_T + plotH, x, PAD_T + plotH + 5));
       parts.push(text(x, PAD_T + plotH + 20, String(b), { size: 11 }));
     }
-    // contiguous bars
     p.frequencies.forEach((f, i) => {
       if (f <= 0) return;
       const xa = xFor(p.boundaries[i]);

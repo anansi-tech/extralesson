@@ -2,15 +2,12 @@ import { z } from 'zod';
 import { INK, line, round, svgOpen, text } from '../svg';
 import type { VisualTemplate } from '../types';
 
-// Growing pattern of 2-4 figures made of dots or matchsticks — the visual
-// pairing for the complete-the-table archetype. The load-bearing invariant:
-// the number of drawn elements in each figure group exactly equals counts[i].
+// The load-bearing invariant: the number of drawn elements in each figure
+// group exactly equals counts[i].
 export const PatternFigureParamsZ = z.object({
-  // 'concentric-circles' is the target/ripple pattern: figure n is n circles
-  // of radii 1..n about a common centre, a dot at the centre and four on each
-  // circumference, with the region outside the innermost circle shaded. It
-  // grows by a DRAWN RING rather than by loose elements, which is why neither
-  // the dot nor the matchstick arrangements can express it.
+  // 'concentric-circles' grows by a DRAWN RING rather than by loose elements,
+  // which is why neither the dot nor the matchstick arrangements can express
+  // it: figure n is n circles about a centre, dots at the centre and on each.
   kind: z.enum(['dots', 'matchsticks', 'concentric-circles']),
   arrangement: z.enum(['triangle', 'square', 'L', 'row', 'cross']),
   figure_numbers: z.array(z.number().int().min(1).max(30)).min(2).max(4),
@@ -299,11 +296,10 @@ export const patternFigure: VisualTemplate<PatternFigureParams> = {
         );
       }
     }
-    // Drawn-element invariant: each figure group must contain exactly counts[i]
-    // dots (circles) or matchsticks (lines).
-    // The concentric-circles kind is counted above, against the rings it draws:
-    // here a <circle> is a ring OR a dot and a <line> is a ruled diameter, so
-    // counting tags would compare the wrong things.
+    // Drawn-element invariant: each figure group contains exactly counts[i]
+    // dots or matchsticks. Concentric circles are counted above instead, since
+    // there a circle element is a ring OR a dot and counting tags would compare
+    // the wrong things.
     if (p.kind !== 'concentric-circles' && p.counts.length === p.figure_numbers.length) {
       const svg = renderSvg(p);
       const groups = [...svg.matchAll(/<g data-figure="(\d+)">([\s\S]*?)<\/g>/g)];

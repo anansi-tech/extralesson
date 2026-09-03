@@ -12,12 +12,9 @@ import { OBJECTIVE_FLOOR } from '@/lib/targets/objectives';
 export const metadata = { title: 'Coverage — ExtraLesson admin' };
 export const dynamic = 'force-dynamic';
 
-// The whole picture, on its own page.
-//
-// It used to sit under the review card, where it was a dashboard bolted to a
-// tool: fourteen P1 topics reading 11/11 while somebody is trying to judge one
-// question. A satisfied target carries no information at the moment of review,
-// so the card keeps the deficits and this page keeps everything.
+// The whole picture, on its own page. A satisfied target carries no
+// information at the moment of review, so the review card keeps the deficits
+// and this page keeps everything.
 export default async function CoveragePage() {
   const cost = await readingCost();
   const { matrix, objectiveRows, approvedTotal, draftsRemaining } = await getCoverage();

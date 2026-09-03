@@ -3,16 +3,11 @@ import { componentsEquivalent } from './components';
 import { checkAnswerFormat, valueLooksRight } from './format';
 import type { AnswerFormat, ProfileMarks, RubricItem } from '@/lib/types';
 
-// Round 1 marking (ROUND_1 §6.3): the final-answer equivalence check drives
-// accuracy marks; method-ish CK/AK marks come from SIMPLE, DOCUMENTED
-// heuristics only. Full examiner (LLM) marking is Round 2 — do not extend.
-//
-// Heuristics for structured questions:
-// - Correct final answer -> every rubric criterion is awarded.
-// - Wrong answer         -> nothing. A method mark needs the working, and the
-//   working is PHOTOGRAPHED (R2): the typed box that used to feed this could
-//   only ever be attributed on a question with one marked slot, which is 4 of
-//   446, so on the rest its label promised marks it could not award.
+// Round 1 marking (ROUND_1 §6): final-answer equivalence drives accuracy marks
+// and CK/AK marks come from simple documented heuristics only — the examiner
+// pass is ROUND_2, do not extend this. A correct final answer awards every
+// rubric criterion; a wrong one awards nothing, because a method mark needs the
+// working and the working is PHOTOGRAPHED (ROUND_2 §4).
 
 export interface MarkResult {
   correct: boolean;
@@ -32,15 +27,14 @@ export function markMcq(profile: 'CK' | 'AK' | 'R', marks: number, answerIndex: 
 // R1.8 Part 1: the unit of marking is the SLOT. One input per slot, addressed
 // as 'part.slot'; rubric rows are earned by the slot named in slot_ref. A part
 // may mix an auto-marked value with a reason the student self-marks, and only
-// the reason is skipped — under R1.6 an explain sub-part exiled its whole part.
+// the reason is skipped.
 export interface SlotInput {
   /** 'a.i' — the part label and the slot label. */
   ref: string;
   answer: string;
   /**
-   * One entry per box, when the slot was rendered as a typed input. Present
-   * means the student never typed a delimiter, so marking compares values by
-   * POSITION instead of parsing the string back apart.
+   * One entry per box when the slot was rendered as typed inputs, so marking
+   * compares values by POSITION instead of parsing the string back apart.
    */
   values?: string[];
 }
@@ -84,13 +78,9 @@ export function markStructuredParts(
         slot.answer_format as AnswerFormat | undefined,
         input?.values,
       );
-      // ONLY A SLOT THAT CARRIES MARKS VOTES ON THE VERDICT.
-      //
-      // A self-marked slot is already skipped above. Five auto-marked slots in
-      // the bank carry no rubric row at all: nothing is on offer for them, so a
-      // miss there cost no marks and still failed the whole attempt, which is
-      // the same disagreement from the other side. The verdict now means
-      // exactly what the score means — every mark on offer was earned.
+      // ONLY A SLOT THAT CARRIES MARKS VOTES ON THE VERDICT: five auto-marked
+      // slots in the bank have no rubric row, so a miss there cost no marks and
+      // still failed the attempt. The verdict means what the score means.
       if (slotRubric.length > 0 && !result.correct) allCorrect = false;
       if (result.format_feedback && !formatFeedback) formatFeedback = result.format_feedback;
       awarded.push(...result.rubric_awarded.filter((c) => c !== 'R0'));
@@ -124,17 +114,11 @@ export function markStructured(
     enteredValues && enteredValues.length > 0
       ? componentsEquivalent(enteredValues, canonicalAnswer, accept)
       : answersEquivalentAny(studentAnswer, canonicalAnswer, accept);
-  // A required form is part of the question, and the official scheme marks it
-  // as its own act: the value earns its marks, and expressing it in the demanded
-  // form earns a further one (R1.7 §B4). So a right value in the wrong form
-  // keeps everything except the rows written for the form.
-  // A FORM IS CHECKED PER VALUE, not on the line they were joined into.
-  //
-  // "Calculate both angles, each correct to 1 decimal place" is one slot
-  // holding two values. Running the check over the composed "73.7°, 53.1°"
-  // asks whether that STRING is one number to one decimal place, which it
-  // never is — so the format mark was lost on every multi-value slot that
-  // demanded a form, however carefully the student had rounded.
+  // A required form is part of the question: the value earns its marks and the
+  // demanded form earns a further one (R1.7 §B4), so a right value in the wrong
+  // form keeps every row except those written for the form. A FORM IS CHECKED
+  // PER VALUE — a slot holding two angles is never itself one number to one
+  // decimal place, so checking the joined line lost the mark every time.
   const checkForm = (): { ok: boolean; feedback?: string } => {
     if (!answerFormat) return { ok: true };
     const values = enteredValues?.length ? enteredValues : [studentAnswer];
@@ -148,13 +132,9 @@ export function markStructured(
   let format_feedback: string | undefined;
   let correct = equivalent;
   let formOnlyMiss = false;
-  // A FORM ONLY COSTS SOMETHING IF A ROW PAYS FOR IT.
-  //
-  // R1.7 §B4 gives the form its own mark, and 129 of the 256 slots declaring a
-  // format have no row marked for_format. On those, missing the form took no
-  // marks — every row was still awarded — and yet set the answer incorrect, so
-  // the card read "9 out of 9" beside "Not quite". Where nothing is on offer
-  // for the form, saying so is feedback, not a verdict.
+  // A FORM ONLY COSTS SOMETHING IF A ROW PAYS FOR IT: 129 of the 256 slots
+  // declaring a format have no for_format row, and there a missed form took no
+  // marks yet set the answer incorrect — "9 out of 9" beside "Not quite".
   const formIsMarked = rubric.some((r) => r.for_format);
   if (equivalent && answerFormat) {
     const check = checkForm();

@@ -2,18 +2,11 @@ import { z } from 'zod';
 import { generateObject } from 'ai';
 import { model } from '@/lib/ai';
 
-// Last step of the independent-solve gate (R1.5 §5).
-//
-// Mechanical equivalence settles values, expressions and equations. It cannot
-// settle prose: "the composite functions have different rules" and
-// "fg(x) != gf(x) for x != -2, 0" are one answer, and no string rule reaches
-// that. Before this existed we answered such pairs by adding another rule per
-// notation we met, which is why the gate kept rejecting correct drafts.
-//
-// So: rules decide what rules can decide, and a skeptical reader decides the
-// rest. This runs ONLY on a part the mechanical check has already failed, so a
-// draft can never be accepted without at least one of the two agreeing, and the
-// verdict is logged beside the pair like every other rejection.
+// Last step of the independent-solve gate (ROUND_1_5 §5). Mechanical
+// equivalence cannot settle prose, and a rule per notation kept rejecting
+// correct drafts, so a skeptical reader decides what rules cannot. It runs ONLY
+// on a part the mechanical check has already failed, so no draft is accepted
+// without at least one of the two agreeing.
 
 const VerdictZ = z.object({
   same: z.boolean(),

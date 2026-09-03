@@ -2,83 +2,53 @@ import { parseQuantity } from './quantity';
 import { parseNumeric } from './equivalence';
 
 /**
- * WHAT INPUT AN ANSWER ACTUALLY WANTS.
- *
- * A single free-text box asks every answer to be typed as a string, which puts
- * two problems on the student at once: reaching characters a phone keyboard
- * does not have, and choosing a delimiter the marker will accept. Both are
- * typing, not mathematics, and both have cost real marks.
- *
- * Classifying the shape lets the session render the input the answer wants —
- * one box per value, stacked boxes for a column vector, a fixed colon between
- * ratio boxes — so the student never types a delimiter and the marker never
- * parses one.
- *
- * The shape is read from the SLOT ANSWER — the same string the marker compares
- * against — and never stored beside it. One source of truth: an answer edited
- * in review changes the input the student is given and the components the
- * marker checks in the same instant, so the two cannot disagree. A copy of the
- * classification on the slot would go stale silently the first time someone
- * corrected an answer, and render the wrong number of boxes.
+ * One box per value, so the student never types a delimiter. Read from the
+ * SLOT ANSWER the marker compares against, never stored beside it: a copy goes
+ * stale the first time review corrects an answer and renders the wrong boxes.
  */
 export type InputShape =
-  | 'number' //        42, -1/3, 0.75
-  | 'quantity' //      72 cm, $260, 35°
-  | 'list' //          18 kg, 27 kg, 36 kg — order carries meaning
-  | 'roots' //         x = 2 or x = -1/3 — order does not
-  | 'set' //           {1, 2, 3} — order does not
-  | 'coordinate' //    (3, 4)
-  | 'column_vector' // a 2x1 or 3x1 matrix
-  | 'matrix' //        anything wider than one column
-  | 'ratio' //         2 : 3
-  | 'inequality' //    x <= 5
-  | 'expression' //    2x + 5, T_n = 0.2n + 1.4
-  | 'word'; //         prose, a classification, a yes/no
+  | 'number'
+  | 'quantity'
+  | 'list'
+  | 'roots'
+  | 'set'
+  | 'coordinate'
+  | 'column_vector'
+  | 'matrix'
+  | 'ratio'
+  | 'inequality'
+  | 'expression'
+  | 'word';
 
 export interface ShapeReading {
   shape: InputShape;
-  /** How many values the student has to enter. 1 unless the shape is plural. */
+  /** 1 unless the shape is plural. */
   boxes: number;
-  /** Whether the order of those values is part of the answer. */
   ordered: boolean;
-  /** The answer broken into the values a student would enter, in order. */
+  /** The answer split into the values a student enters, in reading order. */
   values: string[];
   /** Columns, for a matrix — the grid cannot be laid out without it. */
   cols?: number;
   /**
-   * WHEN THE ELEMENTS ARE THEMSELVES GROUPS: {(1,H),(2,H)}, {{1,2},{1,3}}.
-   *
-   * `values` stays FLAT and in reading order, so one box per value and the
-   * positional comparison both work unchanged. This says where the boundaries
-   * fall — [2,2] for two pairs — so the input can print the brackets around
-   * each group and the composed answer can put them back.
+   * Where group boundaries fall when the elements are themselves groups —
+   * [2,2] for two pairs. `values` stays FLAT and in reading order, so one box
+   * per value and the positional comparison keep working.
    */
   groups?: number[];
-  /** The bracket printed around each group. */
   groupKind?: '(' | '{';
 }
 
 /**
- * Shapes whose number of values is fixed by the QUESTION rather than by the
- * answer: a coordinate is always a pair, a column vector has the rows the
- * question asked for. Their box count can be shown.
- *
- * The others must not show it. "List the factors of 24" rendered as eight
- * boxes has answered itself — the paper does not say how many there are, and
- * neither may we. Those grow on demand instead.
+ * Shapes whose value count is fixed by the QUESTION, so showing the box count
+ * gives nothing away. The others must not show it: "list the factors of 24"
+ * rendered as eight boxes has answered itself.
  */
 export const FIXED_ARITY = new Set<InputShape>(['coordinate', 'column_vector', 'matrix', 'ratio']);
 
 /**
- * A list this short is the question naming what it wants — "calculate both
- * angles", "state the two shares" — so its length is already public and the
- * boxes may show it. Longer than this it is an enumeration, and how many there
- * are is the thing being asked.
- *
- * Measured on the live bank: 38 of 52 list slots hold exactly two values and
- * only 7 hold five or more, while sets run the other way — 13 of 22 hold five
- * or more and exactly one holds two. Withholding the count from all of them
- * opened three empty boxes for a two-value answer, which is what a student hit.
+ * Up to this many, a list is the question naming what it wants — "both angles"
+ * — so its length is already public; longer, the count is what is being asked.
+ * Measured on the bank: 38 of 52 list slots hold exactly two values.
  */
 export const NAMED_LIST_MAX = 4;
 
@@ -88,7 +58,6 @@ export function showsBoxCount(reading: ShapeReading): boolean {
   return reading.shape === 'list' && reading.boxes <= NAMED_LIST_MAX;
 }
 
-/** Shapes entered as several values, however many. */
 export function isMultiValue(shape: InputShape): boolean {
   return shape === 'list' || shape === 'set' || shape === 'roots' || FIXED_ARITY.has(shape);
 }
@@ -109,20 +78,9 @@ function bare(raw: string): string {
 const NUMBERISH = /^-?\d+(?:\.\d+)?(?:\s*\/\s*-?\d+(?:\.\d+)?)?$/;
 
 /**
- * Split on a separator that is NOT inside brackets.
- *
- * A sample space is written {(Mango,H),(Mango,T)} and its members are the
- * PAIRS. Splitting on every comma tears them in half and offers the student
- * four boxes holding "(Mango" and "H)".
- */
-/**
- * A piece of a split answer, tidied the way the whole answer is.
- *
- * bare() strips the $ delimiters at the ENDS of the answer, so splitting
- * "$16.8$ kg, $8.4$ kg" left the inner ones stranded inside the values —
- * "16.8$ kg" — both in the boxes and in what the marker compares against. An
- * ESCAPED \$ is money and stays: the papers write \$1 860 and that is a value,
- * not a delimiter.
+ * bare() strips only the $ at the ENDS, so a split strands the inner ones
+ * inside the values, in the boxes and in what the marker compares against. An
+ * ESCAPED \$ is money and stays: the papers write \$1 860, which is a value.
  */
 function tidyPiece(piece: string): string {
   return piece
@@ -137,8 +95,7 @@ function splitTopLevel(s: string, sep: string): string[] {
   let current = '';
   for (const ch of s) {
     if ('([{'.includes(ch)) depth++;
-    // Clamped at zero: an unbalanced close used to drive the depth negative,
-    // and every later comma then read as top level.
+    // Clamped: an unbalanced close must not make later separators read as top level.
     else if (')]}'.includes(ch)) depth = Math.max(0, depth - 1);
     if (ch === sep && depth <= 0) {
       out.push(current);
@@ -150,12 +107,9 @@ function splitTopLevel(s: string, sep: string): string[] {
 }
 
 /**
- * A set written as a CONDITION rather than as members: {x in N : 1 <= x <= 12}.
- *
- * There is nothing to put in boxes — the answer is a predicate, not a list of
- * values — and it cannot be typed on a phone either. Slots whose answer reads
- * this way are marked by the student against the revealed answer instead of
- * being auto-marked wrong, which is what they were.
+ * A set written as a CONDITION, not as members: {x in N : 1 <= x <= 12}. The
+ * answer is a predicate — nothing to put in boxes, nothing a phone can type —
+ * so these slots are self-marked against the revealed answer, not auto-marked.
  */
 export function isSetBuilder(rawAnswer: string): boolean {
   const s = bare(rawAnswer);
@@ -184,7 +138,6 @@ function wrapped(s: string, open: '{' | '('): string | null {
     else if (ch === close) {
       depth--;
       if (depth === 0) {
-        // Anything after the closing bracket means it did not wrap the whole.
         return body.slice(i + 1).replace(/^\\/, '').trim() === '' ? body.slice(1, i).replace(/\\$/, '') : null;
       }
     }
@@ -193,9 +146,8 @@ function wrapped(s: string, open: '{' | '('): string | null {
 }
 
 /**
- * Members that are each a group — (1,H) or {1,2} — flattened to their values
- * with the boundaries recorded. Null when they are plain values, which is the
- * ordinary case and must keep behaving exactly as before.
+ * Members that are each a group — (1,H) or {1,2} — flattened with boundaries
+ * recorded. Null when they are plain values, which is the ordinary case.
  */
 function asGroups(
   members: string[],
@@ -222,10 +174,8 @@ export function readInputShape(rawAnswer: string): ShapeReading {
   const s = bare(rawAnswer);
   const lower = s.toLowerCase();
 
-  // \binom{4}{-2} is a column vector too. The papers and the generator both
-  // reach for it — it is the shorter way to write a 2x1 — and reading only
-  // \begin{pmatrix} left twelve vector answers classified as prose, so they
-  // rendered as a single free-text box asking a student to type KaTeX.
+  // \binom{4}{-2} is a column vector too: the shorter way the papers and the
+  // generator write a 2x1. Missing it renders a box asking for typed KaTeX.
   const binom = s.match(/\\[dt]?binom\s*\{([^{}]*)\}\s*\{([^{}]*)\}/);
   if (binom) {
     return {
@@ -246,13 +196,9 @@ export function readInputShape(rawAnswer: string): ShapeReading {
       : { shape: 'column_vector', boxes: rows.length, ordered: true, values: cells };
   }
 
-  // A SET, only when the outer brace really does wrap the whole answer.
-  //
-  // The match is greedy, so on a LIST of sets — {6,10}, {2,6,10}, ... — it took
-  // the first brace to the last one and handed the split a string with
-  // unbalanced braces. Every comma then read as top level: eleven values, some
-  // of them carrying a stray brace, both in the boxes and in the mark scheme
-  // the marker compares against.
+  // A SET only when the outer brace wraps the WHOLE answer: on a LIST of sets
+  // — {6,10}, {2,6,10} — a greedy match spans first brace to last and splits
+  // on the commas inside them.
   const set = wrapped(s, '{');
   if (set !== null) {
     const members = splitTopLevel(set, ',');
@@ -261,20 +207,16 @@ export function readInputShape(rawAnswer: string): ShapeReading {
     return { shape: 'set', boxes: Math.max(1, members.length), ordered: false, values: members };
   }
 
-  // SEVERAL GROUPS SIDE BY SIDE, with no outer brace: {1,3}, {2,3}, {3,4}.
-  // The papers write an enumeration of subsets this way. Unordered, like the
-  // braced form it is a shorthand for.
+  // The papers write an enumeration of subsets with no outer brace: {1,3},
+  // {2,3}. Unordered, like the braced form it is shorthand for.
   const bare_groups = asGroups(splitTopLevel(s, ','));
   if (bare_groups && bare_groups.groups.length >= 2) {
     return { shape: 'set', ordered: false, ...bare_groups };
   }
 
-  // A root list is unordered by nature; "or" is how the papers write it.
-  //
-  // The pieces have to LOOK like roots. "or" is an ordinary English word, so
-  // matching on it alone split a described answer — "the common region on or
-  // below both lines…" — into two boxes each holding half a sentence, and made
-  // that half-sentence what the marker compared against.
+  // "or" is how the papers write roots, and also an ordinary English word, so
+  // the pieces must LOOK like roots — otherwise prose splits into boxes each
+  // holding half a sentence, which the marker then compares against.
   if (/\bor\b/.test(lower)) {
     const roots = s.split(/\s+or\s+/i).map(tidyPiece).filter(Boolean);
     const rootish =
@@ -306,7 +248,6 @@ export function readInputShape(rawAnswer: string): ShapeReading {
   if (parseQuantity(lower) !== null) return one('quantity');
   if (parseNumeric(lower) !== null) return one('number');
 
-  // A variable with something done to it, or an equation, is an expression.
   if (/[=+\-*/^]/.test(s) && /[a-z]/i.test(s.replace(/\\[a-z]+/gi, ''))) return one('expression');
   if (/^\\?[a-z](\^|_|\()/i.test(s)) return one('expression');
 
@@ -314,16 +255,9 @@ export function readInputShape(rawAnswer: string): ShapeReading {
 }
 
 /**
- * HOW WIDE A BOX HAS TO BE TO HOLD ITS ANSWER.
- *
- * Measured in characters, from what the student will TYPE rather than from the
- * mark scheme's markup: the key writes \\frac{9}{5}, eleven characters, and the
- * student types 9/5, which is three. Sizing from the raw string would make
- * every fraction box three times wider than it needs to be.
- *
- * The width is the longest value in the SLOT, applied to all of its boxes, so
- * one box is never a clue to the length of its own answer while the boxes stay
- * a consistent size beside each other.
+ * Box width in characters, from what the student TYPES, not the key's markup:
+ * \\frac{9}{5} is eleven characters and 9/5 is three. The slot's longest value
+ * sizes all of its boxes, so no box is a clue to its own answer's length.
  */
 const MIN_BOX_CHARS = 5;
 const MAX_BOX_CHARS = 18;
@@ -340,7 +274,6 @@ function typedLength(value: string): number {
   return typed.length;
 }
 
-/** Characters wide the boxes of this slot should be. */
 export function boxWidthChars(reading: ShapeReading): number {
   const longest = Math.max(0, ...reading.values.map(typedLength));
   return Math.min(MAX_BOX_CHARS, Math.max(MIN_BOX_CHARS, longest));

@@ -3,22 +3,11 @@ import type { ExamSitting } from '@/lib/types';
 import type { OverallGrade } from '@/lib/grade/predict';
 import type { StudyState, TopicState } from './state';
 
-// WHAT IS REACHABLE, measured — never assumed.
-//
-// A new student's arithmetic is U · U · U and an overall VI, and it is correct:
-// at 10% mastery that is what the marks say. Every student sees it for their
-// first weeks, and a January re-sit candidate who has just failed sees the app
-// agreeing with the result they came here to change. Accurate and demotivating
-// is still demotivating.
-//
-// The fix is not to soften the estimate. It is to lead with the part of the
-// picture that is about the future — where the marks actually are, and where
-// this rate of work arrives — and keep the current estimate honest and
-// secondary. Everything here comes out of the attempt history we already store;
-// nothing is invented, and where the data does not support a projection this
-// says so rather than guessing.
+// Lead with what is REACHABLE and keep the current estimate honest but
+// secondary: a new student's U · U · U is accurate and still demotivating.
+// Everything here folds over stored attempts, and where the data does not
+// support a projection this says so rather than guessing.
 
-/** A topic ranked by how much of the estimate is still sitting in it. */
 export interface Leverage {
   code: string;
   title: string;
@@ -28,10 +17,9 @@ export interface Leverage {
   pointsAvailable: number;
 }
 
-// Module contribution is mastery x 80 of 100 weighted marks (predict.ts), and
-// the overall estimate is the mean of the modules — so a topic's leverage is
-// its blueprint weight inside its module, times the mastery it has left, times
-// 80, divided across the modules being studied.
+// A module contributes mastery x 80 of 100 weighted marks (predict.ts) and the
+// overall estimate is the mean of the modules — so leverage is blueprint weight
+// within the module, times mastery left, times 80, over the modules studied.
 export function topicLeverage(state: StudyState, targetModules: number[]): Leverage[] {
   const moduleCount = Math.max(1, targetModules.length);
   const weightTotals = new Map<number, number>();
@@ -68,18 +56,17 @@ export interface Trajectory {
   flat: boolean;
 }
 
-// A rate needs enough sessions AND enough days behind it. Two sessions on one
-// afternoon read as fourteen sessions a week, which projected a student from
-// their first day to Grade I at full marks — the same invented optimism as
-// extrapolating a flat rate, arriving by a different route.
+// A rate needs enough sessions AND enough days behind it: two sessions in one
+// afternoon read as fourteen a week, which projects a first-day student to
+// Grade I at full marks.
 export const MIN_SESSIONS_FOR_TRAJECTORY = 4;
 export const MIN_DAYS_FOR_TRAJECTORY = 10;
 
 /** Nobody sustains more than one session a day for a school year. */
 export const MAX_SESSIONS_PER_WEEK = 7;
 
-// The six-point scale, highest first. One table, used to grade and to find the
-// next band up, so the two can never disagree.
+// One table, used both to grade and to find the next band up, so the two can
+// never disagree.
 const BANDS: { grade: OverallGrade; from: number }[] = [
   { grade: 'I', from: 75 },
   { grade: 'II', from: 65 },
@@ -89,10 +76,9 @@ const BANDS: { grade: OverallGrade; from: number }[] = [
   { grade: 'VI', from: 0 },
 ];
 
-// CXC grades are Roman numerals, and a numeral alone is ambiguous: "on track
-// for I" reads as "on track for 1", which is the opposite end of the scale from
-// what a student assumes. The word "Grade" goes in front of it everywhere, and
-// where a grade first appears on a page it says where on the scale it sits.
+// CXC grades are Roman numerals and a numeral alone is ambiguous: "on track
+// for I" reads as "on track for 1", the opposite end of the scale. The word
+// "Grade" goes in front of it everywhere.
 export function gradeLabel(grade: OverallGrade): string {
   return `Grade ${grade}`;
 }
@@ -115,12 +101,9 @@ export function gradeFor(percent: number): OverallGrade {
 }
 
 /**
- * The percentage that would earn the next grade up, or 100 at the top.
- *
- * The projection is capped here on purpose. Early evidence supports a claim
- * about DIRECTION, not about a destination nine months away, and the next band
- * is the honest form of that claim — it is also the one a student can act on.
- * The cap rises with them: reach it, and the next band becomes the new one.
+ * The next band's threshold, or 100 at the top. The projection is capped here
+ * because early evidence supports a claim about DIRECTION, not a destination
+ * nine months away. The cap rises with them.
  */
 export function nextBandEntry(percent: number): number {
   const above = [...BANDS].reverse().find((b) => b.from > percent);
@@ -128,25 +111,9 @@ export function nextBandEntry(percent: number): number {
 }
 
 /**
- * Where this rate of work arrives by the exam.
- *
- * Both inputs are measured: how much the estimate moved over the sessions we
- * have, and how often those sessions happened. Returns null below two completed
- * sessions, because one session is a starting point and not a rate — and a
- * projection off one session would be exactly the invented optimism this is
- * meant to avoid.
- */
-/**
- * WHAT IS STILL MISSING BEFORE A RATE CAN BE PROJECTED.
- *
- * The gate below needs BOTH enough sessions and enough elapsed days: a rate is
- * work over time, and sixteen sessions crammed into two days says nothing about
- * how much gets done in a week. The card used to ask for "a couple more
- * sessions" whatever was actually short, so a student with sixteen sessions
- * across three days was told to do something they had already done, and would
- * have been told it again every visit.
- *
- * Read from the same two constants the gate reads, so the two cannot drift.
+ * A rate is work over time, so both halves matter: sixteen sessions crammed
+ * into two days says nothing about a week. Read from the constants the gate
+ * reads, so the two cannot drift.
  */
 export interface TrajectoryGap {
   /** Sessions still needed, 0 when that half is satisfied. */
@@ -190,20 +157,16 @@ export function projectTrajectory(args: {
   const weeksToExam = Math.max(0, (examDate.getTime() - now.getTime()) / (7 * 86_400_000));
   const sessionsLeft = sessionsPerWeek * weeksToExam;
 
-  // DIMINISHING RETURNS. The measured gain is expressed as the share of the
-  // headroom it closed, and applied to the headroom that is left — so a rate
-  // earned climbing out of nothing is not extrapolated straight through the
-  // ceiling. Going from 0% to 25% is a quarter of the way to full marks; the
-  // next quarter of what remains is a smaller number of points, as it is in
-  // practice.
+  // DIMINISHING RETURNS: the measured gain is the share of the headroom it
+  // closed, applied to the headroom left, so a rate earned climbing out of
+  // nothing is not extrapolated straight through the ceiling.
   const headroomBefore = Math.max(1e-9, 100 - percentBefore);
   const sharePerSession = Math.max(0, Math.min(1, perSession / headroomBefore));
   const closed = 1 - Math.pow(1 - sharePerSession, sessionsLeft);
   const damped = percentNow + (100 - percentNow) * closed;
 
-  // A rate that is flat or falling projects to where they already are. We do
-  // not extrapolate a decline into a worse grade either: the honest statement
-  // is that the estimate has not moved, and that is what `flat` says.
+  // A rate that is flat or falling projects to where they already are; a
+  // decline is not extrapolated into a worse grade either.
   const projectedPercent = Math.min(
     100,
     nextBandEntry(percentNow),
@@ -220,9 +183,8 @@ export function projectTrajectory(args: {
   };
 }
 
-/** The sitting a student is entered for, as a date to count down to. */
 export function examDateFor(sitting: string): Date {
-  // One definition, in lib/sittings.ts, shared with the access expiry — a
-  // countdown and a paywall must not disagree about when the exam is.
+  // One definition, shared with the access expiry — a countdown and a paywall
+  // must not disagree about when the exam is.
   return (SITTINGS[sitting as ExamSitting] ?? SITTINGS['may-june-2027']).paper;
 }

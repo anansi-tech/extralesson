@@ -2,17 +2,15 @@ import { z } from 'zod';
 import { circle, line, meshDefs, meshRect, plotMark, polygon, round, svgOpen, text, ticks } from '../svg';
 import type { VisualTemplate } from '../types';
 
-// Cumulative frequency curve (ogive): a polyline through
-// (upper class boundary, cumulative frequency) points, with optional dashed
-// guide lines (median/quartile reads). Data lives in the visual; values need
-// not appear in the question text.
+// A polyline through (upper class boundary, cumulative frequency) points. The
+// data lives in the visual and need not appear in the question text.
 export const CumulativeFrequencyParamsZ = z.object({
   title: z.string().max(60).optional(),
   x_label: z.string().max(40).optional(),
   y_label: z.string().max(40).optional(),
   x_step: z.number().positive().max(1000),
   y_step: z.number().positive().max(1000),
-  // R1.8 §4.2: draw the plotted crosses without the curve through them.
+  // ROUND_1_8 §4.2 — the crosses without the curve through them.
   points_only: z.boolean().default(false),
   points: z
     .array(
@@ -73,7 +71,6 @@ export const cumulativeFrequency: VisualTemplate<CumulativeFrequencyParams> = {
     const meshStep = plotW / Math.max(1, (xMax - xMin) / p.x_step);
     parts.push(meshDefs('cfMesh', meshStep));
     parts.push(meshRect('cfMesh', PAD_L, PAD_T, plotW, plotH));
-    // axes
     parts.push(line(PAD_L, PAD_T, PAD_L, PAD_T + plotH));
     parts.push(line(PAD_L, PAD_T + plotH, PAD_L + plotW, PAD_T + plotH));
     for (const t of ticks(0, yMax, p.y_step)) {
@@ -86,7 +83,6 @@ export const cumulativeFrequency: VisualTemplate<CumulativeFrequencyParams> = {
       parts.push(line(x, PAD_T + plotH, x, PAD_T + plotH + 5));
       parts.push(text(x, PAD_T + plotH + 20, String(t), { size: 11 }));
     }
-    // dashed guide lines (median/quartile reads)
     for (const g of p.guides ?? []) {
       const gx = xFor(g.x);
       const gy = yFor(g.y);
@@ -94,9 +90,8 @@ export const cumulativeFrequency: VisualTemplate<CumulativeFrequencyParams> = {
       parts.push(line(gx, gy, gx, PAD_T + plotH, true));
       parts.push(text(PAD_L + 6, gy - 5, g.label, { size: 11, anchor: 'start' }));
     }
-    // R1.8 §4.2: a paper sometimes prints the plotted crosses and leaves the
-    // curve to the candidate. Everything downstream — medians, quartiles,
-    // "how many below" — is still answerable from the points.
+    // The papers sometimes print the crosses and leave the curve to the
+    // candidate; medians, quartiles and "how many below" stay answerable.
     if (!p.points_only) {
       parts.push(polygon(p.points.map((pt) => [xFor(pt.x), yFor(pt.cf)] as [number, number]), false));
       for (const pt of p.points) parts.push(circle(xFor(pt.x), yFor(pt.cf), 3));

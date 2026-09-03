@@ -1,17 +1,9 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
 /**
- * STRIPE WEBHOOK VERIFICATION, WITHOUT THE STRIPE PACKAGE.
- *
- * The kill list bans Stripe as a DEPENDENCY and exempts a handler that verifies
- * signatures with node:crypto alone (CLAUDE.md; ROUND_2_EXAMINER §8c). That is
- * all a webhook needs: the signed payload carries everything we act on, so
- * there is no call back to Stripe and nothing to install.
- *
- * The header is `t=<unix>,v1=<hex>[,v1=<hex>...]`. The signed payload is
- * `${t}.${rawBody}`, HMAC-SHA256 with the endpoint's whsec_ secret. Several v1
- * signatures can be present while a secret is being rotated, and any one
- * matching is a pass.
+ * No Stripe package: the kill list bans it as a DEPENDENCY and exempts a
+ * handler verifying signatures with node:crypto alone — ROUND_2 §8c. Several
+ * v1 signatures can be live during a rotation, and any one matching is a pass.
  */
 export const REPLAY_TOLERANCE_S = 5 * 60;
 
@@ -31,7 +23,7 @@ export function verifyStripeSignature(
   secret: string | undefined,
   now: number = Math.floor(Date.now() / 1000),
 ): VerifyResult {
-  // No secret configured is a REJECT, never a pass. An endpoint that accepts
+  // No secret configured is a REJECT, never a pass: an endpoint accepting
   // unsigned posts because a variable is missing is worse than one that is off.
   if (!secret) return { ok: false, reason: 'no-secret' };
   if (!header) return { ok: false, reason: 'malformed-header' };
@@ -45,8 +37,8 @@ export function verifyStripeSignature(
   }
   if (!timestamp || signatures.length === 0) return { ok: false, reason: 'malformed-header' };
 
-  // A captured request must not be replayable tomorrow. Checked BEFORE the
-  // comparison so an old-but-validly-signed body is refused on its age.
+  // Checked BEFORE the comparison, so an old but validly signed body is
+  // refused on its age and a captured request is not replayable tomorrow.
   const t = Number(timestamp);
   if (!Number.isFinite(t) || Math.abs(now - t) > REPLAY_TOLERANCE_S) {
     return { ok: false, reason: 'too-old' };
@@ -70,17 +62,9 @@ export function verifyStripeSignature(
 }
 
 /**
- * The email the student typed into the payment link's custom field, falling
- * back to the one Stripe collected for the receipt.
- *
- * THE FALLBACK IS TOLERATED, NOT DESIRED, so it reports itself. It is kept
- * because an unmatched payment costs a student a wait and the receipt address
- * is the same person more often than not. But with the Stripe field set to
- * Required it can now only fire when that field is missing or misconfigured —
- * which is exactly the §8e defect, the aunt getting the account and the nephew
- * not, arriving silently and looking like a clean match. The caller writes the
- * source into the grant note so one misconfigured field surfaces on
- * /admin/access after the FIRST sale rather than the twentieth.
+ * THE RECEIPT-ADDRESS FALLBACK IS TOLERATED, NOT DESIRED, so it reports its
+ * source: with the custom field Required it fires only on a misconfiguration,
+ * the ROUND_2 §8e defect arriving silently. The caller notes it on the grant.
  */
 export type EmailSource = 'custom_field' | 'payer';
 
@@ -98,12 +82,9 @@ export function emailFromSession(
 }
 
 /**
- * What the payment link SAYS the sitting is — evidence, never authority.
- *
- * The sitting granted is always the one the student registered for. This is
- * read only so a disagreement can be recorded in the grant note and seen on
- * /admin/access. Today it returns null for every payment: a link sells access,
- * not a sitting, and STRIPE_LINK_SITTINGS is deliberately unset.
+ * What the payment link SAYS the sitting is — evidence, never authority. The
+ * sitting granted is the one the student registered for, and a disagreement is
+ * recorded on the grant. Null today: STRIPE_LINK_SITTINGS is deliberately unset.
  */
 export function sittingFromLink(
   session: Record<string, unknown>,

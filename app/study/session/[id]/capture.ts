@@ -22,17 +22,9 @@ import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 import { markableSlots as allSlots } from '@/lib/grade/mark';
 
 /**
- * A PHOTOGRAPH OF THE WORKING, READ BACK.
- *
- * R2 §2 and §3. The photograph is taken AFTER the typed answers are submitted —
- * the typed answers are the deterministic record, and showing the reveal before
- * the photograph would let it influence what is photographed. So this is keyed
- * on an attempt that already exists.
- *
- * It reads and stores; it marks nothing. Method marking is a separate pass over
- * what this produced (R2 §4), and until its eval gate passes it does not run at
- * all — a student who photographs their working today sees it typed up beside
- * the mark scheme, which is worth having on its own.
+ * The photograph is taken AFTER the typed answers are submitted: those are the
+ * deterministic record, and a reveal before the photograph would influence what
+ * is photographed. This reads and stores; it marks nothing — ROUND_2 §2, §3.
  */
 
 
@@ -47,7 +39,6 @@ export interface CaptureResult {
   transcription: TranscriptionResult;
   take: number;
   takesLeft: number;
-  /** Rows the working earned, and rows it did not, each with its reason. */
   method: { code: string; awarded: boolean; reason: string; mark_value: number }[];
   marksAdded: number;
 }
@@ -108,38 +99,19 @@ export async function captureWorking(input: {
     return { error: 'We could not read that photo. Your marks are unchanged.' };
   }
 
-  // METHOD MARKING (R2 §4), over the rows deterministic marking left unearned.
-  //
-  // This is where grader v6's restriction lifts. v6 awarded method marks only
-  // where a question had exactly one marked slot — 3 of 427 — because the typed
-  // working box belongs to the whole question and could not be attributed to a
-  // slot. Photographed working can: each line carries the part it was written
-  // under. The restriction on the TYPED box stays, because nothing about it has
-  // changed; what has changed is that there is now evidence that can be
-  // attributed, and this is it.
-  //
-  // It may only ADD marks. Nothing here can touch what the grader awarded.
-  // A retake normally re-reads the SAME working, so rows an earlier take
-  // already earned are settled: not re-judged, not re-paid, and not put at risk
-  // of a second opinion that reads "we could not see" beside a mark the student
-  // has already been given.
+  // METHOD MARKING over the rows deterministic marking left unearned, ROUND_2
+  // §4. It may only ADD marks — nothing here touches what the grader awarded —
+  // and rows an earlier take already earned are settled, so a retake cannot put
+  // a mark already given at risk of a second opinion.
   const settled = [...(attempt.rubric_awarded ?? []), ...alreadyEarnedByMethod(earlier)];
   const unearned = earnableByMethod(question, settled);
   let decisions: MethodDecision[] = [];
   let usage: { input_tokens?: number; output_tokens?: number } = {};
   if (unearned.length > 0) {
-    // ONE RULE FOR WHICH LINES BELONG TO WHICH PART.
-    //
-    // This grouped by line.part_label and DROPPED every line the reader left
-    // unlabelled, while linesForSlot — which the eval harness has always used —
-    // carries a label down the page the way a candidate writes: the question
-    // number once, the working under it. So the gate was measured on one rule
-    // and production shipped another, and production's was the lossy one: a
-    // student who labels (c) and writes three lines under it had two of them
-    // thrown away before the marker ever saw them.
-    //
-    // linesForSlot wins because the eval's number was earned with it and
-    // because it is the rule that matches the paper. The duplicate is gone.
+    // ONE RULE FOR WHICH LINES BELONG TO WHICH PART: linesForSlot, the rule the
+    // eval gate was measured with. It carries a label down the page the way a
+    // candidate writes — the part number once, the working under it — so lines
+    // the reader left unlabelled are not dropped.
     const workingByPart: Record<string, string[]> = {};
     for (const part of question.parts ?? []) {
       const lines = linesForSlot(read.transcription, part.label);
@@ -163,14 +135,10 @@ export async function captureWorking(input: {
     }
   }
 
-  // A PHOTOGRAPHED CONSTRUCTION (R2 §8).
-  //
-  // The right answer is a known set of coordinates from the figure's declared
-  // params, so this is comparison rather than judgment. Every check must be
-  // satisfied: a construct slot is marked as one drawing, and a curve through
-  // three of its four points is not the drawing the question asked for. Where
-  // it falls short the student is told exactly which check failed, which is
-  // more use than the mark either way.
+  // A PHOTOGRAPHED CONSTRUCTION, ROUND_2 §8. The answer is a known set of
+  // coordinates from the figure's declared params, so this is comparison and
+  // not judgment. EVERY check must pass: a construct slot is one drawing, and a
+  // curve through three of four points is not the drawing that was asked for.
   const drawRows = constructionRows(question, settled);
   const checks = constructionChecks(question.visual);
   if (drawRows.length > 0 && checks.length > 0) {

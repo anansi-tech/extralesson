@@ -1,10 +1,6 @@
-// An attempt stores what the student typed as one line: "(a.i) 42; (b.ii) 7".
-// Reading it back is how a revisited question is rebuilt, and it cannot be done
-// by splitting on "; " — an answer is allowed to contain one ("x = -1/3; x = 2"
-// is a single slot's answer, and a set is written that way on purpose).
-//
-// The question's own slot refs are the delimiters instead, which makes the
-// split exact rather than a guess about punctuation.
+// Splitting the stored line on "; " would be wrong: one slot's answer may
+// contain a semicolon ("x = -1/3; x = 2" is a set, written that way on
+// purpose). The question's own slot refs are the delimiters instead.
 export function splitStoredAnswer(stored: string, refs: string[]): Record<string, string> {
   const marks = refs
     .map((ref) => ({ ref, at: stored.indexOf(`(${ref})`) }))

@@ -1,9 +1,9 @@
 import { TEMPLATES, type StoredVisual } from './index';
 import { isTextCrossCheckIssue, type VerifyContext } from './types';
 
-// R1.5 §3 integrity rule (load-bearing): every template's params are
-// Zod-validated AND numerically cross-checked against the question. A failure
-// here auto-rejects the draft BEFORE the solve pass.
+// ROUND_1_5 §3 integrity rule: every template's params are Zod-validated AND
+// numerically cross-checked against the question, and a failure here
+// auto-rejects the draft BEFORE the solve pass.
 
 export interface VisualVerifyResult {
   ok: boolean;
@@ -66,11 +66,9 @@ export function verifyQuestionVisual(
   const advisories = all.filter(isTextCrossCheckIssue);
   const issues = all.filter((i) => !isTextCrossCheckIssue(i));
 
-  // A sketch cannot show a question's coordinates. triangleLabeled places the
-  // apex and the base itself, so a question stating A(1,1), B(3,1), C(2,3) —
-  // where C is the apex — was drawn with A on top: the figure and the text
-  // describe different triangles, and only the text is right. Four such
-  // questions reached the review queue before this check existed.
+  // A sketch cannot show a question's coordinates: triangleLabeled places the
+  // apex and the base itself, so a question stating A(1,1), B(3,1), C(2,3) is
+  // drawn with A on top — figure and text describing different triangles.
   if (issues.length === 0 && !COORDINATE_TEMPLATES.has(visual.template)) {
     const text = [context.stimulus ?? '', context.stem, ...context.partPrompts].join(' ');
     const stated = new Set([...text.matchAll(STATED_COORDINATE)].map((m) => m[1]));
@@ -83,11 +81,9 @@ export function verifyQuestionVisual(
     }
   }
 
-  // Last check: does it actually draw? Params can be valid and the geometry
-  // still collapse — a triangle given only side lengths once laid out every
-  // vertex at NaN and reached the review queue as an empty box. A figure a
-  // reviewer cannot see is worse than no figure, because the question reads as
-  // if one is there.
+  // Params can be valid and the geometry still collapse. A figure a reviewer
+  // cannot see is worse than no figure, because the question reads as if one
+  // is there.
   if (issues.length === 0) {
     try {
       const svg = template.render(parsed.data as never, context);

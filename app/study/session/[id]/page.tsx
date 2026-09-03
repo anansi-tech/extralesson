@@ -65,10 +65,9 @@ export default async function SessionPage({
   const total = session.question_ids.length;
   const answered = attempts.length;
 
-  // Which question is on screen. A student may look back at one they have
-  // answered; they may not skip ahead of themselves, so the index is clamped to
-  // the first unanswered one. Revisiting is READ-ONLY and writes nothing: the
-  // view is a fold over the attempt that already exists (§3.5).
+  // A student may look back at an answered question but may not skip ahead, so
+  // the index is clamped to the first unanswered one. Revisiting is READ-ONLY
+  // and writes nothing: the view is a fold over the attempt (ROUND_1 §3.5).
   const asked = qParam === undefined ? null : Number(qParam);
   const index =
     asked !== null && Number.isInteger(asked) ? Math.min(Math.max(asked, 0), Math.min(answered, total - 1)) : answered;
@@ -97,8 +96,8 @@ export default async function SessionPage({
       .select('objective_ids')
       .lean<{ _id: unknown; objective_ids: string[] }[]>();
     const touchedObjectives = [...new Set(questions.flatMap((q) => q.objective_ids))].sort();
-    // The objectives in the syllabus's own words, which is what a student can
-    // read. The ids stay behind the scenes, where they address things.
+    // The syllabus's own words, which is what a student can read; the ids stay
+    // behind the scenes, where they address things.
     const touchedTopics = await Topic.find({ 'objectives.id': { $in: touchedObjectives } })
       .select('objectives')
       .lean<{ objectives: { id: string; text: string }[] }[]>();
@@ -125,18 +124,14 @@ export default async function SessionPage({
         return { code: t.code, title: t.title, from: prev?.mastery ?? 0, to: t.mastery };
       });
 
-    // A DIAGNOSTIC ENDS WITH THE RANKING IT WENT TO GET.
-    //
-    // Twelve minutes spent to answer "where am I?" has to answer it. What it
-    // does NOT report is a grade — eight items is far below the mark gate a
-    // prediction needs, and a grade here would be exactly the invented
-    // confidence taken out of the landing page — or a score out of eight, since
-    // WHICH topics are weak is the finding and how many were right is not.
+    // A diagnostic reports the RANKING it went to get, never a grade: eight
+    // items is far below the mark gate a prediction needs. Nor a score out of
+    // eight, since WHICH topics are weak is the finding and how many were right
+    // is not.
     if (session.mode === 'diagnostic') {
-      // What this session actually SAW of each topic. The band is no use here:
-      // one question per topic leaves every one of them WEAK, so eight
-      // identical chips would make the order look arbitrary when it is not.
-      // Right and wrong is the evidence, and it is what a student can check.
+      // What this session SAW of each topic. The band is no use here: one
+      // question per topic leaves every one WEAK, so identical chips would make
+      // the order look arbitrary when it is not.
       const topicOfQuestion = new Map(
         questions.map((q) => [
           String(q._id),
@@ -266,8 +261,8 @@ export default async function SessionPage({
                 </div>
               ))}
             </div>
-            {/* Compressed, not hidden: the initials keep their meaning on the
-                same screen, and the sentence that explains where they come from
+            {/* Compressed, not hidden: the initials keep their meaning on
+                the same screen, and the explanation
                 is one tap away. */}
             <p className="mt-3 border-t border-dashed border-paper-deep pt-2 font-mono text-[11px] leading-snug text-dim">
               {PROFILE_GLOSS_SHORT}
@@ -304,10 +299,7 @@ export default async function SessionPage({
             </ul>
           </section>
 
-          {/* LOOK BACK AT WHAT YOU JUST DID.
-              The question, the mark scheme and the reasons are all still there —
-              a finished session simply stopped linking to them, so the review a
-              student learns most from ended when the session did. Read-only:
+          {/* Read-only: the question, the mark scheme and the reasons are still there, and
               these open the same view paging back inside a session gives. */}
           {reviewable.length > 0 && (
             <section className="mt-5">
@@ -340,9 +332,8 @@ export default async function SessionPage({
           )}
 
           <section className="mt-5">
-            {/* This printed the syllabus codes — "M1.1.14 · M2.3.5" — under the
-                word "objectives". Both halves were ours rather than theirs: the
-                codes mean nothing without the syllabus open, and a student does
+            {/* Not the syllabus codes and not the word "objectives": the codes
+                mean nothing without the syllabus open, and a student does
                 not call them objectives. */}
             <div className="section-label">
               What this session covered
@@ -354,8 +345,7 @@ export default async function SessionPage({
             </ul>
           </section>
 
-          {/* The next session, not the way out. A student who has just finished
-              one had only a link back to the landing page, so the thing to do
+          {/* The next session, not the way out: without it the thing to do
               next was a decision rather than a button. */}
           <form action={startSession} className="mt-8">
             <input type="hidden" name="mode" value="adaptive" />
@@ -399,13 +389,10 @@ export default async function SessionPage({
   } | null>();
   if (!question) notFound();
 
-  // A construct question's figure IS the answer to its part (a), and every
-  // later part asks the student to read something off it. It is withheld until
-  // they commit, and comes back with the marking (see actions.ts).
-  //
-  // ...and only when the figure IS the answer. A pattern question's figure is
-  // figures 1 to 3, which is the premise; hiding it asked the student to
-  // continue a sequence they could not see.
+  // A construct question's figure IS the answer to its part (a), so it is
+  // withheld until the student commits and comes back with the marking (see
+  // actions.ts). Only when the figure is the answer: a pattern question's
+  // figures are its premise, and hiding them hid the sequence.
   const withholdsFigure =
     !reviewing &&
     (question.parts ?? []).some((p) => (p.slots ?? []).some((slot) => slot.response_mode === 'construct')) &&
@@ -445,9 +432,8 @@ export default async function SessionPage({
     }
   }
 
-  // The session's shape in MARKS, which is the unit the budget is actually
-  // spent in: "Question 1 of 2" reads as a trivially short session next to the
-  // 15 minutes it claims, and 12 marks is what makes the 15 minutes honest.
+  // The session's shape in MARKS, the unit the budget is actually spent in:
+  // "Question 1 of 2" reads as trivially short next to the minutes it claims.
   const sessionQuestions = await Question.find({ _id: { $in: session.question_ids } })
     .select('marks kind')
     .lean<{ _id: unknown; marks: number; kind: 'mcq' | 'structured' }[]>();
@@ -464,17 +450,15 @@ export default async function SessionPage({
   const kinds = new Set(sessionQuestions.map((sq) => sq.kind));
   const paperName = kinds.size === 1 ? ([...kinds][0] === 'mcq' ? 'Paper 1' : 'Paper 2') : 'exam';
 
-  // A revisited question is rebuilt from its attempt — the answers the student
-  // typed, and the marks they earned. Nothing is re-marked and nothing is
-  // written; correctness per slot is recomputed with the same equivalence the
-  // marker used, which is a fold over the attempt rather than a second opinion.
+  // A revisited question is rebuilt from its attempt. Nothing is re-marked and
+  // nothing is written; correctness per slot is recomputed with the marker's
+  // own equivalence, a fold over the attempt rather than a second opinion.
   let prior: CardQuestion['prior'];
   if (reviewing) {
     const attempt = attempts[index];
-    // WHAT THE PHOTOGRAPH READ, KEPT. The image is gone after the TTL; the
-    // transcription and the per-row reasons are not, and they are the marks a
-    // student most wants to reread. One block per take, because a second
-    // photograph can have read a different page.
+    // The image is gone after the TTL; the transcription and the per-row
+    // reasons are not, and they are what a student most wants to reread. One
+    // block per take, because a second photograph can have read a different page.
     const takes = await Transcription.find({ attempt_id: attempt._id })
       .sort({ take: 1 })
       .select('lines legible notes method_marks take')
@@ -548,20 +532,11 @@ export default async function SessionPage({
     };
   }
 
-  // THE STRIP IS THE QUESTION'S, NOT THE SLOT'S.
-  //
-  // A student working a trigonometry question may want ° in a box whose own
-  // answer is a plain decimal — they are writing an intermediate value, or
-  // simply prefer to. Offering the character only on the slot whose ANSWER
-  // needs it makes the strip appear and vanish between boxes for no reason the
-  // student can see. The hints stay per-slot; only the characters broaden.
-  //
-  // Still rendered per input, each inserting into its own box: one strip for
-  // the whole question would need cursor tracking across inputs to know where
-  // the character was going.
-  // A box in a table-completion part is named by the cell it fills. Without it
-  // the card falls back to "first answer", and a student filling boxes in the
-  // order they read the table put a percentage where a count belonged.
+  // The symbol strip is the QUESTION's, not the slot's: offering a character
+  // only where the answer needs it makes the strip vanish between boxes for no
+  // reason a student can see. Rendered per input, so no cursor tracking.
+  // A box in a table-completion part is named by the cell it fills, or the card
+  // falls back to "first answer" and boxes filled in reading order get mismatched.
   const cellNames = slotCellNames(question.visual);
 
   // Slots the student marks themselves; their rubric rows are not auto-awarded.
@@ -620,22 +595,19 @@ export default async function SessionPage({
       label: p.label,
       marks: p.marks,
       promptHtml: renderMathHtml(p.prompt),
-      // A cloze statement is rendered as the prose BETWEEN its gaps: KaTeX has
-      // to run on each piece separately, or the split would cut a math span in
-      // half. n gaps give n+1 pieces, and the inputs go between them.
+      // A cloze statement is the prose BETWEEN its gaps: KaTeX has to run on
+      // each piece separately, or the split would cut a math span in half.
       statementHtml: p.statement
         ? p.statement.split('{}').map((piece: string) => renderMathHtml(piece))
         : undefined,
       slots: (p.slots ?? []).map((slot) => {
         const mode = slot.response_mode ?? 'answer';
-        // The shape of the input is read from the ANSWER, on the server, and
-        // only the shape crosses to the client — never the answer itself. For
-        // a list or a set the box COUNT is withheld too: it would say how many
-        // factors there are.
+        // The shape of the input is read from the ANSWER on the server, and
+        // only the shape crosses to the client — never the answer itself. For a
+        // list or a set the box COUNT is withheld too: it would count factors.
         const reading = mode === 'answer' && slot.answer ? readInputShape(slot.answer) : null;
-        // What is legal to type, and the characters a phone keyboard hides.
-        // Derived from the answer, on the server; the examples inside the hints
-        // are constants, so nothing about THIS answer crosses over.
+        // Derived from the answer, on the server; the examples inside the
+        // hints are constants, so nothing about THIS answer crosses over.
         const affordance = reading
           ? inputAffordance(slot.answer, reading.shape)
           : { hints: [], symbols: [] };
@@ -653,11 +625,9 @@ export default async function SessionPage({
               ? {
                   shape: reading.shape,
                   boxes: showsBoxCount(reading) ? reading.boxes : undefined,
-                  // THAT the elements are pairs, never HOW MANY there are. An
-                  // outcome in a sample space is always two values, so saying
-                  // so tells the student nothing they are being asked for —
-                  // while the number of pairs still grows on demand, exactly
-                  // as the boxes do.
+                  // THAT the elements are pairs, never HOW MANY: an outcome in
+                  // a sample space is always two values, so saying so tells the
+                  // student nothing they are being asked for.
                   pairs: reading.groups?.every((g) => g === 2) && reading.groupKind === '(',
                   cols: reading.cols,
                   // Wide enough for the longest value in the slot, so a box is
@@ -670,8 +640,8 @@ export default async function SessionPage({
     })),
     optionsHtml: question.options?.map(renderMathHtml),
     marks: question.marks,
-    // What is actually on offer, and what the student marks themselves. The
-    // card divided by the question total, so 11 out of 11 read as 11 out of 12.
+    // What is actually on offer, split from what the student marks themselves,
+    // so a full card does not read as 11 out of 12.
     ...markSplit(question as never),
     rubricCodes:
       question.rubric?.map((r) => ({
@@ -680,10 +650,9 @@ export default async function SessionPage({
         mark_value: r.mark_value,
         part_label: r.part_label ?? 'a',
         // A row hanging off a self-marked slot is never awarded here, so the
-        // strip struck it through and printed a cross — telling a student they
-        // had failed a row that was never on offer. It is out of the
-        // denominator too (lib/grade/assessable.ts), which is why the score can
-        // read 11 out of 11 with a cross beside it.
+        // strip must not cross it out and tell a student they failed a row that
+        // was never on offer. It is out of the denominator too
+        // (lib/grade/assessable.ts), so the score still reads 11 out of 11.
         selfMarked: selfMarkedRefs.has(r.slot_ref ?? ''),
       })) ?? [],
   };
@@ -700,8 +669,8 @@ export default async function SessionPage({
             Q{index + 1} OF {total} · {question.marks} MARK{question.marks === 1 ? '' : 'S'}
           </span>
         </header>
-        {/* Why the session is one question. A student who expected eight and got
-            one reads it as a short session rather than a whole exam question,
+        {/* Why the session is one question: a student who expected eight reads
+            one as a short session rather than a whole exam question,
             and the minutes are what make the marks mean something. */}
         <p className="mt-1 text-[12px] leading-snug text-dim">
           {total === 1 ? 'One' : total} whole {paperName} {total === 1 ? 'question' : 'questions'} ·{' '}

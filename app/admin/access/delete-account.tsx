@@ -3,16 +3,11 @@
 import { useActionState } from 'react';
 import { deleteStudentAccount, type DeleteAccountState } from './actions';
 
-// A test account, or somebody who asked to be forgotten.
-//
-// It sits at the bottom of the page and behind two typed fields on purpose.
-// Revoking access is a click because it is reversible; this is not — attempts
-// are append-only and every mastery figure is a fold over them, so there is no
-// recomputation that brings a student back.
-//
-// The counts render here rather than going to a log. An audit row naming the
-// deleted address would leave the person in the database after they asked to
-// leave it, so what is kept is a number and a time.
+// Behind two typed fields on purpose: revoking access is a click because it is
+// reversible, and this is not — attempts are append-only, so no recomputation
+// brings a student back. The counts render here and never to a log; an audit
+// row naming the deleted address would leave the person in the database after
+// they asked to leave it.
 export function DeleteAccount() {
   const [state, action, pending] = useActionState<DeleteAccountState, FormData>(
     deleteStudentAccount,

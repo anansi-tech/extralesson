@@ -22,9 +22,8 @@ export function LegalPage({
         <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-dim">
           Last updated {updated}
         </p>
-        {/* Prose set to the notebook's own rhythm: line-height and every
-            vertical gap are the rule spacing, so the lines sit ON the rules
-            rather than under and through them. h2 picks up the shared section
+        {/* Line-height and every vertical gap are the rule spacing, so the
+            lines sit ON the rules rather than through them. h2 picks up its
             heading from globals.css — one definition, every page. */}
         <div className="on-rules mt-6 text-sm [&_ul]:list-disc [&_ul]:pl-5">{children}</div>
         <p className="mt-8 border-t-[1.5px] border-rule pt-4 text-[12px] text-dim">

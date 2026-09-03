@@ -8,9 +8,7 @@ import { isProduction } from '@/lib/preflight';
 
 // Landing-page content constants (ROUND_1 §7). Every price, cap, stat and
 // address is stated HERE and nowhere else — tests/legal.test.ts enforces it.
-// Each external stat names its source in the label; the reasoning behind
-// removed things (the $25 tier, the launch date, the 56%) is in
-// ROUND_3_LAUNCH.md §2 and git history, not here.
+// Each external stat names its source in its label. See ROUND_3 §2.
 export const LANDING = {
   price: '$49',
   // Derived from the same record the paywall expires against, never typed.

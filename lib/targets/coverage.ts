@@ -1,16 +1,13 @@
 import { topicWeights } from '@/lib/mastery/fold';
 import type { ModuleNumber } from '@/lib/types';
 
-// R1.6 §3/§4 — how much of the exam ExtraLesson can actually assess.
-//
-// Construction and drawing objectives need pencil, ruler and compasses, so we
-// cannot assess them and must not score around them silently. Coverage is
-// computed from the syllabus seeds (which objectives are assessable) weighted
-// by the blueprint (how many marks each topic carries), then stated plainly to
-// the student and used to bound the grade prediction.
+// How much of the exam ExtraLesson can actually assess — ROUND_1_6 §3/§4.
+// Construction and drawing objectives need pencil, ruler and compasses; we
+// cannot assess them and must not score around them silently. Computed from
+// the syllabus seeds weighted by the blueprint, stated plainly to the student
+// and used to bound the grade prediction.
 
-// Raw marks in a full sitting: Paper 1 is 60 one-mark items, Paper 2 is 90
-// marks. Used to express the gap as "about N marks".
+// Paper 1 is 60 one-mark items, Paper 2 is 90 marks.
 export const FULL_PAPER_RAW_MARKS = 150;
 
 export interface TopicCoverage {
@@ -40,10 +37,9 @@ export interface Coverage {
   byModule: Record<ModuleNumber, number>;
   topics: TopicCoverage[];
   /**
-   * R2 §8 — the same computation with the photographed constructions counted.
-   * A student who photographs the graph they drew is assessed on it, so they
-   * are not on the same coverage figure as one who does not, and printing one
-   * number for both would understate the first and overstate the second.
+   * The same computation with photographed constructions counted. One number
+   * for both would understate the student who photographs their graph and
+   * overstate the one who does not. ROUND_2 §8.
    */
   photographed: {
     fraction: number;
@@ -100,9 +96,8 @@ export function computeCoverage(topics: TopicLike[], blueprints: BlueprintLike[]
     };
   });
 
-  // Objectives a photograph brings back in. Read off the DECLARED field, never
-  // off the wording of unassessable_reason — the reason is prose for a student
-  // and prose is not structure.
+  // Read off the DECLARED field, never off the wording of unassessable_reason:
+  // prose is not structure.
   const photoBack = new Map(
     topics.map((t) => [
       t.code,
@@ -155,25 +150,16 @@ export function computeCoverage(topics: TopicLike[], blueprints: BlueprintLike[]
   };
 }
 
-// The figure we print. Rounds down to a multiple of 5, and will not step up to
-// the next one until the arithmetic is clear of it by a point — a coverage
-// claim should lag the truth, never lead it, and under-claiming costs nothing.
+// The figure we print. Rounds down to a multiple of 5 and will not step up
+// until the arithmetic is clear by a point: a coverage claim should lag the
+// truth, never lead it.
 export function displayFigure(percent: number): number {
   return Math.max(0, Math.floor((percent - 1) / 5) * 5);
 }
 
-// What we cover, said in two parts.
-//
-// It was one seventy-word paragraph carrying five facts, sitting above the
-// fold on the landing page. Every fact in it was worth stating and the shape
-// was self-defeating: seventy words that go unread say less than three
-// sentences that get read.
-//
-// So the SUMMARY leads with the number and keeps the two facts a student could
-// be caught out by — the marks we do not cover at all, and Paper 032, which a
-// private candidate needs the name of to know it is missing. The DETAIL keeps
-// everything, behind a disclosure, for the reader who wants it. No fact was
-// dropped in the compression; they moved.
+// What we cover, said in two parts: the SUMMARY leads with the number and the
+// two facts a student could be caught out by; the DETAIL keeps everything
+// behind a disclosure.
 
 /** Two or three short sentences. The version everybody actually reads. */
 export function coverageSummary(coverage: Coverage): string {

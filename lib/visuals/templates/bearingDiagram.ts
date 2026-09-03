@@ -2,10 +2,9 @@ import { z } from 'zod';
 import { INK, line, pathArc, polar, round, svgOpen, text } from '../svg';
 import { valueStatedInText, type VisualTemplate } from '../types';
 
-// Bearing diagram: 1–3 labeled points, each with a north arrow, joined by
-// legs with distance labels. Bearings are drawn as arcs swept clockwise from
-// north and labeled in three-digit form ("060°") or with a variable. The
-// TEMPLATE derives point positions from the legs' bearings and distances.
+// Bearings are drawn as arcs swept clockwise from north and labeled in
+// three-digit form ("060°") or with a variable. The TEMPLATE derives point
+// positions from the legs' bearings and distances.
 
 export const BearingDiagramParamsZ = z.object({
   points: z.array(z.object({ label: z.string().min(1).max(4) })).min(1).max(3),
@@ -108,7 +107,6 @@ export const bearingDiagram: VisualTemplate<BearingDiagramParams> = {
       parts.push(text(x, y - 78, 'N', { size: 13 }));
     });
 
-    // legs
     for (const l of p.legs) {
       if (l.from >= pos.length || l.to >= pos.length || l.from === l.to) continue;
       const a = pos[l.from];
@@ -137,7 +135,6 @@ export const bearingDiagram: VisualTemplate<BearingDiagramParams> = {
       }
     }
 
-    // point dots and labels
     p.points.forEach((pt, i) => {
       const [x, y] = pos[i];
       parts.push(`<circle cx="${round(x)}" cy="${round(y)}" r="3" fill="${INK}" stroke="none" />`);

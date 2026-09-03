@@ -6,15 +6,12 @@ const RubricItemSchema = new Schema(
     profile: { type: String, enum: ['CK', 'AK', 'R'], required: true },
     criterion: { type: String, required: true },
     mark_value: { type: Number, required: true },
-    // R1.8 Part 1: the SLOT this row is earned by. Undeclared here until now,
-    // so Mongoose stripped it on save and every stored rubric row lost its
-    // link — the third boundary this class of bug has crossed, after the model
-    // contract and the validator.
+    // R1.8 Part 1: the SLOT this row is earned by. Undeclared, Mongoose strips
+    // it on save and every stored rubric row loses its link.
     slot_ref: { type: String, required: true },
     part_label: { type: String, default: 'a' }, // derived from slot_ref; read by the review card and the matrices
-    // R1.7 §B4: this row credits the FORM of the answer, so a student who got
-    // the value but not the form still earns the rest. Unstored until now, so
-    // the partial-credit rows were being marked as ordinary ones.
+    // R1.7 §B4: this row credits the FORM of the answer, so a student with the
+    // value but not the form still earns the rest.
     for_format: { type: Boolean },
   },
   { _id: false },
@@ -111,11 +108,9 @@ const QuestionSchema = new Schema({
     enum: ['prose', 'diagram', 'graph', 'table', 'chart', 'venn'],
     default: 'prose',
   },
-  // R1.8 §2: a whole Paper 2 question, or a short practice item. Both are
-  // wanted — a drill item between paper questions is genuinely useful — but a
-  // session and a matrix have to be able to tell them apart, and marks alone
-  // cannot: a 9-mark drill item and a 9-mark paper question differ in whether
-  // the parts go anywhere, not in size.
+  // R1.8 §2: a whole Paper 2 question, or a short practice item. Marks alone
+  // cannot tell them apart — a 9-mark drill and a 9-mark paper question differ
+  // in whether the parts go anywhere, not in size.
   shape: { type: String, enum: ['paper', 'drill'], default: 'drill' },
   options: { type: [String] }, // mcq: exactly 4
   answer_key: { type: Number }, // mcq

@@ -1,17 +1,7 @@
 /**
- * How many marks of a question we actually mark.
- *
- * The rubric is the answer and always was: every row names a slot, and a row
- * on an auto-marked slot is a mark we award. Two places asked the question a
- * different way and both got it wrong.
- *
- * The card divided by the question's TOTAL marks, so a 12-mark question with a
- * one-mark explain part told the student they had scored 11 out of 12 when 11
- * was everything on offer. Mastery approximated by slot proportion — a part's
- * marks times the share of its slots we mark — which for a 3-mark part with one
- * self-marked slot of three gives 2 marks rather than the 2 or 1 the rubric
- * actually places there. On this bank the approximation is wrong for 97 of 416
- * questions.
+ * The rubric decides: a row on an auto-marked slot is a mark we award. A score's
+ * denominator is those marks, never the question's total and never a proportion
+ * of slots — a part may hold marks the student marks themselves.
  */
 export interface MarkableShape {
   parts?: { label: string; marks: number; slots?: { label: string; response_mode?: string }[] }[];
@@ -44,9 +34,8 @@ export function markSplit(q: MarkableShape): MarkSplit {
   }
 
   // No rubric to read — an MCQ, or a question stored before rows named slots.
-  // Whole parts still divide cleanly; only a part MIXING marked and self-marked
-  // slots needs the rubric, and without it the honest fallback is to count the
-  // part rather than invent a fraction of it.
+  // Only a part MIXING marked and self-marked slots needs one, and without it
+  // the honest fallback is to count the whole part, not invent a fraction.
   if (parts.length === 0) return { auto: q.marks, self: 0 };
   const auto = parts
     .filter((p) => (p.slots ?? []).some((s) => (s.response_mode ?? 'answer') === 'answer'))

@@ -1,12 +1,9 @@
 import type { Representation, TemplateName } from '@/lib/types';
 
 // Per-topic representation targets (R1.5 §4), transcribed from the corpus
-// aggregates in design/research/question-corpus-classification.json. Corpus
-// categories are mapped onto the schema's Representation enum; the residual
-// share (unlisted categories) goes to prose except for topics the spec marks
-// "always visual" / "visuals ~96", where it goes to the listed visual
-// categories. Template hints steer the model toward the right template within
-// a representation.
+// aggregates in design/research/question-corpus-classification.json. The
+// residual share goes to prose, except on topics the spec marks "always
+// visual", where it goes to the listed visual categories.
 
 export interface RepresentationTarget {
   representation: Representation;
@@ -76,13 +73,9 @@ export const REPRESENTATION_TARGETS: Record<string, RepresentationTarget[]> = {
     },
     { representation: 'prose', share: 21, template_hints: [] },
   ],
-  // M2.5 V&M 1 (n=7): mostly prose-notation + occasional vector figure
-  //
-  // The corpus note names a vector figure, and vectorFigure is a DIAGRAM in
-  // TEMPLATES_BY_REPRESENTATION — but this topic carried only prose and graph
-  // rows, so the template could never be chosen and the bank holds none. The
-  // visual share is split between the two visual kinds the note lists; an even
-  // split is a documented judgment on low n, as for M1-SETS.
+  // M2.5 V&M 1 (n=7): mostly prose-notation + occasional vector figure. Without
+  // a diagram row, vectorFigure could never be chosen and the bank held none.
+  // The even split of the visual share is a judgment on low n, as for M1-SETS.
   'M2-VM1': [
     { representation: 'prose', share: 80, template_hints: [] },
     { representation: 'graph', share: 10, template_hints: ['coordinateGrid'] },
@@ -92,25 +85,15 @@ export const REPRESENTATION_TARGETS: Record<string, RepresentationTarget[]> = {
   // added below for the ogive.
   'M3-STAT2': [
     { representation: 'table', share: 55, template_hints: ['dataTable'] },
-    // THE OGIVE'S ONLY ROUTE INTO THE BANK.
-    //
-    // M3.1.7 draw a cumulative frequency curve, M3.1.8 analyse statistical
-    // diagrams, M3.1.9 the proportion above or below a value — three objectives
-    // that are all ogive work, and they live HERE. The note below used to say
-    // ogives stayed reachable through M3-RFG2's graph row, and that was simply
-    // untrue: M3-RFG2's objectives are inequalities and function graphs, so a
-    // recipe there never asks for one. The template existed, the objectives
-    // existed, nothing joined them, and the bank held zero.
-    //
-    // The 15% is a judgment on low n, like the M1-SETS and M2-VM1 splits: a
-    // sample of 11 gives no graph row at all, but three of eleven objectives
-    // being ogive work is better evidence of what the paper does than a sample
-    // that small.
+    // THE OGIVE'S ONLY ROUTE INTO THE BANK: M3.1.7-M3.1.9 are all ogive work
+    // and they live HERE. M3-RFG2's objectives are inequalities and function
+    // graphs, so a recipe there never asks for one. The 15% is a judgment on
+    // low n — three of eleven objectives is better evidence than a sample of
+    // eleven that yielded no graph row at all.
     { representation: 'graph', share: 15, template_hints: ['cumulativeFrequency'] },
     // No cumulativeFrequency here: an ogive is a GRAPH in
-    // TEMPLATES_BY_REPRESENTATION, so a question declaring 'chart' and drawing
-    // one is rejected by the schema every time. That still holds — it belongs
-    // in the graph row above, which is where it now is.
+    // TEMPLATES_BY_REPRESENTATION, so a 'chart' question drawing one is
+    // rejected by the schema every time.
     { representation: 'chart', share: 30, template_hints: ['histogram', 'pieChart'] },
   ],
   // M3.2 RFG 2 (n=13): grid 38 / graph 38 / prose 15, residual→graph
@@ -144,17 +127,11 @@ export const REPRESENTATION_TARGETS: Record<string, RepresentationTarget[]> = {
   ],
 };
 
-// Archetype targets (R1.5 §4). Structured shares are spec-stated; the MCQ
-// split is a documented assumption from the corpus aggregate (single-part
-// questions skew to direct procedures; concept-recognition folds into
-// direct-procedure since the R1.5 enum dropped it).
-// R1.8 follow-up — reverse-reasoning raised from 9%, measured rather than
-// chosen. Counting its signatures ("given that ... find", "show that",
-// "determine the value of") across the five text-layer Paper 2s and the 2027
-// specimen gives 3, 6, 5, 6, 7 and 7 per paper — a mean of 5.7 in a paper of
-// roughly 30 sub-parts, so about one sub-part in five works backwards from a
-// stated result. At 9% we were setting it about half as often as the papers do.
-// The share comes out of multi-step-application, which was carrying it.
+// Archetype targets (R1.5 §4). Structured shares are spec-stated; the MCQ split
+// is a documented assumption from the corpus aggregate. Reverse-reasoning's 22%
+// is measured, not chosen: its signatures average 5.7 of roughly 30 sub-parts
+// across five Paper 2s and the 2027 specimen — one sub-part in five. The share
+// comes out of multi-step-application, which was carrying it.
 export const STRUCTURED_ARCHETYPE_TARGETS: Record<string, number> = {
   'multi-step-application': 54,
   'reverse-reasoning': 22,
@@ -170,20 +147,17 @@ export const MCQ_ARCHETYPE_TARGETS: Record<string, number> = {
   'reverse-reasoning': 10,
 };
 
-// 37% of Paper 1 items carry a visual (R1.5 §4). This is a TARGET the recipe
-// consumes as a deficit, not a ceiling applied afterwards: as a ceiling it
-// waited until 37% was exceeded and then exempted nine of the fifteen topics,
-// and the bank reached 53%. Which topics carry the visuals is already decided
-// by REPRESENTATION_TARGETS below — sets get Venn diagrams, statistics get
-// charts — so the bias list it used to need is gone.
+// 37% of Paper 1 items carry a visual (R1.5 §4). The recipe consumes this as a
+// DEFICIT, never as a ceiling applied afterwards: as a ceiling it exempted nine
+// of fifteen topics once the share was passed and the bank reached 53%. WHICH
+// topics carry the visuals is decided by REPRESENTATION_TARGETS.
 export const MCQ_VISUAL_SHARE = 0.37;
 
 
 // Objectives whose work lives on a coordinate plane: an object and its image, a
-// translation vector, a described transformation. A labelled sketch cannot
-// place those points, and a question that states them needs a grid — so the
-// representation search weights 'graph' up for these rather than forbidding
-// anything, which would only teach the model to avoid the shapes.
+// translation vector, a described transformation. A labelled sketch cannot place
+// those points, so the representation search weights 'graph' up rather than
+// forbidding anything, which would only teach the model to avoid the shapes.
 export const GRID_BIASED_OBJECTIVES = new Set([
   'M3.3.2', // translations as vectors
   'M3.3.3', // image of an object, or the object given the image

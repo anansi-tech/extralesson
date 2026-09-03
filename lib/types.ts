@@ -6,9 +6,8 @@ export type Profile = 'CK' | 'AK' | 'R';
 
 export type SyllabusMode = 'legacy-jan' | 'modular-2027';
 
-// R1.8 Part 0: where a question is set, so the bank can be kept varied and
-// measured. 'none' is a first-class choice — the papers set most Paper 1 items
-// as bare symbolic work.
+// Where a question is set, so the bank can be kept varied. 'none' is a
+// first-class choice — most Paper 1 items are bare symbolic work.
 export type ContextCategory =
   | 'none'
   | 'retail'
@@ -37,28 +36,20 @@ export interface Objective {
   id: string; // syllabus numbering, e.g. 'M1.5.10' (module.topic.objective)
   text: string;
   notes?: string;
-  // R1.6 §3: objectives ExtraLesson cannot assess — construction and drawing
-  // work that needs pencil, ruler and compasses. Absent means assessable.
-  // We state this coverage plainly rather than quietly scoring around it.
+  // Objectives we cannot assess — pencil-and-compasses work. Absent means
+  // assessable, and the coverage is stated plainly — ROUND_1_6 §3.
   assessable?: false;
   unassessable_reason?: string;
   /**
-   * R1.7: we assess a genuine half of this objective and not the other. The
-   * papers award marks for producing a graph or a solid and for reading one;
-   * we can mark the reading. Counted as covered, disclosed as partial — the
-   * coverage sentence says both, so a rising number cannot quietly erase the
-   * caveat that earned it.
+   * We assess half of this objective — reading a graph or solid, not producing
+   * one. Counted as covered but disclosed as partial, so a rising coverage
+   * number cannot quietly erase the caveat that earned it.
    */
   partial_reason?: string;
   /**
-   * R2 §8: this objective is unassessable from typed input alone, but a
-   * PHOTOGRAPHED construction can be checked against the figure's declared
-   * params, so the student earns it by photographing the graph they drew.
-   * Only ever set on the plotted families the templates can ground-truth —
-   * never on instrument constructions, which stay out of the round.
-   *
-   * Declared, not inferred: the alternative was pattern-matching the word
-   * "graph" in unassessable_reason, and prose is not structure.
+   * Unassessable from typed input alone, but a PHOTOGRAPHED construction can be
+   * checked against declared params — only on plotted families the templates
+   * ground-truth, never instrument constructions. Declared, not inferred. ROUND_2 §8.
    */
   photo_assessable?: true;
 }
@@ -73,10 +64,9 @@ export interface RubricItem {
   /** Derived from slot_ref; kept because every existing reader uses it. */
   part_label: string;
   /**
-   * R1.7 §B4: this row is the mark for expressing the answer in the required
-   * form. The official scheme awards it separately from the value, so a student
-   * with the right number in the wrong form keeps the value marks and loses
-   * only this one.
+   * The mark for expressing the answer in the required form. The scheme awards
+   * it separately from the value, so a student with the right number in the
+   * wrong form keeps the value marks and loses only this one.
    */
   for_format?: boolean;
 }
@@ -93,8 +83,7 @@ export type Archetype =
 
 export type Representation = 'prose' | 'diagram' | 'graph' | 'table' | 'chart' | 'venn';
 
-// 15 SVG templates + dataTable (semantic HTML). Model emits {template, params},
-// never raw SVG (R1.5 §3).
+// Model emits {template, params}, never raw SVG — ROUND_1_5 §3.
 export type TemplateName =
   | 'triangleLabeled'
   | 'circleCenter'
@@ -116,14 +105,12 @@ export type TemplateName =
   | 'vectorFigure'
   | 'dataTable';
 
-// How a part is answered, which decides whether we can auto-mark it (R1.6 §1).
-// Real papers repeatedly state the answer and ask for the derivation
-// ("show that x = 5"); comparing a final answer the question already gave away
-// is not assessment, so only 'answer' parts are auto-graded.
+// Only 'answer' parts are auto-graded: comparing a final answer the question
+// already gave away is not assessment — ROUND_1_6 §1.
 export type ResponseMode = 'answer' | 'show_that' | 'explain' | 'construct';
 
-// The form an answer must take when the form is the thing being tested
-// (R1.6 §2). 'sf:N' / 'dp:N' carry their precision, e.g. 'sf:3', 'dp:1'.
+// The form an answer must take when the form is what is tested — ROUND_1_6 §2.
+// 'sf:N' / 'dp:N' carry their precision, e.g. 'sf:3', 'dp:1'.
 export type AnswerFormat =
   | 'exact'
   | 'standard_form'
@@ -135,13 +122,9 @@ export type AnswerFormat =
   | 'equation_form';
 
 /**
- * R1.8 Part 1 — an answerable slot inside a lettered part.
- *
- * The papers put several answerable things under one instruction: "Factorize
- * completely EACH of the following: (i) … (ii) …", a table row with three cells
- * to fill, "describe fully the transformation" wanting type, centre and factor.
- * A part that holds one answer can only render those as unrelated parts, losing
- * the instruction that governs them.
+ * An answerable slot inside a lettered part — ROUND_1_8 Part 1. The papers put
+ * several answers under one instruction; a part holding a single answer can
+ * only render those as unrelated parts, losing the instruction governing them.
  */
 export interface Slot {
   /** 'i' | 'ii' | a cell key like 'r5.S' | a descriptor key like 'centre'. */
@@ -152,13 +135,11 @@ export interface Slot {
   accept?: string[];
   answer_format?: AnswerFormat;
   response_mode: ResponseMode;
-  /** Rubric rows this slot earns. */
   rubric_codes: string[];
 }
 
 export interface QuestionPart {
   label: string; // the lettered part, 'a'..'j', as printed
-  /** The instruction governing this part's slots. */
   prompt: string;
   /** Sums over the rubric rows its slots earn. */
   marks: number;

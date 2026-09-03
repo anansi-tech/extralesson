@@ -1,5 +1,4 @@
-// Shared SVG helpers for the visual templates. Black-line exam aesthetic:
-// ink strokes, no decorative color, serif labels, viewBox-scaled.
+// Black-line exam aesthetic: ink strokes, no decorative color, serif labels.
 
 import { protectMoney, restoreMoney } from '@/lib/money';
 
@@ -16,13 +15,9 @@ export function esc(s: string): string {
     .replace(/"/g, '&quot;');
 }
 
-// SVG <text> does not run through KaTeX. Convert the small supported math
-// subset of a label to readable Unicode. (Carried from the research branch —
-// renderer-agnostic utility.)
-// Figure labels are plain SVG text, so an exponent has to be written with the
-// characters unicode provides rather than with markup. Converted only when
-// EVERY character of the script has a form: a caret is honest, and a
-// half-converted "x^a⁺b" would be worse than either.
+// Figure labels are plain SVG text, never KaTeX, so an exponent has to be
+// written with the characters unicode provides. Converted only when EVERY
+// character of the script has a form: half-converted is worse than a caret.
 const SUPERSCRIPT: Record<string, string> = {
   '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
   '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
@@ -60,11 +55,9 @@ export function svgPlainLabel(raw: string): string {
     .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '$1/$2')
     .replace(/\\sqrt\{([^{}]+)\}/g, '√$1')
     .replace(/\\text\{([^{}]*)\}/g, '$1')
-    // \underline{2} -> 2 with a combining low line. A place-value question in
-    // base n asks for "the value of the UNDERLINED digit", so the underline is
-    // the question, not decoration: dropping it here would leave a figure or a
-    // table cell that cannot be answered. Handled before backslashes are
-    // stripped, which would otherwise turn it into the word "underline".
+    // The underline is the QUESTION — "the value of the underlined digit" —
+    // not decoration, so dropping it leaves a cell that cannot be answered.
+    // Handled before backslashes are stripped, which would leave the word.
     .replace(/\\underline\{([^{}]*)\}/g, (_m, inner: string) =>
       [...inner].map((ch) => `${ch}${COMBINING_LOW_LINE}`).join(''),
     )
@@ -74,10 +67,9 @@ export function svgPlainLabel(raw: string): string {
     .replace(/\\parallel/g, '∥')
     .replace(/\\times/g, '×')
     .replace(/\\vec\{([^{}]+)\}/g, '$1⃗')
-    // Relations, BEFORE the backslashes are stripped: otherwise \le became the
-    // word "le" and a class interval printed as "0 le t < 5". The guard is
-    // "not followed by a letter", not a word boundary — \le25 has no space
-    // and \left must not be caught.
+    // Relations, BEFORE the backslashes are stripped, or \le reads as the word
+    // "le". The guard is "not followed by a letter" rather than a word
+    // boundary: \le25 has no space, and \left must not be caught.
     .replace(/\\leq(?![a-zA-Z])/g, '≤')
     .replace(/\\le(?![a-zA-Z])/g, '≤')
     .replace(/\\geq(?![a-zA-Z])/g, '≥')
@@ -162,16 +154,10 @@ export function round(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
-// Nice tick positions between min and max inclusive.
-// 45° line hatch, the paper convention for a shaded region. Emit the defs once
-// per SVG and fill shapes with hatchFill(id).
 /**
- * The 2 mm mesh a real paper prints under its unit lines. Reading "how many
- * took at most 32 minutes" or a root at x = 1.5 off a grid ruled only in units
- * is guesswork; the mesh is what makes those questions answerable.
- *
- * Drawn as a tiled pattern rather than thousands of lines, so a dense grid
- * costs the same as a sparse one.
+ * The 2 mm mesh a real paper prints under its unit lines: reading a root at
+ * x = 1.5 off a grid ruled only in units is guesswork. Tiled as a pattern, so
+ * a dense grid costs the same as a sparse one.
  */
 export function meshDefs(id: string, spacing: number, divisions = 5): string {
   const fine = spacing / divisions;

@@ -3,9 +3,8 @@ import { Schema, model, models, type InferSchemaType } from 'mongoose';
 const StudentSchema = new Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   name: { type: String, required: true },
-  // scrypt$salt$hash — see lib/auth/password.ts. Optional in the schema and
-  // never optional in practice: accounts made before passwords existed have
-  // none, and set one through the reset flow rather than being deleted.
+  // scrypt$salt$hash — see lib/auth/password.ts. Optional only because accounts
+  // made before passwords existed have none, and set one through the reset flow.
   password_hash: { type: String },
   island: { type: String },
   exam_sitting: { type: String, enum: ['jan-2027', 'may-june-2027'], required: true },
@@ -13,13 +12,9 @@ const StudentSchema = new Schema({
   syllabus_mode: { type: String, enum: ['legacy-jan', 'modular-2027'], required: true },
   target_modules: { type: [Number], enum: [1, 2, 3], required: true },
   created_at: { type: Date, default: Date.now, required: true },
-  // PAID ACCESS. Absent means the free tier, which is correct for every account
-  // that existed before this field and for every new one — nobody is granted
-  // access by omission.
-  //
-  // Granted by the webhook on a matched payment, or by hand on /admin/access —
-  // refunds, mismatched emails, comps and undelivered events all end up there,
-  // which is what makes the automatic path safe to have.
+  // PAID ACCESS. Absent means the free tier — nobody is granted access by
+  // omission. Granted by the webhook on a matched payment or by hand on
+  // /admin/access, the visible fallback that makes the automatic path safe.
   access: {
     type: new Schema(
       {

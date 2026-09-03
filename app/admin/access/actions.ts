@@ -15,22 +15,9 @@ const IdZ = z.string().regex(/^[a-f0-9]{24}$/);
 const SittingZ = z.enum(['jan-2027', 'may-june-2027']);
 
 /**
- * GRANTING BY HAND, FOR EVERYTHING THE AUTOMATIC PATH DOES NOT COVER.
- *
- * The webhook grants access on its own when a payment carries an address that
- * matches an account, which is the ordinary case and needs nobody awake for
- * it. This screen is the rest: a typo'd address, a payment made before the
- * student registered, a refund to undo, a comp to give, an event Stripe never
- * delivered. Those are not failures of the automatic path so much as the cases
- * no automatic path can settle — somebody has to decide who a payment belongs
- * to, and it is the same somebody either way.
- *
- * Keeping it means a wrong grant is undone in one click rather than debugged
- * in a delivery log, and an unmatched payment surfaces here instead of
- * vanishing.
- *
- * The note is where the evidence goes — a Stripe payment id, "comp", "refunded
- * 3 Sep". It is why a grant can be explained six months later.
+ * Granting by hand, for the cases no automatic path can settle. A wrong grant
+ * is undone in one click and an unmatched payment surfaces here instead of
+ * vanishing; the note carries the evidence. See ROUND_2 §8c.
  */
 export async function grantAccess(formData: FormData): Promise<void> {
   await requireAdmin();
@@ -55,10 +42,9 @@ export async function revokeAccess(formData: FormData): Promise<void> {
 }
 
 /**
- * An unmatched payment, dealt with. Marking it resolved is deliberately
- * separate from granting: they are usually the same act, but a refund or a
- * duplicate charge is resolved without anyone gaining access, and conflating
- * them would hide that.
+ * Resolving is deliberately separate from granting: a refund or a duplicate
+ * charge is resolved without anyone gaining access, and conflating the two
+ * would hide that.
  */
 export async function resolvePayment(formData: FormData): Promise<void> {
   await requireAdmin();
@@ -69,15 +55,9 @@ export async function resolvePayment(formData: FormData): Promise<void> {
 }
 
 /**
- * DELETE AN ACCOUNT AND EVERYTHING ATTACHED.
- *
- * Deliberately not a button beside Revoke. A destructive action sitting next
- * to a routine one is how the wrong row goes, so this asks for the address to
- * be TYPED: revoking is a click, deleting is a sentence you have to mean.
- *
- * The counts come back to the caller rather than going to a log. An audit row
- * naming the deleted address would leave the person in the database after they
- * asked to leave it, which is the thing the deletion was for.
+ * The address must be TYPED: revoking is a click, deleting is a sentence you
+ * have to mean. Counts return to the caller and never to a log — an audit row
+ * naming the deleted address would leave the person after they asked to leave.
  */
 export async function deleteStudentAccount(
   _previous: DeleteAccountState,

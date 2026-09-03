@@ -1,45 +1,22 @@
 import type { ContextCategory } from '@/lib/types';
 
-// R1.8 correction — what this module is FOR.
-//
-// Measured against the papers, a real question names no country and no city:
-// the settings are generic ("a vendor", "a farmer", "the school"), because
-// sixteen territories sit the same paper and one that named a territory would
-// be a paper about it.
-//
-// So this drives VARIETY — the flavour of a setting and the names in it — and
-// never currency, which lib/money.ts owns, nor a place name in a stem.
+// Drives VARIETY — the flavour of a setting and the names in it — never
+// currency, which lib/money.ts owns, and never a place name in a stem:
+// sixteen territories sit the same paper. See ROUND_1_8 PART 0.
 
 export interface RegionalFlavour {
-  /** Everyday work and trade a stem can be built from, region-wide. */
   livelihoods: string[];
-  /** Produce, goods and materials that appear in a Caribbean question. */
   goods: string[];
-  /**
-   * The transactions the questions are ABOUT. Livelihoods and goods name who
-   * and what; these name the dealing, which is what the banking, wages and
-   * retail settings actually turn on — and those are 54% of the corpus.
-   */
+  /** The transactions the questions are ABOUT — banking, wages and retail are 54% of the corpus. */
   dealings: string[];
 }
 
-// MEASURED AGAINST THE PAPERS, 2026-08-26.
-//
-// The lists were subsistence-heavy — market vendor, fisherman, saltfish,
-// callaloo, sugar cane — while the papers are commercial and modern. Counting
-// context markers across the readable corpus (the 2027 specimen, the subject
-// report and seven past papers; the other twenty are scans with no text layer
-// and running text recognition over scans is a kill-list item, so 9 of 29
-// documents is the honest base):
-//
-//   banking/credit 31% · retail 20% · transport 14% · bills 12% · wages 8%
-//   agriculture 6.5% · appliances 6% · restaurant/tourism 2% · fishing 0%
-//
-// Goods were 13 of 18 produce. Agriculture stays — it does appear — but as one
-// register among several rather than the default one.
+// Context markers over the 9 readable documents of 29: banking/credit 31% ·
+// retail 20% · transport 14% · bills 12% · wages 8% · agriculture 6.5% ·
+// appliances 6% · restaurant/tourism 2% · fishing 0%. Agriculture is one
+// register among several, not the default one.
 /**
- * ONE FLAT LIST. Least-used selection over a single list already spreads
- * evenly, and a name's origin has no downstream effect on anything, so pools
+ * ONE FLAT LIST: least-used selection already spreads evenly, so name pools
  * would be a mechanism without a purpose.
  */
 export const NAMES = [
@@ -50,32 +27,19 @@ export const NAMES = [
 ];
 
 /**
- * HOW OFTEN A QUESTION NAMES A PERSON, measured over Paper 2.
- *
- * A rate is not a judgment to leave to the model sentence by sentence, so it
- * is decided in the recipe and arrives as an instruction: prose guidance that
- * a role MAY stay unnamed was read as never, twenty for twenty.
- *
- * scripts/calibration/naming.py over 14 Paper 2 papers, 178 question-sized
- * chunks: 19.1% name a person. Of those, 79% name exactly ONE and only 9%
- * carry the name across parts, so the default when naming is one person where
- * the question needs them.
- *
- * Detection is grammatical — a capitalised token followed by a person verb —
- * so it misses possessives and other verbs. 19% is a FLOOR, which is the right
- * direction for a target: it will not over-name.
+ * 19.1% of Paper 2 questions name a person (naming.py, 14 papers, 178 chunks);
+ * grammatical detection makes that a FLOOR, the safe direction for a target.
+ * Decided here because prose saying a role MAY stay unnamed was read as never.
  */
 export const NAMING_RATE = 0.19;
 
-/** Whether a question names one of ours — read from NAMES, never guessed. */
 export function namesAPerson(text: string): boolean {
   return NAMES.some((n) => new RegExp(`\\b${n}\\b`).test(text));
 }
 
 /**
- * Should this question name someone? Below the measured rate it should, above
- * it should not — the same shape as the setting deficit, and for the same
- * reason: a share converges against the total or it does not converge.
+ * Below the measured rate it should name, above it should not: a share
+ * converges against the total, or it does not converge.
  */
 export function shouldNamePerson(stems: string[], rate = NAMING_RATE): boolean {
   if (stems.length === 0) return true;
@@ -84,12 +48,9 @@ export function shouldNamePerson(stems: string[], rate = NAMING_RATE): boolean {
 }
 
 /**
- * The name the bank has used least, counted over existing stems. Deterministic:
- * ties break by list order, so the same bank always yields the same choice.
- *
- * Only the CHOSEN name goes to the prompt. Handing over twelve and asking for
- * variety is what let the model concentrate on a few — a list is an invitation,
- * one name is an instruction.
+ * Deterministic: ties break by list order, so one bank yields one choice.
+ * Only the CHOSEN name reaches the prompt — handing over twelve and asking for
+ * variety is what let the model concentrate on a few.
  */
 export function leastUsedName(stems: string[]): string {
   const hay = stems.join(' \u0000 ');
@@ -107,38 +68,24 @@ export function leastUsedName(stems: string[]): string {
 
 export const FLAVOUR: RegionalFlavour = {
   livelihoods: [
-    // Salaried and commercial, which is where the papers mostly sit.
     'a sales clerk', 'a bank teller', 'a supermarket cashier', 'a nurse',
     'a teacher', 'a hotel receptionist', 'a call centre agent', 'a security guard',
     'a shop supervisor', 'a delivery driver', 'a taxi driver', 'a bus conductor',
     'a mechanic', 'a hairdresser', 'a restaurant server',
-    // Trades and self-employment, still common and still on the papers.
     'a seamstress', 'a mason', 'a carpenter', 'a plumber',
-    // Agriculture and fishing, kept but no longer the default register.
     'a farmer', 'a market vendor', 'a fisherman',
   ],
   goods: [
-    // Retail stock, appliances and services — the papers' usual objects.
     'a refrigerator', 'a gas stove', 'a laptop', 'a mobile phone', 'a television',
     'a washing machine', 'school uniforms', 'exercise books', 'phone credit',
     'a monthly data plan', 'an electricity bill', 'a water bill', 'bus fares',
     'a restaurant meal', 'a hotel booking',
-    // Materials, for construction and measurement settings.
     'roofing sheets', 'cement blocks', 'floor tiles', 'fabric',
-    // Produce, kept in proportion rather than dominating.
     'mangoes', 'plantains', 'coconuts', 'nutmeg', 'saltfish',
   ],
-  // NAMED BY THE SYLLABUS ITSELF, not inferred from the papers. CXC's own
-  // wording, with occurrence counts across design/syllabus-2027.pdf:
-  // depreciation 11, hire purchase 10, interest 16 (simple 9 / compound 7),
-  // loan 9, utility 4, demand and supply 3, discount 3, plus salary, wages,
-  // taxes, invoice, budget, insurance, mortgage, currency. Its cross-discipline
-  // notes point the same way — "demand and supply functions of business
-  // studies" (p37), Business Studies among the disciplines graphs link to
-  // (p34).
-  //
-  // This is the register the corpus says we are short of — banking 28% of the
-  // papers against 1% of our bank — named by the examiner rather than guessed.
+  // CXC's own wording from design/syllabus-2027.pdf, not inferred from the
+  // papers. This is the register the corpus says we are short of: banking is
+  // 28% of the papers against 1% of our bank.
   dealings: [
     'a hire-purchase agreement', 'a bank loan repaid monthly', 'a savings account',
     'simple interest over a fixed term', 'compound interest year on year',
@@ -154,7 +101,6 @@ export const FLAVOUR: RegionalFlavour = {
 /** How many recent questions a flavour choice should stay clear of. */
 export const FLAVOUR_MEMORY = 8;
 
-/** Flavour words a topic has used recently, so generation reaches elsewhere. */
 export function recentFlavour(texts: string[]): string[] {
   const used: string[] = [];
   const all = [...FLAVOUR.livelihoods, ...FLAVOUR.goods, ...NAMES];
@@ -168,27 +114,9 @@ export function recentFlavour(texts: string[]): string[] {
 }
 
 /**
- * Prompt block: keep the setting generic and the details varied. Deliberately
- * says nothing about currency — money is written the same way everywhere and
- * lib/money.ts owns that rule.
- */
-/**
- * The actor is chosen from a CLOSED LIST, the way the setting category is.
- *
- * Measured over 416 approved questions: farmer opens 32, contractor 20,
- * shopkeeper 16, manufacturer 12, market vendor 11 — five actors carrying 42%
- * of the bank. Four of those five were the words this prompt printed in its own
- * prose, and the other two the model invented and then reused freely.
- *
- * The avoid-ledger was already running and is not the answer: consecutive
- * questions on one objective repeat their actor only 4% of the time, and
- * repeat their setting CATEGORY 6% against a 7% chance rate. A memory of the
- * last ten prevents ADJACENCY, not CONCENTRATION — thirty-two farmers spread
- * evenly through the bank never trip it.
- *
- * What made settings converge — fifteen categories, largest at 13% — was that
- * they are picked from an enumerated list. So actors are now enumerated too,
- * and the prompt names no actor of its own to anchor on.
+ * The actor comes from a CLOSED LIST, like the setting category: five actors
+ * carried 42% of 416 approved questions, four of them words this prompt printed
+ * itself. An avoid-ledger prevents ADJACENCY, not CONCENTRATION.
  */
 export function flavourGuidance(
   recentTexts: string[],
@@ -208,9 +136,8 @@ export function flavourGuidance(
 }
 
 /**
- * Nouns that take an actor's grammatical position without being one. Maths
- * prose is full of them, and an actor measurement that counts "results" is one
- * nothing can be steered on.
+ * Nouns that take an actor's grammatical position without being one — an actor
+ * measurement that counts "results" is one nothing can be steered on.
  */
 const NOT_AN_ACTOR = new Set([
   'results', 'result', 'values', 'value', 'figures', 'figure', 'data', 'numbers',
@@ -221,14 +148,9 @@ const NOT_AN_ACTOR = new Set([
 ]);
 
 /**
- * Words that never appear INSIDE an actor.
- *
- * Half the verb list doubles as a noun — charges, orders, designs, packs,
- * records, measures — so "The table shows the charges" matches with "charges"
- * as the verb and "table shows the" as the actor. A real one is one or two
- * content words: "market vendor", "school canteen", "taxi driver". None of
- * them carries a determiner, a preposition or a copula, and a phrase that does
- * is a sentence fragment rather than somebody.
+ * Words that never appear INSIDE an actor. Half the verb list doubles as a
+ * noun, so "The table shows the charges" would otherwise match with "table
+ * shows the" as the actor. A real one is one or two content words.
  */
 const NOT_IN_AN_ACTOR = new Set([
   'the', 'a', 'an', 'of', 'for', 'in', 'on', 'at', 'to', 'and', 'or',
@@ -245,9 +167,6 @@ export function recentActors(texts: string[]): string[] {
       .match(/\b(?:A|An|The|At a|At an|In a|During a|On a)\s+([a-z][a-z' -]{2,28}?)\s+(?:plans|records|sells|makes|buys|uses|prepares|wants|needs|orders|packs|runs|owns|tracks|models|compares|charges|delivers|offers|installs|designs|builds|stores|ships|collects|measures|surveys|begins|opens|operates|produces|supplies|manages|hires|rents|plants|harvests|bakes|repairs|transports|imports|exports|stocks|sews|paints|mixes|fills|loads|serves|cuts|weighs|counts)\b/);
     const actor = m?.[1]?.trim().toLowerCase();
     if (!actor || NOT_AN_ACTOR.has(actor) || found.includes(actor)) continue;
-    // EVERY word is tested, not just the head. "table shows the" ends in a
-    // determiner and begins with a thing that is never an actor, and only the
-    // second of those was being caught.
     const words = actor.split(/[\s-]+/);
     if (words.some((w) => NOT_AN_ACTOR.has(w) || NOT_IN_AN_ACTOR.has(w))) continue;
     found.push(actor);

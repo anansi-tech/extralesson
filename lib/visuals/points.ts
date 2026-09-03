@@ -1,16 +1,9 @@
 import type { VerifyContext } from './types';
 
-// Named points are stated ONCE, in the question, and the figure references them.
-//
-// A figure's geometry used to be authored separately from the question's:
-// the stem said A(1,1), B(3,1), C(2,3) and the params said "draw a triangle
-// labelled A, B, C", and nothing tied the two together. Every gate we added for
-// that class — a length on the wrong side, a sketch asked to show coordinates —
-// detects a disagreement that had already been written down. There is no
-// disagreement to detect when there is only one copy.
-//
-// So: the question's text is the source, and coordinateGrid's `named` block
-// says which of those points the figure draws.
+// Named points are stated ONCE, in the question's text, and coordinateGrid's
+// `named` block says which of them the figure draws. Authoring the figure's
+// geometry separately leaves two copies that can disagree, and a gate for that
+// class can only detect a disagreement already written down.
 
 export interface NamedPoint {
   label: string;

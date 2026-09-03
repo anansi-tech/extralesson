@@ -1,14 +1,9 @@
 import { z } from 'zod';
 
-// The structured-output contract for a draft (R1.5 §5, gate 0).
-//
-// Loose on purpose: the strict Zod boundary in lib/validation/question.ts runs
-// afterwards so a malformed draft is logged and rejected rather than thrown.
-// But loose is not the same as absent — a field missing HERE can never be
-// emitted by the model, however clearly the prompt asks for it. The first R1.6
-// batch came back with 71 parts all defaulted to response_mode 'answer' and no
-// answer_format anywhere, because these two fields were documented in the
-// prompt and missing from this schema.
+// The structured-output contract for a draft (R1.5 §5, gate 0). Loose on
+// purpose — the strict Zod boundary in lib/validation/question.ts runs after,
+// so a malformed draft is rejected rather than thrown. Loose is not absent: a
+// field missing HERE can never be emitted, however clearly the prompt asks.
 
 export const MisconceptionLooseZ = z.object({ trigger: z.string(), name: z.string(), remediation: z.string() });
 
@@ -24,9 +19,7 @@ const SlotLooseZ = z.object({
   answer_format: z.string().nullish(),
   rubric_codes: z.array(z.string()).nullish(),
   // The chain, declared. A field the strict schema wants but this one omits
-  // cannot be emitted at all: the model only ever sees THIS shape, so the
-  // first v32 batch came back with every slot independent and a chain depth of
-  // 1 across questions that plainly chained.
+  // cannot be emitted at all: the model only ever sees THIS shape.
   depends_on: z.array(z.string()).nullish(),
   // The objective this slot assesses; integration is counted from these.
   objective_id: z.string().nullish(),

@@ -3,44 +3,20 @@ import { z } from 'zod';
 import { reader, READER_MODEL_ID } from '@/lib/ai';
 
 /**
- * READING A PHOTOGRAPHED PAGE, AND NOTHING ELSE.
- *
- * R2 §3. This call makes no marking judgment of any kind: it says what is on
- * the page and how sure it is, and the marking pass is a separate call over
- * what it produced. Keeping them apart is what makes the transcription
- * something a student can be shown and can argue with — "this is what we read"
- * — instead of a black box that returns a number.
- *
- * The mathematics is transcribed to the conventions the grader ALREADY parses.
- * A second dialect would mean a second equivalence layer, and the kill list
- * forbids one for the same reason we only have one money parser.
- */
-/**
- * Two photographs of one question, then it stands (R2 §2).
- *
- * A retake is for a bad photograph, not for a better answer: the typed answers
- * are already submitted and marked, so nothing about the marks can change here.
- * The limit exists because an unbounded retake is an unbounded bill.
- *
- * It lives beside the reader rather than in the server action because a
- * 'use server' file may export only async functions, and the client needs to
- * know how many takes are left to label its own button.
+ * READING A PHOTOGRAPHED PAGE, AND NOTHING ELSE: marking is a separate call
+ * over what this produced, in the conventions the grader already parses. A
+ * retake is for a bad photograph, not a better answer. ROUND_2 §2, §3.
  */
 export const MAX_TAKES = 2;
 
 /**
  * ~1.5MB after the device has scaled it down; a phone photo is far larger.
- * Lives here rather than in the server action so the server-action body limit
- * can be asserted against it — the two have to agree.
+ * The server-action body limit is asserted against this — the two must agree.
  */
 export const MAX_BYTES = 1_500_000;
 
 export const TranscriptionLineZ = z.object({
-  /**
-   * The part this line belongs to, as the student labelled it. Real papers
-   * require the question number beside the answer and students already write
-   * it; a line with no label of its own inherits the one above.
-   */
+  /** As the student labelled it; a line with no label inherits the one above. */
   part_label: z.string().max(4).nullable(),
   slot_label: z.string().max(30).nullable(),
   text: z.string().max(400),
@@ -79,14 +55,9 @@ export interface TranscribeOutcome {
 }
 
 /**
- * One retry, because the failure is transient and the cost of not retrying is
- * paid by the student.
- *
- * Structured generation occasionally returns something that does not satisfy
- * the schema — the same photograph succeeds on the next call. Without a retry
- * that surfaces as "we could not read that photo" on a page that is perfectly
- * readable, and the student is left believing their handwriting is the problem.
- * Two attempts and then it stands: an unbounded retry is an unbounded bill.
+ * Structured generation occasionally returns something off-schema and the same
+ * photograph succeeds next call; without a retry the student is told a
+ * perfectly readable page could not be read. Two attempts, then it stands.
  */
 const READ_ATTEMPTS = 2;
 
@@ -144,17 +115,9 @@ async function readOnce(args: TranscribeArgs): Promise<TranscribeOutcome> {
 }
 
 /**
- * THE PART IS THE PART, NOT THE SLOT REFERENCE.
- *
- * The reader is told the question's slots are "a.i", "b.i", so it labels lines
- * with the whole reference. linesForSlot then compares that against the part
- * label "a", matches nothing, and the slot is treated as having no working at
- * all — and no working means no method mark (R2 §4.3). A correctly read page
- * would have silently earned nothing.
- *
- * Found by running the eval against real photographs, which is what an eval is
- * for. Split here, once, on the way in, so everything downstream sees a part
- * label that is a part label.
+ * THE PART IS THE PART, NOT THE SLOT REFERENCE. The reader labels lines with
+ * the whole reference ("a.i"); matched against part "a" nothing is found, and
+ * no working means no method mark (ROUND_2 §4). Split once, on the way in.
  */
 function normaliseLabels(t: TranscriptionResult): TranscriptionResult {
   return {
@@ -173,8 +136,6 @@ function normaliseLabels(t: TranscriptionResult): TranscriptionResult {
 }
 
 /**
- * The lines belonging to one slot, with inheritance already applied.
- *
  * Marking reads this, never the raw array: a line that inherited its label is
  * the student's working for that part just as much as one that carried it.
  */

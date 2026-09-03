@@ -1,20 +1,8 @@
-// Deterministic verification, for the mathematics a machine can settle.
-//
-// The independent solve pass is independent in PROMPT only: same model, same
-// blind spot. A composite-function question reached review with fg(x) computed
-// as gf(x) — 2x+3 where 2x+1 was right — and BOTH passes agreed, then the
-// correct answer was listed in the misconception panel as the error. A student
-// answering correctly would have been marked wrong and told their method was
-// the mistake.
-//
-// Asking the same model twice is not two gates. Where the mathematics is
-// machine-checkable it is checked by computation, and that verdict is
-// authoritative; the solve pass stays as a second opinion on everything else.
-//
-// Equality is decided by NUMERIC SAMPLING, not by mathjs's simplify().equals(),
-// which returns false for expressions that are plainly equal — 2(x-3)+1 against
-// 2x-5. Agreement at many well-separated points is both sound in practice and
-// immune to the shape an answer happens to be written in.
+// Asking the same model twice is not two gates: the solve pass is independent
+// in PROMPT only, same model and same blind spot. Where the mathematics is
+// machine-checkable, computation decides and its verdict is authoritative.
+// Equality is decided by NUMERIC SAMPLING because simplify().equals() returns
+// false for expressions that are plainly equal — 2(x-3)+1 against 2x-5.
 import { evaluate, parse } from 'mathjs';
 
 export type Verdict =
@@ -82,14 +70,13 @@ export function equivalent(a: string, b: string, vars: string[] = ['x']): Verdic
     : UNCHECKED('too few points where both expressions are defined');
 }
 
-/** fg(x) means f(g(x)) — apply g FIRST. This is the reversal that got through. */
+/** fg(x) means f(g(x)) — apply g FIRST. */
 export function composite(f: string, g: string, order: 'fg' | 'gf', claimed: string): Verdict {
   const inner = order === 'fg' ? g : f;
   const outer = order === 'fg' ? f : g;
   const eInner = toExpr(inner);
   const eOuter = toExpr(outer);
   if (!eInner || !eOuter) return UNCHECKED('could not read the function definitions');
-  // Substitute by evaluating the outer at the inner's value, point by point.
   const truth = eOuter.replace(/\bx\b/g, `(${eInner})`);
   return equivalent(truth, claimed);
 }
@@ -142,12 +129,10 @@ export function midpoint(p: [number, number], q: [number, number]): [number, num
   return [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
 }
 
-/** Magnitude of a column vector. */
 export function magnitude(v: [number, number], claimed: string): Verdict {
   return equivalent(String(Math.hypot(v[0], v[1])), claimed, ['t']);
 }
 
-/** Numbers a claimed answer contains, for comparing against computed values. */
 export function numbersIn(s: string): number[] {
   return (s.match(/-?\d+(?:\.\d+)?/g) ?? []).map(Number);
 }

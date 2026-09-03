@@ -2,9 +2,8 @@ import { z } from 'zod';
 import { hatchDefs, hatchFill, INK, line, pathArc, polar, polygon, round, svgOpen, text } from '../svg';
 import { valueStatedInText, type VisualTemplate } from '../types';
 
-// Compound plane figures and simple solids with dimension arrows. 3-D shapes
-// use an oblique projection (receding edges at 32°, foreshortened) with
-// dashed hidden edges.
+// Compound plane figures and simple solids. 3-D shapes use an oblique
+// projection (receding edges at 32°, foreshortened) with dashed hidden edges.
 
 const PosZ = z.number().positive().max(100000);
 const UnitZ = z.enum(['cm', 'm', 'mm']);
@@ -18,14 +17,10 @@ export const CompositeShapeParamsZ = z.discriminatedUnion('kind', [
     // R1.6 §6: "find the area of the shaded region" needs the region shaded.
     shaded: z.boolean().default(false),
   }),
-  // The running track / belt / capsule: a rectangle capped by a semicircle at
-  // EACH end. rect-plus-semicircle caps one end and cannot express it, and the
-  // shape carries a perimeter question the one-ended version does not — the two
-  // half-circumferences make a whole one.
-  // A sector: two radii and the arc between them, the figure behind every
-  // "length of arc AB" and "area of the shaded sector". circleCenter draws the
-  // circle THEOREMS — chords, tangents, angles subtended — and has no sector,
-  // so this mensuration item had no figure at all.
+  // The running track / capsule: a rectangle capped by a semicircle at EACH
+  // end, carrying a perimeter question the one-ended version does not.
+  // A sector: two radii and the arc between them. circleCenter draws the circle
+  // THEOREMS and has no sector, so this mensuration item had no figure at all.
   z.object({
     kind: z.literal('sector'),
     radius: PosZ,
@@ -90,7 +85,6 @@ function arrowHead(x: number, y: number, deg: number): string {
   return `<polygon points="${round(x)},${round(y)} ${round(a[0])},${round(a[1])} ${round(b[0])},${round(b[1])}" fill="${INK}" stroke="none" />`;
 }
 
-// Double-headed dimension arrow with a label offset from the midpoint.
 function dimSeg(
   x1: number,
   y1: number,
@@ -122,7 +116,6 @@ function fmt(v: number, unit: string): string {
   return `${v} ${unit}`;
 }
 
-// Named dimensions of a shape, for verify() and describe().
 function dimensions(p: CompositeShapeParams): [string, number][] {
   switch (p.kind) {
     case 'rect-plus-semicircle':
@@ -162,9 +155,8 @@ function dimensions(p: CompositeShapeParams): [string, number][] {
   }
 }
 
-// R1.8 §4.6 — the round solids the 2027 formulae sheet supplies. Drawn the way
-// the papers draw them: an ellipse for a circular base seen in perspective,
-// the hidden half of that ellipse dashed, and every stated dimension labelled.
+// R1.8 §4.6 — the round solids the 2027 formulae sheet supplies, drawn the way
+// the papers draw them: a base ellipse in perspective, its hidden half dashed.
 type RoundSolid = Extract<
   CompositeShapeParams,
   { kind: 'cone' | 'sphere' | 'hemisphere' | 'cone-on-cylinder' | 'cylinder-plus-hemisphere' }
@@ -270,7 +262,6 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
       const d = `M ${round(cx)} ${round(cy)} L ${round(x1)} ${round(y1)} A ${round(r)} ${round(r)} 0 ${large} 0 ${round(x2)} ${round(y2)} Z`;
       if (shaded) parts.push(`<path d="${d}" fill="${hatchFill('shapeHatch')}" stroke="none" />`);
       parts.push(`<path d="${d}" fill="none" />`);
-      // The angle at the centre, and one radius labelled: what the question needs.
       parts.push(pathArc(cx, cy, 34, 0, p.angle));
       const mid = (a1 / 2);
       parts.push(
@@ -297,7 +288,6 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
           `<path d="M ${round(x0)} ${round(yTop)} L ${round(x0 + rw)} ${round(yTop)} A ${round(r)} ${round(r)} 0 0 1 ${round(x0 + rw)} ${round(yBot)} L ${round(x0)} ${round(yBot)} A ${round(r)} ${round(r)} 0 0 1 ${round(x0)} ${round(yTop)} Z" fill="${hatchFill('shapeHatch')}" stroke="none" />`,
         );
       }
-      // One outline: two straights and two semicircular ends.
       parts.push(
         `<path d="M ${round(x0)} ${round(yTop)} L ${round(x0 + rw)} ${round(yTop)} A ${round(r)} ${round(r)} 0 0 1 ${round(x0 + rw)} ${round(yBot)} L ${round(x0)} ${round(yBot)} A ${round(r)} ${round(r)} 0 0 1 ${round(x0)} ${round(yTop)} Z" fill="none" />`,
       );
@@ -328,8 +318,8 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
           `<path d="M ${round(x0)} ${round(yTop)} A ${round(r)} ${round(r)} 0 0 1 ${round(x0 + rw)} ${round(yTop)} Z" fill="${hatchFill('shapeHatch')}" stroke="none" />`,
         );
       }
-      parts.push(line(x0, yTop, x0 + rw, yTop, true)); // diameter (dashed)
-      parts.push(pathArc(x0 + r, yTop, r, 180, 0)); // semicircle on top
+      parts.push(line(x0, yTop, x0 + rw, yTop, true));
+      parts.push(pathArc(x0 + r, yTop, r, 180, 0));
       parts.push(dimH(x0, x0 + rw, yBot + 26, fmt(p.width, u)));
       parts.push(dimV(x0 - 26, yTop, yBot, fmt(p.height, u)));
     } else if (p.kind === 'rect-minus-rect') {
@@ -393,7 +383,6 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
       const x0 = (W - (fl + ox)) / 2;
       const yT = (H - (fh + oy)) / 2 + oy; // front top edge
       const yB = yT + fh;
-      // solid edges
       parts.push(polygon([[x0, yT], [x0 + fl, yT], [x0 + fl, yB], [x0, yB]], true));
       parts.push(line(x0, yT, x0 + ox, yT - oy));
       parts.push(line(x0 + fl, yT, x0 + fl + ox, yT - oy));
@@ -425,9 +414,8 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
       parts.push(text(cx + rx / 2, yT - 10, fmt(p.radius, u), { size: 13 }));
       parts.push(dimV(cx + rx + 30, yT, yB, fmt(p.height, u), 'right'));
     } else if (p.kind === 'trapezoidal-prism') {
-      // R1.8 §4.3 — a prism whose cross-section is a trapezium, drawn in the
-      // oblique projection the rest of this template uses, with that face
-      // shaded because the question asks for its area.
+      // R1.8 §4.3 — the cross-section is shaded because the question asks for
+      // its area.
       const ox0 = p.length * OB_COS;
       const oy0 = p.length * OB_SIN;
       const wide = Math.max(p.parallelA, p.parallelB);
@@ -489,7 +477,6 @@ export const compositeShape: VisualTemplate<CompositeShapeParams> = {
       parts.push(line(A[0], A[1], A2[0], A2[1], true));
       parts.push(line(A2[0], A2[1], B2[0], B2[1], true));
       parts.push(line(A2[0], A2[1], C2[0], C2[1], true));
-      // perpendicular height of the cross-section
       parts.push(line(C[0], C[1], C[0], yBase, true));
       parts.push(polygon([[C[0] - 9, yBase], [C[0] - 9, yBase - 9], [C[0], yBase - 9]], false));
       parts.push(text(C[0] + 9, yBase - hs / 2 + 4, fmt(p.height, u), { size: 13, anchor: 'start' }));

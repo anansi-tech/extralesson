@@ -5,22 +5,9 @@ import { MARK_SCHEME_CONVENTIONS, isFollowThrough } from '@/lib/prompts/mark-sch
 import type { RubricItem } from '@/lib/types';
 
 /**
- * JUDGING WHETHER WRITTEN WORKING DEMONSTRATES A CRITERION.
- *
- * R2 §4. This is the judgment leg, so it stays on the capable tier, and it is
- * text-only over a transcription that already exists — never over an image.
- *
- * It runs after deterministic marking and only over rows determinism left
- * unearned, which by construction excludes CAO rows and self-marked slots
- * (lib/grade/method-marks.ts). It may only ADD marks: nothing it returns can
- * take away what the grader awarded, which is what makes a misread cost a
- * student nothing.
- *
- * The typed answer is the cross-check. Confidence in the reading turned out not
- * to predict correctness — on real photographs, lines rated 0.9+ were right 77%
- * of the time — so instead of gating on a number, the marker is shown what the
- * student actually submitted for the slot and told to withhold when the working
- * contradicts it.
+ * ROUND_2 §4. Text only over an existing transcription, never an image, and it
+ * may only ADD marks, so a misread costs a student nothing. Reading confidence
+ * does not predict correctness (0.9+ was right 77%): the typed answer gates it.
  */
 export const MethodDecisionZ = z.object({
   code: z.string(),
@@ -124,19 +111,10 @@ export async function markMethod(args: MethodMarkArgs): Promise<{
   const result = await generateObject({
     model,
     schema: MethodResultZ,
-    // NO temperature here, and the absence is deliberate.
-    //
-    // The same working, criterion and prompt return different verdicts between
-    // runs — four passes over the golden set gave 93%, 92%, 91% and one below
-    // the gate, with false awards moving between 0 and 1. The obvious fix was
-    // temperature 0; the provider rejects it, because this is a reasoning model
-    // and temperature is not a knob it has. Setting it anyway logged a warning
-    // per call and changed nothing.
-    //
-    // So the variance is a property of the marker, not a setting we forgot, and
-    // it has to be handled where it lands: a single run cannot decide the gate,
-    // and the eval must be run repeatedly with the gate required to hold every
-    // time. Recorded here so the next person does not try temperature again.
+    // NO temperature, deliberately: the provider rejects it on a reasoning
+    // model, so the run-to-run variance is a property of the marker rather than
+    // a setting we forgot. A single run therefore cannot decide the gate — the
+    // eval is run repeatedly and the gate must hold every time.
     prompt:
       `You are marking one CSEC Mathematics candidate's written working against a mark scheme.\n\n` +
       `QUESTION: ${questionStem}\n\n` +

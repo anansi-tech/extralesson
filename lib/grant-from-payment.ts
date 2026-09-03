@@ -3,17 +3,9 @@ import type { ExamSitting } from '@/lib/types';
 import type { EmailSource } from '@/lib/stripe-webhook';
 
 /**
- * A PAYMENT AND AN ACCOUNT HAVE FOUND EACH OTHER.
- *
- * Two orderings, one act. Stripe fires after the student registered — the
- * webhook has both in hand. Or the student pays first and registers afterwards,
- * which is the ordering the checkout caption actually invites ("sign up with
- * the address you paid with"), and then the payment sat unmatched on
- * /admin/access waiting for someone to notice.
- *
- * Written once so the two paths cannot grant differently. The unmatched surface
- * stays for what it was built for: a typo'd address, a refund, a comp — cases
- * where no account will ever arrive on its own.
+ * A PAYMENT AND AN ACCOUNT HAVE FOUND EACH OTHER, in either ordering. Written
+ * once so the two paths cannot grant differently; /admin/access stays for the
+ * cases no account will ever arrive for — a typo'd address, a refund, a comp.
  */
 export async function grantFromPayment(args: {
   studentId: unknown;
@@ -29,23 +21,14 @@ export async function grantFromPayment(args: {
 }): Promise<'granted'> {
   const { studentId, registeredSitting, payment } = args;
 
-  // THE REGISTERED SITTING WINS, ALWAYS.
-  //
-  // A payment link sells access, not a sitting, so it carries no information
-  // about which exam anyone sits. The student knows; the payer often is not
-  // the student and may not.
-  //
-  // The failure is also asymmetric, which decides it even if links ever do
-  // become per-sitting products. Granting May/June to a January student is
-  // generous: they keep access past their paper. Granting January to a May/June
-  // student locks them out in February, before the exam they are revising for,
-  // and they read that as the product taking their money and closing. Of the
-  // two ways to be wrong, only one costs a student their sitting.
+  // THE REGISTERED SITTING WINS, ALWAYS. A payment link sells access, not a
+  // sitting, and the payer is often not the student. The failure is asymmetric:
+  // granting May/June to a January student is generous, granting January to a
+  // May/June student locks them out before the exam they are revising for.
   const sitting = registeredSitting;
 
-  // A mapped link that DISAGREES is recorded rather than resolved quietly —
-  // the same principle the webhook already held: a wrong sitting must be
-  // visible on /admin/access, not chosen silently.
+  // A mapped link that DISAGREES is recorded, not resolved quietly: a wrong
+  // sitting must be visible on /admin/access.
   const notes = [`stripe ${payment.event_id}`];
   if (payment.sitting && payment.sitting !== registeredSitting) {
     notes.push(`link says ${payment.sitting}`);
@@ -74,11 +57,9 @@ export async function grantFromPayment(args: {
 }
 
 /**
- * The payment waiting for this address, if there is one.
- *
- * Oldest first: if someone paid twice, the first payment is the one they have
- * been waiting on. The second stays unmatched and shows on /admin/access, which
- * is right — a double charge is exactly the case a person should look at.
+ * The payment waiting for this address, if there is one. Oldest first: if
+ * someone paid twice, the first is the one they have been waiting on, and the
+ * second stays unmatched on /admin/access for a person to look at.
  */
 export async function pendingPaymentFor(email: string) {
   return Payment.findOne({ email: email.toLowerCase(), student_id: null, resolved_at: null })

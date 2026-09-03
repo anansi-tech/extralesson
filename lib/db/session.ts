@@ -4,11 +4,9 @@ const SessionSchema = new Schema({
   student_id: { type: Schema.Types.ObjectId, ref: 'Student', required: true },
   question_ids: { type: [Schema.Types.ObjectId], ref: 'Question', required: true },
   module_focus: { type: Number, enum: [1, 2, 3] },
-  // HOW the questions were chosen. Needed at the end of a session, not the
-  // start: a diagnostic finishes by reporting the ranking it just produced, and
-  // nothing else can tell it apart from an ordinary session once the questions
-  // are answered. Sessions written before this field existed were all the app's
-  // own choice, which is what 'adaptive' means.
+  // HOW the questions were chosen, needed at the END of a session: a diagnostic
+  // finishes by reporting the ranking it produced, and once the questions are
+  // answered nothing else tells it apart from an ordinary session.
   mode: {
     type: String,
     enum: ['adaptive', 'topic', 'revisit', 'diagnostic'],

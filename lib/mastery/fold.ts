@@ -30,7 +30,6 @@ export function bandFor(mastery: number | null): MasteryBand {
   return 'WEAK';
 }
 
-// Fold a student's attempts into per-objective mastery.
 export function masteryByObjective(attempts: AttemptScore[]): Map<string, number> {
   const byObjective = new Map<string, { score: number; ts: number }[]>();
   for (const a of attempts) {

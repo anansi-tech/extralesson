@@ -3,18 +3,9 @@ import { parseNumeric } from './equivalence';
 import { readInputShape, isMultiValue } from './input-shape';
 
 /**
- * WHY A SLOT WAS MARKED WRONG, SAID BESIDE THE SLOT.
- *
- * A cross beside a box and a struck-through code in a strip at the bottom told
- * a student that something was wrong and nothing about what. The commonest
- * misses are not mathematical at all — a unit left in centimetres, three values
- * given where four were asked for, a box left blank — and each of those is one
- * sentence away from being useful.
- *
- * The reason is derived from the SAME comparison that produced the verdict, so
- * it cannot claim something the marker did not find. Where the marker simply
- * disagrees about a value, this says so plainly rather than inventing a
- * diagnosis: never guess at what the student was thinking.
+ * WHY A SLOT WAS MARKED WRONG, SAID BESIDE THE SLOT. Derived from the SAME
+ * comparison that produced the verdict, so it cannot claim what the marker did
+ * not find; where the marker only disagrees, say so and never guess a diagnosis.
  */
 const DIMENSION_WORDS: Record<string, string> = {
   length: 'a length',
@@ -62,9 +53,8 @@ export function missReason(
     return `That is ${dimensionWord(g.dimension)}; this asks for ${dimensionWord(k.dimension)}.`;
   }
 
-  // The right numbers written in the wrong unit — 8 m by 6 cm for 8 m by 6 m.
-  // Caught by comparing the numerals alone: if those agree and the answer still
-  // does not, the units are what differ.
+  // The right numbers in the wrong unit: if the numerals agree and the answer
+  // still does not, the units are what differ.
   const gn = numerals(typed);
   const kn = numerals(canonicalAnswer);
   if (gn.length > 0 && gn.join(',') === kn.join(',')) {

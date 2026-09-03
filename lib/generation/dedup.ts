@@ -1,18 +1,16 @@
 import { embedMany } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-// Internal dedup gate (R1.5 §5): a new draft is compared against the APPROVED
-// bank only — normalized-stem containment plus a cheap embedding cosine with
-// a conservative threshold. Only the score is stored. There are NO similarity
+// Internal dedup gate (ROUND_1_5 §5): a new draft is compared against the
+// APPROVED bank only, and only the score is stored. There are NO similarity
 // checks against external corpora — archive text never enters the system.
 
 export const DEDUP_COSINE_THRESHOLD = 0.93; // conservative: near-verbatim only
 const EMBEDDING_MODEL = 'text-embedding-3-small';
 
-// Lead-ins that carry no question identity. A stem of nothing but boilerplate
-// is contained in every other stem that opens the same way, which made one
-// approved question ("Use the information above to answer the parts below")
-// reject 25 consecutive drafts on the same recipe.
+// A stem of nothing but boilerplate is contained in every other stem that opens
+// the same way, which made one approved question reject 25 consecutive drafts
+// on the same recipe.
 const BOILERPLATE =
   /\b(?:use|refer to|study)\s+(?:the\s+)?(?:information|table|graph|diagram|figure|sketch|chart|grid|data)(?:\s+(?:above|below|shown|provided))?\s+(?:to\s+)?(?:answer|and answer)\s+(?:the\s+)?(?:parts?|questions?|following)(?:\s+(?:below|that follow|which follow))?\b/g;
 

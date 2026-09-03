@@ -20,10 +20,8 @@ const SubmitZ = z.object({
   sessionId: z.string().regex(/^[a-f0-9]{24}$/),
   questionIndex: z.number().int().min(0),
   // mcq: single entry with label 'a' whose answer is the option index.
-  // a-j and up to 10: the part cap rose from 6 in R1.6 §5 and this schema did
-  // not follow, so a 7-part question could not be submitted at all.
-  // R1.8: answers are addressed by slot — 'a.i', 'b.r5.S' — up to 8 slots
-  // across 10 lettered parts.
+  // Otherwise answers are addressed by slot — 'a.i', 'b.r5.S' — up to 8 slots
+  // across 10 lettered parts (ROUND_1_8).
   answers: z
     .array(
       z.object({
@@ -55,27 +53,21 @@ export interface Feedback {
   /** Right value, wrong required form (R1.6 §2). */
   formatFeedback?: string;
   /**
-   * The figure, for a construct question only. It is the ANSWER to part (a) —
-   * showing it beside the question would hand the student every read the later
-   * parts ask for — so it travels back with the marking, as the answers do,
-   * and is not in the page the student is answering on.
-   */
-  /**
-   * What to check the drawing against. A figure when the question's own figure
-   * IS the answer; otherwise the written description of what should have been
-   * drawn, because there is no stored picture of it.
+   * What to check the drawing against, travelling back with the marking and
+   * never on the page being answered: the figure when the figure IS the answer,
+   * otherwise the written description, there being no stored picture of it.
    */
   construction?: { figureHtml: string; describes?: string; acts: string[] };
   /**
    * The attempt just written. A photograph of the working is attached to it
-   * afterwards (R2 §2), never before: the typed answers are the deterministic
-   * record and the reveal must not influence what gets photographed.
+   * afterwards (ROUND_2 §2), never before: the typed answers are the
+   * deterministic record and the reveal must not influence the photograph.
    */
   attemptId: string;
   /**
    * How many rubric rows a photograph of the working could still earn. Zero
-   * means the camera is not offered: nothing is on offer, so it would cost the
-   * student their time and us a model call for a foregone conclusion.
+   * means the camera is not offered: it would cost the student time and us a
+   * model call for a foregone conclusion.
    */
   earnableByMethod: number;
 }
@@ -159,9 +151,8 @@ export async function submitAnswer(input: {
           return {
             label: ref,
             correct,
-            // Said beside the box, not only as a struck-through code in a strip
-            // at the bottom. A cross on its own reports that something is wrong
-            // and nothing about what.
+            // A cross on its own reports that something is wrong and nothing
+            // about what, so the reason is said beside the box.
             reason: correct
               ? undefined
               : missReason(given?.text ?? '', slot.answer, given?.values),
@@ -190,7 +181,6 @@ export async function submitAnswer(input: {
     ts: new Date(),
   });
 
-  // Miss -> matching misconception remediation, else worked solution.
   let feedbackTitleHtml = 'Worked solution';
   let feedbackHtml = renderMathHtml(question.worked_solution);
   let isMisconception = false;
@@ -219,17 +209,11 @@ export async function submitAnswer(input: {
     (question.parts ?? []).some((p) => p.slots?.some((sl) => sl.response_mode === 'construct'))
   ) {
     try {
-      // THE FIGURE IS ONLY THE CONSTRUCTION WHEN IT IS THE ANSWER.
-      //
-      // A pattern question's figure is Figures 1 to 3 — the premise the student
-      // was given and had to continue. Rendering it under "your drawing should
-      // look like this" hands back the question as though it were the answer,
-      // and a student checking their Figure 4 against Figures 1 to 3 is being
-      // told they got it wrong by an image of something else. Fifteen of the
-      // sixty construct questions in the bank are this family.
-      //
-      // What those questions DO have is the construct slot's written answer,
-      // which says what the drawing should show. That is what to check against.
+      // The figure is only the construction when it IS the answer. A pattern
+      // question's figure is the premise the student was given, so showing it
+      // as "your drawing should look like this" hands back the question and
+      // tells a correct student they got it wrong. Those questions have the
+      // construct slot's written answer instead, which says what to check.
       const givesAnswer = figureGivesAnswer(question.visual?.template as never);
       const constructSlot = (question.parts ?? [])
         .flatMap((p) => p.slots ?? [])
@@ -281,11 +265,9 @@ const DraftZ = z.object({
 });
 
 /**
- * Keep what has been typed so far, so a question survives a phone call.
- *
- * Writes a DRAFT, never an attempt: attempts are append-only and are written
- * once, on submit. This is overwritten on every save and deleted when the
- * answer is handed in, and nothing reads it except the page that restores it.
+ * Keep what has been typed so far, so a question survives a phone call. Writes
+ * a DRAFT, never an attempt: attempts are append-only and written once, on
+ * submit. Overwritten on every save, deleted when the answer is handed in.
  */
 export async function saveDraft(input: {
   sessionId: string;

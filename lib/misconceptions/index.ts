@@ -1,14 +1,8 @@
-// R1.7 Part D — the errors examiners actually report, region-wide.
-//
-// Every family below is drawn from the May/June 2025 subject report's account
-// of what candidates did, rewritten in our own words: the report is calibration
-// material, so the error patterns are facts about the exam and may be encoded,
-// while none of its question text, values or contexts enters this repo.
-//
-// These are fed to generation as the families to draw a question's
-// misconceptions from, which matters because a misconception invented by a
-// model is a plausible guess, while these are documented behaviour — the
-// difference between remediation that lands and remediation that reads well.
+// Drawn from the May/June 2025 subject report, rewritten in our own words: the
+// error patterns are facts about the exam and may be encoded, while none of
+// its question text, values or contexts enters this repo. Generation draws a
+// question's misconceptions from these because documented behaviour lands
+// where a model's plausible guess does not.
 
 export interface MisconceptionFamily {
   /** Objective-id prefixes this family applies to, e.g. 'M1.2.' */
@@ -125,7 +119,6 @@ export const MISCONCEPTION_FAMILIES: MisconceptionFamily[] = [
   },
 ];
 
-/** The families that apply to the objectives a recipe is generating against. */
 export function familiesFor(objectiveIds: string[]): MisconceptionFamily[] {
   const prefixes = objectiveIds.map((id) => id.slice(0, id.lastIndexOf('.') + 1));
   return MISCONCEPTION_FAMILIES.filter((f) =>
@@ -133,7 +126,6 @@ export function familiesFor(objectiveIds: string[]): MisconceptionFamily[] {
   );
 }
 
-/** Prompt block naming the documented errors for this question's objectives. */
 export function misconceptionGuidance(objectiveIds: string[]): string {
   const families = familiesFor(objectiveIds);
   if (families.length === 0) return '';

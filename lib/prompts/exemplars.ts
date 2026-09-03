@@ -1,10 +1,8 @@
 import type { ModuleNumber } from '@/lib/types';
 
-// Module-matched exemplars for the draft prompt (R1.5 §5). Two per module
-// (one structured, one mcq), in the R1.5 schema shape. These are ORIGINAL
-// in-house seeds — the founder replaces or extends them as blind-review
-// feedback accumulates. Style and JSON shape only; the model must never reuse
-// their content.
+// Module-matched exemplars for the draft prompt (ROUND_1_5 §5), two per module.
+// ORIGINAL in-house seeds, offered for style and JSON shape only — the model
+// must never reuse their content.
 
 const M1_STRUCTURED = `{
   "kind": "structured",
@@ -155,8 +153,6 @@ const EXEMPLARS: Record<ModuleNumber, { structured: string; mcq: string }> = {
   3: { structured: M3_STRUCTURED, mcq: M3_MCQ },
 };
 
-// Two module-matched exemplars: the same-kind exemplar for this module plus
-// the other kind as a shape reference.
 export function exemplarsFor(module: ModuleNumber, kind: 'mcq' | 'structured'): string {
   const m = EXEMPLARS[module];
   return kind === 'structured'

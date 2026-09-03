@@ -3,10 +3,6 @@ import { hatchDefs, hatchFill, INK, line, meshDefs, meshRect, plotMark, round, s
 import type { VerifyContext, VisualTemplate } from '../types';
 import { namedPoints, resolvePoints } from '../points';
 
-// Square-grid cartesian plane with labeled axes and integer gridlines.
-// Carries labeled points, polygons (including pre/post transformation
-// overlays — the image polygon drawn dashed with primed labels), and
-// straight lines given as y = mx + c, and quadratic curves y = ax^2 + bx + c.
 const CoordZ = z.number().min(-50).max(50);
 
 // A, A', A'', A_1 — every way the papers name an image point.
@@ -18,11 +14,9 @@ export const CoordinateGridParamsZ = z.object({
   x_range: z.tuple([z.number().int().min(-50).max(50), z.number().int().min(-50).max(50)]).optional(),
   y_range: z.tuple([z.number().int().min(-50).max(50), z.number().int().min(-50).max(50)]).optional(),
   /**
-   * Points the QUESTION names, referenced by label. Their coordinates live in
-   * the question text and nowhere else, so the figure cannot disagree with it.
-   * `sketch` (the default) draws the shape without axes, gridlines or scale
-   * numbers — relative position true by construction, presented as the
-   * schematic the papers print.
+   * Coordinates live in the question text and nowhere else, so the figure
+   * cannot disagree with it. `sketch` (the default) drops axes, gridlines and
+   * scale numbers — the schematic the papers print.
    */
   named: z
     .object({
@@ -51,20 +45,13 @@ export const CoordinateGridParamsZ = z.object({
         vertices: z.array(z.object({ x: CoordZ, y: CoordZ })).min(3).max(10),
         /** Per-VERTEX labels, in order: A, B, C round the shape. */
         labels: z.array(z.string().min(1).max(6)).max(10).optional(),
-        /**
-         * A name for the WHOLE shape, set inside it — the papers letter a
-         * shape P, Q, R and then ask about "Quadrilateral P". Distinct from
-         * `labels`, which name the corners.
-         */
+        /** Names the WHOLE shape ("Quadrilateral P"), not its corners. */
         name: z.string().min(1).max(6).optional(),
         dashed: z.boolean().default(false),
-        /** Filled, as the papers shade the one shape a question is about. */
         shaded: z.boolean().default(false),
       }),
     )
-    // A transformation question shows an object and its images: three shapes
-    // is routine and four occurs, so a cap of two could not draw the figure
-    // these questions are built on.
+    // A transformation question shows an object and up to three images.
     .max(4)
     .default([]),
   lines: z
@@ -77,9 +64,7 @@ export const CoordinateGridParamsZ = z.object({
     )
     .max(4)
     .default([]),
-  // Quadratic curves y = ax^2 + bx + c, drawn as a smooth sampled path.
-  // `domain` restricts the x values plotted (a table of values drawn over
-  // -2 <= x <= 4, say); omit it to draw across the whole window.
+  // `domain` restricts the x values plotted; omit it for the whole window.
   curves: z
     .array(
       z.object({
@@ -88,17 +73,14 @@ export const CoordinateGridParamsZ = z.object({
         c: z.number().min(-100).max(100),
         label: z.string().max(24).optional(),
         domain: z.tuple([CoordZ, CoordZ]).optional(),
-        // The x values whose points are marked on the drawn curve, as the
-        // papers mark the values a candidate plotted from a table.
         plotted: z.array(CoordZ).max(12).optional(),
       }),
     )
     .max(3)
     .default([]),
-  // Shaded solution regions for systems of linear inequalities. Each
-  // constraint is a*x + b*y <= c ('le') or a*x + b*y >= c ('ge'), which
-  // covers y <= mx + k (a = -m, b = 1, c = k) and x >= k (a = 1, b = 0)
-  // alike. The shaded set is where EVERY constraint of the region holds.
+  // Every constraint is normalised to a*x + b*y <= c ('le') or >= c ('ge'),
+  // so y <= mx + k and x >= k are the same shape. A region is shaded where
+  // EVERY one of its constraints holds.
   regions: z
     .array(
       z.object({
@@ -125,24 +107,15 @@ export type CoordinateGridParams = z.infer<typeof CoordinateGridParamsZ>;
 const W = 640;
 const PAD = 45;
 const MAX_PLOT_H = 400;
-// Unit scales stay equal — a parabola or a gradient drawn on unequal axes lies —
-// so a lopsided window can only be drawn as a narrow column inside a fixed
-// canvas. Widening the short axis symmetrically shows MORE of the plane, which
-// can never hide a feature the question refers to, and lets the figure fill the
-// page the way a printed grid does.
+// Unit scales stay equal — a gradient or parabola on unequal axes lies — so a
+// lopsided window widens its short axis symmetrically instead, which shows more
+// of the plane and can never hide a feature the question refers to.
 const MAX_ASPECT = 1.6;
 
-// Where a curve or line label goes. The midpoint of a drawn run is the most
-// crowded part of a graph — for a line through the middle of the window it is
-// almost exactly the origin, on top of the axes and their tick numerals — so
-// labels ride near the far end instead, pushed clear of the stroke and clamped
-// inside the canvas.
-//
-// At the end, unless the end is on an axis: a line like x + y = 10 leaves the
-// window at (10, 0) and its label printed straight through the x-axis, its tick
-// numerals and its arrow. Then, and only then, the anchor walks back along the
-// run until it is clear — backing off unconditionally would push labels on
-// other lines toward the middle, which is what putting them at the end fixed.
+// Labels ride near the far end of a run: the middle of a graph is its most
+// crowded part, at the origin and the tick numerals. Only when the end itself
+// lands on an axis does the anchor walk back until clear — backing off
+// unconditionally would undo what putting labels at the end fixed.
 const AXIS_CLEARANCE = 24; // px
 
 function labelAtEnd(
@@ -157,8 +130,6 @@ function labelAtEnd(
   const dy = end[1] - prev[1];
   const len = Math.hypot(dx, dy) || 1;
 
-  // Walk back along the run until the anchor is clear of both axes, or we have
-  // gone far enough that we are no longer labelling the end of anything.
   const from = pts[0];
   const clearOf = (x: number, y: number) =>
     (axes?.x === undefined || Math.abs(y - axes.x) > AXIS_CLEARANCE) &&
@@ -182,8 +153,7 @@ function labelAtEnd(
   return { x, y, anchor };
 }
 
-// The shapes a `named` block refers to, resolved from the question's own
-// coordinates. Everything here is derived; nothing is stored twice.
+// Derived from the question's own coordinates; nothing is stored twice.
 interface ResolvedFigure {
   polygons: { vertices: [number, number][]; labels: string[]; dashed: boolean; shaded: boolean; name?: string }[];
   points: { x: number; y: number; label: string }[];
@@ -211,17 +181,12 @@ function resolveFigure(
   return { polygons: polygons.filter((poly) => poly.vertices.length >= 3), points };
 }
 
-/**
- * A shape's own outline: shaded where the question is about that shape, dashed
- * where it is the image in a transformation overlay.
- */
 function polygonSvg(points: [number, number][], dashed: boolean, shaded: boolean): string {
   const d = points.map((pt) => `${round(pt[0])},${round(pt[1])}`).join(' ');
   const fill = shaded ? ' fill="#D8D2C6"' : '';
   return `<polygon points="${d}"${fill}${dashed ? ' stroke-dasharray="6 4"' : ''} />`;
 }
 
-/** The name of a whole shape, set at its middle where the papers put it. */
 function shapeName(points: [number, number][], name: string | undefined): string {
   if (!name) return '';
   const cx = points.reduce((s, pt) => s + pt[0], 0) / points.length;
@@ -229,7 +194,6 @@ function shapeName(points: [number, number][], name: string | undefined): string
   return text(cx, cy + 4, name, { size: 14, italic: true, halo: true });
 }
 
-// A window that holds every resolved point with a margin, in whole units.
 function windowFor(figure: ResolvedFigure): { x: [number, number]; y: [number, number] } {
   const xs = [...figure.polygons.flatMap((p) => p.vertices.map((v) => v[0])), ...figure.points.map((p) => p.x)];
   const ys = [...figure.polygons.flatMap((p) => p.vertices.map((v) => v[1])), ...figure.points.map((p) => p.y)];
@@ -342,9 +306,8 @@ function fmtQuadratic(a: number, b: number, c: number): string {
   return `y = ${as}x^2${bs}${cs}`;
 }
 
-// Sample the parabola across the drawn domain, splitting into the contiguous
-// runs that lie inside the window and interpolating the exact edge crossings —
-// a curve may leave the top of the grid and re-enter further along.
+// Split into contiguous runs with interpolated edge crossings: a curve may
+// leave the top of the grid and re-enter further along.
 function sampleCurve(
   a: number,
   b: number,
@@ -452,9 +415,8 @@ function clipHalfPlane(poly: Pt[], a: number, b: number, c: number): Pt[] {
   return out;
 }
 
-// The satisfying set of a region, clipped to the visible window. Fewer than
-// three vertices (or a sliver of no area) means the constraints have no
-// common ground on screen.
+// Empty when the constraints have no common ground on screen — fewer than
+// three vertices, or a sliver of no area.
 function regionPolygon(
   region: Region,
   xmin: number,
@@ -497,7 +459,6 @@ function regionPolygon(
   return Math.abs(area2) / 2 < 1e-6 ? [] : dedup;
 }
 
-// "2x + 1", "-x", "5" — the right-hand side of y <op> mx + k.
 function rhsText(m: number, k: number): string {
   if (m === 0) return String(round(k));
   const ms = m === 1 ? 'x' : m === -1 ? '-x' : `${round(m)}x`;
@@ -525,10 +486,9 @@ type Curve = CoordinateGridParams['curves'][number];
 // one decimal place, so allow for that rounding rather than 0.01.
 const FEATURE_TOL = 0.06;
 
-// When the question TEXT asserts a root, turning point, y-intercept, or axis of
-// symmetry, it must be true of a drawn curve — the same consistency rule the
-// line labels get, applied to what the prose claims. Only explicit assertions
-// match: "find the turning point" states nothing and is never checked.
+// A root, turning point, y-intercept or axis of symmetry ASSERTED in the
+// question text must be true of a drawn curve. Only explicit assertions match:
+// "find the turning point" states nothing and is never checked.
 function statedFeatureIssues(
   curves: Curve[],
   context: { stimulus?: string; stem: string; partPrompts: string[] },
@@ -649,16 +609,13 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
         };
 
     const parts: string[] = [svgOpen(canvasW, H)];
-    // A sketch keeps the geometry and drops the apparatus: no gridlines, axes,
-    // arrows or scale numbers. What survives is the shape, drawn from the
-    // question's own coordinates, and the labels — which is what CXC prints
+    // A sketch keeps the geometry and drops the apparatus — what CXC prints
     // when a transformation question is not set on a supplied grid.
     if (!sketch) {
     // The paper's fine mesh, under the unit lines: reading an intercept or a
     // value between two whole numbers is only fair when it is there.
     parts.push(meshDefs('gridMesh', u));
     parts.push(meshRect('gridMesh', ox, oy, gridW, gridH));
-    // integer gridlines, step 1
     for (let gx = xmin; gx <= xmax; gx++) {
       parts.push(
         `<line x1="${round(X(gx))}" y1="${round(oy)}" x2="${round(X(gx))}" y2="${round(oy + gridH)}" stroke-width="0.5" />`,
@@ -683,7 +640,6 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
       parts.push(`<polygon points="${round(x)},${round(oy - 18)} ${round(x - 4)},${round(oy - 10)} ${round(x + 4)},${round(oy - 10)}" fill="${INK}" />`);
       parts.push(text(x, oy - 24, 'y', { italic: true }));
     }
-    // integer labels along the axes (or grid edges when an axis is off-screen)
     const labelY = hasXAxis ? Y(0) + 14 : oy + gridH + 16;
     for (let gx = xmin; gx <= xmax; gx++) {
       if (gx !== 0) parts.push(text(X(gx), labelY, String(gx), { size: 9 }));
@@ -695,7 +651,6 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     if (hasXAxis && hasYAxis) parts.push(text(X(0) - 5, Y(0) + 14, 'O', { size: 10, anchor: 'end' }));
     }
 
-    // shapes referenced from the question, drawn from its coordinates
     for (const poly of figure?.polygons ?? []) {
       const px = poly.vertices.map(([x, y]) => [X(x), Y(y)] as [number, number]);
       parts.push(polygonSvg(px, poly.dashed, poly.shaded));
@@ -731,7 +686,6 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
         }
       }
     }
-    // straight lines y = mx + c across the visible window
     for (const ln of p.lines) {
       const seg = clipLine(ln.m, ln.c, xmin, xmax, ymin, ymax);
       if (!seg) continue;
@@ -750,7 +704,6 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
         parts.push(text(spot.x, spot.y, ln.label, { size: 12, anchor: spot.anchor, halo: true }));
       }
     }
-    // quadratic curves, sampled smoothly and clipped to the window
     for (const cv of p.curves) {
       const xlo = Math.max(xmin, cv.domain ? Math.min(...cv.domain) : xmin);
       const xhi = Math.min(xmax, cv.domain ? Math.max(...cv.domain) : xmax);
@@ -776,7 +729,6 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
         parts.push(text(spot.x, spot.y, cv.label, { size: 12, anchor: spot.anchor, halo: true }));
       }
     }
-    // polygons (image polygon drawn dashed for transformation overlays)
     for (const poly of p.polygons) {
       const px = poly.vertices.map((v) => [X(v.x), Y(v.y)] as [number, number]);
       parts.push(polygonSvg(px, poly.dashed, poly.shaded));
@@ -795,7 +747,6 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
         });
       }
     }
-    // labeled points
     for (const pt of p.points) {
       parts.push(`<circle cx="${round(X(pt.x))}" cy="${round(Y(pt.y))}" r="3.5" fill="${INK}" />`);
       if (pt.label) {
@@ -857,9 +808,8 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
   verify(p, context) {
     const issues: string[] = [];
 
-    // A `named` figure carries no coordinates of its own — that is the point —
-    // so what there is to check is whether the question states the ones it
-    // references.
+    // A `named` figure carries no coordinates of its own, so all there is to
+    // check is that the question states the ones it references.
     if (p.named) {
       const referenced = [...p.named.polygons.flatMap((poly) => poly.points), ...p.named.points];
       const { missing } = resolvePoints(referenced, context);
@@ -887,10 +837,8 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     }
     if (xmin >= xmax) issues.push('coordinateGrid: x_range must be ascending');
     if (ymin >= ymax) issues.push('coordinateGrid: y_range must be ascending');
-    // 40, not 20. The mesh step scales with the span, so a wider window stays
-    // readable, and applied contexts routinely need one: a graph of cost
-    // against 30 items, or distance over 40 km, was being rejected for being
-    // the size the question is.
+    // The mesh step scales with the span, so a wide window stays readable, and
+    // applied contexts need one: cost against 30 items, distance over 40 km.
     if (xmax - xmin > 40) issues.push('coordinateGrid: x_range span exceeds 40');
     if (ymax - ymin > 40) issues.push('coordinateGrid: y_range span exceeds 40');
     const inRange = (x: number, y: number) => x >= xmin && x <= xmax && y >= ymin && y <= ymax;

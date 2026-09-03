@@ -2,8 +2,6 @@ import { z } from 'zod';
 import { esc, line, meshDefs, meshRect, polygon, round, svgOpen, svgPlainLabel, text } from '../svg';
 import { numbersInText, type VisualTemplate } from '../types';
 
-// Distance-time or speed-time graph: a piecewise-linear journey through
-// (t, v) points, with unit-labeled axes and optional dashed guide lines.
 export const TravelGraphParamsZ = z.object({
   mode: z.enum(['distance-time', 'speed-time']),
   t_label: z.string().min(1).max(30).default('Time'),
@@ -30,11 +28,9 @@ export const TravelGraphParamsZ = z.object({
     .max(4)
     .default([]),
   /**
-   * Names for the STAGES of the journey — the papers label them I, II, III
-   * above each straight section. Entry i names the segment from points[i] to
-   * points[i+1]. Without them a question cannot say "during Stage IV", which is
-   * how the papers pose the acceleration-and-speed item, and which is a cloze
-   * statement over a graph.
+   * Names for the STAGES of the journey; entry i names the segment from
+   * points[i] to points[i+1]. Without them a question cannot say "during Stage
+   * IV", which is how the papers pose the acceleration-and-speed item.
    */
   stages: z.array(z.string().min(1).max(12)).max(9).default([]),
 });
@@ -72,7 +68,6 @@ export const travelGraph: VisualTemplate<TravelGraphParams> = {
     const tSpan = Math.max(...p.points.map((pt) => pt.t)) || 1;
     parts.push(meshDefs('travelMesh', plotW / Math.max(4, Math.min(12, tSpan))));
     parts.push(meshRect('travelMesh', PAD_L, PAD_T, plotW, plotH));
-    // axes
     parts.push(line(PAD_L, PAD_T - 10, PAD_L, PAD_T + plotH));
     parts.push(line(PAD_L, PAD_T + plotH, PAD_L + plotW + 10, PAD_T + plotH));
     // ticks at each journey value (exam style: only the key values are marked)
@@ -86,16 +81,13 @@ export const travelGraph: VisualTemplate<TravelGraphParams> = {
       parts.push(line(PAD_L - 5, Y(v), PAD_L, Y(v)));
       parts.push(text(PAD_L - 10, Y(v) + 4, String(v), { size: 11, anchor: 'end' }));
     }
-    // dashed guides from the axes to each guide point
     for (const g of p.guides) {
       parts.push(line(X(g.t), PAD_T + plotH, X(g.t), Y(g.v), true));
       parts.push(line(PAD_L, Y(g.v), X(g.t), Y(g.v), true));
       if (g.label) parts.push(text(X(g.t) + 6, Y(g.v) - 6, g.label, { size: 12, anchor: 'start' }));
     }
-    // the journey itself
     parts.push(polygon(p.points.map((pt) => [X(pt.t), Y(pt.v)] as [number, number]), false));
-    // Stage names, set above the middle of each straight section the way the
-    // papers letter them, so a question can name the stage it is asking about.
+    // Set above the middle of each section, the way the papers letter them.
     p.stages.forEach((name, i) => {
       const a = p.points[i];
       const b = p.points[i + 1];
@@ -106,7 +98,6 @@ export const travelGraph: VisualTemplate<TravelGraphParams> = {
       const above = my > PAD_T + 26;
       parts.push(text(mx, my + (above ? -12 : 20), name, { size: 12, halo: true }));
     });
-    // axis captions with units
     parts.push(text(PAD_L + plotW / 2, H - 20, `${p.t_label} (${p.t_unit})`, { size: 13 }));
     const yCap = `${p.v_label} (${p.v_unit})`;
     parts.push(

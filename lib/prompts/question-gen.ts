@@ -7,18 +7,12 @@ import { misconceptionGuidance } from '@/lib/misconceptions';
 import { contextGuidance } from '@/lib/generation/contexts';
 import { flavourGuidance } from '@/lib/generation/territories';
 
-// Generation prompts (R1.5 §5): recipe + style spec Part A + 2 module-matched
-// exemplars + visual-template contract. Bump PROMPT_VERSION on any wording
-// change — it is recorded in gen_meta.prompt_version on every insert — and on
-// any change to what a draft is contracted to RETURN (lib/generation/draft-schema.ts),
-// since that is what makes older drafts unlike newer ones.
+// Bump PROMPT_VERSION on any wording change — it is recorded in
+// gen_meta.prompt_version on every insert — and on any change to what a draft
+// is contracted to RETURN (lib/generation/draft-schema.ts). See ROUND_1_5 §5.
 export const PROMPT_VERSION = 'v47';
 
-// ---- Style spec Part A ----
-// Carried from the fingerprint branch's calibrated pilot language (the
-// archetype contracts and cognitive-demand controls that passed the second
-// blind pilot). The corpus-derived composition targets live in the matrices,
-// not in prose.
+// Composition targets live in the matrices, never in this prose.
 
 const ARCHETYPE_CONTRACTS: Record<QuestionRecipe['archetype'], string> = {
   'direct-procedure':
@@ -37,9 +31,9 @@ const ARCHETYPE_CONTRACTS: Record<QuestionRecipe['archetype'], string> = {
     'The student must extend a pattern or relation into missing table entries, then use the completed table; pair the question with a patternFigure or dataTable visual.',
 };
 
-// R1.6 §7 — patterns that recur in every real Paper 2. They are prompt-side
-// weighting, not schema: each block is emitted only where it actually applies,
-// so a number-theory recipe is not told about function notation.
+// ROUND_1_6 §7 — prompt-side weighting, not schema: each block is emitted only
+// where it applies, so a number-theory recipe is not told about function
+// notation.
 const RFG_TOPICS = new Set(['M2-RFG1', 'M3-RFG2']);
 
 function paperPatterns(recipe: QuestionRecipe, context: RecipeContext, objectives: Objective[]): string {
@@ -108,8 +102,8 @@ export function buildDraftPrompt(args: {
   /** Per-template params documentation from lib/visuals (empty for prose). */
   visualContract: string;
   /**
-   * dataTable's params documentation, supplied only when this question's
-   * figure is one the STUDENT DRAWS — see the STIMULUS TABLE section.
+   * Supplied only when this question's figure is one the STUDENT DRAWS — see
+   * the STIMULUS TABLE section.
    */
   stimulusTableContract?: string;
   /** Stems already in the bank for this topic, so the model can avoid them. */
@@ -125,14 +119,9 @@ export function buildDraftPrompt(args: {
 }): string {
   const { topicTitle, objectives, recipe, context, module, visualContract } = args;
   // The dedup gate rejects a repeat only after we have paid to generate it, and
-  // it cannot see monotony that stops short of near-identical wording: one
-  // batch came back with four isosceles-triangle-and-symmetry questions that
-  // differed only in the apex angle. Showing the model the bank is the cheaper
-  // half of the job.
-  //
-  // 200 characters rather than 140, because each entry now leads with the
-  // stimulus and the identifying mathematics — the function, the sequence, the
-  // figure — sits inside the first sentence or two of it.
+  // it cannot see monotony short of near-identical wording. Showing the model
+  // the bank is the cheaper half of the job; 200 characters, because the
+  // identifying mathematics sits inside the first sentence or two.
   const existing = (args.existingStems ?? []).filter((s) => s.trim().length > 0);
   const bankSection = existing.length
     ? `ALREADY IN THE BANK for this topic — write something a student would not mistake for any of these. Change the figure or context, and change what is being asked, not just the numbers or the letters:
@@ -235,8 +224,8 @@ ${
 - Set "answer_format" on a SLOT ONLY when its wording demands a particular form: "exact", "surd" ($a\\sqrt{b}$), "standard_form", "lowest_terms", "integer", "equation_form" (an answer of the form $y = mx + c$), "sf:N" (N significant figures) or "dp:N" (N decimal places). If you write "correct to 2 decimal places" or "in exact form" into a part, that part must carry the matching answer_format; if you do not demand a form, omit the field. Use ONLY the values listed — they are the forms we can mark. If the form you want is not there (set-builder notation, a ratio, a bearing), write the demand into the part's wording, where the student reads it, and leave answer_format unset.
 - When a part asks the student to NAME, STATE, CLASSIFY, or JUDGE something (including yes/no verdicts), "answer" must be the shortest standard form — the syllabus term, or the bare verdict word — and every other wording an examiner would accept goes in that part's "accept" array (a mark scheme's "accept:" list — e.g. answer "edge", accept ["line segment where two faces meet"]). Omit "accept" for numeric/algebraic answers unless a genuinely different correct form exists.`;
 
-  // R1.8 §2 — the shape of the thing, stated before the recipe fields, because
-  // a model told only "10 marks, 3 parts" writes three unrelated fragments
+  // ROUND_1_8 §2 — the shape is stated before the recipe fields, because a
+  // model told only "10 marks, 3 parts" writes three unrelated fragments
   // stapled together rather than one question that goes somewhere.
   const shapeSection =
     recipe.shape === 'drill'
@@ -329,18 +318,17 @@ Return the question as JSON matching the exemplar shape.`;
 }
 
 function partCountGuidance(marks: number, shape: 'paper' | 'drill'): string {
-  // A paper-shaped question is 2-4 LETTERED parts; the depth the corpus shows
-  // lives in the sub-parts under them, which are slots now (R1.8 §2). A drill
-  // item keeps the flat fingerprint: median 4 parts, a third at 5-6 (§4).
+  // A paper-shaped question is 2-4 LETTERED parts; the corpus's depth lives in
+  // the sub-parts under them, which are slots (ROUND_1_8 §2). A drill item keeps
+  // the flat fingerprint: median 4 parts, a third at 5-6.
   if (shape === 'paper') return marks >= 12 ? '3-4' : '2-4';
   if (marks <= 5) return '2-3';
   if (marks <= 7) return '3-4';
   return '4-6';
 }
 
-// Independent solve pass (§5): fresh call; sees stimulus + stem + part
-// prompts + a TEXT rendering of the visual params — never SVG, never the
-// draft's answers.
+// Independent solve pass, ROUND_1_5 §5: a fresh call that sees the question as
+// text — never SVG, never the draft's answers.
 export function buildSolvePrompt(args: {
   stimulus?: string;
   stem: string;
@@ -361,9 +349,8 @@ ${args.options!.map((o, i) => `${i}: ${o}`).join('\n')}
 
 Return JSON: {"answer_index": <0-based index of the correct option>, "final_answer": "<your computed answer>"}`;
   }
-  // Each part says what shape its answer takes. Without this the solver returns
-  // a bare value for a part that asked for a reason, and the gate then compares
-  // "5" against "five lines, one through each vertex" and calls them different.
+  // Each part says what shape its answer takes, or the solver returns a bare
+  // value where a reason was asked for and the gate calls the two different.
   const shape: Record<string, string> = {
     show_that: '  [state the result your working reaches]',
     explain: '  [give the reason, in one short sentence]',

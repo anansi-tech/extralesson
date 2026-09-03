@@ -1,17 +1,13 @@
 import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 
-// HMAC-SHA256 session cookies. Pure functions: secret and clock are injectable
-// for tests.
-//
-// This signed magic links, then reset links, and now only sessions. A reset
-// token is an opaque secret checked against a stored row (lib/auth/reset-token)
-// — it needed a row anyway to be single-use, and a signature on top of a lookup
-// bought nothing but a 200-character URL.
+// HMAC-SHA256 session cookies. Secret and clock are injectable so tests can
+// pin them. Reset tokens are NOT signed: they are opaque secrets checked
+// against a stored row (lib/auth/reset-token), which is what makes them
+// single-use.
 
-// A reset link is the only email in the product now, and it is rare, so it can
-// afford to be short-lived.
-export const RESET_TTL_MS = 30 * 60 * 1000; // 30 minutes
-export const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+// A reset link is rare, so it can afford to be short-lived.
+export const RESET_TTL_MS = 30 * 60 * 1000;
+export const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 function b64url(buf: Buffer): string {
   return buf.toString('base64url');

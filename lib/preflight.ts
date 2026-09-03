@@ -1,12 +1,7 @@
 /**
- * THE VARIABLES THAT FAIL SILENTLY (ROUND_3 §1).
- *
- * Three break the business without breaking a page. Unset,
- * NEXT_PUBLIC_STRIPE_PAYMENT_LINK leaves a landing page that renders perfectly
- * and cannot be bought from. ADMIN_EMAILS locks the operator out of
- * /admin/access, the fallback every automatic path depends on.
- * STRIPE_WEBHOOK_SECRET rejects every delivery with 400, in a place nobody is
- * looking.
+ * Three of these fail silently (ROUND_3 §1): without the payment link a landing
+ * page renders and cannot be bought from, without ADMIN_EMAILS the operator is
+ * locked out of /admin/access, without the webhook secret every delivery 400s.
  */
 export const REQUIRED_ENV = [
   'MONGODB_URI',
@@ -22,20 +17,11 @@ export const REQUIRED_ENV = [
  * "optional" without one is indistinguishable from "forgotten".
  */
 export const OPTIONAL_ENV: Record<string, string> = {
-  // Unset is a supported state: the reset link goes to the server log instead,
-  // so local development works without a provider (CLAUDE.md).
   RESEND_API_KEY: 'unset falls back to logging the reset link',
   RESEND_FROM: 'defaults to the Resend sandbox sender',
-  // Inferred from VERCEL_URL when unset; only a custom domain needs it set.
   NEXT_PUBLIC_BASE_URL: 'inferred from VERCEL_URL when unset',
   BASE_URL: 'audit scripts only, never the app',
-  // DELIBERATELY UNSET, and setting it would not change the granted sitting.
-  // A payment link says nothing about which exam a student sits: the sitting
-  // granted is ALWAYS the one they registered for. A mapped link is evidence,
-  // and a disagreement is written into the grant note for /admin/access
-  // rather than resolved quietly.
   STRIPE_LINK_SITTINGS: 'deliberately unset — a link is evidence of payment, never authority over the sitting',
-  // Set by the platform, not by us.
   NODE_ENV: 'set by the runtime',
   VERCEL_URL: 'set by Vercel',
   VERCEL_PROJECT_PRODUCTION_URL: 'set by Vercel',
@@ -53,13 +39,9 @@ export function isProduction(env: Env = process.env): boolean {
 }
 
 /**
- * A VALUE THAT IS PRESENT AND STILL USELESS.
- *
- * The preflight guards absence; this guards shape, because a placeholder link
- * is present, non-empty, boots clean and is exactly the dead CTA that looks
- * alive. Deliberately narrow: a payment link may one day be served from a
- * custom domain, so the buy.stripe.com host is NOT required — this rejects
- * only what cannot be a link, and what says it is a stand-in.
+ * The preflight guards absence; this guards SHAPE, because a placeholder link
+ * is present, non-empty and boots clean. Deliberately narrow: a payment link
+ * may one day live on a custom domain, so the buy host is NOT required.
  */
 export function isPlaceholderLink(value: string | undefined): boolean {
   const v = value?.trim();
@@ -68,25 +50,16 @@ export function isPlaceholderLink(value: string | undefined): boolean {
   try {
     url = new URL(v);
   } catch {
-    return true; // not a URL at all
+    return true;
   }
   if (url.protocol !== 'https:') return true;
   return /placeholder|example\.com|changeme|todo/i.test(v);
 }
 
 /**
- * TEST MODE, BY SHAPE — and the shape is the `test_` path segment.
- *
- * A Stripe test payment link is https://buy.stripe.com/test_… . That segment IS
- * the discriminator: not the word "test" anywhere in the string, not the
- * absence of "live", not a guess from the key. Written down so nobody later
- * "improves" this into something fuzzier that starts matching a live link whose
- * id happens to contain those letters.
- *
- * A test link takes test cards only, so in production it means no real buyer
- * can pay. It is NOT fatal: it is a deliberate state right up until launch day,
- * and Vercel preview deployments run with NODE_ENV=production too, so failing
- * on it would block the very testing it protects.
+ * The `test_` path segment IS the discriminator — never the word "test"
+ * elsewhere in the string, the absence of "live", or a guess from the key.
+ * Never fatal: it is deliberate until launch day, and previews boot production.
  */
 export function isTestModeLink(value: string | undefined): boolean {
   const v = value?.trim();
@@ -99,15 +72,9 @@ export function isTestModeLink(value: string | undefined): boolean {
 }
 
 /**
- * What the operator should be told without the boot being stopped.
- *
- * Returned for the banner on /admin and logged once at boot. Two halves of the
- * same warning on purpose: the banner is where it will be read on launch day,
- * and the log line covers the 11pm redeploy where nobody opens that page — one
- * greppable line, after the fact, costing nothing.
- *
- * Nothing goes on the public page. A test-mode notice rendered to a visitor is
- * worse than the problem it reports.
+ * Warned twice on purpose: the /admin banner is what gets read on launch day,
+ * the log line covers the redeploy where nobody opens that page. Nothing goes
+ * on the public page — a test-mode notice shown to a visitor is worse.
  */
 export function launchWarnings(env: Env = process.env): string[] {
   const warnings: string[] = [];
@@ -122,24 +89,16 @@ export function launchWarnings(env: Env = process.env): string[] {
 }
 
 /**
- * WHY A HARD FAILURE AT BOOT RATHER THAN A BANNER ON /admin.
- *
- * A banner cannot show the failure that most needs showing — ADMIN_EMAILS
- * missing locks the operator out of the very page it would appear on — and it
- * requires somebody to look, when the failure mode IS that nobody looks. On
- * Vercel a boot failure keeps the previous good deployment serving, so failing
- * loudly costs "the new deploy does not go out" instead of "the new deploy is
- * live and cannot take money".
- *
- * Outside production this reports and continues, so a developer without an
- * AI_API_KEY can still run the site.
+ * Fatal at boot, not a banner: a banner needs someone to look, and ADMIN_EMAILS
+ * missing locks them out of the page it would sit on. A refused boot keeps the
+ * last good deployment serving. Outside production this reports and continues.
  */
 export function preflight(env: Env = process.env): string[] {
   const missing = missingEnv(env);
 
-  // Present but not a link. Fatal for the same reason absence is: it renders a
-  // button that goes nowhere and reports nothing. A placeholder is never a
-  // deliberate state, which is what separates it from a test-mode link below.
+  // Present but not a link is fatal for the same reason absence is: a button
+  // that goes nowhere reports nothing. A placeholder is never a deliberate
+  // state, which is what separates it from a test-mode link.
   if (missing.length === 0 && isProduction(env) && isPlaceholderLink(env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK)) {
     throw new Error(
       'Refusing to start: NEXT_PUBLIC_STRIPE_PAYMENT_LINK is not a usable link ' +

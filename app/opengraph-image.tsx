@@ -1,12 +1,9 @@
 import { ImageResponse } from 'next/og';
 
-// THE REAL LOCKUP, not a wordmark rebuilt here.
-//
-// Satori takes an <img> but not an inline <svg>, so the lockup is handed over
-// as a data URI — drawn from the same three paths app/lockup.tsx gives the
-// headers. It used to set "extra" and "lesson" as styled text, which Satori
-// rendered in a generic sans because it has no Fraunces: the one card most
-// likely to be somebody's first sight of the brand showed the wrong wordmark.
+// THE REAL LOCKUP, not a wordmark rebuilt here. Satori takes an image element
+// but not inline vector markup, so the lockup is handed over as a data URI,
+// drawn from the same three paths app/lockup.tsx gives the headers. Satori has
+// no Fraunces, so styled text renders the wordmark in a generic sans.
 import { lockupSvgMarkup } from './lockup';
 
 const LOCKUP = `data:image/svg+xml;base64,${Buffer.from(lockupSvgMarkup()).toString('base64')}`;

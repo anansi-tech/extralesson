@@ -1,17 +1,10 @@
 import type { Verdict } from './symbolic';
 
-// 2x2 matrix arithmetic, machine-checked.
-//
-// A composite-transformation question reached review with a false answer: the
-// worked solution correctly wrote "rotation first, then reflection", correctly
-// set up F·R, and then printed the wrong product. Every gate passed it, because
-// nothing in the pipeline multiplies matrices — the symbolic checker knew about
-// functions, roots, gradients and magnitudes, and not about the one operation a
-// model fumbles most reliably and a computer settles instantly.
-//
-// Worse than wrong: the correct product had landed in the "reversed order of
-// composition" misconception, so a student who did it RIGHT would be marked
-// wrong and told they had reversed the order.
+// 2x2 matrix arithmetic is machine-checked because nothing else in the pipeline
+// multiplies matrices: a composite-transformation solution set up F·R correctly
+// and printed the wrong product, and every gate passed it. Worse, the correct
+// product sat in the "reversed order of composition" misconception, so a student
+// who did it RIGHT would be marked wrong and told they had reversed the order.
 
 export type Matrix2 = [number, number, number, number]; // a b c d, row-major
 
@@ -61,11 +54,8 @@ export const sameMatrix = (a: Matrix2, b: Matrix2) => a.every((v, i) => near(v, 
 const show = (m: Matrix2) => `(${m[0]} ${m[1]}; ${m[2]} ${m[3]})`;
 
 /**
- * Check a product a solution ASSERTS.
- *
- * The claim comes out of the worked solution's own equation — "A B = C" — so
- * nothing is inferred about which matrices the question meant to multiply. It
- * checks the arithmetic that was written down, which is where the error was.
+ * Checks the arithmetic a solution ASSERTS — its own "A B = C" — so nothing is
+ * inferred about which matrices the question meant to multiply.
  */
 export function productClaim(a: Matrix2, b: Matrix2, claimed: Matrix2): Verdict {
   const want = multiply(a, b);

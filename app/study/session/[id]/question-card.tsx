@@ -58,15 +58,7 @@ export interface CardQuestion {
   /** The session's own budget, in the unit it is actually spent in. */
   marksTotal: number;
   marksAnswered: number;
-  /**
-   * Set when the student is looking back at a question they have answered.
-   * Everything is read-only: the card shows what they typed and what it
-   * earned, and no attempt is written for a second look.
-   */
-  /**
-   * What was typed and not yet handed in. Restores the question so twenty
-   * minutes of work survives a phone call.
-   */
+  /** What was typed and not yet handed in, so work survives a phone call. */
   draft?: {
     answers: Record<string, string>;
     values: Record<string, string[]>;
@@ -103,13 +95,9 @@ type CardPart = CardQuestion['parts'][number];
 const ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'];
 
 /**
- * What to call a box whose slot carries no prompt.
- *
- * lib/notation.ts states the contract: the label is a KEY and the wording the
- * student reads lives in the slot prompt. Where an older question left the
- * prompt empty there is no wording to show, and counting position is the only
- * honest thing left to say — so we say it in words rather than making the
- * student infer it from the order of the boxes.
+ * What to call a box whose slot carries no prompt. The label is a KEY and the
+ * wording lives in the slot prompt (lib/notation.ts); where an older question
+ * left it empty, position counted out in words is all that is left to say.
  */
 function ordinalAnswer(slots: CardSlot[], ref: string): string {
   const marked = slots.filter((s) => s.mode === 'answer');
@@ -118,10 +106,8 @@ function ordinalAnswer(slots: CardSlot[], ref: string): string {
 }
 
 /**
- * What to show beside a box whose slot carries no prompt. A descriptive label
- * IS the wording — "modal_class" is the paper's own name for the thing — so it
- * is shown as words. A positional one names nothing, and counting position out
- * loud is the only honest thing left to say.
+ * A descriptive label IS the wording — "modal_class" is the paper's own name
+ * for the thing — so it is shown as words. A positional label names nothing.
  */
 function describeSlot(slots: CardSlot[], slot: CardSlot): string {
   // The cell it fills, before anything positional: "Suitable beans ·
@@ -165,13 +151,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const [pending, startTransition] = useTransition();
   const startedAt = useRef(Date.now());
 
-  // Moving to another question resets the card to that question: the prior
-  // attempt if there is one, else the saved draft, else blank. It mirrors the
-  // useState initialisers, which run only on MOUNT and so never run on an
-  // in-app move.
-  //
-  // `question.draft` is deliberately NOT a dependency: a fresh object every
-  // render, it would reset the card mid-keystroke.
+  // Moving to another question resets the card to that question, mirroring the
+  // useState initialisers, which run only on MOUNT and so never on an in-app
+  // move. `question.draft` is deliberately NOT a dependency: a fresh object
+  // every render, it would reset the card mid-keystroke.
   useEffect(() => {
     setSelected(question.prior?.selected ?? question.draft?.selected ?? null);
     setPartAnswers(question.prior?.answers ?? question.draft?.answers ?? {});
@@ -193,14 +176,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // on paper and self-marked, so they are not typed in and never gate submit —
   // and a part may hold both kinds at once.
   const markedSlots = question.parts.flatMap((p) => p.slots.filter((s) => s.mode === 'answer'));
-  // THE FIGURE HAS TO STAY REACHABLE WHILE A LATER PART IS ANSWERED.
-  //
-  // Measured at 360px: on a 12-mark question the last input sits 909px below
-  // the bottom of the figure — more than a screen — so a student answering
-  // part (d) is reading nothing and scrolling back loses their place in the
-  // question. When the figure scrolls out of view a control appears that
-  // brings it back over the page, and dismissing it returns them exactly where
-  // they were, because the page never moved.
+  // The figure has to stay reachable while a later part is answered: at 360px
+  // the last input of a 12-mark question sits 909px below it, more than a
+  // screen. A control brings the figure back OVER the page, so dismissing it
+  // returns the student exactly where they were — the page never moved.
   const figureRef = useRef<HTMLDivElement | null>(null);
   const submitRef = useRef<HTMLButtonElement | null>(null);
   const [figureAway, setFigureAway] = useState(false);
@@ -263,31 +242,15 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     });
   };
 
-  /** A slot has an answer when its box — or any of its boxes — holds one. */
   const filled = (s: { ref: string; input?: unknown }) =>
     s.input
       ? (boxValues[s.ref] ?? []).some((v) => v.trim() !== '')
       : (partAnswers[s.ref] ?? '').trim() !== '';
-  // R1.8 §2 — ONE filled slot is enough to hand the question in, because a
-  // paper-shaped question can now be the whole session. Requiring every slot
-  // was harmless when a session was eight fragments and being stuck cost you
-  // one of them; with a 12-mark question it means a student who can do (a),
-  // (b) and (c) but not (d) submits nothing, is marked on nothing, and leaves
-  // no attempt behind to move their mastery. A candidate leaves a blank and
-  // hands the paper in, and the examiner marks the blank wrong — which is
-  // exactly what an empty answer already scores here.
-  // HOW A SLOT IS ANSWERED, in ONE place.
-  //
-  // There are two layouts — a stacked box under the prompt, and a gap inside a
-  // cloze statement — and they are a difference of PRESENTATION. The cloze gap
-  // used to render its own plain input straight into partAnswers, so a slot
-  // whose shape wants several boxes (a coordinate, a column vector, a list, a
-  // set) was given one text box that filled() and the submit serialiser never
-  // read: the box counted as blank however much was typed, and what was typed
-  // was dropped on submit. Sixteen live slots could not be answered at all.
-  //
-  // Both layouts now branch the same way on slot.input, so a shape can never
-  // again be honoured in one place and forgotten in the other.
+  // ONE filled slot hands the question in, because a paper-shaped question can
+  // be the whole session: requiring every slot meant a student who could do (a)
+  // to (c) but not (d) submitted nothing and left no attempt behind. The two
+  // layouts — a stacked box, and a gap inside a cloze statement — differ only in
+  // PRESENTATION, so both branch on slot.input and no shape is honoured in one.
   const slotAnswerInput = (
     slot: { ref: string; input?: { shape: string; boxes?: number; cols?: number; chars?: number; pairs?: boolean } },
     opts: { describe: string; className: string; placeholder?: string },
@@ -325,15 +288,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       : markedSlots.some((s) => filled(s));
   const blanks = markedSlots.filter((s) => !filled(s)).length;
 
-  // AUTOSAVE. Writes a draft and never an attempt: attempts stay append-only
-  // and are written once, on submit, by the action below.
-  //
-  // Debounced while typing, and FLUSHED at every point the page might be about
-  // to stop existing. An 800ms debounce loses whatever was typed in the last
-  // 800ms when a student quits the browser, switches app, or locks the phone —
-  // which is precisely when they most need the draft. visibilitychange is the
-  // one event that fires reliably on a mobile app switch and on a tab close;
-  // blur and pagehide cover the rest.
+  // AUTOSAVE writes a draft and never an attempt: attempts stay append-only and
+  // are written once, on submit. Debounced while typing, and FLUSHED wherever
+  // the page might stop existing — the debounce otherwise loses the last 800ms
+  // when a student switches app or locks the phone, which is when they most
+  // need it. visibilitychange is the one event a mobile app switch fires.
   const draftTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Values and feedback only. `prior` is a PROP, already describing the
   // question ARRIVING, so a guard reading it here would refuse to save the
@@ -403,14 +362,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     };
   }, [feedback, question.prior, saveNow, router]);
 
-  // FLUSH WHEN THE CARD STOPS SHOWING THIS QUESTION.
-  //
-  // blur, visibilitychange and pagehide all mean "the tab is going away" and
-  // none fires on navigation INSIDE the app — the previous/next links, the
-  // back control, browser back — which is how a student moves. Unmount would
-  // not catch it either: QuestionCard has no key, so moving between questions
-  // re-renders the same instance. Keyed on the question, so the cleanup runs
-  // on every move with the session and index it was set up with.
+  // blur, visibilitychange and pagehide all mean "the tab is going away", and
+  // none fires on navigation INSIDE the app, which is how a student moves.
+  // Unmount does not catch it either: QuestionCard has no key, so moving
+  // between questions re-renders the same instance. Keyed on the question, so
+  // the cleanup runs with the session and index it was set up with.
   useEffect(() => {
     const sessionId = question.sessionId;
     const index = question.index;
@@ -584,16 +540,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                     <div key={slot.ref} className={p.slots.length > 1 ? 'mt-2 pl-4' : ''}>
                       {slot.mode === 'answer' ? (
                         <>
-                          {/* The label belongs TO THE BOX, on its line, the way
-                              a printed paper puts (i) beside the answer line it
-                              belongs to. Stacked above, two boxes under one
-                              instruction are told apart only by counting, and a
-                              student who counts wrong has a correct answer
-                              marked wrong — the worst thing this can do. */}
-                        {/* Stacked on a phone, side by side once there is room.
-                            The label held 42% of a 360px row, which left the
-                            box too narrow to see a long answer while typing
-                            it. */}
+                          {/* The label belongs TO THE BOX, on its own line: two boxes under one
+                              instruction are told apart by counting, and a wrong count marks a
+                              correct answer wrong. */}
+                        {/* Stacked on a phone, side by side once there is room: the label held
+                            42% of a 360px row, leaving the box too narrow to type a long answer in. */}
                         <div className="mt-1 flex flex-col items-stretch gap-1 sm:flex-row sm:items-start sm:gap-2">
                           {p.slots.length > 1 && (
                             <label
@@ -821,11 +772,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             <WorkingPhoto attemptId={feedback.attemptId} marks={feedback.earnableByMethod} />
           )}
 
-          {/* LOOKING BACK AT WHAT THE PHOTOGRAPH EARNED.
-              This whole block used to be gated on !reviewing along with the
-              camera, so a finished question showed neither the transcription
-              nor the reasons — the marks a student most wants to reread. The
-              CAPTURE control is what a finished question does not get; what it
+          {/* The CAPTURE control is what a finished question does not get; what it
               read is kept and shown. */}
           {reviewing &&
             question.prior?.working?.map((w) => (
@@ -853,12 +800,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             ))}
 
           {reviewing ? (
-            // No ?q= at all. The session resumes at the first unanswered
-            // question, or the summary when there is none, and the page works
-            // that out from the attempts. Pointing this at the LAST question
-            // instead was a link to the current page whenever the last question
-            // was the one being reviewed, which is where a student ends up, so
-            // the button did nothing.
+            // No ?q= at all: the session resumes at the first unanswered
+            // question, or the summary when there is none. Pointing it at the
+            // LAST question linked to the current page whenever that was the
+            // one being reviewed, which is where a student ends up.
             <Link
               href={`/study/session/${question.sessionId}`}
               className="mt-4 block bg-ink p-3 text-center font-black text-paper shadow-[3px_3px_0_var(--red)]"

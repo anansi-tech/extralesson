@@ -1,16 +1,9 @@
 import { Transcription } from '@/lib/db';
 
 /**
- * WHAT READING HANDWRITING ACTUALLY COSTS.
- *
- * R2 §7 asks for the real figure rather than the estimate: token usage is
- * recorded on every transcription, so this is measured, and if it diverges from
- * the expected cent it is a product decision made with numbers instead of a
- * surprise on an invoice.
- *
- * The rates are the reader tier's published price. They are stated here as
- * constants and nowhere else, so a price change is one edit and the figure
- * cannot quietly become a guess.
+ * Measured from recorded token usage, never estimated — see ROUND_2 §7. The
+ * reader tier's rates live here and nowhere else, so a price change is one edit
+ * and the figure cannot quietly become a guess.
  */
 export const READER_INPUT_PER_M = 0.2;
 export const READER_OUTPUT_PER_M = 1.2;

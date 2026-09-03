@@ -4,16 +4,11 @@ import type { VisualTemplate } from '../types';
 import { SLOT_REF_RE } from '@/lib/notation';
 
 // Semantic HTML table (the one non-SVG template). Data lives in the visual;
-// values need not appear in the question text.
-//
-// R1.8 Part 3 — a cell is either printed or ANSWERABLE. The sequence question
-// in 2023, 2024 and 2025 puts 7 of its 10 marks in a table: rows to complete, a
-// row where a later column is given and the earlier ones are the answers, and a
-// final row in terms of n. The 2023 table goes further and scaffolds the rule
-// itself — "( … × … ) + … + … = …" — walking the candidate from arithmetic to
-// the general form. A value-only cell cannot express any of that.
+// values need not appear in the question text. A cell is either printed or
+// ANSWERABLE — ROUND_1_8 PART 3: the sequence question puts 7 of its 10 marks
+// in a table, and a scaffolded cell walks the candidate from the arithmetic to
+// the general form, which a value-only cell cannot express.
 const CellZ = z.union([
-  // printed text, exactly as today
   z.string().max(60),
   z.object({
     /**
@@ -35,10 +30,9 @@ export const DataTableParamsZ = z.object({
   rows: z.array(z.array(CellZ).min(1).max(12)).min(1).max(15),
   row_header_column: z.boolean().default(false),
   /**
-   * R1.8 §4.4 — a two-way (contingency) table: the last row totals each column,
-   * the last column totals each row, or both. Declaring it is what lets verify()
-   * check the arithmetic; a table whose margins do not add up is a question
-   * nobody can answer, and it reads as correct until a student tries.
+   * A two-way (contingency) table — ROUND_1_8 §4.4. Declaring it is what lets
+   * verify() check the margins, and a table whose margins do not add up reads
+   * as correct until a student tries to answer it.
    */
   totals: z.enum(['row', 'column', 'both']).optional(),
 });
@@ -52,13 +46,9 @@ function cellText(raw: string): string {
 }
 
 /**
- * A cell the student fills: the printed skeleton with a gap per slot.
- *
- * Each gap is STAMPED WITH THE LABEL OF THE SLOT THAT FILLS IT, because that
- * label is also what the answer box beside the question is called. Anonymous
- * gaps put four identical blanks above four boxes named (i) to (iv) and left
- * the student to pair them by counting; pairing them wrong gets correct
- * answers marked wrong, which is the worst thing this can do to them.
+ * Each gap is STAMPED WITH THE LABEL OF THE SLOT THAT FILLS IT — that label
+ * also names the answer box beside the question. Anonymous gaps left students
+ * pairing blanks to boxes by counting, and a wrong pairing marks them wrong.
  */
 function answerCell(cell: Exclude<Cell, string>): string {
   const gaps = cell.slots.map(

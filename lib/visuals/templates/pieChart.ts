@@ -2,16 +2,10 @@ import { z } from 'zod';
 import { INK, polar, round, svgOpen, text } from '../svg';
 import type { VisualTemplate } from '../types';
 
-// Pie chart with labeled sectors. `mode` fixes the value semantics:
-// 'degrees' (sector angles), 'percent', or 'count' (raw frequencies; angles
-// derived). Data usually lives ONLY in the chart, so sector values are not
-// required to appear in the question text.
-//
-// A sector value may also be a simple linear expression in one unknown —
-// "the angles are x, 2x, 3x and 90°; calculate x" is a standard paper 02
-// item. The chart is still drawn to scale: the sum of all sectors gives one
-// linear equation, which fixes the unknown, but each sector is LABELLED with
-// the expression the student sees, not the solved number.
+// `mode` fixes the value semantics: 'degrees', 'percent' or 'count' (angles
+// derived). Data usually lives ONLY in the chart, so sector values need not
+// appear in the question text. A sector value may be a linear expression in
+// one unknown, and is LABELLED with that expression, never the solved number.
 
 // Linear value a*<unknown> + b. `unknown` is null for a plain number.
 export interface LinearValue {
@@ -28,7 +22,6 @@ export function parseSectorValue(raw: number | string): LinearValue | null {
   }
   const s = raw.replace(/[\s$]/g, '').replace(/[−–—]/g, '-');
   if (s === '') return null;
-  // Split into signed terms: "2x-5" -> ["2x", "-5"].
   const terms = s.match(/[+-]?[^+-]+/g);
   if (!terms) return null;
   let coefficient = 0;
@@ -181,7 +174,6 @@ export const pieChart: VisualTemplate<PieChartParams> = {
           en[0],
         )} ${round(en[1])} Z" fill="${fill}" />`,
       );
-      // Sector + value labels outside, near the mid-angle.
       const mid = 90 - (cum + angles[i] / 2);
       const lp = polar(CX, CY, R + 22, mid);
       const dx = Math.cos((mid * Math.PI) / 180);
@@ -246,7 +238,6 @@ export const pieChart: VisualTemplate<PieChartParams> = {
 
     const symbolic = values.filter((v) => v.unknown !== null);
     if (symbolic.length === 0) {
-      // All numeric — the original exact-sum rules, unchanged.
       if (values.some((v) => !Number.isFinite(v.constant) || v.constant <= 0)) {
         issues.push('pieChart: sector values must be finite and positive');
       }

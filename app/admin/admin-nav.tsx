@@ -3,17 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-// ONE NAV, IN THE LAYOUT.
-//
-// Every admin page had grown its own set of links to some of the others:
-// access offered coverage and review, coverage offered review and access,
-// review offered coverage alone — so there was no route to access from the
-// screen a reviewer spends the evening on, and /admin/topics was reachable
-// from nowhere at all. A nav that lives on one page is a nav that disagrees
-// with the next one.
-//
-// A client component only because a server layout cannot know the pathname,
-// and knowing which route is current is the whole job.
+// One nav, in the layout: a nav that lives on one page is a nav that disagrees
+// with the next one. A client component only because a server layout cannot
+// know the pathname, and knowing which route is current is the whole job.
 const ROUTES = [
   { href: '/admin/access', label: 'access', title: 'access' },
   { href: '/admin/review', label: 'review', title: 'review queue' },
@@ -25,9 +17,8 @@ const currentRoute = (pathname: string) =>
   ROUTES.find((r) => pathname === r.href || pathname.startsWith(`${r.href}/`));
 
 /**
- * Which screen this is, beside the lockup. It used to sit on each page, which
- * meant four copies of the same line and a header that could disagree with the
- * nav under it.
+ * Which screen this is, beside the lockup. One copy, so the header cannot
+ * disagree with the nav under it.
  */
 export function AdminTitle() {
   const route = currentRoute(usePathname());

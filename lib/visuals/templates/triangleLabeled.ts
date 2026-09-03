@@ -2,10 +2,9 @@ import { z } from 'zod';
 import { line, pathArc, polar, polygon, round, svgOpen, text } from '../svg';
 import { valueStatedInText, type VerifyContext, type VisualTemplate } from '../types';
 
-// Triangle with vertex labels, optional side/angle labels, equal-side tick
-// marks and a right-angle mark. The TEMPLATE places the vertices — the model
-// never supplies coordinates. Placement is derived deterministically from
-// whichever numeric angles are given (aesthetic scalene fallback otherwise).
+// The TEMPLATE places the vertices — the model never supplies coordinates.
+// Placement is derived deterministically from whichever numeric angles are
+// given (aesthetic scalene fallback otherwise).
 
 const AngleZ = z.object({
   vertex: z.number().int().min(0).max(2), // 0/1/2 → labels[0..2]
@@ -17,8 +16,7 @@ const SideZ = z.object({
   side: z.number().int().min(0).max(2), // side i joins vertex i and vertex (i+1)%3
   value: z.number().positive().max(100000).optional(),
   variable: z.string().max(8).optional(),
-  // km belongs here: bearings and navigation questions are set in
-  // kilometres in every paper, and rejecting them rejected 11 drafts.
+  // km belongs here: navigation questions are set in kilometres in every paper.
   unit: z.enum(['cm', 'm', 'mm', 'km']).optional(),
 });
 
@@ -36,8 +34,8 @@ export const TriangleLabeledParamsZ = z.object({
     .max(3)
     .default([]),
   rightAngleAt: z.number().int().min(0).max(2).optional(),
-  // R1.6 §6: "the shortest distance from the point to the line" — the
-  // perpendicular from one vertex to the opposite side, with its foot marked.
+  // "The shortest distance from the point to the line" — the perpendicular
+  // from one vertex to the opposite side, foot marked. ROUND_1_6 §6.
   perpendicularFrom: z
     .object({
       vertex: z.number().int().min(0).max(2),
@@ -70,10 +68,8 @@ function layoutAngles(p: TriangleLabeledParams): [number, number, number] {
   if (missing.length === 0) {
     return Math.abs(sum - 180) < 0.01 ? (given as [number, number, number]) : DEFAULT_ANGLES;
   }
-  // Nothing given at all — a labelled sketch with only side lengths, which the
-  // scale-drawing questions ask for. Draw the default scalene triangle: the
-  // shares table below covers one or two unknown angles, and a third would have
-  // read past its end and made every vertex NaN, rendering an empty box.
+  // Nothing given: draw the default scalene triangle. Reading past the end of
+  // the shares table made every vertex NaN and rendered an empty box.
   if (missing.length === 3) return DEFAULT_ANGLES;
   const remaining = 180 - sum;
   if (remaining < 2) return DEFAULT_ANGLES; // degenerate — verify() flags it
@@ -181,7 +177,6 @@ export const triangleLabeled: VisualTemplate<TriangleLabeledParams> = {
       parts.push(text(v[i][0] + 24 * ux, v[i][1] + 24 * uy + 5, label, { size: 15, italic: true }));
     });
 
-    // right-angle mark
     if (p.rightAngleAt !== undefined) {
       const i = p.rightAngleAt;
       const a = v[(i + 1) % 3];
@@ -235,7 +230,6 @@ export const triangleLabeled: VisualTemplate<TriangleLabeledParams> = {
       }
     }
 
-    // angle arcs + labels
     for (const a of p.angles) {
       const i = a.vertex;
       const label = a.variable ?? (a.value !== undefined ? `${a.value}°` : undefined);
@@ -260,7 +254,6 @@ export const triangleLabeled: VisualTemplate<TriangleLabeledParams> = {
       parts.push(text(mx + 24 * nx, my + 24 * ny + 4, label, { size: 13 }));
     }
 
-    // equal-side tick marks
     for (const t of p.equalTicks) {
       const a = v[t.side];
       const b = v[(t.side + 1) % 3];
@@ -352,11 +345,9 @@ export const triangleLabeled: VisualTemplate<TriangleLabeledParams> = {
       }
     }
 
-    // The figure must not contradict the text. When the question says "AB = 4
-    // cm" the 4 has to sit on AB, not on CA: a reviewer reads the two as one
-    // statement, and a student reading the figure would answer a different
-    // question from the one asked. This is a contradiction, not a missing
-    // cross-reference, so it rejects rather than advises.
+    // The figure must not contradict the text: "AB = 4 cm" must put the 4 on
+    // AB, or the student answers a different question from the one asked. A
+    // contradiction, not a missing cross-reference, so it rejects.
     for (const stated of statedSideLengths(context)) {
       const carrying = p.sides.filter((s) => s.value !== undefined && closeTo(s.value, stated.value));
       if (carrying.length === 0) continue;

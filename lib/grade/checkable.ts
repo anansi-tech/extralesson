@@ -1,9 +1,7 @@
 // Which questions can be settled by computation, and what to compute.
-//
-// Extraction reads the question as a student would: the definitions from the
-// stem, the demand from the part that asks. It is deliberately narrow — it
-// recognises the shapes the papers actually use and reports everything else as
-// unchecked, because a checker that guesses is worse than one that abstains.
+// Deliberately narrow: it recognises the shapes the papers actually use and
+// reports everything else as unchecked, because a checker that guesses is worse
+// than one that abstains.
 import {
   composite,
   factorisation,
@@ -27,17 +25,9 @@ interface QuestionLike {
 }
 
 /**
- * Matrix arithmetic the WORKED SOLUTION asserts.
- *
- * Read from the solution's own equality CHAIN rather than inferred from prose,
- * so nothing is guessed about which matrices the question meant to multiply.
- *
- * A chain is how these are written: "AB = M1 M2 = <entrywise working> = R".
- * Each segment either evaluates to a matrix or does not — the working step is
- * full of expressions like "2-1" and evaluates to nothing — and every segment
- * that DOES evaluate must agree. Matching "A B = C" pairwise instead pulled
- * triples out of the middle of a chain and reported three approved questions
- * as wrong when they were correct.
+ * Matrix arithmetic the WORKED SOLUTION asserts, read from its own equality
+ * CHAIN, never inferred from prose. Every segment that evaluates to a matrix
+ * must agree; matching "A B = C" pairwise reported correct questions as wrong.
  */
 export function matrixClaims(text: string): CheckTarget[] {
   const out: CheckTarget[] = [];
@@ -67,10 +57,8 @@ function mathBlocks(text: string): string[] {
 
 /**
  * A segment of an equality chain, as a matrix — or null when it is not one.
- *
- * Null is the load-bearing half again: an entrywise working step is a matrix of
- * expressions, and a checker that guessed at "2-1" would be inventing claims
- * the solution never made.
+ * Null is load-bearing: an entrywise working step is a matrix of expressions,
+ * and guessing at "2-1" would invent a claim the solution never made.
  */
 function evaluateMatrixSegment(segment: string): Matrix2 | null {
   const found = [...segment.matchAll(/\\begin\{[bp]matrix\}[\s\S]*?\\end\{[bp]matrix\}/g)].map((m) =>
@@ -78,11 +66,9 @@ function evaluateMatrixSegment(segment: string): Matrix2 | null {
   );
   if (found.length === 0 || found.some((m) => m === null)) return null;
 
-  // ABSTAIN ON ANYTHING THAT IS NOT A PLAIN PRODUCT. A scalar in front of the
-  // matrices — "3M", the "1/det" of an inverse — or a superscript such as
-  // ^{-1} or ^T changes the value, and ignoring it invents a claim the solution
-  // never made. Reading only the matrices reported four correct approved
-  // questions as false, all of them scaled or inverted.
+  // ABSTAIN ON ANYTHING THAT IS NOT A PLAIN PRODUCT: a scalar in front of the
+  // matrices, or a superscript such as ^{-1} or ^T, changes the value, and
+  // ignoring it invents a claim the solution never made.
   const leftover = segment
     .replace(/\\begin\{[bp]matrix\}[\s\S]*?\\end\{[bp]matrix\}/g, '')
     .replace(/\\times|\\cdot|\\left|\\right|\\,|\\;|\\quad|[*\s()]/g, '')
@@ -101,9 +87,8 @@ function matrixMismatch(block: string, want: Matrix2, got: Matrix2): string {
 
 export function functionDefs(text: string): Map<string, string> {
   const defs = new Map<string, string>();
-  // A period inside a decimal is part of the definition; a period that ends the
-  // sentence is not. "g: x \to 0.9x" was being read as "g = 0", which reported
-  // a failure against a question that was correct.
+  // A period inside a decimal is part of the definition; a period that ends
+  // the sentence is not.
   const body = String.raw`((?:[^$,;\n.]|\.(?=\d))+)`;
   const arrow = new RegExp(String.raw`\b([fghpq])\s*:\s*x\s*(?:\\to|\\mapsto|\\rightarrow|->)\s*` + body, 'g');
   const call = new RegExp(String.raw`\b([fghpq])\s*\(\s*x\s*\)\s*=\s*` + body, 'g');
@@ -142,12 +127,10 @@ export function checkQuestion(q: QuestionLike): CheckTarget[] {
       const answer = slot.answer;
       if (!answer) continue;
 
-      // A function-valued demand has a function-valued answer. "Calculate
-      // f^{-1}g(2)" asks for a NUMBER, and comparing that number against the
-      // inverse function reports a failure that is the checker's, not the
-      // question's — which is what it did on the first run.
-      // The variable itself, not a standalone word: "2x+4" has no isolated
-      // letter, and testing for one rejected every valid function answer.
+      // A function-valued demand has a function-valued answer: "Calculate
+      // f^{-1}g(2)" asks for a NUMBER, and comparing it against the inverse
+      // function reports a failure that is the checker's. Test for the variable
+      // itself, not a standalone word — "2x+4" has no isolated letter.
       const answerIsExpression = /x/.test(answer.replace(/\\[a-zA-Z]+/g, ''));
 
       // Composition. fg(x) means f(g(x)) — apply g first. Reversing this is the
@@ -163,7 +146,6 @@ export function checkQuestion(q: QuestionLike): CheckTarget[] {
         continue;
       }
 
-      // Inverse.
       const inv = ask.match(/\b([fghpq])\s*\^\s*\{?\s*-\s*1\s*\}?/);
       // f^{-1}g(2) or f^{-1}(5) is an evaluation, not the inverse function.
       const wantsFunction = /\^\s*\{?\s*-\s*1\s*\}?\s*\(\s*x\s*\)/.test(ask);

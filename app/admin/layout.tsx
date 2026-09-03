@@ -7,11 +7,9 @@ import { Lockup } from '../lockup';
 // Every /admin/* route is allowlist-gated (ROUND_1 §2).
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireAdmin();
-  // The operator-facing half of the launch warnings (ROUND_3 §1). It sits on
-  // the layout rather than one page because whichever admin screen is open is
-  // the one that should say it, and /admin/access is where the first payment
-  // will be watched for. Nothing of this kind goes on the public page: a
-  // test-mode notice rendered to a visitor is worse than the problem it reports.
+  // Launch warnings are operator-facing only (ROUND_3 §1) — a test-mode notice
+  // rendered to a visitor is worse than the problem it reports. On the layout so
+  // that whichever admin screen is open is the one that says it.
   const warnings = launchWarnings();
   return (
     <>
@@ -31,18 +29,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
         </div>
       )}
-      {/* TWO ROWS BELOW sm, ON PURPOSE: the lockup and the page label, then
-          the four routes. From sm up they are one row again.
-
-          It was three rows, and "student app" was the whole reason — five
-          items in 320px of space. It is an EXIT rather than a peer of the four
-          routes, so it went to the foot of the page instead, which is where
-          you look when you are done with a screen. The four stay wrapped and
-          visible: hiding them behind a scroll would undo the reason the nav
-          exists.
-
-          The lockup shows at every width. A radical is an operator — alone in
-          a header it reads as unfinished rather than as a logo. */}
+      {/* Two rows below sm, on purpose: the four routes stay wrapped and
+          visible, because hiding them behind a scroll would undo the reason
+          the nav exists. The lockup shows at every width — a radical alone
+          in a header reads as unfinished rather than as a logo. */}
       <div className="border-b-[1.5px] border-ink bg-white px-6">
         <div className="mx-auto max-w-3xl sm:flex sm:items-center sm:gap-x-4">
           <div className="flex min-w-0 items-center gap-x-3 py-2 sm:py-0">
@@ -53,13 +43,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </div>
       {children}
-      {/* THE WAY OUT, AT THE FOOT. After the content, because that is when you
-          want it — and one row of chrome saved at the top of every admin
-          screen. 44px like every other target (ROUND_1 §5). */}
-      {/* px-6 OUTSIDE the constrained box and max-w-3xl inside, which is the
-          order the pages use. The other way round puts the padding within the
-          3xl cap, and on anything wider than 768 that sits the chrome 24px
-          inside the content it is meant to line up with. */}
+      {/* The way out sits at the foot, after the content, because that is when
+          you want it — and at 44px like every other target. */}
+      {/* px-6 outside the constrained box and the cap inside, as the pages do
+          it: the other order insets the chrome 24px from the
+          content it is meant to line up with over 768px. */}
       <div className="px-6 pb-10">
         <div className="mx-auto max-w-3xl">
           <Link

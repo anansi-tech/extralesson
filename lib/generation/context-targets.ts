@@ -3,32 +3,9 @@ import type { ContextCategory } from '@/lib/types';
 import TARGETS from './context-targets.json';
 
 /**
- * WHAT SETTING A TOPIC'S QUESTIONS SHOULD BE IN, measured per topic.
- *
- * Our bank ran banking at 1% against the papers' 29%, and wages at 1% against
- * 10%, because nothing pulled toward them: contexts.ts only said "avoid what
- * this topic just used", which spreads evenly rather than the way the papers
- * do.
- *
- * TARGETS ARE PER TOPIC, NOT SPLIT FROM A GLOBAL FIGURE, and the measurement
- * says why. Sliced from the reference corpus by
- * scripts/calibration/topic-contexts.py:
- *
- *   M1-CONS   banking 47%, retail 22%, wages 15%   (229 markers)
- *   M1-MEAS   transport 52%, tourism 14%           (29)
- *   M2-STAT1  sport 39%, manufacturing 23%, agriculture 19%, no banking (31)
- *
- * A bank-wide banking target would have pushed compound interest onto
- * Statistics, where the papers use match scores and production runs — the R1.8
- * stapling failure wearing a new costume.
- *
- * A topic whose corpus sample is too thin gets NO TARGET, and reverts to the
- * open list with avoid-recent. A near-zero sample is not missing data — it is
- * the finding that the papers set those topics without context. Every one of
- * the nine is symbolic: Vectors, Matrices, Algebra 2, Geometry 2. Inheriting
- * the bank-wide figure would have stapled a hire-purchase agreement onto a
- * matrix transformation, which is the thing the per-topic split exists to stop.
- * The JSON still records `source` so the data says which it is.
+ * Measured PER TOPIC: a bank-wide figure split down would staple compound
+ * interest onto Statistics. A topic whose sample is too thin gets NO TARGET —
+ * near-zero is the finding that the papers set it bare, not missing data.
  */
 export const MIN_SAMPLE = 12;
 export interface ContextTarget {
@@ -54,8 +31,8 @@ export function neediestContext(
 ): ContextCategory | null {
   const target = targetFor(topicCode);
   if (!target) return null;
-  // No steer where the corpus had nothing to say. See above: silence is the
-  // measurement, not a gap in it.
+  // No steer where the corpus had nothing to say: silence is the measurement,
+  // not a gap in it.
   if (target.source === 'bank-wide fallback' || target.sample < MIN_SAMPLE) return null;
   const shares = target.shares as Record<string, number>;
   if (Object.keys(shares).length === 0) return null;

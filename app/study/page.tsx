@@ -80,11 +80,8 @@ export default async function StudyDashboard({
     loadProgress(auth.student_id),
   ]);
 
-  // TRAJECTORY, measured against this student's own history.
-  //
-  // The estimate as it stood before their recent sessions, against the estimate
-  // now, over the sessions between — the same before/after fold the session
-  // summary already does, read over a longer window.
+  // TRAJECTORY: the estimate before their recent sessions against the estimate
+  // now — the session summary's own before/after fold, over a longer window.
   const RECENT = 5;
   const completed = await PracticeSession.find({
     student_id: auth.student_id,
@@ -148,14 +145,10 @@ export default async function StudyDashboard({
         })
       : null;
 
-  // Lead with what is reachable while the estimate still reads as a verdict.
-  // Below grade III every letter is U and the number is the thing they came
-  // here to change — putting it at the top of the page is the app agreeing with
-  // it every morning. Above that it is news worth leading with, so it leads.
-  //
-  // Including the student who has no estimate yet, who is the extreme case
-  // rather than an exception: "not yet estimated" is a placeholder where the
-  // topics carrying their marks are a plan.
+  // Lead with what is reachable while the estimate still reads as a verdict:
+  // below grade III every letter is U, and putting that at the top of the page
+  // is the app agreeing with it every morning. A student with no estimate yet
+  // is the extreme case of that, not an exception.
   const reachable = topicLeverage(state, student.target_modules).slice(0, 3);
   // The same condition the session builder applies, read from the same
   // function: a topic outside Module 1 is where the marks are and is not where
@@ -182,25 +175,17 @@ export default async function StudyDashboard({
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-xl">
         {/* THE EMAIL IS THE ONLY THING HERE OF UNKNOWN LENGTH, so it is the
-            only thing allowed to give. It was capped at 45vw, which is nearly
-            half the row: the other three were squeezed under their own content
-            width and broke across lines — "REVIEW / QUEUE", "SIGN / OUT" — for
-            an address long enough to deserve truncating in the first place.
-            The fixed items no longer wrap, the address takes what is left and
-            truncates, and below that the row wraps as a whole rather than
-            squashing. */}
+            only thing allowed to give: the fixed items never wrap and the row
+            wraps. */}
         <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-          {/* The lockup at every width. The mark alone is an operator with
-              nothing after it and reads as a stray glyph rather than a logo,
-              so where the row cannot hold both it takes a second line — which
-              costs less than a header that looks unfinished. */}
+          {/* The mark alone is an operator with nothing after it and reads as a
+              stray glyph rather than a logo, so where the row cannot hold both
+              it takes a second line. */}
           <Lockup width={140} className="shrink-0" />
           <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-end gap-x-3 gap-y-1">
-            {/* Signing in lands an admin here, in the product, because an admin
-                is also a student and seeing what a student sees is the point of
-                having the account at all. This is the way across, and it opens
-                ACCESS: that is the screen being watched when a payment lands at
-                9pm, and the admin nav reaches the rest in one hop. */}
+            {/* An admin is also a student, so signing in lands here. The way
+                across opens ACCESS, the screen watched when a payment lands at
+                9pm; the admin nav reaches the rest. */}
             {isAdmin && (
               <Link
                 href="/admin/access"
@@ -212,14 +197,9 @@ export default async function StudyDashboard({
             <span className="hidden shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-dim sm:inline">
               {student.syllabus_mode === 'legacy-jan' ? 'CSEC MATH · JAN RE-SIT' : 'CSEC MATH · MAY/JUNE 2027'}
             </span>
-            {/* Which account is signed in. Obvious on one device with one
-                student; not obvious at all when a device is shared, or when
-                you are moving between admin and a test account — so it is
-                kept from sm up, where there is room for it.
-
-                Below that it is the widest thing in the row by far, at 14ch of
-                the 320 available, and it is what the lockup needs back. On
-                your own phone you already know whose account this is. */}
+            {/* Kept from sm up: on a shared device, or moving between admin and
+                a test account, which account is signed in is not obvious. Below
+                that it is 14ch of 320 and the header needs it back. */}
             <span
               title={auth.email}
               className="hidden min-w-[14ch] max-w-full truncate font-mono text-[10px] tracking-widest text-dim sm:inline"
@@ -234,13 +214,8 @@ export default async function StudyDashboard({
           </div>
         </header>
 
-        {/* THE ACTION COMES FIRST.
-            It used to sit a full screen down — measured at 390px, y=877 —
-            behind 203 words and 22 numbers of analysis. A student opening the
-            app had to read where their marks were, why some of them waited, and
-            what the rate was waiting for, before finding the thing to press.
-            The analysis is worth reading; it is worth reading after you have
-            decided to work, so it now sits below the button rather than in
+        {/* THE ACTION COMES FIRST. The analysis is worth reading, but after
+            you have decided to work — so it sits below the button, not in
             front of it. */}
         {open ? (
           <Link
@@ -254,13 +229,9 @@ export default async function StudyDashboard({
             </small>
           </Link>
         ) : isNewStudent ? (
-          // BEFORE THE FIRST ATTEMPT, THE DIAGNOSTIC LEADS.
-          //
-          // "Weakest topics first" has nothing to sort on when there is no
-          // attempt to sort by: every objective reads as equally unmeasured, so
-          // the session is chosen by blueprint weight alone. Putting the red
-          // button on it buried the twelve minutes that would make it work.
-          // This swaps back on its own once attempts exist.
+          // BEFORE THE FIRST ATTEMPT, THE DIAGNOSTIC LEADS: weakest-first has
+          // nothing to sort on with no attempts, so the session falls back to
+          // blueprint weight alone. Swaps back on its own once attempts exist.
           <>
             {diagnosticOpen && (
             <form action={startSession} className="mt-5">
@@ -309,11 +280,8 @@ export default async function StudyDashboard({
             <ul className="mt-2 space-y-2">
               {reachable.map((t) => (
                 <li key={t.code} className="flex items-baseline justify-between gap-3">
-                  {/* The title and the marks, and nothing else. The row used
-                      to carry the module, the topic strength and a gating note
-                      as well — five facts competing with the one that matters,
-                      three times over. Module and strength are in the
-                      per-module breakdown lower down; the gating is said once,
+                  {/* The title and the marks, and nothing else: module and
+                      strength sit in the per-module breakdown, the gating
                       below. */}
                   <span className="min-w-0">
                     <b>{t.title}</b>
@@ -334,11 +302,9 @@ export default async function StudyDashboard({
                 </li>
               ))}
             </ul>
-            {/* ONE line under the list. Three stacked paragraphs — what the
-                number means, why later modules wait, and what the rate is
-                waiting for — came to 102 words between a student and the
-                button. The rate has moved to the estimate, which is the thing
-                it is about. */}
+            {/* ONE line under the list: three stacked paragraphs put 102 words
+                between a student and the button, and the rate belongs with the
+                estimate. */}
             <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-[12px] leading-snug text-dim">
               Each number is the points your grade estimate could gain from that topic.
               {gatedTopics.length > 0 &&
@@ -426,10 +392,8 @@ export default async function StudyDashboard({
               {trajectoryWait(gap)}
             </p>
           )}
-          {/* CUT 4 — the coverage sentence moved inside the detail it
-              introduced. It sat above the summary that opens it, so a student
-              read the explanation and then the offer to read the explanation.
-              Nothing is lost: it is the first line behind the tap. */}
+          {/* The coverage sentence sits inside the detail it introduces, not
+              above the summary that opens it. */}
           <details className="mt-2 text-left">
             <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">
               What we cover
@@ -446,14 +410,12 @@ export default async function StudyDashboard({
           </details>
         </section>
 
-        {/* THE PAYWALL, and what it does not take away. Everything already
-            earned stays where it is — the notebook, the marks, the questions to
-            look back at. What needs paying for is the NEXT session. */}
-        {/* Checkout opens in a new tab on every path: the study page stays
-            open underneath, and rel="noopener" keeps the Stripe tab from
-            reaching back through window.opener on a payment path. */}
-        {/* An expired sitting is not a locked-out customer. Their notebook is
-            all still there; what has ended is the sitting they bought for. */}
+        {/* THE PAYWALL takes nothing away: the notebook, the marks and the
+            questions stay. Only the NEXT session needs paying for. */}
+        {/* Checkout opens in a new tab, marked noopener so the payment tab
+            cannot reach back through window.opener. */}
+        {/* An expired sitting is not a locked-out customer: what has ended is
+            the sitting they bought for, not their notebook. */}
         {error === 'access-expired' && (
           <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
             <div className="section-label is-alert">
@@ -530,19 +492,11 @@ export default async function StudyDashboard({
         )}
 
 
-        {/* The session above is the one the app chooses, and it stays the
-            default. These are the three things a student knows about their own
-            week that it cannot: what class covered today, what they got wrong,
-            and that it has never seen them work.
-
-            Shown WHILE A SESSION IS OPEN as well. Hiding them until the old one
-            was finished made finishing a prerequisite for choosing, which is
-            backwards: a student who wants circle theorems tonight wants them
-            tonight. Nothing is lost by starting another: sessions QUEUE rather
-            than replace each other. completed_at is set only when every
-            question in a session has been answered, and openSession returns the
-            most recent unfinished one — so the half-done session is offered
-            again as soon as the new one is finished. */}
+        {/* The session above stays the default; these are the things a student
+            knows about their own week that the app cannot. Shown WHILE A
+            SESSION IS OPEN too, because sessions QUEUE rather than replace each
+            other: the half-done one is offered again as soon as the new one is
+            finished. */}
         <section className="mt-6 border-t-[1.5px] border-rule pt-4">
           <h2 className="font-mono text-[10px] uppercase tracking-widest text-dim">
             Or choose for yourself
@@ -607,11 +561,9 @@ export default async function StudyDashboard({
             )}
         </section>
 
-        {/* QUESTIONS YOU HAVE ALREADY DONE.
-            The attempt, the marks, the mark scheme and the reasons a photograph
-            earned are all stored; a finished session just stopped linking to
-            them. These open the read-only view paging back inside a session
-            already gives — no new attempt, nothing re-marked. */}
+        {/* QUESTIONS YOU HAVE ALREADY DONE — the same read-only view that
+            paging back inside a session gives: no new attempt, nothing
+            re-marked. */}
         {reviewable.length > 0 && (
           <section className="mt-5 border-[1.5px] border-ink bg-white p-3 shadow-[3px_3px_0_var(--ink)]">
             <div className="section-label">
@@ -620,10 +572,9 @@ export default async function StudyDashboard({
             <p className="mt-1 text-[11px] leading-snug text-dim">
               Read the mark scheme again, and what your working earned. Nothing here is re-marked.
             </p>
-            {/* <details> rather than state: the page is a server component,
-                the most recent day is open because that is what a student is
-                nearly always after, and every earlier day is one line until
-                they ask for it. */}
+            {/* A disclosure element rather than state, because the page is a
+                server component. The most recent day is open; every earlier
+                day is one line. */}
             {reviewDays.map((d, i) => (
               <details key={d.day} open={i === 0} className="mt-2 border-t-[1.5px] border-rule pt-2">
                 <summary className="flex min-h-11 cursor-pointer items-baseline justify-between gap-2 text-[13px]">

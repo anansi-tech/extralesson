@@ -2,8 +2,6 @@ import { Topic } from '@/lib/db';
 import type { ModuleNumber } from '@/lib/types';
 
 /**
- * The syllabus topics a student can ask for by name.
- *
  * A topic IS an objective prefix — every objective in M1-ALG1 begins 'M1.5.' —
  * so choosing a topic and filtering the question pool are the same operation,
  * and neither has to guess from a title.

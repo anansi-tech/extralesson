@@ -1,13 +1,9 @@
 import { Schema, model, models, type InferSchemaType } from 'mongoose';
 
 /**
- * EVERY PAYMENT THE WEBHOOK SAW, matched or not.
- *
- * Two jobs. Idempotency: Stripe retries until it gets a 2xx, so the event id is
- * unique and a repeat is recognised rather than granting twice. And the
- * unmatched pile: a payment whose email belongs to no account is recorded and
- * shown on /admin/access, because the alternative is a student who has paid and
- * no trace of why nothing happened.
+ * Every payment the webhook saw, matched or not. The event id is unique, so a
+ * retry never grants twice; an email matching no account is still recorded and
+ * shown on /admin/access, or a student pays and nothing traceable happens.
  */
 const PaymentSchema = new Schema({
   event_id: { type: String, required: true, unique: true },
@@ -17,20 +13,18 @@ const PaymentSchema = new Schema({
   /** What the payment LINK mapped to, when a mapping exists. Evidence only —
    *  the sitting granted is the one the student registered for. */
   sitting: { type: String, enum: ['jan-2027', 'may-june-2027'] },
-  /** Which address was used. 'payer' means the Stripe custom field was missing
-   *  or misconfigured, which is the §8e defect arriving quietly — so it is
-   *  recorded and written into the grant note. Absent on payments taken before
-   *  this field existed; there are none, the collection was empty. */
+  /** Which address was used. 'payer' means the custom field was missing or
+   *  misconfigured, the ROUND_2 §8e defect arriving quietly, so it is recorded
+   *  and written into the grant note. */
   email_source: { type: String, enum: ['custom_field', 'payer'] },
   /** The student it was matched to, absent when nothing matched. */
   student_id: { type: Schema.Types.ObjectId, ref: 'Student' },
   /** Set by hand on the admin screen once a mismatch has been sorted out. */
   resolved_at: { type: Date },
   /**
-   * Why this row looks the way it does. Written when an account is deleted and
-   * the payment is kept: student_id and email go, the money stays, and without
-   * a line saying so the row reads as a webhook that failed to match anyone.
-   * Nothing here names a person — that is the point of the deletion.
+   * Written when an account is deleted and the payment kept: student_id and
+   * email go, the money stays, and without a line saying so the row reads as a
+   * webhook that matched nobody. Nothing here names a person.
    */
   note: { type: String },
   received_at: { type: Date, default: Date.now, required: true },

@@ -1,29 +1,9 @@
 import type { RubricItem } from '@/lib/types';
 
 /**
- * ROWS A PHOTOGRAPH OF THE WORKING COULD STILL EARN.
- *
- * R2 §4. The marking pass runs only over rows deterministic marking left
- * unearned, and two kinds of row are permanently out of its reach:
- *
- *   CAO — "correct answer only". The answer is what it marks, and the
- *   deterministic grader has already settled that. 24% of AK criteria say so.
- *
- *   Self-marked slots — a "show that", an explain or a construction is marked
- *   by the student against the solution. Nothing here is on offer to a model.
- *
- * This is also what decides whether the camera is offered at all. A photograph
- * where nothing is left to earn costs a student their time and us a model call
- * for a foregone conclusion, so the offer appears only where there is something
- * to gain — which is the honest signal as well as the cheap one.
- *
- * CAO is read from the criterion text, which is prose detection and the one
- * place this round does it. It is a mark-scheme token the generator writes
- * deliberately, in CXC's own vocabulary, the way `for_format` is a flag — and
- * the durable version of this is a declared boolean on the row with a
- * same-commit backfill. Written down because the difference matters: today a
- * criterion that says "correct answer only" in words rather than initials would
- * slip through.
+ * CAO rows are out of reach because the deterministic grader already settled
+ * the answer (ROUND_2 §4); CAO is read from criterion prose, so one spelled out
+ * in words slips through. An empty result also withholds the camera offer.
  */
 const CAO = /\bCAO\b/;
 
@@ -47,16 +27,9 @@ export function earnableByMethod(q: MethodMarkQuestion, awarded: string[]): Rubr
 }
 
 /**
- * ROWS A PHOTOGRAPHED CONSTRUCTION COULD EARN.
- *
- * A construct slot is self-marked, so earnableByMethod excludes it — there is
- * nothing for a text marker to judge, because the answer is a drawing. R2 §8
- * gives those rows a way to be earned after all: the correct drawing is a known
- * set of coordinates from the figure's own params, so a photograph can be
- * compared against it.
- *
- * Only rows the grader has not already awarded, and only on construct slots.
- * The same asymmetric rule holds — this can add these rows, never remove them.
+ * Construct slots are self-marked, so earnableByMethod excludes them; a drawing
+ * can still be compared against coordinates the figure's own params fix
+ * (ROUND_2 §8). Asymmetric like the marker: it adds rows, never removes them.
  */
 export function constructionRows(q: MethodMarkQuestion, awarded: string[]): RubricItem[] {
   const earned = new Set(awarded);
@@ -71,17 +44,9 @@ export function constructionRows(q: MethodMarkQuestion, awarded: string[]): Rubr
 }
 
 /**
- * WHAT PHOTOGRAPHED WORKING EARNED ON AN ATTEMPT, ACROSS EVERY TAKE.
- *
- * Two takes exist so a blurry photograph can be replaced, which means the
- * second take normally reads the SAME working as the first and earns the same
- * rows again. Summing the takes paid twice for one row and could carry an
- * 8-mark paper to 12/12.
- *
- * A row is worth its marks once. The union of awarded codes is the earned set —
- * so a later take can add a row the earlier one missed, and a later take that
- * reads nothing (a wrong page, a dark photograph) takes nothing away. That is
- * the same asymmetry the marking pass itself obeys, applied across takes.
+ * A row is worth its marks ONCE across takes, so the earned set is the union of
+ * awarded codes and never their sum. A later take can add a row the first
+ * missed, and a take that reads nothing takes nothing away.
  */
 export function methodMarksEarned(
   takes: { method_marks?: { code: string; awarded: boolean; mark_value: number }[] }[],

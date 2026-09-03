@@ -12,18 +12,9 @@ const SITTINGS = [
 ] as const;
 
 /**
- * WHO HAS PAID, and who the webhook could not settle on its own.
- *
- * A payment carrying an address that matches an account is granted
- * automatically; this screen is where the rest arrives — a typo'd address, a
- * payment made before the student registered, a refund, a comp. It is also the
- * fallback that makes the automatic path safe to run at all: every grant is
- * visible and revocable here, and an unmatched payment surfaces instead of
- * vanishing.
- *
- * The list is ordered by who is up against the free tier, because that is who
- * is waiting: a student who has used their free sessions and cannot start
- * another is the one whose payment needs matching now.
+ * Who has paid, and who the webhook could not settle. Every grant is visible and
+ * revocable here and an unmatched payment surfaces instead of vanishing, which
+ * is what makes the automatic path safe (ROUND_2 §8c). Ordered by who is waiting.
  */
 export default async function AccessPage() {
   await dbConnect();
@@ -71,7 +62,6 @@ export default async function AccessPage() {
       attempts: attemptsBy.get(String(s._id)) ?? 0,
     }))
     .sort((a, b) => {
-      // Waiting first: no access, free tier used up.
       // Waiting means "has paid us nothing and cannot continue". An expired
       // sitting is not waiting on anyone — it ended on its own.
       const wait = (r: typeof a) => (r.access ? 2 : r.sessions >= FREE_SESSIONS ? 0 : 1);

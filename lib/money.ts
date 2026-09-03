@@ -1,19 +1,9 @@
-// The one place money is understood. R1.8 correction.
-//
-// Our old rule — "currency is always EC$" — began life as a fix for a KaTeX
-// delimiter clash and leaked into content. Measured against the papers it is
-// simply wrong: across every text-layer paper there are 61 bare dollar signs
-// and no EC$, J$ or BB$ at all. The only prefixed amounts sit inside a currency
-// conversion question, where naming the currency IS the question. CXC is
-// territory-neutral by design — sixteen countries sit the same paper — so a
-// prefix makes us less authentic, not more.
-//
-// The delimiter problem is solved here instead, deterministically: money is
-// STORED as an escaped \$ and rendered as a bare $, and the math segmenter
-// never sees a naked dollar it could mistake for a delimiter. One rule, no
-// heuristics, no guessing from what follows the sign.
+// Money is STORED as an escaped \$ and rendered as a bare $, so the math
+// segmenter never sees a naked dollar it could mistake for a delimiter.
+// No currency prefix: across every text-layer paper there are 61 bare dollar
+// signs and none prefixed, CXC being territory-neutral by design. The only
+// prefixed amounts sit in a conversion question, where the currency IS the ask.
 
-/** How money is written in stored content and in model output. */
 export const MONEY_TOKEN = '\\$';
 
 /** Internal placeholder: never appears in stored content or in output. */
@@ -30,12 +20,9 @@ export function restoreMoney(text: string): string {
 }
 
 /**
- * The sentinel, restored for KaTeX rather than for prose.
- *
- * Inside a math segment a BARE $ is a syntax error — "Can't use function '$' in
- * math mode" — so money that reaches KaTeX has to stay escaped. Prose gets the
- * bare sign a student reads; maths gets the escape KaTeX understands, and both
- * print the same glyph.
+ * Inside a math segment a BARE $ is a syntax error, so money that reaches KaTeX
+ * stays escaped. Prose gets the bare sign a student reads, maths gets the
+ * escape, and both print the same glyph.
  */
 export function restoreMoneyForMath(text: string): string {
   return text.replace(new RegExp(MONEY_SENTINEL, 'g'), '\\$');
@@ -53,22 +40,9 @@ export function hasProtectedMoney(text: string): boolean {
 const CURRENCY_CODES = ['EC', 'US', 'TT', 'BB', 'BDS', 'BZ', 'KY', 'GY', 'JA', 'J', 'G', 'B'];
 
 /**
- * Money markers removed for comparison: the escape, a bare sign, and the
- * currency codes a conversion question is allowed to use.
- */
-/**
- * Money marked as a QUANTITY rather than deleted.
- *
- * stripMoney removes the currency so the number can be compared, which made
- * every amount dimensionless: $70 matched 70 m, because by the time the two
- * reached the comparison neither carried a unit. Rewriting the marker as a unit
- * word instead lets the quantity parser give money its own dimension — so $70
- * is 70 dollars, is not 70 metres, and is still 70 to a student who left the
- * sign off.
- *
- * Only the ESCAPED sign and the currency codes are money. A bare $ is a KaTeX
- * delimiter — "$70$" is the number seventy in maths mode — so treating it as
- * currency would turn every typeset number into an amount.
+ * Money is marked as a QUANTITY, not removed: stripping it left $70 matching
+ * 70 m. Only the ESCAPED sign and the currency codes are money — a bare $ is a
+ * KaTeX delimiter, so treating it as currency would make every number an amount.
  */
 export function markMoney(value: string): string {
   const codes = CURRENCY_CODES.join('|');
@@ -95,7 +69,6 @@ export function stripMoney(value: string): string {
  */
 export const THOUSANDS_SEPARATOR = ' ';
 
-/** Remove a thousands separator of either kind from between digits. */
 export function normaliseDigitGroups(value: string): string {
   return value.replace(/(\d)[  ,](?=\d{3}\b)/g, '$1');
 }

@@ -11,36 +11,21 @@ import type { TemplateName, Archetype, ModuleNumber, Profile, Representation } f
 
 export const P1_TOTAL = 160; // 60-item P1 table × 2.67
 
-// R1.8 §2 — the P2 target is a pool of MARKS, and always was. It used to be
-// written as 240 "questions" and then multiplied by an assumed 7-mark mean
-// wherever it was actually used, which made the headline number a function of
-// how big we happened to be writing questions that month.
-//
-// R1.9 — the pool is now FORTY WHOLE PAPER 2s at the real 90 marks each. It was
-// 240 × 7, which encoded the same intent against a 7-mark question that no
-// longer exists: paper-shaped questions run 9-12 marks and the bank means 10.7,
-// so every topic sat at 185-190% of its target while being correctly
-// proportioned. The old number measured a bank of fragments with a fragment's
-// yardstick.
-//
-// This is a re-derivation, not a nudge. Nothing about the shape of the target
-// changes — each topic still takes its share of the 90 blueprint marks — and
-// deliberately no thumb is put on the scale for P2 over P1: an honest pool
-// restores the steering by itself, because a P2 that is 13% short again
-// outranks a P1 that is 2% over and the paper choice starts working.
+// The P2 target is a pool of MARKS: forty whole Paper 2s at 90 marks each. A
+// pool counted in questions has to assume a mean question size, so the target
+// moved with however big we were writing questions that month. In marks, each
+// topic takes its share of the 90 blueprint marks whatever the size, and P1 and
+// P2 stay comparable so the paper choice can be steered by deficit.
 export const P2_MARKS_TOTAL = 3600;
 
 // Per-module profile splits (per 20 P1 items / per 30 P2 raw marks).
 export const P1_PROFILE_SPLIT: Record<Profile, number> = { CK: 6, AK: 8, R: 6 };
 export const P2_PROFILE_SPLIT: Record<Profile, number> = { CK: 9, AK: 12, R: 9 };
 
-// R1.7 §B5 asked for Paper 1 items to climb CK -> AK -> R within a topic
-// block, and a fixed ten-item cycle delivered it. The cycle is balanced only
-// over its full length: at two to five items per topic only its first
-// positions ever ran, so R was structurally starved and the split sat at
-// 31/53/16. The profile now comes from the same per-module deficit the rest of
-// the recipe uses, which converges at any topic size; the ramp is emergent
-// rather than fixed, which is the price of converging at all.
+// The P1 profile ramp (R1.7 §B5) is emergent, from the same per-module deficit
+// the rest of the recipe uses. A fixed ten-item cycle balances only over its
+// full length, and a topic block runs two to five items, so R was structurally
+// starved. Converging at any topic size costs a fixed ramp; it is worth it.
 
 export const DIFFICULTY_TARGETS: Record<1 | 2 | 3, number> = { 1: 25, 2: 50, 3: 25 };
 
@@ -58,13 +43,9 @@ export interface QuestionFacts {
   has_show_that?: boolean;
   representation: Representation;
   /**
-   * The visual template the question declares, when it has a figure.
-   *
-   * Coverage was counted by REPRESENTATION only, which cannot see a starved
-   * template inside a healthy category: 'graph' looked well served by 144
-   * coordinateGrids while the cumulative frequency curve sat at zero. Reading
-   * quartiles off an ogive is standard M3 statistics, and nothing in the
-   * recipe could ask for one.
+   * Counted per template, not only per representation: 'graph' looked well
+   * served by 144 coordinate grids while the cumulative frequency curve — standard
+   * M3 statistics — sat at zero, and nothing in the recipe could ask for one.
    */
   template?: TemplateName;
   archetype: Archetype;

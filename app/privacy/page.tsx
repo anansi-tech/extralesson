@@ -4,11 +4,9 @@ import { IMAGE_TTL_DAYS } from '@/lib/db/transcription';
 export const metadata = { title: 'Privacy — ExtraLesson' };
 
 /**
- * Every claim on this page is one the code makes true, and was checked against
- * the code when it was written: the image TTL is read from the schema constant
- * rather than typed as a number, the list of what is stored is the list of
- * fields we store, and the two companies named are the only two that receive
- * anything.
+ * Every claim here must be one the code makes true: the image TTL is read from
+ * the schema constant rather than typed, the list of what is stored is the list
+ * of fields we store, and the named companies are the only recipients.
  */
 export default function PrivacyPage() {
   return (

@@ -1,12 +1,8 @@
 import { Resend } from 'resend';
 
-// Single source of truth for outbound email — the same shape as cognicare's
-// lib/email.js, and the same environment variable names, so moving between the
-// two repos does not mean learning two conventions.
-//
-// Extralesson sends exactly one kind of email: a password-reset link. Signing
-// in does not need email at all, which is the point of having replaced the
-// magic link, so this is a rare path rather than one on every session.
+// Same shape and environment variable names as cognicare's lib/email.js, so
+// moving between the two repos does not mean learning two conventions.
+// ExtraLesson sends exactly one kind of email: a password-reset link.
 
 const FROM = process.env.RESEND_FROM ?? 'ExtraLesson <onboarding@resend.dev>';
 
@@ -14,25 +10,17 @@ export interface SendResult {
   /** True when no provider is configured, so the caller can fall back. */
   skipped: boolean;
   /**
-   * The provider's id for this message, when there is one.
-   *
-   * It was discarded, which left no way to connect "I never got the email" to
-   * a record of what happened to it — and that is the whole of the diagnosis:
-   * accepted-and-filed and never-accepted are different problems with different
-   * fixes, and only the provider knows which happened.
+   * The provider's id, kept because accepted-and-filed and never-accepted are
+   * different problems with different fixes, and only the provider knows which
+   * happened to a message a student says never arrived.
    */
   id?: string;
 }
 
 /**
- * Send, or report honestly that we could not.
- *
- * With no key configured this does NOT pretend to succeed. The caller prints
- * the link to the server log instead, which is how this worked before a
- * provider existed and is what keeps local development possible — but the
- * distinction is returned rather than swallowed, because "sent" and "logged
+ * With no key configured this does NOT pretend to succeed. "Sent" and "logged
  * where only an operator can see it" are different facts about a student's
- * ability to get back into their account.
+ * ability to get back into their account, so the caller is told which happened.
  */
 export async function sendEmail(args: {
   to: string;
@@ -55,25 +43,9 @@ export async function sendEmail(args: {
 }
 
 /**
- * The reset email.
- *
- * Written to read as correspondence, because a classifier reads it before a
- * person does. The previous version delivered to Outlook and vanished at Gmail
- * while Resend reported it delivered, on a domain that authenticates correctly
- * and delivers for another product — so the body was what was being judged.
- *
- * What changed, and why each part matters:
- *
- *   The link's text is a phrase, never the URL. An anchor whose visible text is
- *   a 242-character URL is the shape of a phishing mail, and it was printed
- *   twice — once as the href, once as the text.
- *
- *   The full URL appears only in the plain-text part, alone on its line with
- *   blank lines around it. Running a token into the next sentence leaves mail
- *   clients to guess where the link ends, and they guess wrong.
- *
- *   There is a greeting and a sign-off with a name. A message that is only an
- *   instruction and a token has nothing in it that a person wrote.
+ * A classifier judges this body before a person reads it, so: the link's
+ * visible text is a phrase and never the URL, the full URL appears only in the
+ * plain-text part alone on its line, and there is a greeting and a sign-off.
  */
 export function resetEmail(link: string, minutes: number): { subject: string; html: string; text: string } {
   const subject = 'Set a new ExtraLesson password';

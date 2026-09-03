@@ -2,9 +2,8 @@ import { z } from 'zod';
 import { circle, line, pathArc, polar, svgOpen, text } from '../svg';
 import { valueStatedInText, type VisualTemplate } from '../types';
 
-// Circle with centre O. Points sit on the circumference at compass-style
-// bearings (0° = top of the circle, clockwise). Optional radii, chords, a
-// diameter, a tangent, and marked angles at the centre or circumference.
+// Points sit on the circumference at compass-style bearings, 0° at the top of
+// the circle and running clockwise.
 
 const LabelZ = z.string().min(1).max(4);
 
@@ -22,9 +21,9 @@ export const CircleCenterParamsZ = z.object({
   chords: z.array(z.object({ from: LabelZ, to: LabelZ })).max(4).default([]),
   diameter: z.object({ from: LabelZ, to: LabelZ }).optional(),
   tangentAt: LabelZ.optional(),
-  // R1.6 §6: two tangents drawn from a point outside the circle. The template
-  // places the external point at the intersection of the tangents, so the
-  // figure is always geometrically true whatever bearings the model chose.
+  // ROUND_1_6 §6 — the external point is placed at the intersection of the
+  // tangents, so the figure is geometrically true whatever bearings the model
+  // chose.
   externalPoint: z.object({ label: LabelZ, tangentTo: z.tuple([LabelZ, LabelZ]) }).optional(),
   angles: z
     .array(
@@ -73,14 +72,9 @@ function tangentIntersection(b1: number, b2: number, radius = R): [number, numbe
 }
 
 /**
- * The radius to draw at, so that an external point fits on the canvas.
- *
- * Two tangents meet at R/cos(half the angle between their points of contact),
- * which runs away as that angle widens: contacts 132 degrees apart put the
- * meeting point 388px from the centre of a 640px canvas, and P was drawn off
- * the right-hand edge. The figure is a labelled sketch and not to scale, so the
- * whole drawing shrinks about O until P is on it — which changes no angle and
- * loses no question.
+ * The radius to draw at, so an external point fits on the canvas: two tangents
+ * meet at R/cos(half the angle between their contacts), which runs away as that
+ * angle widens. The sketch is not to scale, so it shrinks about O instead.
  */
 function fitRadius(p: CircleCenterParams): number {
   if (!p.externalPoint) return R;

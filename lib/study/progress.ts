@@ -1,11 +1,8 @@
 import { Attempt, PracticeSession } from '@/lib/db';
 
-// What a student has actually done, counted from the append-only record.
-//
-// The landing page showed a predicted grade and a mastery bar per topic, and
-// nothing about the work itself. On a day when the estimate does not move —
-// which is most days early on — the page had nothing to show for the session
-// they just finished.
+// What a student has actually done, counted from the append-only record. The
+// predicted grade does not move on most days early on, so a page showing only
+// the estimate has nothing to show for the session just finished.
 
 export interface Progress {
   sessionsCompleted: number;
@@ -28,11 +25,9 @@ function daysBack(from: Date, n: number): string {
 }
 
 /**
- * A streak counts back from today, and TODAY DOES NOT BREAK IT.
- *
- * Counting from today alone would show 0 every morning until the day's session
- * is done, which reports a broken streak to someone who has not broken
- * anything. So a streak that reaches yesterday is still alive.
+ * A streak counts back from today, and TODAY DOES NOT BREAK IT: counting from
+ * today alone would report a broken streak every morning to someone who has not
+ * broken anything, so a streak that reaches yesterday is still alive.
  */
 export function streakFrom(days: Set<string>, now: Date): number {
   let start = 0;

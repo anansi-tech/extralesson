@@ -21,7 +21,7 @@ import { triangleLabeled } from './templates/triangleLabeled';
 import { vectorFigure } from './templates/vectorFigure';
 import { vennDiagram } from './templates/vennDiagram';
 
-// R1.5 §3 — the 15 SVG templates + dataTable (semantic HTML).
+// ROUND_1_5 §3 — the 15 SVG templates + dataTable (semantic HTML).
 export const TEMPLATES: Record<TemplateName, VisualTemplate<never>> = {
   triangleLabeled,
   compoundTriangle,
@@ -77,10 +77,9 @@ const DRAWN_TO_SCALE = new Set<TemplateName>([
 ]);
 
 /**
- * "Not drawn to scale" under every schematic figure. CXC prints this in the
- * instructions of every paper, so it is exam-authentic; it also makes explicit
- * what our sketch templates already are, since they place their own vertices
- * and a student should not measure anything off them.
+ * "Not drawn to scale" under every schematic figure: CXC prints it in every
+ * paper's instructions, and our sketch templates place their own vertices, so
+ * nothing may be measured off them.
  */
 export function renderVisual(visual: StoredVisual, context?: VerifyContext): string {
   const t = TEMPLATES[visual.template];
@@ -97,12 +96,9 @@ export function renderVisual(visual: StoredVisual, context?: VerifyContext): str
 }
 
 /**
- * The GIVEN data of a question whose one visual slot is already spoken for.
- *
- * An ogive question asks for the curve, so the curve is withheld (see
- * figureGivesAnswer) and the table it is drawn from has nowhere else to live.
- * It is a dataTable like any other — only its home differs, which is why this
- * goes through the ordinary template.
+ * The GIVEN data of a question whose one visual slot is already spoken for: an
+ * ogive asks for the curve, so the curve is withheld (see figureGivesAnswer)
+ * and the table it is drawn from has nowhere else to live.
  */
 export function renderStimulusTable(params: unknown, context?: VerifyContext): string {
   return renderVisual({ template: 'dataTable', params: params as never }, context);

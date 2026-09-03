@@ -2,17 +2,11 @@ import { Attempt, PracticeSession, Transcription } from '@/lib/db';
 import { markSplit } from '@/lib/grade/assessable';
 import { methodMarksEarned } from '@/lib/grade/method-marks';
 
-// LOOKING BACK AT A QUESTION ALREADY ANSWERED.
-//
-// Nothing new is rendered and nothing new is marked: a session page already
-// serves any answered question read-only at ?q=<index>, which is what a student
-// gets when they page back inside a live session. Once the session finished,
-// nothing linked to it. This is the list of links.
-//
-// Marks are folded exactly as lib/study/state.ts folds them — deterministic
-// profile marks plus method marks, one row paid once across takes — so the
-// number beside a question here can never disagree with the number that moved
-// their mastery.
+// Nothing here is rendered or marked afresh: this is the list of links to the
+// read-only view a session already serves at ?q=<index>. Marks are folded
+// exactly as lib/study/state.ts folds them — deterministic profile marks plus
+// method marks, one row paid once across takes — so a number beside a question
+// can never disagree with the number that moved their mastery.
 
 export interface ReviewableQuestion {
   /** Where the read-only view lives: /study/session/{sessionId}?q={index} */
@@ -38,13 +32,9 @@ export interface ReviewableDay {
 }
 
 /**
- * GROUPED BY DAY, NOT BY SESSION.
- *
- * A session is fifteen minutes and holds one or two questions — measured on
- * the live bank, 30 questions across 29 sessions for the heaviest user — so a
- * heading per session is a heading per question, and the page gets longer
- * rather than shorter. Days collapse it properly: the same students sit at 1
- * to 5 days, so the list opens as one day's questions and a few headings.
+ * Grouped by day, not by session: a session holds one or two questions (30
+ * across 29 sessions for the heaviest live account), so a heading per session
+ * is a heading per question. Those same students sit at 1 to 5 days.
  */
 export function groupReviewableByDay(rows: ReviewableQuestion[]): ReviewableDay[] {
   const byDay = new Map<string, ReviewableQuestion[]>();
@@ -65,14 +55,9 @@ export function groupReviewableByDay(rows: ReviewableQuestion[]): ReviewableDay[
 }
 
 /**
- * How far back the list reaches.
- *
- * Twelve was the length of a flat list nobody wanted to scroll. Grouped by day
- * and collapsed, an older day costs one line, and the cap had started to lie:
- * a heading saying "9 questions" meant nine WITHIN THE WINDOW, on a day that
- * held twenty-five. Forty covers the heaviest live account with room, and the
- * work is the same — the query already reads the attempts, this only decides
- * how many rows come back.
+ * How far back the list reaches. A smaller cap made a heading saying "9
+ * questions" mean nine WITHIN THE WINDOW on a day that held twenty-five; forty
+ * covers the heaviest live account, and the query reads the attempts either way.
  */
 const DEFAULT_LIMIT = 40;
 
@@ -94,9 +79,8 @@ export async function loadReviewable(
     .lean<{ _id: unknown; question_ids: unknown[] }[]>();
   if (sessions.length === 0) return [];
 
-  // Where each question sits in each session. The ATTEMPT names its own
-  // session, so there is nothing to infer: a question can appear in several
-  // sessions, and the row must open the sitting it actually records.
+  // A question can appear in several sessions and the ATTEMPT names its own, so
+  // the row opens the sitting it actually records rather than an inferred one.
   const indexOf = new Map<string, number>();
   for (const s of sessions) {
     s.question_ids.forEach((q, index) => indexOf.set(`${String(s._id)}:${String(q)}`, index));

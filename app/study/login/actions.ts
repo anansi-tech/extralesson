@@ -12,9 +12,6 @@ import { hashPassword, passwordProblem, verifyPassword } from '@/lib/auth/passwo
 import { setSessionCookie } from '@/lib/auth/session';
 import { grantFromPayment, pendingPaymentFor } from '@/lib/grant-from-payment';
 
-// Email and password. Round 1 was passwordless, and checking an inbox every
-// session was friction a student on a phone would not pay.
-//
 // One deliberate asymmetry runs through this file: SIGNING IN says as little as
 // possible, and RESETTING says nothing at all. A form that answers "no account
 // with that email" turns the login page into a way to ask whether someone has
@@ -62,9 +59,8 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
 
   if (!student) return { needsProfile: true, email };
   if (!student.password_hash) {
-    // An account from before passwords existed. Say so plainly — this one is
-    // not a disclosure, because they have already proved the email exists by
-    // having signed in with it before.
+    // Saying so plainly is not a disclosure: they proved the email exists by
+    // having signed in with it before passwords existed.
     return {
       error: 'This account was made before passwords. Use "Forgot your password?" to set one.',
       email,
@@ -111,10 +107,9 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
     password_hash: await hashPassword(password),
   });
 
-  // PAY FIRST, REGISTER SECOND — the ordering the checkout caption invites.
-  // Stripe fired before this account existed, so the webhook could only record
-  // the payment as unmatched. It is matched now, and waiting for someone to
-  // read the admin screen would leave a paying student on the free tier.
+  // PAY FIRST, REGISTER SECOND — the ordering the checkout caption invites. The
+  // webhook could only record that payment as unmatched, and waiting for someone
+  // to read the admin screen would leave a paying student on the free tier.
   const pending = await pendingPaymentFor(email);
   if (pending) {
     await grantFromPayment({
@@ -145,11 +140,9 @@ export async function requestReset(_prev: AuthState, formData: FormData): Promis
       // against the provider's record of whether it was accepted, refused or
       // accepted and filed somewhere the student did not look.
       if (id) console.log(`[reset-link] sent to ${email}, message ${id}`);
-      // Without a provider the link still has to reach a human somehow, so it
-      // goes to the server log as it always did. With one, it must NOT — a
-      // reset link in a log is a way into the account for anyone who can read
-      // logs, and it stops being a development convenience the moment the
-      // email actually arrives.
+      // Without a provider the link must still reach a human, so it goes to the
+      // server log. With one it must NOT: a reset link in a log is a way into
+      // the account for anyone who can read logs.
       if (skipped) console.log(`[reset-link] ${email} -> ${link}`);
     } catch (err) {
       // A provider that is down must not tell the form anything, or the

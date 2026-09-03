@@ -8,9 +8,8 @@ export const metadata = { title: 'Terms — ExtraLesson' };
 
 /**
  * The coverage numbers here are the SAME COMPUTED FIGURES the landing page
- * prints, read from the syllabus seeds rather than typed in — so the terms
- * cannot promise a coverage the product does not have, and cannot drift from
- * the claim on the front page.
+ * prints, read from the syllabus seeds rather than typed in, so the terms
+ * cannot promise a coverage the product does not have.
  */
 export default function TermsPage() {
   const coverage = landingCoverage();

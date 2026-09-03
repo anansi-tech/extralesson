@@ -15,8 +15,7 @@ export const BarChartParamsZ = z.object({
         label: z.string().min(1).max(20),
         // R1.8 §4.2: null draws the category with no bar — the paper's
         // half-finished chart, where completing it is the candidate's job and
-        // everything downstream (modal category, probability, a pie-chart
-        // sector angle) is still answerable.
+        // everything downstream is still answerable.
         value: z.number().min(0).max(10000).nullable(),
       }),
     )
@@ -54,7 +53,6 @@ export const barChart: VisualTemplate<BarChartParams> = {
     const yFor = (v: number) => PAD_T + plotH - (v / yMax) * plotH;
 
     if (p.title) parts.push(text(W / 2, 24, p.title, { size: 15 }));
-    // axes
     parts.push(line(PAD_L, PAD_T, PAD_L, PAD_T + plotH));
     parts.push(line(PAD_L, PAD_T + plotH, PAD_L + plotW, PAD_T + plotH));
     for (const t of ticks(0, yMax, p.y_step)) {

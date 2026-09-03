@@ -1,13 +1,8 @@
 import type { ContextCategory } from '@/lib/types';
 
-// R1.8 Part 0 — the context ledger.
-//
-// A bank of 123 approved questions read as repetitive because the settings
-// repeat: market ×10, school ×10, stall ×6, and nine questions opening "The
-// coordinate grid shows…". The real papers roam — fortnightly pay, a data
-// survey, map scales, phone retail, beads in a ratio, a restaurant bill, hire
-// purchase — so a question now declares WHERE it is set, and generation refuses
-// the settings a topic has just used.
+// A question declares WHERE it is set, and generation refuses the settings a
+// topic has just used, because a bank whose settings repeat reads as repetitive
+// however varied the mathematics is. See ROUND_1_8 PART 0.
 
 export const CONTEXT_CATEGORIES = [
   'none', // context-free symbolic work, which the papers use constantly
@@ -29,8 +24,8 @@ export const CONTEXT_CATEGORIES = [
 ] as const;
 
 /**
- * Share of Paper 1 items that should be bare symbolic work. The real paper is
- * largely context-free; ours was 35% contextual with a 27-word median stem.
+ * The real Paper 1 is largely context-free; ours was 35% contextual with a
+ * 27-word median stem.
  */
 export const CONTEXT_FREE_MCQ_SHARE = 0.5;
 
@@ -42,9 +37,8 @@ interface Recent {
 }
 
 /**
- * The settings a topic has used recently, most recent first. Generation is told
- * to avoid these; it is not a hard gate, because a topic with few natural
- * settings (consumer arithmetic is about money) must not become ungeneratable.
+ * Most recent first. Advisory, never a gate: a topic with few natural settings
+ * (consumer arithmetic is about money) must not become ungeneratable.
  */
 export function recentContexts(recent: Recent[]): ContextCategory[] {
   const seen: ContextCategory[] = [];
@@ -55,7 +49,6 @@ export function recentContexts(recent: Recent[]): ContextCategory[] {
   return seen;
 }
 
-/** Prompt block naming what this topic has just used, and what to avoid. */
 export function contextGuidance(
   recent: Recent[],
   wantContextFree: boolean,
@@ -68,10 +61,9 @@ export function contextGuidance(
   const avoid = used.length
     ? ` This topic has just used ${used.join(', ')} — choose something else.`
     : '';
-  // ONE CATEGORY, NAMED. Listing all fifteen and saying "avoid the last few"
-  // spreads evenly; the papers do not. This is the setting the topic is
-  // furthest short of against its OWN measured target, so the share converges
-  // rather than drifting (lib/generation/context-targets.ts).
+  // ONE CATEGORY, NAMED: listing all fifteen and saying "avoid the last few"
+  // spreads evenly, and the papers do not. The name is the setting this topic
+  // is furthest short of on its own target (lib/generation/context-targets.ts).
   if (want) {
     return `SETTING: use ${want}. Set "context_category" to "${want}". This topic is short of that setting measured against the real papers, so write the mathematics into it naturally — if it genuinely cannot carry ${want}, choose the nearest setting that can and set the field to what you actually used.${avoid} Caribbean settings, drawn widely, and do not open with "The coordinate grid shows" or "At a school fair".`;
   }

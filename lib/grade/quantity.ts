@@ -1,16 +1,6 @@
-// A number with a unit is not a number.
-//
-// The old path matched "<number> <word>" and returned the number, throwing the
-// unit away — so every quantity collapsed to its numeric head and any two
-// answers with the same head matched. 72 cm equalled 72 m; 5 cm equalled 5 kg;
-// 336 m equalled 336 square metres. It also rejected 336 m² against 336 square
-// metres, because "²" was not in the character class the regex allowed. Both
-// failures are the same missing idea: the unit was never compared.
-//
-// A quantity is parsed into a value in a CANONICAL BASE UNIT and a dimension.
-// Two quantities are equal when their dimensions match and their base values
-// match. That makes 72 cm ≠ 72 m and 0.72 m = 72 cm fall out of one rule
-// instead of a list of cases.
+// A number with a unit is not a number: a quantity parses to a value in a
+// CANONICAL BASE UNIT plus a dimension, and two are equal only when both
+// match. 72 cm ≠ 72 m and 0.72 m = 72 cm then fall out of one rule.
 
 export interface Quantity {
   /** In the dimension's base unit: metre, m², m³, kilogram, second, degree. */
@@ -18,42 +8,31 @@ export interface Quantity {
   dimension: string;
 }
 
-// Every unit we recognise, as a factor to its dimension's base.
-//
-// Capacity and volume are ONE dimension. A litre is a cubic decimetre, the
-// syllabus teaches 1000 cm³ = 1 litre, and a student who answers in litres
-// where the scheme says cm³ is right — splitting them would reject that.
+// Capacity and volume are ONE dimension: the syllabus teaches 1000 cm³ = 1
+// litre, so a student answering in litres where the scheme says cm³ is right.
 const BASE: Record<string, { dimension: string; factor: number }> = {
-  // length → metre
   mm: { dimension: 'length', factor: 0.001 },
   cm: { dimension: 'length', factor: 0.01 },
   m: { dimension: 'length', factor: 1 },
   km: { dimension: 'length', factor: 1000 },
-  // mass → kilogram
   mg: { dimension: 'mass', factor: 1e-6 },
   g: { dimension: 'mass', factor: 0.001 },
   kg: { dimension: 'mass', factor: 1 },
   t: { dimension: 'mass', factor: 1000 },
-  // volume/capacity → cubic metre
   ml: { dimension: 'volume', factor: 1e-6 },
   cl: { dimension: 'volume', factor: 1e-5 },
   l: { dimension: 'volume', factor: 0.001 },
-  // time → second
   s: { dimension: 'time', factor: 1 },
   min: { dimension: 'time', factor: 60 },
   h: { dimension: 'time', factor: 3600 },
   day: { dimension: 'time', factor: 86400 },
-  // percent → its own dimension. It was handled in parseNumeric, which divided
-  // by a hundred and moved on, so "4" against "4%" was the one place we refused
-  // an omitted unit that the question had supplied. Every other unit gets that
-  // leniency; percent was our inconsistency, not the student's.
+  // Percent is a dimension so that "4" against "4%" gets the same leniency for
+  // an omitted unit as every other unit does.
   '%': { dimension: 'percent', factor: 0.01 },
-  // money → dollar. One dimension, not one per currency: a question that
-  // converts between currencies states its own rate, and the answer is checked
-  // against the number that rate produces.
+  // One dimension, not one per currency: a question that converts states its
+  // own rate, and the answer is checked against the number that rate produces.
   dollar: { dimension: 'money', factor: 1 },
   cent: { dimension: 'money', factor: 0.01 },
-  // angle → degree
   '°': { dimension: 'angle', factor: 1 },
   rad: { dimension: 'angle', factor: 180 / Math.PI },
 };
@@ -91,21 +70,15 @@ function baseUnit(word: string): string {
 }
 
 /**
- * A unit expression to a dimension and a factor.
- *
- * Handles the powers a syllabus uses — m^2, square metres, metres squared,
- * sq m, cubic cm — and rates written with a slash, km/h. Compounds are matched
- * PART-WISE against this grammar; the answer string is never split globally on
- * a multiplication sign, which is also multiplication.
+ * Compounds are matched PART-WISE against this grammar; the answer string is
+ * never split globally on a multiplication sign, which is also multiplication.
  */
 function resolveUnit(raw: string): { dimension: string; factor: number } | null {
-  // Unicode superscripts are exponents. equivalence.ts rewrites them before
-  // calling, but the parser is also used directly and must not depend on its
-  // caller having done that.
+  // Called directly as well as through equivalence.ts, so it cannot depend on
+  // the caller having rewritten superscripts.
   let u = raw.trim().replace(/²/g, '^2').replace(/³/g, '^3').replace(/\./g, '').replace(/\s+/g, ' ');
   if (u === '') return null;
 
-  // A rate: "km/h", "m/s". Each side resolves on its own.
   const slash = u.split('/');
   if (slash.length === 2) {
     const top = resolveUnit(slash[0]);
@@ -114,7 +87,6 @@ function resolveUnit(raw: string): { dimension: string; factor: number } | null 
     return { dimension: `${top.dimension}/${bottom.dimension}`, factor: top.factor / bottom.factor };
   }
 
-  // "square metres" / "cubic cm" / "sq m" / "metres squared" / "m^2" / "m2".
   let power = 1;
   const prefix = u.match(/^(square|sq|cubic|cu)\s+(.+)$/);
   if (prefix) {
@@ -173,14 +145,9 @@ function headValue(raw: string): number | null {
 }
 
 /**
- * A quantity, or null for anything that is not one.
- *
  * Null is the important half of the contract: the caller falls back to the
- * comparisons that were already there. A parser that guessed would start
- * rejecting correct answers, which is worse than what it replaced.
- *
- * Input is expected pre-cleaned by equivalence.ts — lowercased, ² already
- * rewritten as ^2, KaTeX dressing removed.
+ * comparisons already there, and a parser that guessed would start rejecting
+ * correct answers. Input arrives pre-cleaned by equivalence.ts.
  */
 export function parseQuantity(raw: string): Quantity | null {
   const m = raw.trim().match(HEAD);
@@ -199,18 +166,10 @@ export function sameDimension(a: Quantity, b: Quantity): boolean {
 }
 
 
-// A PRODUCT OF QUANTITIES: "8 m × 6 m", the dimensions of a rectangle.
-//
-// Students type the multiplication sign with whatever the phone keyboard gives
-// them — the letter x, a capital X, an asterisk — and a real attempt was marked
-// wrong for writing "8m x 6m" against "8 m × 6 m". That is typing, not
-// mathematics.
-//
-// The rule is POSITIONAL and never a substitution. A separator is only a
-// multiplication sign when a quantity sits on both sides of it: "3x" keeps its
-// x, "2x + 5" keeps its x, and only a string that is entirely quantities
-// separated by one is read as a product. Rewriting x to * anywhere else would
-// turn every algebraic answer into arithmetic.
+// Students type the multiplication sign with whatever the phone keyboard
+// gives them. The rule is POSITIONAL, never a substitution: a separator is a
+// multiplication sign only when a quantity sits on both sides of it, so "3x"
+// and "2x + 5" keep their x instead of turning into arithmetic.
 const SEPARATOR = /\s*\*\s*|\s+[x×]\s+|\s+by\s+/i;
 
 export function parseQuantityProduct(raw: string): Quantity[] | null {

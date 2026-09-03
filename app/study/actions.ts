@@ -33,8 +33,6 @@ export async function startSession(formData?: FormData): Promise<void> {
   const gate = await canStartSession(auth.student_id, student.access, mode);
   if (!gate.allowed) redirect(`/study?error=${gate.reason}`);
 
-  // Whatever the mode needs beyond the pool: the topic the student named, or
-  // the marks they have actually lost.
   let focusPrefixes: string[] | undefined;
   if (mode === 'topic') {
     const choice = (await loadTopicChoices(student.target_modules)).find((t) => t.code === topicCode);

@@ -11,22 +11,9 @@ import { ResetToken } from '@/lib/db/reset-token';
 import { isAdminEmail } from '@/lib/auth/session';
 
 /**
- * DELETE A STUDENT AND EVERYTHING ATTACHED TO THEM.
- *
- * For a test account, and for an erasure request. One function, so the list of
- * collections lives in ONE place: a second copy is how a collection gets
- * missed, and the rows it leaves behind belong to somebody who asked to be
- * forgotten.
- *
- * Irreversible in a way nothing else here is. Attempts are append-only and
- * every mastery, progress and trajectory figure is a fold over them, so there
- * is no recomputation that brings a student back — the record IS the state.
- *
- * SESSION DRAFTS ARE THE ONES THAT GET MISSED. They are keyed by session_id
- * and carry no student_id at all, so a sweep written from "which schemas name
- * a student" skips them and leaves the drafts of a deleted account behind.
- * They are deleted through the student's session ids, which is why the
- * sessions are read before anything is removed.
+ * Every collection attached to a student is listed in ONE place; a second copy
+ * is how one gets missed. Session drafts carry no student_id, so they are
+ * deleted through the session ids, read before anything else is removed.
  */
 export const DELETED_BY_STUDENT_ID = [
   'Attempt',
@@ -36,14 +23,9 @@ export const DELETED_BY_STUDENT_ID = [
 ] as const;
 
 /**
- * The payment is KEPT, and it is the only thing that is.
- *
- * The money is a financial record — Stripe holds it either way, and the totals
- * on /admin/access stop reconciling if rows vanish from under them. What
- * leaves is the person, not the transaction: the link to the account and the
- * address that names them go, and the amount, the currency and the event id
- * stay. It is marked resolved so it does not reappear in the unmatched pile
- * asking to be chased.
+ * The payment is KEPT and anonymised: the money is a financial record and the
+ * /admin/access totals stop reconciling if rows vanish. What leaves is the
+ * person — the account link and the address — not the transaction.
  */
 export const KEPT_BUT_ANONYMISED = 'Payment';
 

@@ -1,10 +1,8 @@
 // Official paper allocations, transcribed VERBATIM from design/syllabus-2027.pdf
-// (CXC 05/G/SYLL 16, Amended Oct 2025):
-//   - Paper 01 item table: PDF page 10 (printed page 6). Each item = 1 mark.
-//   - Paper 02 mark table: PDF pages 10-11 (printed pages 6-7).
-//   - Profile splits: Assessment Grid B, PDF page 12 (printed page 8) — raw values:
-//       Paper 01 per module: CK 6, AK 8, R 6 (items, of 20)
-//       Paper 02 per module: CK 9, AK 12, R 9 (raw marks, of 30)
+// (CXC 05/G/SYLL 16, Amended Oct 2025): Paper 01 item table, PDF page 10, each
+// item 1 mark; Paper 02 mark table, PDF pages 10-11; profile splits from
+// Assessment Grid B, PDF page 12 — Paper 01 per module CK 6 / AK 8 / R 6 of 20
+// items, Paper 02 per module CK 9 / AK 12 / R 9 of 30 raw marks.
 
 interface SeedBlueprint {
   paper: 'P1' | 'P2';
@@ -61,9 +59,8 @@ export const seedBlueprints: SeedBlueprint[] = [
       { topic_codes: ['M1-CONS', 'M1-NTC'], marks: 9 },
       // "Graphs, Sets, Measurement and Algebra 1 — 12"
       { topic_codes: ['M1-GRAPHS', 'M1-SETS', 'M1-MEAS', 'M1-ALG1'], marks: 12 },
-      // "*Investigative question — 9": may be set on any combination of Module 1
-      // objectives (PDF page 11 footnote). That question type is Round 2 — this
-      // allocation exists only for blueprint-faithful weighting.
+      // "*Investigative question — 9": any combination of Module 1 objectives
+      // (PDF page 11 footnote). Kept only for blueprint-faithful weighting.
       {
         topic_codes: ['M1-NTC', 'M1-CONS', 'M1-SETS', 'M1-MEAS', 'M1-ALG1', 'M1-GRAPHS'],
         marks: 9,

@@ -23,21 +23,9 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   /**
-   * WHAT A RELATIVE og:image RESOLVES AGAINST.
-   *
-   * Without it Next falls back to the deployment origin and warns at build.
-   * That happens to produce the right absolute URL on Vercel, so the tag has
-   * been correct — but it is correct by accident, and the fallback is a
-   * per-deployment value, so a preview build would advertise its own
-   * *.vercel.app host to anyone who shared that link.
-   *
-   * externalBaseUrl() rather than a second copy of the domain: it already
-   * prefers configuration over the platform, already refuses to hand out a
-   * localhost link in production, and already declines to read the request's
-   * Host — which is the header an attacker controls.
-   *
-   * It must be the CANONICAL host. The apex 308s to www, and a scraper that
-   * does not follow redirects gets fifteen bytes of text/plain.
+   * What a relative og:image resolves against. Next's fallback is the
+   * per-deployment origin, so a preview would advertise its own host;
+   * externalBaseUrl() never reads the Host header and gives the CANONICAL one.
    */
   metadataBase: new URL(externalBaseUrl()),
   title: "ExtraLesson — Your own CXC examiner",

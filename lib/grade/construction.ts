@@ -1,20 +1,9 @@
 import type { StoredVisual } from '@/lib/visuals';
 
 /**
- * WHAT A CORRECT CONSTRUCTION LOOKS LIKE, DERIVED FROM THE FIGURE'S OWN PARAMS.
- *
- * R2 §8. A construction is the easier vision problem, not the harder one: the
- * right answer is a known set of coordinates, so checking a photographed graph
- * is comparison against ground truth rather than open judgment.
- *
- * THE PARAMS ARE THE ONLY SOURCE. Not the worked solution, not the question
- * prose, not a second table someone maintains alongside — the same declared
- * structure the figure is rendered from is the structure it is checked against,
- * so the two cannot drift apart. Where the params do not locate something, this
- * returns nothing and the slot stays self-marked; it never falls back to
- * reading coordinates out of the wording.
- *
- * Scope is the plotted families. Instrument constructions stay out (kill list).
+ * THE PARAMS ARE THE ONLY SOURCE: a figure is checked against the structure it
+ * is rendered from, so the two cannot drift. Where they locate nothing this
+ * returns nothing and the slot stays self-marked. See ROUND_2 §8.
  */
 export type CheckKind = 'point' | 'intercept' | 'shape' | 'segment' | 'boundary';
 
@@ -146,7 +135,6 @@ export function constructionChecks(visual: StoredVisual | undefined): Constructi
   return checks;
 }
 
-/** Whether a photographed construction can be checked at all. */
 export function canGroundTruth(visual: StoredVisual | undefined): boolean {
   return constructionChecks(visual).length > 0;
 }

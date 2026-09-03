@@ -1,13 +1,9 @@
 import type { Profile } from '@/lib/types';
 
-// R1.7 Part C — the mark scheme's own descriptor vocabulary.
-//
-// The official Paper 02 scheme allocates marks as CK1/AK1/R1 with a per-question
-// profile total, and writes its criteria in a small, consistent language. Our
-// rubric architecture is not an approximation of that — it IS that notation, so
-// the criteria should read the same way. This module is the single place that
-// vocabulary is defined: the generation prompt teaches it, the lint checks it,
-// and R2's grader will mark against it.
+// R1.7 Part C — the mark scheme's own descriptor vocabulary, defined in this
+// one place: the generation prompt teaches it, the lint checks it, and the
+// grader marks against it. Our rubric IS the official scheme's notation rather
+// than an approximation of it, so the criteria read the same way.
 
 export const MARK_SCHEME_CONVENTIONS = `MARK-SCHEME LANGUAGE (the official scheme's own):
 - "CAO" — correct answer only: the mark is for the final value, with no credit for method. Usually a CK mark.
@@ -17,10 +13,8 @@ export const MARK_SCHEME_CONVENTIONS = `MARK-SCHEME LANGUAGE (the official schem
 - Each criterion names one creditable act, in the scheme's telegraphic register — "Substitutes into the compound-interest formula", "CAO 47.5", "Divides 'their' total by 8" — not a sentence about what the student understands.`;
 
 // Canonical descriptors, taught to the model as examples of the register. The
-// lint does NOT check membership of this list — see opensWithAnAct below. A
-// curated list of verbs is endless to maintain and says nothing: "lists",
-// "records", "tallies" and "determines" all name creditable acts and none of
-// them were on it, which had the lint flagging a quarter of sound rubric rows.
+// lint does NOT check membership of this list — see opensWithAnAct below: a
+// curated verb list is endless, and flagged a quarter of sound rubric rows.
 export const CRITERION_VERBS = [
   'cao',
   'method',
@@ -74,10 +68,9 @@ export interface CriterionIssue {
 
 const FOLLOW_THROUGH_RE = /["“]their["”]|follow[- ]through/i;
 
-// The scheme's register is one creditable ACT, written third-person singular:
-// "Substitutes into the formula", "Divides 'their' total by 8", "CAO 47.5".
-// That shape is checkable without curating a word list — which is the point,
-// since the shape is what the convention actually is.
+// The scheme's register is one creditable ACT in the third-person singular.
+// That shape is checkable without curating a word list, which is the point:
+// the shape is what the convention actually is.
 const SCHEME_IDIOMS = new Set(['cao', 'method', 'process', 'follow-through', 'ft']);
 
 function opensWithAnAct(text: string): boolean {

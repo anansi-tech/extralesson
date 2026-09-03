@@ -1,17 +1,12 @@
-// What a password must be, with no crypto attached.
-//
 // Separate from ./password because the sign-in form is a client component and
-// needs the minimum length to show it: importing it from the hashing module
-// pulled node:crypto into the browser bundle and failed the build. A rule the
-// user reads belongs on the client; the key derivation never does.
+// needs the minimum length: importing it from the hashing module pulls
+// node:crypto into the browser bundle. A rule the user reads belongs on the
+// client; the key derivation never does.
 
 /**
- * What we require of a password, and nothing more.
- *
  * Length is the only rule that reliably buys strength. Character-class rules
- * push people to Passw0rd! — memorable to a cracker, not to the student — and
- * this is a maths practice account, so the honest bar is "long enough not to be
- * guessed, short enough to type on a phone every day".
+ * push people to Passw0rd! — memorable to a cracker, not to the student — so
+ * the bar is long enough not to be guessed, short enough to type every day.
  */
 export const PASSWORD_MIN = 10;
 

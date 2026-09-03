@@ -9,8 +9,6 @@ export const metadata = {
 };
 
 /**
- * WHERE STRIPE SENDS A STUDENT AFTER PAYING.
- *
  * One instruction, because there is only one way this goes wrong: access is
  * matched on the EMAIL ADDRESS, so an account made with a different one gets
  * nothing until someone matches it by hand. Everything else can wait.

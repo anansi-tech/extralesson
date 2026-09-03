@@ -2,10 +2,9 @@ import { z } from 'zod';
 import { line, pathArc, polar, polygon, svgOpen, text } from '../svg';
 import { valueStatedInText, type VisualTemplate } from '../types';
 
-// Two horizontal parallel lines (marked with matching arrows) cut by one or
-// two transversals. Angles are marked at intersection slots: line 'top' or
-// 'bottom' picks the intersection, slot NE/NW/SW/SE picks the quadrant formed
-// by the parallel line and the transversal (8 slots per transversal).
+// Angles are marked at intersection slots: line 'top' or 'bottom' picks the
+// intersection, slot NE/NW/SW/SE picks the quadrant formed by the parallel line
+// and the transversal (8 slots per transversal).
 
 const SlotZ = z.enum(['NE', 'NW', 'SW', 'SE']);
 
@@ -87,21 +86,18 @@ export const parallelTransversal: VisualTemplate<ParallelTransversalParams> = {
 
   render(p) {
     const parts: string[] = [svgOpen(W, H)];
-    // parallel lines with matching direction arrows
     for (const y of [Y_TOP, Y_BOT]) {
       parts.push(line(30, y, 610, y));
       parts.push(
         polygon([[122, y], [110, y - 5], [110, y + 5]], true).replace('<polygon', '<polygon fill="#1E2430" stroke="none"'),
       );
     }
-    // transversals
     p.transversals.forEach((tr, i) => {
       const theta = tr.angleDeg;
       const cot = Math.cos((theta * Math.PI) / 180) / Math.sin((theta * Math.PI) / 180);
       const xAt = (y: number) => X_TOP[i] + (Y_TOP - y) * cot;
       parts.push(line(xAt(Y_TOP - 55), Y_TOP - 55, xAt(Y_BOT + 55), Y_BOT + 55));
     });
-    // marked angles
     for (const a of p.angles) {
       if (a.transversal >= p.transversals.length) continue;
       const theta = p.transversals[a.transversal].angleDeg;
