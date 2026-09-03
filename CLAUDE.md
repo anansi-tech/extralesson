@@ -1,9 +1,10 @@
 # CLAUDE.md — ExtraLesson
 
 AI-powered CSEC Mathematics tutoring for the Caribbean. The current spec is
-`ROUND_1_5_FINAL.md` (visuals, multi-part schema, target matrices) layered on
-`ROUND_1_EXTRALESSON.md` — read both before any non-trivial change. The
-photo-grading examiner engine is Round 2. `feat/question-bank-fingerprint` is
+`ROUND_4_FIRST_RUN.md` (photo-first answering, the first-question session,
+mark disputes), on top of `ROUND_1_5_FINAL.md` (visuals, multi-part schema,
+target matrices) layered on `ROUND_1_EXTRALESSON.md` — read all three before
+any non-trivial change. The photo-grading examiner engine is Round 2. `feat/question-bank-fingerprint` is
 a quarry, not a merge target — see the R1.5 branch policy.
 
 ## Ground truth
@@ -221,6 +222,12 @@ rule that was not written down got resolved to whatever the reader assumed.
 First principles. Occam's razor. Surgical changes only — no scope creep, no speculative
 abstractions. Every changed line traces to the spec. Verify with `pnpm test` before
 committing; one task per commit, push after each.
+
+**Code rule, new in this round and permanent.** Code is the explanation. Short
+functions, plain names, one idea per line. A comment says *why*, never *what*
+or *what used to be*. If the code can't say it, change the code first. History
+lives in git and the ROUND docs. A comment over five lines is a paragraph
+looking for a home. This goes in CLAUDE.md under Working style.
 
 ## Commands
 
