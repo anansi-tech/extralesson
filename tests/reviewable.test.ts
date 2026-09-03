@@ -66,7 +66,10 @@ describe('a reviewed question shows what the photograph earned', () => {
   );
 
   it('offers the camera only when not reviewing', () => {
-    expect(CARD).toMatch(/!reviewing && feedback\.earnableByMethod > 0 && \(\s*<WorkingPhoto/);
+    // Before submit, and after it where a read exists or the working could
+    // still earn something; never on a look back (ROUND_4 Task 1).
+    expect(CARD).toMatch(/!reviewing && !feedback && \(\s*<WorkingPhoto/);
+    expect(CARD).toMatch(/!reviewing && \(feedback\.working \|\| feedback\.earnableByMethod > 0\) && \(\s*<WorkingPhoto/);
   });
 
   it('renders the stored takes when reviewing', () => {

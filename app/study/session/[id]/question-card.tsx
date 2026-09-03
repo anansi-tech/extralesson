@@ -4,6 +4,7 @@ import { Fragment, useCallback, useEffect, useRef, useState, useTransition } fro
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { saveDraft, submitAnswer, type Feedback } from './actions';
+import type { ReadResult } from './capture';
 import { TypedInput } from './typed-input';
 import { HintLines, SymbolStrip } from './affordance';
 import { WorkingPhoto } from './working-photo';
@@ -63,6 +64,8 @@ export interface CardQuestion {
     answers: Record<string, string>;
     values: Record<string, string[]>;
     selected?: number;
+    /** The page already photographed for this question, before submit. */
+    read?: ReadResult;
   };
   prior?: {
     answers: Record<string, string>;
@@ -474,6 +477,19 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </div>
       )}
 
+      {/* PHOTO FIRST (ROUND_4 Task 1): the camera sits above the boxes from the
+          start. A read fills the single-box slots; the student checks them and
+          submits, and only then does the read become the answer. */}
+      {question.kind === 'structured' && !reviewing && !feedback && (
+        <WorkingPhoto
+          key={`${question.sessionId}-${question.index}`}
+          sessionId={question.sessionId}
+          questionIndex={question.index}
+          initial={question.draft?.read}
+          onRead={(prefill) => setPartAnswers((prev) => ({ ...prev, ...prefill }))}
+        />
+      )}
+
       {question.kind === 'structured' && (
         <div className="mt-4 space-y-4">
           {question.parts.map((p) => {
@@ -764,12 +780,17 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             />
           </div>
 
-          {/* R2 §2 — the camera comes after the typed answers are in, and only
-              where the working could still earn something. A prompt on every
-              question is a chore; a prompt on a question with three unearned
-              method marks is an offer. */}
-          {question.kind === 'structured' && !reviewing && feedback.earnableByMethod > 0 && (
-            <WorkingPhoto attemptId={feedback.attemptId} marks={feedback.earnableByMethod} />
+          {/* After submit the read is marked. A student who typed instead is
+              offered the camera only where the working could still earn
+              something: a prompt on every question is a chore. */}
+          {question.kind === 'structured' && !reviewing && (feedback.working || feedback.earnableByMethod > 0) && (
+            <WorkingPhoto
+              sessionId={question.sessionId}
+              questionIndex={question.index}
+              attemptId={feedback.attemptId}
+              marks={feedback.earnableByMethod}
+              initial={feedback.working}
+            />
           )}
 
           {/* The CAPTURE control is what a finished question does not get; what it

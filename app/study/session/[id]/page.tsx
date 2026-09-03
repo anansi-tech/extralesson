@@ -20,6 +20,8 @@ import { boxWidthChars, isMultiValue, readInputShape, showsBoxCount } from '@/li
 import { inputAffordance } from '@/lib/grade/input-hints';
 import { PROFILE_GLOSS, PROFILE_GLOSS_SHORT, PROFILE_MEANING } from '@/lib/study/profiles';
 import QuestionCard, { type CardQuestion } from './question-card';
+import type { ReadResult } from './capture';
+import { MAX_TAKES } from '@/lib/grade/transcribe';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { constructActs, figureGivesAnswer } from '@/lib/targets/construct';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
@@ -568,6 +570,24 @@ export default async function SessionPage({
         selected?: number;
       } | null>();
 
+  // A page photographed before submit: the take that stands, and how many
+  // are left, so a reload shows what was read rather than offering a third.
+  const reads = reviewing
+    ? []
+    : await Transcription.find({ session_id: id, question_index: index })
+        .sort({ take: 1 })
+        .select('lines answers legible notes take')
+        .lean<{ take: number; lines: ReadResult['transcription']['lines']; answers?: ReadResult['transcription']['answers']; legible: boolean; notes?: string }[]>();
+  const latest = reads.at(-1);
+  const read: ReadResult | undefined = latest
+    ? {
+        transcription: { lines: latest.lines, answers: latest.answers ?? [], legible: latest.legible, notes: latest.notes },
+        take: latest.take,
+        takesLeft: MAX_TAKES - reads.length,
+        prefill: {},
+      }
+    : undefined;
+
   const card: CardQuestion = {
     sessionId: id,
     index,
@@ -575,13 +595,15 @@ export default async function SessionPage({
     marksTotal,
     marksAnswered,
     prior,
-    draft: draftRow
-      ? {
-          answers: draftRow.answers ?? {},
-          values: draftRow.values ?? {},
-          selected: draftRow.selected,
-        }
-      : undefined,
+    draft:
+      draftRow || read
+        ? {
+            answers: draftRow?.answers ?? {},
+            values: draftRow?.values ?? {},
+            selected: draftRow?.selected,
+            read,
+          }
+        : undefined,
     kind: question.kind,
     stimulusHtml: question.stimulus ? renderMathHtml(question.stimulus) : undefined,
     stemHtml: renderMathHtml(question.stem),

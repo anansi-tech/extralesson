@@ -1,14 +1,17 @@
 'use client';
 
 import { useRef, useState, useTransition } from 'react';
-import { captureWorking } from './capture';
+import { captureWorking, readWorking, type ReadResult } from './capture';
+import type { CaptureResult } from './mark-working';
 import { WorkingRead } from './working-read';
 import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
 
 /**
- * The camera appears only after the typed answers are submitted: those are the
- * deterministic record, and the reveal must not steer what is photographed.
- * Scaled down on the device, to spend less of a student's data. ROUND_2 §2–§3.
+ * PHOTO FIRST (ROUND_4 Task 1): before submit the page is read and the boxes
+ * are filled from the read, which the student checks and hands in; the read
+ * becomes the answer only when they do. After submit the same control reads
+ * and marks, for a student who typed instead. Scaled down on the device, to
+ * spend less of a student's data.
  */
 const LONG_EDGE = 1400;
 const QUALITY = 0.75;
@@ -24,14 +27,33 @@ async function scaleDown(file: File): Promise<{ data: string; contentType: strin
   return { data: url.slice(url.indexOf(',') + 1), contentType: 'image/jpeg' };
 }
 
-export function WorkingPhoto({ attemptId, marks }: { attemptId: string; marks: number }) {
+type Marked = Pick<CaptureResult, 'method' | 'marksAdded'>;
+
+export function WorkingPhoto({
+  sessionId,
+  questionIndex,
+  attemptId,
+  marks,
+  initial,
+  onRead,
+}: {
+  sessionId: string;
+  questionIndex: number;
+  /** Set once the answers are in: reads are then marked as well as read. */
+  attemptId?: string;
+  /** Method marks still on offer; the post-submit copy names them. */
+  marks?: number;
+  /** A read already taken, so a reload or a submit does not lose it. */
+  initial?: (ReadResult | CaptureResult) | null;
+  /** The boxes to fill from a read; only ever called before submit. */
+  onRead?: (prefill: Record<string, string>) => void;
+}) {
   const fileRef = useRef<HTMLInputElement | null>(null);
-  const [read, setRead] = useState<TranscriptionResult | null>(null);
-  const [method, setMethod] = useState<
-    { code: string; awarded: boolean; reason: string; mark_value: number }[]
-  >([]);
-  const [marksAdded, setMarksAdded] = useState(0);
-  const [takesLeft, setTakesLeft] = useState(MAX_TAKES);
+  const [read, setRead] = useState<TranscriptionResult | null>(initial?.transcription ?? null);
+  const [takesLeft, setTakesLeft] = useState(initial?.takesLeft ?? MAX_TAKES);
+  const [marked, setMarked] = useState<Marked>(
+    initial && 'method' in initial ? { method: initial.method, marksAdded: initial.marksAdded } : { method: [], marksAdded: 0 },
+  );
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
@@ -39,15 +61,18 @@ export function WorkingPhoto({ attemptId, marks }: { attemptId: string; marks: n
     setError(null);
     start(async () => {
       try {
-        const { data, contentType } = await scaleDown(file);
-        const res = await captureWorking({ attemptId, contentType, data });
-        if ('error' in res) setError(res.error);
-        else {
-          setRead(res.transcription);
-          setTakesLeft(res.takesLeft);
-          setMethod(res.method);
-          setMarksAdded(res.marksAdded);
+        const image = await scaleDown(file);
+        const res = attemptId
+          ? await captureWorking({ attemptId, ...image })
+          : await readWorking({ sessionId, questionIndex, ...image });
+        if ('error' in res) {
+          setError(res.error);
+          return;
         }
+        setRead(res.transcription);
+        setTakesLeft(res.takesLeft);
+        if ('method' in res) setMarked({ method: res.method, marksAdded: res.marksAdded });
+        if ('prefill' in res) onRead?.(res.prefill);
       } catch {
         setError('That photo could not be prepared on this device.');
       }
@@ -55,16 +80,14 @@ export function WorkingPhoto({ attemptId, marks }: { attemptId: string; marks: n
   };
 
   return (
-    <div className="mt-4 border-t-[1.5px] border-rule pt-4">
-      <div className="section-label">
-        Your working on paper
-      </div>
+    <div className={attemptId ? 'mt-4 border-t-[1.5px] border-rule pt-4' : 'mt-4 border-l-3 border-margin bg-[#FFFDF6] py-2 pl-3'}>
+      <div className="section-label">Your working on paper</div>
 
       {!read && (
         <p className="mt-1 text-[12px] leading-snug text-dim">
-          There {marks === 1 ? 'is 1 mark' : `are ${marks} marks`} here for the method, and we
-          cannot see your working. Photograph what you wrote and we will type it up beside the
-          mark scheme. Nothing you have already earned can change.
+          {attemptId
+            ? `There ${marks === 1 ? 'is 1 mark' : `are ${marks} marks`} here for the method, and we cannot see your working. Photograph what you wrote and we will type it up beside the mark scheme. Nothing you have already earned can change.`
+            : 'Work it on paper, then photograph the page. We fill in the boxes from what we read — check them, change anything we got wrong, and submit.'}
         </p>
       )}
 
@@ -86,7 +109,7 @@ export function WorkingPhoto({ attemptId, marks }: { attemptId: string; marks: n
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={pending}
-          className="mt-2 min-h-11 w-full border-[1.5px] border-ink p-3 font-mono text-xs uppercase tracking-widest disabled:opacity-60"
+          className="mt-2 min-h-11 w-full border-[1.5px] border-ink bg-white p-3 font-mono text-xs uppercase tracking-widest disabled:opacity-60"
         >
           {pending ? 'Reading…' : read ? 'Take it again' : 'Photograph your working'}
         </button>
@@ -103,10 +126,10 @@ export function WorkingPhoto({ attemptId, marks }: { attemptId: string; marks: n
           lines={read.lines}
           legible={read.legible}
           notes={read.notes}
-          method={method}
+          method={marked.method}
           earnedLabel={
-            marksAdded > 0
-              ? `Your working earned ${marksAdded} more mark${marksAdded === 1 ? '' : 's'}`
+            marked.marksAdded > 0
+              ? `Your working earned ${marked.marksAdded} more mark${marked.marksAdded === 1 ? '' : 's'}`
               : 'What your working earned'
           }
           footer={
