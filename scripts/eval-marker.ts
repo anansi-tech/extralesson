@@ -314,6 +314,9 @@ async function main() {
     console.log(`   run ${i}: ${r.agree}/${r.n} ${((100 * r.agree) / r.n).toFixed(0)}%` +
       `  false awards CAO ${r.falseAwardCao} / method ${r.falseAwardMethod}` +
       `  withheld-should-award ${r.withheldShouldAward}`);
+    // Which rows, per run, so a case can be followed across runs and not
+    // only in the worst one.
+    if (REASONING) console.log(`      disagreed: ${r.lines.map((l) => l.split(' ')[0]).join(', ') || 'none'}`);
   }
 
   const spread = (pick: (r: RunStats) => number) => {
