@@ -397,6 +397,26 @@
         { "code": "AK5", "awarded": false, "reason": "The equation is not solved to obtain n = 2 or n = 6." },
         { "code": "R4", "awarded": false, "reason": "Only the equation n^2 - 8n + 24 = 12 is written; nothing is solved, rejected or selected." }
       ]
+    },
+    {
+      "id": "f-20c7f7",
+      "case": "Field dispute on R4: the student queried \"We could not see where you expressed your answer, 24000, in standard form such as 2.4 × 10^4.\".",
+      "student_answers": { "a.i": "144000", "b.i": "156000", "b.ii": "88%", "c.ii": "24000" },
+      "marks": [
+        { "code": "CK1", "awarded": true, "reason": "Awarded by the grader on the typed answer.", "proposed": true },
+        { "code": "AK1", "awarded": true, "reason": "Awarded by the grader on the typed answer.", "proposed": true },
+        { "code": "CK2", "awarded": true, "reason": "You wrote “1200000 - 144000 = 1056000”, showing suitable beans as the total less rejected beans.", "proposed": true },
+        { "code": "AK2", "awarded": true, "reason": "You subtracted your rejected-bean total, 144000, from 1200000.", "proposed": true },
+        { "code": "AK3", "awarded": true, "reason": "Awarded by the grader on the typed answer.", "proposed": true },
+        { "code": "R1", "awarded": true, "reason": "Awarded by the grader on the typed answer.", "proposed": true },
+        { "code": "R2", "awarded": false, "reason": "Not earned by the typed answer, and not sent to the marker.", "proposed": true },
+        { "code": "R3", "awarded": false, "reason": "Not earned by the typed answer, and not sent to the marker.", "proposed": true },
+        { "code": "CK3", "awarded": true, "reason": "Awarded by the grader on the typed answer.", "proposed": true },
+        { "code": "AK4", "awarded": true, "reason": "Awarded by the grader on the typed answer.", "proposed": true },
+        { "code": "AK5", "awarded": true, "reason": "Awarded by the grader on the typed answer.", "proposed": true },
+        { "code": "R4", "awarded": false, "reason": "We could not see where you expressed your answer, 24000, in standard form such as 2.4 × 10^4.", "proposed": true, "disputed": true }
+      ],
+      "proposed": true
     }
   ]
 }

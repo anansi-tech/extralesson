@@ -141,3 +141,9 @@ Approved: 47 awards, 10 withholds after the correction; 19 had been flagged.
 
 All 30 entries were approved across the six batches. `review.json` was marked
 `approved` by David at `2026-08-23T20:39:39Z`.
+
+## Field cases — proposed
+
+Exported from /admin/disputes by `pnpm golden:import`. Proposed until a person approves them; the loader skips them meanwhile.
+
+- `f-20c7f7`: from a field dispute on R4, exported 2026-09-04; every row proposed, R4 disputed.

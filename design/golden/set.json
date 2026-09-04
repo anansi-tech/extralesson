@@ -1057,5 +1057,46 @@
     "text": "n^2 - 8n + 24 = 12"
    }
   ]
+ },
+ {
+  "id": "f-20c7f7",
+  "question_id": "6a852665bd8b8cbd670ab933",
+  "writer": "w-field",
+  "mode": "photo",
+  "image": "f-20c7f7.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "# of rejected = 12% x 1200000"
+   },
+   {
+    "part_label": "a",
+    "text": "= 0.12 x 1200000"
+   },
+   {
+    "part_label": "a",
+    "text": "= 144000"
+   },
+   {
+    "part_label": "b",
+    "text": "1200000 - 144000 = 1056000"
+   },
+   {
+    "part_label": "b",
+    "text": "1056000 / 1200000 = 0.88 = 88%"
+   },
+   {
+    "part_label": "c",
+    "text": "well 88% < 90%, so the harvest will not be accepted."
+   },
+   {
+    "part_label": "c",
+    "text": "# of addtn: 90% - 88% = 2% x 1200000 = 2/100 x 1200000"
+   },
+   {
+    "part_label": "c",
+    "text": "= 24000"
+   }
+  ]
  }
 ]
