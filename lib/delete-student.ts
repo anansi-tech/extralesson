@@ -1,6 +1,7 @@
 import {
   Attempt,
   CapturedImage,
+  MarkDispute,
   Payment,
   PracticeSession,
   SessionDraft,
@@ -20,6 +21,7 @@ export const DELETED_BY_STUDENT_ID = [
   'PracticeSession',
   'Transcription',
   'CapturedImage',
+  'MarkDispute',
 ] as const;
 
 /**
@@ -34,6 +36,7 @@ export interface DeletionCounts {
   PracticeSession: number;
   Transcription: number;
   CapturedImage: number;
+  MarkDispute: number;
   SessionDraft: number;
   ResetToken: number;
   Student: number;
@@ -71,6 +74,7 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
   const attempts = await Attempt.deleteMany({ student_id: studentId });
   const transcriptions = await Transcription.deleteMany({ student_id: studentId });
   const images = await CapturedImage.deleteMany({ student_id: studentId });
+  const disputes = await MarkDispute.deleteMany({ student_id: studentId });
   const practiceSessions = await PracticeSession.deleteMany({ student_id: studentId });
   const resets = await ResetToken.deleteMany({ email: address });
 
@@ -93,6 +97,7 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
       PracticeSession: practiceSessions.deletedCount ?? 0,
       Transcription: transcriptions.deletedCount ?? 0,
       CapturedImage: images.deletedCount ?? 0,
+      MarkDispute: disputes.deletedCount ?? 0,
       SessionDraft: drafts.deletedCount ?? 0,
       ResetToken: resets.deletedCount ?? 0,
       Student: removed.deletedCount ?? 0,

@@ -74,6 +74,8 @@ async function seed() {
     content_type: 'image/jpeg',
   });
   await ResetToken.create({ email: STUDENT.email, lookup: 'lookup-1', expires_at: new Date(Date.now() + 6e4) });
+  const read = await db.Transcription.findOne({ attempt_id: attempt._id }).select('_id').lean<{ _id: unknown }>();
+  await db.MarkDispute.create({ student_id: student._id, attempt_id: attempt._id, transcription_id: read!._id, code: 'R1' });
   await db.Payment.create({
     event_id: `evt_${Date.now()}`,
     email: STUDENT.email,
@@ -85,7 +87,7 @@ async function seed() {
 }
 
 beforeEach(async () => {
-  for (const m of [db.Student, db.PracticeSession, db.Attempt, db.SessionDraft, db.Transcription, db.CapturedImage, db.Payment, ResetToken]) {
+  for (const m of [db.Student, db.PracticeSession, db.Attempt, db.SessionDraft, db.Transcription, db.CapturedImage, db.MarkDispute, db.Payment, ResetToken]) {
     await m.deleteMany({});
   }
 });
@@ -101,12 +103,13 @@ describe('deleting a student', () => {
       PracticeSession: 1,
       Transcription: 1,
       CapturedImage: 1,
+      MarkDispute: 1,
       SessionDraft: 1,
       ResetToken: 1,
       Student: 1,
       PaymentAnonymised: 1,
     });
-    for (const m of [db.Student, db.PracticeSession, db.Attempt, db.Transcription, db.CapturedImage, ResetToken]) {
+    for (const m of [db.Student, db.PracticeSession, db.Attempt, db.Transcription, db.CapturedImage, db.MarkDispute, ResetToken]) {
       expect(await m.countDocuments({}), m.modelName).toBe(0);
     }
   });
