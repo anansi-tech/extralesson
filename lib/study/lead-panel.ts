@@ -1,14 +1,16 @@
 export type LeadPanel = 'resume' | 'first' | 'diagnostic' | 'session';
 
 /**
- * What the top of /study asks for. An open session always resumes; before
- * the first question the first question leads, with the diagnostic beneath
- * it (ROUND_4 Task 2); after it the diagnostic leads until an attempt exists.
+ * What the top of /study asks for: an open session, else the first question
+ * until one exists, else the diagnostic until one exists, else the dashboard
+ * (ROUND_4 Task 2). A diagnostic that reopens after the interval is offered
+ * below, never pushed: the student has sessions to sit.
  */
-export function leadPanel(args: { open: boolean; firstTaken: boolean; isNewStudent: boolean }): LeadPanel {
+export function leadPanel(args: { open: boolean; firstTaken: boolean; diagnosticTaken: boolean }): LeadPanel {
   if (args.open) return 'resume';
   if (!args.firstTaken) return 'first';
-  return args.isNewStudent ? 'diagnostic' : 'session';
+  if (!args.diagnosticTaken) return 'diagnostic';
+  return 'session';
 }
 
 /**

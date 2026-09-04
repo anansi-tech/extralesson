@@ -124,7 +124,7 @@ export default async function StudyDashboard({
   const lead = leadPanel({
     open: Boolean(open),
     firstTaken: await firstQuestionTaken(auth.student_id),
-    isNewStudent,
+    diagnosticTaken: diagnosticOpensAtDate !== null,
   });
 
   // What the trajectory is still waiting for, named rather than guessed at.
@@ -259,9 +259,8 @@ export default async function StudyDashboard({
             )}
           </>
         ) : lead === 'diagnostic' ? (
-          // BEFORE THE FIRST ATTEMPT, THE DIAGNOSTIC LEADS: weakest-first has
-          // nothing to sort on with no attempts, so the session falls back to
-          // blueprint weight alone. Swaps back on its own once attempts exist.
+          // UNTIL A DIAGNOSTIC EXISTS IT LEADS: weakest-first has nothing to
+          // sort on without one, so a session falls back to blueprint weight.
           <>
             {diagnosticOpen && (
             <form action={startSession} className="mt-5">
