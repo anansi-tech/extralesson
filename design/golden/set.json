@@ -1,0 +1,1061 @@
+[
+ {
+  "id": "c0bf69",
+  "question_id": "6a866bc3b944c6fb77c0bf69",
+  "writer": "w1",
+  "mode": "photo",
+  "image": "c0bf69.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "US$180 x 2.50 = $450"
+   },
+   {
+    "part_label": "b",
+    "text": "2% of $450 = $9"
+   },
+   {
+    "part_label": "c",
+    "text": "$450 - $375 = $76"
+   },
+   {
+    "part_label": "c",
+    "text": "$75 / 2.40 = US$31.25"
+   },
+   {
+    "part_label": "d",
+    "text": "No, US$31.25 not US$30"
+   }
+  ]
+ },
+ {
+  "id": "c0bf2a",
+  "question_id": "6a866962b944c6fb77c0bf2a",
+  "writer": "w2",
+  "mode": "photo",
+  "image": "c0bf2a.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "(x + 3)(x + 4) = x^2 + 12"
+   },
+   {
+    "part_label": "b",
+    "text": "3(x^2 + 12) = 3x^2 + 36"
+   },
+   {
+    "part_label": "c",
+    "text": "(x + 2)(3x^2 + 36)"
+   },
+   {
+    "part_label": "c",
+    "text": "= 3x^2 + 6x^2 + 36x + 72"
+   }
+  ]
+ },
+ {
+  "id": "821115",
+  "question_id": "6a83f4759aba6d73cb821115",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "Package B: 29 has exactly 2 factors, 1 and 29; 29 is prime."
+   },
+   {
+    "part_label": "b",
+    "text": "12% of $1450 = 0.12 x 1450 = $174"
+   },
+   {
+    "part_label": "c",
+    "text": "Discounted price = $1450 - $174 = $1276"
+   },
+   {
+    "part_label": "c",
+    "text": "Sales tax = 10% of $1276 = $127.60; Amount paid = $1276 + $127.60 = $1403.60"
+   },
+   {
+    "part_label": "d",
+    "text": "Amount retained = $1403.60 - $127.60 = $1276"
+   },
+   {
+    "part_label": "d",
+    "text": "Profit = $1276 - $1050 = $226; Profit"
+   }
+  ]
+ },
+ {
+  "id": "797bbe",
+  "question_id": "6a853df3e7fc40f429797bbe",
+  "writer": "w3",
+  "mode": "photo",
+  "image": "797bbe.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "40 - 15/100 x 40 = 34 lamps covered"
+   },
+   {
+    "part_label": "b",
+    "text": "40 - 34 = 6 lamps uncovered"
+   },
+   {
+    "part_label": "b",
+    "text": "6/40 x 100% = 15%"
+   },
+   {
+    "part_label": "c",
+    "text": "15/100 x 10 000 000 = 1 500 000 flashes"
+   },
+   {
+    "part_label": "d",
+    "text": "1 500 000 = 1.5 x 10^6"
+   },
+   {
+    "part_label": "d",
+    "text": "1.5 x 10^6 < 8.4 x 10^6, not suitable"
+   }
+  ]
+ },
+ {
+  "id": "8049fc",
+  "question_id": "6a83dcb5f8a49010ad8049fc",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "40 x 18.50 = $740"
+   },
+   {
+    "part_label": "a",
+    "text": "25 x 12 = $300; 15 x 8 = $120"
+   },
+   {
+    "part_label": "b",
+    "text": "$740 + $300 + $120 = $1 160"
+   },
+   {
+    "part_label": "c",
+    "text": "Amount payable after discount = $1 160"
+   },
+   {
+    "part_label": "d",
+    "text": "12.5% of $1 160 = $145"
+   },
+   {
+    "part_label": "d",
+    "text": "$1 160 + $145 = $1 305"
+   }
+  ]
+ },
+ {
+  "id": "8049c8",
+  "question_id": "6a83da96f8a49010ad8049c8",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "A to C via B = 250 m"
+   },
+   {
+    "part_label": "b",
+    "text": "Total distance = 250 + 250"
+   },
+   {
+    "part_label": "b",
+    "text": "= 500 m"
+   },
+   {
+    "part_label": "c",
+    "text": "Average speed = 500/11"
+   },
+   {
+    "part_label": "c",
+    "text": "= 45.45 m/min"
+   },
+   {
+    "part_label": "d",
+    "text": "45.45/60 = 0.76 m/s"
+   },
+   {
+    "part_label": "d",
+    "text": "0.76 < 0.9"
+   },
+   {
+    "part_label": "d",
+    "text": "Kemar did not meet the required average speed."
+   }
+  ]
+ },
+ {
+  "id": "d0dd05",
+  "question_id": "6a852ec4ed771942b6d0dd05",
+  "writer": "w4",
+  "mode": "photo",
+  "image": "d0dd05.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "gradient = (0 - 36)/(12 - 0) = -36/12 = -3"
+   },
+   {
+    "part_label": "b",
+    "text": "y = mx + c"
+   },
+   {
+    "part_label": "b",
+    "text": "y = -3x + 36"
+   },
+   {
+    "part_label": "c",
+    "text": "y = -3(7) + 36 = 15 m"
+   },
+   {
+    "part_label": "d",
+    "text": "-3x + 36 >= 15"
+   },
+   {
+    "part_label": "d",
+    "text": "-3x >= -21,  x <= 7"
+   },
+   {
+    "part_label": "d",
+    "text": "greatest whole number = 7 costumes"
+   }
+  ]
+ },
+ {
+  "id": "797cd7",
+  "question_id": "6a854b85e7fc40f429797cd7",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "A = {1,2,3,4,6}"
+   },
+   {
+    "part_label": "b",
+    "text": "{1,3}, {2,3}, {3,4}, {3,6}"
+   },
+   {
+    "part_label": "c",
+    "text": "D = {1,3,4}"
+   },
+   {
+    "part_label": "c",
+    "text": "{1,3}, {3,4}"
+   },
+   {
+    "part_label": "d",
+    "text": "{1,3} + 2 or 6: 2 D, 1 B"
+   },
+   {
+    "part_label": "d",
+    "text": "{3,4} + 2 or 6: 2 D, 1 B"
+   },
+   {
+    "part_label": "d",
+    "text": "Not possible"
+   }
+  ]
+ },
+ {
+  "id": "82109b",
+  "question_id": "6a83f0a39aba6d73cb82109b",
+  "writer": "w5",
+  "mode": "photo",
+  "image": "82109b.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "P = -12"
+   },
+   {
+    "part_label": "b",
+    "text": "m = 15/10"
+   }
+  ]
+ },
+ {
+  "id": "d16fdf",
+  "question_id": "6a841c965222177bc0d16fdf",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "(a) 27x = 120 + 15x"
+   },
+   {
+    "part_label": "b",
+    "text": "(b) 27x - 15x = 120"
+   },
+   {
+    "part_label": "b",
+    "text": "(b) 6x = 120"
+   },
+   {
+    "part_label": "b",
+    "text": "(b) x = 20"
+   },
+   {
+    "part_label": "c",
+    "text": "(c) 18 - 20 = -2"
+   },
+   {
+    "part_label": "c",
+    "text": "(c) -2 x 12 = -24"
+   },
+   {
+    "part_label": "c",
+    "text": "(c) Greatest profit = -$24"
+   },
+   {
+    "part_label": "d",
+    "text": "(d) 12(x - 20) >= 120"
+   },
+   {
+    "part_label": "d",
+    "text": "(d) x - 20 >= 10,  x >= 30"
+   },
+   {
+    "part_label": "d",
+    "text": "(d) 30 > 18,  No"
+   }
+  ]
+ },
+ {
+  "id": "d16f47",
+  "question_id": "6a8416b75222177bc0d16f47",
+  "writer": "w1",
+  "mode": "photo",
+  "image": "d16f47.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "T/(2pi) = sqrt(l/g)"
+   },
+   {
+    "part_label": "a",
+    "text": "l/g = T/(2pi)"
+   },
+   {
+    "part_label": "a",
+    "text": "l = gT/(2pi)"
+   },
+   {
+    "part_label": "b",
+    "text": "l = (9.8 x 2.50)/(2pi)"
+   },
+   {
+    "part_label": "b",
+    "text": "l = 3.90 m"
+   },
+   {
+    "part_label": "c",
+    "text": "3.90 m > 1.60 m"
+   },
+   {
+    "part_label": "c",
+    "text": "Will not fit"
+   }
+  ]
+ },
+ {
+  "id": "c0c0ad",
+  "question_id": "6a8678e6b944c6fb77c0c0ad",
+  "writer": "w2",
+  "mode": "photo",
+  "image": "c0c0ad.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "angle QSR = 60"
+   },
+   {
+    "part_label": "a",
+    "text": "tan 60 = RS/QR, so RS = sqrt(3)QR"
+   },
+   {
+    "part_label": "a",
+    "text": "tan 30 = RS/(20 + QR) = sqrt(3)QR/(20"
+   },
+   {
+    "part_label": "a",
+    "text": "+ QR)"
+   },
+   {
+    "part_label": "a",
+    "text": "QR = 10, so RS = 10sqrt(3) m"
+   },
+   {
+    "part_label": "c",
+    "text": "sin 30 = RS/PS"
+   },
+   {
+    "part_label": "c",
+    "text": "PS = 10sqrt(3)/(1/2) = 20sqrt(3) = 34.6 m"
+   }
+  ]
+ },
+ {
+  "id": "d0dd9b",
+  "question_id": "6a8538a6ed771942b6d0dd9b",
+  "writer": "w3",
+  "mode": "photo",
+  "image": "d0dd9b.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "x + 3 = 5,  x = 2"
+   },
+   {
+    "part_label": "a",
+    "text": "2y - 1 = 3,  2y = 4,  y = 2"
+   },
+   {
+    "part_label": "b",
+    "text": "OQ = OP + PQ = (5, 3) + (4, -1) = (9, 2)"
+   },
+   {
+    "part_label": "c",
+    "text": "QR = OR - OQ = (11, 7) - (9, 2) = (2, 5)"
+   },
+   {
+    "part_label": "c",
+    "text": "OS = OP + PS = (5, 3) + (2, 5) = (7, 8)"
+   },
+   {
+    "part_label": "d",
+    "text": "PS = (2, 5),  |PS| = sqrt(2^2 + 5^2) = sqrt(29)"
+   },
+   {
+    "part_label": "d",
+    "text": "Unit vector = (2/sqrt(29), 5/sqrt(29))"
+   }
+  ]
+ },
+ {
+  "id": "a9f505",
+  "question_id": "6a854f92c99a188733a9f505",
+  "writer": "w4",
+  "mode": "photo",
+  "image": "a9f505.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "A(1, 0): b + c = -1"
+   },
+   {
+    "part_label": "a",
+    "text": "B(5, 0): 5b + c = -25"
+   },
+   {
+    "part_label": "b",
+    "text": "(5b + c) - (b + c) = -25 - (-1)"
+   },
+   {
+    "part_label": "b",
+    "text": "4b = -24,  b = 6"
+   },
+   {
+    "part_label": "b",
+    "text": "6 + c = -1,  c = -7"
+   },
+   {
+    "part_label": "c",
+    "text": "P = x^2 + 6x - 7"
+   },
+   {
+    "part_label": "c",
+    "text": "P = (x + 3)^2 - 16"
+   },
+   {
+    "part_label": "d",
+    "text": "-3 = (x + 3)^2 - 16"
+   },
+   {
+    "part_label": "d",
+    "text": "(x + 3)^2 = 13"
+   },
+   {
+    "part_label": "d",
+    "text": "x = -3 + sqrt(13) or x = -3 - sqrt(13); no whole number value"
+   }
+  ]
+ },
+ {
+  "id": "9cc685",
+  "question_id": "6a867f75519aa120d69cc685",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "tan \u03b8 = 3.60/0.90"
+   },
+   {
+    "part_label": "a",
+    "text": "tan \u03b8 = 4"
+   },
+   {
+    "part_label": "b",
+    "text": "\u03b8 = tan\u207b\u00b9(4)"
+   },
+   {
+    "part_label": "b",
+    "text": "\u03b8 = 76.0 degrees"
+   },
+   {
+    "part_label": "c",
+    "text": "cos 76.0 = 5.00/L"
+   },
+   {
+    "part_label": "c",
+    "text": "L = 5.00/cos 76.0"
+   },
+   {
+    "part_label": "c",
+    "text": "L = 20.67 m"
+   },
+   {
+    "part_label": "d",
+    "text": "5.10 m < 20.67 m"
+   },
+   {
+    "part_label": "d",
+    "text": "Not long enough"
+   }
+  ]
+ },
+ {
+  "id": "b1a5ae",
+  "question_id": "6a86500d0dea6d2763b1a5ae",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "2x + 3y = 19,  y = -2/3x + 19/3"
+   },
+   {
+    "part_label": "a",
+    "text": "x + y = 7,  y = -x + 7"
+   },
+   {
+    "part_label": "a",
+    "text": "Intersection: (x, y) = (5, 2)"
+   },
+   {
+    "part_label": "b",
+    "text": "Breadfruit = $5"
+   },
+   {
+    "part_label": "b",
+    "text": "Coconut = $2"
+   },
+   {
+    "part_label": "c",
+    "text": "[4  2][5; 2] = 4(5) + 2(2)"
+   },
+   {
+    "part_label": "c",
+    "text": "= 20 + 4 = $24"
+   }
+  ]
+ },
+ {
+  "id": "a9f515",
+  "question_id": "6a85501bc99a188733a9f515",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "Turning point: (4, 9)"
+   },
+   {
+    "part_label": "a",
+    "text": "Roots: 1, 7"
+   },
+   {
+    "part_label": "b",
+    "text": "a = 4,  g(x) = x - 4"
+   },
+   {
+    "part_label": "b",
+    "text": "fg(x) = f(x - 4) = -((x - 4) - 4)^2 + 9 = -(x - 8)^2 + 9"
+   },
+   {
+    "part_label": "c",
+    "text": "Axis of symmetry: x = 8"
+   },
+   {
+    "part_label": "c",
+    "text": "Maximum value: 9"
+   },
+   {
+    "part_label": "d",
+    "text": "-(x - 8)^2 + 9 = 0  =>  (x - 8)^2 = 9"
+   },
+   {
+    "part_label": "d",
+    "text": "x = 5 or x = 11;  2 roots"
+   },
+   {
+    "part_label": "d",
+    "text": "Positive for 5 < x < 11;  11 - 5 = 6 weeks"
+   }
+  ]
+ },
+ {
+  "id": "b1a6a2",
+  "question_id": "6a865a280dea6d2763b1a6a2",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "21, 22, 23, 24, 24, 25, 26, 27, 28, 29"
+   },
+   {
+    "part_label": "b",
+    "text": "Q1 position = 3.5th value; Q1 = (23 + 24)/2 = 23.5"
+   },
+   {
+    "part_label": "b",
+    "text": "Q3 position = 7.5th value; Q3 = (26 + 27)/2 = 26.5"
+   },
+   {
+    "part_label": "b",
+    "text": "IQR = 26.5 - 23.5 = 3 minutes"
+   },
+   {
+    "part_label": "c",
+    "text": "SIQR = 3/2 = 1.5 minutes"
+   },
+   {
+    "part_label": "d",
+    "text": "Driver A: SIQR = 1.5 < 3; SD = 2.45 < 2.98"
+   },
+   {
+    "part_label": "d",
+    "text": "Select Driver A"
+   }
+  ]
+ },
+ {
+  "id": "8049da",
+  "question_id": "6a83db98f8a49010ad8049da",
+  "writer": "w5",
+  "mode": "photo",
+  "image": "8049da.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "P: (P,1), (P,2)"
+   },
+   {
+    "part_label": "b",
+    "text": "4/6"
+   },
+   {
+    "part_label": "c",
+    "text": "P or 2"
+   },
+   {
+    "part_label": "d",
+    "text": "2"
+   }
+  ]
+ },
+ {
+  "id": "fe84af",
+  "question_id": "6a83bceb2977095c51fe84af",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "f:x -> 2x + 1"
+   },
+   {
+    "part_label": "b",
+    "text": "fg(x) = f(x^2)"
+   },
+   {
+    "part_label": "b",
+    "text": "= 2x^2 + 1"
+   },
+   {
+    "part_label": "c",
+    "text": "gf(x) = fg(x) = 2x^2 + 1"
+   },
+   {
+    "part_label": "c",
+    "text": "fg = gf"
+   },
+   {
+    "part_label": "d",
+    "text": "gf(3) = 2(3^2) + 1 = 19"
+   },
+   {
+    "part_label": "d",
+    "text": "fg(3) = 2(3^2) + 1 = 19"
+   },
+   {
+    "part_label": "d",
+    "text": "19 - 19 = 0"
+   }
+  ]
+ },
+ {
+  "id": "c0bf13",
+  "question_id": "6a86688fb944c6fb77c0bf13",
+  "writer": "w1",
+  "mode": "photo",
+  "image": "c0bf13.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "det = 2(1) - 3(1) = -1"
+   },
+   {
+    "part_label": "b",
+    "text": "adj A = [1  -1;  -2  3]"
+   },
+   {
+    "part_label": "b",
+    "text": "A^-1 = 1/-1[1  -1;  -2  3] = [-1  1;  2  -3]"
+   },
+   {
+    "part_label": "c",
+    "text": "[s; d] = [-1  1;  2  -3][170; 130]"
+   },
+   {
+    "part_label": "c",
+    "text": "= [-170 + 130; 340 - 390] = [-40; -50]"
+   },
+   {
+    "part_label": "d",
+    "text": "No, -40 and -50 are not positive"
+   },
+   {
+    "part_label": "d",
+    "text": "whole numbers."
+   }
+  ]
+ },
+ {
+  "id": "d1705a",
+  "question_id": "6a8421645222177bc0d1705a",
+  "writer": "w2",
+  "mode": "photo",
+  "image": "d1705a.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "AB = OA - OB = (-2, 3) - (4, 1) = (-6, 2)"
+   },
+   {
+    "part_label": "b",
+    "text": "BC = 2AB = 2(-6, 2) = (-12, 4)"
+   },
+   {
+    "part_label": "b",
+    "text": "OC = OB + BC = (4, 1) + (-12, 4) = (-8, 5)"
+   },
+   {
+    "part_label": "c",
+    "text": "AC = OC - OA = (-8, 5) - (-2, 3) ="
+   },
+   {
+    "part_label": "c",
+    "text": "(-6, 2)"
+   },
+   {
+    "part_label": "c",
+    "text": "AC = AB, so A, B and C lie on"
+   },
+   {
+    "part_label": "c",
+    "text": "a straight line."
+   }
+  ]
+ },
+ {
+  "id": "9e894a",
+  "question_id": "6a84112a0676ebb26b9e894a",
+  "writer": "w3",
+  "mode": "photo",
+  "image": "9e894a.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "AB = (1, 3) - (-5, 7) = (6, -4)"
+   },
+   {
+    "part_label": "b",
+    "text": "OC = OA + kAB,  -5 + 6k = 10"
+   },
+   {
+    "part_label": "b",
+    "text": "k = 5/2,  OC = (-5, 7) + 5/2(6, -4) = (10, -3)"
+   },
+   {
+    "part_label": "c",
+    "text": "BC = (10, -3) - (1, 3) = (9, -6)"
+   },
+   {
+    "part_label": "c",
+    "text": "BC = sqrt(9^2 + (-6)^2) = sqrt(117) = 3sqrt(13) km"
+   },
+   {
+    "part_label": "d",
+    "text": "AB = sqrt(6^2 + (-4)^2) = 2sqrt(13),  AB : BC = 2 : 3"
+   },
+   {
+    "part_label": "d",
+    "text": "B is not the midpoint of AC."
+   }
+  ]
+ },
+ {
+  "id": "a9f537",
+  "question_id": "6a8551d1c99a188733a9f537",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "(-4 - 2, 1 - (-2)) = (-6, 3)"
+   },
+   {
+    "part_label": "b",
+    "text": "B' = (-2, 4) + (-6, 3) = (-8, 7)"
+   },
+   {
+    "part_label": "b",
+    "text": "C' = (-1, 1) + (-6, 3) = (-7, 4)"
+   },
+   {
+    "part_label": "c",
+    "text": "B'' = (2, -2) + 2[(-8, 7) - (2, -2)] = (-18, 16)"
+   },
+   {
+    "part_label": "c",
+    "text": "C'' = (2, -2) + 2[(-7, 4) - (2, -2)] = (-16, 10)"
+   },
+   {
+    "part_label": "d",
+    "text": "No; scale factor 2 doubles the lengths, so not congruent."
+   }
+  ]
+ },
+ {
+  "id": "9e8967",
+  "question_id": "6a8412240676ebb26b9e8967",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "1 + 3 + 4 + 1 = 9"
+   },
+   {
+    "part_label": "a",
+    "text": "Missing frequency = 9"
+   },
+   {
+    "part_label": "b",
+    "text": "12(1) + 15(3) + 18(4) + 21(9) + 24(1) = 342"
+   },
+   {
+    "part_label": "b",
+    "text": "1 + 3 + 4 + 9 + 1 = 18"
+   },
+   {
+    "part_label": "b",
+    "text": "Mean = 342/18 = 19 bottles"
+   },
+   {
+    "part_label": "c",
+    "text": "5 x 19 = 95 bottles"
+   },
+   {
+    "part_label": "c",
+    "text": "95 bottles is enough"
+   }
+  ]
+ },
+ {
+  "id": "037e50",
+  "question_id": "6a867804274ccc2bbe037e50",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "g(2) = -(2)^2 + 8(2) = 12"
+   },
+   {
+    "part_label": "b",
+    "text": "Break-even = 2 stools"
+   },
+   {
+    "part_label": "c",
+    "text": "Profit for 2 \u2264 x \u2264 4"
+   },
+   {
+    "part_label": "c",
+    "text": "2 and 4 stools"
+   },
+   {
+    "part_label": "d",
+    "text": "At 2 stools: 12 - (2(2) + 8) = 0"
+   },
+   {
+    "part_label": "d",
+    "text": "At 4 stools: 16 - (2(4) + 8) = 0"
+   }
+  ]
+ },
+ {
+  "id": "a9f59f",
+  "question_id": "6a8556dec99a188733a9f59f",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "(2 - (-3), 0 - 2) = (5, -2)"
+   },
+   {
+    "part_label": "a",
+    "text": "[5; -2]"
+   },
+   {
+    "part_label": "b",
+    "text": "B' = (-1 + 5, 5 - 2) = (4, 3)"
+   },
+   {
+    "part_label": "b",
+    "text": "C' = (1 + 5, 2 - 2) = (6, 0)"
+   },
+   {
+    "part_label": "c",
+    "text": "A'' = (2, 0)"
+   },
+   {
+    "part_label": "c",
+    "text": "B'' = (2, 0) + 2(2, 3) = (6, 6)"
+   },
+   {
+    "part_label": "c",
+    "text": "C'' = (2, 0) + 2(4, 0) = (10, 0)"
+   },
+   {
+    "part_label": "d",
+    "text": "Similar: corresponding angles equal; corresponding sides in ratio 2:1"
+   },
+   {
+    "part_label": "d",
+    "text": "Not congruent: corresponding side lengths not equal"
+   },
+   {
+    "part_label": "d",
+    "text": "Same orientation"
+   }
+  ]
+ },
+ {
+  "id": "797c98",
+  "question_id": "6a8548dae7fc40f429797c98",
+  "writer": "w4",
+  "mode": "photo",
+  "image": "797c98.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "AB = (-2 - (-4), 1 - 1) = (2, 0)"
+   },
+   {
+    "part_label": "b",
+    "text": "A' = (-4 - 2, 1 - 0) = (-6, 1)"
+   },
+   {
+    "part_label": "b",
+    "text": "C' = (-3 - 2, 3 - 0) = (-5, 3)"
+   },
+   {
+    "part_label": "c",
+    "text": "A'' = (-1, -6)"
+   },
+   {
+    "part_label": "c",
+    "text": "C'' = (-3, -5)"
+   },
+   {
+    "part_label": "d",
+    "text": "ABC and A''B''C'' are congruent and have the same orientation."
+   },
+   {
+    "part_label": "d",
+    "text": "Translation and rotation preserve lengths and angles."
+   }
+  ]
+ },
+ {
+  "id": "48641b",
+  "question_id": "6a8797946af0b4c2ed48641b",
+  "writer": "w5",
+  "mode": "photo",
+  "image": "48641b.jpg",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "35/100 x 40 = 14"
+   },
+   {
+    "part_label": "b",
+    "text": "5 + x = 14"
+   },
+   {
+    "part_label": "c",
+    "text": "5 + 9 + 14"
+   },
+   {
+    "part_label": "d",
+    "text": "1/3 = ?"
+   }
+  ]
+ },
+ {
+  "id": "037dc7",
+  "question_id": "6a86725f274ccc2bbe037dc7",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "x + y = 10"
+   },
+   {
+    "part_label": "a",
+    "text": "3x + 2y = 24"
+   },
+   {
+    "part_label": "b",
+    "text": "70x + 60y"
+   },
+   {
+    "part_label": "c",
+    "text": "n^2 - 8n + 24 = 12"
+   }
+  ]
+ }
+]

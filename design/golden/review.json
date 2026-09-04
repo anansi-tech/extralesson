@@ -1,0 +1,341 @@
+{
+  "version": 1,
+  "status": "approved",
+  "reviewer": "David",
+  "reviewed_at": "2026-08-23T20:39:39Z",
+  "entries": [
+    {
+      "id": "c0bf69",
+      "case": "Correct opening conversion; service charge found but not deducted; later conversion follows the student's own wrong balance.",
+      "student_answers": { "a.i": "$450", "c.i": "US$31.25" },
+      "marks": [
+        { "code": "CK3", "awarded": true, "reason": "The working chooses division by 2.40 to convert the local-dollar balance back to US dollars." },
+        { "code": "AK3", "awarded": true, "reason": "The student subtracts 375 from their own post-charge value of 450." },
+        { "code": "AK4", "awarded": true, "reason": "The student divides their remaining 75 local dollars by 2.40." },
+        { "code": "R2", "awarded": false, "reason": "The student deducts the attraction cost from the pre-charge amount of $450, not from a post-charge balance." }
+      ]
+    },
+    {
+      "id": "c0bf2a",
+      "case": "Omits both middle terms, then turns the cubic revenue term into x squared and leaves like terms uncollected.",
+      "student_answers": { "a.i": "x^2 + 12", "c.i": "3x^2 + 6x^2 + 36x + 72" },
+      "marks": [
+        { "code": "CK1", "awarded": true, "reason": "The student forms (x + 3)(x + 4) from rows by rolls per row." },
+        { "code": "AK1", "awarded": false, "reason": "The expansion omits the 7x middle term." },
+        { "code": "CK3", "awarded": true, "reason": "Revenue is formed as (x + 2) multiplied by the student's own three-tray expression." },
+        { "code": "AK3", "awarded": true, "reason": "All four distributed products are attempted; writing 3x^2 instead of 3x^3 is a subsequent algebraic multiplication error." },
+        { "code": "R2", "awarded": false, "reason": "The two x^2 terms are left uncollected." },
+        { "code": "R3", "awarded": false, "reason": "The stated expression is neither a correct expansion nor fully collected." }
+      ]
+    },
+    {
+      "id": "821115",
+      "case": "Strong complete response with correct arithmetic and conclusion.",
+      "student_answers": { "a.i": "B", "b.i": "$174", "c.i": "$1276", "c.ii": "$127.60", "c.iii": "$1403.60", "d.i": "profit" },
+      "marks": []
+    },
+    {
+      "id": "797bbe",
+      "case": "Confuses covered with uncovered throughout, but carries the mistaken 15 percent consistently to the comparison.",
+      "student_answers": { "a.i": "34", "b.i": "15%", "c.i": "1500000", "d.i": "1.5 x 10^6" },
+      "marks": [
+        { "code": "CK1", "awarded": true, "reason": "The student identifies 40 lamps and calculates with 15 percent of that total." },
+        { "code": "CK2", "awarded": true, "reason": "The student treats uncovered lamps as 40 less their own covered count." },
+        { "code": "AK2", "awarded": true, "reason": "The student converts their 6 uncovered lamps to 6/40 x 100 percent." },
+        { "code": "CK3", "awarded": true, "reason": "The student's own uncovered percentage is used as the operating proportion." },
+        { "code": "AK3", "awarded": true, "reason": "The student calculates their 15 percent of 10,000,000." },
+        { "code": "AK5", "awarded": true, "reason": "The student's 1,500,000 is converted to 1.5 x 10^6." },
+        { "code": "R2", "awarded": true, "reason": "The student's result is expressed in valid standard form." }
+      ]
+    },
+    {
+      "id": "8049fc",
+      "case": "Correct invoice subtotal, then forgets the discount and calculates tax on the undiscounted amount.",
+      "student_answers": { "a.i": "$740", "a.ii": "$300", "a.iii": "$120", "b.i": "$1160", "c.i": "$1160", "d.i": "$145", "d.ii": "$1305" },
+      "marks": [
+        { "code": "CK2", "awarded": false, "reason": "No 5 percent discount is calculated or identified in the working." },
+        { "code": "AK3", "awarded": false, "reason": "The student does not subtract a discount from the subtotal." },
+        { "code": "CK3", "awarded": true, "reason": "The student uses their own stated payable amount of 1,160 as the taxable amount." },
+        { "code": "R2", "awarded": true, "reason": "The student correctly calculates 12.5 percent of their 1,160 as 145." },
+        { "code": "R3", "awarded": true, "reason": "The student's tax is added to their own taxable amount to obtain 1,305." }
+      ]
+    },
+    {
+      "id": "8049c8",
+      "case": "Misreads one route distance, then uses the resulting total consistently through speed and unit conversion.",
+      "student_answers": { "a.i": "250 m", "b.i": "500 m", "c.i": "45.45 m/min", "d.verdict": "did not" },
+      "marks": [
+        { "code": "CK1", "awarded": false, "reason": "The response gives 250 m but never identifies or adds AB and BC; it appears to copy the direct CA distance." },
+        { "code": "AK1", "awarded": false, "reason": "There is no calculation of 180 + 120." },
+        { "code": "CK2", "awarded": true, "reason": "The complete walk is formed from the student's own via-B distance plus the direct 250 m return." },
+        { "code": "AK2", "awarded": true, "reason": "The student adds 250 m to their earlier 250 m result." },
+        { "code": "CK3", "awarded": true, "reason": "Average speed is selected as total distance divided by time." },
+        { "code": "R1", "awarded": true, "reason": "The student's own 500 m total is divided by 11 minutes." }
+      ]
+    },
+    {
+      "id": "d0dd05",
+      "case": "Strong graph response with equation, substitution and limiting whole-number argument.",
+      "student_answers": { "a.i": "-3", "b.i": "y = -3x + 36", "c.i": "15 m", "d.number": "7" },
+      "marks": []
+    },
+    {
+      "id": "797cd7",
+      "case": "Lists the factor set and subsets correctly, then selects the drought-tolerant pairs instead of pairs meeting both conditions.",
+      "student_answers": { "a.i": "{1,2,3,4,6}", "b.i": "{1,3}, {2,3}, {3,4}, {3,6}", "c.i": "{1,3}, {3,4}" },
+      "marks": [
+        { "code": "CK3", "awarded": true, "reason": "The working identifies type 3 as drought-tolerant." },
+        { "code": "CK4", "awarded": false, "reason": "The part (c) working does not identify 2 and 6 as the butterfly-attracting types." },
+        { "code": "AK4", "awarded": false, "reason": "The student selects {1,3}, not {2,3}." },
+        { "code": "AK5", "awarded": false, "reason": "The student selects {3,4}, not {3,6}." }
+      ]
+    },
+    {
+      "id": "82109b",
+      "case": "Very incomplete graph response: gives the intercept value without its coordinate and starts the gradient calculation only.",
+      "student_answers": { "a.i": "-12", "b.i": "", "c.i": "", "d.i": "" },
+      "marks": [
+        { "code": "CK1", "awarded": true, "reason": "P = -12 identifies the value at the vertical-axis intercept, although the coordinate is incomplete." },
+        { "code": "CK2", "awarded": false, "reason": "No linear equation form P = mx + c is written." },
+        { "code": "AK1", "awarded": true, "reason": "The gradient is correctly represented by the exact calculation 15/10." },
+        { "code": "AK2", "awarded": false, "reason": "The gradient and intercept are not combined into an equation." },
+        { "code": "AK3", "awarded": false, "reason": "There is no substitution of P = 0." },
+        { "code": "AK4", "awarded": false, "reason": "There is no solution for the break-even value of x." },
+        { "code": "R2", "awarded": false, "reason": "No break-even garment count is interpreted." },
+        { "code": "AK5", "awarded": false, "reason": "There is no inequality for a profit of at least 60 dollars." },
+        { "code": "R3", "awarded": false, "reason": "No least whole-number solution is selected." }
+      ]
+    },
+    {
+      "id": "d16fdf",
+      "case": "Forms the break-even equation correctly, makes a collection error, and follows the wrong break-even value through profit and feasibility.",
+      "student_answers": { "a.i": "27x = 120 + 15x", "b.i": "20", "c.i": "-$24" },
+      "marks": [
+        { "code": "AK1", "awarded": false, "reason": "27x - 15x is incorrectly collected as 6x rather than 12x." },
+        { "code": "AK2", "awarded": false, "reason": "The student effectively divides by 6, not by 12." },
+        { "code": "CK3", "awarded": true, "reason": "The calculation uses 12 dollars as the profit contribution per crate above the student's break-even value." },
+        { "code": "AK4", "awarded": true, "reason": "The student calculates 18 minus their own break-even value of 20." }
+      ]
+    },
+    {
+      "id": "d16f47",
+      "case": "Rearranges without squaring, then evaluates that wrong formula and gives a consistent cabinet decision.",
+      "student_answers": { "a.i": "l = gT/(2pi)", "b.i": "3.90 m" },
+      "marks": [
+        { "code": "CK1", "awarded": false, "reason": "The square root is never removed by squaring." },
+        { "code": "AK1", "awarded": true, "reason": "Both sides are divided by 2pi." },
+        { "code": "AK2", "awarded": false, "reason": "The student does not square T/(2pi), so the rearranged formula is incomplete." },
+        { "code": "CK2", "awarded": true, "reason": "T = 2.50 and g = 9.8 are substituted into the student's own formula." },
+        { "code": "AK3", "awarded": false, "reason": "The required intermediate value T/(2pi) is not evaluated; the student evaluates a different unsquared expression." },
+        { "code": "AK4", "awarded": false, "reason": "There is no squaring before multiplication by 9.8." },
+        { "code": "R1", "awarded": true, "reason": "The student's resulting length, 3.90 m, is stated to three significant figures." }
+      ]
+    },
+    {
+      "id": "c0c0ad",
+      "case": "States the wrong angle but uses the correct trigonometric relationships and reaches the correct final distance.",
+      "student_answers": { "a.i": "60", "c.i": "34.6 m" },
+      "marks": [
+        { "code": "CK1", "awarded": false, "reason": "The student states 60 degrees without showing the angle-sum process and the stated angle is wrong." }
+      ]
+    },
+    {
+      "id": "d0dd9b",
+      "case": "Strong complete vectors-and-matrices response.",
+      "student_answers": { "a.x": "2", "a.y": "2", "b.i": "\\begin{pmatrix}9\\\\2\\end{pmatrix}", "c.i": "\\begin{pmatrix}7\\\\8\\end{pmatrix}", "d.i": "\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}" },
+      "marks": []
+    },
+    {
+      "id": "a9f505",
+      "case": "Forms the simultaneous equations correctly, loses a negative sign, then completes the square and solves consistently from the wrong coefficients.",
+      "student_answers": { "a.i": "b+c=-1, 5b+c=-25", "b.i": "b=6, c=-7", "c.i": "(x+3)^2-16", "d.i": "no whole number value" },
+      "marks": [
+        { "code": "AK1", "awarded": true, "reason": "The subtraction of the two equations correctly eliminates c; the error occurs when -24/4 is written as positive 6." },
+        { "code": "AK2", "awarded": true, "reason": "The student's own b = 6 is substituted to obtain c = -7." },
+        { "code": "CK3", "awarded": false, "reason": "The criterion is the identity for x^2 - 6x + 9; the student's expression has +6x." },
+        { "code": "AK3", "awarded": true, "reason": "The student correctly adds and subtracts 9 for their own quadratic expression." },
+        { "code": "AK4", "awarded": true, "reason": "The completed-square form is correct for the student's own b and c values." },
+        { "code": "CK4", "awarded": true, "reason": "Three hundred dollars below target is correctly represented by P = -3." },
+        { "code": "AK5", "awarded": true, "reason": "The student equates their completed-square expression to -3." },
+        { "code": "R2", "awarded": true, "reason": "Both positive and negative square-root branches are considered." }
+      ]
+    },
+    {
+      "id": "9cc685",
+      "case": "Inverts the tangent ratio, then consistently calculates the complementary steep angle, ramp length and rail decision.",
+      "student_answers": { "a.i": "4", "b.i": "76.0 degrees", "c.i": "20.67 m", "d.i": "No" },
+      "marks": [
+        { "code": "CK1", "awarded": false, "reason": "The tangent ratio is inverted; rise should be divided by horizontal distance." },
+        { "code": "CK2", "awarded": true, "reason": "The angle is found using inverse tangent of the student's own ratio." },
+        { "code": "AK2", "awarded": true, "reason": "tan inverse of the student's ratio 4 is evaluated correctly." },
+        { "code": "CK3", "awarded": true, "reason": "The student correctly relates cosine to horizontal distance over ramp length." },
+        { "code": "AK3", "awarded": true, "reason": "The student calculates 5 divided by cosine of their own angle." }
+      ]
+    },
+    {
+      "id": "b1a5ae",
+      "case": "Swaps the coordinates of the graph intersection and consistently uses the swapped prices in the matrix product.",
+      "student_answers": { "b.i": "$5", "b.ii": "$2", "c.i": "$24" },
+      "marks": [
+        { "code": "CK3", "awarded": true, "reason": "The row matrix product is correctly interpreted as 4x + 2y." },
+        { "code": "AK3", "awarded": true, "reason": "The student's own swapped values x = 5 and y = 2 are substituted consistently." }
+      ]
+    },
+    {
+      "id": "a9f515",
+      "case": "Strong complete functions-and-graph response.",
+      "student_answers": { "a.i": "(4,9)", "a.ii": "1,7", "b.i": "-(x-8)^2+9", "c.i": "x=8", "c.ii": "9", "d.i": "2", "d.ii": "5", "d.iii": "11", "d.iv": "6" },
+      "marks": []
+    },
+    {
+      "id": "b1a6a2",
+      "case": "Orders the data correctly but uses quartile positions that average adjacent values for an even-sized sample.",
+      "student_answers": { "a.i": "21,22,23,24,24,25,26,27,28,29", "b.lower_quartile": "23.5", "b.upper_quartile": "26.5", "b.interquartile_range": "3" },
+      "marks": [
+        { "code": "CK2", "awarded": false, "reason": "The lower five values are not used; the student instead averages the third and fourth observations." },
+        { "code": "AK2", "awarded": false, "reason": "The stated lower quartile 23.5 is not the required 23." }
+      ],
+      "human_note": "The deterministic grader currently also accepts 26.5 as equivalent to the canonical 27 because of numeric rounding tolerance, so AK3 is wrongly removed before photo marking. This needs a separate deterministic-grader correction."
+    },
+    {
+      "id": "8049da",
+      "case": "Completes only one sample-space row, obtains the inclusive probability, then leaves the exclusive case largely as fragments.",
+      "student_answers": { "a.i": "(P,1), (P,2)", "a.ii": "", "a.iii": "", "b.i": "", "b.ii": "4/6", "c.i": "", "d.i": "Yes" },
+      "marks": [
+        { "code": "AK1", "awarded": false, "reason": "The row for spinner result G is absent." },
+        { "code": "AK2", "awarded": false, "reason": "The row for spinner result M is absent." },
+        { "code": "CK2", "awarded": false, "reason": "The four inclusive-event outcomes are not identified; only the fraction 4/6 is written." },
+        { "code": "CK3", "awarded": false, "reason": "The shared outcome (P,2) is not explicitly identified." },
+        { "code": "R1", "awarded": false, "reason": "The shared outcome is not removed from the earlier reward outcomes." }
+      ]
+    },
+    {
+      "id": "fe84af",
+      "case": "Finds f and fg correctly, then assumes function composition commutes and follows that assumption to a zero difference.",
+      "student_answers": { "a.i": "f:x -> 2x+1", "b.i": "2x^2+1", "c.i": "2x^2+1", "c.ii": "=", "d.i": "0" },
+      "marks": [
+        { "code": "CK3", "awarded": false, "reason": "The student equates gf with fg instead of recognising gf(x) = g(f(x))." },
+        { "code": "AK4", "awarded": false, "reason": "The expression for f(x) is not substituted into g; the student repeats fg." },
+        { "code": "R1", "awarded": false, "reason": "The student states fg = gf rather than distinguishing the composites." },
+        { "code": "R2", "awarded": true, "reason": "The student evaluates both of their own composite expressions at 3, following through from those expressions." }
+      ]
+    },
+    {
+      "id": "c0bf13",
+      "case": "Reverses the determinant products, forms the corresponding wrong inverse, and follows it through consistently to negative carton counts.",
+      "student_answers": { "a.i": "-1", "c.i": "(-40,-50)" },
+      "marks": [
+        { "code": "CK1", "awarded": false, "reason": "The determinant products are reversed; 2(1) - 3(1) is not the stated determinant calculation." },
+        { "code": "R2", "awarded": true, "reason": "The student's own inverse matrix is applied to the order-total vector." },
+        { "code": "AK3", "awarded": true, "reason": "The standard-carton entry -40 is calculated correctly using the student's inverse." },
+        { "code": "AK4", "awarded": true, "reason": "The deluxe-carton entry -50 is calculated correctly using the student's inverse." }
+      ]
+    },
+    {
+      "id": "d1705a",
+      "case": "Reverses AB, then consistently doubles that vector and adds it to obtain C.",
+      "student_answers": { "a.i": "(-6,2)", "b.i": "(-8,5)" },
+      "marks": [
+        { "code": "CK1", "awarded": false, "reason": "The student states OA - OB, the reverse of AB = OB - OA." },
+        { "code": "AK1", "awarded": false, "reason": "The subtraction gives the reverse vector, not (6,-2)." },
+        { "code": "CK2", "awarded": true, "reason": "BC is formed as twice the student's own AB." },
+        { "code": "AK2", "awarded": true, "reason": "The first component of the student's AB is doubled correctly." },
+        { "code": "AK3", "awarded": true, "reason": "The second component of the student's AB is doubled correctly." },
+        { "code": "AK4", "awarded": true, "reason": "The student's BC is added to OB to obtain their OC." }
+      ]
+    },
+    {
+      "id": "9e894a",
+      "case": "Strong complete vector response with exact surd distance and ratio interpretation.",
+      "student_answers": { "a.i": "\\begin{pmatrix}6\\\\-4\\end{pmatrix}", "b.i": "\\begin{pmatrix}10\\\\-3\\end{pmatrix}", "c.i": "3\\sqrt{13}\\text{ km}", "d.ratio": "2:3" },
+      "marks": []
+    },
+    {
+      "id": "a9f537",
+      "case": "Uses the reverse translation vector, then applies it consistently and enlarges the resulting image about the stated centre.",
+      "student_answers": { "a.i": "(-6,3)", "b.B'": "(-8,7)", "b.C'": "(-7,4)", "c.B''": "(-18,16)", "c.C''": "(-16,10)" },
+      "marks": [
+        { "code": "CK1", "awarded": false, "reason": "The subtraction is A - A', the reverse of the required A' - A." },
+        { "code": "AK1", "awarded": false, "reason": "The resulting translation vector has both signs reversed." },
+        { "code": "CK2", "awarded": true, "reason": "The same student translation vector is applied to both remaining vertices." },
+        { "code": "AK2", "awarded": true, "reason": "The student's translation vector is applied correctly to B." },
+        { "code": "AK3", "awarded": true, "reason": "The student's translation vector is applied correctly to C." },
+        { "code": "R1", "awarded": true, "reason": "The same translation is used consistently for both image vertices." },
+        { "code": "CK3", "awarded": true, "reason": "The centre A' is held fixed and displacements from it are doubled." },
+        { "code": "AK4", "awarded": true, "reason": "Scale factor 2 about A' is correctly applied to the student's B'." },
+        { "code": "AK5", "awarded": true, "reason": "Scale factor 2 about A' is correctly applied to the student's C'." },
+        { "code": "R2", "awarded": true, "reason": "The stated centre A' is maintained for both enlarged points." }
+      ]
+    },
+    {
+      "id": "9e8967",
+      "case": "Treats the known-frequency total as the missing frequency, then computes a mean and forecast consistently using that wrong table.",
+      "student_answers": { "a.i": "9", "b.i": "19", "c.i": "Yes" },
+      "marks": [
+        { "code": "CK1", "awarded": false, "reason": "The student totals the known frequencies but does not use the required total of 12 to find the missing frequency." },
+        { "code": "AK1", "awarded": false, "reason": "Nine is the known-frequency total, not 12 minus that total." },
+        { "code": "CK2", "awarded": true, "reason": "The mean is selected as sum fx divided by total frequency." },
+        { "code": "AK2", "awarded": true, "reason": "Sum fx = 342 is correct for the student's own missing frequency of 9." },
+        { "code": "AK3", "awarded": false, "reason": "The student divides by their frequency total 18 rather than the required 12." }
+      ]
+    },
+    {
+      "id": "037e50",
+      "case": "Gets the first calculation and lower break-even point, mistakes both break-even endpoints for profitable choices, and finds zero profit there.",
+      "student_answers": { "a.i": "12", "b.i": "2", "c.i": "2 and 4", "d.i": "$0" },
+      "marks": [
+        { "code": "R2", "awarded": false, "reason": "The inclusive interval 2 <= x <= 4 includes both break-even endpoints, where revenue equals rather than exceeds cost." },
+        { "code": "R3", "awarded": false, "reason": "The student does not restrict the interval to the only profitable whole-number value, 3." },
+        { "code": "CK3", "awarded": true, "reason": "Profit is formed as revenue minus cost at the student's own selected stool counts." },
+        { "code": "AK2", "awarded": true, "reason": "Revenue and cost are evaluated correctly at the student's selected endpoints 2 and 4." },
+        { "code": "AK3", "awarded": true, "reason": "The zero profits follow correctly from the student's evaluated revenue and cost values." }
+      ]
+    },
+    {
+      "id": "a9f59f",
+      "case": "Strong complete transformation response.",
+      "student_answers": { "a.i": "(5,-2)", "b.i": "(4,3)", "b.ii": "(6,0)", "c.i": "(2,0)", "c.ii": "(6,6)", "c.iii": "(10,0)", "d.i": "similar", "d.iii": "congruent", "d.v": "the same" },
+      "marks": []
+    },
+    {
+      "id": "797c98",
+      "case": "Finds AB correctly, translates in the opposite direction, then rotates that wrong image correctly and gives invariant conclusions.",
+      "student_answers": { "a.i": "(2,0)", "b.i": "(-6,1)", "b.ii": "(-5,3)", "c.i": "(-1,-6)", "c.ii": "(-3,-5)", "d.relationship": "congruent", "d.orientation": "same" },
+      "marks": [
+        { "code": "CK2", "awarded": false, "reason": "The student uses the negative of AB rather than AB as the translation vector." },
+        { "code": "AK2", "awarded": false, "reason": "AB is subtracted from A instead of added." },
+        { "code": "AK3", "awarded": false, "reason": "AB is subtracted from C instead of added." },
+        { "code": "CK3", "awarded": true, "reason": "The rotation rule (x,y) to (-y,x) is used on the student's own translated points." },
+        { "code": "AK4", "awarded": true, "reason": "The student's A' is rotated correctly." },
+        { "code": "AK5", "awarded": true, "reason": "The student's C' is rotated correctly." }
+      ]
+    },
+    {
+      "id": "48641b",
+      "case": "Gets the first percentage count, forms the next equation and subtotal, but does not finish either calculation or the final comparison.",
+      "student_answers": { "a.i": "14", "b.i": "", "c.i": "", "d.verdict": "" },
+      "marks": [
+        { "code": "R1", "awarded": true, "reason": "The student forms 5 + x equal to their earlier count of 14." },
+        { "code": "AK2", "awarded": false, "reason": "The equation is not solved for x." },
+        { "code": "CK2", "awarded": true, "reason": "The first three class frequencies are selected in the subtotal 5 + 9 + 14." },
+        { "code": "AK3", "awarded": true, "reason": "The selected frequencies sum to 28, although the result is not written explicitly." },
+        { "code": "AK4", "awarded": false, "reason": "The subtotal is not converted to a percentage of 40." },
+        { "code": "R3", "awarded": false, "reason": "No comparison or customer verdict is completed." }
+      ]
+    },
+    {
+      "id": "037dc7",
+      "case": "Writes the two boundaries and objective expression but does not draw, test vertices, solve the mapping equation, or give final answers.",
+      "student_answers": { "b.i": "", "c.number": "" },
+      "marks": [
+        { "code": "CK2", "awarded": true, "reason": "The income expression 70x + 60y is formed." },
+        { "code": "AK3", "awarded": false, "reason": "No feasible vertices or their incomes are calculated." },
+        { "code": "AK4", "awarded": false, "reason": "An income of 640 at (4,6) is not obtained." },
+        { "code": "R2", "awarded": false, "reason": "No corner points are identified." },
+        { "code": "R3", "awarded": false, "reason": "No income-maximising point is selected." },
+        { "code": "CK3", "awarded": true, "reason": "The equation n^2 - 8n + 24 = 12 is formed from the mapping." },
+        { "code": "AK5", "awarded": false, "reason": "The equation is not solved to obtain n = 2 or n = 6." }
+      ]
+    }
+  ]
+}

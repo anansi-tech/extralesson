@@ -43,15 +43,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-# The marking golden set: photographs of real people's handwriting, and David's
-# hand-marking of them. Personal data of minors and of the volunteers who wrote
-# it, and the ground truth we grade ourselves against — read-only reference,
-# like the past papers. Never in the repo.
-design/golden/
-# The CXC past papers, specimen and subject reports. Read, never kept: they are
-# CXC's copyright and the standing rule is that no past-paper content enters
-# this repo. They were tracked for months anyway — 29 files, 94MB — because the
-# comment above said "like the past papers" while the rule below only named the
-# golden set. Ignored explicitly now so that `git add -A` cannot sweep them back
-# in, which is exactly how they returned once already.
 design/reference/
