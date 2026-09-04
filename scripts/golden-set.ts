@@ -43,7 +43,7 @@ export interface GoldenInput {
 
 export interface GoldenVerdict {
   id: string;
-  marks: { code: string; awarded: boolean; reason?: string }[];
+  marks: { code: string; awarded: boolean; reason?: string; proposed?: boolean }[];
 }
 
 export interface GoldenSet {
@@ -88,7 +88,9 @@ export function loadGoldenSet(): GoldenSet {
       studentAnswers: byId.get(e.id)!.student_answers ?? {},
       case: byId.get(e.id)!.case ?? '',
     })),
-    verdicts: new Map(review.entries.map((e) => [e.id, e.marks])),
+    // A proposed row is a question for the reviewer, not ground truth: the
+    // gate reads approved verdicts only (APPROVAL_LOG Batch 7).
+    verdicts: new Map(review.entries.map((e) => [e.id, e.marks.filter((m) => !m.proposed)])),
     approval: { reviewer: review.reviewer, reviewed_at: review.reviewed_at, status: review.status },
   };
 }
