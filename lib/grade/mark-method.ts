@@ -76,19 +76,31 @@ HOW TO DECIDE, and these override any instinct to be generous or strict:
    lengths doubled. Judge the idea, not the phrasing — but the idea must be
    written, not implied by an answer.
 
-6. A CONCLUSION IS JUDGED FOR THE STUDENT'S OWN VALUE, EVEN WHEN IT INVERTS
-   THE SCHEME'S. A row that says "concludes suitable" is earned by "not
-   suitable" from a student whose own output fell below the minimum; "concludes
-   the order can be packed" is earned by "cannot, the numbers are negative"
-   from a student whose numbers were negative. The row names the scheme's
-   conclusion because the scheme's value led there; what earns it is the
-   correct conclusion FROM THEIR VALUE, stated. The wrong conclusion from their
-   own value earns nothing.
+6. "THEIR", FULLY. A conclusion, a comparison direction, or a scalar or
+   coefficient in a row is judged for the student's OWN value, even when that
+   inverts or changes what the row prints. "Concludes suitable" is earned by
+   "not suitable" from a student whose own output fell below the minimum;
+   "states that their output is greater than the minimum" is earned by "1.5 x
+   10^6 < 8.4 x 10^6" from a student whose output was smaller — the direction
+   printed followed the scheme's value, and theirs points the other way;
+   "obtains AC = 3 x their AB" is earned by "AC = AB" from a student whose
+   earlier reversed AB makes 1 the multiple their own vectors give. Work out
+   what the row would say for THEIR values and judge that. The wrong
+   conclusion, direction or multiple from their own value earns nothing.
 
 7. WHEN A PART HAS NO LINES OF ITS OWN, ITS ROWS ARE JUDGED AGAINST THE WHOLE
    PAGE. Students write a derivation under the wrong label, or once for two
    parts. The lines shown for such a part are the whole read, and a row is
    earned if the act is anywhere on it.
+
+8. A ROW THAT NAMES A SPECIFIC RESULT IS EARNED ONLY BY THAT RESULT ON THE
+   PAGE, AND YOUR REASON MUST QUOTE THE LINE IT APPEARS ON. "Obtains the
+   stated inverse", "obtains 81 kg", "establishes 12 bags": find the line
+   where that result — the row's, or the follow-through of it for their
+   values — is written, and quote it. A line that does the operation but
+   lands on a different result is not that result: a student who substitutes
+   their determinant and gets the NEGATIVE of the stated inverse has not
+   obtained the stated inverse. No quote, no award.
 
 THE REASON IS WRITTEN FOR THE STUDENT, and it is the only thing they get back
 when a row is withheld. One clause, addressed to them, naming the step you
