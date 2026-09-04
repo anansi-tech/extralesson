@@ -1,5 +1,7 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { deriveTemplate, scopeOf, type ScopeSlot } from '@/lib/grade/claim-template';
+import { claimsFor, deriveTemplate, renderClaim, scopeOf, type ScopeSlot } from '@/lib/grade/claim-template';
 
 // ROUND_5 Task 1: a criterion becomes a claim by replacing every literal that
 // is a canonical value in scope with a reference. Constants stay; anything
@@ -65,5 +67,36 @@ describe('deriveTemplate', () => {
 
   it('walks depends_on transitively', () => {
     expect(scopeOf('c.ii', cocoa).map((s) => s.ref)).toEqual(['c.ii', 'b.i', 'a.i']);
+  });
+});
+
+describe('renderClaim', () => {
+  const canonical = { 'a.i': '144 000', 'b.i': '1 056 000' };
+  it('puts the student’s confirmed answer where the reference is', () => {
+    expect(renderClaim('Subtracts "their" {a.i} from 1 200 000', { 'a.i': '140 000' }, canonical)).toBe(
+      'Subtracts "their" 140 000 from 1 200 000',
+    );
+  });
+  it('falls back to the canonical value where the student left the slot empty', () => {
+    expect(renderClaim('Divides {b.i} by 1 200 000', { 'b.i': '' }, canonical)).toBe('Divides 1 056 000 by 1 200 000');
+    expect(renderClaim('Divides {b.i} by 1 200 000', {}, canonical)).toBe('Divides 1 056 000 by 1 200 000');
+  });
+  it('gives the marker the claim and keeps the criterion for the record', () => {
+    const rows = claimsFor([{ criterion: 'CAO 88%', template: 'CAO {b.ii}' }], { 'b.ii': '80%' }, { 'b.ii': '88%' });
+    expect(rows[0]).toMatchObject({ criterion: 'CAO 88%', claim: 'CAO 80%' });
+  });
+  it('is the criterion itself when a row has no template', () => {
+    expect(claimsFor([{ criterion: 'Adds the frequencies' }], {}, {})[0].claim).toBe('Adds the frequencies');
+  });
+});
+
+describe('the marker prompt after ROUND_5', () => {
+  it('states the one sentence and has lost the three rules it replaces', () => {
+    const src = readFileSync(join(process.cwd(), 'lib', 'grade', 'mark-method.ts'), 'utf8');
+    expect(src).toContain("A CRITERION IS ALREADY WRITTEN FOR THIS STUDENT'S OWN VALUES; DECIDE WHETHER\nTHE PAGE SHOWS IT.");
+    expect(src).not.toMatch(/ANY NUMBER PRINTED IN A FOLLOW-THROUGH CRITERION|"THEIR", FULLY|NO QUOTE, NO AWARD/i);
+    expect(src).toMatch(/CRITERION: \$\{r\.claim \?\? r\.criterion\}/);
+    // The quote survives as output format.
+    expect(src).toMatch(/the reason quotes the line that earned it/);
   });
 });

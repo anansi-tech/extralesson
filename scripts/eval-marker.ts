@@ -28,6 +28,7 @@ import { markableSlots } from '@/lib/grade/mark';
 import { MARKER_VERSION } from '@/lib/grade/version';
 
 import { isFollowThrough } from '@/lib/prompts/mark-scheme';
+import { claimsFor } from '@/lib/grade/claim-template';
 
 const DIR = join(process.cwd(), 'design', 'golden');
 const GATE = 0.9;
@@ -258,8 +259,11 @@ async function main() {
 
         let decisions: MethodDecision[] = [];
         try {
+          const canonical = Object.fromEntries(
+            (q.parts ?? []).flatMap((p: any) => (p.slots ?? []).map((s: any) => [`${p.label}.${s.label}`, s.answer ?? ''])),
+          );
           decisions = (await markMethod({
-            rows,
+            rows: claimsFor(rows, e.studentAnswers, canonical),
             workingByPart,
             typedAnswers: e.studentAnswers,
             workedSolution: q.worked_solution,

@@ -5,6 +5,7 @@ import { earnableByMethod, constructionRows, alreadyEarnedByMethod } from '@/lib
 import { markMethod, type MethodDecision } from '@/lib/grade/mark-method';
 import { MARKER_VERSION } from '@/lib/grade/version';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
+import { claimsFor } from '@/lib/grade/claim-template';
 import type { RubricItem } from '@/lib/types';
 
 export interface CaptureResult {
@@ -65,7 +66,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
   if (!read) return null;
 
   const question = await Question.findById(attempt.question_id).lean<{
-    parts?: { label: string; marks: number; slots: { label: string; response_mode?: string }[] }[];
+    parts?: { label: string; marks: number; slots: { label: string; answer?: string; response_mode?: string }[] }[];
     rubric?: RubricItem[];
     stem: string;
     stimulus?: string;
@@ -89,11 +90,15 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
       const lines = linesForSlot(transcription, part.label);
       if (lines.length > 0) workingByPart[part.label] = lines;
     }
+    const confirmed = splitStoredAnswer(String(attempt.answer), markableSlots(question.parts ?? []));
+    const canonical = Object.fromEntries(
+      (question.parts ?? []).flatMap((p) => p.slots.map((s) => [`${p.label}.${s.label}`, s.answer ?? ''])),
+    );
     try {
       const result = await markMethod({
-        rows: unearned,
+        rows: claimsFor(unearned, confirmed, canonical),
         workingByPart,
-        typedAnswers: splitStoredAnswer(String(attempt.answer), markableSlots(question.parts ?? [])),
+        typedAnswers: confirmed,
         workedSolution: question.worked_solution ?? '',
         questionStem: `${question.stimulus ?? ''} ${question.stem}`.trim(),
       });

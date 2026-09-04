@@ -20,8 +20,11 @@ export const MethodResultZ = z.object({ decisions: z.array(MethodDecisionZ) });
 export type MethodDecision = z.infer<typeof MethodDecisionZ>;
 
 export interface MethodMarkArgs {
-  /** Rows deterministic marking left unearned. CAO rows are already excluded. */
-  rows: RubricItem[];
+  /**
+   * Rows deterministic marking left unearned, CAO rows already excluded, each
+   * carrying its claim rendered for this student (ROUND_5 Task 1).
+   */
+  rows: (RubricItem & { claim?: string })[];
   /** The student's transcribed working, by part label. */
   workingByPart: Record<string, string[]>;
   /** What they typed, by slot ref — including slots these rows depend on. */
@@ -33,6 +36,9 @@ export interface MethodMarkArgs {
 const RULES = `
 HOW TO DECIDE, and these override any instinct to be generous or strict:
 
+A CRITERION IS ALREADY WRITTEN FOR THIS STUDENT'S OWN VALUES; DECIDE WHETHER
+THE PAGE SHOWS IT.
+
 1. NO WORKING, NO MARK. If the lines for that part are absent, or show nothing
    relevant to the criterion, the row is not awarded. Silence earns nothing.
    Do not infer a step the student did not write.
@@ -40,18 +46,9 @@ HOW TO DECIDE, and these override any instinct to be generous or strict:
 2. FOLLOW-THROUGH IS THE POINT. A criterion written with "their" is earned when
    the METHOD is right given the student's OWN earlier value, however wrong that
    value was. You are judging the step, not re-checking arithmetic that has
-   already been marked wrong. This is the case the whole feature exists for.
-
-   ANY NUMBER PRINTED IN A FOLLOW-THROUGH CRITERION IS THE SCHEME'S OWN VALUE,
-   not a value the student must produce. "Finds the remaining dollars as 'their'
-   441 less 375" is earned by a student who writes 450 - 375, because 450 is
-   their 441. Substitute their value for the scheme's and ask only whether the
-   OPERATION is the right one. A mismatch between the printed number and the
-   student's is expected — it is the whole reason the row says "their".
-
-   An arithmetic slip inside the working does not remove a method mark either. A
-   student who writes 450 - 375 = 76 and then uses 75 has still performed the
-   subtraction the row asks for.
+   already been marked wrong. An arithmetic slip inside the working does not
+   remove a method mark either: a student who writes 450 - 375 = 76 and then
+   uses 75 has still performed the subtraction the row asks for.
 
 3. THE TYPED ANSWER IS THE CROSS-CHECK. You are given what the student actually
    submitted for each slot. If the working you are shown contradicts it — a
@@ -76,31 +73,10 @@ HOW TO DECIDE, and these override any instinct to be generous or strict:
    lengths doubled. Judge the idea, not the phrasing — but the idea must be
    written, not implied by an answer.
 
-6. "THEIR", FULLY. A conclusion, a comparison direction, or a scalar or
-   coefficient in a row is judged for the student's OWN value, even when that
-   inverts or changes what the row prints. "Concludes suitable" is earned by
-   "not suitable" from a student whose own output fell below the minimum;
-   "states that their output is greater than the minimum" is earned by "1.5 x
-   10^6 < 8.4 x 10^6" from a student whose output was smaller — the direction
-   printed followed the scheme's value, and theirs points the other way;
-   "obtains AC = 3 x their AB" is earned by "AC = AB" from a student whose
-   earlier reversed AB makes 1 the multiple their own vectors give. Work out
-   what the row would say for THEIR values and judge that. The wrong
-   conclusion, direction or multiple from their own value earns nothing.
-
-7. WHEN A PART HAS NO LINES OF ITS OWN, ITS ROWS ARE JUDGED AGAINST THE WHOLE
+6. WHEN A PART HAS NO LINES OF ITS OWN, ITS ROWS ARE JUDGED AGAINST THE WHOLE
    PAGE. Students write a derivation under the wrong label, or once for two
    parts. The lines shown for such a part are the whole read, and a row is
    earned if the act is anywhere on it.
-
-8. A ROW THAT NAMES A SPECIFIC RESULT IS EARNED ONLY BY THAT RESULT ON THE
-   PAGE, AND YOUR REASON MUST QUOTE THE LINE IT APPEARS ON. "Obtains the
-   stated inverse", "obtains 81 kg", "establishes 12 bags": find the line
-   where that result — the row's, or the follow-through of it for their
-   values — is written, and quote it. A line that does the operation but
-   lands on a different result is not that result: a student who substitutes
-   their determinant and gets the NEGATIVE of the stated inverse has not
-   obtained the stated inverse. No quote, no award.
 
 THE REASON IS WRITTEN FOR THE STUDENT, and it is the only thing they get back
 when a row is withheld. One clause, addressed to them, naming the step you
@@ -109,7 +85,8 @@ could not find: "we could not see where you divided by the scale factor", not
 their page; a student told nothing has learnt nothing, and a withheld mark with
 no reason is indistinguishable from a marker that is simply wrong.
 
-Where you DID award, the reason names the line that earned it.
+Where you DID award, the reason quotes the line that earned it — for a row
+that names a result, the line where that result appears.
 
 confidence is your confidence in the DECISION.
 `;
@@ -128,7 +105,7 @@ export async function markMethod(args: MethodMarkArgs): Promise<{
       const lines = own.length ? own : Object.values(workingByPart).flat();
       return [
         `ROW ${r.code} (${r.profile}, ${r.mark_value} mark${r.mark_value === 1 ? '' : 's'}) for part (${part})`,
-        `CRITERION: ${r.criterion}`,
+        `CRITERION: ${r.claim ?? r.criterion}`,
         isFollowThrough(r.criterion) ? 'THIS IS A FOLLOW-THROUGH ROW: judge the method on their own value.' : '',
         own.length
           ? `THE STUDENT'S WORKING FOR (${part}):`

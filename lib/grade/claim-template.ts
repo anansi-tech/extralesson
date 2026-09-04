@@ -93,3 +93,28 @@ export function deriveTemplate(args: {
   if (ambiguous) return { template: criterion, refs: [], ambiguous };
   return { template, refs: [...refs] };
 }
+
+/**
+ * The claim for THIS student: every reference becomes their confirmed answer
+ * for that slot, or the canonical value where they left it empty. The marker
+ * sees this and the page, nothing else.
+ */
+export function renderClaim(
+  template: string,
+  confirmed: Record<string, string>,
+  canonical: Record<string, string>,
+): string {
+  return template.replace(/\{([a-j]\.[^{}]+)\}/g, (_m, ref: string) => {
+    const theirs = confirmed[ref]?.trim();
+    return theirs || canonical[ref] || `{${ref}}`;
+  });
+}
+
+/** Rows as the marker should see them: the claim rendered, the criterion kept for the record. */
+export function claimsFor<R extends { criterion: string; template?: string }>(
+  rows: R[],
+  confirmed: Record<string, string>,
+  canonical: Record<string, string>,
+): (R & { claim: string })[] {
+  return rows.map((r) => ({ ...r, claim: renderClaim(r.template ?? r.criterion, confirmed, canonical) }));
+}
