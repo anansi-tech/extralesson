@@ -63,7 +63,9 @@ export async function buildGoldenBundle(disputeId: string): Promise<GoldenBundle
     .sort({ take: -1 })
     .lean<{ data: Buffer; content_type: string } | null>();
   const id = `f-${String(read._id).slice(-6)}`;
-  const filename = `${id}.${image?.content_type === 'image/png' ? 'png' : 'jpg'}`;
+  // Under field/, which is gitignored: a real student's page stays on the
+  // machine that imported it, while the entry commits like any other.
+  const filename = `field/${id}.${image?.content_type === 'image/png' ? 'png' : 'jpg'}`;
 
   const byMarker = new Map((read.method_marks ?? []).map((m) => [m.code, m]));
   const earned = new Set(attempt.rubric_awarded ?? []);

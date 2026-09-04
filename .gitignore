@@ -44,3 +44,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 design/reference/
+
+# Field pages are real students' handwriting: exported locally, never committed (ROUND_5 Task 3).
+design/golden/field/

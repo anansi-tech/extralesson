@@ -116,6 +116,8 @@ async function main() {
   // Photographs arrive one at a time; an entry without its image yet is not an
   // error, it is work still to do.
   const missing: string[] = [];
+  /** Field pages live under design/golden/field/, which never leaves the machine that imported them. */
+  const fieldMissing: string[] = [];
   const unread: string[] = [];
   /** Pages whose transcription differed from the truth, for attribution below. */
   const readDiffered = new Set<string>();
@@ -128,7 +130,7 @@ async function main() {
     }
     const imagePath = join(DIR, e.image!);
     if (!existsSync(imagePath)) {
-      missing.push(e.id);
+      (e.image!.startsWith('field/') ? fieldMissing : missing).push(e.id);
       continue;
     }
     const image = readFileSync(imagePath);
@@ -171,6 +173,9 @@ async function main() {
 
   if (missing.length > 0) {
     console.log(`READING — ${missing.length} of ${photo.length} photograph(s) not taken yet: ${missing.join(', ')}\n`);
+  }
+  if (fieldMissing.length > 0) {
+    console.log(`READING — ${fieldMissing.length} field page(s) whose image is not on this machine, skipped here and marked below: ${fieldMissing.join(', ')}\n`);
   }
   if (unread.length > 0) {
     console.log(`READING — ${unread.length} photograph(s) the reader could not return: ${unread.join(', ')}\n`);

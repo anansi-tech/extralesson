@@ -50,7 +50,10 @@ function passes(t: TranscriptionResult, c: ReadCase): { ok: boolean; why: string
 async function main() {
   await dbConnect();
   const runs = Number(process.argv[2] ?? 3);
-  const golden = goldenSetExists() ? loadGoldenSet().inputs.filter((e) => e.mode === 'photo' && e.image && existsSync(join(GOLDEN, e.image))) : [];
+  const photos = goldenSetExists() ? loadGoldenSet().inputs.filter((e) => e.mode === 'photo' && e.image) : [];
+  const golden = photos.filter((e) => existsSync(join(GOLDEN, e.image!)));
+  const fieldMissing = photos.filter((e) => !existsSync(join(GOLDEN, e.image!)) && e.image!.startsWith('field/')).map((e) => e.id);
+  if (fieldMissing.length) console.log(`field page(s) whose image is not on this machine, skipped: ${fieldMissing.join(', ')}`);
   const cases: ReadCase[] = readdirSync(CASES)
     .filter((f) => f.endsWith('.json'))
     .map((f) => JSON.parse(readFileSync(join(CASES, f), 'utf8')) as ReadCase);

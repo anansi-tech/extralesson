@@ -81,7 +81,7 @@ describe('export as golden case', () => {
     expect(b).not.toBeNull();
     if (!b) return;
     expect(b.id).toBe(`f-${readId.slice(-6)}`);
-    expect(b.set).toMatchObject({ id: b.id, question_id: questionId, writer: 'w-field', mode: 'photo', image: `${b.id}.jpg` });
+    expect(b.set).toMatchObject({ id: b.id, question_id: questionId, writer: 'w-field', mode: 'photo', image: `field/${b.id}.jpg` });
     expect(b.set.transcript).toEqual([{ part_label: 'a', text: '3x = 15' }, { part_label: 'b', text: 'because it is' }]);
     expect(b.image?.content_type).toBe('image/jpeg');
     expect(Buffer.from(b.image!.base64, 'base64').toString()).toBe('jpegbytes');
@@ -103,8 +103,11 @@ describe('export as golden case', () => {
     expect(before.inputs.map((e) => e.id)).toEqual(['aaaaaa']);
 
     const result = importGoldenBundle(b, dir);
-    expect(result.files).toEqual([`${b.id}.jpg`, 'set.json', 'review.json', 'APPROVAL_LOG.md']);
-    expect(existsSync(join(dir, `${b.id}.jpg`))).toBe(true);
+    expect(result.files).toEqual([`field/${b.id}.jpg`, 'set.json', 'review.json', 'APPROVAL_LOG.md']);
+    expect(existsSync(join(dir, 'field', `${b.id}.jpg`))).toBe(true);
+    // The page never leaves the machine that imported it.
+    expect(readFileSync(join(process.cwd(), '.gitignore'), 'utf8')).toMatch(/^design\/golden\/field\/$/m);
+    expect(readFileSync(join(process.cwd(), 'scripts', 'eval-marker.ts'), 'utf8')).toMatch(/field page\(s\) whose image is not on this machine, skipped here and marked below/);
     expect(readFileSync(join(dir, 'APPROVAL_LOG.md'), 'utf8')).toMatch(/## Field cases — proposed[\s\S]*every row proposed, AK1 disputed/);
     // One mark per line, as the real file keeps it.
     const review = readFileSync(join(dir, 'review.json'), 'utf8');

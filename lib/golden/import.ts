@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import type { GoldenBundle } from './bundle';
 
 /**
@@ -24,6 +24,7 @@ export function importGoldenBundle(bundle: GoldenBundle, dir: string): { id: str
   if (bundle.image) {
     const imagePath = join(dir, bundle.image.filename);
     if (existsSync(imagePath)) throw new Error(`${bundle.image.filename} already exists`);
+    mkdirSync(dirname(imagePath), { recursive: true });
     writeFileSync(imagePath, Buffer.from(bundle.image.base64, 'base64'));
     files.push(bundle.image.filename);
   }
