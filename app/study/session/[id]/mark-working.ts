@@ -1,4 +1,4 @@
-import { Attempt, CapturedImage, PracticeSession, Question, Transcription } from '@/lib/db';
+import { Attempt, CapturedImage, LineRejected, PracticeSession, Question, Transcription } from '@/lib/db';
 import { markableSlots } from '@/lib/grade/mark';
 import { MAX_TAKES, linesForSlot, type TranscriptionResult } from '@/lib/grade/transcribe';
 import { earnableByMethod, constructionRows, alreadyEarnedByMethod } from '@/lib/grade/method-marks';
@@ -12,6 +12,8 @@ export interface CaptureResult {
   transcription: TranscriptionResult;
   /** The read that was marked, which a dispute names. */
   transcriptionId: string;
+  /** Lines the student said were not theirs; never shown to the marker. */
+  rejected: number[];
   take: number;
   takesLeft: number;
   method: { code: string; awarded: boolean; reason: string; mark_value: number }[];
@@ -76,8 +78,12 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
 
   const settled = [...(attempt.rubric_awarded ?? []), ...alreadyEarnedByMethod(marked)];
   const unearned = earnableByMethod(question, settled);
+  // A rejected line keeps its label, so the lines under it stay attributed,
+  // and loses its text, so nothing of it reaches the marker (ROUND_5 Task 2).
+  const rejected = (await LineRejected.find({ transcription_id: read._id }).select('line_index').lean<{ line_index: number }[]>()).map((r) => r.line_index);
+  const struck = new Set(rejected);
   const transcription: TranscriptionResult = {
-    lines: read.lines,
+    lines: read.lines.map((l, i) => (struck.has(i) ? { ...l, text: '' } : l)),
     answers: read.answers ?? [],
     legible: read.legible,
     notes: read.notes,
@@ -87,7 +93,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
   if (unearned.length > 0) {
     const workingByPart: Record<string, string[]> = {};
     for (const part of question.parts ?? []) {
-      const lines = linesForSlot(transcription, part.label);
+      const lines = linesForSlot(transcription, part.label).filter((t) => t !== '');
       if (lines.length > 0) workingByPart[part.label] = lines;
     }
     const confirmed = splitStoredAnswer(String(attempt.answer), markableSlots(question.parts ?? []));
@@ -154,8 +160,9 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
   );
 
   return {
-    transcription,
+    transcription: { ...transcription, lines: read.lines },
     transcriptionId: String(read._id),
+    rejected,
     take: read.take,
     takesLeft: MAX_TAKES - reads.length,
     method: methodMarks.map(({ code, awarded, reason, mark_value }) => ({ code, awarded, reason, mark_value })),

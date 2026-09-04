@@ -27,7 +27,7 @@ async function scaleDown(file: File): Promise<{ data: string; contentType: strin
   return { data: url.slice(url.indexOf(',') + 1), contentType: 'image/jpeg' };
 }
 
-type Marked = Pick<CaptureResult, 'method' | 'marksAdded'> & { transcriptionId?: string };
+type Marked = Pick<CaptureResult, 'method' | 'marksAdded'> & { transcriptionId?: string; rejected?: number[] };
 
 export function WorkingPhoto({
   sessionId,
@@ -53,11 +53,12 @@ export function WorkingPhoto({
 }) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [read, setRead] = useState<TranscriptionResult | null>(initial?.transcription ?? null);
+  const [readId, setReadId] = useState<string | null>(initial?.transcriptionId ?? null);
   const [takesLeft, setTakesLeft] = useState(initial?.takesLeft ?? MAX_TAKES);
   const [marked, setMarked] = useState<Marked>(
     initial && 'method' in initial
-      ? { method: initial.method, marksAdded: initial.marksAdded, transcriptionId: initial.transcriptionId }
-      : { method: [], marksAdded: 0 },
+      ? { method: initial.method, marksAdded: initial.marksAdded, transcriptionId: initial.transcriptionId, rejected: initial.rejected }
+      : { method: [], marksAdded: 0, rejected: initial && 'rejected' in initial ? (initial as { rejected?: number[] }).rejected : undefined },
   );
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -78,8 +79,9 @@ export function WorkingPhoto({
           return;
         }
         setRead(res.transcription);
+        setReadId(res.transcriptionId);
         setTakesLeft(res.takesLeft);
-        if ('method' in res) setMarked({ method: res.method, marksAdded: res.marksAdded, transcriptionId: res.transcriptionId });
+        if ('method' in res) setMarked({ method: res.method, marksAdded: res.marksAdded, transcriptionId: res.transcriptionId, rejected: res.rejected });
         if ('prefill' in res) onRead?.(res.prefill);
       } catch {
         setError('That photo could not be prepared on this device.');
@@ -149,6 +151,8 @@ export function WorkingPhoto({
           legible={read.legible}
           notes={read.notes}
           method={marked.method}
+          rejected={marked.rejected}
+          reject={!attemptId && readId ? { transcriptionId: readId } : undefined}
           dispute={
             attemptId && marked.transcriptionId
               ? { attemptId, transcriptionId: marked.transcriptionId, disputed: [] }

@@ -1,6 +1,7 @@
 import {
   Attempt,
   CapturedImage,
+  LineRejected,
   MarkDispute,
   Payment,
   PracticeSession,
@@ -37,6 +38,7 @@ export interface DeletionCounts {
   Transcription: number;
   CapturedImage: number;
   MarkDispute: number;
+  LineRejected: number;
   SessionDraft: number;
   ResetToken: number;
   Student: number;
@@ -71,6 +73,9 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
   const sessionIds = sessions.map((s) => s._id);
 
   const drafts = await SessionDraft.deleteMany({ session_id: { $in: sessionIds } });
+  // Rejections hang off the reads the way drafts hang off the sessions.
+  const readIds = (await Transcription.find({ student_id: studentId }).select('_id').lean<{ _id: unknown }[]>()).map((r) => r._id);
+  const rejections = await LineRejected.deleteMany({ transcription_id: { $in: readIds } });
   const attempts = await Attempt.deleteMany({ student_id: studentId });
   const transcriptions = await Transcription.deleteMany({ student_id: studentId });
   const images = await CapturedImage.deleteMany({ student_id: studentId });
@@ -98,6 +103,7 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
       Transcription: transcriptions.deletedCount ?? 0,
       CapturedImage: images.deletedCount ?? 0,
       MarkDispute: disputes.deletedCount ?? 0,
+      LineRejected: rejections.deletedCount ?? 0,
       SessionDraft: drafts.deletedCount ?? 0,
       ResetToken: resets.deletedCount ?? 0,
       Student: removed.deletedCount ?? 0,

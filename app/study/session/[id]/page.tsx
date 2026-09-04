@@ -1,7 +1,7 @@
 import 'katex/dist/katex.min.css';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { dbConnect, Attempt, MarkDispute, PracticeSession, Question, Student, Topic, Transcription } from '@/lib/db';
+import { dbConnect, Attempt, LineRejected, MarkDispute, PracticeSession, Question, Student, Topic, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
 import { renderVisual, renderStimulusTable } from '@/lib/visuals';
@@ -558,6 +558,9 @@ export default async function SessionPage({
     const disputes = await MarkDispute.find({ attempt_id: attempt._id })
       .select('transcription_id code')
       .lean<{ transcription_id: unknown; code: string }[]>();
+    const rejections = await LineRejected.find({ transcription_id: { $in: takes.map((t) => t._id) } })
+      .select('transcription_id line_index')
+      .lean<{ transcription_id: unknown; line_index: number }[]>();
     const refs: string[] = (question.parts ?? []).flatMap((p) =>
       (p.slots ?? []).filter((sl) => (sl.response_mode ?? 'answer') === 'answer').map((sl) => `${p.label}.${sl.label}`),
     );
@@ -573,6 +576,7 @@ export default async function SessionPage({
         of: takes.length,
         transcriptionId: String(t._id),
         disputed: disputes.filter((d) => String(d.transcription_id) === String(t._id)).map((d) => d.code),
+        rejected: rejections.filter((r) => String(r.transcription_id) === String(t._id)).map((r) => r.line_index),
         lines: t.lines.map((l) => ({
           text: l.text,
           part_label: l.part_label ?? null,
@@ -667,14 +671,19 @@ export default async function SessionPage({
     : await Transcription.find({ session_id: id, question_index: index })
         .sort({ take: 1 })
         .select('lines answers legible notes take')
-        .lean<{ take: number; lines: ReadResult['transcription']['lines']; answers?: ReadResult['transcription']['answers']; legible: boolean; notes?: string }[]>();
+        .lean<{ _id: unknown; take: number; lines: ReadResult['transcription']['lines']; answers?: ReadResult['transcription']['answers']; legible: boolean; notes?: string }[]>();
   const latest = reads.at(-1);
-  const read: ReadResult | undefined = latest
+  const rejectedLines = latest
+    ? (await LineRejected.find({ transcription_id: latest._id }).select('line_index').lean<{ line_index: number }[]>()).map((r) => r.line_index)
+    : [];
+  const read: (ReadResult & { rejected: number[] }) | undefined = latest
     ? {
         transcription: { lines: latest.lines, answers: latest.answers ?? [], legible: latest.legible, notes: latest.notes },
+        transcriptionId: String(latest._id),
         take: latest.take,
         takesLeft: MAX_TAKES - reads.length,
         prefill: {},
+        rejected: rejectedLines,
       }
     : undefined;
 

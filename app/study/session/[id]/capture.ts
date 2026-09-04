@@ -40,6 +40,8 @@ const CaptureZ = z.object({
 
 export interface ReadResult {
   transcription: TranscriptionResult;
+  /** The stored read, which a line rejection names. */
+  transcriptionId: string;
   take: number;
   takesLeft: number;
   /** Single-box slots the read filled, by slot ref. */
@@ -123,7 +125,7 @@ export async function readWorking(input: {
   }
 
   const key = { student_id: auth.student_id, session_id: sessionId, question_index: questionIndex, take };
-  await Transcription.create({
+  const stored = await Transcription.create({
     ...key,
     question_id: questionId,
     lines: read.transcription.lines,
@@ -153,7 +155,7 @@ export async function readWorking(input: {
     );
   }
 
-  return { transcription: read.transcription, take, takesLeft: MAX_TAKES - take, prefill };
+  return { transcription: read.transcription, transcriptionId: String(stored._id), take, takesLeft: MAX_TAKES - take, prefill };
 }
 
 /**

@@ -3,7 +3,9 @@
  * whenever the student looks back at that question. Presentation only — it
  * captures nothing, marks nothing, and holds no state of its own.
  */
+import { useState } from 'react';
 import { DisputeButton } from './dispute-button';
+import { RejectLineButton } from './reject-line-button';
 
 export interface ReadLine {
   text: string;
@@ -26,6 +28,8 @@ export function WorkingRead({
   earnedLabel,
   footer,
   dispute,
+  rejected,
+  reject,
 }: {
   lines: ReadLine[];
   legible: boolean;
@@ -37,19 +41,24 @@ export function WorkingRead({
   footer?: string;
   /** Set once the read is marked against an attempt: a withheld row can be disputed. */
   dispute?: { attemptId: string; transcriptionId: string; disputed: string[] };
+  /** Lines the student said were not theirs, by index into `lines`. */
+  rejected?: number[];
+  /** Set while the read is unmarked: a line can still be taken out of marking. */
+  reject?: { transcriptionId: string };
 }) {
+  const [struck, setStruck] = useState<Set<number>>(() => new Set(rejected ?? []));
   // Grouped by the part each line belongs to, with an unlabelled line
   // inheriting the part above it — the same rule the marker applies, so what a
   // student is shown is what was marked.
-  const byPart: { part: string; lines: ReadLine[] }[] = [];
+  const byPart: { part: string; lines: (ReadLine & { index: number })[] }[] = [];
   let current: string | null = null;
-  for (const line of lines) {
+  lines.forEach((line, index) => {
     if (line.part_label) current = line.part_label;
     const key = current ?? '—';
     const last = byPart[byPart.length - 1];
-    if (last && last.part === key) last.lines.push(line);
-    else byPart.push({ part: key, lines: [line] });
-  }
+    if (last && last.part === key) last.lines.push({ ...line, index });
+    else byPart.push({ part: key, lines: [{ ...line, index }] });
+  });
 
   return (
     <div className="mt-3">
@@ -67,11 +76,27 @@ export function WorkingRead({
             {group.part === '—' ? 'Not matched to a part' : `(${group.part})`}
           </div>
           <ul className="mt-0.5 border-l-3 border-paper-deep pl-3">
-            {group.lines.map((line, i) => (
-              <li key={i} className="font-mono text-[13px] leading-snug">
-                {line.text}
-                {line.confidence < 0.6 && (
-                  <span className="ml-2 font-mono text-[10px] text-dim">hard to read</span>
+            {group.lines.map((line) => (
+              <li key={line.index} className="font-mono text-[13px] leading-snug">
+                {struck.has(line.index) ? (
+                  <>
+                    <s className="text-dim">{line.text}</s>
+                    <span className="ml-2 font-mono text-[10px] text-dim">you said this wasn&rsquo;t yours</span>
+                  </>
+                ) : (
+                  <>
+                    {line.text}
+                    {line.confidence < 0.6 && (
+                      <span className="ml-2 font-mono text-[10px] text-dim">hard to read</span>
+                    )}
+                    {reject && (
+                      <RejectLineButton
+                        transcriptionId={reject.transcriptionId}
+                        lineIndex={line.index}
+                        onRejected={() => setStruck((prev) => new Set(prev).add(line.index))}
+                      />
+                    )}
+                  </>
                 )}
               </li>
             ))}

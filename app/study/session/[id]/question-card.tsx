@@ -67,7 +67,7 @@ export interface CardQuestion {
     values: Record<string, string[]>;
     selected?: number;
     /** The page already photographed for this question, before submit. */
-    read?: ReadResult;
+    read?: ReadResult & { rejected?: number[] };
   };
   prior?: {
     answers: Record<string, string>;
@@ -80,6 +80,8 @@ export interface CardQuestion {
       transcriptionId: string;
       /** Rows already reported, so the button does not come back on reload. */
       disputed: string[];
+      /** Lines the student took out of marking, by index. */
+      rejected: number[];
       lines: { text: string; part_label: string | null; confidence: number }[];
       legible: boolean;
       notes?: string;
@@ -848,6 +850,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                     transcriptionId: w.transcriptionId,
                     disputed: w.disputed,
                   }}
+                  rejected={w.rejected}
                   heading={
                     w.of > 1
                       ? `${w.take === 1 ? 'First' : 'Second'} photograph — what we read`
