@@ -2,7 +2,7 @@
   "version": 1,
   "status": "approved",
   "reviewer": "David",
-  "reviewed_at": "2026-09-04T19:35:53Z",
+  "reviewed_at": "2026-09-04T20:26:50Z",
   "entries": [
     {
       "id": "c0bf69",
@@ -411,12 +411,12 @@
         { "code": "R1", "awarded": true, "reason": "The typed 88% is the CAO value." },
         { "code": "R2", "awarded": true, "reason": "\"88% < 90%\" compares their percentage with 90%." },
         { "code": "R3", "awarded": true, "reason": "\"so the harvest will not be accepted\" concludes it." },
-        { "code": "CK3", "awarded": false, "reason": "The required number is never identified as 90% of 1 200 000; the page finds the shortfall as 2% of the total instead, a different valid method." },
-        { "code": "AK4", "awarded": false, "reason": "1 080 000 is never calculated." },
-        { "code": "AK5", "awarded": false, "reason": "Nothing is subtracted from 1 080 000; 2% x 1200000 = 24000 stands in for it." },
+        { "code": "CK3", "awarded": true, "reason": "valid alternative route: 2% of the total reaches 24 000 without the intermediate 1 080 000" },
+        { "code": "AK4", "awarded": true, "reason": "valid alternative route: 2% of the total reaches 24 000 without the intermediate 1 080 000" },
+        { "code": "AK5", "awarded": true, "reason": "valid alternative route: 2% of the total reaches 24 000 without the intermediate 1 080 000" },
         { "code": "R4", "awarded": false, "reason": "The typed 24000 is not in standard form, and the page ends at \"= 24000\". The withhold the student queried stands.", "disputed": true }
       ],
-      "human_note": "Batch 8: judged by Claude on David's instruction against calibration/reads/cocoa-b1.jpg, the same page. CK3, AK4 and AK5 are withheld as written because the page reaches 24 000 by 2% of the total, a valid method that never states 1 080 000; the grader had awarded the slot on the correct typed value."
+      "human_note": "Batch 8, approved by David: CK3, AK4 and AK5 are awarded as a valid alternative route — 2% of the total reaches 24 000 without the intermediate 1 080 000. R4 stays withheld: 24000 is not standard form."
     }
   ]
 }

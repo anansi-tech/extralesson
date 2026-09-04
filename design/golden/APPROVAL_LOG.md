@@ -151,9 +151,8 @@ Exported from /admin/disputes by `pnpm golden:import`. Proposed until a person a
 ## Batch 8 — approved
 
 - `f-20c7f7`, the cocoa page (the same page as `calibration/reads/cocoa-b1.jpg`),
-  approved 4 September on David's instruction, judged by Claude: award CK1,
-  AK1, CK2, AK2, AK3, R1, R2, R3; withhold CK3, AK4, AK5 and R4. R4 was the
-  disputed row and the withhold stands: 24000 is not standard form. CK3, AK4
-  and AK5 are withheld as written — the page finds the shortfall as 2% of the
-  total, a valid method that never states 1 080 000 — where the grader had
-  awarded the slot on the correct typed value.
+  approved by David, 4 September: award CK1, AK1, CK2, AK2, AK3, R1, R2, R3,
+  and CK3, AK4, AK5 as a valid alternative route — 2% of the total reaches
+  24 000 without the intermediate 1 080 000. Withhold R4, the disputed row:
+  24000 is not standard form. A valid alternative method earns the rows for
+  the step it replaces; the marker paragraph now says so.
