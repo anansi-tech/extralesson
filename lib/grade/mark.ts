@@ -90,7 +90,7 @@ export function markStructuredParts(
         slot.accept,
         slot.answer_format as AnswerFormat | undefined,
         input?.values,
-        roundingOf({ answer_format: slot.answer_format, prompts: [part.prompt, slot.prompt] }),
+        roundingOf({ answer_format: slot.answer_format, prompts: [part.prompt, slot.prompt], canonical: slot.answer }),
       );
       // ONLY A SLOT THAT CARRIES MARKS VOTES ON THE VERDICT: five auto-marked
       // slots in the bank have no rubric row, so a miss there cost no marks and
@@ -124,7 +124,7 @@ export function markStructured(
   accept?: string[],
   answerFormat?: AnswerFormat,
   enteredValues?: string[],
-  rounding: Rounding | null = roundingOf({ answer_format: answerFormat }),
+  rounding: Rounding | null = roundingOf({ answer_format: answerFormat, canonical: canonicalAnswer }),
 ): MarkResult {
   const equivalent =
     enteredValues && enteredValues.length > 0

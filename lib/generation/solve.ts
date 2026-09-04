@@ -193,7 +193,7 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     // are revealed to the student inside the session to self-mark, so they are
     // checked too, by the reader rather than by the rules (R1.6 §1).
     const mode = p.slot.response_mode ?? 'answer';
-    const rounding = roundingOf({ answer_format: p.slot.answer_format, prompts: [p.prompt, p.slot.prompt] });
+    const rounding = roundingOf({ answer_format: p.slot.answer_format, prompts: [p.prompt, p.slot.prompt], canonical: p.slot.answer });
     if (mode === 'answer' && answersEquivalentAny(s, p.slot.answer, p.slot.accept, rounding)) continue;
 
     const verdict = await adjudicateAnswers({

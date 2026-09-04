@@ -595,7 +595,7 @@ export default async function SessionPage({
         rubric_awarded: attempt.rubric_awarded,
         partResults: refs.map((ref) => {
           const slot = slotByRef.get(ref);
-          const rounding = roundingOf({ answer_format: slot?.answer_format, prompts: [slot?.partPrompt, slot?.prompt] });
+          const rounding = roundingOf({ answer_format: slot?.answer_format, prompts: [slot?.partPrompt, slot?.prompt], canonical: slot?.answer });
           const correct = answersEquivalentAny(answers[ref] ?? '', slot?.answer ?? '', slot?.accept, rounding);
           const line = correct ? undefined : schemeLine(question.rubric ?? [], ref);
           return { label: ref, correct, reasonHtml: line ? renderMathHtml(line) : undefined };

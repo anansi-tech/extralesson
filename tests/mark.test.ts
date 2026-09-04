@@ -141,8 +141,8 @@ describe('format-aware marking (R1.6 §2)', () => {
       ...rubric,
       { code: 'R1', profile: 'R', criterion: 'exact form', mark_value: 1, slot_ref: 'a.i', part_label: 'a', for_format: true },
     ];
-    const parts = [{ label: 'a', slots: [{ label: 'i', answer: '1/2', answer_format: 'exact' as const }] }];
-    const r = markStructuredParts(priced, parts, [{ ref: 'a.i', answer: '0.5' }]);
+    const parts = [{ label: 'a', slots: [{ label: 'i', answer: '1/3', answer_format: 'exact' as const }] }];
+    const r = markStructuredParts(priced, parts, [{ ref: 'a.i', answer: '0.333' }]);
     expect(r.correct).toBe(false);
     expect(r.rubric_awarded).toEqual(['AK1']); // the value stands; the form mark does not
     expect(r.format_feedback).toContain('EXACT');
@@ -157,12 +157,10 @@ describe('format-aware marking (R1.6 §2)', () => {
     expect(r.format_feedback).toBeUndefined();
   });
 
-  it('compares exactly when no rounding is asked for', () => {
+  it('leaves marking unchanged when no format is required', () => {
     const parts = [{ label: 'a', slots: [{ label: 'i', answer: '1/3' }] }];
     const r = markStructuredParts(rubric, parts, [{ ref: 'a.i', answer: '0.333' }]);
-    expect(r.correct).toBe(false); // 0.333 is not a third unless 3 d.p. was asked for
-    const asked = [{ label: 'a', prompt: 'Give your answer to 3 decimal places.', slots: [{ label: 'i', answer: '1/3' }] }];
-    expect(markStructuredParts(rubric, asked, [{ ref: 'a.i', answer: '0.333' }]).correct).toBe(true);
+    expect(r.correct).toBe(true); // a third is not exact, so 3 s.f. applies by default
   });
 
   // Nothing here pays for the form, so the answer stands and the student is

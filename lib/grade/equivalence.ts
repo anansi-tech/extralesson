@@ -1,7 +1,7 @@
 import { evaluate, parse, rationalize, simplify } from 'mathjs';
 import { markMoney, normaliseDigitGroups } from '@/lib/money';
 import { parseQuantity, parseQuantityProduct, productsEqual, sameDimension } from './quantity';
-import { roundTo, type Rounding } from './rounding';
+import { roundingOf, roundTo, type Rounding } from './rounding';
 
 // Final-answer equivalence (ROUND_1 §6.3 and §4.3): documented deterministic
 // heuristics, no LLM grading.
@@ -369,7 +369,11 @@ function valueEquivalent(a: string, b: string, rounding: Rounding | null): boole
 
 // True when two answers are equivalent. Multi-part answers ("x = -1/3 or
 // x = 2", "EC$70; EC$58") match as unordered sets of equivalent values.
-export function answersEquivalent(a: string, b: string, rounding: Rounding | null = null): boolean {
+// `rounding` undefined means the default: 3 s.f. when either side cannot
+// terminate — the scheme's third, or a student's exact surd against a scheme
+// that rounded it — and exact otherwise. null means exact.
+export function answersEquivalent(a: string, b: string, rounding?: Rounding | null): boolean {
+  if (rounding === undefined) rounding = roundingOf({ canonical: b }) ?? roundingOf({ canonical: a });
   const partsA = splitParts(preClean(a));
   const partsB = splitParts(preClean(b));
   if (partsA.length === 0 || partsB.length === 0) return false;
@@ -394,7 +398,7 @@ export function answersEquivalentAny(
   candidate: string,
   canonical: string,
   accept?: string[],
-  rounding: Rounding | null = null,
+  rounding?: Rounding | null,
 ): boolean {
   if (answersEquivalent(candidate, canonical, rounding)) return true;
   return (accept ?? []).some((alt) => answersEquivalent(candidate, alt, rounding));

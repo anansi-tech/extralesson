@@ -65,7 +65,7 @@ describe('units are compared, not stripped', () => {
 
   it('leaves mathematics alone', () => {
     // "pi" is not a unit; reading it as one rejected 5π against its own value.
-    expect(both('5 pi', '15.70796327')).toEqual([true, true]);
+    expect(both('5 pi', '15.70796')).toEqual([true, true]);
     expect(parseQuantity('5 pi')).toBeNull();
     // A single letter is algebra, not a unit.
     expect(parseQuantity('3 x')).toBeNull();

@@ -47,7 +47,7 @@ async function correctedState(studentId: string, targets: number[]): Promise<num
     const slots = (q.parts ?? []).flatMap((p: any) =>
       (p.slots ?? [])
         .filter((s: any) => (s.response_mode ?? 'answer') === 'answer')
-        .map((s: any) => ({ ref: `${p.label}.${s.label}`, slot: s, rounding: roundingOf({ answer_format: s.answer_format, prompts: [p.prompt, s.prompt] }) })),
+        .map((s: any) => ({ ref: `${p.label}.${s.label}`, slot: s, rounding: roundingOf({ answer_format: s.answer_format, prompts: [p.prompt, s.prompt], canonical: s.answer }) })),
     );
     const typed = splitStoredAnswer(String(a.answer), slots.map((x: any) => x.ref));
     for (const { ref, slot, rounding } of slots) {
@@ -107,7 +107,7 @@ async function main() {
     const slots = (q.parts ?? []).flatMap((p: any) =>
       (p.slots ?? [])
         .filter((s: any) => (s.response_mode ?? 'answer') === 'answer')
-        .map((s: any) => ({ ref: `${p.label}.${s.label}`, slot: s, rounding: roundingOf({ answer_format: s.answer_format, prompts: [p.prompt, s.prompt] }) })),
+        .map((s: any) => ({ ref: `${p.label}.${s.label}`, slot: s, rounding: roundingOf({ answer_format: s.answer_format, prompts: [p.prompt, s.prompt], canonical: s.answer }) })),
     );
     const typed = splitStoredAnswer(String(a.answer), slots.map((s: any) => s.ref));
     const rubricFor = (ref: string) =>

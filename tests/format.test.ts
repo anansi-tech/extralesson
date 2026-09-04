@@ -158,8 +158,6 @@ describe('round trip — a correctly formatted answer marks correct', () => {
 
   // [format, canonical answer, what a student writes correctly, an equivalent
   //  value in the WRONG form]
-  // A decimal standing in for a surd is not the value: with no rounding asked
-  // for, 4.243 is not 3√2 and loses the value marks too. 0.375 IS 3/8.
   const cases: [AnswerFormat, string, string, string][] = [
     ['exact', '\\frac{3}{8}', '\\frac{3}{8}', '0.375'],
     ['surd', '3\\sqrt{2}', '3\\sqrt{2}', '4.243'],
@@ -180,18 +178,11 @@ describe('round trip — a correctly formatted answer marks correct', () => {
       expect(res.format_feedback).toBeUndefined();
     });
 
-    it(`${format}: "${wrongForm}" ${format === 'surd' ? 'is not the value, and says so' : 'keeps the value marks and loses the form mark'}`, () => {
+    it(`${format}: "${wrongForm}" keeps the value marks and loses the form mark`, () => {
       const res = markStructured(rubric, canonical, wrongForm, undefined, format);
       expect(res.correct).toBe(false);
-      if (format === 'surd') {
-        // A decimal never parses as the surd's value, so no form feedback fires;
-        // the slot's scheme line says what was asked for.
-        expect(res.rubric_awarded).toEqual([]);
-        expect(res.format_feedback).toBeUndefined();
-      } else {
-        expect(res.rubric_awarded).toEqual(['CK1']);
-        expect(res.format_feedback).toMatch(/^Correct value/);
-      }
+      expect(res.rubric_awarded).toEqual(['CK1']);
+      expect(res.format_feedback).toMatch(/^Correct value/);
     });
   }
 

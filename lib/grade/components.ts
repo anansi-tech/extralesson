@@ -11,7 +11,7 @@ export function componentsEquivalent(
   entered: string[],
   canonicalAnswer: string,
   accept?: string[],
-  rounding: Rounding | null = null,
+  rounding?: Rounding | null,
 ): boolean {
   const same = (v: string, k: string) => answersEquivalentAny(v, k, undefined, rounding);
   const against = (candidate: string): boolean => {

@@ -15,14 +15,30 @@ describe('numbers are exact unless a rounding is stated', () => {
 
   it('accepts 3.8977 against 3.90 when 3 s.f. is required', () => {
     expect(answersEquivalent('3.8977', '3.90', { kind: 'sf', n: 3 })).toBe(true);
-    expect(answersEquivalent('3.8977', '3.90')).toBe(false);
+    expect(answersEquivalent('3.8977', '3.90')).toBe(false); // 3.90 terminates: exact by default
   });
 
-  it('accepts 1/3 against 0.333 only under a stated rounding', () => {
-    expect(answersEquivalent('1/3', '0.333')).toBe(false);
-    expect(answersEquivalent('1/3', '0.333', { kind: 'dp', n: 3 })).toBe(true);
-    expect(answersEquivalent('1/3', '0.333', { kind: 'sf', n: 3 })).toBe(true);
-    expect(answersEquivalentAny('0.333', '1/3', ['0.33'], { kind: 'dp', n: 2 })).toBe(true);
+  it('accepts 0.333 against 1/3 by the general instruction, and 0.33 only under a stated rounding', () => {
+    expect(answersEquivalent('0.333', '1/3')).toBe(true); // a third cannot terminate: 3 s.f.
+    expect(answersEquivalent('0.33', '1/3')).toBe(false);
+    expect(answersEquivalent('0.33', '1/3', { kind: 'dp', n: 2 })).toBe(true);
+    expect(answersEquivalent('0.333', '1/3', null)).toBe(false); // null is exact
+    expect(answersEquivalentAny('0.33', '1/3', ['0.33'], { kind: 'dp', n: 2 })).toBe(true);
+  });
+
+  it('is exact for a canonical that terminates, 3 s.f. for one that cannot', () => {
+    expect(roundingOf({ canonical: '27' })).toBeNull();
+    expect(roundingOf({ canonical: '12.68' })).toBeNull();
+    expect(roundingOf({ canonical: '\\frac{3}{8}' })).toBeNull(); // 0.375
+    expect(roundingOf({ canonical: '$\\frac{1}{3}$' })).toEqual({ kind: 'sf', n: 3 });
+    expect(roundingOf({ canonical: '3\\sqrt{2}' })).toEqual({ kind: 'sf', n: 3 });
+    expect(roundingOf({ canonical: '\\sqrt{9}' })).toBeNull(); // 3
+    expect(roundingOf({ canonical: '5\\pi' })).toEqual({ kind: 'sf', n: 3 });
+    expect(roundingOf({ canonical: '$(4,1)$' })).toBeNull();
+    expect(roundingOf({ canonical: 'x = -1/3 or x = 2' })).toEqual({ kind: 'sf', n: 3 });
+    // A stated rounding overrides the default either way.
+    expect(roundingOf({ canonical: '1/3', answer_format: 'dp:2' })).toEqual({ kind: 'dp', n: 2 });
+    expect(roundingOf({ canonical: '27', prompts: ['to 1 decimal place'] })).toEqual({ kind: 'dp', n: 1 });
   });
 
   it('still absorbs representation error with no rounding at all', () => {
