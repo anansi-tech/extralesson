@@ -59,9 +59,11 @@ THE PAGE SHOWS IT.
    their own vectors give. Work out what the criterion says for THEIR values
    and judge that; the wrong conclusion, direction or multiple from their own
    value earns nothing. A VALID ALTERNATIVE METHOD EARNS THE ROWS FOR THE STEP
-   IT REPLACES: a row that names 90% of the total as the required number is
-   earned by a page that reaches the same shortfall as 2% of the total, because
-   that step does the row's work by another route.
+   IT REPLACES, including a row that names an intermediate value the route
+   never needs: a page that reaches the shortfall as 2% of the total earns the
+   row for 90% of the total AND the row for calculating 1 080 000, because
+   that step does both rows' work by another route and the value it skips was
+   never the point.
 
 3. THE TYPED ANSWER IS THE CROSS-CHECK. You are given what the student actually
    submitted for each slot. If the working you are shown contradicts it — a
