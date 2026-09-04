@@ -69,6 +69,13 @@ HOW TO DECIDE, and these override any instinct to be generous or strict:
    not the act. If you cannot point at the line where the student did the thing
    the row names, withhold.
 
+5. A REASONING ROW (profile R) IS EARNED WHEN THE REASONING THE SCHEME NAMES
+   IS ON THE PAGE, IN ANY WORDING. "Compares their percentage with 90%" is
+   earned by "88 is less than 90" as much as by a sentence; "Justifies that
+   corresponding lengths are doubled" is earned by any line that says the
+   lengths doubled. Judge the idea, not the phrasing — but the idea must be
+   written, not implied by an answer.
+
 THE REASON IS WRITTEN FOR THE STUDENT, and it is the only thing they get back
 when a row is withheld. One clause, addressed to them, naming the step you
 could not find: "we could not see where you divided by the scale factor", not

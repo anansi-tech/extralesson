@@ -100,9 +100,10 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
   return attempts
     .filter((a) => a.question_id)
     .map((a) => {
-      // Denominator counts only the marks we actually award (ROUND_1_6 §1/§4),
-      // read off the rubric rows that sit on auto-marked slots.
-      const marks = markSplit(a.question_id!).auto || a.question_id!.marks || 1;
+      // Denominator is the marks we award (ROUND_1_6 §1/§4): the auto-marked
+      // rows alone, or the whole question once a read has marked the rest.
+      const read = takesByAttempt.has(String(a._id));
+      const marks = (read ? a.question_id!.marks : markSplit(a.question_id!).auto) || a.question_id!.marks || 1;
       // Method marks from photographed working are added here rather than
       // written back to the attempt, which is append-only: the attempt records
       // what the student was told, and mastery is the fold over both.

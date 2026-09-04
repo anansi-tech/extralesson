@@ -128,12 +128,14 @@ export async function loadReviewable(
     const key = String(a.question_id._id);
     if (seen.has(key)) continue;
     seen.add(key);
-    const method = methodMarksEarned(takes.get(String(a._id)) ?? []);
+    const reads = takes.get(String(a._id)) ?? [];
+    const method = methodMarksEarned(reads);
     out.push({
       sessionId: String(a.session_id),
       index,
       earned: a.profile_marks.CK + a.profile_marks.AK + a.profile_marks.R + method,
-      marks: markSplit(a.question_id as never).auto || a.question_id.marks || 1,
+      // Out of the whole question once a read has marked what the grader could not.
+      marks: (reads.length ? a.question_id.marks : markSplit(a.question_id as never).auto) || a.question_id.marks || 1,
       photographed: method > 0,
       ts: a.ts,
       objectiveIds: a.question_id.objective_ids ?? [],

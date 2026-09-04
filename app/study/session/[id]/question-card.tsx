@@ -414,8 +414,20 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     });
   };
 
+  // Once a page has been read, the rows the grader could not settle have been
+  // marked from it, so the score is out of the whole question.
+  const readRows = [
+    ...(feedback?.working?.method ?? []),
+    ...(question.prior?.working ?? []).flatMap((w) => w.method),
+  ];
+  const readExists = !!feedback?.working || (question.prior?.working?.length ?? 0) > 0;
+  const methodAwarded = new Set(readRows.filter((m) => m.awarded).map((m) => m.code));
+  const outOf = readExists ? question.marks : question.auto;
   const earned = feedback
-    ? feedback.profile_marks.CK + feedback.profile_marks.AK + feedback.profile_marks.R
+    ? feedback.profile_marks.CK +
+      feedback.profile_marks.AK +
+      feedback.profile_marks.R +
+      question.rubricCodes.filter((r) => methodAwarded.has(r.code)).reduce((n, r) => n + r.mark_value, 0)
     : 0;
 
   return (
@@ -640,7 +652,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                         </p>
                       ) : (
                         <p className="mt-1 border-l-3 border-paper-deep bg-[#FFFDF6] py-1 pl-3 text-[13px] text-dim">
-                          Work this one on paper. {feedback ? 'Mark it yourself against the solution below' : 'It is not marked here'} — these marks are left out of your estimate.
+                          {readExists
+                            ? 'Work this one on paper — it is marked from your photograph.'
+                            : `Work this one on paper. ${feedback ? 'Mark it yourself against the solution below' : 'Photograph the page and it is marked from there'} — until then these marks are left out of your estimate.`}
                         </p>
                           )}
                         </>
@@ -695,8 +709,8 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               )}
             </b>
             <span className="text-right font-mono text-xs">
-              {earned}/{question.auto}
-              {question.self > 0 && (
+              {earned}/{outOf}
+              {question.self > 0 && !readExists && (
                 <span className="block text-[10px] text-dim">
                   {question.auto} marked here · {question.self} you mark yourself
                 </span>
@@ -715,19 +729,20 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               <p className="mt-2 text-[11px] leading-snug text-dim">{PROFILE_GLOSS}</p>
             <div className="mt-2 flex flex-wrap gap-1">
               {question.rubricCodes.map((r) => {
-                const got = feedback.rubric_awarded.includes(r.code);
+                const got = feedback.rubric_awarded.includes(r.code) || methodAwarded.has(r.code);
+                const unmarked = r.selfMarked && !readExists;
                 return (
                   <span
                     key={r.code}
                     className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold ${
-                      r.selfMarked
+                      unmarked
                         ? 'border border-dashed border-rule text-dim'
                         : got
                           ? chipColor[r.profile]
                           : 'bg-paper-deep text-dim line-through'
                     }`}
                   >
-                    ({r.part_label}) {r.code} {r.selfMarked ? '— you mark' : got ? '✓' : '✗'}
+                    ({r.part_label}) {r.code} {unmarked ? '— you mark' : got ? '✓' : '✗'}
                   </span>
                 );
               })}

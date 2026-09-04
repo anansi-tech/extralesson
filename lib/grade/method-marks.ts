@@ -4,8 +4,11 @@ import type { RubricItem } from '@/lib/types';
  * CAO rows are out of reach because the deterministic grader already settled
  * the answer (ROUND_2 §4); CAO is read from criterion prose, so one spelled out
  * in words slips through. An empty result also withholds the camera offer.
+ * Rows on a slot the student reasons or shows on paper are read off the page
+ * too (ROUND_4 post-smoke): only a drawing needs the construction check.
  */
 const CAO = /\bCAO\b/;
+const READ_OFF_THE_PAGE = new Set(['answer', 'explain', 'show_that']);
 
 export interface MethodMarkQuestion {
   parts?: { label: string; slots?: { label: string; response_mode?: string }[] }[];
@@ -14,15 +17,15 @@ export interface MethodMarkQuestion {
 
 export function earnableByMethod(q: MethodMarkQuestion, awarded: string[]): RubricItem[] {
   const earned = new Set(awarded);
-  const autoRefs = new Set(
+  const readable = new Set(
     (q.parts ?? []).flatMap((p) =>
       (p.slots ?? [])
-        .filter((s) => (s.response_mode ?? 'answer') === 'answer')
+        .filter((s) => READ_OFF_THE_PAGE.has(s.response_mode ?? 'answer'))
         .map((s) => `${p.label}.${s.label}`),
     ),
   );
   return (q.rubric ?? []).filter(
-    (r) => !earned.has(r.code) && autoRefs.has(r.slot_ref) && !CAO.test(r.criterion),
+    (r) => !earned.has(r.code) && readable.has(r.slot_ref) && !CAO.test(r.criterion),
   );
 }
 

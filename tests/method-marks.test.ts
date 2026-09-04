@@ -10,11 +10,13 @@ const q = {
   parts: [
     { label: 'a', slots: [{ label: 'i' }] },
     { label: 'b', slots: [{ label: 'i', response_mode: 'explain' }] },
+    { label: 'c', slots: [{ label: 'i', response_mode: 'construct' }] },
   ],
   rubric: [
     row('AK1', 'a.i', 'Divides 16.8 by "their" slab area'),
     row('AK2', 'a.i', 'CAO $0.050\\text{ m}$'),
     row('R1', 'b.i', 'Explains why the delivery does not guarantee it'),
+    row('R2', 'c.i', 'Draws the line through both points'),
   ],
 };
 
@@ -22,25 +24,28 @@ const q = {
 // unearned, and never over rows it could not settle anyway.
 describe('earnableByMethod — what a photograph could still be worth', () => {
   it('offers a method row the grader did not award', () => {
-    expect(earnableByMethod(q, []).map((r) => r.code)).toEqual(['AK1']);
+    expect(earnableByMethod(q, []).map((r) => r.code)).toEqual(['AK1', 'R1']);
   });
 
   it('never offers a CAO row: the answer is what it marks', () => {
     expect(earnableByMethod(q, []).map((r) => r.code)).not.toContain('AK2');
   });
 
-  it('never offers a row on a slot the student marks themselves', () => {
-    expect(earnableByMethod(q, []).map((r) => r.code)).not.toContain('R1');
+  // ROUND_4 post-smoke: reasoning written on the page is read off it like
+  // method; only a drawing needs the construction check instead.
+  it('offers a reasoning row on a slot the student works on paper, never a construct row', () => {
+    expect(earnableByMethod(q, []).map((r) => r.code)).toContain('R1');
+    expect(earnableByMethod(q, []).map((r) => r.code)).not.toContain('R2');
   });
 
-  it('offers nothing once the row is already earned', () => {
-    expect(earnableByMethod(q, ['AK1'])).toEqual([]);
+  it('offers nothing once the rows are already earned', () => {
+    expect(earnableByMethod(q, ['AK1', 'R1'])).toEqual([]);
   });
 
   // Zero is what keeps the camera off a question with nothing to gain — the
   // student's time and a model call both saved.
   it('returns nothing for a question that is fully marked', () => {
-    expect(earnableByMethod(q, ['AK1', 'AK2', 'R1'])).toEqual([]);
+    expect(earnableByMethod(q, ['AK1', 'AK2', 'R1', 'R2'])).toEqual([]);
   });
 });
 
