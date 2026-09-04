@@ -7,7 +7,7 @@ import { markMcq, markStructuredParts } from '@/lib/grade/mark';
 import { GRADER_VERSION, questionFingerprint } from '@/lib/grade/version';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
-import { missReason } from '@/lib/grade/reason';
+import { missReason, schemeLine } from '@/lib/grade/reason';
 import { earnableByMethod } from '@/lib/grade/method-marks';
 import { readInputShape } from '@/lib/grade/input-shape';
 import { renderMathHtml } from '@/lib/katex';
@@ -46,13 +46,16 @@ export interface Feedback {
   correct: boolean;
   profile_marks: ProfileMarks;
   rubric_awarded: string[];
-  /** Per slot: whether it earned its marks, and when it did not, why. */
-  partResults: { label: string; correct: boolean; reason?: string }[];
+  /**
+   * Per slot: whether the VALUE was right, whether a form row was withheld,
+   * and for a wrong value the scheme's own line for the slot.
+   */
+  partResults: { label: string; correct: boolean; formWithheld?: boolean; reasonHtml?: string }[];
   feedbackTitleHtml: string;
   feedbackHtml: string;
   isMisconception: boolean;
   /** Right value, wrong required form (R1.6 §2). */
-  formatFeedback?: string;
+  formatFeedbackHtml?: string;
   /**
    * What to check the drawing against, travelling back with the marking and
    * never on the page being answered: the figure when the figure IS the answer,
@@ -115,7 +118,7 @@ export async function submitAnswer(input: {
   if (!question) return { error: 'Question not found.' };
 
   let result;
-  let partResults: { label: string; correct: boolean }[];
+  let partResults: Feedback['partResults'];
   let storedAnswer: string | number;
   if (question.kind === 'mcq') {
     const idx = Number(answers[0]?.answer);
@@ -140,28 +143,18 @@ export async function submitAnswer(input: {
       return { ...a, values, text: composeAnswer(values, reading.shape, reading) };
     });
     const inputs = entered.map((a) => ({ ref: a.label, answer: a.text, values: a.values }));
-    result = markStructuredParts(question.rubric ?? [], parts, inputs);
+    const marked = markStructuredParts(question.rubric ?? [], parts, inputs);
+    result = marked;
     const inputByRef = new Map(entered.map((a) => [a.label, a]));
-    partResults = parts.flatMap((p) =>
-      p.slots
-        .filter((slot) => (slot.response_mode ?? 'answer') === 'answer')
-        .map((slot) => {
-          const ref = `${p.label}.${slot.label}`;
-          const given = inputByRef.get(ref);
-          const correct = given?.values?.length
-            ? componentsEquivalent(given.values, slot.answer, slot.accept)
-            : answersEquivalentAny(given?.text ?? '', slot.answer, slot.accept);
-          return {
-            label: ref,
-            correct,
-            // A cross on its own reports that something is wrong and nothing
-            // about what, so the reason is said beside the box.
-            reason: correct
-              ? undefined
-              : missReason(given?.text ?? '', slot.answer, given?.values),
-          };
-        }),
-    );
+    const slotByRef2 = new Map(parts.flatMap((p) => p.slots.map((s) => [`${p.label}.${s.label}` as string, s] as const)));
+    // A wrong value is told the scheme's line for the slot, never a comment on
+    // the answer; a cross on its own says nothing a student can act on.
+    partResults = marked.slot_results.map((s) => {
+      const given = inputByRef.get(s.ref);
+      const slot = slotByRef2.get(s.ref);
+      const line = s.correct ? undefined : schemeLine(question.rubric ?? [], s.ref) ?? missReason(given?.text ?? '', slot?.answer ?? '', given?.values);
+      return { label: s.ref, correct: s.correct, formWithheld: s.form_withheld, reasonHtml: line ? renderMathHtml(line) : undefined };
+    });
     storedAnswer = entered.map((a) => `(${a.label}) ${a.text}`).join('; ');
   }
 
@@ -253,7 +246,7 @@ export async function submitAnswer(input: {
     feedbackTitleHtml,
     feedbackHtml,
     isMisconception,
-    formatFeedback: 'format_feedback' in result ? result.format_feedback : undefined,
+    formatFeedbackHtml: result.format_feedback ? renderMathHtml(result.format_feedback) : undefined,
     construction,
     attemptId: String(written._id),
     earnableByMethod:

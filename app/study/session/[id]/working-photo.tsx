@@ -36,6 +36,7 @@ export function WorkingPhoto({
   marks,
   initial,
   onRead,
+  onBusy,
 }: {
   sessionId: string;
   questionIndex: number;
@@ -47,6 +48,8 @@ export function WorkingPhoto({
   initial?: (ReadResult | CaptureResult) | null;
   /** The boxes to fill from a read; only ever called before submit. */
   onRead?: (prefill: Record<string, string>) => void;
+  /** While a page is being read the answers cannot be handed in. */
+  onBusy?: (busy: boolean) => void;
 }) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [read, setRead] = useState<TranscriptionResult | null>(initial?.transcription ?? null);
@@ -57,10 +60,13 @@ export function WorkingPhoto({
       : { method: [], marksAdded: 0 },
   );
   const [error, setError] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
   const send = (file: File) => {
     setError(null);
+    setPreview(URL.createObjectURL(file));
+    onBusy?.(true);
     start(async () => {
       try {
         const image = await scaleDown(file);
@@ -77,6 +83,12 @@ export function WorkingPhoto({
         if ('prefill' in res) onRead?.(res.prefill);
       } catch {
         setError('That photo could not be prepared on this device.');
+      } finally {
+        setPreview((url) => {
+          if (url) URL.revokeObjectURL(url);
+          return null;
+        });
+        onBusy?.(false);
       }
     });
   };
@@ -105,6 +117,14 @@ export function WorkingPhoto({
           e.target.value = '';
         }}
       />
+
+      {/* The page, small, in the place the read will appear — never a modal. */}
+      {pending && preview && (
+        <div className="mt-2 flex items-center gap-3" aria-live="polite">
+          <img src={preview} alt="" className="h-16 w-16 border-[1.5px] border-ink object-cover" />
+          <span className="font-mono text-[11px] uppercase tracking-widest text-dim">Reading your page…</span>
+        </div>
+      )}
 
       {takesLeft > 0 && (
         <button

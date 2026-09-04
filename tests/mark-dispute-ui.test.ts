@@ -17,9 +17,9 @@ describe('the dispute button', () => {
   });
 
   it('says the two things the spec says, and nothing after the first tap but the second', () => {
-    expect(button).toContain('I think this earned the mark.');
-    expect(button).toContain('Noted — we&rsquo;ll look.');
-    expect(button).toMatch(/if \(done\) \{[\s\S]*Noted/);
+    expect(button).toContain('Query this mark');
+    expect(button).toContain('Queried. A person will look before anything changes.');
+    expect(button).toMatch(/if \(done\) \{[\s\S]*Queried/);
     expect(button).toMatch(/useState\(noted\)/);
   });
 

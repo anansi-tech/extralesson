@@ -218,7 +218,7 @@ export default async function LandingPage() {
             </div>
             <div className="step">
               <div className="sn">STEP 3</div>
-              <h3>Fifteen minutes a day</h3>
+              <h3>Every day.</h3>
               <p>
                 A short diagnostic finds the topics costing you the most marks. Every session aims
                 there. Your predicted grade updates after every question.

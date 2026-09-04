@@ -27,6 +27,8 @@ export interface CardQuestion {
   parts: {
     label: string;
     promptHtml: string;
+    /** The prompt as plain text, for an accessible name. */
+    promptText: string;
     marks: number;
     /** Cloze prose, already split on its gaps: n gaps give n+1 pieces. */
     statementHtml?: string[];
@@ -98,36 +100,19 @@ export interface CardQuestion {
 type CardSlot = CardQuestion['parts'][number]['slots'][number];
 type CardPart = CardQuestion['parts'][number];
 
-const ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'];
-
 /**
- * What to call a box whose slot carries no prompt. The label is a KEY and the
- * wording lives in the slot prompt (lib/notation.ts); where an older question
- * left it empty, position counted out in words is all that is left to say.
+ * What a box is called when its slot carries no prompt: the cell it fills, a
+ * descriptive label's own words, or the PART's prompt — never a position
+ * counted out in words, which names nothing the student can act on.
  */
-function ordinalAnswer(slots: CardSlot[], ref: string): string {
-  const marked = slots.filter((s) => s.mode === 'answer');
-  const i = marked.findIndex((s) => s.ref === ref);
-  return `${ORDINALS[i] ?? `${i + 1}th`} answer`;
-}
-
-/**
- * A descriptive label IS the wording — "modal_class" is the paper's own name
- * for the thing — so it is shown as words. A positional label names nothing.
- */
-function describeSlot(slots: CardSlot[], slot: CardSlot): string {
-  // The cell it fills, before anything positional: "Suitable beans ·
-  // Percentage of total harvest" says which box this is, where "first answer"
-  // says only where it sits in a list the student did not write.
+function describeSlot(part: CardPart, slot: CardSlot): string {
   if (slot.cellName) return slot.cellName;
-  return isPositionalLabel(slot.label)
-    ? ordinalAnswer(slots, slot.ref)
-    : slot.label.replace(/[_-]+/g, ' ');
+  return isPositionalLabel(slot.label) ? part.promptText : slot.label.replace(/[_-]+/g, ' ');
 }
 
 function slotAriaLabel(part: CardPart, slot: CardSlot): string {
   if (part.slots.length === 1) return `Answer to part (${part.label})`;
-  const named = slot.promptText?.trim() || describeSlot(part.slots, slot);
+  const named = slot.promptText?.trim() || describeSlot(part, slot);
   return `Part (${part.label}) (${slot.label}): ${named}`;
 }
 
@@ -153,6 +138,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       : (question.draft?.values ?? {}),
   );
   const [feedback, setFeedback] = useState<Feedback | null>(question.prior?.feedback ?? null);
+  const [reading, setReading] = useState(false);
   const [error, setError] = useState<string>();
   const [pending, startTransition] = useTransition();
   const startedAt = useRef(Date.now());
@@ -502,6 +488,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           questionIndex={question.index}
           initial={question.draft?.read}
           onRead={(prefill) => setPartAnswers((prev) => ({ ...prev, ...prefill }))}
+          onBusy={setReading}
         />
       )}
 
@@ -588,8 +575,13 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                                   className="question-prose"
                                   dangerouslySetInnerHTML={{ __html: slot.promptHtml }}
                                 />
+                              ) : slot.cellName || !isPositionalLabel(slot.label) ? (
+                                <span className="text-dim">{describeSlot(p, slot)}</span>
                               ) : (
-                                <span className="text-dim">{describeSlot(p.slots, slot)}</span>
+                                <span
+                                  className="question-prose text-dim"
+                                  dangerouslySetInnerHTML={{ __html: p.promptHtml }}
+                                />
                               )}
                             </label>
                           )}
@@ -608,18 +600,33 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                           })}
                           {partFeedback && (
                             <span
-                              className={`shrink-0 pt-1.5 font-hand text-xl ${partFeedback.correct ? 'text-green-pen' : 'text-red-pen'}`}
+                              className={`shrink-0 pt-1.5 font-hand text-xl ${
+                                partFeedback.formWithheld
+                                  ? 'text-[#B8860B]'
+                                  : partFeedback.correct
+                                    ? 'text-green-pen'
+                                    : 'text-red-pen'
+                              }`}
                             >
-                              {partFeedback.correct ? '✓' : '✗'}
+                              {partFeedback.formWithheld ? (
+                                <>
+                                  ✓<span className="ml-1 font-mono text-[10px]">value · form withheld</span>
+                                </>
+                              ) : partFeedback.correct ? (
+                                '✓'
+                              ) : (
+                                '✗'
+                              )}
                             </span>
                           )}
                           </div>
                           </div>
                           <div className={p.slots.length > 1 ? 'sm:ml-auto sm:basis-[62%]' : ''}>
-                            {partFeedback && !partFeedback.correct && partFeedback.reason && (
-                              <p className="mt-1 border-l-3 border-red-pen bg-[#FDF1F0] px-2 py-1 text-[12px] leading-snug">
-                                {partFeedback.reason}
-                              </p>
+                            {partFeedback && !partFeedback.correct && partFeedback.reasonHtml && (
+                              <p
+                                className="question-prose mt-1 border-l-3 border-red-pen bg-[#FDF1F0] px-2 py-1 text-[12px] leading-snug"
+                                dangerouslySetInnerHTML={{ __html: partFeedback.reasonHtml }}
+                              />
                             )}
                             <SymbolStrip
                               symbols={slot.symbols ?? []}
@@ -679,49 +686,61 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
       {!feedback ? (
         reviewing ? null : (
+        <>
         <button
           ref={submitRef}
           onClick={submit}
-          disabled={pending || !canSubmit}
+          disabled={pending || reading || !canSubmit}
           className="mt-5 w-full bg-red-pen p-3 font-black text-white shadow-[3px_3px_0_var(--ink)] disabled:opacity-50"
         >
           {pending
             ? 'Marking…'
-            : blanks > 0 && question.kind === 'structured'
-              ? `Submit answer (${blanks} left blank)`
-              : 'Submit answer'}
+            : reading
+              ? 'Reading your page…'
+              : blanks > 0 && question.kind === 'structured'
+                ? `Submit answer (${blanks} left blank)`
+                : 'Submit answer'}
         </button>
+        {/* Inline, in the place the marking will appear; never a modal. */}
+        {pending && (
+          <div className="mt-5 animate-pulse" aria-live="polite">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-dim">Marking…</div>
+            {[3, 2, 4].map((w, i) => (
+              <div key={i} className={`mt-2 h-3 rounded bg-paper-deep w-${w}/5`} />
+            ))}
+          </div>
+        )}
+        </>
         )
       ) : (
         <div className="mt-5">
+          {/* The fraction is the verdict. A cross only at zero: two of three is
+              not "not quite", it is two of three. */}
           <div
             className={`flex items-baseline justify-between border-l-3 p-3 ${
-              feedback.correct ? 'border-green-pen bg-[#E8F0E9]' : 'border-red-pen bg-[#FDF1F0]'
+              earned === 0
+                ? 'border-red-pen bg-[#FDF1F0]'
+                : earned >= outOf
+                  ? 'border-green-pen bg-[#E8F0E9]'
+                  : 'border-[#D9A62E] bg-[#FDF8EC]'
             }`}
           >
-            <b className={feedback.correct ? 'text-green-pen' : 'text-red-pen'}>
-              {feedback.correct ? (
-                'Correct ✓'
-              ) : feedback.isMisconception ? (
-                <span dangerouslySetInnerHTML={{ __html: feedback.feedbackTitleHtml }} />
-              ) : (
-                'Not quite ✗'
-              )}
-            </b>
-            <span className="text-right font-mono text-xs">
+            <b className={`font-mono text-lg ${earned === 0 ? 'text-red-pen' : earned >= outOf ? 'text-green-pen' : 'text-ink'}`}>
               {earned}/{outOf}
-              {question.self > 0 && !readExists && (
-                <span className="block text-[10px] text-dim">
-                  {question.auto} marked here · {question.self} you mark yourself
-                </span>
-              )}
-            </span>
+              {earned === 0 && <span className="ml-1 font-hand">✗</span>}
+            </b>
+            {question.self > 0 && !readExists && (
+              <span className="text-right font-mono text-[10px] text-dim">
+                {question.auto} marked here · {question.self} you mark yourself
+              </span>
+            )}
           </div>
 
-          {feedback.formatFeedback && (
-            <p className="mt-2 border-l-3 border-[#D9A62E] bg-[#FDF8EC] p-2 text-sm">
-              {feedback.formatFeedback}
-            </p>
+          {feedback.formatFeedbackHtml && (
+            <p
+              className="question-prose mt-2 border-l-3 border-[#D9A62E] bg-[#FDF8EC] p-2 text-sm"
+              dangerouslySetInnerHTML={{ __html: feedback.formatFeedbackHtml }}
+            />
           )}
 
           {question.rubricCodes.length > 0 && (
@@ -786,11 +805,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
           <div className="mt-3">
             <div className="section-label">
-              {feedback.correct
-                ? 'Worked solution'
-                : feedback.isMisconception
-                  ? 'What went wrong'
-                  : 'Worked solution'}
+              {feedback.isMisconception ? (
+                <span dangerouslySetInnerHTML={{ __html: feedback.feedbackTitleHtml }} />
+              ) : (
+                'Worked solution'
+              )}
             </div>
             <div
               className="question-prose mt-1 text-[15px]"
@@ -867,12 +886,16 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       )}
 
       {question.visualHtml && figureAway && !atSubmit && !figureOpen && (
+        // In the gutter, not over the text: the page's 20px and the card's 20px
+        // of padding put the first character 40px from the edge, so a 40px
+        // button at the edge covers padding only.
         <button
           type="button"
           onClick={() => setFigureOpen(true)}
-          className="fixed bottom-4 right-4 z-40 flex min-h-11 items-center gap-1.5 border-[1.5px] border-ink bg-paper px-3 py-2 font-mono text-xs uppercase tracking-widest shadow-[3px_3px_0_var(--ink)]"
+          aria-label="Show figure"
+          className="fixed bottom-3 right-0 z-40 flex h-11 w-10 items-center justify-center border-y-[1.5px] border-l-[1.5px] border-ink bg-paper font-mono text-[10px] uppercase tracking-widest shadow-[-2px_2px_0_var(--ink)]"
         >
-          Show figure
+          fig
         </button>
       )}
 

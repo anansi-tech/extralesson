@@ -15,6 +15,15 @@ export interface MarkResult {
   profile_marks: ProfileMarks;
   /** Set when the value was right but the required FORM was not (R1.6 §2). */
   format_feedback?: string;
+  /** The value earned its rows and a for_format row was withheld. */
+  form_withheld?: boolean;
+}
+
+export interface SlotVerdict {
+  ref: string;
+  /** The VALUE was right, whatever the form. */
+  correct: boolean;
+  form_withheld: boolean;
 }
 
 export function markMcq(profile: 'CK' | 'AK' | 'R', marks: number, answerIndex: number, answerKey: number): MarkResult {
@@ -53,10 +62,11 @@ export function markStructuredParts(
   rubric: RubricItem[],
   parts: { label: string; slots: MarkableSlot[] }[],
   inputs: SlotInput[],
-): MarkResult {
+): MarkResult & { slot_results: SlotVerdict[] } {
   const inputByRef = new Map(inputs.map((i) => [i.ref, i]));
   const profile_marks: ProfileMarks = { CK: 0, AK: 0, R: 0 };
   const awarded: string[] = [];
+  const slot_results: SlotVerdict[] = [];
   let allCorrect = true;
   let formatFeedback: string | undefined;
 
@@ -83,6 +93,7 @@ export function markStructuredParts(
       // still failed the attempt. The verdict means what the score means.
       if (slotRubric.length > 0 && !result.correct) allCorrect = false;
       if (result.format_feedback && !formatFeedback) formatFeedback = result.format_feedback;
+      slot_results.push({ ref, correct: result.correct || !!result.form_withheld, form_withheld: !!result.form_withheld });
       awarded.push(...result.rubric_awarded.filter((c) => c !== 'R0'));
       profile_marks.CK += result.profile_marks.CK;
       profile_marks.AK += result.profile_marks.AK;
@@ -90,7 +101,7 @@ export function markStructuredParts(
     }
   }
 
-  return { correct: allCorrect, rubric_awarded: awarded, profile_marks, format_feedback: formatFeedback };
+  return { correct: allCorrect, rubric_awarded: awarded, profile_marks, format_feedback: formatFeedback, slot_results };
 }
 
 /** The slots a student is asked to type an answer into. */
@@ -156,5 +167,5 @@ export function markStructured(
   const profile_marks: ProfileMarks = { CK: 0, AK: 0, R: 0 };
   for (const r of awarded) profile_marks[r.profile] += r.mark_value;
 
-  return { correct, rubric_awarded: awarded.map((r) => r.code), profile_marks, format_feedback };
+  return { correct, rubric_awarded: awarded.map((r) => r.code), profile_marks, format_feedback, form_withheld: formOnlyMiss };
 }

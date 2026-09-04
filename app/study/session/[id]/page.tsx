@@ -24,6 +24,7 @@ import QuestionCard, { type CardQuestion } from './question-card';
 import type { ReadResult } from './capture';
 import { MAX_TAKES } from '@/lib/grade/transcribe';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
+import { schemeLine } from '@/lib/grade/reason';
 import { constructActs, figureGivesAnswer } from '@/lib/targets/construct';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 import type { ModuleNumber, ProfileMarks } from '@/lib/types';
@@ -593,7 +594,9 @@ export default async function SessionPage({
         rubric_awarded: attempt.rubric_awarded,
         partResults: refs.map((ref) => {
           const slot = slotByRef.get(ref);
-          return { label: ref, correct: answersEquivalentAny(answers[ref] ?? '', slot?.answer ?? '', slot?.accept) };
+          const correct = answersEquivalentAny(answers[ref] ?? '', slot?.answer ?? '', slot?.accept);
+          const line = correct ? undefined : schemeLine(question.rubric ?? [], ref);
+          return { label: ref, correct, reasonHtml: line ? renderMathHtml(line) : undefined };
         }),
         feedbackTitleHtml: 'Worked solution',
         feedbackHtml: renderMathHtml(question.worked_solution),
@@ -702,6 +705,7 @@ export default async function SessionPage({
       label: p.label,
       marks: p.marks,
       promptHtml: renderMathHtml(p.prompt),
+      promptText: p.prompt.replace(/\$/g, ''),
       // A cloze statement is the prose BETWEEN its gaps: KaTeX has to run on
       // each piece separately, or the split would cut a math span in half.
       statementHtml: p.statement

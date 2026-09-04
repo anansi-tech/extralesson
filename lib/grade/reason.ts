@@ -28,6 +28,17 @@ function numerals(s: string): string[] {
   return [...s.matchAll(/-?\d+(?:\.\d+)?/g)].map((m) => m[0]);
 }
 
+/**
+ * What the scheme says the slot is for — its first method row — which is what
+ * a wrong answer is told, never a comment on the answer (ROUND_4 post-smoke).
+ */
+export function schemeLine(
+  rubric: { slot_ref?: string; criterion: string; for_format?: boolean }[],
+  ref: string,
+): string | undefined {
+  return rubric.find((r) => r.slot_ref === ref && !r.for_format && !/\bCAO\b/.test(r.criterion))?.criterion;
+}
+
 export function missReason(
   given: string,
   canonicalAnswer: string,

@@ -20,7 +20,11 @@ export function DisputeButton({
   const [pending, start] = useTransition();
 
   if (done) {
-    return <span className="block font-mono text-[11px] text-dim">Noted — we&rsquo;ll look.</span>;
+    return (
+      <span className="block font-mono text-[11px] text-dim">
+        Queried. A person will look before anything changes.
+      </span>
+    );
   }
   return (
     <span className="block">
@@ -36,7 +40,7 @@ export function DisputeButton({
         }
         className="min-h-11 font-mono text-[11px] uppercase tracking-widest text-red-pen underline disabled:opacity-60"
       >
-        I think this earned the mark.
+        Query this mark
       </button>
       {error && <span className="ml-2 font-mono text-[11px] text-red-pen">{error}</span>}
     </span>
