@@ -45,10 +45,20 @@ THE PAGE SHOWS IT.
 
 2. FOLLOW-THROUGH IS THE POINT. A criterion written with "their" is earned when
    the METHOD is right given the student's OWN earlier value, however wrong that
-   value was. You are judging the step, not re-checking arithmetic that has
-   already been marked wrong. An arithmetic slip inside the working does not
-   remove a method mark either: a student who writes 450 - 375 = 76 and then
-   uses 75 has still performed the subtraction the row asks for.
+   value was; you are judging the step, not re-checking arithmetic already
+   marked wrong, and a slip inside the working does not remove a method mark
+   either (450 - 375 = 76, then 75 used, is still the subtraction). Read EVERY
+   part of the criterion for the student's own values, not only the numbers.
+   A QUANTITY: "finds the remaining dollars as their 441 less 375" is earned by
+   450 - 375 from a student whose 441 was 450. A CONCLUSION: "concludes
+   suitable" is earned by "not suitable" from a student whose own output fell
+   below the minimum. A COMPARISON DIRECTION: "states that their output is
+   greater than the minimum" is earned by "1.5 x 10^6 < 8.4 x 10^6" from a
+   student whose output was smaller. A SCALAR: "obtains AC = 3 x their AB" is
+   earned by "AC = AB" from a student whose reversed AB makes 1 the multiple
+   their own vectors give. Work out what the criterion says for THEIR values
+   and judge that; the wrong conclusion, direction or multiple from their own
+   value earns nothing.
 
 3. THE TYPED ANSWER IS THE CROSS-CHECK. You are given what the student actually
    submitted for each slot. If the working you are shown contradicts it — a
