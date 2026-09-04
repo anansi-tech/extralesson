@@ -44,7 +44,9 @@ const CONVENTIONS = [
   'Write mathematics the way a student would type it, with no backslash commands',
   'and no markup: 2x + 3, sqrt(5), 3/4,',
   '24 m by 16 m, 47 degrees as 47, x <= 5, 2 * 3 or 2 x 3 for a product.',
-  'Keep the student\'s own values even where they are wrong. You are reading, not correcting.',
+  'Transcribe what is on the page EXACTLY. Never correct arithmetic or spelling toward a plausible answer:',
+  'a student who wrote 156000 wrote 156000, whatever the sum should give. You are reading, not correcting.',
+  'If two lines disagree with each other, keep both as written and lower the confidence on each.',
   'One line per line of working. Do not merge steps and do not invent steps that are not there.',
   'Copy a crossed-out line only if nothing replaced it; otherwise omit it.',
 ].join(' ');
