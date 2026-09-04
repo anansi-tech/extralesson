@@ -780,8 +780,14 @@ export default async function SessionPage({
             one as a short session rather than a whole exam question,
             and the minutes are what make the marks mean something. */}
         <p className="mt-1 text-[12px] leading-snug text-dim">
-          {total === 1 ? 'One' : total} whole {paperName} {total === 1 ? 'question' : 'questions'} ·{' '}
-          {marksTotal} marks · about {sessionMinutes} minutes at exam pace.{' '}
+          {session.mode === 'first' ? (
+            <>One short {paperName} question · {marksTotal} marks. Work it on paper, then photograph the page.</>
+          ) : (
+            <>
+              {total === 1 ? 'One' : total} whole {paperName} {total === 1 ? 'question' : 'questions'} ·{' '}
+              {marksTotal} marks · about {sessionMinutes} minutes at exam pace.{' '}
+            </>
+          )}
           {marksAnswered > 0 && <span className="text-ink">{marksAnswered} answered so far.</span>}
         </p>
         <QuestionCard question={card} />

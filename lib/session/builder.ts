@@ -41,7 +41,13 @@ export interface CandidateQuestion {
   response_modes?: string[];
   /** Rubric rows a photograph of the working could earn; 'first' needs one. */
   method_rows?: number;
+  /** Lettered parts; 'first' takes a short question. */
+  part_count?: number;
 }
+
+/** The first question is short: five marks or fewer, two parts or fewer. */
+export const FIRST_MAX_MARKS = 5;
+export const FIRST_MAX_PARTS = 2;
 
 // A question belongs in the session when it has anything to mark; self-marked
 // parts are revealed inline. See ROUND_1_6 §1.
@@ -120,7 +126,10 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
     if (!hasMarkableParts(c)) return false;
     // The first question shows the examiner: structured, photographed, with
     // method marks to earn (ROUND_4 Task 2). Ranked as adaptive would rank it.
-    if (mode === 'first' && (c.kind !== 'structured' || !(c.method_rows ?? 0))) return false;
+    if (mode === 'first') {
+      if (c.kind !== 'structured' || !(c.method_rows ?? 0)) return false;
+      if (c.marks > FIRST_MAX_MARKS || (c.part_count ?? 1) > FIRST_MAX_PARTS) return false;
+    }
     if (mode === 'topic') {
       return (focusPrefixes ?? []).some((prefix) =>
         c.objective_ids.some((id) => id.startsWith(prefix)),

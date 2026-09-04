@@ -518,8 +518,8 @@ describe("buildSession — 'first' is one question that shows the examiner", () 
       ...base,
       candidates: [
         withRows(q('mcq', 1, 'M1.1.1', 'mcq'), 0),
-        withRows(q('s-cao', 1, 'M1.1.2', 'structured', 9), 0),
-        withRows(q('s-method', 1, 'M1.1.3', 'structured', 9), 2),
+        withRows(q('s-cao', 1, 'M1.1.2', 'structured', 5), 0),
+        withRows(q('s-method', 1, 'M1.1.3', 'structured', 5), 2),
       ],
     });
     expect(picked.map((p) => p.id)).toEqual(['s-method']);
@@ -530,8 +530,8 @@ describe("buildSession — 'first' is one question that shows the examiner", () 
       ...base,
       targetModules: [2, 3],
       candidates: [
-        withRows(q('light', 3, 'M3.1.1', 'structured', 9), 1),
-        withRows(q('heavy', 2, 'M2.3.1', 'structured', 9), 1),
+        withRows(q('light', 3, 'M3.1.1', 'structured', 5), 1),
+        withRows(q('heavy', 2, 'M2.3.1', 'structured', 5), 1),
       ],
     });
     expect(picked.map((p) => p.id)).toEqual(['heavy']); // M2.3 weighs 10, M3.1 weighs 6
@@ -541,15 +541,29 @@ describe("buildSession — 'first' is one question that shows the examiner", () 
     const picked = buildSession({
       ...base,
       targetModules: [2],
-      candidates: [withRows(q('m1', 1, 'M1.1.1', 'structured', 9), 3)],
+      candidates: [withRows(q('m1', 1, 'M1.1.1', 'structured', 5), 3)],
     });
     expect(picked).toEqual([]);
+  });
+
+  // Five marks or fewer, two parts or fewer: the first five minutes are for
+  // seeing the examiner, not for a twelve-mark question.
+  it('takes a short question: five marks or fewer, two parts or fewer', () => {
+    const picked = buildSession({
+      ...base,
+      candidates: [
+        { ...withRows(q('long', 1, 'M1.1.1', 'structured', 9), 3), part_count: 4 },
+        { ...withRows(q('many-parts', 1, 'M1.1.2', 'structured', 5), 3), part_count: 3 },
+        { ...withRows(q('short', 1, 'M1.1.3', 'structured', 5), 2), part_count: 2 },
+      ],
+    });
+    expect(picked.map((p) => p.id)).toEqual(['short']);
   });
 
   it('returns nothing rather than a question with nothing for a photograph to earn', () => {
     const picked = buildSession({
       ...base,
-      candidates: [withRows(q('s', 1, 'M1.1.1', 'structured', 9), 0), q('bare', 1, 'M1.1.2', 'structured', 9)],
+      candidates: [withRows(q('s', 1, 'M1.1.1', 'structured', 5), 0), q('bare', 1, 'M1.1.2', 'structured', 5)],
     });
     expect(picked).toEqual([]);
   });

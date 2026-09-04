@@ -53,6 +53,7 @@ export async function planSession(args: PlanArgs): Promise<CandidateQuestion[]> 
         (p.slots ?? []).map((slot) => slot.response_mode ?? 'answer'),
       ),
       method_rows: c.rubric ? earnableByMethod(c, []).length : undefined,
+      part_count: c.parts?.length,
     })),
     perObjectiveMastery: state.perObjective,
     attemptedObjectives: state.attemptedObjectives,
