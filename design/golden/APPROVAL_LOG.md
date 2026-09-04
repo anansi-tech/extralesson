@@ -147,3 +147,13 @@ All 30 entries were approved across the six batches. `review.json` was marked
 Exported from /admin/disputes by `pnpm golden:import`. Proposed until a person approves them; the loader skips them meanwhile.
 
 - `f-20c7f7`: from a field dispute on R4, exported 2026-09-04; every row proposed, R4 disputed.
+
+## Batch 8 — approved
+
+- `f-20c7f7`, the cocoa page (the same page as `calibration/reads/cocoa-b1.jpg`),
+  approved 4 September on David's instruction, judged by Claude: award CK1,
+  AK1, CK2, AK2, AK3, R1, R2, R3; withhold CK3, AK4, AK5 and R4. R4 was the
+  disputed row and the withhold stands: 24000 is not standard form. CK3, AK4
+  and AK5 are withheld as written — the page finds the shortfall as 2% of the
+  total, a valid method that never states 1 080 000 — where the grader had
+  awarded the slot on the correct typed value.
