@@ -272,7 +272,8 @@ Pages lacking verdicts, with the rows that need one (`code [slot]`):
 - 48641b (photo, w5): CK3, R2 [d.reason]
 - 037dc7 (typed): R4 [c.reason]
 
-To do: judge each row above against the page's working exactly as the
-answer-slot rows were judged, add the verdicts to the page's `marks` in
-`review.json`, and log the batch in `APPROVAL_LOG.md`. Until then the marking
-eval measures the reasoning-row rule on nothing.
+Batch 7 (APPROVAL_LOG.md, 4 September) proposes a verdict for every row
+above, written into each page's `marks` with `"proposed": true`. To do: approve
+or amend each, drop the `proposed` flag, and log the decision. Until then the
+gate skips them, so the marking eval still measures the reasoning-row rule on
+nothing.

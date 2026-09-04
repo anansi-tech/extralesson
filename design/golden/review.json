@@ -12,7 +12,11 @@
         { "code": "CK3", "awarded": true, "reason": "The working chooses division by 2.40 to convert the local-dollar balance back to US dollars." },
         { "code": "AK3", "awarded": true, "reason": "The student subtracts 375 from their own post-charge value of 450." },
         { "code": "AK4", "awarded": true, "reason": "The student divides their remaining 75 local dollars by 2.40." },
-        { "code": "R2", "awarded": false, "reason": "The student deducts the attraction cost from the pre-charge amount of $450, not from a post-charge balance." }
+        { "code": "R2", "awarded": false, "reason": "The student deducts the attraction cost from the pre-charge amount of $450, not from a post-charge balance." },
+        { "code": "CK2", "awarded": true, "reason": "The service charge is identified as 2% of the student's own $450.", "proposed": true },
+        { "code": "AK2", "awarded": true, "reason": "2% of $450 is evaluated as $9.", "proposed": true },
+        { "code": "R1", "awarded": false, "reason": "The $9 is never deducted; no line reaches $441 or any post-charge balance.", "proposed": true },
+        { "code": "R3", "awarded": false, "reason": "The student writes \"No, US$31.25 not US$30\" — a mismatch, not a \"less than\" comparison, and their 31.25 exceeds 30.", "proposed": true, "flag": "their value exceeds 30, so the row's \"less than\" cannot be made honestly" }
       ]
     },
     {
@@ -25,14 +29,22 @@
         { "code": "CK3", "awarded": true, "reason": "Revenue is formed as (x + 2) multiplied by the student's own three-tray expression." },
         { "code": "AK3", "awarded": true, "reason": "All four distributed products are attempted; writing 3x^2 instead of 3x^3 is a subsequent algebraic multiplication error." },
         { "code": "R2", "awarded": false, "reason": "The two x^2 terms are left uncollected." },
-        { "code": "R3", "awarded": false, "reason": "The stated expression is neither a correct expansion nor fully collected." }
+        { "code": "R3", "awarded": false, "reason": "The stated expression is neither a correct expansion nor fully collected." },
+        { "code": "CK2", "awarded": true, "reason": "3(x^2 + 12) uses 3 times the student's own one-tray expression.", "proposed": true },
+        { "code": "AK2", "awarded": true, "reason": "The 3 is distributed to give 3x^2 + 36.", "proposed": true },
+        { "code": "R1", "awarded": true, "reason": "Their expression has no like terms to collect; 3x^2 + 36 is their total for 3 trays.", "proposed": true, "flag": "nothing to collect in their expression" }
       ]
     },
     {
       "id": "821115",
       "case": "Strong complete response with correct arithmetic and conclusion.",
       "student_answers": { "a.i": "B", "b.i": "$174", "c.i": "$1276", "c.ii": "$127.60", "c.iii": "$1403.60", "d.i": "profit" },
-      "marks": []
+      "marks": [
+        { "code": "CK2", "awarded": true, "reason": "\"29 has exactly 2 factors, 1 and 29\" is written.", "proposed": true },
+        { "code": "AK5", "awarded": true, "reason": "$1403.60 - $127.60 = $1276 subtracts their tax from their amount paid.", "proposed": true },
+        { "code": "AK6", "awarded": true, "reason": "$1276 - $1050 = $226 is written.", "proposed": true },
+        { "code": "R3", "awarded": true, "reason": "The verdict \"Profit\" is supported by the retained amount, the cost and the $226 difference.", "proposed": true }
+      ]
     },
     {
       "id": "797bbe",
@@ -45,7 +57,9 @@
         { "code": "CK3", "awarded": true, "reason": "The student's own uncovered percentage is used as the operating proportion." },
         { "code": "AK3", "awarded": true, "reason": "The student calculates their 15 percent of 10,000,000." },
         { "code": "AK5", "awarded": true, "reason": "The student's 1,500,000 is converted to 1.5 x 10^6." },
-        { "code": "R2", "awarded": true, "reason": "The student's result is expressed in valid standard form." }
+        { "code": "R2", "awarded": true, "reason": "The student's result is expressed in valid standard form." },
+        { "code": "R3", "awarded": true, "reason": "With their 1.5 x 10^6 the honest conclusion is \"not suitable\", which is what they write.", "proposed": true, "flag": "their value inverts the scheme's conclusion" },
+        { "code": "R4", "awarded": true, "reason": "\"1.5 x 10^6 < 8.4 x 10^6\" is a correct comparison of their output with the minimum.", "proposed": true, "flag": "their value makes it \"less than\", not \"greater\"" }
       ]
     },
     {
@@ -70,14 +84,18 @@
         { "code": "CK2", "awarded": true, "reason": "The complete walk is formed from the student's own via-B distance plus the direct 250 m return." },
         { "code": "AK2", "awarded": true, "reason": "The student adds 250 m to their earlier 250 m result." },
         { "code": "CK3", "awarded": true, "reason": "Average speed is selected as total distance divided by time." },
-        { "code": "R1", "awarded": true, "reason": "The student's own 500 m total is divided by 11 minutes." }
+        { "code": "R1", "awarded": true, "reason": "The student's own 500 m total is divided by 11 minutes." },
+        { "code": "AK3", "awarded": true, "reason": "45.45/60 = 0.76 m/s divides their speed by 60.", "proposed": true }
       ]
     },
     {
       "id": "d0dd05",
       "case": "Strong graph response with equation, substitution and limiting whole-number argument.",
       "student_answers": { "a.i": "-3", "b.i": "y = -3x + 36", "c.i": "15 m", "d.number": "7" },
-      "marks": []
+      "marks": [
+        { "code": "R3", "awarded": false, "reason": "No eighth costume is tested and 12 m is never written; the inequality x <= 7 implies it without stating it.", "proposed": true, "flag": "an examiner may accept the inequality as the same argument" },
+        { "code": "R4", "awarded": true, "reason": "-3x + 36 >= 15 solved to x <= 7, then \"greatest whole number = 7\".", "proposed": true }
+      ]
     },
     {
       "id": "797cd7",
@@ -87,7 +105,10 @@
         { "code": "CK3", "awarded": true, "reason": "The working identifies type 3 as drought-tolerant." },
         { "code": "CK4", "awarded": false, "reason": "The part (c) working does not identify 2 and 6 as the butterfly-attracting types." },
         { "code": "AK4", "awarded": false, "reason": "The student selects {1,3}, not {2,3}." },
-        { "code": "AK5", "awarded": false, "reason": "The student selects {3,4}, not {3,6}." }
+        { "code": "AK5", "awarded": false, "reason": "The student selects {3,4}, not {3,6}." },
+        { "code": "R1", "awarded": true, "reason": "Their first selection {1,3} is tested with 2 and with 6 against both conditions.", "proposed": true, "flag": "their selections are {1,3} and {3,4}, not the scheme's {2,3} and {3,6}" },
+        { "code": "R2", "awarded": true, "reason": "Their second selection {3,4} is tested with 2 and with 6 against both conditions.", "proposed": true, "flag": "as R1" },
+        { "code": "R3", "awarded": true, "reason": "\"Not possible\" follows the 2 D, 1 B counts for every addition.", "proposed": true }
       ]
     },
     {
@@ -114,7 +135,11 @@
         { "code": "AK1", "awarded": false, "reason": "27x - 15x is incorrectly collected as 6x rather than 12x." },
         { "code": "AK2", "awarded": false, "reason": "The student effectively divides by 6, not by 12." },
         { "code": "CK3", "awarded": true, "reason": "The calculation uses 12 dollars as the profit contribution per crate above the student's break-even value." },
-        { "code": "AK4", "awarded": true, "reason": "The student calculates 18 minus their own break-even value of 20." }
+        { "code": "AK4", "awarded": true, "reason": "The student calculates 18 minus their own break-even value of 20." },
+        { "code": "CK4", "awarded": true, "reason": "12(x - 20) >= 120 uses their break-even value of 20.", "proposed": true },
+        { "code": "R1", "awarded": true, "reason": "x >= 30 follows through correctly from their inequality.", "proposed": true },
+        { "code": "R2", "awarded": true, "reason": "\"30 > 18\" compares the required number with the number line's maximum.", "proposed": true },
+        { "code": "R3", "awarded": true, "reason": "\"No\" is concluded from 30 > 18.", "proposed": true }
       ]
     },
     {
@@ -128,7 +153,10 @@
         { "code": "CK2", "awarded": true, "reason": "T = 2.50 and g = 9.8 are substituted into the student's own formula." },
         { "code": "AK3", "awarded": false, "reason": "The required intermediate value T/(2pi) is not evaluated; the student evaluates a different unsquared expression." },
         { "code": "AK4", "awarded": false, "reason": "There is no squaring before multiplication by 9.8." },
-        { "code": "R1", "awarded": true, "reason": "The student's resulting length, 3.90 m, is stated to three significant figures." }
+        { "code": "R1", "awarded": true, "reason": "The student's resulting length, 3.90 m, is stated to three significant figures." },
+        { "code": "CK3", "awarded": true, "reason": "1.60 m is used as the limit in \"3.90 m > 1.60 m\".", "proposed": true },
+        { "code": "R2", "awarded": true, "reason": "Their 3.90 m is compared with 1.60 m.", "proposed": true },
+        { "code": "R3", "awarded": true, "reason": "\"Will not fit\" is consistent with their comparison.", "proposed": true }
       ]
     },
     {
@@ -136,7 +164,12 @@
       "case": "States the wrong angle but uses the correct trigonometric relationships and reaches the correct final distance.",
       "student_answers": { "a.i": "60", "c.i": "34.6 m" },
       "marks": [
-        { "code": "CK1", "awarded": false, "reason": "The student states 60 degrees without showing the angle-sum process and the stated angle is wrong." }
+        { "code": "CK1", "awarded": false, "reason": "The student states 60 degrees without showing the angle-sum process and the stated angle is wrong." },
+        { "code": "CK2", "awarded": true, "reason": "tan 60 = RS/QR gives RS = sqrt(3)QR — the relationship is reached, from tan rather than the triangle ratios.", "proposed": true, "flag": "all (b) working is labelled (a) on the page" },
+        { "code": "CK3", "awarded": true, "reason": "20 + QR is used as the denominator for tan 30, though PR = 20 + QR is not written as a statement.", "proposed": true, "flag": "implicit; and labelled (a)" },
+        { "code": "R1", "awarded": true, "reason": "tan 30 = RS/(20 + QR) is formed.", "proposed": true, "flag": "labelled (a)" },
+        { "code": "AK2", "awarded": false, "reason": "sqrt(3)QR is substituted but tan 30 is never evaluated; no 1/sqrt(3) appears.", "proposed": true, "flag": "labelled (a)" },
+        { "code": "R2", "awarded": true, "reason": "\"QR = 10, so RS = 10sqrt(3) m\" establishes the result, with the solving steps omitted.", "proposed": true, "flag": "jump from the equation to QR = 10; labelled (a)" }
       ]
     },
     {
@@ -193,7 +226,13 @@
       "student_answers": { "a.i": "21,22,23,24,24,25,26,27,28,29", "b.lower_quartile": "23.5", "b.upper_quartile": "26.5", "b.interquartile_range": "3" },
       "marks": [
         { "code": "CK2", "awarded": false, "reason": "The lower five values are not used; the student instead averages the third and fourth observations." },
-        { "code": "AK2", "awarded": false, "reason": "The stated lower quartile 23.5 is not the required 23." }
+        { "code": "AK2", "awarded": false, "reason": "The stated lower quartile 23.5 is not the required 23." },
+        { "code": "CK3", "awarded": true, "reason": "SIQR = 3/2 halves their interquartile range.", "proposed": true },
+        { "code": "AK5", "awarded": false, "reason": "The row asks for 4 / 2 = 2; the student calculates 3/2 = 1.5 from their IQR.", "proposed": true, "flag": "follow-through would award 1.5; the row is written without \"their\"" },
+        { "code": "CK4", "awarded": true, "reason": "Driver A is chosen on both smaller measures, which is the recognition; it is not stated in words.", "proposed": true, "flag": "implicit" },
+        { "code": "R1", "awarded": true, "reason": "\"SIQR = 1.5 < 3\" compares their value with 3 minutes.", "proposed": true },
+        { "code": "R2", "awarded": true, "reason": "\"SD = 2.45 < 2.98\" is written.", "proposed": true },
+        { "code": "R3", "awarded": true, "reason": "\"Select Driver A\" follows both comparisons.", "proposed": true }
       ],
       "human_note": "The deterministic grader currently also accepts 26.5 as equivalent to the canonical 27 because of numeric rounding tolerance, so AK3 is wrongly removed before photo marking. This needs a separate deterministic-grader correction."
     },
@@ -206,7 +245,9 @@
         { "code": "AK2", "awarded": false, "reason": "The row for spinner result M is absent." },
         { "code": "CK2", "awarded": false, "reason": "The four inclusive-event outcomes are not identified; only the fraction 4/6 is written." },
         { "code": "CK3", "awarded": false, "reason": "The shared outcome (P,2) is not explicitly identified." },
-        { "code": "R1", "awarded": false, "reason": "The shared outcome is not removed from the earlier reward outcomes." }
+        { "code": "R1", "awarded": false, "reason": "The shared outcome is not removed from the earlier reward outcomes." },
+        { "code": "R2", "awarded": false, "reason": "Part (d) holds only \"2\"; no outcomes are identified.", "proposed": true },
+        { "code": "R3", "awarded": false, "reason": "No outcome containing P is identified.", "proposed": true }
       ]
     },
     {
@@ -228,7 +269,12 @@
         { "code": "CK1", "awarded": false, "reason": "The determinant products are reversed; 2(1) - 3(1) is not the stated determinant calculation." },
         { "code": "R2", "awarded": true, "reason": "The student's own inverse matrix is applied to the order-total vector." },
         { "code": "AK3", "awarded": true, "reason": "The standard-carton entry -40 is calculated correctly using the student's inverse." },
-        { "code": "AK4", "awarded": true, "reason": "The deluxe-carton entry -50 is calculated correctly using the student's inverse." }
+        { "code": "AK4", "awarded": true, "reason": "The deluxe-carton entry -50 is calculated correctly using the student's inverse." },
+        { "code": "CK2", "awarded": true, "reason": "adj A = [1 -1; -2 3] is formed.", "proposed": true },
+        { "code": "R1", "awarded": false, "reason": "Their -1 is used in the formula but its being non-zero is never used to say the inverse exists.", "proposed": true, "flag": "implicit at best" },
+        { "code": "CK3", "awarded": true, "reason": "A^-1 = 1/det × adj is written with their determinant.", "proposed": true },
+        { "code": "AK2", "awarded": false, "reason": "Their -1 is substituted, but the result is [-1 1; 2 -3], not the stated inverse the row names.", "proposed": true, "flag": "the act is done; the target is not reached" },
+        { "code": "R3", "awarded": true, "reason": "With their -40 and -50 the honest conclusion is \"No, not positive whole numbers\", which is written.", "proposed": true, "flag": "their values invert the scheme's conclusion" }
       ]
     },
     {
@@ -241,14 +287,19 @@
         { "code": "CK2", "awarded": true, "reason": "BC is formed as twice the student's own AB." },
         { "code": "AK2", "awarded": true, "reason": "The first component of the student's AB is doubled correctly." },
         { "code": "AK3", "awarded": true, "reason": "The second component of the student's AB is doubled correctly." },
-        { "code": "AK4", "awarded": true, "reason": "The student's BC is added to OB to obtain their OC." }
+        { "code": "AK4", "awarded": true, "reason": "The student's BC is added to OB to obtain their OC." },
+        { "code": "CK3", "awarded": true, "reason": "AC = OC - OA is written.", "proposed": true },
+        { "code": "R1", "awarded": false, "reason": "Their AC = (-6, 2) is 1 × their AB, not 3 ×; the arithmetic is right for their reversed AB.", "proposed": true, "flag": "the multiple is 1 because AB was reversed in (a)" },
+        { "code": "R2", "awarded": true, "reason": "\"AC = AB, so A, B and C lie on a straight line\" concludes collinearity from a scalar multiple.", "proposed": true }
       ]
     },
     {
       "id": "9e894a",
       "case": "Strong complete vector response with exact surd distance and ratio interpretation.",
       "student_answers": { "a.i": "\\begin{pmatrix}6\\\\-4\\end{pmatrix}", "b.i": "\\begin{pmatrix}10\\\\-3\\end{pmatrix}", "c.i": "3\\sqrt{13}\\text{ km}", "d.ratio": "2:3" },
-      "marks": []
+      "marks": [
+        { "code": "R4", "awarded": true, "reason": "AB : BC = 2 : 3 is found, then \"B is not the midpoint of AC\".", "proposed": true }
+      ]
     },
     {
       "id": "a9f537",
@@ -264,7 +315,9 @@
         { "code": "CK3", "awarded": true, "reason": "The centre A' is held fixed and displacements from it are doubled." },
         { "code": "AK4", "awarded": true, "reason": "Scale factor 2 about A' is correctly applied to the student's B'." },
         { "code": "AK5", "awarded": true, "reason": "Scale factor 2 about A' is correctly applied to the student's C'." },
-        { "code": "R2", "awarded": true, "reason": "The stated centre A' is maintained for both enlarged points." }
+        { "code": "R2", "awarded": true, "reason": "The stated centre A' is maintained for both enlarged points." },
+        { "code": "R3", "awarded": true, "reason": "\"No ... not congruent\" is written.", "proposed": true },
+        { "code": "R4", "awarded": true, "reason": "\"scale factor 2 doubles the lengths, so not congruent\" gives the justification; \"similar\" is not said.", "proposed": true, "flag": "\"similar\" absent" }
       ]
     },
     {
@@ -295,7 +348,10 @@
       "id": "a9f59f",
       "case": "Strong complete transformation response.",
       "student_answers": { "a.i": "(5,-2)", "b.i": "(4,3)", "b.ii": "(6,0)", "c.i": "(2,0)", "c.ii": "(6,6)", "c.iii": "(10,0)", "d.i": "similar", "d.iii": "congruent", "d.v": "the same" },
-      "marks": []
+      "marks": [
+        { "code": "R1", "awarded": true, "reason": "\"corresponding angles equal; corresponding sides in ratio 2:1\" is written.", "proposed": true },
+        { "code": "R2", "awarded": true, "reason": "\"Not congruent: corresponding side lengths not equal\" is written.", "proposed": true }
+      ]
     },
     {
       "id": "797c98",
@@ -307,7 +363,9 @@
         { "code": "AK3", "awarded": false, "reason": "AB is subtracted from C instead of added." },
         { "code": "CK3", "awarded": true, "reason": "The rotation rule (x,y) to (-y,x) is used on the student's own translated points." },
         { "code": "AK4", "awarded": true, "reason": "The student's A' is rotated correctly." },
-        { "code": "AK5", "awarded": true, "reason": "The student's C' is rotated correctly." }
+        { "code": "AK5", "awarded": true, "reason": "The student's C' is rotated correctly." },
+        { "code": "R2", "awarded": true, "reason": "\"preserve lengths\" is given as the reason.", "proposed": true },
+        { "code": "R3", "awarded": true, "reason": "\"and angles\" is given in the same line.", "proposed": true }
       ]
     },
     {
@@ -320,7 +378,9 @@
         { "code": "CK2", "awarded": true, "reason": "The first three class frequencies are selected in the subtotal 5 + 9 + 14." },
         { "code": "AK3", "awarded": true, "reason": "The selected frequencies sum to 28, although the result is not written explicitly." },
         { "code": "AK4", "awarded": false, "reason": "The subtotal is not converted to a percentage of 40." },
-        { "code": "R3", "awarded": false, "reason": "No comparison or customer verdict is completed." }
+        { "code": "R3", "awarded": false, "reason": "No comparison or customer verdict is completed." },
+        { "code": "CK3", "awarded": false, "reason": "Part (d) holds only \"1/3 = ?\"; no complement is recognised.", "proposed": true },
+        { "code": "R2", "awarded": false, "reason": "No percentage is determined.", "proposed": true }
       ]
     },
     {
@@ -334,7 +394,8 @@
         { "code": "R2", "awarded": false, "reason": "No corner points are identified." },
         { "code": "R3", "awarded": false, "reason": "No income-maximising point is selected." },
         { "code": "CK3", "awarded": true, "reason": "The equation n^2 - 8n + 24 = 12 is formed from the mapping." },
-        { "code": "AK5", "awarded": false, "reason": "The equation is not solved to obtain n = 2 or n = 6." }
+        { "code": "AK5", "awarded": false, "reason": "The equation is not solved to obtain n = 2 or n = 6." },
+        { "code": "R4", "awarded": false, "reason": "Only the equation n^2 - 8n + 24 = 12 is written; nothing is solved, rejected or selected.", "proposed": true }
       ]
     }
   ]
