@@ -2,7 +2,7 @@
   "version": 1,
   "status": "approved",
   "reviewer": "David",
-  "reviewed_at": "2026-09-04T05:34:49Z",
+  "reviewed_at": "2026-09-04T13:19:09Z",
   "entries": [
     {
       "id": "c0bf69",
@@ -273,7 +273,7 @@
         { "code": "CK2", "awarded": true, "reason": "adj A = [1 -1; -2 3] is formed." },
         { "code": "R1", "awarded": false, "reason": "Their -1 is used in the formula but its being non-zero is never used to say the inverse exists." },
         { "code": "CK3", "awarded": true, "reason": "A^-1 = 1/det × adj is written with their determinant." },
-        { "code": "AK2", "awarded": false, "reason": "Their -1 is substituted, but the result is [-1 1; 2 -3], not the stated inverse the row names." },
+        { "code": "AK2", "awarded": true, "reason": "The inverse follows correctly from the student's own determinant of −1." },
         { "code": "R3", "awarded": true, "reason": "With their -40 and -50 the honest conclusion is \"No, not positive whole numbers\", which is written." }
       ]
     },

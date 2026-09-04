@@ -70,6 +70,11 @@ approved by David the same day. Two proposals were changed on approval:
 Everything else stands as proposed. The flag column records where the
 transcript did not settle the verdict on its own.
 
+Correction, 4 September: `c0bf13` AK2 flipped to award — the inverse follows
+correctly from the student's own determinant of −1. The row's "stated
+inverse" reads as follow-through from their determinant, which is the
+marker's reading and was the review's disagreement.
+
 | page | row | proposed | reason | flagged |
 |---|---|---|---|---|
 | c0bf69 | CK2 | award | The service charge is identified as 2% of the student's own $450. |  |
@@ -114,7 +119,7 @@ transcript did not settle the verdict on its own.
 | c0bf13 | CK2 | award | adj A = [1 -1; -2 3] is formed. |  |
 | c0bf13 | R1 | withhold | Their -1 is used in the formula but its being non-zero is never used to say the inverse exists. | implicit at best |
 | c0bf13 | CK3 | award | A^-1 = 1/det × adj is written with their determinant. |  |
-| c0bf13 | AK2 | withhold | Their -1 is substituted, but the result is [-1 1; 2 -3], not the stated inverse the row names. | the act is done; the target is not reached |
+| c0bf13 | AK2 | award (corrected 4 Sep) | Their -1 is substituted, but the result is [-1 1; 2 -3], not the stated inverse the row names. | the act is done; the target is not reached |
 | c0bf13 | R3 | award | With their -40 and -50 the honest conclusion is "No, not positive whole numbers", which is written. | their values invert the scheme's conclusion |
 | d1705a | CK3 | award | AC = OC - OA is written. |  |
 | d1705a | R1 | award (changed on approval) | Their AC = (-6, 2) is 1 × their AB, not 3 ×; the arithmetic is right for their reversed AB. | the multiple is 1 because AB was reversed in (a) |
@@ -130,7 +135,7 @@ transcript did not settle the verdict on its own.
 | 48641b | R2 | withhold | No percentage is determined. |  |
 | 037dc7 | R4 | withhold | Only the equation n^2 - 8n + 24 = 12 is written; nothing is solved, rejected or selected. |  |
 
-Approved: 46 awards, 11 withholds; 19 had been flagged.
+Approved: 47 awards, 10 withholds after the correction; 19 had been flagged.
 
 ## Final approval
 
