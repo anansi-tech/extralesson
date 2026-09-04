@@ -1,4 +1,21 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+
+// The importer re-reads the page with the current reader; here that reader is
+// a stub that returns a different read from the stored one.
+vi.mock('ai', () => ({
+  generateObject: async () => ({
+    object: {
+      lines: [
+        { part_label: 'a', slot_label: null, text: '3x = 15 (fresh)', confidence: 0.9 },
+        { part_label: null, slot_label: null, text: 'x = 4 (misread)', confidence: 0.5 },
+        { part_label: 'b', slot_label: null, text: 'because it is (fresh)', confidence: 0.8 },
+      ],
+      answers: [],
+      legible: true,
+    },
+    usage: {},
+  }),
+}));
 import { mkdtempSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -102,8 +119,14 @@ describe('export as golden case', () => {
     const before = loadGoldenSet(dir);
     expect(before.inputs.map((e) => e.id)).toEqual(['aaaaaa']);
 
-    const result = importGoldenBundle(b, dir);
+    const result = await importGoldenBundle(b, dir);
     expect(result.files).toEqual([`field/${b.id}.jpg`, 'set.json', 'review.json', 'APPROVAL_LOG.md']);
+    // Re-read with the current reader, the rejected line dropped by its text.
+    expect(result.reread).toBe(true);
+    const imported = (JSON.parse(readFileSync(join(dir, 'set.json'), 'utf8')) as { id: string; transcript: { text: string }[] }[]).find((e) => e.id === b.id)!;
+    expect(imported.transcript.map((l) => l.text)).toEqual(['3x = 15 (fresh)', 'because it is (fresh)']);
+    expect(b.rejected_texts).toEqual(['x = 4 (misread)']);
+    expect(b.slot_refs).toEqual(['a.i']);
     expect(existsSync(join(dir, 'field', `${b.id}.jpg`))).toBe(true);
     // The page never leaves the machine that imported it.
     expect(readFileSync(join(process.cwd(), '.gitignore'), 'utf8')).toMatch(/^design\/golden\/field\/$/m);
@@ -128,7 +151,7 @@ describe('export as golden case', () => {
     expect(approved.inputs.map((e) => e.id)).toEqual(['aaaaaa', b.id]);
     expect(approved.verdicts.get(b.id)).toHaveLength(3);
 
-    expect(() => importGoldenBundle(b, dir)).toThrow(/already/);
+    await expect(importGoldenBundle(b, dir)).rejects.toThrow(/already/);
   });
 
   it('reproduces the committed review.json byte for byte, so an import cannot reflow it', () => {

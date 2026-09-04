@@ -29,6 +29,10 @@ export interface GoldenBundle {
     marks: { code: string; awarded: boolean; reason: string; proposed: true; disputed?: true }[];
     proposed: true;
   };
+  /** What the reader is told the question has, so an importer can re-read the page. */
+  slot_refs: string[];
+  /** Lines the student rejected, by text, so a fresh read drops them too. */
+  rejected_texts: string[];
   source: { dispute_id: string; code: string; transcription_id: string; attempt_id: string; exported_at: string };
 }
 
@@ -58,6 +62,7 @@ export async function buildGoldenBundle(disputeId: string): Promise<GoldenBundle
   const transcript = read.lines
     .filter((_, i) => !rejected.has(i))
     .map((l) => ({ part_label: l.part_label ?? null, text: l.text }));
+  const rejectedTexts = read.lines.filter((_, i) => rejected.has(i)).map((l) => l.text);
 
   const image = await CapturedImage.findOne({ attempt_id: dispute.attempt_id })
     .sort({ take: -1 })
@@ -92,6 +97,8 @@ export async function buildGoldenBundle(disputeId: string): Promise<GoldenBundle
       ...(image ? { image: filename } : {}),
       transcript,
     },
+    slot_refs: markableSlots(question.parts ?? []),
+    rejected_texts: rejectedTexts,
     review: {
       id,
       case: `Field dispute on ${dispute.code}: the student queried "${byMarker.get(dispute.code)?.reason ?? 'a withheld row'}".`,

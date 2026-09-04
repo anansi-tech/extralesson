@@ -1,12 +1,17 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import type { GoldenBundle } from './bundle';
+import { transcribeWorking } from '@/lib/grade/transcribe';
 
 /**
  * Appends a bundle to a golden directory in that directory's own style, so
  * the diff is the case and nothing else. Refuses an id already present.
+ * The page is RE-READ with the current reader rather than copied from the
+ * stored read: the stored one is what the product said at the time, and the
+ * transcript here should start from what the reader says now, for a person
+ * to correct. Lines the student rejected are dropped from the fresh read too.
  */
-export function importGoldenBundle(bundle: GoldenBundle, dir: string): { id: string; files: string[] } {
+export async function importGoldenBundle(bundle: GoldenBundle, dir: string): Promise<{ id: string; files: string[]; reread: boolean }> {
   const setPath = join(dir, 'set.json');
   const reviewPath = join(dir, 'review.json');
   const logPath = join(dir, 'APPROVAL_LOG.md');
@@ -28,7 +33,8 @@ export function importGoldenBundle(bundle: GoldenBundle, dir: string): { id: str
     writeFileSync(imagePath, Buffer.from(bundle.image.base64, 'base64'));
     files.push(bundle.image.filename);
   }
-  set.push(bundle.set);
+  const reread = bundle.image ? await rereadTranscript(bundle) : null;
+  set.push(reread ? { ...bundle.set, transcript: reread } : bundle.set);
   writeFileSync(setPath, serialiseSet(set));
   review.entries.push(bundle.review);
   writeFileSync(reviewPath, serialiseReview(review));
@@ -40,7 +46,25 @@ export function importGoldenBundle(bundle: GoldenBundle, dir: string): { id: str
   const heading = '## Field cases — proposed';
   writeFileSync(logPath, log.includes(heading) ? log.replace(/\n*$/, '\n') + line : `${log.replace(/\n*$/, '\n')}\n${heading}\n\nExported from /admin/disputes by \`pnpm golden:import\`. Proposed until a person approves them; the loader skips them meanwhile.\n\n${line}`);
   files.push('APPROVAL_LOG.md');
-  return { id: bundle.id, files };
+  return { id: bundle.id, files, reread: reread !== null };
+}
+
+const flat = (s: string) => s.toLowerCase().replace(/[\s,]/g, '');
+
+async function rereadTranscript(bundle: GoldenBundle): Promise<GoldenBundle['set']['transcript'] | null> {
+  try {
+    const out = await transcribeWorking({
+      image: new Uint8Array(Buffer.from(bundle.image!.base64, 'base64')),
+      contentType: bundle.image!.content_type,
+      slotRefs: bundle.slot_refs ?? [],
+    });
+    const rejected = new Set((bundle.rejected_texts ?? []).map(flat));
+    return out.transcription.lines
+      .filter((l) => !rejected.has(flat(l.text)))
+      .map((l) => ({ part_label: l.part_label ?? null, text: l.text }));
+  } catch {
+    return null;
+  }
 }
 
 const js = (v: unknown) => JSON.stringify(v);

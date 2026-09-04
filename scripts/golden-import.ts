@@ -11,5 +11,6 @@ if (!path) {
   process.exit(1);
 }
 const bundle = JSON.parse(readFileSync(path, 'utf8')) as GoldenBundle;
-const { id, files } = importGoldenBundle(bundle, join(process.cwd(), 'design', 'golden'));
-console.log(`${id} added as proposed: ${files.join(', ')}`);
+importGoldenBundle(bundle, join(process.cwd(), 'design', 'golden')).then(({ id, files, reread }) => {
+  console.log(`${id} added as proposed: ${files.join(', ')}${reread ? ' — page re-read with the current reader' : ' — stored read kept (no image, or the reader failed)'}`);
+});
