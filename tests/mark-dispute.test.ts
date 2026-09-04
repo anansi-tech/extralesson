@@ -17,6 +17,8 @@ beforeAll(async () => {
   process.env.MONGODB_URI = mongod.getUri();
   await mongoose.connect(process.env.MONGODB_URI);
   db = await import('@/lib/db');
+  // The once-per-row rule is the unique index; it has to exist before it is relied on.
+  await db.MarkDispute.init();
   ({ disputeMark } = await import('@/app/study/session/[id]/dispute'));
 });
 

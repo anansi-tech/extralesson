@@ -11,6 +11,7 @@ const ROUTES = [
   { href: '/admin/review', label: 'review', title: 'review queue' },
   { href: '/admin/coverage', label: 'coverage', title: 'coverage' },
   { href: '/admin/topics', label: 'topics', title: 'syllabus graph' },
+  { href: '/admin/disputes', label: 'disputes', title: 'mark disputes' },
 ] as const;
 
 const currentRoute = (pathname: string) =>

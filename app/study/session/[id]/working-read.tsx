@@ -3,6 +3,8 @@
  * whenever the student looks back at that question. Presentation only — it
  * captures nothing, marks nothing, and holds no state of its own.
  */
+import { DisputeButton } from './dispute-button';
+
 export interface ReadLine {
   text: string;
   part_label?: string | null;
@@ -23,6 +25,7 @@ export function WorkingRead({
   heading,
   earnedLabel,
   footer,
+  dispute,
 }: {
   lines: ReadLine[];
   legible: boolean;
@@ -32,6 +35,8 @@ export function WorkingRead({
   heading?: string;
   earnedLabel: string;
   footer?: string;
+  /** Set once the read is marked against an attempt: a withheld row can be disputed. */
+  dispute?: { attemptId: string; transcriptionId: string; disputed: string[] };
 }) {
   // Grouped by the part each line belongs to, with an unlabelled line
   // inheriting the part above it — the same rule the marker applies, so what a
@@ -94,6 +99,14 @@ export function WorkingRead({
                 </span>
                 <span className="min-w-0">
                   <span className="font-mono text-[11px] text-dim">{m.code}</span> {m.reason}
+                  {dispute && !m.awarded && (
+                    <DisputeButton
+                      attemptId={dispute.attemptId}
+                      transcriptionId={dispute.transcriptionId}
+                      code={m.code}
+                      noted={dispute.disputed.includes(m.code)}
+                    />
+                  )}
                 </span>
               </li>
             ))}

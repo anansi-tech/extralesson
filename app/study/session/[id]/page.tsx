@@ -1,7 +1,7 @@
 import 'katex/dist/katex.min.css';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { dbConnect, Attempt, PracticeSession, Question, Student, Topic, Transcription } from '@/lib/db';
+import { dbConnect, Attempt, MarkDispute, PracticeSession, Question, Student, Topic, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { renderMathHtml } from '@/lib/katex';
 import { renderVisual, renderStimulusTable } from '@/lib/visuals';
@@ -545,6 +545,7 @@ export default async function SessionPage({
       .select('lines legible notes method_marks take')
       .lean<
         {
+          _id: unknown;
           take: number;
           legible: boolean;
           notes?: string;
@@ -552,6 +553,9 @@ export default async function SessionPage({
           method_marks?: { code: string; awarded: boolean; reason: string; mark_value: number }[];
         }[]
       >();
+    const disputes = await MarkDispute.find({ attempt_id: attempt._id })
+      .select('transcription_id code')
+      .lean<{ transcription_id: unknown; code: string }[]>();
     const refs: string[] = (question.parts ?? []).flatMap((p) =>
       (p.slots ?? []).filter((sl) => (sl.response_mode ?? 'answer') === 'answer').map((sl) => `${p.label}.${sl.label}`),
     );
@@ -565,6 +569,8 @@ export default async function SessionPage({
       working: takes.map((t) => ({
         take: t.take,
         of: takes.length,
+        transcriptionId: String(t._id),
+        disputed: disputes.filter((d) => String(d.transcription_id) === String(t._id)).map((d) => d.code),
         lines: t.lines.map((l) => ({
           text: l.text,
           part_label: l.part_label ?? null,

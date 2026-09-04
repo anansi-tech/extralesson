@@ -75,6 +75,9 @@ export interface CardQuestion {
     working?: {
       take: number;
       of: number;
+      transcriptionId: string;
+      /** Rows already reported, so the button does not come back on reload. */
+      disputed: string[];
       lines: { text: string; part_label: string | null; confidence: number }[];
       legible: boolean;
       notes?: string;
@@ -806,6 +809,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                   legible={w.legible}
                   notes={w.notes}
                   method={w.method}
+                  dispute={{
+                    attemptId: question.prior!.feedback.attemptId,
+                    transcriptionId: w.transcriptionId,
+                    disputed: w.disputed,
+                  }}
                   heading={
                     w.of > 1
                       ? `${w.take === 1 ? 'First' : 'Second'} photograph — what we read`

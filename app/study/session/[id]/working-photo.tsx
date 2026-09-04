@@ -27,7 +27,7 @@ async function scaleDown(file: File): Promise<{ data: string; contentType: strin
   return { data: url.slice(url.indexOf(',') + 1), contentType: 'image/jpeg' };
 }
 
-type Marked = Pick<CaptureResult, 'method' | 'marksAdded'>;
+type Marked = Pick<CaptureResult, 'method' | 'marksAdded'> & { transcriptionId?: string };
 
 export function WorkingPhoto({
   sessionId,
@@ -52,7 +52,9 @@ export function WorkingPhoto({
   const [read, setRead] = useState<TranscriptionResult | null>(initial?.transcription ?? null);
   const [takesLeft, setTakesLeft] = useState(initial?.takesLeft ?? MAX_TAKES);
   const [marked, setMarked] = useState<Marked>(
-    initial && 'method' in initial ? { method: initial.method, marksAdded: initial.marksAdded } : { method: [], marksAdded: 0 },
+    initial && 'method' in initial
+      ? { method: initial.method, marksAdded: initial.marksAdded, transcriptionId: initial.transcriptionId }
+      : { method: [], marksAdded: 0 },
   );
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -71,7 +73,7 @@ export function WorkingPhoto({
         }
         setRead(res.transcription);
         setTakesLeft(res.takesLeft);
-        if ('method' in res) setMarked({ method: res.method, marksAdded: res.marksAdded });
+        if ('method' in res) setMarked({ method: res.method, marksAdded: res.marksAdded, transcriptionId: res.transcriptionId });
         if ('prefill' in res) onRead?.(res.prefill);
       } catch {
         setError('That photo could not be prepared on this device.');
@@ -127,6 +129,11 @@ export function WorkingPhoto({
           legible={read.legible}
           notes={read.notes}
           method={marked.method}
+          dispute={
+            attemptId && marked.transcriptionId
+              ? { attemptId, transcriptionId: marked.transcriptionId, disputed: [] }
+              : undefined
+          }
           earnedLabel={
             marked.marksAdded > 0
               ? `Your working earned ${marked.marksAdded} more mark${marked.marksAdded === 1 ? '' : 's'}`

@@ -9,6 +9,8 @@ import type { RubricItem } from '@/lib/types';
 
 export interface CaptureResult {
   transcription: TranscriptionResult;
+  /** The read that was marked, which a dispute names. */
+  transcriptionId: string;
   take: number;
   takesLeft: number;
   method: { code: string; awarded: boolean; reason: string; mark_value: number }[];
@@ -148,6 +150,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
 
   return {
     transcription,
+    transcriptionId: String(read._id),
     take: read.take,
     takesLeft: MAX_TAKES - reads.length,
     method: methodMarks.map(({ code, awarded, reason, mark_value }) => ({ code, awarded, reason, mark_value })),
