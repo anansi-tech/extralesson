@@ -71,6 +71,11 @@ export default async function DisputesPage() {
             <div className="flex flex-wrap items-baseline justify-between gap-x-3 font-mono text-[11px] text-dim">
               <span>{d.ts.toLocaleString('en-GB')}</span>
               <span className="truncate">{studentBy.get(String(d.student_id))?.email ?? 'account deleted'}</span>
+              {/* A download, not a write: the bundle is built in memory and
+                  enters the golden set only through pnpm golden:import. */}
+              <a href={`/admin/disputes/${String(d._id)}/export`} className="min-h-11 inline-flex items-center uppercase tracking-widest text-red-pen underline">
+                Export as golden case
+              </a>
             </div>
 
             <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-dim">The question</div>

@@ -52,25 +52,29 @@ export interface GoldenSet {
   approval: { reviewer?: string; reviewed_at?: string; status?: string };
 }
 
-export function goldenSetExists(): boolean {
-  return existsSync(join(DIR, 'set.json')) && existsSync(join(DIR, 'review.json'));
+export function goldenSetExists(dir: string = DIR): boolean {
+  return existsSync(join(dir, 'set.json')) && existsSync(join(dir, 'review.json'));
 }
 
-export function loadGoldenSet(): GoldenSet {
-  const set = JSON.parse(readFileSync(join(DIR, 'set.json'), 'utf8')) as Omit<
+export function loadGoldenSet(dir: string = DIR): GoldenSet {
+  const all = JSON.parse(readFileSync(join(dir, 'set.json'), 'utf8')) as Omit<
     GoldenInput,
     'studentAnswers' | 'case'
   >[];
-  const review = JSON.parse(readFileSync(join(DIR, 'review.json'), 'utf8')) as {
+  const review = JSON.parse(readFileSync(join(dir, 'review.json'), 'utf8')) as {
     status?: string;
     reviewer?: string;
     reviewed_at?: string;
-    entries: (GoldenVerdict & { student_answers?: Record<string, string>; case?: string })[];
+    entries: (GoldenVerdict & { student_answers?: Record<string, string>; case?: string; proposed?: boolean })[];
   };
+  // A field case arrives proposed as a whole (ROUND_5 Task 3) and is not in
+  // the set the gate reads until a person has approved it.
+  const proposed = new Set(review.entries.filter((e) => e.proposed).map((e) => e.id));
+  const set = all.filter((e) => !proposed.has(e.id));
 
   const byId = new Map(review.entries.map((e) => [e.id, e]));
   const orphanInputs = set.filter((e) => !byId.has(e.id)).map((e) => e.id);
-  const orphanVerdicts = review.entries.filter((e) => !set.some((s) => s.id === e.id)).map((e) => e.id);
+  const orphanVerdicts = review.entries.filter((e) => !proposed.has(e.id) && !set.some((s) => s.id === e.id)).map((e) => e.id);
   if (orphanInputs.length || orphanVerdicts.length) {
     throw new Error(
       'golden set is not paired 1:1 — ' +
@@ -90,7 +94,7 @@ export function loadGoldenSet(): GoldenSet {
     })),
     // A proposed row is a question for the reviewer, not ground truth: the
     // gate reads approved verdicts only (APPROVAL_LOG Batch 7).
-    verdicts: new Map(review.entries.map((e) => [e.id, e.marks.filter((m) => !m.proposed)])),
+    verdicts: new Map(review.entries.filter((e) => !proposed.has(e.id)).map((e) => [e.id, e.marks.filter((m) => !m.proposed)])),
     approval: { reviewer: review.reviewer, reviewed_at: review.reviewed_at, status: review.status },
   };
 }

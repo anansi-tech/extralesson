@@ -11,6 +11,7 @@
     "seed:topics": "tsx scripts/seed-topics.ts",
     "seed:blueprints": "tsx scripts/seed-blueprints.ts",
     "generate": "tsx scripts/generate.ts",
+    "golden:import": "tsx scripts/golden-import.ts",
     "check:figures": "tsx scripts/check-figures.ts",
     "check:kill-list": "bash scripts/check-kill-list.sh",
     "prepare": "git config core.hooksPath .githooks || true"
