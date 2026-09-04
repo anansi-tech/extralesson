@@ -34,3 +34,19 @@ Audit of the live bank, same day (`calibration/rubric-template-audit.md`):
 5771 rows, 809 templated, 4389 unchanged, 573 ambiguous (523 a literal that
 is both a question constant and a value in scope, mostly small integers; 47
 a literal matching two slots).
+
+## Rules and templates coexist — `562c423`, same day
+
+The follow-through paragraph restored under the R5 sentence (quantity,
+conclusion, comparison direction, scalar; one example each), templating and
+rendering kept. Five runs each.
+
+| eval | pre-R5 | R5 alone | rules + templates | CAO false | method false |
+|---|---|---|---|---|---|
+| reasoning rows (57) | 86 / 89 / 91% | 82 / 84 / 86% | 84 / 89 / 91% | 0 | 0 |
+| full (185) | 89 / 90 / 91% | 83 / 86 / 88% | 85 / 89 / 90% | 0 | 1–2 |
+
+Median and best are back to the pre-R5 figures; the worst run is two to
+four points under, which is inside the spread the same prompt has shown
+between runs. 797bbe R3/R4 and d1705a R1 agree again in most runs; c0bf13
+AK2 and b1a6a2 AK5 agree in every run.
