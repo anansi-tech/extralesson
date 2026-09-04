@@ -13,6 +13,9 @@ const RubricItemSchema = new Schema(
     // R1.7 §B4: this row credits the FORM of the answer, so a student with the
     // value but not the form still earns the rest.
     for_format: { type: Boolean },
+    // ROUND_5 Task 1: the criterion with {part.slot} references in place of
+    // values, rendered for each student at marking time.
+    template: { type: String },
   },
   { _id: false },
 );

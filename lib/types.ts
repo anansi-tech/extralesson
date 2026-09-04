@@ -69,6 +69,14 @@ export interface RubricItem {
    * wrong form keeps the value marks and loses only this one.
    */
   for_format?: boolean;
+  /**
+   * The criterion as a CLAIM about the page: every literal that is a canonical
+   * value of this slot or one it depends on is a {part.slot} reference, so it
+   * can be rendered for the student's own values (ROUND_5 Task 1). Derived
+   * from criterion by scripts/backfill-rubric-template.ts; absent or equal to
+   * criterion where nothing in it is a value.
+   */
+  template?: string;
 }
 
 // R1.5 §2 — question structure

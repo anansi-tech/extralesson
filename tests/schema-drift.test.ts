@@ -36,6 +36,7 @@ const DERIVED: Record<string, string> = {
   status: 'lifecycle, set by the pipeline',
   gen_meta: 'provenance, set by the pipeline',
   syllabus_mode: 'display-only, set by the caller',
+  template: 'derived from criterion and the slot graph by scripts/backfill-rubric-template.ts (ROUND_5 Task 1)',
 };
 
 /**
@@ -43,7 +44,7 @@ const DERIVED: Record<string, string> = {
  * stored row or the request, so the strict question schema is not where they
  * would be declared.
  */
-const NOT_ON_THE_QUESTION = new Set(['status', 'gen_meta', 'syllabus_mode']);
+const NOT_ON_THE_QUESTION = new Set(['status', 'gen_meta', 'syllabus_mode', 'template']);
 
 /** The element schema of an array field on an object schema. */
 function elementOf(schema: z.ZodTypeAny, field: string): z.ZodTypeAny {
