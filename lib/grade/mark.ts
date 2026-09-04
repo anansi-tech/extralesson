@@ -1,6 +1,7 @@
 import { answersEquivalentAny } from './equivalence';
 import { componentsEquivalent } from './components';
 import { checkAnswerFormat, valueLooksRight } from './format';
+import { roundingOf, type Rounding } from './rounding';
 import type { AnswerFormat, ProfileMarks, RubricItem } from '@/lib/types';
 
 // Round 1 marking (ROUND_1 §6): final-answer equivalence drives accuracy marks
@@ -56,11 +57,13 @@ export interface MarkableSlot {
   // string at the Zod boundary, which has already validated the shape.
   answer_format?: string;
   response_mode?: string;
+  /** Wording that may ask for a rounding the format field does not carry. */
+  prompt?: string;
 }
 
 export function markStructuredParts(
   rubric: RubricItem[],
-  parts: { label: string; slots: MarkableSlot[] }[],
+  parts: { label: string; prompt?: string; slots: MarkableSlot[] }[],
   inputs: SlotInput[],
 ): MarkResult & { slot_results: SlotVerdict[] } {
   const inputByRef = new Map(inputs.map((i) => [i.ref, i]));
@@ -87,6 +90,7 @@ export function markStructuredParts(
         slot.accept,
         slot.answer_format as AnswerFormat | undefined,
         input?.values,
+        roundingOf({ answer_format: slot.answer_format, prompts: [part.prompt, slot.prompt] }),
       );
       // ONLY A SLOT THAT CARRIES MARKS VOTES ON THE VERDICT: five auto-marked
       // slots in the bank have no rubric row, so a miss there cost no marks and
@@ -120,11 +124,12 @@ export function markStructured(
   accept?: string[],
   answerFormat?: AnswerFormat,
   enteredValues?: string[],
+  rounding: Rounding | null = roundingOf({ answer_format: answerFormat }),
 ): MarkResult {
   const equivalent =
     enteredValues && enteredValues.length > 0
-      ? componentsEquivalent(enteredValues, canonicalAnswer, accept)
-      : answersEquivalentAny(studentAnswer, canonicalAnswer, accept);
+      ? componentsEquivalent(enteredValues, canonicalAnswer, accept, rounding)
+      : answersEquivalentAny(studentAnswer, canonicalAnswer, accept, rounding);
   // A required form is part of the question: the value earns its marks and the
   // demanded form earns a further one (R1.7 §B4), so a right value in the wrong
   // form keeps every row except those written for the form. A FORM IS CHECKED
@@ -157,7 +162,9 @@ export function markStructured(
       }
     }
   } else if (!equivalent && answerFormat && valueLooksRight(studentAnswer, canonicalAnswer)) {
-    format_feedback = checkForm().feedback;
+    // Near the value in the wrong form, which with no rounding asked for is
+    // not the value: say so rather than call it correct.
+    format_feedback = checkForm().feedback?.replace(/^Correct value, but /, 'Close, but not the value asked for: ');
   }
   const awarded = rubric.filter((r) => {
     if (formOnlyMiss) return !r.for_format; // the mathematics was right

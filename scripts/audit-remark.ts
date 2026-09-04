@@ -19,6 +19,7 @@
 import 'dotenv/config';
 import { dbConnect, Attempt, Question, Student } from '@/lib/db';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
+import { roundingOf } from '@/lib/grade/rounding';
 import { markSplit } from '@/lib/grade/assessable';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 import { GRADER_VERSION } from '@/lib/grade/version';
@@ -46,11 +47,11 @@ async function correctedState(studentId: string, targets: number[]): Promise<num
     const slots = (q.parts ?? []).flatMap((p: any) =>
       (p.slots ?? [])
         .filter((s: any) => (s.response_mode ?? 'answer') === 'answer')
-        .map((s: any) => ({ ref: `${p.label}.${s.label}`, slot: s })),
+        .map((s: any) => ({ ref: `${p.label}.${s.label}`, slot: s, rounding: roundingOf({ answer_format: s.answer_format, prompts: [p.prompt, s.prompt] }) })),
     );
     const typed = splitStoredAnswer(String(a.answer), slots.map((x: any) => x.ref));
-    for (const { ref, slot } of slots) {
-      if (answersEquivalentAny(typed[ref] ?? '', slot.answer, slot.accept)) {
+    for (const { ref, slot, rounding } of slots) {
+      if (answersEquivalentAny(typed[ref] ?? '', slot.answer, slot.accept, rounding)) {
         after += (q.rubric ?? []).filter((r: any) => r.slot_ref === ref).reduce((n: number, r: any) => n + r.mark_value, 0);
       }
     }
@@ -106,15 +107,15 @@ async function main() {
     const slots = (q.parts ?? []).flatMap((p: any) =>
       (p.slots ?? [])
         .filter((s: any) => (s.response_mode ?? 'answer') === 'answer')
-        .map((s: any) => ({ ref: `${p.label}.${s.label}`, slot: s })),
+        .map((s: any) => ({ ref: `${p.label}.${s.label}`, slot: s, rounding: roundingOf({ answer_format: s.answer_format, prompts: [p.prompt, s.prompt] }) })),
     );
     const typed = splitStoredAnswer(String(a.answer), slots.map((s: any) => s.ref));
     const rubricFor = (ref: string) =>
       (q.rubric ?? []).filter((r: any) => r.slot_ref === ref).reduce((n: number, r: any) => n + r.mark_value, 0);
 
-    for (const { ref, slot } of slots) {
+    for (const { ref, slot, rounding } of slots) {
       const answer = typed[ref] ?? '';
-      const nowCorrect = answersEquivalentAny(answer, slot.answer, slot.accept);
+      const nowCorrect = answersEquivalentAny(answer, slot.answer, slot.accept, rounding);
       // What the stored attempt recorded for this slot. profile_marks is the
       // whole attempt, so per-slot truth comes from re-running the OLD verdict
       // is impossible — the old grader is gone. The attempt's own correctness
@@ -126,9 +127,9 @@ async function main() {
     }
 
     const earnedBefore = a.profile_marks.CK + a.profile_marks.AK + a.profile_marks.R;
-    const earnedAfter = slots.reduce((sum: number, { ref, slot }: any) => {
+    const earnedAfter = slots.reduce((sum: number, { ref, slot, rounding }: any) => {
       const answer = typed[ref] ?? '';
-      return sum + (answersEquivalentAny(answer, slot.answer, slot.accept) ? rubricFor(ref) : 0);
+      return sum + (answersEquivalentAny(answer, slot.answer, slot.accept, rounding) ? rubricFor(ref) : 0);
     }, 0);
     marksBefore += earnedBefore;
     marksAfter += earnedAfter;

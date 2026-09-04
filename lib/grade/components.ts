@@ -1,4 +1,5 @@
 import { answersEquivalentAny } from './equivalence';
+import type { Rounding } from './rounding';
 import { readInputShape } from './input-shape';
 
 /**
@@ -10,7 +11,9 @@ export function componentsEquivalent(
   entered: string[],
   canonicalAnswer: string,
   accept?: string[],
+  rounding: Rounding | null = null,
 ): boolean {
+  const same = (v: string, k: string) => answersEquivalentAny(v, k, undefined, rounding);
   const against = (candidate: string): boolean => {
     const key = readInputShape(candidate);
     if (key.values.length !== entered.length) return false;
@@ -30,9 +33,8 @@ export function componentsEquivalent(
       const sameGroup = (a: string[], b: string[]) =>
         a.length === b.length &&
         (key.groupKind === '('
-          ? a.every((v, i) => answersEquivalentAny(v, b[i]))
-          : a.every((v) => b.some((k) => answersEquivalentAny(v, k))) &&
-            b.every((k) => a.some((v) => answersEquivalentAny(v, k))));
+          ? a.every((v, i) => same(v, b[i]))
+          : a.every((v) => b.some((k) => same(v, k))) && b.every((k) => a.some((v) => same(v, k))));
       const used = new Array<boolean>(theirs.length).fill(false);
       return mine.every((g) => {
         const i = theirs.findIndex((t, j) => !used[j] && sameGroup(g, t));
@@ -42,11 +44,11 @@ export function componentsEquivalent(
       });
     }
     if (key.ordered) {
-      return entered.every((v, i) => answersEquivalentAny(v, key.values[i]));
+      return entered.every((v, i) => same(v, key.values[i]));
     }
     const used = new Array<boolean>(key.values.length).fill(false);
     return entered.every((v) => {
-      const i = key.values.findIndex((k, j) => !used[j] && answersEquivalentAny(v, k));
+      const i = key.values.findIndex((k, j) => !used[j] && same(v, k));
       if (i === -1) return false;
       used[i] = true;
       return true;

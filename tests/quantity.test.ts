@@ -65,7 +65,7 @@ describe('units are compared, not stripped', () => {
 
   it('leaves mathematics alone', () => {
     // "pi" is not a unit; reading it as one rejected 5π against its own value.
-    expect(both('5 pi', '15.70796')).toEqual([true, true]);
+    expect(both('5 pi', '15.70796327')).toEqual([true, true]);
     expect(parseQuantity('5 pi')).toBeNull();
     // A single letter is algebra, not a unit.
     expect(parseQuantity('3 x')).toBeNull();
@@ -112,28 +112,25 @@ describe('money is a dimension', () => {
   });
 });
 
-// The blanket 0.5% tolerance accepted 335 for 336. Rounding accuracy is
-// examined — the papers ask for 3 s.f., or 1 d.p. on an angle, and the scheme
-// pays for it — so a flat percentage forgave what CXC penalises.
-describe('two numbers agree to the precision that was written', () => {
+// Tolerance only where the scheme's answer is itself rounded: a question
+// demanding 3 s.f. has a rounded canonical, and a student writing the
+// unrounded value has done the mathematics right — they keep the value marks
+// and lose the one written for the form. With nothing asked for, exact.
+describe('two numbers agree only at a stated rounding', () => {
   it('rejects a difference at the precision given', () => {
-    expect(answersEquivalent('335', '336')).toBe(false);
-    expect(answersEquivalent('12.7', '12.4')).toBe(false);
+    expect(answersEquivalent('335', '336', { kind: 'sf', n: 3 })).toBe(false);
+    expect(answersEquivalent('12.7', '12.4', { kind: 'sf', n: 3 })).toBe(false);
   });
 
   it('accepts the unrounded value against a rounded canonical', () => {
-    // This is what the tolerance was really for: a question demanding 3 s.f.
-    // has a rounded canonical, and a student writing the unrounded value has
-    // done the mathematics right. They keep the value marks and lose the mark
-    // written for the form — exactness would take both.
-    expect(answersEquivalent('12.7', '12.68')).toBe(true);
-    expect(answersEquivalent('36.9', '36.87')).toBe(true);
-    expect(answersEquivalent('47', '47.2')).toBe(true);
-    expect(answersEquivalent('4.243', '4.24264069')).toBe(true);
+    expect(answersEquivalent('12.7', '12.68', { kind: 'sf', n: 3 })).toBe(true);
+    expect(answersEquivalent('36.9', '36.87', { kind: 'dp', n: 1 })).toBe(true);
+    expect(answersEquivalent('47', '47.2', { kind: 'dp', n: 0 })).toBe(true);
+    expect(answersEquivalent('4.243', '4.24264069', { kind: 'dp', n: 3 })).toBe(true);
   });
 
-  it('compares a single significant figure exactly', () => {
-    // At one figure the rule is too coarse to mean anything: 3.4 rounds to 3.
+  it('is exact when nothing asks for a rounding', () => {
+    expect(answersEquivalent('12.7', '12.68')).toBe(false);
     expect(answersEquivalent('3', '3.4')).toBe(false);
   });
 

@@ -25,6 +25,7 @@ import type { ReadResult } from './capture';
 import { MAX_TAKES } from '@/lib/grade/transcribe';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { schemeLine } from '@/lib/grade/reason';
+import { roundingOf } from '@/lib/grade/rounding';
 import { constructActs, figureGivesAnswer } from '@/lib/targets/construct';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 import type { ModuleNumber, ProfileMarks } from '@/lib/types';
@@ -561,8 +562,8 @@ export default async function SessionPage({
       (p.slots ?? []).filter((sl) => (sl.response_mode ?? 'answer') === 'answer').map((sl) => `${p.label}.${sl.label}`),
     );
     const answers = splitStoredAnswer(String(attempt.answer), refs);
-    const slotByRef = new Map<string, { answer: string; accept?: string[] }>(
-      (question.parts ?? []).flatMap((p) => (p.slots ?? []).map((sl) => [`${p.label}.${sl.label}`, sl])),
+    const slotByRef = new Map<string, { answer: string; accept?: string[]; answer_format?: string; prompt?: string; partPrompt: string }>(
+      (question.parts ?? []).flatMap((p) => (p.slots ?? []).map((sl) => [`${p.label}.${sl.label}`, { ...sl, partPrompt: p.prompt }])),
     );
     prior = {
       answers,
@@ -594,7 +595,8 @@ export default async function SessionPage({
         rubric_awarded: attempt.rubric_awarded,
         partResults: refs.map((ref) => {
           const slot = slotByRef.get(ref);
-          const correct = answersEquivalentAny(answers[ref] ?? '', slot?.answer ?? '', slot?.accept);
+          const rounding = roundingOf({ answer_format: slot?.answer_format, prompts: [slot?.partPrompt, slot?.prompt] });
+          const correct = answersEquivalentAny(answers[ref] ?? '', slot?.answer ?? '', slot?.accept, rounding);
           const line = correct ? undefined : schemeLine(question.rubric ?? [], ref);
           return { label: ref, correct, reasonHtml: line ? renderMathHtml(line) : undefined };
         }),

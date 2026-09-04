@@ -3,6 +3,7 @@ import { generateObject } from 'ai';
 import { model } from '@/lib/ai';
 import { buildSolvePrompt } from '@/lib/prompts/question-gen';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
+import { roundingOf } from '@/lib/grade/rounding';
 import { adjudicateAnswers } from './adjudicate';
 import { describeVisual, describeStimulusTable, type StoredVisual } from '@/lib/visuals';
 import type { QuestionDraft } from '@/lib/validation/question';
@@ -192,7 +193,8 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     // are revealed to the student inside the session to self-mark, so they are
     // checked too, by the reader rather than by the rules (R1.6 §1).
     const mode = p.slot.response_mode ?? 'answer';
-    if (mode === 'answer' && answersEquivalentAny(s, p.slot.answer, p.slot.accept)) continue;
+    const rounding = roundingOf({ answer_format: p.slot.answer_format, prompts: [p.prompt, p.slot.prompt] });
+    if (mode === 'answer' && answersEquivalentAny(s, p.slot.answer, p.slot.accept, rounding)) continue;
 
     const verdict = await adjudicateAnswers({
       partPrompt: p.prompt,

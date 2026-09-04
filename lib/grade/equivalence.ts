@@ -1,6 +1,7 @@
 import { evaluate, parse, rationalize, simplify } from 'mathjs';
 import { markMoney, normaliseDigitGroups } from '@/lib/money';
 import { parseQuantity, parseQuantityProduct, productsEqual, sameDimension } from './quantity';
+import { roundTo, type Rounding } from './rounding';
 
 // Final-answer equivalence (ROUND_1 §6.3 and §4.3): documented deterministic
 // heuristics, no LLM grading.
@@ -147,26 +148,16 @@ function headOf(raw: string): number | null {
   return m ? Number(m[1]) : null;
 }
 
-// Two numbers agree when they agree to the PRECISION OF THE LESS PRECISE of
-// them, which is what "correct to 3 s.f." means. A blanket relative tolerance
-// accepted 335 for 336, forgiving what CXC penalises; exact comparison would
-// take the value marks off an unrounded 12.68 against 12.7 (R1.7 §B4). A value
-// carrying one significant figure is compared exactly — the rule is too coarse.
-function significantDigits(n: number): number {
-  const mantissa = Math.abs(n).toExponential().split('e')[0].replace('.', '').replace(/0+$/, '');
-  return Math.max(1, mantissa.length);
-}
-
-function closeEnough(a: number, b: number): boolean {
+// EXACT unless the scheme's answer is itself rounded: two numbers agree at
+// the stated rounding, and only there. A less-precise-wins rule accepted 26.5
+// for 27 with nothing in the question asking for whole numbers; a blanket
+// tolerance before it accepted 335 for 336. Representation error is always
+// absorbed: 1000 x 1e-6 is 0.001.
+function closeEnough(a: number, b: number, rounding: Rounding | null): boolean {
   if (a === b) return true;
-  // Representation error first: a conversion computing 1000 x 1e-6 lands on
-  // 0.001 with a tail carrying seventeen significant digits, which the
-  // precision guard below would misread as a single-figure answer and refuse.
   if (Math.abs(a - b) <= Math.max(1e-9, Math.max(Math.abs(a), Math.abs(b)) * 1e-9)) return true;
-  if (a === 0 || b === 0) return false;
-  const precision = Math.min(significantDigits(a), significantDigits(b));
-  if (precision < 2) return false;
-  return Number(a.toPrecision(precision)) === Number(b.toPrecision(precision));
+  if (!rounding) return false;
+  return roundTo(a, rounding) === roundTo(b, rounding);
 }
 
 
@@ -248,7 +239,7 @@ function sampledEquivalent(ea: string, eb: string, vars: string[]): boolean | nu
 // reported an expression not equivalent to ITSELF over a 2.2e-16 residue. So
 // rationalize and simplify are trusted ASYMMETRICALLY: '0' proves equality, a
 // non-zero residue proves nothing. A symbolic engine never returns false here.
-function mathEquivalent(a: string, b: string): boolean | null {
+function mathEquivalent(a: string, b: string, rounding: Rounding | null): boolean | null {
   const bothEquations = a.includes('=') && b.includes('=');
   const ea = toMathExpr(bothEquations ? asDifference(a) : a);
   const eb = toMathExpr(bothEquations ? asDifference(b) : b);
@@ -262,7 +253,7 @@ function mathEquivalent(a: string, b: string): boolean | null {
     try {
       const na = evaluate(ea);
       const nb = evaluate(eb);
-      if (typeof na === 'number' && typeof nb === 'number') return closeEnough(na, nb);
+      if (typeof na === 'number' && typeof nb === 'number') return closeEnough(na, nb, rounding);
     } catch {
       // not something mathjs can evaluate — fall through
     }
@@ -340,19 +331,20 @@ function looksMathematical(s: string): boolean {
   return !/[a-z]{2,}/.test(s.replace(/sqrt|frac|pi|text|cdot|times/g, ''));
 }
 
-function valueEquivalent(a: string, b: string): boolean {
+function valueEquivalent(a: string, b: string, rounding: Rounding | null): boolean {
+  const close = (x: number, y: number) => closeEnough(x, y, rounding);
   // QUANTITIES FIRST, and decisively: if either side carries a unit the numeric
   // path below must not see it, because that path drops the unit — which is how
   // 72 cm came to equal 72 m. A product of quantities is tried before a single
   // one, since each side of a product is a quantity too.
   const pa = parseQuantityProduct(a);
   const pb = parseQuantityProduct(b);
-  if (pa && pb) return productsEqual(pa, pb, closeEnough);
+  if (pa && pb) return productsEqual(pa, pb, close);
   if (pa || pb) return false;
 
   const qa = parseQuantity(a);
   const qb = parseQuantity(b);
-  if (qa && qb) return sameDimension(qa, qb) && closeEnough(qa.value, qb.value);
+  if (qa && qb) return sameDimension(qa, qb) && close(qa.value, qb.value);
   if (qa || qb) {
     // A bare number is accepted against a unit when the values agree: the
     // question supplied the unit, so omitting it is not a mathematical error.
@@ -361,16 +353,14 @@ function valueEquivalent(a: string, b: string): boolean {
     const other = parseNumeric(qa ? b : a);
     if (other === null) return false;
     const asWritten = headOf(qa ? a : b);
-    return (
-      closeEnough(other, quantity.value) || (asWritten !== null && closeEnough(other, asWritten))
-    );
+    return close(other, quantity.value) || (asWritten !== null && close(other, asWritten));
   }
 
   const na = parseNumeric(a);
   const nb = parseNumeric(b);
-  if (na !== null && nb !== null) return closeEnough(na, nb);
+  if (na !== null && nb !== null) return close(na, nb);
   if (looksMathematical(a) && looksMathematical(b)) {
-    const m = mathEquivalent(a, b);
+    const m = mathEquivalent(a, b, rounding);
     if (m !== null) return m;
   }
   // both sides are already pre-cleaned/label-stripped
@@ -379,19 +369,19 @@ function valueEquivalent(a: string, b: string): boolean {
 
 // True when two answers are equivalent. Multi-part answers ("x = -1/3 or
 // x = 2", "EC$70; EC$58") match as unordered sets of equivalent values.
-export function answersEquivalent(a: string, b: string): boolean {
+export function answersEquivalent(a: string, b: string, rounding: Rounding | null = null): boolean {
   const partsA = splitParts(preClean(a));
   const partsB = splitParts(preClean(b));
   if (partsA.length === 0 || partsB.length === 0) return false;
 
   if (partsA.length !== partsB.length) {
     // Different part counts: only a whole-string comparison can save it.
-    return valueEquivalent(stripLabel(preClean(a)), stripLabel(preClean(b)));
+    return valueEquivalent(stripLabel(preClean(a)), stripLabel(preClean(b)), rounding);
   }
 
   const used = new Array<boolean>(partsB.length).fill(false);
   for (const pa of partsA) {
-    const idx = partsB.findIndex((pb, i) => !used[i] && valueEquivalent(pa, pb));
+    const idx = partsB.findIndex((pb, i) => !used[i] && valueEquivalent(pa, pb, rounding));
     if (idx === -1) return false;
     used[idx] = true;
   }
@@ -404,7 +394,8 @@ export function answersEquivalentAny(
   candidate: string,
   canonical: string,
   accept?: string[],
+  rounding: Rounding | null = null,
 ): boolean {
-  if (answersEquivalent(candidate, canonical)) return true;
-  return (accept ?? []).some((alt) => answersEquivalent(candidate, alt));
+  if (answersEquivalent(candidate, canonical, rounding)) return true;
+  return (accept ?? []).some((alt) => answersEquivalent(candidate, alt, rounding));
 }

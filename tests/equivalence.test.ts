@@ -39,7 +39,8 @@ describe('parseNumeric', () => {
 describe('answersEquivalent', () => {
   it('matches numerically equivalent forms', () => {
     expect(answersEquivalent('0.5', '1/2')).toBe(true);
-    expect(answersEquivalent('-1/3', '-0.333')).toBe(true);
+    expect(answersEquivalent('-1/3', '-0.333', { kind: 'dp', n: 3 })).toBe(true);
+    expect(answersEquivalent('-1/3', '-0.333')).toBe(false); // nothing asked for 3 d.p.
     expect(answersEquivalent('$25', '25')).toBe(true);
   });
 
@@ -63,7 +64,7 @@ describe('answersEquivalent', () => {
   it('matches multi-root answers as unordered sets', () => {
     expect(answersEquivalent('x = -1/3 or x = 2', '2, -1/3')).toBe(true);
     expect(answersEquivalent('x = 2 or x = 3', 'x = 3 or x = 2')).toBe(true);
-    expect(answersEquivalent('x = -1/3; x = 2', 'x = 2 or x = -0.333')).toBe(true);
+    expect(answersEquivalent('x = -1/3; x = 2', 'x = 2 or x = -0.333', { kind: 'dp', n: 3 })).toBe(true);
     expect(answersEquivalent('x = 2 or x = 3', 'x = 2')).toBe(false);
     expect(answersEquivalent('x = 2 or x = 3', 'x = 2 or x = 4')).toBe(false);
   });
@@ -83,7 +84,8 @@ describe('answersEquivalent', () => {
   });
 
   it('uses mathjs canonical comparison for surds and algebraic forms', () => {
-    expect(answersEquivalent('2*sqrt(2)', '2.8284')).toBe(true);
+    expect(answersEquivalent('2*sqrt(2)', '2.8284', { kind: 'dp', n: 4 })).toBe(true);
+    expect(answersEquivalent('2*sqrt(2)', '2.8284')).toBe(false); // a surd is exact
     expect(answersEquivalent('\\sqrt{9}', '3')).toBe(true);
     expect(answersEquivalent('2x - 4', '2(x - 2)')).toBe(true);
     expect(answersEquivalent('2x - 4', '2x + 4')).toBe(false);
