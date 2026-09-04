@@ -104,7 +104,7 @@ describe('the marker prompt after ROUND_5', () => {
     const src = readFileSync(join(process.cwd(), 'lib', 'grade', 'mark-method.ts'), 'utf8');
     expect(src).toContain("A CRITERION IS ALREADY WRITTEN FOR THIS STUDENT'S OWN VALUES; DECIDE WHETHER\nTHE PAGE SHOWS IT.");
     expect(src).not.toMatch(/ANY NUMBER PRINTED IN A FOLLOW-THROUGH CRITERION|"THEIR", FULLY|NO QUOTE, NO AWARD/i);
-    expect(src).toMatch(/A QUANTITY:[\s\S]*A CONCLUSION:[\s\S]*A COMPARISON DIRECTION:[\s\S]*A SCALAR:/);
+    expect(src).toMatch(/A QUANTITY:[\s\S]*A CONCLUSION:[\s\S]*A COMPARISON DIRECTION:[\s\S]*A SCALAR:[\s\S]*A VALID ALTERNATIVE METHOD EARNS THE ROWS FOR THE STEP/);
     expect(src).toMatch(/CRITERION: \$\{r\.claim \?\? r\.criterion\}/);
     // The quote survives as output format.
     expect(src).toMatch(/the reason quotes the line that earned it/);
