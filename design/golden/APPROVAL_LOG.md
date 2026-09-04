@@ -70,6 +70,11 @@ approved by David the same day. Two proposals were changed on approval:
 Everything else stands as proposed. The flag column records where the
 transcript did not settle the verdict on its own.
 
+Correction, 4 September, by David: `d0dd05` R3 flipped to award — the
+inequality -3x + 36 >= 15 solved to x <= 7 is a valid alternative route to
+"an eighth costume leaves less than 15 m", without writing 12 m. (Asked for
+as a Batch 1 correction; R3 was judged in this batch, so it is logged here.)
+
 Correction, 4 September: `c0bf13` AK2 flipped to award — the inverse follows
 correctly from the student's own determinant of −1. The row's "stated
 inverse" reads as follow-through from their determinant, which is the
@@ -151,7 +156,9 @@ Exported from /admin/disputes by `pnpm golden:import`. Proposed until a person a
 ## Batch 8 — approved
 
 - `f-20c7f7`, the cocoa page (the same page as `calibration/reads/cocoa-b1.jpg`),
-  approved by David, 4 September: award CK1, AK1, CK2, AK2, AK3, R1, R2, R3,
+  approved by David, 4 September. Its b(i) transcript line was corrected to
+  "= 156000", what the page says, per the as-written rule; the stored read
+  predated it. Award CK1, AK1, CK2, AK2, AK3, R1, R2, R3,
   and CK3, AK4, AK5 as a valid alternative route — 2% of the total reaches
   24 000 without the intermediate 1 080 000. Withhold R4, the disputed row:
   24000 is not standard form. A valid alternative method earns the rows for

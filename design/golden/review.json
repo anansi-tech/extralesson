@@ -2,7 +2,7 @@
   "version": 1,
   "status": "approved",
   "reviewer": "David",
-  "reviewed_at": "2026-09-04T20:26:50Z",
+  "reviewed_at": "2026-09-04T20:55:19Z",
   "entries": [
     {
       "id": "c0bf69",
@@ -93,7 +93,7 @@
       "case": "Strong graph response with equation, substitution and limiting whole-number argument.",
       "student_answers": { "a.i": "-3", "b.i": "y = -3x + 36", "c.i": "15 m", "d.number": "7" },
       "marks": [
-        { "code": "R3", "awarded": false, "reason": "No eighth costume is tested and 12 m is never written; the inequality x <= 7 implies it without stating it." },
+        { "code": "R3", "awarded": true, "reason": "Alternative route: -3x + 36 >= 15 solved to x <= 7 shows an eighth costume cannot keep 15 m, without writing 12 m." },
         { "code": "R4", "awarded": true, "reason": "-3x + 36 >= 15 solved to x <= 7, then \"greatest whole number = 7\"." }
       ]
     },
