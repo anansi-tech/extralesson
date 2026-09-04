@@ -104,10 +104,24 @@ export function renderClaim(
   confirmed: Record<string, string>,
   canonical: Record<string, string>,
 ): string {
-  return template.replace(/\{([a-j]\.[^{}]+)\}/g, (_m, ref: string) => {
+  return template.replace(/\{([a-j]\.[^{}]+)\}/g, (_m, ref: string, at: number) => {
     const theirs = confirmed[ref]?.trim();
-    return theirs || canonical[ref] || `{${ref}}`;
+    const value = theirs || canonical[ref];
+    if (!value) return `{${ref}}`;
+    return bare(value, template.slice(at + ref.length + 2, at + ref.length + 5));
   });
+}
+
+/**
+ * A value typed by a student is plain text; the criterion around it is KaTeX.
+ * Its own delimiters go, and its unit sign goes where the criterion already
+ * writes one after the reference.
+ */
+function bare(value: string, after: string): string {
+  let v = value.replace(/^\$+|\$+$/g, '').trim();
+  if (/^\s*\\?%/.test(after)) v = v.replace(/\s*%$/, '');
+  if (/^\s*(?:°|\^\{?\\circ)/.test(after)) v = v.replace(/\s*°$/, '');
+  return v;
 }
 
 /** Rows as the marker should see them: the claim rendered, the criterion kept for the record. */

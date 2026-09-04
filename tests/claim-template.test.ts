@@ -85,6 +85,15 @@ describe('renderClaim', () => {
     const rows = claimsFor([{ criterion: 'CAO 88%', template: 'CAO {b.ii}' }], { 'b.ii': '80%' }, { 'b.ii': '88%' });
     expect(rows[0]).toMatchObject({ criterion: 'CAO 88%', claim: 'CAO 80%' });
   });
+  it('drops the student’s own delimiters and unit signs where the criterion writes them', () => {
+    expect(renderClaim('Calculates $\\frac{\\text{their }{c.i}}{40} \\times 100 = {d.i}\\%$', { 'c.i': '$28$', 'd.i': '70%' }, {})).toBe(
+      'Calculates $\\frac{\\text{their }28}{40} \\times 100 = 70\\%$',
+    );
+    expect(renderClaim('Solves to obtain $n={c.number}$', { 'c.number': '$6$' }, {})).toBe('Solves to obtain $n=6$');
+    expect(renderClaim('CAO ${b.ii}\\%$', { 'b.ii': '80%' }, { 'b.ii': '88%' })).toBe('CAO $80\\%$');
+    expect(renderClaim('an angle of {a.i}°', { 'a.i': '45°' }, {})).toBe('an angle of 45°');
+  });
+
   it('is the criterion itself when a row has no template', () => {
     expect(claimsFor([{ criterion: 'Adds the frequencies' }], {}, {})[0].claim).toBe('Adds the frequencies');
   });
