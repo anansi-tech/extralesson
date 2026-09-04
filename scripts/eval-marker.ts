@@ -325,7 +325,7 @@ async function main() {
       `  withheld-should-award ${r.withheldShouldAward}`);
     // Which rows, per run, so a case can be followed across runs and not
     // only in the worst one.
-    if (REASONING) console.log(`      disagreed: ${r.lines.map((l) => l.split(' ')[0]).join(', ') || 'none'}`);
+    console.log(`      disagreed: ${r.lines.map((l) => l.split(' ')[0]).join(', ') || 'none'}`);
   }
 
   const spread = (pick: (r: RunStats) => number) => {
