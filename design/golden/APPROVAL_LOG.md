@@ -57,13 +57,18 @@ file records approval in manageable batches without changing the review schema.
 - `48641b`: award R1, CK2 and AK3; withhold AK2, AK4 and R3.
 - `037dc7`: award CK2 and CK3; withhold AK3, AK4, R2, R3 and AK5.
 
-## Batch 7 — proposed, not approved
+## Batch 7 — approved
 
 Rows on explain and show-that slots (HUMAN_TASKS §D), proposed 4 September
-2026 from the transcript in `set.json` against the criterion in the bank.
-Each carries `"proposed": true` in `review.json` and is excluded from the
-marking gate until approved. Flagged rows are the ones where the transcript
-does not settle the verdict on its own.
+2026 from the transcript in `set.json` against the criterion in the bank and
+approved by David the same day. Two proposals were changed on approval:
+
+- `b1a6a2`: award AK5 — follow-through; their IQR of 3 is halved to 1.5.
+- `d1705a`: award R1 — follow-through; AC = (-6, 2) is the scalar multiple
+  of their reversed AB.
+
+Everything else stands as proposed. The flag column records where the
+transcript did not settle the verdict on its own.
 
 | page | row | proposed | reason | flagged |
 |---|---|---|---|---|
@@ -99,7 +104,7 @@ does not settle the verdict on its own.
 | c0c0ad | AK2 | withhold | sqrt(3)QR is substituted but tan 30 is never evaluated; no 1/sqrt(3) appears. | labelled (a) |
 | c0c0ad | R2 | award | "QR = 10, so RS = 10sqrt(3) m" establishes the result, with the solving steps omitted. | jump from the equation to QR = 10; labelled (a) |
 | b1a6a2 | CK3 | award | SIQR = 3/2 halves their interquartile range. |  |
-| b1a6a2 | AK5 | withhold | The row asks for 4 / 2 = 2; the student calculates 3/2 = 1.5 from their IQR. | follow-through would award 1.5; the row is written without "their" |
+| b1a6a2 | AK5 | award (changed on approval) | The row asks for 4 / 2 = 2; the student calculates 3/2 = 1.5 from their IQR. | follow-through would award 1.5; the row is written without "their" |
 | b1a6a2 | CK4 | award | Driver A is chosen on both smaller measures, which is the recognition; it is not stated in words. | implicit |
 | b1a6a2 | R1 | award | "SIQR = 1.5 < 3" compares their value with 3 minutes. |  |
 | b1a6a2 | R2 | award | "SD = 2.45 < 2.98" is written. |  |
@@ -112,7 +117,7 @@ does not settle the verdict on its own.
 | c0bf13 | AK2 | withhold | Their -1 is substituted, but the result is [-1 1; 2 -3], not the stated inverse the row names. | the act is done; the target is not reached |
 | c0bf13 | R3 | award | With their -40 and -50 the honest conclusion is "No, not positive whole numbers", which is written. | their values invert the scheme's conclusion |
 | d1705a | CK3 | award | AC = OC - OA is written. |  |
-| d1705a | R1 | withhold | Their AC = (-6, 2) is 1 × their AB, not 3 ×; the arithmetic is right for their reversed AB. | the multiple is 1 because AB was reversed in (a) |
+| d1705a | R1 | award (changed on approval) | Their AC = (-6, 2) is 1 × their AB, not 3 ×; the arithmetic is right for their reversed AB. | the multiple is 1 because AB was reversed in (a) |
 | d1705a | R2 | award | "AC = AB, so A, B and C lie on a straight line" concludes collinearity from a scalar multiple. |  |
 | 9e894a | R4 | award | AB : BC = 2 : 3 is found, then "B is not the midpoint of AC". |  |
 | a9f537 | R3 | award | "No ... not congruent" is written. |  |
@@ -125,7 +130,7 @@ does not settle the verdict on its own.
 | 48641b | R2 | withhold | No percentage is determined. |  |
 | 037dc7 | R4 | withhold | Only the equation n^2 - 8n + 24 = 12 is written; nothing is solved, rejected or selected. |  |
 
-44 proposed awards, 13 proposed withholds, 19 flagged.
+Approved: 46 awards, 11 withholds; 19 had been flagged.
 
 ## Final approval
 

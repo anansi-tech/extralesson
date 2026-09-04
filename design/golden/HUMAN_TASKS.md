@@ -272,8 +272,6 @@ Pages lacking verdicts, with the rows that need one (`code [slot]`):
 - 48641b (photo, w5): CK3, R2 [d.reason]
 - 037dc7 (typed): R4 [c.reason]
 
-Batch 7 (APPROVAL_LOG.md, 4 September) proposes a verdict for every row
-above, written into each page's `marks` with `"proposed": true`. To do: approve
-or amend each, drop the `proposed` flag, and log the decision. Until then the
-gate skips them, so the marking eval still measures the reasoning-row rule on
-nothing.
+Done: Batch 7 (APPROVAL_LOG.md, 4 September) judged every row above and was
+approved the same day, so the marking gate now measures the reasoning-row
+rule on 57 rows across 20 pages.

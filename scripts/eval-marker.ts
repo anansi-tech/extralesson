@@ -31,6 +31,10 @@ import { isFollowThrough } from '@/lib/prompts/mark-scheme';
 
 const DIR = join(process.cwd(), 'design', 'golden');
 const GATE = 0.9;
+// --reasoning: the rows on explain and show-that slots only (APPROVAL_LOG
+// Batch 7), no reading pass, every disagreement printed with both reasons.
+const REASONING = process.argv.includes('--reasoning');
+const PAPER = new Set(['explain', 'show_that']);
 
 
 
@@ -115,7 +119,7 @@ async function main() {
   /** Pages whose transcription differed from the truth, for attribution below. */
   const readDiffered = new Set<string>();
 
-  for (const e of photo) {
+  for (const e of REASONING ? [] : photo) {
     const q = await Question.findById(e.question_id).select('parts').lean<any>();
     if (!q) {
       console.log(`  ${e.id}: question not in the bank, skipped`);
@@ -239,7 +243,11 @@ async function main() {
         if (truth.length === 0) continue;
         const q = await Question.findById(e.question_id).lean<any>();
         if (!q) continue;
-        const rows = (q.rubric ?? []).filter((r: any) => truth.some((t) => t.code === r.code));
+        const paperRefs = new Set(
+          (q.parts ?? []).flatMap((p: any) => (p.slots ?? []).filter((sl: any) => PAPER.has(sl.response_mode)).map((sl: any) => `${p.label}.${sl.label}`)),
+        );
+        const inScope = (code: string) => !REASONING || paperRefs.has((q.rubric ?? []).find((r: any) => r.code === code)?.slot_ref);
+        const rows = (q.rubric ?? []).filter((r: any) => truth.some((t) => t.code === r.code) && inScope(r.code));
         if (rows.length === 0) continue;
 
         const workingByPart: Record<string, string[]> = {};
@@ -263,6 +271,7 @@ async function main() {
 
         const misread = e.mode === 'photo' && readDiffered.has(e.id);
         for (const t of truth) {
+          if (!inScope(t.code)) continue;
           const got = decisions.find((d) => d.code === t.code);
           const row = rows.find((r: any) => r.code === t.code);
           const isCao = row ? /\bCAO\b/.test(row.criterion) : false;
@@ -280,7 +289,10 @@ async function main() {
               else st.falseAwardMethod++;
             }
             if (!got?.awarded && t.awarded) st.withheldShouldAward++;
-            st.lines.push(`${e.id}/${t.code} truth ${t.awarded ? 'award' : 'withhold'} got ${got ? (got.awarded ? 'award' : 'withhold') : 'nothing'}`);
+            st.lines.push(
+              `${e.id}/${t.code} truth ${t.awarded ? 'award' : 'withhold'} got ${got ? (got.awarded ? 'award' : 'withhold') : 'nothing'}` +
+                (REASONING ? `\n         review: ${t.reason ?? '—'}\n         marker: ${got?.reason ?? '—'}` : ''),
+            );
           }
           const prof = row?.profile ?? '?';
           const p = st.byProfile.get(prof) ?? { n: 0, agree: 0 };
@@ -336,7 +348,7 @@ async function main() {
   const passes = ag.min > GATE && caoSp.max === 0;
   console.log(`\n   ${passes ? 'PASS' : 'BELOW GATE'} — worst of ${RUNS} runs must exceed ${GATE * 100}% with no CAO false award.`);
   console.log(`   worst run disagreements:`);
-  for (const l of worst.lines.slice(0, 10)) console.log(`      ${l}`);
+  for (const l of REASONING ? worst.lines : worst.lines.slice(0, 10)) console.log(`      ${l}`);
 
   process.exit(0);
 }
