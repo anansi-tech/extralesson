@@ -24,10 +24,6 @@ export const LANDING = {
   // CXC CSEC Mathematics Subject Report May/June 2025: mean 76.05 (38.02%).
   statAvgScore: '38%',
   statAvgScoreLabel: 'Mean mark in CSEC Mathematics\n76.05 of 200 · CXC, May/June 2025',
-  // CXC Aug 2026 results release via Barbados Today (Dr Manning). The 2025
-  // subject report gives 36.11% — different measure and year, not comparable.
-  statBenchmark: '42%',
-  statBenchmarkLabel: 'Of candidates passed CSEC Mathematics\nGrades I–III · CXC, August 2026',
   contactEmail: 'extralesson@anansi.xyz',
 } as const;
 

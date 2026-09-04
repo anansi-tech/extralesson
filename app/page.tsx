@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './landing.css';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import Link from 'next/link';
 import { Lockup } from './lockup';
 import { LANDING, landingCoverage, paymentLink } from '@/lib/landing-content';
@@ -13,11 +15,11 @@ import { getSession } from '@/lib/auth/session';
 export const metadata: Metadata = {
   title: 'ExtraLesson — Your own CXC examiner',
   description:
-    `AI-powered CSEC Maths tutoring that marks real working the way a CXC examiner does — step by step. Built by a Grenadian island scholar. ${LANDING.price} for the sitting you are preparing for.`,
+    `Work a CSEC Maths question on paper, photograph the page, and ExtraLesson marks your working the way a Paper 2 examiner does — every method mark, and the reason for each. Built by a Grenadian island scholar. ${LANDING.price} for the sitting you are preparing for.`,
   openGraph: {
     title: 'ExtraLesson — Your own CXC examiner',
     description:
-      `CSEC Maths tutoring that marks the way examiners award marks — step by step. ${LANDING.price}.`,
+      `Photograph your working. ExtraLesson marks it the way a Paper 2 examiner does — every method mark, and the reason for each. ${LANDING.price}.`,
     type: 'website',
     // A page's openGraph REPLACES the layout's rather than merging into it, so
     // the url declared there does not reach the one page anybody shares. It is
@@ -29,8 +31,15 @@ export const metadata: Metadata = {
 // Reading the session cookie renders this page per request rather than
 // statically — the cost of the header knowing who you are. Without it everyone
 // who has already bought the product finds two buy buttons and no way in.
+
+// The photograph is a file in public/, so its absence is a fact of the
+// deployment rather than a broken image.
+const FOUNDER_PHOTO = '/brand/david.jpg';
+const founderPhotoExists = () => existsSync(join(process.cwd(), 'public', FOUNDER_PHOTO));
+
 export default async function LandingPage() {
   const coverage = landingCoverage();
+  const photo = founderPhotoExists();
   const session = await getSession();
   // A STUDENT WHO HAS PAID MUST NOT BE SOLD TO AGAIN: without an access check
   // they meet two buy buttons and a checkout that would charge them twice.
@@ -70,9 +79,8 @@ export default async function LandingPage() {
             CXC examiner.<span className="pen"> In red pen.</span>
           </h1>
           <p className="lede">
-            ExtraLesson is AI-powered CSEC Maths tutoring that marks your{' '}
-            <b>real working</b> the way a CXC examiner marks Paper 2 — mark by mark, with the exact
-            feedback an examiner would write.
+            Work a CSEC Maths question on paper. Photograph the page. ExtraLesson marks your
+            working the way a Paper 2 examiner does — every method mark, and the reason for each.
           </p>
           {signedInWithAccess ? (
             <Link className="btn" href="/study">
@@ -80,10 +88,15 @@ export default async function LandingPage() {
               <small>YOUR ACCESS IS ACTIVE · PICK UP WHERE YOU LEFT OFF</small>
             </Link>
           ) : (
-            <a className="btn" href="#offer">
-              Get full access — {LANDING.price}
-              <small>ONE PAYMENT · FULL ACCESS THROUGH THE SITTING YOU CHOOSE</small>
-            </a>
+            <>
+              <Link className="btn" href="/study/login">
+                Mark one question free
+                <small>NO CARD · NINETY SECONDS · ANY PHONE WITH A CAMERA</small>
+              </Link>
+              <a className="authlink herolink" href="#offer">
+                Full access — {LANDING.price}
+              </a>
+            </>
           )}
           <div className="heronote">
             FOR CSEC MATHEMATICS · {LANDING.sittingNote} · WORKS ON ANY PHONE
@@ -94,20 +107,16 @@ export default async function LandingPage() {
       <div className="stats">
         <div className="wrap">
           <div className="grid">
-            <div>
-              <div className="n red">{LANDING.statAvgScore}</div>
-              <div className="l">{LANDING.statAvgScoreLabel}</div>
-            </div>
-            <div>
-              <div className="n red">{LANDING.statBenchmark}</div>
-              <div className="l">{LANDING.statBenchmarkLabel}</div>
-            </div>
             {/* Not a date: an argument that expires. The urgency is that most
                 of a paper's marks are in the working, and a week nobody marks
                 them is a week uncorrected. */}
             <div>
-              <div className="n">{LANDING.statWorking}</div>
+              <div className="n red">{LANDING.statWorking}</div>
               <div className="l">{LANDING.statWorkingLabel}</div>
+            </div>
+            <div>
+              <div className="n">{LANDING.statAvgScore}</div>
+              <div className="l">{LANDING.statAvgScoreLabel}</div>
             </div>
           </div>
         </div>
@@ -131,7 +140,7 @@ export default async function LandingPage() {
               <ul className="marklist">
                 <li>
                   <span className="chip">MARKS</span>
-                  <span>Marked the way examiners award marks — step by step</span>
+                  <span>Every method mark, awarded or withheld, with the reason</span>
                 </li>
                 <li>
                   <span className="chip">WHY</span>
@@ -143,8 +152,7 @@ export default async function LandingPage() {
                 </li>
               </ul>
               <p>
-                Fifteen minutes a day, aimed at the topics worth the most marks for{' '}
-                <b>you</b>.
+                Short daily sessions, aimed at the topics worth the most marks for <b>you</b>.
               </p>
             </div>
             <div className="phone">
@@ -193,30 +201,27 @@ export default async function LandingPage() {
       <section className="rule-top">
         <div className="wrap">
           <div className="eyebrow">How it works</div>
-          <h2>Fifteen minutes. Every day. In red pen.</h2>
+          <h2>Fifteen minutes. Every day.</h2>
           <div className="steps">
             <div className="step">
               <div className="sn">STEP 1</div>
-              <h3>Diagnose</h3>
-              <p>
-                A short placement test maps you against the full CSEC syllabus and sets a
-                predicted grade — the one number everything here works to move.
-              </p>
+              <h3>Work it on paper</h3>
+              <p>A CSEC-style question on your phone. You do it by hand, the way the exam is.</p>
             </div>
             <div className="step">
               <div className="sn">STEP 2</div>
-              <h3>Practise &amp; get marked</h3>
+              <h3>Photograph the page</h3>
               <p>
-                Daily 15-minute sessions on their weakest, highest-mark topics — marked the way
-                examiners award marks, step by step.
+                We read your working line by line and mark it as a Paper 2 examiner would — method
+                marks included, with the reason for every one.
               </p>
             </div>
             <div className="step">
               <div className="sn">STEP 3</div>
-              <h3>See where you stand</h3>
+              <h3>Fifteen minutes a day</h3>
               <p>
-                Sessions done, accuracy trend, predicted grade and what&rsquo;s next — all in your
-                notebook, updated after every question. No mystery about where the marks are going.
+                A short diagnostic finds the topics costing you the most marks. Every session aims
+                there. Your predicted grade updates after every question.
               </p>
             </div>
           </div>
@@ -234,7 +239,11 @@ export default async function LandingPage() {
       <section className="rule-top">
         <div className="wrap">
           <div className="founder">
-            <div className="badge">DN</div>
+            {photo ? (
+              <img className="badge" src={FOUNDER_PHOTO} alt="David Noel" width={64} height={64} />
+            ) : (
+              <div className="badge">DN</div>
+            )}
             <div>
               <div className="eyebrow">Why I built this</div>
               <p style={{ marginTop: 8 }}>

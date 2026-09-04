@@ -318,7 +318,7 @@ describe('public claims are ones we can show', () => {
     // has sat an exam after using this, so there was nothing behind it. What it
     // says now is what the product demonstrably does.
     expect(LANDING).not.toMatch(/turns a Grade/i);
-    expect(LANDING.replace(/\s+/g, ' ')).toMatch(/the exact feedback an examiner would write/i);
+    expect(LANDING.replace(/\s+/g, ' ')).toMatch(/every method mark, and the reason for each/i);
   });
 
   it('keeps the limits, which are what make the rest believable', () => {
@@ -338,7 +338,6 @@ describe('public claims are ones we can show', () => {
 describe('landing statistics', () => {
   const stats = [
     [LANDING_CONTENT.statAvgScore, LANDING_CONTENT.statAvgScoreLabel],
-    [LANDING_CONTENT.statBenchmark, LANDING_CONTENT.statBenchmarkLabel],
     [LANDING_CONTENT.statWorking, LANDING_CONTENT.statWorkingLabel],
   ] as const;
 
@@ -347,9 +346,9 @@ describe('landing statistics', () => {
   });
 
   it('cites a source and a date in every label of an external figure', () => {
-    // The third is measured from our own bank and says so; the two CXC figures
+    // The second is measured from our own bank and says so; the CXC figure
     // must name CXC and a sitting or a date.
-    for (const [, label] of stats.slice(0, 2)) {
+    for (const [, label] of stats.slice(0, 1)) {
       expect(label).toMatch(/CXC/);
       expect(label).toMatch(/20\d\d/);
     }
@@ -359,13 +358,11 @@ describe('landing statistics', () => {
   it('does not call the mean mark a pass rate, or the pass rate a score', () => {
     expect(LANDING_CONTENT.statAvgScoreLabel).toMatch(/mean mark/i);
     expect(LANDING_CONTENT.statAvgScoreLabel).not.toMatch(/pass/i);
-    expect(LANDING_CONTENT.statBenchmarkLabel).toMatch(/passed/i);
-    expect(LANDING_CONTENT.statBenchmarkLabel).toMatch(/Grades I–III/);
   });
 
-  it('has dropped the unsourceable benchmark figure', () => {
+  it('has dropped the unsourceable benchmark figure, and then the pass rate beside it', () => {
     for (const [, label] of stats) expect(label).not.toMatch(/5-subject benchmark/i);
-    expect(LANDING_CONTENT.statBenchmark).not.toBe('56%');
+    expect(LANDING_CONTENT).not.toHaveProperty('statBenchmark');
   });
 });
 

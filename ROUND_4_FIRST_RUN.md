@@ -134,6 +134,9 @@ no button. This is the button.
 
 Gate: a dispute never changes an attempt, a transcription, or mastery. Test it.
 
+Landing page rewritten to describe photo-first and the free first question;
+kill-list exception, decided 3 Sep.
+
 ## Kill list, this round
 
 No teacher role, class, or roster. No provider fallback. No dispute

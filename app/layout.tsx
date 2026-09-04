@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(externalBaseUrl()),
   title: "ExtraLesson — Your own CXC examiner",
   description:
-    "AI-powered CSEC Maths tutoring that marks the way examiners award marks — step by step. Built by a Grenadian island scholar.",
+    "Photograph your working. ExtraLesson marks it the way a Paper 2 examiner does — every method mark, and the reason for each. Built by a Grenadian island scholar.",
   /**
    * Which URL this page IS. Absent, a scraper that arrived at the apex and
    * followed the 308 has nothing telling it the canonical address, and a

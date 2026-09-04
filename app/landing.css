@@ -45,6 +45,7 @@
 .landing .lede b { font-weight: 700; }
 /* R1.6 §3: coverage stated plainly on the page, in the copybook's margin voice. */
 .landing .honest { margin-top: 26px; max-width: 640px; font-size: 14px; line-height: 1.5; color: #3a4152; border-left: 3px solid var(--margin); padding-left: 12px; }
+.landing .herolink { display: block; margin-top: 14px; }
 .landing .heronote { font-family: var(--mono); font-size: 11px; color: var(--dim); margin-top: 14px; letter-spacing: .05em; }
 
 .landing section { padding: 46px 0; }
@@ -53,7 +54,7 @@
 
 /* stats band */
 .landing .stats { background: var(--ink); color: var(--paper); padding: 38px 0; }
-.landing .stats .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; text-align: center; }
+.landing .stats .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 26px; text-align: center; }
 @media (max-width: 640px) { .landing .stats .grid { grid-template-columns: 1fr; gap: 20px; } }
 .landing .stats .n { font-size: clamp(34px, 5vw, 48px); font-weight: 900; color: #f0b429; }
 .landing .stats .n.red { color: #ff6b6b; }
@@ -99,6 +100,7 @@
 .landing .founder { background: var(--paper-deep); border-radius: 18px; padding: 32px 28px; display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: start; }
 @media (max-width: 640px) { .landing .founder { grid-template-columns: 1fr; } }
 .landing .founder .badge { width: 84px; height: 84px; border-radius: 50%; background: var(--ink); color: var(--paper); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 28px; border: 3px solid var(--red); }
+.landing .founder img.badge { width: 64px; height: 64px; object-fit: cover; }
 .landing .founder p { font-size: 15px; color: #3a4152; margin-bottom: 10px; }
 .landing .founder p b { font-weight: 700; }
 .landing .founder .sig { font-family: var(--hand); font-size: 26px; color: var(--ink); }
