@@ -76,6 +76,20 @@ HOW TO DECIDE, and these override any instinct to be generous or strict:
    lengths doubled. Judge the idea, not the phrasing — but the idea must be
    written, not implied by an answer.
 
+6. A CONCLUSION IS JUDGED FOR THE STUDENT'S OWN VALUE, EVEN WHEN IT INVERTS
+   THE SCHEME'S. A row that says "concludes suitable" is earned by "not
+   suitable" from a student whose own output fell below the minimum; "concludes
+   the order can be packed" is earned by "cannot, the numbers are negative"
+   from a student whose numbers were negative. The row names the scheme's
+   conclusion because the scheme's value led there; what earns it is the
+   correct conclusion FROM THEIR VALUE, stated. The wrong conclusion from their
+   own value earns nothing.
+
+7. WHEN A PART HAS NO LINES OF ITS OWN, ITS ROWS ARE JUDGED AGAINST THE WHOLE
+   PAGE. Students write a derivation under the wrong label, or once for two
+   parts. The lines shown for such a part are the whole read, and a row is
+   earned if the act is anywhere on it.
+
 THE REASON IS WRITTEN FOR THE STUDENT, and it is the only thing they get back
 when a row is withheld. One clause, addressed to them, naming the step you
 could not find: "we could not see where you divided by the scale factor", not
@@ -98,13 +112,16 @@ export async function markMethod(args: MethodMarkArgs): Promise<{
   const rowText = rows
     .map((r) => {
       const part = r.slot_ref.split('.')[0];
-      const lines = workingByPart[part] ?? [];
+      const own = workingByPart[part] ?? [];
+      const lines = own.length ? own : Object.values(workingByPart).flat();
       return [
         `ROW ${r.code} (${r.profile}, ${r.mark_value} mark${r.mark_value === 1 ? '' : 's'}) for part (${part})`,
         `CRITERION: ${r.criterion}`,
         isFollowThrough(r.criterion) ? 'THIS IS A FOLLOW-THROUGH ROW: judge the method on their own value.' : '',
-        `THE STUDENT'S WORKING FOR (${part}):`,
-        lines.length ? lines.map((l) => `  ${l}`).join('\n') : '  (nothing written for this part)',
+        own.length
+          ? `THE STUDENT'S WORKING FOR (${part}):`
+          : `THE STUDENT'S WORKING (nothing is labelled (${part}); the whole page follows):`,
+        lines.length ? lines.map((l) => `  ${l}`).join('\n') : '  (nothing written)',
       ]
         .filter(Boolean)
         .join('\n');
