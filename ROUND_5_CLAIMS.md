@@ -37,10 +37,26 @@ the student's confirmed answers for every referenced slot, falling back to
 the canonical value where the student left the slot empty. The marker sees
 the rendered claim and the page. Nothing else.
 
-**Prompt.** Delete rules 1, 6 and 8 (their-values, their-conclusions,
-quote-the-result). One sentence replaces them: "A criterion is already
-written for this student's own values; decide whether the page shows it."
-Rule 8's quote requirement stays as output format, not as a rule.
+**Prompt.** Templates carry VALUES: a number in a criterion that is a slot's
+answer is rendered as the student's own. They cannot yet carry
+TRANSFORMATIONS of those values — the conclusion, the comparison direction,
+the scalar that a student's numbers produce — because the deriver can only
+reference what is stored, and those are computed. So one follow-through
+paragraph stays in the prompt and carries the transformations: quantities,
+conclusions, comparison directions and scalars, each read for the student's
+own values, with one example each. The three rules that did this by cases
+(their-values, their-fully, quote-the-result) are gone; the sentence "A
+criterion is already written for this student's own values; decide whether
+the page shows it" stands above the rules, and the quote requirement stays
+as output format. When templates can express a transformation, the
+paragraph shrinks by that case.
+
+Measured on the way here (`calibration/r5-gate.md`): rendering alone, with
+the rules deleted, touched 9 of 185 golden rows and lost the pages that turn
+on a transformation — reasoning agreement fell from 86 / 89 / 91 to
+82 / 84 / 86. The bank's own ambiguity is the other limit: 573 of 5771 rows
+keep the literal, most because a small integer is both a constant and an
+answer.
 
 **Gate.** Reasoning eval and full eval, five runs each. Agreement must not
 fall; CAO false awards stay 0; the golden pages that exercised rules 1/6/8
