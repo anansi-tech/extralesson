@@ -185,6 +185,22 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const [figureAway, setFigureAway] = useState(false);
   const [atSubmit, setAtSubmit] = useState(false);
   const [figureOpen, setFigureOpen] = useState(false);
+  const recallRef = useRef<HTMLButtonElement | null>(null);
+  const closeRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (!figureOpen) return;
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setFigureOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      recallRef.current?.focus();
+    };
+  }, [figureOpen]);
+  // A quiet word beside the answers: the draft is kept, or it is not.
+  const [saveState, setSaveState] = useState<'saved' | 'failed' | null>(null);
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return;
     const watch = (el: Element | null, set: (v: boolean) => void, want: boolean) => {
@@ -324,7 +340,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
   const saveNow = useCallback(() => {
     if (question.prior) return;
-    void saveDraftFor(question.sessionId, question.index);
+    const p = saveDraftFor(question.sessionId, question.index);
+    if (!p) return;
+    p.then((r) => setSaveState(r.ok ? 'saved' : 'failed')).catch(() => setSaveState('failed'));
   }, [saveDraftFor, question.prior, question.sessionId, question.index]);
 
   useEffect(() => {
@@ -776,6 +794,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 ? 'Hand in as is'
                 : 'Submit answer'}
         </button>
+        {saveState && !pending && (
+          <p aria-live="polite" className={`mt-1 text-right font-mono text-[10px] uppercase tracking-widest ${saveState === 'saved' ? 'text-dim' : 'text-red-pen'}`}>
+            {saveState === 'saved' ? 'Saved' : 'Couldn’t save — check your connection'}
+          </p>
+        )}
         {blanks > 0 && question.kind === 'structured' && !pending && (
           <p className="mt-1 text-center text-[12px] text-dim">
             {blanks} box{blanks === 1 ? '' : 'es'} left blank. Blanks score zero, like the exam.
@@ -974,6 +997,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         // of padding put the first character 40px from the edge, so a 40px
         // button at the edge covers padding only.
         <button
+          ref={recallRef}
           type="button"
           onClick={() => setFigureOpen(true)}
           aria-label="Show figure"
@@ -984,13 +1008,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       )}
 
       {figureOpen && question.visualHtml && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-[rgba(30,36,48,0.55)] p-3">
-          <div className="flex min-h-0 flex-1 flex-col border-[1.5px] border-ink bg-white shadow-[4px_4px_0_var(--ink)]">
+        <div role="dialog" aria-modal="true" aria-labelledby="figure-title" className="fixed inset-0 z-50 flex flex-col bg-[rgba(30,36,48,0.55)] p-3" onClick={() => setFigureOpen(false)}>
+          <div className="flex min-h-0 flex-1 flex-col border-[1.5px] border-ink bg-white shadow-[4px_4px_0_var(--ink)]" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b border-paper-deep px-3 py-2">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-dim">
+              <span id="figure-title" className="font-mono text-[10px] uppercase tracking-widest text-dim">
                 The figure
               </span>
               <button
+                ref={closeRef}
                 type="button"
                 onClick={() => setFigureOpen(false)}
                 className="min-h-11 px-3 font-mono text-xs uppercase tracking-widest underline"

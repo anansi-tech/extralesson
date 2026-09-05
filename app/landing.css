@@ -8,7 +8,10 @@
   --margin: #e4b8b4;
   --red: #c1121f;
   --green: #2e7d5b;
-  --dim: #6e7687;
+  --dim: #5b6373;
+  /* ONE corner radius (ROUND_7 Task 4 finish); ONE measure, which .lede and .honest inherit. */
+  --radius: 12px;
+  --measure: 620px;
   --disp: var(--font-fraunces), serif;
   --mono: var(--font-plex-mono), monospace;
   --hand: var(--font-caveat), cursive;
@@ -21,7 +24,7 @@
 .landing .wrap { max-width: 920px; margin: 0 auto; padding: 0 22px; }
 .landing .mono { font-family: var(--mono); }
 .landing .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--red); font-weight: 600; }
-.landing .btn { display: inline-block; background: var(--red); color: #fff; font-weight: 800; font-size: 17px; padding: 16px 30px; border-radius: 12px; text-decoration: none; box-shadow: 4px 4px 0 var(--ink); transition: transform .1s; }
+.landing .btn { display: inline-block; background: var(--red); color: #fff; font-weight: 800; font-size: 17px; padding: 16px 30px; border-radius: var(--radius); text-decoration: none; box-shadow: 4px 4px 0 var(--ink); transition: transform .1s; }
 .landing .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
 .landing .btn small { display: block; font-family: var(--mono); font-weight: 500; font-size: 10px; letter-spacing: .12em; margin-top: 4px; opacity: .9; }
 
@@ -41,10 +44,10 @@
 .landing .logo em { font-style: normal; color: var(--red); }
 .landing h1 { font-size: clamp(34px, 6.4vw, 62px); font-weight: 900; line-height: 1.04; letter-spacing: -.02em; margin: 26px 0 14px; }
 .landing h1 .pen { color: var(--red); }
-.landing .lede { font-size: clamp(16px, 2.4vw, 19px); max-width: 600px; color: #3a4152; margin-bottom: 26px; }
+.landing .lede { font-size: clamp(16px, 2.4vw, 19px); max-width: var(--measure); color: #3a4152; margin-bottom: 26px; }
 .landing .lede b { font-weight: 700; }
 /* R1.6 §3: coverage stated plainly on the page, in the copybook's margin voice. */
-.landing .honest { margin-top: 26px; max-width: 640px; font-size: 14px; line-height: 1.5; color: #3a4152; border-left: 3px solid var(--margin); padding-left: 12px; }
+.landing .honest { margin-top: 26px; max-width: var(--measure); font-size: 14px; line-height: 1.5; color: #3a4152; border-left: 3px solid var(--margin); padding-left: 12px; }
 .landing .herolink { display: block; margin-top: 14px; }
 .landing .heronote { font-family: var(--mono); font-size: 11px; color: var(--dim); margin-top: 14px; letter-spacing: .05em; }
 
@@ -64,22 +67,22 @@
 .landing .stats .sources a { color: #c8cdd8; text-decoration: underline; text-underline-offset: 3px; }
 
 /* the phone, under the band */
-.landing .phone { background: #fff; border: 1.5px solid var(--ink); border-radius: 26px; padding: 12px 10px 16px; box-shadow: 6px 6px 0 var(--ink); max-width: 340px; margin: 0 auto; }
+.landing .phone { background: #fff; border: 1.5px solid var(--ink); border-radius: var(--radius); padding: 12px 10px 16px; box-shadow: 6px 6px 0 var(--ink); max-width: 340px; margin: 0 auto; }
 .landing .page { position: relative; padding: 8px 10px 12px 24px; background: repeating-linear-gradient(to bottom, transparent 0 26px, var(--rule) 26px 27px); background-color: #fffdf6; }
 .landing .page::before { content: ''; position: absolute; top: 0; bottom: 0; left: 16px; width: 1.5px; background: var(--margin); }
 .landing .q { font-size: 12px; margin-bottom: 8px; }
 .landing .q b { font-weight: 800; }
 .landing .qm { font-family: var(--mono); font-size: 9px; color: var(--dim); }
-.landing .work { background: #fff; border: 1px dashed #b9c4d6; border-radius: 10px; padding: 9px 11px; position: relative; margin-bottom: 8px; }
+.landing .work { background: #fff; border: 1px dashed #b9c4d6; border-radius: var(--radius); padding: 9px 11px; position: relative; margin-bottom: 8px; }
 .landing .work .cap { font-family: var(--mono); font-size: 8px; color: var(--dim); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 3px; }
 .landing .hand { font-family: var(--hand); font-size: 17px; line-height: 1.5; color: #2a3550; }
 .landing .tick { color: var(--red); font-family: var(--hand); font-weight: 600; font-size: 18px; }
-.landing .score-pill { position: absolute; top: -9px; right: 9px; background: var(--red); color: #fff; font-family: var(--mono); font-size: 10px; font-weight: 600; border-radius: 20px; padding: 3px 9px; box-shadow: 2px 2px 0 var(--ink); }
+.landing .score-pill { position: absolute; top: -9px; right: 9px; background: var(--red); color: #fff; font-family: var(--mono); font-size: 10px; font-weight: 600; border-radius: var(--radius); padding: 3px 9px; box-shadow: 2px 2px 0 var(--ink); }
 .landing .markrow { display: flex; justify-content: space-between; font-size: 10.5px; padding: 5px 2px; border-bottom: 1px solid var(--paper-deep); }
 .landing .aw { font-family: var(--mono); font-size: 9.5px; font-weight: 600; }
 .landing .aw.y { color: var(--green); }
 .landing .aw.n { color: var(--red); }
-.landing .verdict { background: #fdf1f0; border-left: 3px solid var(--red); border-radius: 0 8px 8px 0; padding: 8px 10px; margin-top: 8px; }
+.landing .verdict { background: #fdf1f0; border-left: 3px solid var(--red); border-radius: 0 var(--radius) var(--radius) 0; padding: 8px 10px; margin-top: 8px; }
 .landing .verdict .vt { font-weight: 800; font-size: 11px; color: var(--red); }
 .landing .verdict .vm { font-size: 10.5px; margin-top: 2px; line-height: 1.4; }
 
@@ -94,7 +97,7 @@
 .landing .daily { margin: 18px 0 22px; font-size: 15px; color: #3a4152; }
 
 /* founder */
-.landing .founder { background: var(--paper-deep); border-radius: 18px; padding: 32px 28px; display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: start; }
+.landing .founder { background: var(--paper-deep); border-radius: var(--radius); padding: 32px 28px; display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: start; }
 @media (max-width: 640px) { .landing .founder { grid-template-columns: 1fr; } }
 .landing .founder .badge { width: 84px; height: 84px; border-radius: 50%; background: var(--ink); color: var(--paper); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 28px; border: 3px solid var(--red); }
 .landing .founder img.badge { width: 64px; height: 64px; object-fit: cover; }
@@ -104,7 +107,7 @@
 .landing .founder .cred { font-family: var(--mono); font-size: 10px; color: var(--dim); letter-spacing: .06em; margin-top: 2px; }
 
 /* offer */
-.landing .offer { background: var(--ink); color: var(--paper); border-radius: 12px; padding: 40px 32px; text-align: left; position: relative; overflow: hidden; }
+.landing .offer { background: var(--ink); color: var(--paper); border-radius: var(--radius); padding: 40px 32px; text-align: left; position: relative; overflow: hidden; }
 .landing .offer .eyebrow { color: #f0b429; }
 .landing .offer h2 { color: #fff; }
 .landing .offer .price { font-size: clamp(48px, 8vw, 72px); font-weight: 900; color: #f0b429; line-height: 1; margin: 10px 0 4px; }
@@ -113,7 +116,7 @@
 .landing .offer li { padding: 8px 0; border-bottom: 1px solid #2e3646; font-size: 14.5px; display: flex; gap: 10px; }
 .landing .offer li:last-child { border-bottom: 0; }
 .landing .offer li::before { content: '✓'; color: #f0b429; font-weight: 700; }
-.landing .offer p { font-size: 14.5px; color: #c8cdd8; max-width: 520px; margin: 18px 0 0; text-align: left; }
+.landing .offer p { font-size: 14.5px; color: #c8cdd8; max-width: var(--measure); margin: 18px 0 0; text-align: left; }
 .landing .offer .cap { font-family: var(--mono); font-size: 10.5px; color: #a8aebd; margin-top: 14px; letter-spacing: .08em; }
 .landing .offer .btn { box-shadow: 4px 4px 0 #f0b429; }
 

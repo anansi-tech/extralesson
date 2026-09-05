@@ -9,7 +9,7 @@
   --margin: #e4b8b4;
   --red: #c1121f;
   --green: #2e7d5b;
-  --dim: #6e7687;
+  --dim: #5b6373; /* ≥ 4.5:1 on paper (5.65:1); #6e7687 was 4.27 */
 }
 
 @theme inline {
