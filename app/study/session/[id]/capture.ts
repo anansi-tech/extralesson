@@ -158,6 +158,24 @@ export async function readWorking(input: {
   return { transcription: read.transcription, transcriptionId: String(stored._id), take, takesLeft: MAX_TAKES - take, prefill };
 }
 
+const RetryZ = z.object({ attemptId: z.string().regex(/^[a-f0-9]{24}$/) });
+
+/**
+ * Marks the stored text again after a marking failed (ROUND_6 Task 1). No new
+ * photo and no new read: the read that failed still has no marker_version, so
+ * markWorking picks it up as the take that stands.
+ */
+export async function retryMarking(input: { attemptId: string }): Promise<CaptureResult | { error: string }> {
+  const auth = await requireSession();
+  const parsed = RetryZ.safeParse(input);
+  if (!parsed.success) return { error: 'That answer could not be found.' };
+  await dbConnect();
+  const owned = await Attempt.exists({ _id: parsed.data.attemptId, student_id: auth.student_id });
+  if (!owned) return { error: 'That answer could not be found.' };
+  const marked = await markWorking(parsed.data.attemptId);
+  return marked ?? { error: 'There is nothing left to mark.' };
+}
+
 /**
  * The post-submit path, for a student who typed instead: read, then mark, the
  * same two steps the photo-first path takes either side of submit.

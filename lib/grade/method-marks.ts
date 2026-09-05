@@ -46,6 +46,24 @@ export function constructionRows(q: MethodMarkQuestion, awarded: string[]): Rubr
   return (q.rubric ?? []).filter((r) => !earned.has(r.code) && constructRefs.has(r.slot_ref));
 }
 
+/**
+ * A MARKING IS ALL OR NOTHING (ROUND_6 Task 1): exactly one decision per row
+ * asked for. A missing, repeated or unknown code is a failure to store as one,
+ * never a partial result to store as marks.
+ */
+export function oneDecisionPerRow<D extends { code: string }>(decisions: D[], codes: string[]): D[] {
+  const wanted = new Set(codes);
+  const seen = new Set<string>();
+  for (const d of decisions) {
+    if (!wanted.has(d.code)) throw new Error(`marker decided ${d.code}, a row it was not asked about`);
+    if (seen.has(d.code)) throw new Error(`marker decided ${d.code} twice`);
+    seen.add(d.code);
+  }
+  const missing = codes.filter((c) => !seen.has(c));
+  if (missing.length) throw new Error(`marker did not decide ${missing.join(', ')}`);
+  return decisions;
+}
+
 /** The rows earlier takes already paid for, so a later take never re-judges them. */
 export function alreadyEarnedByMethod(
   takes: { method_marks?: { code: string; awarded: boolean }[] }[],

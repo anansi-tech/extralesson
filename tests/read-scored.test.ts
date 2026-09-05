@@ -12,11 +12,15 @@ vi.mock('@/lib/auth/session', () => ({
 
 let page: { lines: { part_label: string; slot_label: null; text: string; confidence: number }[]; legible: boolean } = { lines: [], legible: true };
 let decisions: { code: string; awarded: boolean; reason: string; confidence: number }[] = [];
+let markerFails = false;
+let imageCalls = 0;
 vi.mock('ai', () => ({
   generateObject: async (opts: { messages?: { content: unknown }[] }) => {
     if (opts.messages) {
+      imageCalls++;
       return { object: { ...page, answers: [] }, usage: { inputTokens: 1, outputTokens: 1 } };
     }
+    if (markerFails) throw new Error('timed out');
     return { object: { decisions }, usage: { inputTokens: 1, outputTokens: 1 } };
   },
 }));
@@ -24,6 +28,7 @@ vi.mock('ai', () => ({
 let mongod: MongoMemoryServer;
 let db: typeof import('@/lib/db');
 let readWorking: typeof import('@/app/study/session/[id]/capture').readWorking;
+let retryMarking: typeof import('@/app/study/session/[id]/capture').retryMarking;
 let submitAnswer: typeof import('@/app/study/session/[id]/actions').submitAnswer;
 let loaders: {
   loadHistory: typeof import('@/lib/study/history').loadHistory;
@@ -79,7 +84,7 @@ beforeAll(async () => {
   process.env.MONGODB_URI = mongod.getUri();
   await mongoose.connect(process.env.MONGODB_URI);
   db = await import('@/lib/db');
-  ({ readWorking } = await import('@/app/study/session/[id]/capture'));
+  ({ readWorking, retryMarking } = await import('@/app/study/session/[id]/capture'));
   ({ submitAnswer } = await import('@/app/study/session/[id]/actions'));
   loaders = {
     loadHistory: (await import('@/lib/study/history')).loadHistory,
@@ -96,6 +101,8 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+  markerFails = false;
+  imageCalls = 0;
   await Promise.all([db.Attempt.deleteMany({}), db.Transcription.deleteMany({}), db.PracticeSession.deleteMany({})]);
 });
 
@@ -149,5 +156,70 @@ describe('one score fold — ROUND_6 Task 1', () => {
     expect(await loaders.loadHistory(id)).toMatchObject([{ earned: 1, marks: 3, unassessed: 1 }]);
     const mistakes = await loaders.loadMistakes(id, new Date(Date.now() + 4 * DAYS));
     expect(Object.fromEntries(mistakes.lostByObjective)).toEqual({ 'M1.1.1': 2 });
+  });
+});
+
+describe('marking fails honestly — ROUND_6 Task 1', () => {
+  const legiblePage = () => {
+    page = { lines: [{ part_label: 'c', slot_label: null, text: '4 + 6 = 10', confidence: 0.9 }], legible: true };
+  };
+
+  it('a timeout is stored as a failure, leaves the row unassessed, and is retryable over the stored text', async () => {
+    legiblePage();
+    markerFails = true;
+    const sessionId = await session(await question());
+    await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
+    const fb = await submitAnswer({ sessionId, questionIndex: 0, answers: right });
+    if ('error' in fb) throw new Error(fb.error);
+    expect(fb.working).toMatchObject({ marked: false, failure: 'timed out', method: [], marksAdded: 0 });
+
+    const stored = await db.Transcription.findOne({ attempt_id: fb.attemptId }).lean<Record<string, any> | null>();
+    expect(stored?.marker_version).toBeUndefined();
+    expect(stored?.marking).toMatchObject({ status: 'failed', reason: 'timed out' });
+    expect(await loaders.loadHistory(String(STUDENT))).toMatchObject([{ earned: 3, marks: 3, unassessed: 1 }]);
+
+    markerFails = false;
+    decisions = [{ code: 'R5', awarded: true, reason: 'the sum “4 + 6 = 10” is written', confidence: 0.9 }];
+    const again = await retryMarking({ attemptId: fb.attemptId });
+    expect(again).toMatchObject({ marked: true, marksAdded: 1 });
+    const after = await db.Transcription.findOne({ attempt_id: fb.attemptId }).lean<Record<string, any> | null>();
+    expect(after?.marker_version).toBeTruthy();
+    expect(after?.marking).toBeUndefined();
+    expect(imageCalls).toBe(1);
+    expect(await loaders.loadHistory(String(STUDENT))).toMatchObject([{ earned: 4, marks: 4, unassessed: 0 }]);
+  });
+
+  it('a missing, repeated or unknown code is a failure, not a partial result', async () => {
+    legiblePage();
+    for (const [bad, reason] of [
+      [[], /did not decide R5/],
+      [[{ code: 'R5', awarded: true, reason: 'a', confidence: 1 }, { code: 'R5', awarded: false, reason: 'b', confidence: 1 }], /twice/],
+      [[{ code: 'R5', awarded: true, reason: 'a', confidence: 1 }, { code: 'R9', awarded: true, reason: 'b', confidence: 1 }], /not asked/],
+    ] as const) {
+      decisions = [...bad];
+      const sessionId = await session(await question());
+      await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
+      const fb = await submitAnswer({ sessionId, questionIndex: 0, answers: right });
+      if ('error' in fb) throw new Error(fb.error);
+      expect(fb.working?.marked).toBe(false);
+      expect(fb.working?.failure).toMatch(reason);
+      const stored = await db.Transcription.findOne({ attempt_id: fb.attemptId }).lean<Record<string, any> | null>();
+      expect(stored?.method_marks).toEqual([]);
+      expect(stored?.marker_version).toBeUndefined();
+    }
+  });
+
+  it('refuses a retry on another student’s attempt', async () => {
+    const other = await db.Attempt.create({
+      student_id: new mongoose.Types.ObjectId(),
+      question_id: await question(),
+      session_id: new mongoose.Types.ObjectId(),
+      answer: '',
+      rubric_awarded: [],
+      profile_marks: { CK: 0, AK: 0, R: 0 },
+      correct: false,
+      duration_ms: 0,
+    });
+    expect(await retryMarking({ attemptId: String(other._id) })).toMatchObject({ error: /found/ });
   });
 });

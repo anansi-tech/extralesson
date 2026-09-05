@@ -42,7 +42,7 @@ describe('(4) a quoted line must be on the page', () => {
     expect(requireEvidence(stub, page).map((d) => d.awarded)).toEqual([false, true]);
   });
   it('runs on the marking path and in the eval, before the form rule', () => {
-    expect(at('app', 'study', 'session', '[id]', 'mark-working.ts')).toMatch(/applyFormatDependency\(\s*requireEvidence\(result\.decisions/);
+    expect(at('app', 'study', 'session', '[id]', 'mark-working.ts')).toMatch(/applyFormatDependency\(\s*requireEvidence\(oneDecisionPerRow\(result\.decisions/);
     expect(at('scripts', 'eval-marker.ts')).toMatch(/requireEvidence\(\(await markMethod\(/);
   });
 });

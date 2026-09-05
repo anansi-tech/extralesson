@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { earnableByMethod } from '@/lib/grade/method-marks';
+import { earnableByMethod, oneDecisionPerRow } from '@/lib/grade/method-marks';
 import { MethodDecisionZ } from '@/lib/grade/mark-method';
 import type { RubricItem } from '@/lib/types';
 
@@ -70,5 +70,17 @@ describe('the method decision contract', () => {
 
     const noReason = MethodDecisionZ.safeParse({ code: 'AK3', awarded: false, confidence: 0.8 });
     expect(noReason.success).toBe(false);
+  });
+});
+
+describe('oneDecisionPerRow — a marking is all or nothing', () => {
+  const d = (code: string) => ({ code, awarded: true, reason: 'r' });
+  it('passes exactly one decision per requested row', () => {
+    expect(oneDecisionPerRow([d('AK1'), d('R1')], ['AK1', 'R1'])).toHaveLength(2);
+  });
+  it('fails on a missing, repeated or unknown code', () => {
+    expect(() => oneDecisionPerRow([d('AK1')], ['AK1', 'R1'])).toThrow(/did not decide R1/);
+    expect(() => oneDecisionPerRow([d('AK1'), d('AK1')], ['AK1'])).toThrow(/twice/);
+    expect(() => oneDecisionPerRow([d('AK1'), d('R9')], ['AK1'])).toThrow(/not asked/);
   });
 });

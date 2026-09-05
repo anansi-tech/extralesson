@@ -79,6 +79,13 @@ const TranscriptionSchema = new Schema({
     default: [],
   },
   marker_version: { type: String },
+  /** Why the marker did not finish (ROUND_6 Task 1); cleared when a retry does. */
+  marking: {
+    type: new Schema(
+      { status: { type: String, enum: ['failed'], required: true }, reason: { type: String, required: true }, ts: { type: Date, required: true } },
+      { _id: false },
+    ),
+  },
   created_at: { type: Date, default: Date.now, required: true },
   /** Set on a read with no attempt yet; unset once linked. Scratch expires with the draft. */
   expires_at: { type: Date },

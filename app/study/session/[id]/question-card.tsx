@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { saveDraft, submitAnswer, type Feedback } from './actions';
 import { attemptOutcome, type OutcomeRead } from '@/lib/study/outcome';
+import { RetryMarkingButton } from './retry-marking-button';
 import type { ReadResult } from './capture';
 import { TypedInput } from './typed-input';
 import { HintLines, SymbolStrip } from './affordance';
@@ -858,6 +859,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                   }
                   earnedLabel="What this earned"
                 />
+                {!w.marked && <RetryMarkingButton attemptId={question.prior!.feedback.attemptId} />}
               </div>
             ))}
 

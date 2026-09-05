@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from 'react';
 import { captureWorking, readWorking, type ReadResult } from './capture';
 import type { CaptureResult } from './mark-working';
 import { WorkingRead } from './working-read';
+import { RetryMarkingButton } from './retry-marking-button';
 import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
 
 /**
@@ -27,7 +28,7 @@ async function scaleDown(file: File): Promise<{ data: string; contentType: strin
   return { data: url.slice(url.indexOf(',') + 1), contentType: 'image/jpeg' };
 }
 
-type Marked = Pick<CaptureResult, 'method' | 'marksAdded'> & { transcriptionId?: string; rejected?: number[] };
+type Marked = Pick<CaptureResult, 'method' | 'marksAdded'> & { transcriptionId?: string; rejected?: number[]; failed?: boolean };
 
 export function WorkingPhoto({
   sessionId,
@@ -57,7 +58,7 @@ export function WorkingPhoto({
   const [takesLeft, setTakesLeft] = useState(initial?.takesLeft ?? MAX_TAKES);
   const [marked, setMarked] = useState<Marked>(
     initial && 'method' in initial
-      ? { method: initial.method, marksAdded: initial.marksAdded, transcriptionId: initial.transcriptionId, rejected: initial.rejected }
+      ? { method: initial.method, marksAdded: initial.marksAdded, transcriptionId: initial.transcriptionId, rejected: initial.rejected, failed: !initial.marked }
       : { method: [], marksAdded: 0, rejected: initial && 'rejected' in initial ? (initial as { rejected?: number[] }).rejected : undefined },
   );
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +82,7 @@ export function WorkingPhoto({
         setRead(res.transcription);
         setReadId(res.transcriptionId);
         setTakesLeft(res.takesLeft);
-        if ('method' in res) setMarked({ method: res.method, marksAdded: res.marksAdded, transcriptionId: res.transcriptionId, rejected: res.rejected });
+        if ('method' in res) setMarked({ method: res.method, marksAdded: res.marksAdded, transcriptionId: res.transcriptionId, rejected: res.rejected, failed: !res.marked });
         if ('prefill' in res) onRead?.(res.prefill);
       } catch {
         setError('That photo could not be prepared on this device.');
@@ -142,6 +143,13 @@ export function WorkingPhoto({
         <p className="mt-2 border-l-3 border-red-pen bg-[#FDF1F0] p-2 text-[12px] leading-snug">
           {error}
         </p>
+      )}
+
+      {read && attemptId && marked.failed && (
+        <RetryMarkingButton
+          attemptId={attemptId}
+          onMarked={(res) => setMarked({ method: res.method, marksAdded: res.marksAdded, transcriptionId: res.transcriptionId, rejected: res.rejected, failed: !res.marked })}
+        />
       )}
 
       {read && (

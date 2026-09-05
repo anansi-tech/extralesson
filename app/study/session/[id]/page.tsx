@@ -560,7 +560,9 @@ export default async function SessionPage({
     // reasons are not, and they are what a student most wants to reread. Only
     // the take that was marked: a read a second photograph replaced before
     // submit earned nothing and is not shown as if it had.
-    const takes = await Transcription.find({ attempt_id: attempt._id, marker_version: { $exists: true } })
+    // The marked take, and a take whose marking failed: its text stands and
+    // can be marked again from here (ROUND_6 Task 1).
+    const takes = await Transcription.find({ attempt_id: attempt._id, $or: [{ marker_version: { $exists: true } }, { 'marking.status': 'failed' }] })
       .sort({ take: 1 })
       .select('lines legible notes method_marks marker_version take')
       .lean<

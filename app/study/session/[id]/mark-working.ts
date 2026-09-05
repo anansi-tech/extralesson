@@ -1,7 +1,7 @@
 import { Attempt, CapturedImage, LineRejected, PracticeSession, Question, Transcription } from '@/lib/db';
 import { markableSlots } from '@/lib/grade/mark';
 import { MAX_TAKES, linesForSlot, type TranscriptionResult } from '@/lib/grade/transcribe';
-import { earnableByMethod, constructionRows, alreadyEarnedByMethod, applyFormatDependency, requireEvidence } from '@/lib/grade/method-marks';
+import { earnableByMethod, constructionRows, alreadyEarnedByMethod, applyFormatDependency, requireEvidence, oneDecisionPerRow } from '@/lib/grade/method-marks';
 import { markMethod, type MethodDecision } from '@/lib/grade/mark-method';
 import { MARKER_VERSION } from '@/lib/grade/version';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
@@ -20,6 +20,8 @@ export interface CaptureResult {
   marksAdded: number;
   /** The marker finished; the fold counts these decisions. */
   marked: boolean;
+  /** Why it did not, when it did not. The stored text stands for a retry. */
+  failure?: string;
 }
 
 interface StoredRead {
@@ -39,7 +41,9 @@ interface StoredRead {
  * (ROUND_4 Task 1). Links every unlinked read of this question to the attempt
  * once, then marks the take that stands. Method marks only ADD (ROUND_2 §4);
  * rows an earlier take earned are settled. Construct rows are decided from
- * the stored drawing check, not from a second look.
+ * the stored drawing check, not from a second look. A marker that fails or
+ * answers for the wrong rows is stored as a failure, never as marks
+ * (ROUND_6 Task 1): the read keeps no marker_version and a retry marks it again.
  */
 export async function markWorking(attemptId: string): Promise<CaptureResult | null> {
   const attempt = await Attempt.findById(attemptId).lean<{
@@ -111,13 +115,25 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
         questionStem: `${question.stimulus ?? ''} ${question.stem}`.trim(),
       });
       decisions = applyFormatDependency(
-        requireEvidence(result.decisions, transcription.lines.map((l) => l.text)),
+        requireEvidence(oneDecisionPerRow(result.decisions, unearned.map((r) => r.code)), transcription.lines.map((l) => l.text)),
         question.rubric ?? [],
         settled,
       );
       usage = result.usage;
-    } catch {
-      // The reading stands; the student keeps everything determinism gave them.
+    } catch (e) {
+      const reason = e instanceof Error ? e.message : String(e);
+      await Transcription.updateOne({ _id: read._id }, { $set: { marking: { status: 'failed', reason, ts: new Date() } } });
+      return {
+        transcription: { ...transcription, lines: read.lines },
+        transcriptionId: String(read._id),
+        rejected,
+        take: read.take,
+        takesLeft: MAX_TAKES - reads.length,
+        method: [],
+        marksAdded: 0,
+        marked: false,
+        failure: reason,
+      };
     }
   }
 
@@ -143,7 +159,6 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
 
   const byCode = new Map([...unearned, ...drawRows].map((r) => [r.code, r]));
   const methodMarks = decisions
-    .filter((d) => byCode.has(d.code))
     .map((d) => ({
       code: d.code,
       awarded: d.awarded && !d.needs_review,
@@ -163,6 +178,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
         'usage.marking_input': usage.input_tokens,
         'usage.marking_output': usage.output_tokens,
       },
+      $unset: { marking: '' },
     },
   );
 
