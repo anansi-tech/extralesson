@@ -6,7 +6,7 @@ import { StudyNav, sittingTag } from './study-nav';
 import { logout, startSession } from './actions';
 import { openSession } from '@/lib/study/open-session';
 import { loadProgress } from '@/lib/study/progress';
-import { gradeLabel, gradePlace, topicLeverage } from '@/lib/study/trajectory';
+import { gradeLabel, gradePlace, topicLeverage } from '@/lib/study/leverage';
 import { MIN_MARKS_FOR_PREDICTION } from '@/lib/mastery/config';
 import { DIAGNOSTIC_MINUTES, m1GateHolds, SESSION_MINUTES } from '@/lib/session/builder';
 import { loadMistakes } from '@/lib/study/mistakes';
