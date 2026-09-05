@@ -21,6 +21,8 @@ const EmailZ = z.string().email().transform((e) => e.toLowerCase().trim());
 
 const SignInZ = z.object({ email: EmailZ, password: z.string().min(1) });
 
+const SIGN_IN_FAILED = 'That email and password do not match. New here? Create an account below.';
+
 const RegisterZ = z.object({
   email: EmailZ,
   password: z.string().min(1),
@@ -34,7 +36,7 @@ const RegisterZ = z.object({
 
 export interface AuthState {
   error?: string;
-  /** The email is not registered, so the form offers to create the account. */
+  /** The registration form failed validation and stays a registration form. */
   needsProfile?: boolean;
   /** A reset link was requested; the message never says whether it was sent. */
   resetRequested?: boolean;
@@ -57,18 +59,10 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
     password_hash?: string;
   } | null>();
 
-  if (!student) return { needsProfile: true, email };
-  if (!student.password_hash) {
-    // Saying so plainly is not a disclosure: they proved the email exists by
-    // having signed in with it before passwords existed.
-    return {
-      error: 'This account was made before passwords. Use "Forgot your password?" to set one.',
-      email,
-    };
-  }
-  if (!(await verifyPassword(password, student.password_hash))) {
-    return { error: 'That email and password do not match.', email };
-  }
+  // ONE ANSWER for unknown, legacy and wrong (ROUND_6 Task 3): three answers
+  // made the form a way to ask which addresses have an account here.
+  const ok = !!student?.password_hash && (await verifyPassword(password, student.password_hash));
+  if (!student || !ok) return { error: SIGN_IN_FAILED, email };
 
   await setSessionCookie(String(student._id), student.email);
   redirect('/study');

@@ -8,6 +8,8 @@ const ResetTokenSchema = new Schema({
   email: { type: String, required: true, lowercase: true, trim: true },
   expires_at: { type: Date, required: true },
   used_at: { type: Date },
+  /** Claiming this link proves the inbox; the role is granted at that moment, not before. */
+  grant_role: { type: String, enum: ['admin'] },
 });
 
 // Mongo TTL sweep removes expired rows. It is a tidy-up, NOT the expiry check —

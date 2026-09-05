@@ -1,5 +1,5 @@
 import { dbConnect, Student } from '@/lib/db';
-import { isAdminEmail, requireSession } from '@/lib/auth/session';
+import { requireSession } from '@/lib/auth/session';
 import { loadStudyState } from '@/lib/study/state';
 import { BAND_LABEL } from '@/lib/study/profiles';
 import type { ModuleNumber } from '@/lib/types';
@@ -34,7 +34,7 @@ export default async function ProgressPage() {
     <main className="ruled relative min-h-screen px-5 py-8">
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-xl">
-        <StudyNav current="progress" sitting={sittingTag(student.syllabus_mode)} email={auth.email} isAdmin={isAdminEmail(auth.email)} />
+        <StudyNav current="progress" sitting={sittingTag(student.syllabus_mode)} email={auth.email} isAdmin={auth.role === 'admin'} />
         <h1 className="mt-5 text-2xl font-black">
           Where you stand, topic by topic<span className="text-red-pen">.</span>
         </h1>

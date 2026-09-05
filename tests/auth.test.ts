@@ -71,7 +71,7 @@ describe('claiming a reset secret', () => {
 
   it('claims exactly once', async () => {
     const secret = await issue('kid@example.com');
-    expect(await claimResetSecret(secret)).toBe('kid@example.com');
+    expect(await claimResetSecret(secret)).toEqual({ email: 'kid@example.com', grant_role: undefined });
     // Opening the link twice must not set two passwords.
     expect(await claimResetSecret(secret)).toBeNull();
   });

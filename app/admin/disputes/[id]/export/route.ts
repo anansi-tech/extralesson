@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
-import { getSession, isAdminEmail } from '@/lib/auth/session';
+import { getSession } from '@/lib/auth/session';
 import { buildGoldenBundle } from '@/lib/golden/bundle';
 
 /** Read-only: the bundle is built in memory and handed to the browser. */
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   const session = await getSession();
-  if (!session || !isAdminEmail(session.email)) return new NextResponse('Forbidden', { status: 403 });
+  if (session?.role !== 'admin') return new NextResponse('Forbidden', { status: 403 });
   const { id } = await ctx.params;
   if (!/^[a-f0-9]{24}$/.test(id)) return new NextResponse('Not found', { status: 404 });
   await dbConnect();

@@ -14,6 +14,8 @@ export default function LoginForm() {
   // One form, three actions. Which one runs is decided by what the student is
   // doing, not by three separate pages they have to find their way between.
   const [mode, setMode] = useState<'signin' | 'reset'>('signin');
+  // Chosen by the student, never inferred from a failed sign-in (ROUND_6 Task 3).
+  const [creating, setCreating] = useState(false);
   // HELD ON THE CLIENT, not returned in AuthState: React 19 resets an
   // uncontrolled form once a form action has run — exactly when signIn answers
   // needsProfile and this form becomes a registration, which had the student
@@ -54,8 +56,7 @@ export default function LoginForm() {
     );
   }
 
-  // The email was not recognised, so the same details become a registration.
-  const needsProfile = signInState.needsProfile || registerState.needsProfile;
+  const needsProfile = creating || registerState.needsProfile;
   const state = needsProfile ? registerState : signInState;
   const pending = needsProfile ? registering : signingIn;
 
@@ -96,7 +97,7 @@ export default function LoginForm() {
       {needsProfile && (
         <fieldset className="space-y-4 border-[1.5px] border-dashed border-ink p-4">
           <legend className="px-1 font-mono text-xs uppercase tracking-widest text-dim">
-            No account with that email — let&rsquo;s make one
+            Your account
           </legend>
           <label className="block">
             <span className="font-mono text-xs uppercase tracking-widest text-dim">Name</span>
@@ -142,8 +143,18 @@ export default function LoginForm() {
       </button>
 
       {!needsProfile && (
-        <button type="button" onClick={() => setMode('reset')} className="w-full text-sm underline">
-          Forgot your password?
+        <>
+          <button type="button" onClick={() => setCreating(true)} className="w-full text-sm underline">
+            New here? Create an account
+          </button>
+          <button type="button" onClick={() => setMode('reset')} className="w-full text-sm underline">
+            Forgot your password?
+          </button>
+        </>
+      )}
+      {creating && (
+        <button type="button" onClick={() => setCreating(false)} className="w-full text-sm underline">
+          I already have an account
         </button>
       )}
 

@@ -10,7 +10,6 @@ import {
   Transcription,
 } from '@/lib/db';
 import { ResetToken } from '@/lib/db/reset-token';
-import { isAdminEmail } from '@/lib/auth/session';
 
 /**
  * Every collection attached to a student is listed in ONE place; a second copy
@@ -54,15 +53,13 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
   const address = email.trim().toLowerCase();
   if (!address) return { ok: false, reason: 'No email address given.' };
 
-  // An operator cannot delete the account that lets them operate. The check is
-  // on the allowlist rather than on "is this me", because deleting the other
-  // admin locks the same door.
-  if (isAdminEmail(address)) {
-    return { ok: false, reason: `${address} is in ADMIN_EMAILS and cannot be deleted.` };
-  }
-
-  const student = await Student.findOne({ email: address }).select('_id').lean<{ _id: unknown } | null>();
+  const student = await Student.findOne({ email: address }).select('_id role').lean<{ _id: unknown; role?: string } | null>();
   if (!student) return { ok: false, reason: `No account for ${address}.` };
+  // An operator cannot delete the account that lets them operate — theirs or
+  // the other admin's, because deleting either locks the same door.
+  if (student.role === 'admin') {
+    return { ok: false, reason: `${address} is an operator account and cannot be deleted.` };
+  }
   const studentId = student._id;
 
   // Read the session ids BEFORE deleting the sessions: the drafts hang off

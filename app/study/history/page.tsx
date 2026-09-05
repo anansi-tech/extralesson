@@ -1,7 +1,7 @@
 import 'katex/dist/katex.min.css';
 import Link from 'next/link';
 import { dbConnect, Student } from '@/lib/db';
-import { isAdminEmail, requireSession } from '@/lib/auth/session';
+import { requireSession } from '@/lib/auth/session';
 import { loadHistory } from '@/lib/study/history';
 import { StudyNav, sittingTag } from '../study-nav';
 
@@ -20,7 +20,7 @@ export default async function HistoryPage() {
     <main className="ruled relative min-h-screen px-5 py-8">
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-xl">
-        <StudyNav current="history" sitting={sittingTag(student.syllabus_mode)} email={auth.email} isAdmin={isAdminEmail(auth.email)} />
+        <StudyNav current="history" sitting={sittingTag(student.syllabus_mode)} email={auth.email} isAdmin={auth.role === 'admin'} />
         <h1 className="mt-5 text-2xl font-black">
           Every question you have answered<span className="text-red-pen">.</span>
         </h1>

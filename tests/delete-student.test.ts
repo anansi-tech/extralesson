@@ -139,12 +139,12 @@ describe('deleting a student', () => {
     expect(JSON.stringify(payments)).not.toContain(STUDENT.email);
   });
 
-  it('refuses an address in ADMIN_EMAILS', async () => {
-    await db.Student.create({ ...STUDENT, email: 'boss@extralesson.invalid' });
+  it('refuses an operator account', async () => {
+    await db.Student.create({ ...STUDENT, email: 'boss@extralesson.invalid', role: 'admin' });
     const result = await deleteStudent('boss@extralesson.invalid');
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.reason).toMatch(/ADMIN_EMAILS/);
+    expect(result.reason).toMatch(/operator/);
     expect(await db.Student.countDocuments({})).toBe(1);
   });
 

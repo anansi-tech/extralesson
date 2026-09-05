@@ -28,13 +28,15 @@ export async function setPassword(_prev: ResetState, formData: FormData): Promis
   // link opened twice cannot set two passwords. Unknown, used and expired are
   // deliberately the same answer: telling them apart tells the holder of a
   // stale link which kind of stale it is, and they can do nothing with either.
-  const email = await claimResetSecret(parsed.data.token);
-  if (!email) return { error: 'That link has expired or has already been used. Ask for a new one.' };
+  const claimed = await claimResetSecret(parsed.data.token);
+  if (!claimed) return { error: 'That link has expired or has already been used. Ask for a new one.' };
 
-  const student = await Student.findOne({ email });
+  const student = await Student.findOne({ email: claimed.email });
   if (!student) return { error: 'That link has expired. Ask for a new one.' };
 
   student.password_hash = await hashPassword(parsed.data.password);
+  // A provisioning link grants its role here, once the inbox is proved.
+  if (claimed.grant_role) student.role = claimed.grant_role;
   await student.save();
 
   await setSessionCookie(String(student._id), student.email);

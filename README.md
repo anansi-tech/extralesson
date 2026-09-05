@@ -27,9 +27,9 @@ Requires Node 20+, pnpm, and a MongoDB instance (`MONGODB_URI`).
 | `/study` | Student app | Session cookie (30 days) |
 | `/study/login` | Email + password, or register | Public |
 | `/study/reset` | Set a new password from a reset link | Reset token |
-| `/admin/review` | Question review queue | Admin allowlist (`ADMIN_EMAILS`) |
-| `/admin/coverage` | Objective coverage + target matrices | Admin allowlist |
-| `/admin/topics` | Syllabus graph + blueprint viewer | Admin allowlist |
+| `/admin/review` | Question review queue | Admin role (`pnpm admin:provision`) |
+| `/admin/coverage` | Objective coverage + target matrices | Admin role |
+| `/admin/topics` | Syllabus graph + blueprint viewer | Admin role |
 
 ## Question generation (recipe-driven, R1.5)
 

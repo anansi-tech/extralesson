@@ -1,7 +1,7 @@
 /**
  * Three of these fail silently (ROUND_3 §1): without the payment link a landing
- * page renders and cannot be bought from, without ADMIN_EMAILS the operator is
- * locked out of /admin/access, without the webhook secret every delivery 400s.
+ * page renders and cannot be bought from, without ADMIN_EMAILS no operator can
+ * be provisioned for /admin/access, without the webhook secret every delivery 400s.
  * A fourth fails loudly but wrongly: without the allowlist every payment is
  * refused as another product's (ROUND_6 Task 2).
  */

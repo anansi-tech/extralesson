@@ -2,7 +2,7 @@ import 'katex/dist/katex.min.css';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { dbConnect, Attempt, LineRejected, MarkDispute, PracticeSession, Question, Student, Topic, Transcription } from '@/lib/db';
-import { isAdminEmail, requireSession } from '@/lib/auth/session';
+import { requireSession } from '@/lib/auth/session';
 import { StudyNav, sittingTag } from '../../study-nav';
 import { renderMathHtml } from '@/lib/katex';
 import { renderVisual, renderStimulusTable } from '@/lib/visuals';
@@ -790,7 +790,7 @@ export default async function SessionPage({
     <main className="ruled relative min-h-screen px-5 py-8">
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-xl">
-        <StudyNav current={null} sitting={sittingTag(sittingStudent?.syllabus_mode ?? '')} email={auth.email} isAdmin={isAdminEmail(auth.email)} />
+        <StudyNav current={null} sitting={sittingTag(sittingStudent?.syllabus_mode ?? '')} email={auth.email} isAdmin={auth.role === 'admin'} />
         <div className="mt-3 text-right font-mono text-xs text-dim">
           Q{index + 1} OF {total} · {question.marks} MARK{question.marks === 1 ? '' : 'S'}
         </div>

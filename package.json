@@ -14,7 +14,8 @@
     "golden:import": "tsx scripts/golden-import.ts",
     "check:figures": "tsx scripts/check-figures.ts",
     "check:kill-list": "bash scripts/check-kill-list.sh",
-    "prepare": "git config core.hooksPath .githooks || true"
+    "prepare": "git config core.hooksPath .githooks || true",
+    "admin:provision": "tsx scripts/provision-admin.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.118",

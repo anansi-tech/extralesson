@@ -1,5 +1,5 @@
 import { dbConnect, Student } from '@/lib/db';
-import { isAdminEmail, requireSession } from '@/lib/auth/session';
+import { requireSession } from '@/lib/auth/session';
 import { loadStudyState } from '@/lib/study/state';
 import { coverageDetail } from '@/lib/targets/coverage';
 import { paperShape } from '@/lib/exam/paper-shape';
@@ -62,7 +62,7 @@ export default async function StudyDashboard({
   } | null>();
   if (!student) return null;
 
-  const isAdmin = isAdminEmail(auth.email);
+  const isAdmin = auth.role === 'admin';
   const state = await loadStudyState(auth.student_id, student.target_modules);
   const { prediction } = state;
   const [open, progress] = await Promise.all([

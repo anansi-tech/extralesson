@@ -6,6 +6,9 @@ const StudentSchema = new Schema({
   // scrypt$salt$hash — see lib/auth/password.ts. Optional only because accounts
   // made before passwords existed have none, and set one through the reset flow.
   password_hash: { type: String },
+  // 'admin' is set ONLY when a provisioning link is claimed (lib/auth/provision.ts):
+  // public registration always makes a student, whatever the address (ROUND_6 Task 3).
+  role: { type: String, enum: ['student', 'admin'], default: 'student', required: true },
   island: { type: String },
   exam_sitting: { type: String, enum: ['jan-2027', 'may-june-2027'], required: true },
   // Derived from exam_sitting; display only — never branch logic on it (ROUND_1 §0).
