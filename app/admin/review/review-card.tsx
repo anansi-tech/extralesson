@@ -46,6 +46,8 @@ export interface ReviewQuestion {
     code: string;
     profile: string;
     criterionHtml: string;
+    /** The second-person hint written at approval, or by a batch. */
+    hintHtml?: string;
     mark_value: number;
     part_label: string;
   }[];
@@ -102,9 +104,24 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
     window.history.replaceState(null, '', url.pathname + url.search);
   }, [question.backTo]);
 
+  const [hintProblems, setHintProblems] = useState<{ code: string; hint?: string; problem: string }[]>([]);
+  const [freshHints, setFreshHints] = useState<Record<string, string>>({});
   const act = (fn: (id: string) => Promise<void>) =>
     startTransition(async () => {
       await fn(question.id);
+      router.replace(`/admin/review?from=${question.id}`);
+    });
+  // Approval writes the hints; a refusal names the rows and stays on the card.
+  const approve = () =>
+    startTransition(async () => {
+      const res = await approveQuestion(question.id);
+      if (!res.ok) {
+        setError(res.error);
+        setHintProblems(res.problems);
+        return;
+      }
+      setFreshHints(res.hints);
+      setHintProblems([]);
       router.replace(`/admin/review?from=${question.id}`);
     });
 
@@ -125,7 +142,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
       // page — the search box, a link — must not retire a live question.
       if (!cardRef.current?.contains(document.activeElement)) return;
       // The keys do exactly what the buttons do and nothing more.
-      if ((e.key === 'a' || e.key === 'A') && question.status === 'draft') act(approveQuestion);
+      if ((e.key === 'a' || e.key === 'A') && question.status === 'draft') approve();
       if ((e.key === 'r' || e.key === 'R') && question.status !== 'retired') retire();
       if (e.key === 'e' || e.key === 'E') {
         setEditing(true);
@@ -358,11 +375,25 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
           <div className="section-label">Rubric</div>
           <ul className="mt-1 space-y-1">
             {question.rubric.map((r) => (
-              <li key={r.code} className="flex items-baseline gap-2 text-sm">
-                <Chip profile={r.profile} code={r.code} />
-                <span className="font-mono text-[10px] text-dim">({r.part_label})</span>
-                <span dangerouslySetInnerHTML={{ __html: r.criterionHtml }} />
-                <span className="ml-auto font-mono text-xs text-dim">{r.mark_value}</span>
+              <li key={r.code} className="text-sm">
+                <div className="flex items-baseline gap-2">
+                  <Chip profile={r.profile} code={r.code} />
+                  <span className="font-mono text-[10px] text-dim">({r.part_label})</span>
+                  <span dangerouslySetInnerHTML={{ __html: r.criterionHtml }} />
+                  <span className="ml-auto font-mono text-xs text-dim">{r.mark_value}</span>
+                </div>
+                {/* Beneath the criterion: the hint a student is told, once it exists. */}
+                {(r.hintHtml || freshHints[r.code]) && (
+                  <div className="ml-6 mt-0.5 text-[12px] text-dim">
+                    <span className="font-mono text-[10px] uppercase tracking-widest">hint </span>
+                    {freshHints[r.code] ?? <span dangerouslySetInnerHTML={{ __html: r.hintHtml! }} />}
+                  </div>
+                )}
+                {hintProblems.filter((p) => p.code === r.code).map((p, i) => (
+                  <div key={i} className="ml-6 mt-0.5 border-l-3 border-red-pen bg-[#FDF1F0] px-2 py-0.5 text-[12px]">
+                    {p.hint ? <>“{p.hint}” — </> : null}{p.problem}
+                  </div>
+                ))}
               </li>
             ))}
           </ul>
@@ -442,7 +473,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
             </button>
           ) : (
             <button
-              onClick={() => act(approveQuestion)}
+              onClick={approve}
               disabled={pending || question.status !== 'draft'}
               className="bg-green-pen px-4 py-2 font-bold text-white shadow-[3px_3px_0_var(--ink)] disabled:opacity-60"
             >

@@ -87,7 +87,7 @@ export default async function ReviewPage({
           statement?: string;
           slots?: { label: string; prompt?: string; answer: string; accept?: string[] }[];
         }[];
-        rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string }[];
+        rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string; hint?: string }[];
         final_answer?: string;
         worked_solution: string;
         misconceptions: { trigger: string; name: string; remediation: string }[];
@@ -183,6 +183,7 @@ export default async function ReviewPage({
           mark_value: r.mark_value,
           part_label: r.part_label ?? 'a',
           criterionHtml: renderMathHtml(r.criterion),
+          hintHtml: r.hint ? renderMathHtml(r.hint) : undefined,
         })),
         finalAnswerHtml: raw.final_answer ? renderAnswerHtml(raw.final_answer) : undefined,
         solutionHtml: renderMathHtml(raw.worked_solution),
