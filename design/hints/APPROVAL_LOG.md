@@ -2743,3 +2743,508 @@ Approved by David on 2026-09-05: all 500 rows. Row 185 set to his sentence.
 | 498 | c0bed3 | R2 | Applies "their" percentage as a proportion of 240 sweets | Find the number of ginger-flavoured sweets by taking your percentage of the total number of sweets. |
 | 499 | c0bed3 | AK4 | Divides "their" number of plain sweets by 5 | Divide your number of plain sweets by the number that goes into each bag. |
 | 500 | c0bed3 | R3 | Compares "their" required number of bags with 30 and concludes that the bags are sufficient | Compare your required number of bags with the available bags and state whether there are enough. |
+
+## Batch 7 — proposed (500 rows, gpt-5.6-terra, 2026-09-05)
+
+| # | question | code | criterion | hint |
+|---|---|---|---|---|
+| 1 | 037c95 | CK1 | Writes $0.375$ as $\dfrac{375}{1000}$ | Multiply the decimal by $1000$ for the numerator and write the fraction as $\dfrac{\text{numerator}}{1000}$. |
+| 2 | 037c95 | AK1 | Reduces $\dfrac{375}{1000}$ to an equivalent fraction | Cancel common factors from $\dfrac{\text{numerator}}{\text{denominator}}$ to make an equivalent fraction. |
+| 3 | 037c95 | R1 | Expresses the fraction in lowest terms | Continue cancelling common factors until your numerator and denominator have no common factor greater than $1$. |
+| 4 | 037c95 | CK2 | Selects $\dfrac{3}{8}$ of 200 to represent the morning sales | Represent the morning sales by multiplying the simplified fraction by $200$, written as $\dfrac{\text{numerator}}{\text{denominator}}\times200$. |
+| 5 | 037c95 | AK2 | Calculates $\dfrac{3}{8}\times 200=75$ | Simplify and multiply $\dfrac{\text{your numerator}}{\text{your denominator}}\times200$ to calculate the morning-sales total. |
+| 6 | 037c95 | CK3 | Converts $40\%$ to $0.4$ | Divide the given $40\%$ by $100$ to write the afternoon rate as a decimal. |
+| 7 | 037c95 | AK3 | Calculates $0.4\times(200-\text{their morning sales})$ to obtain 50 | Calculate $\text{your afternoon decimal}\times(200-\text{your morning-sales total})$ to find the afternoon-sales total. |
+| 8 | 037c95 | R2 | Finds the number remaining by subtracting both "their" sales totals from 200 | Subtract both your sales totals from $200$ to find the number of mangoes left. |
+| 9 | 037c95 | R3 | Uses the original total of 200 as the whole when forming the percentage | Use the original $200$ as the whole, so place it as the denominator when you form the percentage. |
+| 10 | 037c95 | AK4 | Calculates $\dfrac{\text{their remaining mangoes}}{200}\times100$ to obtain $37.5\%$ | Calculate $\dfrac{\text{your remaining mangoes}}{200}\times100$ and express the result using $\%$. |
+| 11 | c0bedb | AK1 | Evaluates $5 \diamond 4$ as $2(5)+3(4)$ and obtains 22 | Evaluate $5 \diamond 4$ by multiplying each input by its stated coefficient and adding the results. |
+| 12 | c0bedb | CK1 | Recognises that the rating of batch C is "their" batch A rating plus 4 | Add 4 to your batch A rating to find the rating of batch C. |
+| 13 | c0bedb | CK2 | Forms $2x+3(4) = 26$ | Translate the operation rule and the rating of batch C into an equation in $x$. |
+| 14 | c0bedb | AK2 | Solves the equation to obtain $x=7$ | Rearrange your equation step by step until $x$ is alone. |
+| 15 | c0bedb | CK3 | Uses 4 as the first input and "their" value of $x$ as the second input | Use 4 as the first input and your value of $x$ as the second input in $4 \diamond x$. |
+| 16 | c0bedb | AK3 | Substitutes correctly to obtain $2(4)+3(7)$ | Substitute the first input and your value of $x$ into the operation rule before simplifying. |
+| 17 | c0bedb | AK4 | Simplifies to show that the result is 29 | Simplify the multiplication and addition in your expression to get one result. |
+| 18 | c0bedb | R1 | Compares $x \diamond 4$ with $4 \diamond x$ using "their" values | Calculate $x \diamond 4$ and $4 \diamond x$ using your values, then compare the two results. |
+| 19 | c0bedb | R2 | Establishes that the two results are different | Check whether the two results you obtain are equal or different. |
+| 20 | c0bedb | R3 | Concludes that $\diamond$ is not commutative | Use your comparison to state whether $\diamond$ is commutative. |
+| 21 | 037c9d | CK1 | Recognises that the entries for Round 1 are substituted as $2 \diamond 3$ | Substitute the Round 1 entries as $2 \diamond 3$. |
+| 22 | 037c9d | AK1 | Evaluates $2(2)+3$ to obtain $7$ | Evaluate $2(2)+3$ by multiplying before adding. |
+| 23 | 037c9d | CK2 | Uses "their" Round 1 code as the first entry for Round 2 | Use your Round 1 code as the first entry for Round 2. |
+| 24 | 037c9d | AK2 | Applies the operation as $2(\text{their }7)+4$ | Apply the operation to your Round 1 code and the second Round 2 entry as $2(\text{your Round 1 code})+4$. |
+| 25 | 037c9d | R1 | Shows that the Round 2 code is $18$ | State the Round 2 code you calculate. |
+| 26 | 037c9d | CK3 | Recognises that the Round 2 code is the first entry for Round 3 | Use the Round 2 code as the first entry for Round 3. |
+| 27 | 037c9d | R2 | Forms $2(18)+n=40$, or equivalent using "their" Round 2 code | Form an equation by substituting your Round 2 code into $2(\text{your Round 2 code})+n=40$. |
+| 28 | 037c9d | AK3 | Solves "their" equation for $n$ | Solve your equation by isolating $n$. |
+| 29 | c0bee3 | CK1 | Identifies the comparison rectangle as $8\text{ m}$ by $4\text{ m}$ | Read the labelled length and width of the comparison rectangle from the diagram and record both in $\text{m}$. |
+| 30 | c0bee3 | AK1 | Calculates the area of the rectangle as $32\text{ m}^2$ | Multiply the rectangle's length by its width to calculate its area in $\text{m}^2$. |
+| 31 | c0bee3 | AK2 | Multiplies "their" estimated area by 20 | Multiply your estimated shaded area by 20 to find the savings. |
+| 32 | c0bee3 | CK2 | Uses "their" savings as the principal | Use your savings as the principal amount in the compound-interest calculation. |
+| 33 | c0bee3 | CK3 | Uses $0.05$ as the annual rate and 2 as the number of periods | Use the annual rate and number of periods stated in the information when you apply compound interest. |
+| 34 | c0beeb | AK3 | Lists all negative factors corresponding to the positive factors | Write the negative partner of every positive factor by placing a minus sign before each one. |
+| 35 | c0beeb | R1 | Uses "their" positive factors and applies the condition more than 4 | Use your positive factors and keep only those that satisfy the stated greater-than condition. |
+| 36 | c0beeb | R2 | Selects the only "their" factor fewer than 10, giving 6 | From your remaining factors, select the only one that also satisfies the stated upper-limit condition. |
+| 37 | c0beeb | AK4 | Generates successive positive multiples of "their" carton size | Starting with your carton size, repeatedly add that same size to generate successive positive multiples. |
+| 38 | c0beeb | R3 | Stops the list at the greatest multiple not exceeding 30 | Stop when the next multiple would exceed the stated maximum. |
+| 39 | c0bef3 | AK1 | Halves the diameter to obtain the radius | Divide the diameter by two to find the radius. |
+| 40 | c0bef3 | CK1 | Recognises that the patio consists of a rectangle and a semicircle | Split the patio into a rectangle and a semicircle before calculating its area. |
+| 41 | c0bef3 | CK2 | Selects half the area of a circle for the semicircular end | Use half of the circle-area formula for the semicircular end. |
+| 42 | c0bef3 | AK2 | Calculates the rectangular area as $112\text{ m}^2$ | Multiply the rectangle's length by its width and give the area in $\text{ m}^2$. |
+| 43 | c0bef3 | AK3 | Substitutes "their" radius to calculate the semicircular area as $77\text{ m}^2$ | Substitute your radius into half the circle-area formula and give the semicircular area in $\text{ m}^2$. |
+| 44 | c0bef3 | R1 | Combines the two component areas to establish $189\text{ m}^2$ | Add the rectangle area and the semicircle area to find the total patio area in $\text{ m}^2$. |
+| 45 | c0bef3 | CK3 | Recognises that the area of one slab is found from length multiplied by width | Find the area of one slab by multiplying its length by its width. |
+| 46 | c0bef3 | AK4 | Divides "their" patio area by "their" area of one slab to obtain $126$ | Divide your patio area by your area of one slab to find how many slabs you need. |
+| 47 | c0bef3 | R2 | Divides "their" number of slabs by $10$ to obtain $12.6$ packs | Divide your number of slabs by $10$ to find how many packs are needed. |
+| 48 | c0bef3 | R3 | Rounds up to the next whole pack because part of a pack cannot be bought | Round the number of packs up to the next whole pack because you cannot buy part of a pack. |
+| 49 | 037caf | CK2 | Selects the area of a circle and recognises that the required region is a semicircle | Choose the circle-area formula, then take half of it because the region is a semicircle. |
+| 50 | 037caf | AK1 | Substitutes "their" radius into $\frac12\pi r^2$ | Substitute your earlier radius into $\frac12\pi r^2$ before calculating. |
+| 51 | 037caf | AK2 | Simplifies to $24.5\pi\text{ m}^2$ | Simplify the numerical coefficient, keep $\pi$, and include the square-metre unit $\text{ m}^2$. |
+| 52 | 037caf | CK3 | Recognises that the areas of the rectangle and semicircle are added | Add the rectangle’s area to the semicircle’s area because both regions are included. |
+| 53 | 037caf | AK3 | Obtains $140+24.5\pi$ from $14\times10+$ "their" semicircle area | Multiply the rectangle’s length by its width, then add your earlier semicircle area. |
+| 54 | 037caf | R1 | Expresses "their" area in exact form | Leave your area in an exact form by keeping $\pi$ instead of converting it to a decimal. |
+| 55 | 037caf | R2 | Uses the area of 3 beds and divides by the coverage of one bag | Find the total area for all the beds, then divide by the area one bag covers. |
+| 56 | 037caf | AK4 | Evaluates $3\times$ "their" area $\div25$ | Calculate the area for the number of beds using $n\times$ your earlier area, then divide by the coverage of one bag. |
+| 57 | c0befb | CK3 | Recognises that Figure 5 has 3 more dots than "their" Figure 4 | Compare the next figure with your Figure 4 total and identify the constant increase in dots. |
+| 58 | c0befb | AK2 | Adds 3 to "their" Figure 4 total to obtain 16 | Add the pattern’s constant increase to your Figure 4 total. |
+| 59 | c0befb | R2 | Uses "their" Figure 5 total as the starting value for the next figure | Start the next calculation with your Figure 5 total. |
+| 60 | c0befb | AK3 | Adds 3 to "their" Figure 5 total | Add the same constant increase to your Figure 5 total. |
+| 61 | 037cb7 | CK2 | Uses $n=4$ for Figure 4 | Use $n=4$ for Figure 4. |
+| 62 | 037cb7 | R1 | Reads $P=16$ from their graph at $n=4$ | Read the value of $P$ from your graph where $n=4$. |
+| 63 | 037cb7 | AK3 | Substitutes $n=3$ to obtain $P=9$ | Substitute $n=3$ into $P=n^2$ and calculate $P$. |
+| 64 | 037cb7 | R2 | Adds $9$ to "their" Figure 4 value | Add the Figure 3 value to your Figure 4 value. |
+| 65 | 037cb7 | CK3 | Recognises that the dots left are found by subtracting the number used from 30 | Find the dots left by subtracting the number used from $30$. |
+| 66 | 037cb7 | AK4 | Subtracts "their" total from 30, giving 5 | Subtract your total from $30$. |
+| 67 | c0bf03 | CK2 | Identifies gradient as rise divided by run | Calculate the gradient by dividing the vertical rise by the horizontal run between two points on the line. |
+| 68 | c0bf03 | CK3 | Recognises that solutions of the pair are common points of the two graphs | Find the points where the two graphs cross, since these common points give the solutions. |
+| 69 | c0bf03 | AK4 | Reads the intersection coordinates as $(2,-1)$ and $(3,0)$ | Read the $x$- and $y$-coordinates of each intersection directly from the graph. |
+| 70 | c0bf03 | R3 | States both ordered-pair solutions | State both solutions as ordered pairs using the intersection coordinates you read. |
+| 71 | c0bf0b | CK1 | Identifies that the underlined digit is in the eights place. | Locate the underlined digit by counting place values from the right and identify it as the eights place. |
+| 72 | c0bf0b | AK1 | Calculates $3\times8=24$. | Multiply the digit by its place value using $3\times8$. |
+| 73 | c0bf0b | AK2 | Expresses $24$ as $2^3\times3$. | Break $24$ into prime factors and use powers and multiplication, as in $2^n\times p$. |
+| 74 | c0bf0b | AK3 | Expresses $36$ as $2^2\times3^2$. | Break $36$ into prime factors and use powers and multiplication, as in $2^n\times p$. |
+| 75 | c0bf0b | CK2 | Identifies the common prime factors as $2^2\times3$. | Compare the prime factorisations and keep each shared prime with the smaller power to get the common factors as $2^2\times3$. |
+| 76 | c0bf0b | CK3 | Selects the relationship $\operatorname{LCM}\times\operatorname{HCF}=24\times36$. | Use the relationship $\operatorname{LCM}\times\operatorname{HCF}=24\times36$ to connect the two numbers with the H.C.F. and L.C.M. |
+| 77 | c0bf0b | AK4 | Substitutes $12$ and calculates $\frac{24\times36}{12}=72$. | Substitute the H.C.F. into $\frac{24\times36}{\text{HCF}}$ and calculate the quotient. |
+| 78 | c0bf0b | R1 | Concludes that the common flashing interval is 72 seconds. | State that the lamps flash together once every L.C.M. seconds. |
+| 79 | c0bf0b | AK5 | Converts 5 minutes to 300 seconds. | Convert the five-minute gap into seconds before comparing it with the flashing intervals. |
+| 80 | c0bf0b | R2 | Uses 4 complete intervals of "their" common flashing interval to obtain 288 seconds. | Multiply 4 by your common flashing interval and express the elapsed time in seconds. |
+| 81 | c0bf0b | R3 | Shows that a fifth interval of "their" common flashing interval exceeds 300 seconds. | Multiply 5 by your common flashing interval and check that it is greater than the departure gap in seconds. |
+| 82 | c0bf0b | R4 | Adds 4 minutes 48 seconds to 06:45:00 to obtain 06:49:48. | Add the elapsed four-interval time, converted to minutes and seconds, to 06:45:00 and write the resulting clock time. |
+| 83 | c0bf13 | CK1 | States determinant as $3(1)-1(2)$ | Calculate the determinant as $3(1)-1(2)$. |
+| 84 | c0bf13 | CK2 | Forms the adjoint $\begin{pmatrix}1 & -1 \\ -2 & 3\end{pmatrix}$ | Form the adjoint by swapping the diagonal entries and changing the signs of the off-diagonal entries in a $\begin{pmatrix}\cdot & \cdot \\ \cdot & \cdot\end{pmatrix}$. |
+| 85 | c0bf13 | R1 | Uses "their" non-zero determinant to establish that the inverse exists | Use your non-zero determinant to state that the inverse exists. |
+| 86 | c0bf13 | CK3 | Uses $A^{-1}=\dfrac{1}{\det(A)}\operatorname{adj}(A)$ | Use $A^{-1}=\dfrac{1}{\det(A)}\operatorname{adj}(A)$ to set up the inverse. |
+| 87 | c0bf13 | AK2 | Substitutes "their" determinant to obtain the stated inverse | Substitute your determinant into the inverse formula and simplify to obtain your inverse matrix. |
+| 88 | c0bf13 | R2 | Applies "their" inverse matrix to the order-total vector | Multiply your inverse matrix by the order-total vector. |
+| 89 | c0bf13 | AK3 | Calculates the standard-carton entry using "their" inverse | Calculate the standard-carton entry from the first row of your inverse-matrix multiplication. |
+| 90 | c0bf13 | AK4 | Calculates the deluxe-carton entry using "their" inverse | Calculate the deluxe-carton entry from the second row of your inverse-matrix multiplication. |
+| 91 | c0bf13 | R3 | Concludes that "their" carton numbers allow exact packing because both are positive whole numbers | Conclude that your carton numbers allow exact packing by checking that both are positive whole numbers. |
+| 92 | 037cc4 | CK1 | Recognises $6$ as a common factor of both $18$ and $24$ | List the factors of both numbers and identify a factor that appears in both lists. |
+| 93 | 037cc4 | AK3 | Divides $18$ and $24$ by "their" bundle size | Divide each packet total by your bundle size to find how many bundles each type makes. |
+| 94 | 037cc4 | CK2 | Identifies "their" L.C.M. as the time until the alerts next sound together | Use your L.C.M. as the waiting time until both alerts sound together again. |
+| 95 | 037cc4 | AK5 | Converts "their" number of minutes to hours and minutes | Convert your number of minutes into whole hours and remaining minutes. |
+| 96 | 037cc4 | R1 | Adds "their" elapsed time correctly to $08{:}00$ | Add your elapsed time to $08{:}00$ carefully, carrying into the next hour when needed. |
+| 97 | 037cc4 | R2 | Establishes that the next joint alert is at $09{:}12$ | State the clock time you obtain for the next joint alert. |
+| 98 | 037cc4 | CK3 | States the value of the underlined units digit as $3$ | Read the underlined units digit and state its value. |
+| 99 | 037cc4 | R3 | Interprets $1\underline{3}_4$ as $4+3$ | Interpret $1\underline{\phantom{0}}_4$ by multiplying the leading digit by the base and then adding the units digit. |
+| 100 | 037cc4 | R4 | Compares the base-four value with "their" total number of bundles and gives a supported verdict | Compare your base-four value with your total number of bundles and give a verdict supported by the comparison. |
+| 101 | 037ccc | R2 | Reads the gradient of the line as $2$ | Read the rise over run from the line to find the gradient, $2$. |
+| 102 | 037ccc | CK2 | Recognises that the equation of a straight line has the form $y = mx + c$ | Use the straight-line equation form $y = mx + c$. |
+| 103 | 037ccc | AK3 | Substitutes "their" gradient and "their" intercept to obtain the equation | Substitute your gradient and your intercept into $y = mx + c$ to form the equation. |
+| 104 | 037ccc | R3 | Expresses "their" equation in the form $y = mx + c$ | Write your equation in the form $y = mx + c$. |
+| 105 | 037ccc | CK3 | Recognises that $gf(x) = g(f(x))$ | Interpret $gf(x) = g(f(x))$ by applying $f$ first and then $g$. |
+| 106 | c0bf2a | CK1 | Forms $(x+3)(x+4)$ from the rows and rolls in each row | Form $(x+3)(x+4)$ by multiplying the number of rows by the number of rolls in each row. |
+| 107 | c0bf2a | AK1 | Expands to give $x^2+7x+12$ | Expand the two brackets for one tray and combine terms with the same power of $x$. |
+| 108 | c0bf2a | CK2 | Uses 3 times "their" expression for one tray | Represent the rolls in three trays by multiplying your one-tray expression by 3. |
+| 109 | c0bf2a | AK2 | Distributes 3 across "their" expression | Distribute 3 to every term in your one-tray expression. |
+| 110 | c0bf2a | R1 | Collects like terms to obtain "their" total for 3 trays | Collect terms with the same power of $x$ to write your total number of rolls for three trays. |
+| 111 | c0bf2a | CK3 | Forms revenue as $(x+2)$ multiplied by "their" total number of rolls | Form the revenue by multiplying $(x+2)$ by your total number of rolls. |
+| 112 | c0bf2a | AK3 | Applies the distributive law to expand $(x+2)$ by "their" total | Use the distributive law to multiply $(x+2)$ by every term in your total number of rolls. |
+| 113 | c0bf2a | R2 | Collects like terms in "their" expanded revenue expression | Collect like terms in your expanded revenue expression. |
+| 114 | c0bf2a | R3 | States the fully expanded revenue expression | State your revenue expression as one fully expanded polynomial in descending powers of $x$. |
+| 115 | 037cde | CK1 | Represents the buns on four racks as $4(x + 3)$ | Write four lots of the buns on one rack as $4(x + 3)$. |
+| 116 | 037cde | R1 | Forms $3($"their" total for one group$)$ | Put your total for one group in brackets and multiply it by 3. |
+| 117 | 037cde | CK2 | Recognises that the factor 3 applies to both terms in $3($"their" expression$)$ | Multiply every term inside your brackets by 3. |
+| 118 | 037cde | AK2 | Obtains a simplified expression from $3($"their" expression$)$ | Expand your bracketed expression and collect like terms. |
+| 119 | 037cde | R2 | Shows $12x + 36$ when using the correct total from part (a) | Use the correct total from part (a), multiply it by 3, and simplify. |
+| 120 | 037cde | R3 | Subtracts 12 from the stated total to obtain $12x + 24$ | Subtract 12 from the stated total, then simplify. |
+| 121 | 037cde | CK3 | Identifies 12 as the common factor of $12x + 24$ | Find the greatest common factor shared by both terms and factorise it. |
+| 122 | c0bf32 | CK1 | Selects the sector fraction $\frac{90}{360}$ of the area of a circle | Use the sector fraction $\frac{90}{360}$ of the circle’s area. |
+| 123 | c0bf32 | AK1 | Substitutes $r=7$ and $\pi=\frac{22}{7}$ into the sector-area calculation | Substitute $r=7$ and $\pi=\frac{22}{7}$ into the sector-area calculation. |
+| 124 | c0bf32 | R1 | Uses \$10 per square metre with "their" area | Multiply your area by \$10 per square metre. |
+| 125 | c0bf32 | CK2 | Identifies depreciation as the decrease expressed as a percentage of the original value | Find the decrease from the original value, then express that decrease as a percentage of the original value. |
+| 126 | c0bf32 | R2 | Forms $\frac{\text{their new value}-308}{\text{their new value}}\times100$ | Form $\frac{\text{your new value}-308}{\text{your new value}}\times100$. |
+| 127 | c0bf32 | CK3 | Selects the multiplier $1-\text{their depreciation rate}$ | Use the multiplier $1-\text{your depreciation rate}$. |
+| 128 | 037ce6 | CK1 | Selects the sector area calculation using $\frac{180}{360}\pi r^2$ | Calculate the sector area using $\frac{180}{360}\pi r^2$. |
+| 129 | 037ce6 | AK2 | Multiplies "their" area by 15 to obtain 1155 | Multiply your area by 15 to find your current quotation. |
+| 130 | 037ce6 | CK2 | Recognises that the depreciated quotation is $70\%$ of the original quotation | Treat the depreciated quotation as $70\%$ of the original quotation. |
+| 131 | 037ce6 | R1 | Forms $0.70P = 1155$, using "their" current quotation | Form $0.70P = \text{your current quotation}$. |
+| 132 | 037ce6 | AK3 | Divides "their" current quotation by 0.70 | Divide your current quotation by $0.70$ to find the original quotation. |
+| 133 | 037ce6 | CK3 | Uses "their" current quotation as the base amount for the appreciation percentage | Use your current quotation as the base amount when finding the appreciation percentage. |
+| 134 | 037ce6 | R2 | Calculates $\frac{\text{their original quotation} - \text{their current quotation}}{\text{their current quotation}} \times 100$ | Calculate $\frac{\text{your original quotation} - \text{your current quotation}}{\text{your current quotation}} \times 100$. |
+| 135 | 037ce6 | R3 | Expresses "their" percentage correct to 1 decimal place | Write your percentage correct to 1 decimal place. |
+| 136 | c0bf3a | CK1 | Selects the triangle-area formula using two sides and the included angle | Use the triangle area formula with two sides and the included angle, $A=\frac{1}{2}ab\sin C$. |
+| 137 | c0bf3a | AK1 | Substitutes $12$, $10$ and $60°$ correctly | Substitute the two given side lengths and the included angle into $A=\frac{1}{2}ab\sin C$ correctly. |
+| 138 | c0bf3a | AK2 | Evaluates $\frac{1}{2}(12)(10)\sin 60°$ to obtain $30\sqrt{3}$ | Evaluate $\frac{1}{2}(12)(10)\sin 60°$ exactly, using $\sin 60°=\frac{\sqrt{3}}{2}$. |
+| 139 | c0bf3a | R1 | Expresses the area in exact form | Write your area in exact form using $\sqrt{3}$ instead of a decimal. |
+| 140 | c0bf3a | CK2 | Recognises that three identical awnings have three times the area of one awning | Multiply the area of one awning by the number of identical awnings. |
+| 141 | c0bf3a | AK3 | Multiplies "their" area of one awning by $3$ | Multiply your area for one awning by $3$. |
+| 142 | c0bf3a | R2 | Links "their" product to the total canvas area for three awnings | State that your product represents the total canvas area for the three awnings. |
+| 143 | c0bf3a | CK3 | Recognises that the fourth awning has the same area as each of the first three | Use the fact that the fourth awning is identical to the first three, so it has the same area. |
+| 144 | c0bf3a | AK4 | Adds "their" area for three awnings to "their" area for one awning | Add your area for three awnings to your area for one awning. |
+| 145 | c0bf3a | R3 | Uses "their" earlier areas to determine the canvas required for all four awnings | Use your earlier areas to state the total canvas required for all four awnings. |
+| 146 | 037cf3 | CK2 | Selects the area relationship for two sides and their included angle. | Use the triangle-area formula $\frac12 ab\sin C$ for two sides and the included angle. |
+| 147 | 037cf3 | R2 | Identifies from 'their' image that $A'B'=A'C'=3$ and $\angle B'A'C'=90°$. | Measure your image and identify the two equal sides and the included angle at $A'$. |
+| 148 | 037cf3 | AK2 | Substitutes 'their' lengths and included angle into $\frac12 ab\sin C$. | Substitute your two side lengths and your included angle into $\frac12 ab\sin C$ before simplifying. |
+| 149 | 037cf3 | CK3 | Recognises that the segment area is the sector area minus the area of triangle $A'B'C'$. | Find the segment area by subtracting the area of triangle $A'B'C'$ from the sector area. |
+| 150 | 037cf3 | AK4 | Calculates the $90°$ sector area as $\frac{90}{360}\pi(3)^2=\frac{9\pi}{4}$. | Calculate the sector area as the fraction of the full circle, using $\frac{\theta}{360}\pi r^2$. |
+| 151 | 037cf3 | AK5 | Subtracts 'their' triangle area from $\frac{9\pi}{4}$ to obtain $\frac{9}{4}(\pi-2)$. | Subtract your triangle area from the sector area and simplify the exact result using $\pi$ and a $\frac{}{}$ coefficient. |
+| 152 | 037cf3 | R3 | Compares the original area of $18$ square units with 'their' image area. | Compare the original pennant area with your image area by dividing one area by the other. |
+| 153 | 037cf3 | R4 | Justifies that scale factor $\frac12$ gives area scale factor $\frac14$. | Justify the area scale factor by squaring the linear scale factor, using $\left(\frac12\right)^2$. |
+| 154 | 037cfb | CK3 | Recognises that the class frequencies must be added to obtain the total number weighed | Add the frequencies of all the histogram bars to find the total number weighed. |
+| 155 | 037cfb | AK1 | Adds the frequencies to obtain $40$ | Add each class frequency carefully to obtain the total. |
+| 156 | 037cfb | AK2 | Forms cumulative frequencies $4$, $12$, $26$, $35$, $40$ | Create cumulative frequencies by successively adding each frequency to the running total. |
+| 157 | 037cfb | R1 | Uses the 20th and 21st values from "their" total to identify the interval containing the median | Use the two middle positions from your total and locate the class interval containing both. |
+| 158 | 037cfb | R2 | Selects $400$, $12$, $14$ and $100$ from "their" median interval and the histogram | Read the lower class boundary, preceding cumulative frequency, class frequency, and class width from your median interval and the histogram. |
+| 159 | 037cfb | AK3 | Substitutes correctly in $400+\frac{20-12}{14}\times100$ | Substitute the values you selected into the interpolation structure $L+\frac{p-C}{f}\times w$. |
+| 160 | 037cfb | AK4 | Evaluates the estimate as $457.142\ldots$ | Evaluate your interpolation expression accurately, keeping any continuing decimal shown by $\ldots$. |
+| 161 | 037cfb | R3 | Expresses "their" estimate to 1 decimal place | Round your estimate to 1 decimal place. |
+| 162 | 037d03 | CK2 | Recognises that reflection in $y=x$ interchanges the coordinates | Swap the $x$- and $y$-coordinates of every point when you reflect it in $y=x$. |
+| 163 | 037d03 | R2 | Forms the reflection matrix with columns $(0,1)$ and $(1,0)$ | Use the transformed coordinate unit vectors as the columns of your reflection matrix $\begin{pmatrix}a&b\\c&d\end{pmatrix}$. |
+| 164 | 037d03 | R3 | Uses the reflection matrix on the left of "their" rotation matrix | Put your reflection matrix on the left of your rotation matrix before you multiply them. |
+| 165 | 037d03 | AK2 | Writes the matrix for a $90°$ anticlockwise rotation as $\begin{pmatrix}0&-1\\1&0\end{pmatrix}$ | Write the standard anticlockwise $90°$ rotation matrix in the form $\begin{pmatrix}a&b\\c&d\end{pmatrix}$, checking where each coordinate moves. |
+| 166 | 037d03 | AK3 | Multiplies the matrices correctly using "their" matrix from part (b) | Multiply your matrix from part (b) by your rotation matrix row by column, using your own earlier matrix even if you need to correct it. |
+| 167 | 037d0b | R2 | Uses the common point of the two graphs to solve the pair of equations | Read the coordinates where the two lines intersect and use that ordered pair to solve both equations. |
+| 168 | 037d0b | CK1 | Selects the coordinate differences to determine the length $AP$ | Subtract the x-coordinates and the y-coordinates of A and P, then use these differences in the distance formula. |
+| 169 | 037d0b | CK2 | Recognises that midpoint coordinates are found by averaging corresponding coordinates | Add the two x-coordinates and divide by two, then do the same with the two y-coordinates to find the midpoint. |
+| 170 | 037d0b | CK3 | States that parallel lines have equal gradients | Use the fact that parallel lines have the same gradient. |
+| 171 | 037d0b | R4 | Forms an equation with gradient $-\frac{1}{2}$ through "their" midpoint, giving $y=-\frac{1}{2}x+\frac{7}{2}$ | Use your midpoint in $y-y_1=-\frac{1}{2}(x-x_1)$, then rearrange into $y=mx+c$. |
+| 172 | c0bf51 | R1 | Reads the intersection of the two graphs as $(-1,-1)$ | Find where the two plotted lines cross and read the coordinates of that point from the grid. |
+| 173 | c0bf51 | CK2 | Identifies the reference test point as $(-3,-5)$ and uses "their" intersection point | Substitute the given test input into the original rule to locate the reference point, then use your intersection point. |
+| 174 | c0bf51 | R3 | Determines the perpendicular gradient as the negative reciprocal of the gradient of the original segment | Calculate the gradient of the original segment, then take its negative reciprocal for the perpendicular gradient. |
+| 175 | c0bf51 | AK5 | Uses "their" midpoint and "their" length on the perpendicular line to obtain the two grid-point endpoints | Starting from your midpoint, move along the perpendicular line by half of your length in opposite directions to locate both grid-point endpoints. |
+| 176 | 037d13 | CK2 | Factorizes the numerator as $(n+1)(n+4)$ | Factor the numerator into two binomials and check by expanding your factors. |
+| 177 | 037d13 | AK2 | Writes the fraction as $\dfrac{(n+1)(n+4)}{n+1}$ | Rewrite the fraction as $\dfrac{(n+1)(n+4)}{n+1}$ after factorizing the numerator. |
+| 178 | 037d13 | AK3 | Cancels the common factor and obtains $n+4$ | Cancel the common factor in the numerator and denominator, then simplify the expression. |
+| 179 | 037d13 | R2 | Forms $n+4=8$ using "their" simplified expression | Set your simplified expression equal to the supervisor’s stated number of dots. |
+| 180 | 037d13 | R3 | Solves to obtain figure number $4$ | Solve the equation to identify the figure number. |
+| 181 | 037d13 | CK3 | Substitutes "their" figure number into the original expression | Substitute your figure number into the original fraction, not the simplified expression. |
+| 182 | 037d13 | AK4 | Evaluates "their" fraction correctly | Evaluate your fraction carefully by completing the numerator calculation and then dividing by the denominator. |
+| 183 | c0bf59 | CK3 | Recognises $17x+17$ as $17(x+1)$. | Rewrite the numerator as the common factor multiplied by $(x+1)$. |
+| 184 | c0bf59 | AK2 | Cancels the common factor 17. | Cancel the identical factor in the numerator and denominator to simplify the fraction. |
+| 185 | c0bf59 | R2 | Equates "their" simplified average to 5. | Set your simplified average equal to $5$. |
+| 186 | c0bf59 | AK4 | Solves "their" equation for $x$. | Rearrange your equation to isolate $x$. |
+| 187 | c0bf61 | R2 | Uses $x=2$ to locate the appropriate point on "their" graph | Use $x=2$ to locate the corresponding point on your graph. |
+| 188 | c0bf61 | AK2 | Reads ordinate $24$ from "their" graph | Read the ordinate of that point from your graph. |
+| 189 | c0bf61 | CK2 | States the surface area in cm$^2$ | State the surface area with units of cm$^2$. |
+| 190 | c0bf61 | CK3 | Recognises that the 4 containers have equal surface areas | Recognise that all four containers have equal surface areas. |
+| 191 | c0bf61 | AK3 | Calculates $4\times$ "their" surface area of one container | Calculate the total surface area by doing $4\times$ your surface area for one container. |
+| 192 | 037d20 | CK2 | Identifies the horizontal level $A = 24$ on the graph | Locate the horizontal level stated for $A$ on the graph before reading across. |
+| 193 | 037d20 | CK3 | Recognises that a box with no lid has five square faces | Count the square faces that remain when the box has no lid. |
+| 194 | 037d20 | R3 | Uses "their" edge length from part (b) | Use your edge length from part (b) in the calculation for the metal area. |
+| 195 | 037d20 | AK2 | Forms $5 \times (\text{their } x)^2$ | Form $5 \times (\text{your } x)^2$ using your edge length. |
+| 196 | c0bf69 | CK1 | Selects the rate for buying local dollars | Select the rate the bureau uses when it buys local dollars. |
+| 197 | c0bf69 | CK2 | Identifies the service charge as 2% of "their" local-dollar amount | Identify the service charge as 2% of your local-dollar amount. |
+| 198 | c0bf69 | AK2 | Calculates 2% of "their" amount | Calculate 2% of your local-dollar amount to find your service charge. |
+| 199 | c0bf69 | R1 | Deducts "their" service charge from "their" local-dollar amount to establish \$441 | Subtract your service charge from your local-dollar amount to find your post-charge amount. |
+| 200 | c0bf69 | CK3 | Recognises that the buying rate of \$2.40 per US dollar requires division to convert local dollars to US dollars | Divide by the buying rate to convert your local-dollar balance into US dollars. |
+| 201 | c0bf69 | AK3 | Finds the remaining local dollars as "their" \$441 less \$375 | Subtract the attraction cost from your post-charge local-dollar amount to find your remaining balance. |
+| 202 | c0bf69 | AK4 | Divides "their" remaining local dollars by 2.40 | Divide your remaining local-dollar balance by the buying rate. |
+| 203 | c0bf69 | R2 | Uses "their" post-charge amount after deducting the attraction cost before converting the balance | Deduct the attraction cost from your post-charge amount before converting the balance to US dollars. |
+| 204 | c0bf69 | R3 | Concludes that "their" amount received is less than US\$30 | Compare your received US-dollar amount with the stated target and conclude whether it is less. |
+| 205 | 037d3a | CK1 | Identifies the sixth and seventh values as the middle positions | Locate the sixth and seventh entries in the ordered list as the two middle positions. |
+| 206 | 037d3a | CK2 | Separates the data into lower and upper halves using "their" median | Split the ordered data into lower and upper halves using your median. |
+| 207 | 037d3a | CK3 | Identifies a total of 12 deliveries | Count all the deliveries in the table. |
+| 208 | 037d3a | CK4 | Identifies 5 deliveries with mass at least "their" upper quartile | Count the deliveries whose masses are at least your upper quartile. |
+| 209 | 037d3a | AK5 | Forms the proportion $\frac{5}{12}$ | Form the proportion as $\frac{\text{qualifying deliveries}}{\text{total deliveries}}$. |
+| 210 | 037d3a | R1 | Recognises that Kemar's 50% is greater than "their" proportion for Amara | Compare Kemar's $50\%$ with your proportion for Amara and identify which is greater. |
+| 211 | 037d3a | R2 | Compares the standard deviations and identifies $1.4\text{ kg} < 2.0\text{ kg}$ | Compare the standard deviations using $1.4\text{ kg} < 2.0\text{ kg}$. |
+| 212 | 037d3a | R3 | Concludes that Kemar should be chosen using both conditions | Choose Kemar using both the greater proportion and the smaller standard deviation. |
+| 213 | 037d47 | CK1 | Recognises that all five class frequencies are required for the sample total. | Include the frequency from every class when you find the sample total. |
+| 214 | 037d47 | AK1 | Adds the frequencies to obtain $80$. | Add all five class frequencies carefully to find your sample total. |
+| 215 | 037d47 | CK2 | Selects the three classes with mass less than $8$ kg. | Choose all and only the classes whose masses are below $8$ kg. |
+| 216 | 037d47 | AK2 | Adds the selected frequencies to obtain $50$. | Add the frequencies from the three classes you selected for masses below $8$ kg. |
+| 217 | 037d47 | AK3 | Calculates $\frac{50}{\text{their }80}\times100=62.5\%$. | Calculate the percentage using $\frac{\text{your below-$8$ frequency}}{\text{your total}}\times100$. |
+| 218 | 037d47 | R1 | Uses the complement of the small breadfruit, using $100\%-\text{their }62.5\%$ or $\text{their }80-\text{their }50$. | Find the not-small amount by subtracting $\text{your small percentage}$ from $100\%$, or subtract $\text{your small frequency}$ from $\text{your total}$. |
+| 219 | 037d47 | CK3 | Recognises that the class $10\le m<12$ is excluded when considering masses less than $10$ kg. | Leave out the class $10\le m<12$ when you count breadfruit with masses less than $10$ kg. |
+| 220 | 037d47 | R2 | Uses $\text{their }30-15$ to find the $8\le m<10$ group and combines this with their number below $8$ kg to obtain $65$ and $81.25\%$. | Subtract the frequency in the at-least-$10$ kg class from $\text{your not-small total}$ to find the $8\le m<10$ group, combine it with $\text{your below-$8$ total}$, and calculate the $\%$. |
+| 221 | 037d47 | R3 | Compares their percentage with $80\%$ and concludes that the delivery qualifies. | Compare your percentage with $80\%$ and state whether the delivery qualifies. |
+| 222 | c0bf92 | CK1 | Selects the frequencies from all five mass classes. | Add the frequencies from each of the five mass classes to find the total frequency. |
+| 223 | c0bf92 | CK2 | Selects the three classes with masses less than 400 g. | Select only the frequency classes whose masses are below 400 g. |
+| 224 | c0bf92 | AK2 | Finds the frequency below 400 g as 36. | Add the selected frequencies below 400 g. |
+| 225 | c0bf92 | AK3 | Calculates $\frac{36}{\text{their }50}\times100$ to show 72%. | Calculate $\frac{\text{your frequency below 400 g}}{\text{your total frequency}}\times100$. |
+| 226 | c0bf92 | CK3 | Recognises that the 200 ≤ m < 300 class is outside the packing interval. | Exclude the $200 \le m < 300$ class because it is not in the packing interval. |
+| 227 | c0bf92 | R1 | Subtracts 8 from "their" frequency below 400 g to obtain the packing frequency. | Subtract the frequency in the $200 \le m < 300$ class from your frequency below 400 g to find the packing frequency. |
+| 228 | c0bf92 | AK4 | Calculates $\frac{\text{their }28}{\text{their }50}\times100$ to obtain 56%. | Calculate $\frac{\text{your packing frequency}}{\text{your total frequency}}\times100$. |
+| 229 | c0bf92 | R2 | Uses "their" packed percentage and identifies that the 300 ≤ m < 350 class must be removed. | Remove the percentage for the $300 \le m < 350$ class from your packed percentage. |
+| 230 | c0bf9a | AK3 | Calculates $16 \times 7.35$ to obtain \$117.60. | Calculate $16 \times 7.35$ accurately to find the simple interest in \$. |
+| 231 | c0bf9a | CK2 | Selects the simple-interest relationship involving principal, rate and time. | Use the simple-interest relationship $I=Prt$ linking interest, principal, rate and time. |
+| 232 | c0bf9a | AK4 | Substitutes "their" interest, $r=0.049$ and $t=4$, and rearranges to find the principal. | Substitute your interest with $r=0.049$ and $t=4$ into $I=Prt$, then rearrange to find the principal. |
+| 233 | c0bf9a | CK3 | Identifies the amount as principal plus interest. | Add the principal and the interest to find the total amount. |
+| 234 | c0bf9a | R2 | Expresses "their" total amount correct to 3 significant figures. | Round your total amount to 3 significant figures and write it in \$. |
+| 235 | 037d54 | CK3 | Selects $I = A - P$ before determining the rate. | Use $I = A - P$ before you work out the annual rate. |
+| 236 | 037d54 | AK3 | Calculates the interest as \$294. | Calculate the interest by subtracting the principal from the amount. |
+| 237 | 037d54 | AK4 | Substitutes \"their\" principal and \$294 into the simple-interest relationship and obtains $7\%$. | Substitute your principal and the interest into the simple-interest relationship, then solve for the rate as a $\%$. |
+| 238 | 037d54 | R1 | Uses \"their\" principal and rate to calculate the amount after 3 years. | Use your principal and rate in the simple-interest formula to calculate the amount after three years. |
+| 239 | 037d54 | R2 | Expresses \"their\" amount correct to 3 significant figures. | Round your amount to $3$ significant figures. |
+| 240 | c0bfa2 | CK1 | Identifies the like terms in $5x+3(x+4)-2x$ | Identify the terms involving $x$ that can be combined after expanding the bracket in $5x+3(x+4)-2x$. |
+| 241 | c0bfa2 | AK1 | Expands and simplifies to obtain $6x+12$ | Expand the bracket and combine the variable terms and constants into one simplified expression. |
+| 242 | c0bfa2 | CK2 | Applies the quotient law of indices to the powers of 2 and 3 | Use the quotient law of indices by subtracting the denominator exponent from the numerator exponent for each base. |
+| 243 | c0bfa2 | AK2 | Obtains $F=12$ | Evaluate the resulting powers and multiply the factors to find $F$. |
+| 244 | c0bfa2 | R1 | Multiplies 12 by "their" simplified expression for $A$ to show the stated cost expression | Multiply $12$ by your simplified expression for $A$ to form the cost expression. |
+| 245 | c0bfa2 | CK3 | Forms $72x+144\le1008$, using "their" cost expression | Write an inequality that makes your cost expression no greater than the budget. |
+| 246 | c0bfa2 | AK3 | Subtracts 144 from both sides of "their" inequality | Subtract the fixed charge from both sides of your inequality. |
+| 247 | c0bfa2 | AK4 | Divides by 72 to obtain $x\le12$ | Divide both sides by the coefficient of $x$ and keep the inequality direction unchanged. |
+| 248 | c0bfa2 | R2 | States the solution in set-builder notation with the positive whole-number domain | Write your allowed values in set-builder notation using $x\in\mathbb{N}$ and restrict $x$ to positive whole numbers. |
+| 249 | c0bfa2 | AK5 | Calculates the waived-charge cost as $72\times13=936$ | Calculate the waived-charge cost using $72\times13$. |
+| 250 | c0bfa2 | R3 | Compares $936$ with the budget of \$1 008 | Compare your waived-charge cost with the budget of \$1 008. |
+| 251 | c0bfa2 | R4 | Gives a justified conclusion that the special order can be produced | State whether the special order can be produced and justify this using your budget comparison. |
+| 252 | 037d61 | CK1 | Selects $V=\pi r^2h$ for the cylinder | Use the cylinder-volume formula $V=\pi r^2h$. |
+| 253 | 037d61 | AK1 | Substitutes $r=3$ and $h=10$ and obtains $90\pi\text{ cm}^3$ | Substitute $r=3$ and $h=10$ into the cylinder formula, then calculate the volume in $\pi\text{ cm}^3$. |
+| 254 | 037d61 | CK2 | Recognises that the complete mould comprises a cylinder and a hemisphere | Split the complete mould into its cylindrical part and its hemispherical part before finding the total volume. |
+| 255 | 037d61 | CK3 | Selects half the volume of a sphere for the hemisphere | Find the hemisphere volume by taking half of the volume of a sphere with the same radius. |
+| 256 | 037d61 | AK2 | Calculates the hemisphere volume as $18\pi\text{ cm}^3$ | Calculate half the sphere volume and write the result in $\pi\text{ cm}^3$. |
+| 257 | 037d61 | AK3 | Adds $18\pi$ to "their" cylindrical volume to obtain $108\pi\text{ cm}^3$ | Add the hemisphere volume to your cylindrical volume and express the total in $\pi\text{ cm}^3$. |
+| 258 | 037d61 | AK4 | Evaluates "their" complete-mould volume in decimal form | Use a calculator to convert your complete-mould volume from a multiple of $\pi$ into a decimal. |
+| 259 | 037d61 | R1 | Expresses "their" volume correct to $3$ significant figures | Round your decimal volume to $3$ significant figures. |
+| 260 | 037d61 | R2 | Divides "their" volume by $100$ to determine the number of packets | Divide your volume by $100$ to find how many packets are needed. |
+| 261 | 037d61 | R3 | Rounds up to whole packets, giving $4$ packets | Round the packet calculation up to the next whole packet, because you cannot buy part of a packet. |
+| 262 | c0bfaa | CK2 | Selects the volume formula for the cone | Use $\frac13\pi r^2h$ for the volume of the cone. |
+| 263 | c0bfaa | AK1 | Substitutes the cone dimensions to obtain $24\pi\text{ cm}^3$ | Substitute the cone dimensions into $\frac13\pi r^2h$ and simplify, keeping the unit $\text{ cm}^3$. |
+| 264 | c0bfaa | AK2 | Adds $24\pi$ to "their" cylindrical volume to obtain $114\pi\text{ cm}^3$ | Add the cone volume to your cylindrical volume and simplify the terms containing $\pi$. |
+| 265 | c0bfaa | R1 | Converts $6\pi$ litres to $6000\pi\text{ cm}^3$ and forms a comparison with "their" candle volume | Convert $6\pi$ litres to $\text{ cm}^3$ using $1$ litre $=1000\text{ cm}^3$, then compare this with your candle volume. |
+| 266 | c0bfaa | AK3 | Divides $6000\pi$ by "their" candle volume | Divide $6000\pi$ by your candle volume to find how many candles the wax can make. |
+| 267 | c0bfaa | CK3 | Recognises that the wax left is the total wax less the wax used for "their" complete candles | Subtract the wax used for your complete candles from the total wax to find the wax left. |
+| 268 | c0bfaa | AK4 | Calculates $6000\pi-52(114\pi)$ | Calculate $6000\pi-52(114\pi)$ carefully by multiplying before subtracting. |
+| 269 | c0bfaa | R3 | Expresses the volume left exactly in terms of $\pi$ | Write the remaining volume exactly as a multiple of $\pi$. |
+| 270 | 037d69 | CK2 | Identifies first term $1.25$ and common difference $0.5$ | Identify the first term and the common difference from the departure times. |
+| 271 | 037d69 | CK3 | States the nth-term structure first term plus $(n-1)$ common differences | Write the nth term as the first term plus $(n-1)$ common differences. |
+| 272 | 037d69 | AK2 | Simplifies to $0.5n+0.75$, or equivalent | Expand and simplify your nth-term expression into a linear expression in $n$. |
+| 273 | 037d69 | AK3 | Substitutes $n=15$ into "their" nth-term expression | Substitute $n=15$ into your nth-term expression. |
+| 274 | 037d69 | AK4 | Obtains "their" time in hours after 6:00 a.m. | Evaluate your substitution to find your time in hours after 6:00 a.m. |
+| 275 | 037d69 | R1 | Converts $8.25$ hours after 6:00 a.m. to 2:15 p.m. | Convert the hours-after-6:00 a.m. time into a clock time by changing the fractional hour into minutes. |
+| 276 | 037d69 | R2 | Uses "their" fifteenth departure and one further interval to identify a possible sixteenth departure | Add one further departure interval to your fifteenth departure to find a possible sixteenth departure. |
+| 277 | 037d69 | R3 | Rejects the seventeenth departure as later than 3:00 p.m. | Check that the next departure after your possible sixteenth departure is later than 3:00 p.m. |
+| 278 | 037d69 | AK5 | Calculates the time of "their" final departure | Calculate the time of your final departure using your departure pattern. |
+| 279 | 037d69 | R4 | States "their" final departure time as a clock time no later than 3:00 p.m. | State your final departure as a clock time that is no later than 3:00 p.m. |
+| 280 | 037d71 | CK2 | Interchanges the input and output and selects the positive square-root branch | Interchange the input and output, then choose the positive square-root branch because the original inputs are restricted to the right-hand side. |
+| 281 | 037d71 | AK3 | Rearranges to obtain $2+\sqrt{x}$ | Rearrange the equation to isolate the output and write it as $2+\sqrt{x}$. |
+| 282 | 037d71 | CK3 | States the domain of $f^{-1}$ as "their" range of $f$ | State the domain of $f^{-1}$ as your range of $f$. |
+| 283 | 037d71 | AK4 | Substitutes $9$ into "their" inverse function | Substitute $9$ into your inverse function before simplifying. |
+| 284 | c0bfba | CK2 | Interchanges the variables in the function rule | Swap $x$ and $y$ in the function rule before rearranging it. |
+| 285 | c0bfba | AK3 | Rearranges to obtain $y=2\pm\sqrt{x-1}$ | Rearrange the swapped equation to isolate $y$ and obtain $y=2\pm\sqrt{x-1}$. |
+| 286 | c0bfba | CK3 | Recognises that the positive square-root branch is required since the mass is at least $2$ kg | Choose the positive square-root branch because the mass is at least $2\text{ kg}$. |
+| 287 | c0bfba | AK4 | Substitutes $10$ into "their" inverse function | Substitute $10$ into your inverse function and simplify. |
+| 288 | c0bfc2 | CK2 | Identifies the roots as the $x$-intercepts of the graph | Read the roots from the $x$-coordinates where the graph crosses the $x$-axis. |
+| 289 | c0bfc2 | R3 | Uses the midpoint of "their" roots and states the axis as $x=2$ | Find the midpoint of your roots and write the equation of the axis of symmetry. |
+| 290 | c0bfc2 | CK3 | Recognises that the minimum point lies on "their" axis of symmetry | Locate the minimum point directly on your axis of symmetry. |
+| 291 | c0bfc2 | AK2 | Evaluates $g(1)=2$ | Substitute $1$ into $g(1)$ and simplify. |
+| 292 | c0bfc2 | AK3 | Uses the ordinate of "their" minimum point to obtain $f(2)=-1$ | Use the ordinate of your minimum point as the value of $f(2)$. |
+| 293 | 037d79 | R1 | Identifies the midpoint of "their" roots as $1$ | Add your two roots and divide by $2$ to find the midpoint of your roots. |
+| 294 | 037d79 | R2 | States the vertical line $x=1$ | State the vertical line through the midpoint as $x=1$. |
+| 295 | 037d79 | R3 | Explains that "their" roots are equidistant from $x=1$ | Explain that your roots lie the same distance on either side of $x=1$. |
+| 296 | 037d86 | CK1 | Recognises that the total number of parts is found by combining the three ratio parts | Combine all three parts of the ratio to find the total number of parts. |
+| 297 | 037d86 | AK1 | Adds $5+3+4$ to obtain $12$ | Add $5+3+4$ to calculate the total number of ratio parts. |
+| 298 | 037d86 | CK2 | Identifies one ratio part as $960 \div$ "their" total number of parts | Use $960 \div$ your total number of parts to find the mass of one ratio part. |
+| 299 | 037d86 | AK2 | Calculates one part as $80$ kg using "their" total number of parts | Calculate the mass of one part using your total number of ratio parts. |
+| 300 | 037d86 | AK3 | Multiplies the mass of one part by $5$ to show $400$ kg | Multiply your mass for one ratio part by $5$ to find the plantain-chip mass. |
+| 301 | 037d86 | CK3 | Associates cassava chips with the $3$ parts of the ratio | Use the $3$ ratio parts for cassava chips. |
+| 302 | 037d86 | AK4 | Uses "their" mass of one part and $4$ ratio parts to obtain $320$ kg | Multiply your mass for one ratio part by $4$ to find the breadfruit-chip mass. |
+| 303 | 037d86 | R1 | Uses the 30 kg carton capacity with "their" cassava-chip mass | Divide your cassava-chip mass by the $30$ kg capacity of each carton. |
+| 304 | 037d86 | R2 | Uses the 40 kg carton capacity with "their" breadfruit-chip mass | Divide your breadfruit-chip mass by the $40$ kg capacity of each carton. |
+| 305 | 037d86 | R3 | Combines "their" two carton counts to obtain $16$ cartons | Add your two carton counts to find the total number of cartons. |
+| 306 | c0bfd4 | CK1 | Recognises that all three ratio parts must be combined | Add all three ratio parts to get the total number of parts. |
+| 307 | c0bfd4 | CK2 | Forms $360 \div$ "their" total number of ratio parts | Calculate $360 \div$ your total number of ratio parts to find the value of one part. |
+| 308 | c0bfd4 | CK3 | Associates Shop A with 3 equal ratio parts | Match Shop A to its 3 equal ratio parts. |
+| 309 | c0bfd4 | AK3 | Calculates $4 \times$ "their" value of one part for Shop B | Calculate Shop B's delivery using $4 \times$ your value of one part. |
+| 310 | c0bfd4 | AK4 | Calculates $5 \times$ "their" value of one part for Shop C | Calculate Shop C's delivery using $5 \times$ your value of one part. |
+| 311 | c0bfd4 | R1 | Relates each of "their" shop deliveries to crates of 30 rolls | For each shop, divide your delivery by 30 rolls to find how many crates it needs. |
+| 312 | c0bfd4 | R2 | Finds a total of 12 crates using "their" deliveries | Add the crate numbers from your deliveries to find the total number of crates. |
+| 313 | c0bfd4 | R3 | Concludes that 12 crates exceed the van capacity by 2 crates | Compare your total number of crates with the van capacity and state how many extra crates are needed. |
+| 314 | c0bfe1 | R1 | Uses $fg(0)=f[g(0)]$ | Rewrite the composite expression by applying $g$ to the input first and then applying $f$ to that result. |
+| 315 | c0bfe1 | AK3 | Evaluates $g(0)=1$ | Substitute the given input into $g$ and simplify before using the result in the composite function. |
+| 316 | c0bfe1 | R2 | Uses $(g(0),fg(0))=(1,0)$ and "their" $y$-intercept as points on the line | Use $(g(0),fg(0))$ and the y-intercept you found as the two points for the line. |
+| 317 | c0bfe1 | R3 | Concludes that the inverse relation is a function on the stated domain | State that the inverse relation is a function on the stated domain. |
+| 318 | c0bfe1 | R4 | Justifies the conclusion using the horizontal line test or equivalent one-to-one reasoning | Use the horizontal line test by explaining that each horizontal line meets the graph at most once on the stated domain. |
+| 319 | c0bfe9 | CK1 | Recognises that the ratio has 5 equal parts | Add the two ratio parts to find how many equal parts the savings are split into. |
+| 320 | c0bfe9 | R1 | Selects 3 of the 5 equal parts for the larger account | Take the larger account's stated share of the total equal ratio parts. |
+| 321 | c0bfe9 | CK2 | Selects the compound-interest formula | Use the compound-interest formula $A=P(1+r)^n$. |
+| 322 | c0bfe9 | AK2 | Substitutes \$15 000, 4% and 2 years into the compound-interest formula | Substitute the principal, annual rate, and number of years into $A=P(1+r)^n$ before calculating. |
+| 323 | c0bfe9 | CK3 | Identifies interest as accumulated amount less principal | Find the interest by subtracting the principal from the accumulated amount. |
+| 324 | c0bfe9 | AK4 | Subtracts "their" principal from "their" accumulated amount | Subtract your principal from your accumulated amount. |
+| 325 | c0bfe9 | R2 | Concludes that "their" accumulated amount is sufficient to pay for the equipment | Compare your accumulated amount with the equipment cost and state whether it is enough. |
+| 326 | c0bfe9 | R3 | Finds the surplus by subtracting the equipment cost from "their" accumulated amount | Subtract the equipment cost from your accumulated amount to find the surplus. |
+| 327 | 037d9d | CK2 | Recognises that the $y$-intercept is read where $x=0$ | Read the $y$-intercept at the point where $x=0$. |
+| 328 | 037d9d | CK3 | Uses gradient as change in $y$ divided by change in $x$ | Calculate the gradient by dividing the change in $y$ by the change in $x$. |
+| 329 | 037d9d | R3 | States that $f^{-1}$ is not a function | State that $f^{-1}$ is not a function. |
+| 330 | 037d9d | AK5 | Uses "their" roots to obtain $f^{-1}(0)=-1$ or $5$ | Use your roots as the possible outputs when finding $f^{-1}(0)$. |
+| 331 | 037d9d | R4 | Explains that one input to the inverse relation has two outputs | Explain that one input in the inverse relation produces two outputs. |
+| 332 | c0bff1 | CK1 | Identifies the curved edge as half the circumference of a circle of diameter $14$ m | Treat the curved edge as half the circumference of a circle, using the diameter shown. |
+| 333 | c0bff1 | AK1 | Substitutes correctly into $\frac{1}{2}\pi d$ | Substitute the given diameter into $\frac{1}{2}\pi d$. |
+| 334 | c0bff1 | CK2 | Identifies the straight boundary lengths as $14$ m, $17$ m and $17$ m | Read the three straight boundary lengths directly from the diagram before adding them. |
+| 335 | c0bff1 | R1 | Forms the total perimeter using "their" curved-edge length | Add the three straight boundary lengths to your curved-edge length to form the total perimeter. |
+| 336 | c0bff1 | CK3 | Recognises that the total edging is shared equally among five pieces | Use the fact that the total edging is split equally among the five pieces. |
+| 337 | c0bff1 | R2 | Divides "their" perimeter by $5$ | Divide your perimeter by $5$. |
+| 338 | c0bff1 | R3 | Interprets the quotient as the length of one piece of edging, giving $14$ m | State that quotient as the length of one piece of edging. |
+| 339 | 037da5 | CK1 | Identifies the curved edge as half the circumference of a circle of diameter $14$ m | Treat the curved edge as half the circumference of a circle with diameter $14$ m. |
+| 340 | 037da5 | AK1 | Calculates half of $\pi \times 14$ | Calculate half of $\pi \times 14$. |
+| 341 | 037da5 | R1 | Expresses the curved length in exact form | Write the curved length exactly using $\pi$, without changing it to a decimal. |
+| 342 | 037da5 | CK2 | Recognises that the perimeter consists of the two lengths, the width and the curved edge | Form the perimeter by including both straight sides, the width, and the curved edge. |
+| 343 | 037da5 | AK2 | Calculates the total straight length as $20+20+14=54$ m | Add $20+20+14$ to find the total length of the straight edges. |
+| 344 | 037da5 | AK3 | Adds $54$ m to "their" curved length | Add the total straight length to your curved length. |
+| 345 | 037da5 | R2 | Expresses "their" perimeter in exact form | Write your perimeter in exact form, keeping $\pi$ in the expression. |
+| 346 | 037da5 | CK3 | Uses $5$ m as the length of one fence roll | Use $5$ m as the length covered by one fence roll. |
+| 347 | c0bff9 | CK2 | Recognises that an exponent of $\frac{1}{2}$ gives the square root | Treat the exponent $\frac{1}{2}$ as an instruction to find the square root of the number of dots. |
+| 348 | c0bff9 | CK3 | Recognises that the dots form a cube with 4 dots along each edge | Arrange the Figure 4 dots as a cube and identify how many dots lie along one edge. |
+| 349 | c0bff9 | R1 | Uses "their" Figure 4 cube total to establish that it is less than 100 | Compare your Figure 4 cube total with 100 to show that it is less than 100. |
+| 350 | c0bff9 | R2 | Selects the next whole number of dots along an edge and tests $(\text{their }4+1)^3$ | Add one to your previous edge length and test whether $(\text{your previous edge length}+1)^3$ reaches or exceeds 100. |
+| 351 | c0c001 | CK1 | Recognises direct variation and writes $m=kp$ | Recognise direct variation and write $m=kp$. |
+| 352 | c0c001 | AK1 | Substitutes $m=12$ and $p=8$ to form $12=8k$ | Substitute the stated mass and package values into $m=kp$ to form an equation for $k$. |
+| 353 | c0c001 | CK2 | Identifies the total order mass as $m=30$ | Identify the total mass of the order before using the direct-variation relationship. |
+| 354 | c0c001 | CK3 | Recognises inverse variation and writes $t=\frac{k}{n}$ | Recognise inverse variation and write $t=\frac{k}{n}$. |
+| 355 | c0c001 | AK4 | Calculates the one-packer time as $3\times$ "their" number of packages | Multiply $3$ by your earlier number of packages to calculate the one-packer time. |
+| 356 | c0c001 | R1 | Uses the one-packer time as the constant of variation to form $t=\frac{60}{n}$, follow-through | Use your one-packer time as the constant in $t=\frac{k}{n}$ and write the resulting equation. |
+| 357 | c0c001 | R2 | Substitutes $n=3$ into "their" inverse-variation equation to obtain $20$ minutes, follow-through | Substitute $n=3$ into your inverse-variation equation and calculate the time in minutes. |
+| 358 | c0c001 | R3 | Compares the required time with $18$ minutes and concludes that the claim is not correct | Compare your calculated time with $18$ minutes and state whether the claim is correct. |
+| 359 | c0c009 | CK2 | Identifies the matrix for reflection in $y=x$ as $\begin{pmatrix}0&1\\1&0\end{pmatrix}$. | Write the reflection matrix that swaps the coordinates, using the form $\begin{pmatrix}a&b\\c&d\end{pmatrix}$. |
+| 360 | c0c009 | AK3 | Forms the product $\begin{pmatrix}2&0\\0&2\end{pmatrix}\begin{pmatrix}0&1\\1&0\end{pmatrix}$. | Place the enlargement matrix to the left of the reflection matrix and form the product $\begin{pmatrix}a&b\\c&d\end{pmatrix}\begin{pmatrix}e&f\\g&h\end{pmatrix}$. |
+| 361 | c0c009 | R1 | Uses the transformations in the correct order to obtain $C=\begin{pmatrix}0&2\\2&0\end{pmatrix}$. | Apply the reflection first and then the enlargement, multiply in that order, and label the result $C=\begin{pmatrix}a&b\\c&d\end{pmatrix}$. |
+| 362 | c0c009 | CK3 | Finds the determinant of 'their' matrix $C$. | Calculate the determinant of your matrix $C$. |
+| 363 | c0c009 | AK4 | Forms the adjugate of 'their' matrix $C$. | Form the adjugate of your matrix $C$ by swapping the main-diagonal entries and changing the signs of the other diagonal. |
+| 364 | c0c009 | AK5 | Divides the adjugate by 'their' determinant to obtain $C^{-1}$. | Divide every entry of your adjugate by your determinant to form $C^{-1}$. |
+| 365 | c0c009 | R2 | Selects 'their' inverse matrix to reverse the combined transformation. | Use your inverse matrix $C^{-1}$ to undo the combined transformation. |
+| 366 | c0c009 | R3 | Multiplies 'their' inverse matrix by $\begin{pmatrix}10\\6\end{pmatrix}$. | Multiply your inverse matrix by the given final position vector, written as $\begin{pmatrix}x\\y\end{pmatrix}$. |
+| 367 | c0c009 | R4 | Concludes that the original position vector is $\begin{pmatrix}3\\5\end{pmatrix}$. | State the vector you obtain as the original position vector in the form $\begin{pmatrix}a\\b\end{pmatrix}$. |
+| 368 | c0c011 | CK1 | Selects the correct fraction of the circumference for a $135^\circ$ sector | Divide $135^\circ$ by $360^\circ$ to find the fraction of the full circumference represented by the sector. |
+| 369 | c0c011 | AK1 | Obtains $0.6\pi$ m for the curved edge | Multiply your sector fraction by $2\pi(0.8)$ to calculate the curved-edge length. |
+| 370 | c0c011 | R1 | Expresses the arc length correct to 2 decimal places | Round your calculated arc length to 2 decimal places and write the unit m. |
+| 371 | c0c011 | CK2 | Forms the number of trim lengths by dividing "their" curved-edge length by $0.5$ | Divide your curved-edge length by $0.5$ to form the number of trim lengths needed. |
+| 372 | c0c011 | AK2 | Obtains approximately $3.76$ lengths using "their" curved-edge length | Carry out the division of your curved-edge length by $0.5$ to find the approximate number of lengths. |
+| 373 | c0c011 | CK3 | Forms the cost in US dollars using "their" number of trim lengths | Form a multiplication using your number of trim lengths and $\text{US}\$3.20$. |
+| 374 | c0c011 | AK3 | Calculates US\$12.80 using "their" number of trim lengths | Evaluate the multiplication of your number of trim lengths by $\text{US}\$3.20$ to find the US-dollar cost. |
+| 375 | c0c011 | R3 | Uses the exchange rate in the correct direction to convert "their" US-dollar cost to dollars | Multiply your US-dollar cost by the number of dollars equivalent to one US dollar to convert in the correct direction. |
+| 376 | c0c019 | CK1 | Recognises that 12 bottles each make 18 cups. | Use 12 bottles with 18 cups from each bottle to find the total number of cups. |
+| 377 | c0c019 | R1 | Forms $12 \times 18$. | Calculate the total cups by forming $12 \times 18$. |
+| 378 | c0c019 | CK2 | Recognises that the cups sold are subtracted from the total. | Subtract the cups sold from the total cups to find how many remain. |
+| 379 | c0c019 | R2 | Forms "their" total $-47$. | Form your subtraction as your total $-47$. |
+| 380 | c0c019 | AK2 | Subtracts 47 from "their" total correctly. | Subtract 47 correctly from your total. |
+| 381 | c0c019 | CK3 | Recognises that equal sharing among 13 jugs requires division by 13. | Divide the remaining cups equally among 13 jugs. |
+| 382 | c0c019 | R3 | Forms "their" remaining number of cups $\div 13$. | Form your calculation as your remaining number of cups $\div 13$. |
+| 383 | c0c019 | AK3 | Divides "their" remaining number of cups by 13 correctly. | Divide your remaining number of cups correctly by 13. |
+| 384 | 037dbf | CK1 | Identifies the total number of mangoes as $18 \times 24$ | Find the total number of mangoes by calculating $18 \times 24$. |
+| 385 | 037dbf | CK2 | Identifies the quantity sold as $\frac{3}{4}$ of "their" total | Identify the quantity sold by taking $\frac{3}{4}$ of your total. |
+| 386 | 037dbf | AK2 | Calculates $\frac{3}{4} \times$ "their" total | Calculate $\frac{3}{4} \times$ your total. |
+| 387 | 037dbf | R1 | Uses "their" number of mangoes sold and the selling price of \$2.50 each | Multiply your number of mangoes sold by the selling price of \$2.50 each. |
+| 388 | 037dbf | CK3 | Identifies money left as the amount received less the transport cost | Find the money left by subtracting the transport cost from the amount received. |
+| 389 | 037dbf | AK3 | Subtracts \$120 from "their" amount received | Subtract \$120 from your amount received. |
+| 390 | 037dc7 | CK2 | Forms the income expression $I=70x+60y$ | Write the income expression by multiplying each type of block by its income rate and adding the results. |
+| 391 | 037dc7 | AK3 | Calculates the incomes at the relevant vertices from "their" feasible region | For each relevant corner of your feasible region, substitute its coordinates into your income expression and calculate the income. |
+| 392 | 037dc7 | AK4 | Obtains \$640 at $(4,6)$ from "their" values | Substitute your values for the coordinates of the intersection corner into the income expression and evaluate it. |
+| 393 | 037dc7 | R2 | Identifies the corner points of "their" shaded feasible region | Read off and list the coordinates of every corner of your shaded feasible region. |
+| 394 | 037dc7 | R3 | Selects $(4,6)$ as the point giving the greatest income | Compare the incomes at the corners and select the point with the greatest income. |
+| 395 | 037dc7 | CK3 | Forms $n^2-8n+24=12$ from the mapping and the given effect index | Set the mapping expression equal to the given effect index to form an equation in $n$. |
+| 396 | 037dc7 | AK5 | Solves to obtain $n=2$ or $n=6$ | Rearrange the equation into quadratic form, factor or solve it, and state both possible values of $n$. |
+| 397 | 037dc7 | R4 | Rejects $n=2$ and selects $n=6$ because "their" plan has 6 covered blocks | Compare both values of $n$ with the number of covered blocks in your plan and choose the matching value. |
+| 398 | 037dcf | CK1 | Selects the tangent ratio for triangle $BCD$ | Choose the tangent ratio by dividing the side opposite the $60^\circ$ angle by the adjacent side in triangle $BCD$. |
+| 399 | 037dcf | AK1 | Substitutes $BC=12$ and $\angle DBC=60^\circ$ correctly | Substitute $BC=12$ and $\angle DBC=60^\circ$ into your tangent equation. |
+| 400 | 037dcf | AK2 | Obtains $CD=12\sqrt{3}$ | Evaluate the tangent calculation to find $CD$ in an exact form containing $\sqrt{3}$. |
+| 401 | 037dcf | R1 | Expresses the height in exact form | Write the height $CD$ exactly, without changing the surd into a decimal. |
+| 402 | 037dcf | AK3 | Finds $AC=24+12=36$ m | Add the two horizontal ground distances to calculate $AC$ in metres. |
+| 403 | 037dcf | AK4 | Forms $\tan \angle DAB=\frac{\text{their }CD}{36}$ | Use your earlier height and ground distance in $\tan \angle DAB=\frac{\text{your }CD}{\text{your }AC}$. |
+| 404 | 037dcf | R2 | Uses the tangent value to establish $\angle DAB=30^\circ$, following through from "their" height | Apply inverse tangent to the ratio based on your height, then state $\angle DAB$. |
+| 405 | 037dcf | CK2 | States that the angle of depression is equal to the angle of elevation | State that the angle of depression equals the angle of elevation. |
+| 406 | 037dcf | R3 | Compares "their" angle of depression with $35^\circ$ and concludes that a warning sign is required | Compare your angle of depression with $35^\circ$ and use the comparison to decide whether a warning sign is required. |
+| 407 | 037dcf | CK3 | Explains that the equality of the angles follows from parallel horizontal lines | Explain that the angles are equal because the horizontal through $D$ and the level ground are parallel. |
+| 408 | 037dd7 | CK1 | Selects the area of a circle as the required relationship. | Use the circle-area relationship $\pi r^2$. |
+| 409 | 037dd7 | AK1 | Substitutes $r=14$ into $\pi r^2$. | Substitute $r=14$ into $\pi r^2$ and simplify. |
+| 410 | 037dd7 | CK2 | Recognises that the $120°$ sector is one third of the circle. | Recognise that the $120°$ sector is one third of the full circle. |
+| 411 | 037dd7 | AK3 | Divides “their” area of the circle by $3$. | Divide your area of the circle by $3$. |
+| 412 | 037dd7 | R1 | Expresses “their” sector area in exact form. | Write your sector area exactly, keeping $\pi$ rather than using a decimal. |
+| 413 | 037dd7 | CK3 | Identifies the minor segment as the sector less triangle $AOB$. | Find the minor segment by subtracting the area of triangle $AOB$ from the sector area. |
+| 414 | 037dd7 | AK4 | Obtains $49\sqrt{3}\text{ cm}^2$ for the area of triangle $AOB$. | Calculate the area of triangle $AOB$ exactly and write it using $\sqrt{3}$ in $\text{ cm}^2$. |
+| 415 | 037dd7 | R2 | Subtracts the area of triangle $AOB$ from “their” sector area. | Subtract the area of triangle $AOB$ from your sector area. |
+| 416 | 037dd7 | R3 | Expresses “their” segment area in exact form. | Write your segment area in exact form, retaining $\pi$ and $\sqrt{3}$. |
+| 417 | c0c035 | CK2 | States the direct-variation relationship $C=kD$ | Write the direct-variation equation $C=kD$. |
+| 418 | c0c035 | AK2 | Uses Figure $3$ to obtain $k=8$, giving $C=8D$ | Use Figure $3$ in $C=kD$ to find $k$, then write the resulting equation for $C$. |
+| 419 | c0c035 | CK3 | States the inverse-variation relationship $W=\frac{k}{n}$ | Write the inverse-variation equation $W=\frac{k}{n}$. |
+| 420 | c0c035 | AK4 | Uses $W=3$ and $n=4$ to obtain $k=12$, giving $W=\frac{12}{n}$ | Substitute $W=3$ and $n=4$ into $W=\frac{k}{n}$ to find $k$, then write the equation for $W$. |
+| 421 | c0c035 | CK4 | Forms the linear relationship $W=8-n$ | Write the linear relationship between workers and rows as $W=8-n$. |
+| 422 | c0c035 | R2 | Solves $\frac{12}{n}=8-n$ and selects $n=6$ using the condition $n>4$ | Solve $\frac{12}{n}=8-n$, then use $n>4$ to choose the valid value of $n$. |
+| 423 | c0c035 | R3 | Uses "their" $n$ to determine $W=2$ and $C=\$288$ | Use your $n$ to calculate $W=2$ and then use the cost relationship to find $C=\$288$. |
+| 424 | 037de4 | R1 | Identifies the non-zero intersection of the two graphs | Find the intersection away from the origin where the two graphs cross. |
+| 425 | 037de4 | R2 | Reads the coordinates of the non-zero intersection as $(3,12)$ | Read the horizontal and vertical coordinates of the non-zero crossing. |
+| 426 | 037de4 | CK2 | Recognises that the required figure number must be the next whole number after the non-zero equality point | Move from the non-zero equality point to the next whole-numbered figure. |
+| 427 | 037de4 | CK3 | Identifies the comparison $D=20$ and $R=16$ for Figure 4 | Calculate $D$ and $R$ for Figure 4, then compare them. |
+| 428 | 037de4 | CK4 | States or uses the inverse-variation relationship $T=k/D$ | Write the inverse-variation relationship as $T=k/D$. |
+| 429 | 037de4 | AK5 | Uses 'their' Figure 4 values to determine $k=60$ | Substitute your Figure 4 values into $T=k/D$ and rearrange to find $k$. |
+| 430 | 037de4 | R3 | Applies $T=60/D$ to Figure 5, where $D=30$, to obtain 2 minutes | Substitute the Figure 5 value of $D$ into your equation for $T$ and calculate the time in minutes. |
+| 431 | c0c03d | CK1 | Selects the frequencies for amounts greater than \$4 | Select the bars for amounts greater than \$4. |
+| 432 | c0c03d | AK2 | Adds the selected frequencies to obtain 12 | Add the frequencies from the selected bars to find the number of customers. |
+| 433 | c0c03d | CK2 | Recognises that one voucher is issued for each customer spending more than \$4 | Match each customer spending more than \$4 with one voucher. |
+| 434 | c0c03d | CK3 | Identifies the gradient as 3 dollars per voucher | Use the increase in cost for each additional voucher as the gradient. |
+| 435 | c0c03d | R1 | Uses the point based on "their" number of vouchers and "their" total cost | Use the point with coordinates given by your number of vouchers and your total cost. |
+| 436 | c0c03d | R3 | Expresses the relationship in the form $C = mx + c$ | Write the cost relationship in the form $C = mx + c$. |
+| 437 | c0c045 | CK1 | Forms an equation by equating the total of the sector angles to $360°$ | Add all four sector angles and set the total equal to $360°$. |
+| 438 | c0c045 | AK1 | Simplifies to $4x+90=360$ | Collect the $x$ terms and constants to simplify your equation to $4x+90=360$. |
+| 439 | c0c045 | CK2 | Uses $\frac{\text{bus angle}}{360}\times72$ to find the bus frequency | Find the bus frequency using $\frac{\text{bus angle}}{360}\times72$. |
+| 440 | c0c045 | AK3 | Finds the bus angle as $2(\text{their }67.5)+30$ | Find the bus angle by calculating $2(\text{your }x)+30$ using your earlier value of $x$. |
+| 441 | c0c045 | AK4 | Obtains $33$ from $\frac{\text{their }165}{360}\times72$ | Calculate $\frac{\text{your bus angle}}{360}\times72$ using the bus angle you found. |
+| 442 | c0c045 | R1 | States that Bus has the greatest frequency or largest sector | State that Bus is the mode because it has the greatest frequency or largest sector. |
+| 443 | c0c045 | R2 | Identifies the required group as the total less 'their' number travelling by bus | Subtract your number travelling by bus from the total number of students. |
+| 444 | 037df1 | CK1 | Recognises that the angles in the pie chart total $360°$: $2x+(x+30)+90+x=360$ | Add the four sector angles and set the total equal to $360°$. |
+| 445 | 037df1 | AK1 | Solves the equation to obtain $x=60$ | Collect the $x$ terms, move the constant term to the other side, and divide to find $x$. |
+| 446 | 037df1 | CK2 | Finds the Mango juice sector angle as $2(\text{their }x)$, giving $120°$ | Calculate the Mango juice angle using $2(\text{your }x)$. |
+| 447 | 037df1 | AK2 | Forms the correct fraction of the survey: $\frac{\text{their Mango angle}}{360}\times180$ | Use $\frac{\text{your Mango angle}}{360}\times180$ to find how many students chose Mango juice. |
+| 448 | 037df1 | AK3 | Evaluates to show that 60 students selected Mango juice | Evaluate your fraction carefully to find the number of students who selected Mango juice. |
+| 449 | 037df1 | R1 | Subtracts "their" number selecting Mango juice from the total of 180 | Subtract your number selecting Mango juice from the total of $180$. |
+| 450 | 037df1 | AK4 | Correctly evaluates $180-60=120$ | Carry out the subtraction accurately to find the number selecting drinks other than Mango juice. |
+| 451 | 037df1 | R2 | Uses "their" value of $x$ to establish that the Mango juice sector is greater than each other sector | Use your value of $x$ to compare the Mango juice sector with each of the other sectors. |
+| 452 | 037df1 | R3 | Explains that the mode is the category with the greatest frequency | State that the mode is the category chosen by the greatest number of students. |
+| 453 | c0c04d | CK3 | Recognises the larger pattern as $(5^2)^2$ using "their" square number | Square your square number to write the total for the larger pattern. |
+| 454 | c0c04d | AK2 | Applies the power-of-a-power law to obtain $5^4$ | Apply the power-of-a-power law by multiplying the exponents in your expression. |
+| 455 | c0c04d | R2 | Forms "their" larger-pattern total divided by $5^2$ panels | Form a division of your larger-pattern total by the number of panels. |
+| 456 | c0c04d | AK3 | Applies the quotient law to simplify "their" $5^4 \div 5^2$ to $5^2$ | Apply the quotient law by subtracting the divisor exponent from the dividend exponent in your division. |
+| 457 | 037df9 | CK2 | Recognises that $4^{-1} = \frac{1}{4}$ | Apply $a^{-1}=\frac{1}{a}$ to rewrite $4^{-1}$ as a reciprocal. |
+| 458 | 037df9 | AK2 | Combines the indices to obtain $4^{2-1}$ | Add the exponents when multiplying powers with the same base to form $4^{2-1}$. |
+| 459 | 037df9 | CK3 | Forms $($"their" answer to (b)$)^2 \times ($"their" answer to (b)$)^2$ for the total | For the total, multiply two copies of your answer to (b), with each copy squared. |
+| 460 | 037df9 | AK4 | Applies the laws of indices to multiply the two powers | Use the product rule for powers with the same base by adding the exponents. |
+| 461 | c0c055 | CK1 | Recognises that the rectangular section contains $8 \times 4$ square metres | Count the rows and columns in the rectangular section and multiply them as $\text{rows} \times \text{columns}$. |
+| 462 | c0c055 | CK2 | Uses three quarters of "their" rectangular-section area | Find three quarters of your rectangular-section area. |
+| 463 | c0c055 | R1 | Combines "their" rectangular and shaded-end areas | Add your rectangular-section area to your shaded-end area. |
+| 464 | c0c055 | CK3 | Selects $12$ m$^2$ as the area covered by one pack | Use the stated area covered by one pack, in $\text{m}^2$. |
+| 465 | c0c055 | AK4 | Divides "their" total estimated area by $12$ | Divide your total estimated area by the area covered by one pack. |
+| 466 | c0c055 | R2 | Interprets a non-whole quotient as requiring an additional complete pack | Round any non-whole number of packs up to the next complete pack so all the area is covered. |
+| 467 | 037e01 | CK1 | Recognises the estimate as three quarters of the rectangular area | Find the rectangular area first, then multiply it by $\frac{3}{4}$ to estimate the shaded area. |
+| 468 | 037e01 | AK1 | Finds the rectangular area as $12 \times 6 = 72\text{ m}^2$ | Calculate the rectangular area using $12 \times 6$ and give the area in $\text{m}^2$. |
+| 469 | 037e01 | R1 | Multiplies "their" estimated area by \$40 per square metre | Multiply your estimated area by \$40 per square metre to find your deposit. |
+| 470 | 037e01 | CK2 | Selects a compound-interest model | Use a compound-interest model by multiplying the principal by the growth factor raised to the number of years. |
+| 471 | 037e01 | CK3 | Recognises that interest is the accumulated amount less the principal | Find the interest by subtracting the principal from the accumulated amount. |
+| 472 | 037e01 | AK4 | Evaluates "their" deposit multiplied by $(1.05)^2$ | Calculate your accumulated amount by evaluating your deposit multiplied by $(1.05)^2$. |
+| 473 | 037e01 | R2 | Subtracts "their" principal from "their" accumulated amount | Subtract your principal from your accumulated amount to calculate your interest. |
+| 474 | 037e01 | R3 | Expresses "their" interest correct to the nearest cent | Write your interest as an amount of money rounded to the nearest cent. |
+| 475 | c0c05d | CK1 | Recognises that a percentage is written as a fraction over 100 | Write the percentage as a fraction with 100 as the denominator. |
+| 476 | c0c05d | AK1 | Reduces $\frac{37.5}{100}$ to $\frac{3}{8}$ | Simplify $\frac{37.5}{100}$ by clearing the decimal and cancelling common factors. |
+| 477 | c0c05d | CK2 | Uses "their" fraction as the required part of 96 | Multiply your fraction by the total number of entrants to find the junior entrants. |
+| 478 | c0c05d | CK3 | Identifies $1 \times 36$ as a factor pair | Include the factor pair that begins with 1 by checking what multiplies with it to make the total. |
+| 479 | c0c05d | AK3 | Identifies $2 \times 18$ as a factor pair | Check whether 2 divides the total exactly, then write the matching factor pair. |
+| 480 | c0c05d | AK4 | Identifies $3 \times 12$ as a factor pair | Check whether 3 divides the total exactly, then write the matching factor pair. |
+| 481 | c0c05d | AK5 | Identifies $4 \times 9$ as a factor pair | Check whether 4 divides the total exactly, then write the matching factor pair. |
+| 482 | c0c05d | R1 | Selects the factor pair $3$ and $12$ from "their" factor pairs | From your factor pairs, select the pair whose numbers have the required heats-to-entrants relationship. |
+| 483 | c0c05d | R2 | Shows that $3:12$ simplifies to $1:4$ | Simplify the ratio from your selected pair by dividing both terms by the same factor until it matches the required ratio. |
+| 484 | c0c05d | R3 | Rejects Devon's arrangement because $4:9$ is not equivalent to $1:4$ | Simplify Devon's ratio, compare it with the required ratio, and state that it is not equivalent. |
+| 485 | c0c05d | R4 | Concludes that "their" valid arrangement is 3 heats of 12 entrants | State your valid arrangement by giving the number of heats and the number of entrants in each heat. |
+| 486 | 037e09 | AK1 | Converts $\frac{3}{8}$ to $0.375$ | Convert $\frac{3}{8}$ to a decimal by dividing the numerator by the denominator. |
+| 487 | 037e09 | CK1 | Recognises that the ratio $2:1$ contains 3 equal parts | Add the parts in the ratio $2:1$ to find the total number of equal parts. |
+| 488 | 037e09 | AK3 | Finds $37.5\%$ of 96, or equivalent process using "their" percentage | Calculate your percentage of $96$ to find the number bought online. |
+| 489 | 037e09 | AK4 | Finds $\frac{2}{3}$ of "their" online bands | Find $\frac{2}{3}$ of your online-band total for the adult bands. |
+| 490 | 037e09 | AK5 | Finds $\frac{1}{3}$ of "their" online bands | Find $\frac{1}{3}$ of your online-band total for the child bands. |
+| 491 | 037e09 | CK2 | Identifies the factor pairs of "their" number of child bands | List the factor pairs that multiply to give your number of child bands. |
+| 492 | 037e09 | R1 | Selects 3 and 4 as the only factors of "their" child-band total between 2 and 5 | Check the factors of your child-band total between $2$ and $5$ and select the possible packet sizes. |
+| 493 | 037e09 | R2 | Finds that "their" child-band total gives 4 packets when 3 bands are placed in each packet | Divide your child-band total by the smaller possible packet size to find how many packets are needed. |
+| 494 | 037e09 | R3 | Rejects 3 bands per packet because 4 is not a multiple of 3 | Check whether the number of packets from the smaller packet size is a multiple of that packet size, and reject it if it is not. |
+| 495 | 037e09 | R4 | Concludes that 4 bands per packet gives 3 packets and is the only possible arrangement | Test the other possible packet size, then state it as the only arrangement when it gives a valid number of packets. |
+| 496 | 037e11 | CK2 | Recognises that the solutions are given by the $x$-coordinates of the intersections. | Use the $x$-coordinates where the two graphs intersect to find the solutions. |
+| 497 | 037e11 | AK4 | Reads one solution as $x=1$. | Read the $x$-coordinate of one intersection from the graph and write it as a solution. |
+| 498 | 037e11 | AK5 | Reads the other solution as $x=6$. | Read the $x$-coordinate of the other intersection from the graph and write it as a solution. |
+| 499 | 037e11 | R1 | Uses 'their' intersection values as boundary values for comparing the two plans. | Use your intersection values as boundary values to split the domain before comparing the two plans. |
+| 500 | 037e11 | R2 | Identifies the values for which $f(x)\ge g(x)$ on the stated domain. | Identify the $x$-values on the stated domain where $f(x)\ge g(x)$ by finding where the graph of $f$ is on or above the graph of $g$. |
