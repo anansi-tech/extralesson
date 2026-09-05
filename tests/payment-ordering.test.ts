@@ -1,7 +1,7 @@
 import { createHmac } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
@@ -55,6 +55,8 @@ function checkoutBody(args: {
 let POST: (req: Request) => Promise<Response>;
 let Student: typeof import('@/lib/db').Student;
 let Payment: typeof import('@/lib/db').Payment;
+let StripeEvent: typeof import('@/lib/db').StripeEvent;
+let Fulfilment: typeof import('@/lib/db').Fulfilment;
 let grantFromPayment: typeof import('@/lib/grant-from-payment').grantFromPayment;
 let pendingPaymentFor: typeof import('@/lib/grant-from-payment').pendingPaymentFor;
 
@@ -69,7 +71,7 @@ beforeAll(async () => {
   process.env.STRIPE_PAYMENT_LINKS = 'plink_founding, plink_january';
   await mongoose.connect(process.env.MONGODB_URI);
   ({ POST } = await import('@/app/api/stripe/webhook/route'));
-  ({ Student, Payment } = await import('@/lib/db'));
+  ({ Student, Payment, StripeEvent, Fulfilment } = await import('@/lib/db'));
   ({ grantFromPayment, pendingPaymentFor } = await import('@/lib/grant-from-payment'));
 }, 120000);
 
@@ -79,8 +81,8 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  await Student.deleteMany({});
-  await Payment.deleteMany({});
+  vi.restoreAllMocks();
+  await Promise.all([Student.deleteMany({}), Payment.deleteMany({}), StripeEvent.deleteMany({}), Fulfilment.deleteMany({})]);
 });
 
 const makeStudent = (email: string, sitting = REGISTERED) =>
@@ -358,6 +360,59 @@ describe('11. a payment for another Anansi product is not ours (ROUND_6 Task 2)'
     );
     expect(await paid.json()).toEqual({ matched: true });
     expect((await accessOf(email))?.sitting).toBe(REGISTERED);
+  });
+});
+
+describe('12. fulfilment is its own record (ROUND_6 Task 2)', () => {
+  const fulfilmentOf = (id: string) => Fulfilment.findOne({ session_id: `cs_${id}` }).lean<{ status: string; reason?: string } | null>();
+
+  it('records the event once and the grant once, granted', async () => {
+    const email = 'recorded@test.invalid';
+    await makeStudent(email);
+    await POST(signed(checkoutBody({ id: 'evt_12', studentField: email })));
+    expect(await StripeEvent.countDocuments({ _id: 'evt_12' })).toBe(1);
+    expect(await fulfilmentOf('evt_12')).toMatchObject({ status: 'granted' });
+  });
+
+  it('a grant that fails is a failed fulfilment and a 500; the redelivery retries the grant', async () => {
+    const email = 'grant-fails@test.invalid';
+    await makeStudent(email);
+    const body = checkoutBody({ id: 'evt_12b', studentField: email });
+    vi.spyOn(Student, 'updateOne').mockImplementationOnce(() => {
+      throw new Error('db down');
+    });
+
+    const first = await POST(signed(body));
+    expect(first.status).toBe(500);
+    expect(await fulfilmentOf('evt_12b')).toMatchObject({ status: 'failed', reason: 'db down' });
+    expect(await accessOf(email)).toBeUndefined();
+
+    const second = await POST(signed(body));
+    expect(await second.json()).toEqual({ matched: true });
+    expect(await fulfilmentOf('evt_12b')).toMatchObject({ status: 'granted' });
+    expect((await accessOf(email))?.sitting).toBe(REGISTERED);
+    expect(await StripeEvent.countDocuments()).toBe(1);
+    expect(await Payment.countDocuments()).toBe(1);
+    expect(await Fulfilment.countDocuments()).toBe(1);
+  });
+
+  it('a write error that is not a duplicate key is a failure, not a duplicate', async () => {
+    const email = 'write-fails@test.invalid';
+    await makeStudent(email);
+    vi.spyOn(Payment, 'create').mockImplementationOnce(() => {
+      throw new Error('write failed');
+    });
+    const res = await POST(signed(checkoutBody({ id: 'evt_12c', studentField: email })));
+    expect(res.status).toBe(500);
+    expect(await accessOf(email)).toBeUndefined();
+  });
+
+  it('marks the fulfilment granted when the account arrives after the payment', async () => {
+    const email = 'pay-then-register-fulfilled@test.invalid';
+    await POST(signed(checkoutBody({ id: 'evt_12d', studentField: email })));
+    expect(await fulfilmentOf('evt_12d')).toMatchObject({ status: 'pending' });
+    await registerAndClaim(email);
+    expect(await fulfilmentOf('evt_12d')).toMatchObject({ status: 'granted' });
   });
 });
 

@@ -1,4 +1,4 @@
-import { Payment, Student } from '@/lib/db';
+import { Fulfilment, Payment, Student } from '@/lib/db';
 import type { ExamSitting } from '@/lib/types';
 import type { EmailSource } from '@/lib/stripe-webhook';
 
@@ -53,6 +53,8 @@ export async function grantFromPayment(args: {
   // Attaching the student is what takes it off the unmatched list, so it
   // happens here rather than being left to the caller to remember.
   await Payment.updateOne({ _id: payment._id }, { $set: { student_id: studentId } });
+  // The fulfilment, if the webhook opened one, is now what it says it is.
+  await Fulfilment.updateOne({ payment_id: payment._id }, { $set: { status: 'granted', ts: new Date() }, $unset: { reason: '' } });
   return 'granted';
 }
 

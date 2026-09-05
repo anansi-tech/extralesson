@@ -4,6 +4,8 @@ export { Blueprint, type BlueprintDoc } from './blueprint';
 export { Question, type QuestionDoc } from './question';
 export { Student, type StudentDoc } from './student';
 export { Payment, type PaymentDoc } from './payment';
+export { StripeEvent, type StripeEventDoc } from './stripe-event';
+export { Fulfilment, isDuplicateKey, type FulfilmentDoc } from './fulfilment';
 export { Attempt, type AttemptDoc } from './attempt';
 export { PracticeSession, type SessionDoc } from './session';
 export { SessionDraft, DRAFT_TTL_DAYS, type SessionDraftDoc } from './session-draft';
