@@ -27,6 +27,7 @@ let register: typeof import('@/app/study/login/actions').register;
 let signIn: typeof import('@/app/study/login/actions').signIn;
 let setPassword: typeof import('@/app/study/reset/actions').setPassword;
 let getSession: typeof import('@/lib/auth/session').getSession;
+let resetRateLimits: typeof import('@/lib/auth/rate-limit').resetRateLimits;
 let requireAdmin: typeof import('@/lib/auth/session').requireAdmin;
 
 const OPERATOR = 'operator@extralesson.invalid';
@@ -50,6 +51,7 @@ beforeAll(async () => {
   ({ register, signIn } = await import('@/app/study/login/actions'));
   ({ setPassword } = await import('@/app/study/reset/actions'));
   ({ getSession, requireAdmin } = await import('@/lib/auth/session'));
+  ({ resetRateLimits } = await import('@/lib/auth/rate-limit'));
 }, 120000);
 
 afterAll(async () => {
@@ -59,6 +61,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   cookieJar.clear();
+  resetRateLimits();
   await Promise.all([db.Student.deleteMany({}), ResetToken.deleteMany({})]);
 });
 
@@ -118,5 +121,33 @@ describe('sign-in says one thing', () => {
     expect(new Set(answers.map((a) => a.error)).size).toBe(1);
     expect(answers.every((a) => !a.needsProfile)).toBe(true);
     expect(cookieJar.size).toBe(0);
+  });
+});
+
+describe('rate limits and session versions', () => {
+  it('sign-in is refused after the bucket empties, for that account', async () => {
+    await expect(register({}, registration('limited@extralesson.invalid'))).rejects.toThrow('redirect:/study');
+    cookieJar.clear();
+    const wrong = () => signIn({}, form({ email: 'limited@extralesson.invalid', password: 'not the passphrase' }));
+    for (let i = 0; i < 10; i++) expect((await wrong()).error).not.toMatch(/Too many/);
+    expect((await wrong()).error).toMatch(/Too many/);
+    // The right password is refused too: the bucket, not the credential, decides now.
+    expect((await signIn({}, form({ email: 'limited@extralesson.invalid', password: 'a long enough passphrase' }))).error).toMatch(/Too many/);
+    expect(cookieJar.size).toBe(0);
+  });
+
+  it('a password reset signs out every cookie minted before it', async () => {
+    await expect(register({}, registration('reset-me@extralesson.invalid'))).rejects.toThrow('redirect:/study');
+    const before = cookieJar.get('el_session')!;
+    expect(await getSession()).toMatchObject({ email: 'reset-me@extralesson.invalid' });
+
+    const { newResetSecret } = await import('@/lib/auth/reset-token');
+    const { secret, lookup } = newResetSecret();
+    await ResetToken.create({ lookup, email: 'reset-me@extralesson.invalid', expires_at: new Date(Date.now() + 60_000) });
+    await expect(setPassword({}, form({ token: secret, password: 'a brand new passphrase' }))).rejects.toThrow('redirect:/study');
+    expect(await getSession()).toMatchObject({ email: 'reset-me@extralesson.invalid' });
+
+    cookieJar.set('el_session', before);
+    expect(await getSession()).toBeNull();
   });
 });

@@ -11,6 +11,7 @@ import { externalBaseUrl } from '@/lib/base-url';
 import { hashPassword, passwordProblem, verifyPassword } from '@/lib/auth/password';
 import { setSessionCookie } from '@/lib/auth/session';
 import { grantFromPayment, pendingPaymentFor } from '@/lib/grant-from-payment';
+import { limited, TOO_MANY } from '@/lib/auth/rate-limit';
 
 // One deliberate asymmetry runs through this file: SIGNING IN says as little as
 // possible, and RESETTING says nothing at all. A form that answers "no account
@@ -51,12 +52,14 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
   });
   if (!parsed.success) return { error: 'Enter your email and your password.' };
   const { email, password } = parsed.data;
+  if (await limited('login', email)) return { error: TOO_MANY, email };
 
   await dbConnect();
   const student = await Student.findOne({ email }).lean<{
     _id: unknown;
     email: string;
     password_hash?: string;
+    session_version?: number;
   } | null>();
 
   // ONE ANSWER for unknown, legacy and wrong (ROUND_6 Task 3): three answers
@@ -64,7 +67,7 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
   const ok = !!student?.password_hash && (await verifyPassword(password, student.password_hash));
   if (!student || !ok) return { error: SIGN_IN_FAILED, email };
 
-  await setSessionCookie(String(student._id), student.email);
+  await setSessionCookie(String(student._id), student.email, student.session_version ?? 1);
   redirect('/study');
 }
 
@@ -121,6 +124,7 @@ export async function requestReset(_prev: AuthState, formData: FormData): Promis
   const parsed = z.object({ email: EmailZ }).safeParse({ email: formData.get('email') });
   if (!parsed.success) return { error: 'Enter the email you registered with.' };
   const { email } = parsed.data;
+  if (await limited('reset-request', email)) return { error: TOO_MANY, email };
 
   await dbConnect();
   const student = await Student.findOne({ email }).lean();

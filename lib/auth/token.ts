@@ -27,6 +27,8 @@ export interface SessionPayload {
   kind: 'session';
   student_id: string;
   email: string;
+  /** The account's session_version when minted; absent on cookies from before it existed. */
+  sv?: number;
   exp: number; // epoch ms
 }
 
@@ -61,6 +63,7 @@ export function createSessionToken(
   email: string,
   secret: string,
   now: number = Date.now(),
+  version = 1,
 ): string {
-  return signToken({ kind: 'session', student_id, email, exp: now + SESSION_TTL_MS }, secret);
+  return signToken({ kind: 'session', student_id, email, sv: version, exp: now + SESSION_TTL_MS }, secret);
 }

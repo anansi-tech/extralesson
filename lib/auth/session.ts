@@ -12,8 +12,8 @@ export interface SessionUser {
   role: 'student' | 'admin';
 }
 
-export async function setSessionCookie(student_id: string, email: string): Promise<void> {
-  const token = createSessionToken(student_id, email, getSecret());
+export async function setSessionCookie(student_id: string, email: string, version = 1): Promise<void> {
+  const token = createSessionToken(student_id, email, getSecret(), Date.now(), version);
   (await cookies()).set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -33,8 +33,12 @@ export async function getSession(): Promise<SessionUser | null> {
   const payload = verifyToken(raw, getSecret());
   if (!payload || payload.kind !== 'session') return null;
   await dbConnect();
-  const account = await Student.findById(payload.student_id).select('role').lean<{ role?: 'student' | 'admin' } | null>();
+  const account = await Student.findById(payload.student_id)
+    .select('role session_version')
+    .lean<{ role?: 'student' | 'admin'; session_version?: number } | null>();
   if (!account) return null;
+  // A cookie from before a password reset is refused: the reset moved the version on.
+  if ((payload.sv ?? 1) !== (account.session_version ?? 1)) return null;
   return { student_id: payload.student_id, email: payload.email, role: account.role ?? 'student' };
 }
 

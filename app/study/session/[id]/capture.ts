@@ -19,6 +19,7 @@ import { constructionChecks } from '@/lib/grade/construction';
 import { checkConstruction } from '@/lib/grade/check-construction';
 import { prefillFromRead } from '@/lib/grade/prefill';
 import { markWorking, type CaptureResult } from './mark-working';
+import { limited, TOO_MANY } from '@/lib/auth/rate-limit';
 import type { StoredVisual } from '@/lib/visuals';
 
 const ImageZ = {
@@ -64,6 +65,8 @@ export async function readWorking(input: {
   const parsed = ReadZ.safeParse(input);
   if (!parsed.success) return { error: 'That photo could not be read. Try again.' };
   const { sessionId, questionIndex, contentType, data } = parsed.data;
+  // A read is a paid model call: the bucket is what stops a loop from spending it.
+  if (await limited('read', auth.student_id)) return { error: TOO_MANY };
 
   await dbConnect();
   // The session has to be this student's, or a photo writes into someone else's draft.

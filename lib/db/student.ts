@@ -9,6 +9,9 @@ const StudentSchema = new Schema({
   // 'admin' is set ONLY when a provisioning link is claimed (lib/auth/provision.ts):
   // public registration always makes a student, whatever the address (ROUND_6 Task 3).
   role: { type: String, enum: ['student', 'admin'], default: 'student', required: true },
+  // Bumped by a password reset; a cookie minted before the bump is refused on
+  // every request, so a reset signs every other device out (ROUND_6 Task 3).
+  session_version: { type: Number, default: 1, required: true },
   island: { type: String },
   exam_sitting: { type: String, enum: ['jan-2027', 'may-june-2027'], required: true },
   // Derived from exam_sitting; display only — never branch logic on it (ROUND_1 §0).

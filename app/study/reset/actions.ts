@@ -6,6 +6,7 @@ import { dbConnect, Student } from '@/lib/db';
 import { claimResetSecret } from '@/lib/auth/consume';
 import { hashPassword, passwordProblem } from '@/lib/auth/password';
 import { setSessionCookie } from '@/lib/auth/session';
+import { limited, TOO_MANY } from '@/lib/auth/rate-limit';
 
 export interface ResetState {
   error?: string;
@@ -22,6 +23,8 @@ export async function setPassword(_prev: ResetState, formData: FormData): Promis
 
   const problem = passwordProblem(parsed.data.password);
   if (problem) return { error: problem };
+  // Keyed on the link, since the account is unknown until the link is claimed.
+  if (await limited('reset-confirm', parsed.data.token)) return { error: TOO_MANY };
 
   await dbConnect();
   // Single-use and in-date, claimed atomically before anything is changed, so a
@@ -37,8 +40,10 @@ export async function setPassword(_prev: ResetState, formData: FormData): Promis
   student.password_hash = await hashPassword(parsed.data.password);
   // A provisioning link grants its role here, once the inbox is proved.
   if (claimed.grant_role) student.role = claimed.grant_role;
+  // Every other device is signed out: cookies carry the old version.
+  student.session_version = (student.session_version ?? 1) + 1;
   await student.save();
 
-  await setSessionCookie(String(student._id), student.email);
+  await setSessionCookie(String(student._id), student.email, student.session_version);
   redirect('/study');
 }
