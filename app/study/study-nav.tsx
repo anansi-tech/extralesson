@@ -3,12 +3,13 @@ import { Lockup } from '../lockup';
 import { logout } from './actions';
 
 /**
- * One header for every student page: the lockup, two places to be, and the
+ * One header for every student page: the lockup, three places to be, and the
  * quiet things — sitting, who is signed in, the way out — on the right.
  */
 const TABS = [
   { href: '/study', label: 'Notebook', key: 'notebook' },
   { href: '/study/history', label: 'History', key: 'history' },
+  { href: '/study/progress', label: 'Progress', key: 'progress' },
 ] as const;
 
 export type StudyTab = (typeof TABS)[number]['key'];

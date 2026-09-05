@@ -85,10 +85,10 @@ describe('(1)(2)(3) history, the student nav, the admin bar', () => {
     expect(dash).toContain('href="/study/history"');
     expect(dash).not.toMatch(/Look back at a question|groupReviewableByDay/);
   });
-  it('gives every student page the same two-item nav and drops the back link', () => {
+  it('gives every student page the same nav and drops the back link', () => {
     const nav = at('app', 'study', 'study-nav.tsx');
-    expect(nav).toMatch(/Notebook[\s\S]*History/);
-    for (const f of [['app', 'study', 'page.tsx'], ['app', 'study', 'history', 'page.tsx'], ['app', 'study', 'session', '[id]', 'page.tsx']]) {
+    expect(nav).toMatch(/Notebook[\s\S]*History[\s\S]*Progress/);
+    for (const f of [['app', 'study', 'page.tsx'], ['app', 'study', 'history', 'page.tsx'], ['app', 'study', 'progress', 'page.tsx'], ['app', 'study', 'session', '[id]', 'page.tsx']]) {
       expect(at(...f), f.join('/')).toMatch(/<StudyNav /);
     }
     expect(at('app', 'study', 'session', '[id]', 'page.tsx')).not.toContain('← notebook');
@@ -102,5 +102,22 @@ describe('(1)(2)(3) history, the student nav, the admin bar', () => {
 describe('(7) the camera control', () => {
   it('offers the gallery as well as the camera', () => {
     expect(at('app', 'study', 'session', '[id]', 'working-photo.tsx')).not.toMatch(/capture=/);
+  });
+});
+
+describe('(8) progress off the dashboard', () => {
+  it('moves the module estimates and topic bars to /study/progress', () => {
+    const progress = at('app', 'study', 'progress', 'page.tsx');
+    expect(progress).toMatch(/topic strength/);
+    expect(progress).toMatch(/BAND_LABEL\[t\.band\]/);
+    expect(progress).toMatch(/prediction\.modules\.find/);
+    expect(progress).not.toMatch(/updateOne|create\(|deleteOne/);
+    const dash = at('app', 'study', 'page.tsx');
+    expect(dash).not.toMatch(/topic strength|BAND_LABEL|prediction\.modules|coverageSummary/);
+  });
+  it('ends the dashboard at the streak stats', () => {
+    const dash = at('app', 'study', 'page.tsx');
+    const afterStats = dash.slice(dash.indexOf('days in a row'));
+    expect(afterStats).not.toMatch(/<section|<Link/);
   });
 });

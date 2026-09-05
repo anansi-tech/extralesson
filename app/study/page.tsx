@@ -1,7 +1,7 @@
 import { dbConnect, Student } from '@/lib/db';
 import { isAdminEmail, requireSession } from '@/lib/auth/session';
 import { loadStudyState } from '@/lib/study/state';
-import { coverageDetail, coverageSummary } from '@/lib/targets/coverage';
+import { coverageDetail } from '@/lib/targets/coverage';
 import { paperShape } from '@/lib/exam/paper-shape';
 import Link from 'next/link';
 import { StudyNav, sittingTag } from './study-nav';
@@ -25,9 +25,7 @@ import { leadPanel, shouldLeadWithReachable } from '@/lib/study/lead-panel';
 import { DIAGNOSTIC_INTERVAL_DAYS, diagnosticOpensAt, firstQuestionTaken, FREE_SESSIONS } from '@/lib/access';
 import { sittingLabel } from '@/lib/sittings';
 import { paymentLink } from '@/lib/landing-content';
-import { BAND_LABEL } from '@/lib/study/profiles';
 import type { ModuleNumber } from '@/lib/types';
-import type { MasteryBand } from '@/lib/mastery/config';
 
 export const metadata = { title: 'Your notebook — ExtraLesson' };
 export const dynamic = 'force-dynamic';
@@ -46,13 +44,6 @@ function trajectoryWait(gap: TrajectoryGap | null): string {
   if (s > 0 && d > 0) return `After ${sessions}, spread over ${days}, we can show you the grade your current rate is heading for.`;
   if (s > 0) return `After ${sessions} we can show you the grade your current rate is heading for.`;
   return `You have done enough sessions. A rate needs time as well, so after ${days} we can show you the grade it is heading for.`;
-}
-
-
-function barColor(band: MasteryBand): string {
-  if (band === 'STRONG') return 'bg-green-pen';
-  if (band === 'BUILDING') return 'bg-[#D9A62E]';
-  return 'bg-red-pen';
 }
 
 export default async function StudyDashboard({
@@ -157,7 +148,6 @@ export default async function StudyDashboard({
 
   // Stating what we cannot mark is a trust asset — it sits with the estimate it
   // qualifies, not in a footnote (R1.6 §3).
-  const coverage = coverageSummary(state.coverage);
   const coverageMore = coverageDetail(state.coverage);
 
   return (
@@ -262,8 +252,7 @@ export default async function StudyDashboard({
               {reachable.map((t) => (
                 <li key={t.code} className="flex items-baseline justify-between gap-3">
                   {/* The title and the marks, and nothing else: module and
-                      strength sit in the per-module breakdown, the gating
-                      below. */}
+                      strength sit on the progress page. */}
                   <span className="min-w-0">
                     <b>{t.title}</b>
                   </span>
@@ -312,38 +301,17 @@ export default async function StudyDashboard({
                 session after that.
               </p>
             </>
-          ) : student.syllabus_mode === 'legacy-jan' ? (
-            // Jan sitting awards an overall grade only — no per-module letters (§6.6).
+          ) : (
+            // The overall grade only: the per-module letters are on the
+            // progress page, beside the topics that make them.
             <>
               <div className={`font-black text-red-pen ${leadWithReachable ? 'text-2xl' : 'text-5xl'}`}>
                 {prediction.overall_grade ? gradeLabel(prediction.overall_grade) : '—'}
               </div>
               <div className="mt-1 section-label">
-                Estimated overall grade
+                {leadWithReachable ? 'Where you are today' : 'Estimated overall grade'}
                 {prediction.overall_grade ? ` · ${gradePlace(prediction.overall_grade)}` : ''} ·
                 estimate only
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex justify-center gap-6">
-                {prediction.modules.map((m) => (
-                  <div key={m.module}>
-                    <div className={`font-black text-red-pen ${leadWithReachable ? 'text-xl' : 'text-4xl'}`}>
-                      {m.letter ?? '—'}
-                    </div>
-                    <div className="section-label">
-                      M{m.module} est.
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-2 section-label">
-                {leadWithReachable ? 'Where you are today' : 'Overall estimate'}:{' '}
-                {prediction.overall_grade
-                  ? `${gradeLabel(prediction.overall_grade)}, ${gradePlace(prediction.overall_grade)}`
-                  : 'not yet'}{' '}
-                · all figures are estimates
               </div>
             </>
           )}
@@ -373,13 +341,10 @@ export default async function StudyDashboard({
               {trajectoryWait(gap)}
             </p>
           )}
-          {/* The coverage sentence sits inside the detail it introduces, not
-              above the summary that opens it. */}
           <details className="mt-2 text-left">
             <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">
               What we cover
             </summary>
-            <p className="mt-2 text-[11px] leading-snug text-dim">{coverage}</p>
             <ul className="mt-2 space-y-2">
               {coverageMore.map((line) => (
                 <li key={line} className="text-[11px] leading-snug text-dim">
@@ -583,37 +548,6 @@ export default async function StudyDashboard({
             </div>
           </section>
         )}
-
-        {([1, 2, 3] as const)
-          .filter((m) => student.target_modules.includes(m))
-          .map((m) => (
-            <section key={m} className="mt-8">
-              <div className="flex items-baseline justify-between">
-                <h2 className="font-black">Module {m}</h2>
-                <span className="font-mono text-xs text-dim">
-                  {Math.round(state.moduleMastery[m] * 100)}% topic strength
-                </span>
-              </div>
-              <div className="mt-2 space-y-3">
-                {state.topics
-                  .filter((t) => t.module === m)
-                  .map((t) => (
-                    <div key={t.code}>
-                      <div className="flex justify-between text-sm">
-                        <b>{t.title}</b>
-                        <span className="font-mono text-[10px] text-dim">{BAND_LABEL[t.band]}</span>
-                      </div>
-                      <div className="mt-1 h-2 overflow-hidden rounded border border-ink bg-paper-deep">
-                        <i
-                          className={`block h-full ${barColor(t.band)}`}
-                          style={{ width: `${Math.max(2, Math.round(t.mastery * 100))}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </section>
-          ))}
       </div>
     </main>
   );
