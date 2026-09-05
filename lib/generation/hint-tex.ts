@@ -41,11 +41,15 @@ const JSON_ESCAPES: [RegExp, string][] = [
   [/\x0b/g, 'v'],
 ];
 
+/** Commands the model reaches for on its own, whatever the criterion carries. */
+const COMMON_COMMANDS = ['vec', 'frac', 'dfrac', 'times', 'text', 'theta', 'alpha', 'beta', 'angle', 'approx', 'begin', 'end', 'right', 'ne', 'neq', 'tan', 'triangle', 'therefore', 'to'];
+
 export function repairTex(hint: string, criterion: string): string {
   let out = hint;
-  // A control character followed by the rest of a command the criterion has
-  // is that command with its backslash and first letter swallowed by JSON.
-  for (const c of commandsIn(criterion)) {
+  // A control character followed by the rest of a command is that command
+  // with its backslash and first letter swallowed by JSON — whether the
+  // criterion carries the command or the model reached for it itself.
+  for (const c of [...new Set([...commandsIn(criterion), ...COMMON_COMMANDS])]) {
     for (const [ctrl, letter] of JSON_ESCAPES) {
       if (c.startsWith(letter)) out = out.replace(new RegExp(`${ctrl.source}${c.slice(1)}(?![A-Za-z])`, 'g'), `\\${c}`);
     }

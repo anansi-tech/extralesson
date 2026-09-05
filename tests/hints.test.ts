@@ -43,6 +43,8 @@ describe('TeX through the generator', () => {
     // JSON ate \\a into a bell and \\f into a form feed; the command comes back.
     expect(repairTex('Identify $\u0007ngle ACB$ as a right angle.', 'Recognises that $\\angle ACB=90°$')).toBe('Identify $\\angle ACB$ as a right angle.');
     expect(repairTex('Leave $x=\u000crac{1}{2}$.', 'Obtains $x=\\frac{1}{2}$')).toBe('Leave $x=\\frac{1}{2}$.');
+    // The model reached for \\vec on its own; the criterion never had it.
+    expect(repairTex('State that $\u000bec{AD}$ and $\u000bec{AB}$ are parallel.', 'Recognises parallel vectors')).toBe('State that $\\vec{AD}$ and $\\vec{AB}$ are parallel.');
     expect(missingCommands('Solve $3x-6 ge 20$ for $x$.', 'Solves $3x-6\\ge20$')).toEqual(['ge']);
     expect(missingCommands('Solve $3x-6\\ge20$ for $x$.', 'Solves $3x-6\\ge20$')).toEqual([]);
     // A hint that leaves the answer out has no reason to carry its TeX.
