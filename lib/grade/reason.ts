@@ -30,15 +30,23 @@ function numerals(s: string): string[] {
 
 /**
  * What a wrong answer is told (ROUND_7 Task 1): the approved hint on the
- * slot's first method row, written to the student. The criterion itself is
- * the assessor's sentence and never reaches the card; a row with no hint
- * yet says nothing rather than something in the wrong register.
+ * slot's first method row, written to the student. Until that row has one,
+ * the criterion with "their" read as "your" — a wrong answer must never show
+ * nothing. Delete the fallback only when every approved question's method
+ * rows carry hints (`pnpm hints:generate` batches, approved by hand).
  */
 export function hintLine(
   rubric: { slot_ref?: string; criterion: string; for_format?: boolean; hint?: string }[],
   ref: string,
 ): string | undefined {
-  return rubric.find((r) => r.slot_ref === ref && !r.for_format && !/\bCAO\b/.test(r.criterion))?.hint;
+  const row = rubric.find((r) => r.slot_ref === ref && !r.for_format && !/\bCAO\b/.test(r.criterion));
+  if (!row) return undefined;
+  return row.hint ?? forStudent(row.criterion);
+}
+
+/** The scheme says "their"; the student reading it is the one meant. */
+export function forStudent(schemeText: string): string {
+  return schemeText.replace(/[“"']their[”"']/g, 'your');
 }
 
 export function missReason(

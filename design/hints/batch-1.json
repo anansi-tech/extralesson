@@ -52,77 +52,77 @@
   "question_id": "6a83b11711edd390f46a51ef",
   "code": "CK3",
   "criterion": "Forms the condition $h(x)\\ge20$ for retaining at least \\$20",
-  "hint": "Write the condition for Plan B retaining at least $20$ as $h(x)\u001e20$.",
+  "hint": "Write the condition for Plan B retaining at least $20$ as $h(x)\\ge20$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b11711edd390f46a51ef",
   "code": "R3",
   "criterion": "Solves $3x-6\\ge20$ to obtain $x\\ge\\frac{26}{3}$",
-  "hint": "Solve $3x-6\u001e20$ step by step to find the lower bound for $x$.",
+  "hint": "Solve $3x-6\\ge20$ step by step to obtain $x\\ge\\frac{26}{3}$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b11711edd390f46a51ef",
   "code": "R4",
   "criterion": "Justifies that 8 trays give only \\$18, which is less than \\$20",
-  "hint": "Substitute 8 trays into Plan B and show that the retained amount is below $20$.",
+  "hint": "Substitute 8 into Plan B's function and state that the retained amount is less than $20$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "CK1",
   "criterion": "Writes $\\overrightarrow{OA}$ as the column vector $\\begin{pmatrix}2\\\\-1\\end{pmatrix}$",
-  "hint": "Write the coordinates of A as the components of \foverrightarrow{OA}.",
+  "hint": "Write \\overrightarrow{OA} as a column vector \\begin{pmatrix}\\cdots\\\\\\cdots\\end{pmatrix} by using A's coordinates in order.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "CK2",
   "criterion": "Writes $\\overrightarrow{OB}$ as the column vector $\\begin{pmatrix}8\\\\5\\end{pmatrix}$",
-  "hint": "Write the coordinates of B as the components of \foverrightarrow{OB}.",
+  "hint": "Write \\overrightarrow{OB} as a column vector \\begin{pmatrix}\\cdots\\\\\\cdots\\end{pmatrix} by using B's coordinates in order.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "AK1",
   "criterion": "Subtracts position vectors to obtain $\\overrightarrow{AB}=\\begin{pmatrix}8-2\\\\5-(-1)\\end{pmatrix}$",
-  "hint": "Subtract the components of \foverrightarrow{OA} from the corresponding components of \foverrightarrow{OB} to find \foverrightarrow{AB}.",
+  "hint": "Subtract corresponding components of \\overrightarrow{OA} from \\overrightarrow{OB} to form \\overrightarrow{AB}=\\begin{pmatrix}\\cdots\\\\\\cdots\\end{pmatrix}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "CK3",
   "criterion": "Forms $\\overrightarrow{OC}=\\overrightarrow{OA}+\\dfrac{3}{2}\\overrightarrow{AB}$",
-  "hint": "Form \foverrightarrow{OC} by adding \foverrightarrow{OA} to \ffrac{3}{2}\foverrightarrow{AB}.",
+  "hint": "Form \\overrightarrow{OC}=\\overrightarrow{OA}+\\dfrac{3}{2}\\overrightarrow{AB} before calculating the components.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "AK2",
   "criterion": "Finds $\\dfrac{3}{2}$ of “their” $\\overrightarrow{AB}$",
-  "hint": "Multiply each component of your earlier \foverrightarrow{AB} by \ffrac{3}{2}.",
+  "hint": "Find \\dfrac{3}{2} of your \\overrightarrow{AB} by multiplying each component by \\dfrac{3}{2}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "CK4",
   "criterion": "Identifies $\\overrightarrow{AD}=\\overrightarrow{OD}-\\overrightarrow{OA}$ and $\\overrightarrow{DC}=\\overrightarrow{OC}-\\overrightarrow{OD}$",
-  "hint": "Find \foverrightarrow{AD} by subtracting \foverrightarrow{OA} from \foverrightarrow{OD}, then find \foverrightarrow{DC} by subtracting \foverrightarrow{OD} from \foverrightarrow{OC}.",
+  "hint": "Identify \\overrightarrow{AD}=\\overrightarrow{OD}-\\overrightarrow{OA} and \\overrightarrow{DC}=\\overrightarrow{OC}-\\overrightarrow{OD}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "R1",
   "criterion": "Obtains $\\overrightarrow{AD}=\\begin{pmatrix}3\\\\3\\end{pmatrix}$",
-  "hint": "Subtract the coordinates of A from the corresponding coordinates of D to obtain \foverrightarrow{AD}.",
+  "hint": "Calculate \\overrightarrow{AD} and write the result as \\begin{pmatrix}\\cdots\\\\\\cdots\\end{pmatrix}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "R2",
   "criterion": "Obtains $\\overrightarrow{DC}=\\begin{pmatrix}6\\\\6\\end{pmatrix}$ using “their” $\\overrightarrow{OC}$",
-  "hint": "Subtract the coordinates of D from the corresponding components of your earlier \foverrightarrow{OC} to obtain \foverrightarrow{DC}.",
+  "hint": "Use your \\overrightarrow{OC} to calculate \\overrightarrow{DC}=\\overrightarrow{OC}-\\overrightarrow{OD} and write it as \\begin{pmatrix}\\cdots\\\\\\cdots\\end{pmatrix}.",
   "status": "proposed"
  },
  {
@@ -318,7 +318,7 @@
   "question_id": "6a83b6b911edd390f46a5278",
   "code": "AK3",
   "criterion": "Solves to obtain $x=\\pm2$",
-  "hint": "Solve the equation by isolating the squared term and taking both square roots, giving $x=\\pm2$.",
+  "hint": "Solve the equation for x and include both positive and negative solutions.",
   "status": "proposed"
  },
  {
@@ -346,35 +346,35 @@
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "CK1",
   "criterion": "Uses $-3$ as the first component of $\\overrightarrow{OA}$",
-  "hint": "Read station $A$ from the graph and use its horizontal coordinate as the first component of $\foverrightarrow{OA}$.",
+  "hint": "Read station A’s horizontal coordinate from the graph and use it as the first component of \\overrightarrow{OA}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "CK2",
   "criterion": "Uses $2$ as the second component of $\\overrightarrow{OA}$",
-  "hint": "Read station $A$ from the graph and use its vertical coordinate as the second component of $\foverrightarrow{OA}$.",
+  "hint": "Read station A’s vertical coordinate from the graph and use it as the second component of \\overrightarrow{OA}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "CK3",
   "criterion": "Uses $2$ as the first component of $\\overrightarrow{OB}$",
-  "hint": "Read station $B$ from the graph and use its horizontal coordinate as the first component of $\foverrightarrow{OB}$.",
+  "hint": "Read station B’s horizontal coordinate from the graph and use it as the first component of \\overrightarrow{OB}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "CK4",
   "criterion": "Uses $4$ as the second component of $\\overrightarrow{OB}$",
-  "hint": "Read station $B$ from the graph and use its vertical coordinate as the second component of $\foverrightarrow{OB}$.",
+  "hint": "Read station B’s vertical coordinate from the graph and use it as the second component of \\overrightarrow{OB}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "R1",
   "criterion": "Forms $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$",
-  "hint": "Form $\foverrightarrow{AB}=\foverrightarrow{OB}-\foverrightarrow{OA}$ to find the displacement from $A$ to $B$.",
+  "hint": "Find the displacement from A to B by subtracting \\overrightarrow{OA} from \\overrightarrow{OB}: \\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}.",
   "status": "proposed"
  },
  {
@@ -395,21 +395,21 @@
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "R2",
   "criterion": "Forms $\\overrightarrow{OC}=\\overrightarrow{OB}+2\\overrightarrow{AB}$ using \"their\" $\\overrightarrow{AB}$",
-  "hint": "Form $\foverrightarrow{OC}=\foverrightarrow{OB}+2\foverrightarrow{AB}$ using your earlier $\foverrightarrow{AB}$.",
+  "hint": "Form \\overrightarrow{OC}=\\overrightarrow{OB}+2\\overrightarrow{AB} using your \\overrightarrow{AB}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "AK3",
   "criterion": "Finds twice \"their\" $\\overrightarrow{AB}$",
-  "hint": "Multiply each component of your earlier $\foverrightarrow{AB}$ by $2$.",
+  "hint": "Multiply each component of your \\overrightarrow{AB} by 2 to find twice your \\overrightarrow{AB}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "R3",
   "criterion": "Adds \"their\" doubled displacement to \"their\" $\\overrightarrow{OB}$",
-  "hint": "Add your doubled displacement component by component to your $\foverrightarrow{OB}$.",
+  "hint": "Add your doubled displacement component by component to your \\overrightarrow{OB}.",
   "status": "proposed"
  },
  {
@@ -430,7 +430,7 @@
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "AK2",
   "criterion": "Uses $\\left(180°-\\text{their }\\angle PAQ\\right)\\div2$ to find each base angle",
-  "hint": "Calculate each base angle using $\u001b[0m\\left(180°-\\text{your }\\angle PAQ\\right)\\div2$.",
+  "hint": "Find each base \\angle by calculating \\(\\left(180°-\\text{your }\\angle PAQ\\right)\\div2\\).",
   "status": "proposed"
  },
  {
@@ -444,98 +444,98 @@
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "AK3",
   "criterion": "Uses $P$, $O$ and $Q$ collinear to equate $\\angle APQ$ and $\\angle QPA$",
-  "hint": "Use the fact that $P$, $O$ and $Q$ are collinear to set $\u001b[0m\\angle APQ=\\angle QPA$.",
+  "hint": "Use the fact that \\(P\\), \\(O\\), and \\(Q\\) are collinear to set \\(\\angle APQ\\) equal to \\(\\angle QPA\\).",
   "status": "proposed"
  },
  {
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "CK4",
   "criterion": "Recognises that $TQ\\perp OQ$, so $TQ$ is a tangent at $Q$",
-  "hint": "Show that $TQ$ is perpendicular to $OQ$, then conclude that $TQ$ is a tangent at $Q$.",
+  "hint": "Show that \\(TQ\\perp OQ\\), then state that \\(TQ\\) is a tangent at \\(Q\\).",
   "status": "proposed"
  },
  {
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "R3",
   "criterion": "Uses the alternate-segment angle to obtain $\\angle TQA=\\text{their }\\angle APQ$",
-  "hint": "Use the alternate-segment angle to set $\u001b[0m\\angle TQA=\\text{your }\\angle APQ$.",
+  "hint": "Use the alternate-segment \\angle to set \\(\\angle TQA=\\text{your }\\angle APQ\\).",
   "status": "proposed"
  },
  {
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "AK4",
   "criterion": "Uses angle sum of triangle $ATQ$: $180°-\\text{their }\\angle TAQ-\\text{their }\\angle TQA$",
-  "hint": "Find $\u001b[0m\\angle ATQ$ using $180°-\\text{your }\\angle TAQ-\\text{your }\\angle TQA$.",
+  "hint": "Find \\(\\angle ATQ\\) using the triangle \\angle sum: \\(180°-\\text{your }\\angle TAQ-\\text{your }\\angle TQA\\).",
   "status": "proposed"
  },
  {
   "question_id": "6a83b99311edd390f46a52b3",
   "code": "CK1",
   "criterion": "States $\\vec{PQ}=\\vec{OQ}-\\vec{OP}$",
-  "hint": "Find the vector from $P$ to $Q$ by subtracting $\\vec{OP}$ from $\\vec{OQ}$.",
+  "hint": "Find the vector from P to Q by subtracting \\vec{OP} from \\vec{OQ}: \\vec{PQ}=\\vec{OQ}-\\vec{OP}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b99311edd390f46a52b3",
   "code": "CK2",
   "criterion": "Recognises that each term in $\\vec{PQ}$ is multiplied by $2$",
-  "hint": "Multiply both the $\\vec{a}$ component and the $\\vec{b}$ component of $\\vec{PQ}$ by $2$ to get $\\vec{QR}$.",
+  "hint": "Multiply every component of \\vec{PQ} by 2 to obtain \\vec{QR}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b99311edd390f46a52b3",
   "code": "CK3",
   "criterion": "States $\\vec{OR}=\\vec{OQ}+\\vec{QR}$",
-  "hint": "Travel from $O$ to $R$ through $Q$, so add $\\vec{OQ}$ and $\\vec{QR}$.",
+  "hint": "Travel from O to R through Q, so write \\vec{OR}=\\vec{OQ}+\\vec{QR}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b99311edd390f46a52b3",
   "code": "AK3",
   "criterion": "Adds corresponding components of $\\vec{OQ}$ and \"their\" $\\vec{QR}$",
-  "hint": "Add the $\\vec{a}$ components together and add the $\\vec{b}$ components together in $\\vec{OQ}$ and your $\\vec{QR}$.",
+  "hint": "Add the corresponding \\vec{a} and \\vec{b} components in \\vec{OQ} and your \\vec{QR}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b99311edd390f46a52b3",
   "code": "R2",
   "criterion": "Uses \"their\" $\\vec{OR}$ to obtain $\\vec{OS}$ and forms $\\vec{PS}=\\vec{OS}-\\vec{OP}$",
-  "hint": "Use your $\\vec{OR}$ to find $\\vec{OS}$, then subtract $\\vec{OP}$ from $\\vec{OS}$ to form $\\vec{PS}$.",
+  "hint": "Use your \\vec{OR} to find \\vec{OS}, then subtract \\vec{OP} by writing \\vec{PS}=\\vec{OS}-\\vec{OP}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b99311edd390f46a52b3",
   "code": "R3",
   "criterion": "Concludes parallelogram since \"their\" $\\vec{PS}$ equals \"their\" $\\vec{QR}$",
-  "hint": "Compare your $\\vec{PS}$ with your $\\vec{QR}$ and conclude that $PQRS$ is a parallelogram when they are equal.",
+  "hint": "Compare your \\vec{PS} with your \\vec{QR} and conclude that PQRS is a parallelogram when these vectors are equal.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b9cd11edd390f46a52bb",
   "code": "AK1",
   "criterion": "Calculates $6 \\times 2 = 12$",
-  "hint": "Multiply 6 by 2 and write the product in the first $fx$ entry.",
+  "hint": "Multiply 6 by 2 to find the first fx value.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b9cd11edd390f46a52bb",
   "code": "AK2",
   "criterion": "Calculates $7 \\times 3 = 21$",
-  "hint": "Multiply 7 by 3 and write the product in the second $fx$ entry.",
+  "hint": "Multiply 7 by 3 to find the second fx value.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b9cd11edd390f46a52bb",
   "code": "AK3",
   "criterion": "Calculates $8 \\times 4 = 32$",
-  "hint": "Multiply 8 by 4 and write the product in the third $fx$ entry.",
+  "hint": "Multiply 8 by 4 to find the third fx value.",
   "status": "proposed"
  },
  {
   "question_id": "6a83b9cd11edd390f46a52bb",
   "code": "AK4",
   "criterion": "Calculates $9 \\times 1 = 9$",
-  "hint": "Multiply 9 by 1 and write the product in the fourth $fx$ entry.",
+  "hint": "Multiply 9 by 1 to find the fourth fx value.",
   "status": "proposed"
  },
  {
@@ -570,7 +570,7 @@
   "question_id": "6a83ba2711edd390f46a52c8",
   "code": "AK1",
   "criterion": "Multiplies both sides by $\\frac{3}{4\\pi}$ to obtain $r^3=\\frac{3V}{4\\pi}$",
-  "hint": "Multiply both sides by \\(\\frac{3}{4\\pi}\\) to obtain \\(r^3=\\frac{3V}{4\\pi}\\).",
+  "hint": "Multiply both sides of the volume equation by \\frac{3}{4\\pi} to make \\(r^3=\\frac{3V}{4\\pi}\\).",
   "status": "proposed"
  },
  {
@@ -584,14 +584,14 @@
   "question_id": "6a83ba2711edd390f46a52c8",
   "code": "CK2",
   "criterion": "Substitutes $V=36\\pi$ into the expression for $r$",
-  "hint": "Replace \\(V\\) in your expression for \\(r\\) with the given tank volume.",
+  "hint": "Substitute \\(V=36\\pi\\) into \\(r=\\sqrt[3]{\\frac{3V}{4\\pi}}\\).",
   "status": "proposed"
  },
  {
   "question_id": "6a83ba2711edd390f46a52c8",
   "code": "AK2",
   "criterion": "Simplifies $\\frac{3(36\\pi)}{4\\pi}$ to $27$",
-  "hint": "Simplify the fraction by cancelling \\(\\pi\\) and carrying out the remaining arithmetic.",
+  "hint": "Simplify \\(\\frac{3(36\\pi)}{4\\pi}\\) by cancelling \\(\\pi\\) and dividing the remaining factors.",
   "status": "proposed"
  },
  {
@@ -619,42 +619,42 @@
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "CK1",
   "criterion": "Uses $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$",
-  "hint": "Use \\(\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}\\) to find the displacement from A to B.",
+  "hint": "Write $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$ before calculating the displacement.",
   "status": "proposed"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "AK1",
   "criterion": "Subtracts components to obtain $\\begin{pmatrix}5\\\\3\\end{pmatrix}$",
-  "hint": "Subtract the corresponding components of the two position vectors.",
+  "hint": "Subtract the corresponding components and write the displacement as $\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "CK2",
   "criterion": "Uses $\\overrightarrow{BC}=2\\times$ \"their\" $\\overrightarrow{AB}$",
-  "hint": "Multiply your \\(\\overrightarrow{AB}\\) by \\(2\\) to form \\(\\overrightarrow{BC}\\).",
+  "hint": "Use $\\overrightarrow{BC}=2\\times\\overrightarrow{AB}$, multiplying your earlier $\\overrightarrow{AB}$ by $2$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "AK2",
   "criterion": "Calculates $\\overrightarrow{BC}=\\begin{pmatrix}10\\\\6\\end{pmatrix}$, or equivalent follow-through value",
-  "hint": "Double each component of your \\(\\overrightarrow{AB}\\).",
+  "hint": "Multiply each component of your $\\overrightarrow{AB}$ by $2$ and write $\\overrightarrow{BC}$ as $\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "CK3",
   "criterion": "Uses $\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{BC}$",
-  "hint": "Add \\(\\overrightarrow{OB}\\) and \\(\\overrightarrow{BC}\\) to find \\(\\overrightarrow{OC}\\).",
+  "hint": "Write $\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{BC}$ to find the position vector of $C$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "AK3",
   "criterion": "Adds vectors to obtain $\\begin{pmatrix}12\\\\11\\end{pmatrix}$, or correct follow-through from \"their\" $\\overrightarrow{BC}$",
-  "hint": "Add the corresponding components of \\(\\overrightarrow{OB}\\) and your \\(\\overrightarrow{BC}\\).",
+  "hint": "Add the corresponding components of $\\overrightarrow{OB}$ and your $\\overrightarrow{BC}$, writing $\\overrightarrow{OC}$ as $\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
   "status": "proposed"
  },
  {
@@ -682,7 +682,7 @@
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "R3",
   "criterion": "Finds target position minus \"their\" $\\overrightarrow{OC}$ to obtain $\\begin{pmatrix}-2\\\\0\\end{pmatrix}$",
-  "hint": "Subtract your \\(\\overrightarrow{OC}\\) from the target position vector to find the required displacement.",
+  "hint": "Subtract your $\\overrightarrow{OC}$ from the target position and write the required displacement as $\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
   "status": "proposed"
  },
  {
@@ -724,7 +724,7 @@
   "question_id": "6a83bceb2977095c51fe84af",
   "code": "R1",
   "criterion": "Compares \"their\" composite expressions and states $fg\\ne gf$",
-  "hint": "Compare your two composite expressions and state that they are not equal if they give different expressions.",
+  "hint": "Compare your two composite expressions and state \\(fg\\ne gf\\) because they are not the same.",
   "status": "proposed"
  },
  {
@@ -815,7 +815,7 @@
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "AK2",
   "criterion": "Halves \"their\" $\\angle AOB$.",
-  "hint": "Divide your $\u0007ngle AOB$ by $2$ to find $\u0007ngle ACB$.",
+  "hint": "Halve \"your\" \\angle AOB to find \\angle ACB.",
   "status": "proposed"
  },
  {
@@ -829,21 +829,21 @@
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "AK3",
   "criterion": "Calculates $180-42-\\text{\"their\" }\\angle ACB$.",
-  "hint": "Subtract $42°$ and your $\u0007ngle ACB$ from $180°$ to find $\u0007ngle CBA$.",
+  "hint": "Calculate 180-42-\\text{\"your\" }\\angle ACB to find \\angle CBA.",
   "status": "proposed"
  },
  {
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "CK4",
   "criterion": "Identifies $\\angle CBA$ as the angle in the alternate segment for chord $CA$.",
-  "hint": "Identify $\u0007ngle CBA$ as the angle in the alternate segment for chord $CA$.",
+  "hint": "Identify \\angle CBA as the \\angle in the alternate segment for chord $CA$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "AK4",
   "criterion": "States \"their\" $\\angle CBA$ as the required angle between a tangent at $C$ and chord $CA$.",
-  "hint": "Use your $\u0007ngle CBA$ as the angle that a tangent at $C$ must make with chord $CA$.",
+  "hint": "State \"your\" \\angle CBA as the required \\angle between a tangent at $C$ and chord $CA$.",
   "status": "proposed"
  },
  {
@@ -864,7 +864,7 @@
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "CK1",
   "criterion": "Identifies $QR$ as opposite the $30^\\circ$ angle",
-  "hint": "Identify $QR$ as the side opposite the $30^\firc$ angle.",
+  "hint": "Identify $QR$ as the side opposite the $30^\\circ$ angle.",
   "status": "proposed"
  },
  {
@@ -878,21 +878,21 @@
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "AK1",
   "criterion": "Substitutes into $\\tan 30^\\circ=\\frac{QR}{45}$",
-  "hint": "Substitute the known side and angle into $\tan 30^\firc=\\frac{QR}{45}$.",
+  "hint": "Substitute the triangle sides into $\\tan 30^\\circ=\\frac{QR}{45}$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "AK2",
   "criterion": "Evaluates $QR=45\\tan30^\\circ$",
-  "hint": "Calculate $QR$ by evaluating $45\\tan30^\firc$.",
+  "hint": "Calculate $QR=45\\tan30^\\circ$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "R1",
   "criterion": "Gives $26.0\\text{ m}$ correct to 1 decimal place",
-  "hint": "State the mast height in metres, rounded to 1 decimal place.",
+  "hint": "State the mast height to 1 decimal place in $\\text{ m}$.",
   "status": "proposed"
  },
  {
@@ -906,28 +906,28 @@
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "AK3",
   "criterion": "Uses $\\frac{\\text{their }QR}{\\sin30^\\circ}$ to find $PR$",
-  "hint": "Use your value of $QR$ and calculate $PR$ with $\\frac{\\text{your }QR}{\\sin30^\firc}$.",
+  "hint": "Use $\\frac{\\text{your }QR}{\\sin30^\\circ}$ to calculate $PR$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "AK4",
   "criterion": "Evaluates $PR=\\frac{25.980\\ldots}{\\sin30^\\circ}=51.961\\ldots$",
-  "hint": "Evaluate $PR=\\frac{25.980\\ldots}{\\sin30^\firc}$.",
+  "hint": "Evaluate $PR=\\frac{25.980\\ldots}{\\sin30^\\circ}=51.961\\ldots$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "R2",
   "criterion": "Gives $52.0\\text{ m}$ correct to 1 decimal place",
-  "hint": "State the support-cable length in metres, rounded to 1 decimal place.",
+  "hint": "State the support-cable length to 1 decimal place in $\\text{ m}$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "R3",
   "criterion": "Concludes that the cable is not long enough since \"their\" $PR>51\\text{ m}$",
-  "hint": "Compare your value of $PR$ with $51\\text{ m}$ and conclude whether the cable is long enough.",
+  "hint": "Conclude that the cable is not long enough because your $PR>51\\text{ m}$.",
   "status": "proposed"
  },
  {
@@ -948,14 +948,14 @@
   "question_id": "6a83be012977095c51fe84d4",
   "code": "CK3",
   "criterion": "Identifies $P(\\text{underweight}) = \\frac{30}{100} = 0.3$",
-  "hint": "Find the underweight frequency out of the total and write it as a decimal probability.",
+  "hint": "Find the probability of an underweight bag by dividing the number of underweight bags by the total number of bags, then write it as $P(\\text{underweight}) = \\frac{30}{100} = 0.3$.",
   "status": "proposed"
  },
  {
   "question_id": "6a83be012977095c51fe84d4",
   "code": "R1",
   "criterion": "Multiplies probabilities for the independent events using $0.2 \\times 0.3$",
-  "hint": "Multiply the probability of a damaged bag by the probability of an underweight bag because the events are independent.",
+  "hint": "Multiply the probabilities for the independent events using $0.2 \\times 0.3$.",
   "status": "proposed"
  },
  {
@@ -983,28 +983,28 @@
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "CK1",
   "criterion": "Recognises that $\\overrightarrow{AB}$ is found by subtracting the coordinates of $A$ from those of $B$.",
-  "hint": "Subtract the coordinates of $A$ from the corresponding coordinates of $B$ to form $\foverrightarrow{AB}$.",
+  "hint": "Find \\overrightarrow{AB} by subtracting each coordinate of A from the corresponding coordinate of B.",
   "status": "proposed"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "AK1",
   "criterion": "Subtracts correctly to obtain $\\begin{pmatrix}3\\\\4\\end{pmatrix}$.",
-  "hint": "Carry out both coordinate subtractions accurately to obtain the displacement vector.",
+  "hint": "Carry out the coordinate subtraction carefully to obtain \\begin{pmatrix}3\\\\4\\end{pmatrix}.",
   "status": "proposed"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "CK2",
   "criterion": "Uses $\\left|\\begin{pmatrix}x\\\\y\\end{pmatrix}\\right|=\\sqrt{x^2+y^2}$.",
-  "hint": "Use $\fleft|\begin{pmatrix}x\\\\y\\end{pmatrix}\fright|=\fsqrt{x^2+y^2}$ to find the vector’s magnitude.",
+  "hint": "Use \\left|\\begin{pmatrix}x\\\\y\\end{pmatrix}\\right|=\\sqrt{x^2+y^2} to find the magnitude of the vector.",
   "status": "proposed"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "AK2",
   "criterion": "Evaluates $\\sqrt{3^2+4^2}$.",
-  "hint": "Square the two vector components, add the results, and evaluate the square root accurately.",
+  "hint": "Evaluate \\sqrt{3^2+4^2} step by step.",
   "status": "proposed"
  },
  {
@@ -1018,7 +1018,7 @@
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "AK3",
   "criterion": "Uses $|x-1|=$ 'their' magnitude of $\\overrightarrow{AB}$ to obtain $x=6$ or $x=-4$.",
-  "hint": "Set $|x-1|$ equal to your magnitude of $\foverrightarrow{AB}$ and solve for both possible values of $x$.",
+  "hint": "Set |x-1| equal to your magnitude of \\overrightarrow{AB} and solve for both possible values of x.",
   "status": "proposed"
  },
  {
@@ -1095,7 +1095,7 @@
   "question_id": "6a83be65c24c2d59f4d9c1f0",
   "code": "R2",
   "criterion": "Forms the mass of the order as $200 \\times 18 \\times 350$ g",
-  "hint": "Form the order mass in grams using \\(200\\times18\\times350\\).",
+  "hint": "Multiply the number of cartons by the bags per carton and the mass per bag to form the order mass: $200 \\times 18 \\times 350$ g.",
   "status": "proposed"
  },
  {
@@ -1116,7 +1116,7 @@
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "CK1",
   "criterion": "Divides both sides by $2\\pi$ to isolate the square root",
-  "hint": "Divide both sides by $2\\pi$ so that the square root is alone.",
+  "hint": "Divide both sides by $2\\pi$ so that the square root \\sqrt{\\frac{l}{g}} is isolated.",
   "status": "proposed"
  },
  {
@@ -1137,14 +1137,14 @@
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "AK3",
   "criterion": "Substitutes into $l = \\frac{gT^2}{4\\pi^2}$ using \"their\" expression from part (a)",
-  "hint": "Substitute $T = 2.20$ and $g = 9.8$ into your expression from part (a): $l = \\frac{gT^2}{4\\pi^2}$.",
+  "hint": "Substitute the given measurements into $l = \\frac{gT^2}{4\\pi^2}$ using your expression from part (a).",
   "status": "proposed"
  },
  {
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "AK4",
   "criterion": "Evaluates \"their\" expression, giving $1.201\\ldots\\text{ m}$",
-  "hint": "Evaluate your expression to obtain the pendulum length in metres.",
+  "hint": "Evaluate your expression to find the length in \\text{m}, keeping extra decimal places with \\ldots before rounding.",
   "status": "proposed"
  },
  {
@@ -1158,14 +1158,14 @@
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "CK3",
   "criterion": "Identifies $1.15\\text{ m}$ as the limiting height of the case",
-  "hint": "Use $1.15\\text{ m}$ as the maximum height available inside the case.",
+  "hint": "Use the stated height of the case, in \\text{m}, as the limiting height.",
   "status": "proposed"
  },
  {
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "R2",
   "criterion": "Compares \"their\" pendulum length with $1.15\\text{ m}$",
-  "hint": "Compare your pendulum length with $1.15\\text{ m}$ to decide whether it is within the case height.",
+  "hint": "Compare your calculated pendulum length in \\text{m} with the limiting height of the case to decide whether it fits.",
   "status": "proposed"
  },
  {
@@ -1193,7 +1193,7 @@
   "question_id": "6a83bf02c24c2d59f4d9c205",
   "code": "R2",
   "criterion": "Identifies 13 selected players who scored at least 2 goals and uses the scale factor $80\\div20$",
-  "hint": "Count the selected players who scored at least 2 goals, then multiply this count by the scale factor \\(80\\div20\\).",
+  "hint": "Add the frequencies for 2, 3 and 4 goals, then use the scale factor $80\\div20$ to estimate the number of all players who scored at least 2 goals.",
   "status": "proposed"
  },
  {
@@ -1221,7 +1221,7 @@
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "R1",
   "criterion": "Reads $g(\\text{their }7)=3$ correctly from the graph",
-  "hint": "Use the input from your part (a) result and read the corresponding output accurately from the graph of g.",
+  "hint": "Find your value of \\(f(3)\\) on the input axis, then read the corresponding output on the graph to write \\(g(\\text{your }7)=3\\).",
   "status": "proposed"
  },
  {
@@ -1249,7 +1249,7 @@
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "R2",
   "criterion": "States $g:x\\to \\frac{x-1}{2}$",
-  "hint": "Write your rearranged inverse rule in mapping notation for g.",
+  "hint": "Interchange \\(x\\) and \\(y\\) in \\(y=2x+1\\), then rearrange \\to state \\(g:x\\to \\frac{x-1}{2}\\).",
   "status": "proposed"
  },
  {
@@ -1340,7 +1340,7 @@
   "question_id": "6a83bf6ac24c2d59f4d9c215",
   "code": "R3",
   "criterion": "Solves to obtain $n=\\frac{49}{3}$",
-  "hint": "Solve the equation for \\(n\\) and express the result exactly as a fraction.",
+  "hint": "Rearrange the equation step by step and divide by the coefficient of n to obtain n=\\frac{49}{3}.",
   "status": "proposed"
  },
  {
@@ -1368,14 +1368,14 @@
   "question_id": "6a83bf97c24c2d59f4d9c21d",
   "code": "AK2",
   "criterion": "Substitutes correctly into $PQ^2=10^2+14^2-2(10)(14)\\cos(\\text{their }55°)$.",
-  "hint": "Substitute the side lengths and your angle at $H$ into $PQ^2=10^2+14^2-2(10)(14)\u0000cos(\text{your }55°)$.",
+  "hint": "Substitute the two given side lengths and \\cos(\\text{your }55°) into \\(PQ^2=10^2+14^2-2(10)(14)\\cos(\\text{your }55°)\\).",
   "status": "proposed"
  },
  {
   "question_id": "6a83bf97c24c2d59f4d9c21d",
   "code": "AK3",
   "criterion": "Processes to obtain $PQ\\approx11.6369$ km.",
-  "hint": "Evaluate your cosine-rule expression and take the positive square root to obtain $PQ$ in kilometres.",
+  "hint": "Evaluate your expression for \\(PQ^2\\) and take the positive square root to obtain \\(PQ\\) in km.",
   "status": "proposed"
  },
  {
@@ -1396,7 +1396,7 @@
   "question_id": "6a83bf97c24c2d59f4d9c21d",
   "code": "AK4",
   "criterion": "Calculates angle $HPQ\\approx80.3°$ using \"their\" value of $PQ$.",
-  "hint": "Use the cosine rule with the two sides from $P$ and your value of $PQ$ to calculate $\u0000angle HPQ$.",
+  "hint": "Use the cosine rule with your value of \\(PQ\\) to calculate \\(\\angle HPQ\\), then find the angle to one decimal place.",
   "status": "proposed"
  }
 ]

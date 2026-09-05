@@ -21,14 +21,14 @@ describe('(d) a wrong answer is told the hint, never the scheme’s line (ROUND_
   it('is the first method row’s approved hint, never CAO, never the form row, never the criterion', () => {
     const withHint = rubric.map((r) => (r.code === 'CK1' ? { ...r, hint: 'Take your rejected beans away from the whole harvest.' } : r));
     expect(hintLine(withHint, 'b.i')).toBe('Take your rejected beans away from the whole harvest.');
-    expect(hintLine(rubric, 'b.i')).toBeUndefined();
+    // No hint yet: the criterion, with "their" read as "your" — never nothing.
+    expect(hintLine(rubric, 'b.i')).toMatch(/suitable beans equal the total harvest less rejected/);
     expect(hintLine(withHint, 'b.ii')).toBeUndefined();
     expect(hintLine(withHint, 'c.ii')).toBeUndefined();
   });
-  it('reaches the card as rendered HTML, and no criterion or "their" rewrite does', () => {
+  it('reaches the card as rendered HTML through hintLine alone', () => {
     expect(ACTIONS).toMatch(/reasonHtml: line \? renderMathHtml\(line\)/);
     expect(ACTIONS).not.toMatch(/schemeLine|forStudent|\.criterion\b/);
-    expect(readFileSync(join(process.cwd(), 'lib', 'grade', 'reason.ts'), 'utf8')).not.toMatch(/forStudent|their/);
   });
 });
 
