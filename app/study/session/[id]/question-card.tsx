@@ -99,6 +99,9 @@ export interface CardQuestion {
   }[];
 }
 
+/** The MCQ index that means "I don't know": past every real option, so it can only score wrong. */
+export const DONT_KNOW = 4;
+
 type CardSlot = CardQuestion['parts'][number]['slots'][number];
 type CardPart = CardQuestion['parts'][number];
 
@@ -276,10 +279,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       />
     );
 
-  const canSubmit =
-    question.kind === 'mcq'
-      ? selected !== null
-      : markedSlots.some((s) => filled(s));
+  // HAND IN AS IS (ROUND_7 Task 2): a student who does not know the answer
+  // can still hand in. A blank scores zero, like the exam, and the solution
+  // is what they get for it; there is no other path to it.
+  const canSubmit = question.kind === 'mcq' ? selected !== null : markedSlots.length > 0;
   const blanks = markedSlots.filter((s) => !filled(s)).length;
 
   // AUTOSAVE writes a draft and never an attempt: attempts stay append-only and
@@ -487,6 +490,17 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               <span dangerouslySetInnerHTML={{ __html: o }} />
             </button>
           ))}
+          {/* The fifth option scores wrong and shows the solution, exactly as a wrong letter does. */}
+          <button
+            disabled={!!feedback}
+            onClick={() => setSelected(DONT_KNOW)}
+            className={`flex w-full items-baseline gap-2 border-[1.5px] border-dashed p-3 text-left text-sm ${
+              selected === DONT_KNOW ? 'border-red-pen bg-[#FDF1F0]' : 'border-paper-deep bg-white'
+            } disabled:opacity-70`}
+          >
+            <span className="font-mono text-xs text-dim">—</span>
+            <span>I don&rsquo;t know</span>
+          </button>
         </div>
       )}
 
@@ -729,9 +743,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             : reading
               ? 'Reading your page…'
               : blanks > 0 && question.kind === 'structured'
-                ? `Submit answer (${blanks} left blank)`
+                ? 'Hand in as is'
                 : 'Submit answer'}
         </button>
+        {blanks > 0 && question.kind === 'structured' && !pending && (
+          <p className="mt-1 text-center text-[12px] text-dim">
+            {blanks} box{blanks === 1 ? '' : 'es'} left blank. Blanks score zero, like the exam.
+          </p>
+        )}
         {/* Inline, in the place the marking will appear; never a modal. */}
         {pending && (
           <div className="mt-5 animate-pulse" aria-live="polite">
