@@ -89,7 +89,7 @@ export default async function LandingPage() {
             </Link>
           ) : (
             <>
-              <Link className="btn" href="/study/login">
+              <Link className="btn" href="/study/login?new=1">
                 Mark one question free
                 <small>NO CARD · ONE REAL QUESTION · ANY PHONE WITH A CAMERA</small>
               </Link>

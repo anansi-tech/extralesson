@@ -22,7 +22,7 @@ const EmailZ = z.string().email().transform((e) => e.toLowerCase().trim());
 
 const SignInZ = z.object({ email: EmailZ, password: z.string().min(1) });
 
-const SIGN_IN_FAILED = 'That email and password do not match. New here? Create an account below.';
+const SIGN_IN_FAILED = 'That email and password do not match.';
 
 const RegisterZ = z.object({
   email: EmailZ,
@@ -37,8 +37,6 @@ const RegisterZ = z.object({
 
 export interface AuthState {
   error?: string;
-  /** The registration form failed validation and stays a registration form. */
-  needsProfile?: boolean;
   /** A reset link was requested; the message never says whether it was sent. */
   resetRequested?: boolean;
   /** Carried back so the form does not make them retype it. */
@@ -80,11 +78,11 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
     exam_sitting: formData.get('exam_sitting'),
     target_modules: formData.getAll('target_modules').length ? formData.getAll('target_modules') : undefined,
   });
-  if (!parsed.success) return { error: 'Check the form — something is missing.', needsProfile: true };
+  if (!parsed.success) return { error: 'Check the form — something is missing.' };
   const { email, password, name, island, exam_sitting, target_modules } = parsed.data;
 
   const problem = passwordProblem(password);
-  if (problem) return { error: problem, needsProfile: true, email };
+  if (problem) return { error: problem, email };
 
   await dbConnect();
   if (await Student.findOne({ email }).lean()) {

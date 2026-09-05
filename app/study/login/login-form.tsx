@@ -10,16 +10,12 @@ import { PASSWORD_MIN } from '@/lib/auth/password-policy';
 // whole cause — nothing about the viewport meta or the layout.
 const field = 'mt-1 w-full border-[1.5px] border-ink bg-white p-3 text-base';
 
-export default function LoginForm() {
-  // One form, three actions. Which one runs is decided by what the student is
-  // doing, not by three separate pages they have to find their way between.
+export default function LoginForm({ door }: { door: 'signin' | 'create' }) {
+  // Two doors on one page, and the way to a new password. The page decides
+  // which door is open; nothing here infers it from a failed sign-in.
   const [mode, setMode] = useState<'signin' | 'reset'>('signin');
-  // Chosen by the student, never inferred from a failed sign-in (ROUND_6 Task 3).
-  const [creating, setCreating] = useState(false);
-  // HELD ON THE CLIENT, not returned in AuthState: React 19 resets an
-  // uncontrolled form once a form action has run — exactly when signIn answers
-  // needsProfile and this form becomes a registration, which had the student
-  // typing the password a second time on a phone.
+  // Held on the client: React 19 resets an uncontrolled form once a form
+  // action has run, which had the student typing the password twice on a phone.
   const [password, setPassword] = useState('');
   const [signInState, signInAction, signingIn] = useActionState<AuthState, FormData>(signIn, {});
   const [registerState, registerAction, registering] = useActionState<AuthState, FormData>(register, {});
@@ -56,7 +52,7 @@ export default function LoginForm() {
     );
   }
 
-  const needsProfile = creating || registerState.needsProfile;
+  const needsProfile = door === 'create';
   const state = needsProfile ? registerState : signInState;
   const pending = needsProfile ? registering : signingIn;
 
@@ -142,20 +138,20 @@ export default function LoginForm() {
         {pending ? 'One moment…' : needsProfile ? 'Create account' : 'Sign in'}
       </button>
 
-      {!needsProfile && (
+      {/* The other door, always in view: two explicit actions, one page. */}
+      {needsProfile ? (
+        <Link href="/study/login" className="block w-full text-center text-sm underline">
+          I already have an account — sign in
+        </Link>
+      ) : (
         <>
-          <button type="button" onClick={() => setCreating(true)} className="w-full text-sm underline">
+          <Link href="/study/login?new=1" className="block w-full text-center text-sm underline">
             New here? Create an account
-          </button>
+          </Link>
           <button type="button" onClick={() => setMode('reset')} className="w-full text-sm underline">
             Forgot your password?
           </button>
         </>
-      )}
-      {creating && (
-        <button type="button" onClick={() => setCreating(false)} className="w-full text-sm underline">
-          I already have an account
-        </button>
       )}
 
       {/* Shown where an account is actually being made, rather than on every

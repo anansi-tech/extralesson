@@ -119,7 +119,6 @@ describe('sign-in says one thing', () => {
       await signIn({}, form({ email: 'known@extralesson.invalid', password: 'not the passphrase' })),
     ];
     expect(new Set(answers.map((a) => a.error)).size).toBe(1);
-    expect(answers.every((a) => !a.needsProfile)).toBe(true);
     expect(cookieJar.size).toBe(0);
   });
 });
@@ -149,5 +148,23 @@ describe('rate limits and session versions', () => {
 
     cookieJar.set('el_session', before);
     expect(await getSession()).toBeNull();
+  });
+});
+
+describe('create account is a door (ROUND_6 Task 5)', () => {
+  const read = (...p: string[]) => require('node:fs').readFileSync(require('node:path').join(process.cwd(), ...p), 'utf8') as string;
+  it('the landing’s free-question button opens the create door with the question named', () => {
+    expect(read('app', 'page.tsx')).toMatch(/href="\/study\/login\?new=1"[\s\S]{0,80}Mark one question free/);
+    const page = read('app', 'study', 'login', 'page.tsx');
+    expect(page).toMatch(/const creating = fresh === '1'/);
+    expect(page).toMatch(/Your first question is waiting: one Paper 2 question/);
+    expect(page).toMatch(/<LoginForm door=\{creating \? 'create' : 'signin'\} \/>/);
+  });
+  it('the form has no toggle and infers nothing from a failed sign-in', () => {
+    const form = read('app', 'study', 'login', 'login-form.tsx');
+    expect(form).not.toMatch(/setCreating|signInState\.needsProfile/);
+    expect(form).toMatch(/href="\/study\/login\?new=1"/);
+    expect(form).toMatch(/href="\/study\/login"[^>]*>[\s\S]{0,40}I already have an account/);
+    expect(read('app', 'study', 'login', 'actions.ts')).not.toMatch(/needsProfile/);
   });
 });
