@@ -2237,7 +2237,9 @@ Approved by David on 2026-09-05: all 500 rows. Rows 13, 487 and 490 rewritten to
 | 499 | 797cdf | AK2 | Divides $2680$ by $40$ to obtain $67$ | Divide your total $\sum fx$ by the total frequency to estimate the mean journey time. |
 | 500 | 797cdf | CK4 | Identifies the first- and third-quartile positions as the 10th and 30th values | Use the total frequency to locate the first- and third-quartile positions in the ordered data. |
 
-## Batch 6 — proposed (500 rows, gpt-5.6-terra, 2026-09-05)
+## Batch 6 — approved (500 rows, gpt-5.6-terra, generated 2026-09-05)
+
+Approved by David on 2026-09-05: all 500 rows. Row 185 set to his sentence.
 
 | # | question | code | criterion | hint |
 |---|---|---|---|---|
@@ -2425,7 +2427,7 @@ Approved by David on 2026-09-05: all 500 rows. Rows 13, 487 and 490 rewritten to
 | 182 | a9f57d | R2 | Concludes that the expressions are identical for all values of $x$ | State that the expressions are identical for all values of $x$ because they both simplify to $5x$. |
 | 183 | a9f57d | CK3 | Represents the increased adjustment score as $-3+n$ | Add the increase $n$ to $-3$ to write the new adjustment score as $-3+n$. |
 | 184 | a9f57d | R3 | Forms an inequality using "their" score, for example $-15+5n\geq20$ | Use your score to form an inequality for at least 20 points, such as $-15+5n\geq20$. |
-| 185 | a9f57d | AK5 | Solves "their" inequality to obtain $n\geq7$ | Solve your inequality by isolating $n$ to obtain $n\geq7$. |
+| 185 | a9f57d | AK5 | Solves "their" inequality to obtain $n\geq7$ | Solve your inequality by isolating $n$. |
 | 186 | a9f57d | R4 | Selects the least whole-number value and gives it as an integer | Choose the smallest whole-number value that satisfies $n\geq7$ and write it as an integer. |
 | 187 | a9f585 | CK1 | Recognises that the markup is calculated as 25% of the cost price | Calculate the markup as $25\%$ of the cost price. |
 | 188 | a9f585 | AK1 | Calculates the markup as \$20 | Multiply the cost price by $0.25$ to calculate the markup. |
