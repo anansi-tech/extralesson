@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { generateObject } from 'ai';
 import { z } from 'zod';
 import { model, MODEL_ID } from '@/lib/ai';
@@ -119,6 +120,10 @@ that names a result, the line where that result appears.
 
 confidence is your confidence in the DECISION.
 `;
+
+/** What the marker is told, hashed: a results file that names it can be compared with one that names another. */
+export const promptHash = (): string =>
+  createHash('sha256').update(`${MARK_SCHEME_CONVENTIONS}\n${RULES}`).digest('hex').slice(0, 12);
 
 export async function markMethod(args: MethodMarkArgs): Promise<{
   decisions: MethodDecision[];

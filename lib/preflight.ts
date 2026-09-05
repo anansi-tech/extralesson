@@ -25,6 +25,7 @@ export const OPTIONAL_ENV: Record<string, string> = {
   NEXT_PUBLIC_BASE_URL: 'inferred from VERCEL_URL when unset',
   BASE_URL: 'audit scripts only, never the app',
   STRIPE_LINK_SITTINGS: 'deliberately unset — a link is evidence of payment, never authority over the sitting',
+  RUN_AS_STUDENT: 'the composition eval only; ignored in production',
   NODE_ENV: 'set by the runtime',
   VERCEL_URL: 'set by Vercel',
   VERCEL_PROJECT_PRODUCTION_URL: 'set by Vercel',

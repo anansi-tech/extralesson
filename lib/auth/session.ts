@@ -28,6 +28,12 @@ export async function clearSessionCookie(): Promise<void> {
 }
 
 export async function getSession(): Promise<SessionUser | null> {
+  // The composition eval runs the production actions as one student from a
+  // script; there is no request to read a cookie from. Never in production.
+  if (process.env.RUN_AS_STUDENT && process.env.NODE_ENV !== 'production') {
+    const [student_id, email] = process.env.RUN_AS_STUDENT.split(':');
+    return { student_id, email: email ?? 'eval@extralesson.invalid', role: 'student' };
+  }
   const raw = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!raw) return null;
   const payload = verifyToken(raw, getSecret());

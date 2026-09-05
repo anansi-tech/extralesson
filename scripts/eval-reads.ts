@@ -7,6 +7,7 @@ import { goldenSetExists, loadGoldenSet } from './golden-set';
 import { dbConnect, Question } from '@/lib/db';
 import { transcribeWorking, linesForSlot, type TranscriptionResult } from '@/lib/grade/transcribe';
 import { markableSlots } from '@/lib/grade/mark';
+import { provenance, writeResults } from './eval-provenance';
 
 const GOLDEN = join(process.cwd(), 'design', 'golden');
 const CASES = join(process.cwd(), 'calibration', 'reads');
@@ -50,7 +51,11 @@ function passes(t: TranscriptionResult, c: ReadCase): { ok: boolean; why: string
 async function main() {
   await dbConnect();
   const runs = Number(process.argv[2] ?? 3);
-  const photos = goldenSetExists() ? loadGoldenSet().inputs.filter((e) => e.mode === 'photo' && e.image) : [];
+  if (!goldenSetExists()) {
+    console.error('No golden set: design/golden/set.json and review.json are required. The gate FAILS.');
+    process.exit(1);
+  }
+  const photos = loadGoldenSet().inputs.filter((e) => e.mode === 'photo' && e.image);
   const golden = photos.filter((e) => existsSync(join(GOLDEN, e.image!)));
   const fieldMissing = photos.filter((e) => !existsSync(join(GOLDEN, e.image!)) && e.image!.startsWith('field/')).map((e) => e.id);
   if (fieldMissing.length) console.log(`field page(s) whose image is not on this machine, skipped: ${fieldMissing.join(', ')}`);
@@ -58,6 +63,7 @@ async function main() {
     .filter((f) => f.endsWith('.json'))
     .map((f) => JSON.parse(readFileSync(join(CASES, f), 'utf8')) as ReadCase);
 
+  const results: { run: number; lost: number; of: number; verdicts: string[] }[] = [];
   for (let run = 1; run <= runs; run++) {
     let lost = 0;
     for (const e of golden) if (!(await read(join(GOLDEN, e.image!), e.question_id))) lost++;
@@ -77,8 +83,14 @@ async function main() {
       verdicts.push(`${c.id}: ${v.ok ? 'PASS' : `FAIL — ${v.why}`}`);
     }
     console.log(`run ${run}: page loss ${lost}/${golden.length} · ${verdicts.join(' · ')}`);
+    results.push({ run, lost, of: golden.length, verdicts });
   }
-  process.exit(0);
+  // The bar: no page lost on any run, and every calibration case passing on
+  // every run. A case with no image is a missing golden file, and fails too.
+  const clean = results.every((r) => r.lost === 0 && r.verdicts.every((v) => v.includes(': PASS')));
+  const file = writeResults('eval-reads', { ...(await provenance()), golden_pages: golden.length, field_missing: fieldMissing, cases: cases.map((c) => c.id), runs: results, passes: clean });
+  console.log(`${clean ? 'PASS' : 'BELOW GATE'} — no page lost and every case passing, on every run. results: ${file}`);
+  process.exit(clean ? 0 : 1);
 }
 
 main().catch((e) => {

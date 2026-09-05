@@ -30,6 +30,7 @@ import { MARKER_VERSION } from '@/lib/grade/version';
 import { isFollowThrough } from '@/lib/prompts/mark-scheme';
 import { claimsFor } from '@/lib/grade/claim-template';
 import { applyFormatDependency, requireEvidence } from '@/lib/grade/method-marks';
+import { provenance, writeResults } from './eval-provenance';
 
 const DIR = join(process.cwd(), 'design', 'golden');
 const GATE = 0.9;
@@ -92,12 +93,10 @@ function cer(truth: string, got: string): number {
 
 async function main() {
   if (!goldenSetExists()) {
-    console.log('No golden set yet.\n');
-    console.log('  Expected: design/golden/set.json (the working) and review.json (the verdicts)');
-    console.log('  Format:   design/golden/README.md');
-    console.log('\nUntil they exist the gate cannot pass, so method marking stays off.');
-    console.log(`MARKER_VERSION is ${MARKER_VERSION} — the pass has never run.`);
-    process.exit(0);
+    // A gate with nothing to read is a failed gate, not a skipped one (ROUND_6 Task 7).
+    console.error('No golden set: design/golden/set.json and review.json are required. The gate FAILS.');
+    console.error(`MARKER_VERSION is ${MARKER_VERSION} — the pass has never run.`);
+    process.exit(1);
   }
 
   await dbConnect();
@@ -112,7 +111,10 @@ async function main() {
   console.log(`writers: ${[...new Set(entries.map((e) => e.writer))].join(', ')}\n`);
 
   // ---- READING ------------------------------------------------------------
-  const byWriter = new Map<string, { lines: number; right: number; cer: number }>();
+  // lines = TRUTH lines, right = truth lines the reader produced: a line the
+  // reader left out counts against it exactly as a misread one does (ROUND_6
+  // Task 7). extra = lines the reader produced that match nothing.
+  const byWriter = new Map<string, { lines: number; right: number; cer: number; extra: number }>();
   const buckets = new Map<string, { n: number; right: number }>();
   // Photographs arrive one at a time; an entry without its image yet is not an
   // error, it is work still to do.
@@ -155,20 +157,25 @@ async function main() {
       key: `${l.part_label ?? '-'}|${normalise(l.text)}`,
       confidence: l.confidence,
     }));
-    const w = byWriter.get(e.writer) ?? { lines: 0, right: 0, cer: 0 };
+    const w = byWriter.get(e.writer) ?? { lines: 0, right: 0, cer: 0, extra: 0 };
+    const gotKeys = got.map((g) => g.key);
+    for (const t of truth) {
+      w.lines++;
+      if (gotKeys.includes(t)) w.right++;
+      // Nearest read line, so a misordered page is not scored as a misread;
+      // an omitted line is a whole line of error.
+      w.cer += got.length ? Math.min(...got.map((g) => cer(t.split('|')[1], g.key.split('|')[1])), 1) : 1;
+    }
     for (const g of got) {
       const hit = truth.includes(g.key);
-      w.lines++;
-      if (hit) w.right++;
-      // Nearest truth line, so a misordered page is not scored as a misread.
-      w.cer += Math.min(...truth.map((t) => cer(t.split('|')[1], g.key.split('|')[1])), 1);
+      if (!hit) w.extra++;
       const band = g.confidence >= 0.9 ? '0.9+' : g.confidence >= 0.8 ? '0.8-0.9' : g.confidence >= 0.6 ? '0.6-0.8' : '<0.6';
       const b = buckets.get(band) ?? { n: 0, right: 0 };
       b.n++;
       if (hit) b.right++;
       buckets.set(band, b);
     }
-    if (got.some((g) => !truth.includes(g.key)) || got.length !== truth.length) readDiffered.add(e.id);
+    if (w.extra > 0 || truth.some((t) => !gotKeys.includes(t))) readDiffered.add(e.id);
     byWriter.set(e.writer, w);
   }
 
@@ -182,16 +189,16 @@ async function main() {
     console.log(`READING — ${unread.length} photograph(s) the reader could not return: ${unread.join(', ')}\n`);
   }
   if (byWriter.size > 0) {
-    console.log('READING — line accuracy by writer');
+    console.log('READING — truth lines the reader produced, by writer (an omitted line counts against it)');
     for (const [writer, r] of [...byWriter].sort()) {
       console.log(
         `   ${writer.padEnd(10)} exact ${String(r.right + '/' + r.lines).padEnd(7)} ${String(((100 * r.right) / r.lines).toFixed(0) + '%').padStart(4)}` +
-          `   character error ${((100 * r.cer) / r.lines).toFixed(1)}%`,
+          `   character error ${((100 * r.cer) / r.lines).toFixed(1)}%   invented ${r.extra}`,
       );
     }
     const all = [...byWriter.values()].reduce(
-      (a, b) => ({ lines: a.lines + b.lines, right: a.right + b.right, cer: a.cer + b.cer }),
-      { lines: 0, right: 0, cer: 0 },
+      (a, b) => ({ lines: a.lines + b.lines, right: a.right + b.right, cer: a.cer + b.cer, extra: a.extra + b.extra }),
+      { lines: 0, right: 0, cer: 0, extra: 0 },
     );
     const spread = [...byWriter.values()].map((r) => r.right / r.lines);
     console.log(`   overall    exact ${all.right}/${all.lines}  ${((100 * all.right) / all.lines).toFixed(0)}%  character error ${((100 * all.cer) / all.lines).toFixed(1)}%` +
@@ -367,7 +374,24 @@ async function main() {
   console.log(`   worst run disagreements:`);
   for (const l of REASONING ? worst.lines : worst.lines.slice(0, 10)) console.log(`      ${l}`);
 
-  process.exit(0);
+  const reading = [...byWriter.values()].reduce(
+    (a, b) => ({ lines: a.lines + b.lines, right: a.right + b.right, extra: a.extra + b.extra }),
+    { lines: 0, right: 0, extra: 0 },
+  );
+  const file = writeResults(REASONING ? 'eval-marker-reasoning' : 'eval-marker', {
+    ...(await provenance()),
+    golden: { pages: entries.length, approved_by: golden.approval.reviewer, reviewed_at: golden.approval.reviewed_at },
+    reading: byWriter.size ? { truth_lines: reading.lines, exact: reading.right, invented: reading.extra, unread, missing, field_missing: fieldMissing } : null,
+    marking: {
+      runs: runs.map((r) => ({ n: r.n, agree: r.agree, cao_false: r.falseAwardCao, method_false: r.falseAwardMethod, withheld_should_award: r.withheldShouldAward, disagreed: r.lines.map((l) => l.split(' ')[0]) })),
+      agreement: { min: ag.min, median: ag.median, max: ag.max },
+      gate: GATE,
+    },
+    passes,
+  });
+  console.log(`   results: ${file}`);
+  // THE GATE IS A GATE (ROUND_6 Task 7): below the bar is a nonzero exit.
+  process.exit(passes ? 0 : 1);
 }
 
 main();

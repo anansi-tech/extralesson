@@ -15,7 +15,11 @@
     "check:figures": "tsx scripts/check-figures.ts",
     "check:kill-list": "bash scripts/check-kill-list.sh",
     "prepare": "git config core.hooksPath .githooks || true",
-    "admin:provision": "tsx scripts/provision-admin.ts"
+    "admin:provision": "tsx scripts/provision-admin.ts",
+    "eval:marker": "tsx scripts/eval-marker.ts",
+    "eval:reads": "tsx scripts/eval-reads.ts",
+    "eval:pipeline": "tsx scripts/eval-pipeline.ts",
+    "golden:field-prune": "tsx scripts/golden-field-prune.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.118",
