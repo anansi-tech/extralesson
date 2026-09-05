@@ -40,6 +40,9 @@ describe('TeX through the generator', () => {
   it('restores a backslash the JSON lost, inside math only, and names what is still missing', () => {
     expect(repairTex('Write $overrightarrow{OA}$ as a column.', 'Writes $\\overrightarrow{OA}$')).toBe('Write $\\overrightarrow{OA}$ as a column.');
     expect(repairTex('Write overrightarrow{OA} as a column.', 'Writes $\\overrightarrow{OA}$')).toBe('Write overrightarrow{OA} as a column.');
+    // JSON ate \\a into a bell and \\f into a form feed; the command comes back.
+    expect(repairTex('Identify $\u0007ngle ACB$ as a right angle.', 'Recognises that $\\angle ACB=90°$')).toBe('Identify $\\angle ACB$ as a right angle.');
+    expect(repairTex('Leave $x=\u000crac{1}{2}$.', 'Obtains $x=\\frac{1}{2}$')).toBe('Leave $x=\\frac{1}{2}$.');
     expect(missingCommands('Solve $3x-6 ge 20$ for $x$.', 'Solves $3x-6\\ge20$')).toEqual(['ge']);
     expect(missingCommands('Solve $3x-6\\ge20$ for $x$.', 'Solves $3x-6\\ge20$')).toEqual([]);
     // A hint that leaves the answer out has no reason to carry its TeX.

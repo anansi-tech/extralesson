@@ -715,3 +715,508 @@ Approved by David on 2026-09-05: all 500 rows. Rows 303–312 put in the imperat
 | 498 | 804a64 | CK3 | Recognises that sales received equal the initial loss when net amount is $0$ | Recognise that a net amount of $0$ means the sales received exactly cover the initial loss. |
 | 499 | 804a64 | R3 | States that there is no profit or loss | State that the situation results in no profit or loss. |
 | 500 | 804a74 | CK1 | Forms $\overrightarrow{AB}=\overrightarrow{OB}-\overrightarrow{OA}$. | Form $\overrightarrow{AB}=\overrightarrow{OB}-\overrightarrow{OA}$ by subtracting the position vector of $A$ from that of $B$. |
+
+## Batch 3 — proposed (500 rows, gpt-5.6-terra, 2026-09-05)
+
+| # | question | code | criterion | hint |
+|---|---|---|---|---|
+| 1 | 804a74 | AK1 | Subtracts corresponding components to obtain $\begin{pmatrix}6\\8\end{pmatrix}$. | Subtract A’s components from B’s corresponding components and write the result as $\begin{pmatrix}u\\v\end{pmatrix}$. |
+| 2 | 804a74 | CK2 | Uses $\left\|\begin{pmatrix}x\\y\end{pmatrix}\right\|=\sqrt{x^2+y^2}$. | Use $\left\|\begin{pmatrix}x\\y\end{pmatrix}\right\|=\sqrt{x^2+y^2}$ to find a vector’s magnitude. |
+| 3 | 804a74 | AK2 | Calculates $\sqrt{6^2+8^2}=10$. | Substitute the two components of your displacement into $\sqrt{a^2+b^2}$ and simplify the result. |
+| 4 | 804a74 | R1 | Concludes Yes because $\begin{pmatrix}\frac{3}{5}\\\frac{4}{5}\end{pmatrix}$ is a positive scalar multiple of “their” $\overrightarrow{AB}$. | Conclude Yes by showing that the proposed vector is a positive scalar multiple of your $\overrightarrow{AB}$. |
+| 5 | 804a74 | CK3 | Recognises that a unit vector has magnitude $1$. | Check that the proposed vector has unit magnitude before deciding whether it is a unit vector. |
+| 6 | 804a74 | AK3 | Shows $\sqrt{\left(\frac{3}{5}\right)^2+\left(\frac{4}{5}\right)^2}=1$. | Calculate its magnitude using $\sqrt{\left(\frac{p}{q}\right)^2+\left(\frac{r}{s}\right)^2}$ and check that it satisfies the unit-vector condition. |
+| 7 | 804a74 | AK4 | Converts $3$ m to $6$ grid units. | Divide the stated distance in metres by the number of metres represented by one grid unit. |
+| 8 | 804a74 | R2 | Uses “their” unit vector to obtain the displacement $6\begin{pmatrix}\frac{3}{5}\\\frac{4}{5}\end{pmatrix}=\begin{pmatrix}\frac{18}{5}\\\frac{24}{5}\end{pmatrix}$. | Multiply your unit vector by the grid-unit distance and write the displacement as $\begin{pmatrix}\frac{p}{q}\\\frac{r}{s}\end{pmatrix}$. |
+| 9 | 804a74 | R3 | Adds the displacement to $\overrightarrow{OA}$ to obtain $\begin{pmatrix}\frac{23}{5}\\\frac{29}{5}\end{pmatrix}$. | Add the displacement to $\overrightarrow{OA}$ and write the resulting position vector as $\begin{pmatrix}\frac{p}{q}\\\frac{r}{s}\end{pmatrix}$. |
+| 10 | 804a7c | CK1 | Recognises that corresponding entries of matrices of the same order are added | Add each entry in one matrix to the entry in the same position in the other matrix. |
+| 11 | 804a7c | AK1 | Adds the entries in the first row correctly | Add the corresponding entries across the first row to form the first row of your total matrix. |
+| 12 | 804a7c | CK2 | Recognises that "their" order matrix can be multiplied by the price column vector | Multiply your order matrix by the price column vector to find the charges. |
+| 13 | 804a7c | R1 | Uses the price vector on the right of "their" order matrix | Write the price column vector on the right of your order matrix before multiplying. |
+| 14 | 804a7c | AK3 | Calculates the first component using "their" first row | Use the first row of your order matrix to calculate the first component of the charge vector. |
+| 15 | 804a7c | CK3 | Identifies that both shop charges must be included in the budget comparison | Include both shop charges when you find the total amount to compare with the budget. |
+| 16 | 804a7c | R2 | Finds the amount remaining by subtracting the sum of "their" charges from \$550 | Subtract the sum of your charges from \$550 to find the amount remaining. |
+| 17 | 804a7c | R3 | Compares "their" total charge with \$550 and states that the budget is sufficient | Compare your total charge with \$550 and state whether the budget is sufficient. |
+| 18 | 804a84 | CK1 | Recognises that reverse bearings differ by $180°$. | Use the fact that reverse bearings differ by $180°$. |
+| 19 | 804a84 | AK1 | Calculates $230°-180°=50°$. | Subtract $180°$ from the given bearing. |
+| 20 | 804a84 | R1 | Writes the bearing as $050°$. | Write your bearing in three-digit format, adding a leading zero if needed. |
+| 21 | 804a84 | CK2 | Recognises that perpendicular paths form an angle of $90°$. | Use the fact that perpendicular paths form an angle of $90°$. |
+| 22 | 804a84 | AK2 | Adds $90°$ to "their" bearing of $B$ from $A$. | Add $90°$ to your bearing of $B$ from $A$. |
+| 23 | 804a84 | R2 | Uses the clockwise position of $C$ to obtain $140°$. | Use the clockwise position of $C$ to choose the correct right-angle turn. |
+| 24 | 804a84 | CK3 | Recognises that the bearing of $A$ from $C$ is the reverse bearing. | Treat the bearing of $A$ from $C$ as the reverse of the bearing of $C$ from $A$. |
+| 25 | 804a84 | AK3 | Adds $180°$ to "their" bearing of $C$ from $A$. | Add $180°$ to your bearing of $C$ from $A$. |
+| 26 | 804a84 | R3 | Writes "their" reverse bearing in three-digit format, $320°$. | Write your reverse bearing in three-digit format. |
+| 27 | 804a99 | CK1 | Recognises that the cost of all cases is found by multiplying the number of cases by the cost per case | Multiply the number of cases by the cost per case to find the cost before discount. |
+| 28 | 804a99 | CK2 | Uses $12\%$ of "their" cost before discount as the discount | Find $12\%$ of your cost before discount to get the discount. |
+| 29 | 804a99 | AK2 | Subtracts the discount from "their" cost before discount | Subtract the discount from your cost before discount. |
+| 30 | 804a99 | CK3 | Applies the $15\%$ tax to "their" discounted cost | Apply the $15\%$ tax rate to your discounted cost. |
+| 31 | 804a99 | AK3 | Calculates $15\%$ of "their" discounted cost | Calculate $15\%$ of your discounted cost to find the tax. |
+| 32 | 804a99 | AK4 | Adds "their" tax to "their" discounted cost | Add your tax to your discounted cost to find the total amount payable. |
+| 33 | 804a99 | R1 | Compares "their" total amount payable with \$4 000 | Compare your total amount payable with \$4 000. |
+| 34 | 804a99 | R2 | Finds the shortfall from "their" total amount payable | Subtract \$4 000 from your total amount payable to find the shortfall. |
+| 35 | 804a99 | R3 | States that the cash is not sufficient | State that the cash is not sufficient because your total amount payable is greater than the cash available. |
+| 36 | 804aa6 | CK1 | Recognises that the coconut-bar total is $9 \times 14$ | Find the coconut-bar total by multiplying the 9 crates by 14 bars in each crate: $9 \times 14$. |
+| 37 | 804aa6 | CK2 | Recognises that the ginger-bar total is $9 \times 6$ | Find the ginger-bar total by multiplying the 9 crates by 6 bars in each crate: $9 \times 6$. |
+| 38 | 804aa6 | AK3 | Adds the two bar totals to obtain $180$ | Add your coconut-bar total and your ginger-bar total to find the total number of bars. |
+| 39 | 804aa6 | CK3 | States the distributive property | State the distributive property as the property used. |
+| 40 | 804aa6 | R1 | Explains that 9 is the common number of crates | Explain that 9 is the common number of crates in both products. |
+| 41 | 804aa6 | R2 | Divides "their" total number of bars by 13 | Divide your total number of bars by 13 to find how many full boxes you can fill. |
+| 42 | 804aa6 | AK4 | Obtains $13$ remainder $11$, or equivalent | Write the quotient and remainder from your division. |
+| 43 | 804aa6 | R3 | Includes one further box for the remaining bars | Add one more box when your remainder shows that some bars are left over. |
+| 44 | 804aae | CK1 | Recognises that the grand total is found by combining all four outcomes. | Combine the frequencies from all four outcomes to find the grand total. |
+| 45 | 804aae | AK1 | Adds the frequencies to obtain $50$. | Add all four frequencies to obtain $50$. |
+| 46 | 804aae | CK2 | Selects $15$ as the frequency for tail and odd number. | Read the frequency in the table where tail and odd number meet. |
+| 47 | 804aae | AK2 | Divides $15$ by "their" total and simplifies to $\frac{3}{10}$. | Divide $15$ by your total, then simplify the fraction to $\frac{3}{10}$. |
+| 48 | 804aae | CK3 | Recognises that the theoretical probability is $\frac{1}{2}\times\frac{1}{2}$. | For the theoretical probability, multiply the probability of a tail by the probability of an odd number: $\frac{1}{2}\times\frac{1}{2}$. |
+| 49 | 804aae | AK3 | Evaluates the theoretical probability as $\frac{1}{4}$. | Evaluate $\frac{1}{2}\times\frac{1}{2}$ to get $\frac{1}{4}$. |
+| 50 | 804aae | R1 | Finds the difference between "their" experimental probability and $\frac{1}{4}$, giving $\frac{1}{20}$. | Subtract $\frac{1}{4}$ from your experimental probability and simplify the difference to $\frac{1}{20}$. |
+| 51 | 804aae | R2 | States that the results support the theoretical probability. | State that the experimental result supports the theoretical probability. |
+| 52 | 804aae | R3 | Justifies the conclusion by relating "their" experimental probability to the theoretical probability or by identifying a small difference. | Justify your conclusion by showing that your experimental probability is close to the theoretical probability or that the difference is small. |
+| 53 | 804ab6 | CK1 | Identifies red, blue and green as the possible token colours | Read the bar chart and list every token colour with a non-zero bar. |
+| 54 | 804ab6 | AK1 | States a valid sample space, $\{R, B, G\}$ | Write each possible colour initial inside the sample-space braces $\{\}$. |
+| 55 | 804ab6 | CK2 | Counts 6 tokens from the bar chart | Add the frequencies of all the colour bars to find the total number of tokens. |
+| 56 | 804ab6 | AK2 | Calculates $\frac{3}{6}$, giving $\frac{1}{2}$ | Write the red probability as $\frac{\text{red-token frequency}}{\text{total-token frequency}}$ and simplify it. |
+| 57 | 804ab6 | CK3 | Recognises that both a red token and a head are required | Treat getting a voucher as needing both events to happen: selecting red and getting a head. |
+| 58 | 804ab6 | AK3 | Multiplies "their" probability of red by $\frac{1}{2}$ | Multiply your probability of red by the probability of getting a head, using $\frac{\text{favourable outcomes}}{\text{total outcomes}}$ for each probability. |
+| 59 | 804ab6 | R1 | Finds the required new probability as "their" probability from (c) minus $\frac{1}{12}$ | Subtract the stated reduction, written as $\frac{\text{numerator}}{\text{denominator}}$, from your probability in part (c). |
+| 60 | 804ab6 | R2 | Uses 3 red tokens and a total of $6+x$ tokens after adding $x$ blue tokens | Keep the original red-token count unchanged and write the new total as the original total plus $x$ after adding blue tokens. |
+| 61 | 804ab6 | R3 | Forms $\frac{3}{2(6+x)} =$ "their" required new probability | Set $\frac{\text{unchanged red count}}{2(\text{new total})}$ equal to your required probability. |
+| 62 | 804ab6 | AK5 | Solves the equation to obtain $x=3$ | Rearrange and solve your equation for $x$. |
+| 63 | 804ab6 | R4 | Interprets $x=3$ as 3 blue tokens to be added | State that the value of $x$ represents the number of blue tokens you add. |
+| 64 | 804ad2 | CK1 | Selects compatible distance and speed units | Convert the distances into kilometres so they match speeds written in kilometres per hour. |
+| 65 | 804ad2 | AK1 | Divides $1.2$ by $3$ to obtain $0.4\text{ h}$ | Divide $1.2$ by $3$ and state the time in $\text{h}$. |
+| 66 | 804ad2 | CK2 | Identifies $AB$, $BC$ and $CA$ as the three sections of the complete journey | Use $AB$, $BC$ and $CA$ as the three sections that make up the whole journey. |
+| 67 | 804ad2 | AK3 | Converts and adds the distances to obtain $5\text{ km}$ | Convert each section distance to kilometres, then add all three distances and state the total in $\text{km}$. |
+| 68 | 804ad2 | CK3 | Uses average speed as total distance divided by total time | Find the average speed by dividing the total distance by the total time. |
+| 69 | 804ad2 | AK4 | Divides "their" total distance by $4\frac{1}{6}$ to obtain $1.2\text{ h}$ | Divide your total distance by $4\frac{1}{6}$ and state the time in $\text{h}$. |
+| 70 | 804ad2 | R1 | Subtracts "their" times for $AB$ and $BC$ from "their" total journey time | Subtract your times for $AB$ and $BC$ from your total journey time to find the time for $CA$. |
+| 71 | 804ad2 | R3 | Divides $2\text{ km}$ by "their" time for $CA$ to infer $5\text{ km/h}$ | Divide $2\text{ km}$ by your time for $CA$ and state the speed in $\text{km/h}$. |
+| 72 | 804ada | CK1 | Reads the start and stop times as $2\text{ s}$ and $8\text{ s}$ | Read the labelled start and stop times from the diagram, keeping the units as $\text{ s}$. |
+| 73 | 804ada | CK2 | Recognises that the equation must be squared to remove the square root | Square both sides of the equation to remove the square root. |
+| 74 | 804ada | AK2 | Obtains $T^2=\frac{4\pi^2l}{g}$ | After squaring, simplify so that $T^2$ is written as one fraction containing $\pi^2$, with denominator $g$. |
+| 75 | 804ada | AK3 | Rearranges correctly to obtain $l=\frac{gT^2}{4\pi^2}$ | Isolate $l$ by multiplying by $g$ and dividing by the coefficient containing $\pi^2$, then write the result as $\frac{\text{numerator}}{\text{denominator}}$. |
+| 76 | 804ada | CK3 | Substitutes $g=10$ and "their" value of $T$ into the rearranged formula | Substitute $g=10$ and your value of $T$ into your rearranged formula. |
+| 77 | 804ada | AK4 | Simplifies to $\frac{90}{\pi^2}$, or correct follow-through using "their" value of $T$ | Simplify your substitution to one exact fraction of the form $\frac{\text{numerator}}{\pi^2}$, following through with your value of $T$. |
+| 78 | 804ada | R1 | Expresses "their" answer in exact form | Leave your length in exact form, using $\pi$ rather than a decimal approximation. |
+| 79 | 804ada | R2 | States that the cord is not long enough, following through from "their" length | Compare your length with the available cord length and state whether the cord is long enough, following through from your length. |
+| 80 | 804ada | R3 | Justifies that $\frac{90}{\pi^2}>9$ using $\pi^2<10$ | Use $\pi^2<10$ to compare your exact fraction $\frac{\text{numerator}}{\pi^2}$ with the required length. |
+| 81 | 804ae2 | CK1 | Uses $\vec{PQ}=\vec{OQ}-\vec{OP}$ | Find the displacement by subtracting the position vector of $P$ from the position vector of $Q$: $\vec{PQ}=\vec{OQ}-\vec{OP}$. |
+| 82 | 804ae2 | AK1 | Calculates the horizontal component as $1-(-3)=4$ | Subtract the x-coordinate of $P$ from the x-coordinate of $Q$ to find the horizontal component. |
+| 83 | 804ae2 | AK2 | Calculates the vertical component as $4-1=3$ | Subtract the y-coordinate of $P$ from the y-coordinate of $Q$ to find the vertical component. |
+| 84 | 804ae2 | CK2 | Recognises that $\vec{PR}=\vec{PQ}+\vec{QR}$ | Form the displacement to $R$ by adding the two route vectors: $\vec{PR}=\vec{PQ}+\vec{QR}$. |
+| 85 | 804ae2 | AK3 | Adds the corresponding components of "their" $\vec{PQ}$ and $\vec{QR}$ | Add the horizontal components together and add the vertical components together for your $\vec{PQ}$ and $\vec{QR}$. |
+| 86 | 804ae2 | R1 | Obtains $\binom{8}{0}$, following through from "their" $\vec{PQ}$ | Write the two summed components as a column vector $\binom{a}{b}$, following through from your earlier $\vec{PQ}$. |
+| 87 | 804ae2 | CK3 | Uses $\|\binom{x}{y}\|=\sqrt{x^2+y^2}$ | Use the vector-length formula $\|\binom{x}{y}\|=\sqrt{x^2+y^2}$. |
+| 88 | 804ae2 | R2 | Finds the magnitude of "their" $\vec{PR}$ | Substitute the two components of your $\vec{PR}$ into the magnitude calculation and evaluate the square root. |
+| 89 | 804ae2 | R3 | Uses the scale of $5$ m per grid unit to obtain $40\text{ m}$ | Multiply your magnitude in grid units by the scale factor $5\text{ m}$ per grid unit to give the distance in metres. |
+| 90 | 804aea | CK1 | Recognises that reciprocal bearings differ by $180°$ | Reverse the bearing by turning $180°$ to get the reciprocal bearing. |
+| 91 | 804aea | CK2 | Recognises that a bearing to the south-east is between $090°$ and $180°$ | Place a south-east bearing between $090°$ and $180°$. |
+| 92 | 804aea | AK2 | Subtracts $75°$ from "their" bearing of $A$ from $B$ | Subtract $75°$ from your earlier bearing of $A$ from $B$. |
+| 93 | 804aea | R1 | Selects the south-east direction, giving $140°$ rather than $290°$ | Choose the south-east direction rather than the north-west alternative. |
+| 94 | 804aea | CK3 | Recognises that the bearing of $B$ from $C$ differs by $180°$ from "their" bearing of $C$ from $B$ | Reverse your earlier bearing of $C$ from $B$ by changing it by $180°$. |
+| 95 | 804aea | AK3 | Calculates the bearing of $B$ from $C$ as "their" $140°+180°=320°$ | Add $180°$ to your earlier bearing of $C$ from $B$ to calculate the bearing of $B$ from $C$. |
+| 96 | 804aea | R2 | Finds the smaller angle between "their" bearing of $B$ from $C$ and $270°$ | Find the smaller angle between your bearing of $B$ from $C$ and $270°$. |
+| 97 | 804aea | CK4 | Selects the sine rule using $AB/\sin(\angle BCA)=AC/\sin(75°)$ | Use the sine rule in the form $\dfrac{AB}{\sin(\angle BCA)}=\dfrac{AC}{\sin(75°)}$. |
+| 98 | 804aea | AK4 | Calculates $\angle BAC=090°-035°=55°$ | Calculate $\angle BAC$ by subtracting the two given bearings at $A$. |
+| 99 | 804aea | AK5 | Substitutes $180\sin(\text{"their" }\angle BCA)/\sin(75°)$ and evaluates | Substitute your earlier $\angle BCA$ into $\dfrac{180\sin(\text{your }\angle BCA)}{\sin(75°)}$ and evaluate it. |
+| 100 | 804aea | R3 | Expresses "their" distance correct to 3 significant figures | Write your distance correct to $3$ significant figures. |
+| 101 | 804af7 | CK1 | Recognises that $fg(x)=f(g(x))$ | Interpret $fg(x)$ as applying $g$ first and then applying $f$ to the result. |
+| 102 | 804af7 | AK1 | Substitutes $x+1$ for $x$ in $f(x)$ | Replace $x$ in $f(x)$ with the expression produced by $g(x)$. |
+| 103 | 804af7 | R1 | Reads the minimum value $-4$ from the turning point | Read the y-coordinate of the turning point as the minimum value. |
+| 104 | 804af7 | AK3 | Factors "their" quadratic as $(x-3)(x+1)$ | Factor your quadratic into two linear brackets by finding two numbers with the required product and sum. |
+| 105 | 804af7 | CK3 | Identifies that an image of $-3$ is represented by the horizontal level $y=-3$ | Locate the horizontal graph level that corresponds to the specified image value. |
+| 106 | 804af7 | R2 | Obtains one domain element from the intersection at $x=0$ | Read one domain element from the x-coordinate where that horizontal level intersects the curve. |
+| 107 | 804af7 | R3 | Uses "their" axis of symmetry to identify the second domain element $x=2$ | Use your axis of symmetry to reflect your first domain element across the axis and find the second one. |
+| 108 | 804aff | CK1 | Selects the tangent ratio for triangle $BCD$ | Choose tangent by relating the opposite height to the adjacent horizontal side in $\tan 28^\circ=\frac{CD}{75}$. |
+| 109 | 804aff | AK1 | Substitutes $75$ and $28^\circ$ into $\tan 28^\circ=\frac{CD}{75}$ | Substitute the given length and angle into $\tan 28^\circ=\frac{CD}{75}$. |
+| 110 | 804aff | AK2 | Calculates $CD=75\tan28^\circ$ | Calculate $CD$ by evaluating $75\tan28^\circ$. |
+| 111 | 804aff | R1 | Expresses the height correct to 3 significant figures | Round your height to 3 significant figures and include the unit. |
+| 112 | 804aff | CK2 | Identifies that $AC=AB+BC$ | Identify $AC$ by adding the two horizontal distances, $AB$ and $BC$. |
+| 113 | 804aff | AK3 | Calculates $AC=45+75=120\text{ m}$ | Calculate $AC$ in $\text{m}$ by adding the two given horizontal lengths. |
+| 114 | 804aff | CK3 | Selects the tangent ratio using $CD$ and $AC$ | Use the tangent ratio $\tan\angle DAC=\frac{CD}{AC}$. |
+| 115 | 804aff | AK4 | Calculates $\tan^{-1}\left(\frac{\text{their }CD}{120}\right)$ | Calculate $\tan^{-1}\left(\frac{\text{your }CD}{120}\right)$ using your earlier $CD$ value. |
+| 116 | 804aff | R2 | Expresses the angle correct to 1 decimal place | Round your angle to 1 decimal place and include $^\circ$. |
+| 117 | 804aff | R3 | Concludes that the camera will not identify the lighthouse because "their" angle is less than $20^\circ$ | Conclude that the camera does not identify the lighthouse because your angle is less than $20^\circ$. |
+| 118 | 804b07 | CK1 | Recognises that $V$ contains the regions labelled $6$ and $x$ | Look at set $V$ and include both the overlap labelled $6$ and the part labelled $x$. |
+| 119 | 804b07 | R1 | Forms $x + 6 = 21$ | Use $n(V)=21$ to write $x+6=21$. |
+| 120 | 804b07 | CK2 | Identifies the three regions in $H \cup V$ | Identify the three regions that lie in $H \cup V$. |
+| 121 | 804b07 | AK2 | Adds $14$, $6$ and "their" value of $x$ | Add $14$, $6$, and your value of $x$ to find $n(H \cup V)$. |
+| 122 | 804b07 | CK3 | Recognises $(H \cup V)'$ as the region outside both sets | Select the region outside both $H$ and $V$ for $(H \cup V)'$. |
+| 123 | 804b07 | AK3 | Subtracts "their" $n(H \cup V)$ from $40$ | Subtract your $n(H \cup V)$ from $40$. |
+| 124 | 804b0f | CK1 | Identifies $5x$ as the highest common factor | Find the greatest factor that divides both terms, including the common variable factor. |
+| 125 | 804b0f | AK1 | Divides both terms by $5x$ to obtain $3x+4$ | Divide each term by the common factor to find the expression left inside the brackets. |
+| 126 | 804b0f | CK2 | Recognises that total tiles equal tiles per row multiplied by number of rows | Write the total number of tiles as the number in each row multiplied by the number of rows. |
+| 127 | 804b0f | R1 | Uses "their" factorisation, matching $5x$ to the number of tiles in each row | Use your factorisation to identify which factor represents the number of tiles in each row. |
+| 128 | 804b0f | CK3 | Forms $5x=3x+4$ for a square wall | Set the two dimensions equal because a square has the same number of rows as tiles in each row. |
+| 129 | 804b0f | AK3 | Solves "their" equation to obtain $x=2$ | Solve your equation for $x$ by collecting the variable terms and then isolating $x$. |
+| 130 | 804b0f | R3 | Concludes that $x=2$ satisfies the positive whole-number condition | Check that your value of $x$ is a positive whole number before stating that it is suitable. |
+| 131 | 804b0f | CK4 | Recognises that the required total is the product of the two equal dimensions | Find the required total by multiplying the two equal dimensions. |
+| 132 | 804b0f | AK4 | Substitutes "their" value of $x$ to calculate $10\times10$ | Substitute your value of $x$ into both dimensions, then calculate $\text{row size}\times\text{number of rows}$. |
+| 133 | 804b1c | R1 | Reads the $V$-intercept correctly from the graph | Read the coordinate where the line crosses the $V$-axis and write the intercept as an ordered pair. |
+| 134 | 804b1c | R2 | Reads the $t$-intercept correctly from the graph | Read the coordinate where the line crosses the $t$-axis and write the intercept as an ordered pair. |
+| 135 | 804b1c | CK3 | Uses the change in volume over the change in time | Divide the change in volume by the change in time to find the rate of decrease. |
+| 136 | 804b1c | AK1 | Finds the decrease in volume as $16$ litres over $8$ hours, or using "their" intercepts | Use your two intercepts to find how much the volume decreases and how long the decrease takes. |
+| 137 | 804b1c | AK3 | Uses $16-2(5)$, or "their" initial volume and rate | Subtract the volume lost after $5$ hours, using your initial volume and your rate of decrease. |
+| 138 | 804b1c | R3 | Compares "their" volume with $7$ litres and concludes that it is insufficient | Compare your calculated volume with $7$ litres and state whether it is insufficient for the garden. |
+| 139 | 804b2c | CK1 | Forms $\vec{HM}=\vec{OM}-\vec{OH}$ | Calculate $\vec{HM}=\vec{OM}-\vec{OH}$ by subtracting the position vector of $H$ from the position vector of $M$. |
+| 140 | 804b2c | AK1 | Subtracts components to obtain $\begin{pmatrix}3\\4\end{pmatrix}$ | Subtract the corresponding components to form $\begin{pmatrix}x\\y\end{pmatrix}$. |
+| 141 | 804b2c | CK2 | Selects $\sqrt{x^2+y^2}$ to find the magnitude of "their" vector | Find the magnitude of your vector using $\sqrt{x^2+y^2}$. |
+| 142 | 804b2c | AK2 | Evaluates $\sqrt{3^2+4^2}=5$ grid units, or equivalent using "their" vector | Substitute the components of your vector into $\sqrt{x^2+y^2}$ and evaluate the result in grid units. |
+| 143 | 804b2c | R1 | Converts "their" grid distance using $100$ m per grid unit | Multiply your grid distance by $100$ m per grid unit to convert it to metres. |
+| 144 | 804b2c | CK3 | Recognises that a unit vector is found by dividing a vector by its magnitude | Find a unit vector by dividing a vector by its magnitude. |
+| 145 | 804b2c | AK3 | Divides both components of "their" $\vec{HM}$ by "their" magnitude | Divide each component of your $\vec{HM}$ by your magnitude. |
+| 146 | 804b2c | R2 | Uses the direction from $H$ to $M$, not the reverse direction | Use the direction from $H$ to $M$, so your vector points towards $M$ rather than towards $H$. |
+| 147 | 804b34 | CK1 | Recognises that the overtime rate is $1.5 \times \$18$ per hour | Use an overtime rate of $1.5 \times \$18$ per hour. |
+| 148 | 804b34 | AK1 | Calculates ordinary and overtime earnings | Calculate the ordinary earnings and the overtime earnings separately by multiplying each number of hours by its rate. |
+| 149 | 804b34 | CK2 | Recognises that tax applies only to gross earnings above \$1 400 | Apply income tax only to the part of the gross earnings above \$1 400. |
+| 150 | 804b34 | R1 | Finds taxable earnings by subtracting \$1 400 from "their" gross earnings | Find the taxable earnings by subtracting \$1 400 from your gross earnings. |
+| 151 | 804b34 | AK3 | Finds 10% of "their" taxable earnings | Calculate 10% of your taxable earnings to find the income-tax deduction. |
+| 152 | 804b34 | CK3 | Recognises that the health-insurance deduction is 2% of gross earnings | Use 2% of the gross earnings for the health-insurance deduction. |
+| 153 | 804b34 | R2 | Subtracts "their" tax and insurance deductions from "their" gross earnings to obtain net pay | Subtract your tax deduction and your insurance deduction from your gross earnings to obtain your net pay. |
+| 154 | 804b34 | CK4 | Identifies the investment as 18% of "their" net pay | Identify the investment as 18% of your net pay. |
+| 155 | 804b34 | AK4 | Calculates 18% of "their" net pay | Calculate 18% of your net pay to find the investment amount. |
+| 156 | 804b34 | R3 | Subtracts "their" investment from "their" net pay to find the amount retained | Subtract your investment from your net pay to find the amount retained. |
+| 157 | 804b34 | R4 | Concludes that "their" retained amount is less than \$1 210 | Compare your retained amount with \$1 210 and conclude whether it is less. |
+| 158 | 821070 | CK1 | Recognises the square-number pattern. | Use the square-number pattern in the diagram to find the number of packets in Figure 4. |
+| 159 | 821070 | R1 | Forms \$25 multiplied by "their" number of packets. | Multiply \$25 by your number of packets to form the marked price. |
+| 160 | 821070 | CK2 | Identifies discount as marked price minus sale price. | Find the discount by subtracting the sale price from the marked price. |
+| 161 | 821070 | AK3 | Finds "their" marked price minus \$340. | Subtract \$340 from your marked price to find your discount. |
+| 162 | 821070 | R2 | Divides "their" discount by "their" marked price and multiplies by 100. | Divide your discount by your marked price and multiply by 100. |
+| 163 | 821070 | R3 | States the discount as a percentage. | State your discount as a percentage using the \% symbol. |
+| 164 | 82109b | CK1 | Identifies that the $y$-intercept occurs when $x=0$ | Set $x=0$ to locate the $y$-intercept on the graph. |
+| 165 | 82109b | CK2 | Uses the linear relationship $P=mx+c$ | Use the linear form $P=mx+c$ to organise the equation of the line. |
+| 166 | 82109b | AK1 | Calculates gradient $=\frac{3-(-12)}{10-0}=1.5$ | Choose two points on the line and calculate the gradient as $\frac{\text{change in }P}{\text{change in }x}$. |
+| 167 | 82109b | AK2 | Forms $P=1.5x-12$, using "their" $y$-intercept | Substitute your gradient and your $y$-intercept into $P=mx+c$ to form your equation. |
+| 168 | 82109b | AK3 | Substitutes $P=0$ into "their" equation | Replace $P$ with $0$ in your equation to represent break-even. |
+| 169 | 82109b | AK4 | Solves "their" equation for $x$ | Rearrange your equation step by step until $x$ is the subject. |
+| 170 | 82109b | R2 | Interprets "their" value of $x$ as the break-even number of garments | State that your value of $x$ is the number of garments made when profit is zero. |
+| 171 | 82109b | AK5 | Solves $\text{their }P\geq6$ using "their" equation | Use your equation to solve $\text{your }P\geq6$ for $x$. |
+| 172 | 82109b | R3 | Selects the least whole number satisfying "their" inequality | Choose the smallest whole number that satisfies your inequality. |
+| 173 | 8210a8 | AK1 | Continues the pattern to obtain 15 beads. | Continue the bead pattern by adding the next increase to find the number of beads in the next figure. |
+| 174 | 8210a8 | AK2 | Multiplies "their" number of beads by 4. | Multiply your number of beads by $4$ to find the marked price. |
+| 175 | 8210a8 | CK1 | Uses 75% of the marked price as the sale price. | Calculate the sale price as $75\%$ of the marked price. |
+| 176 | 8210a8 | R1 | Adds \$18 to "their" sale price to obtain \$63. | Add $\$18$ to your sale price to find the other sale price. |
+| 177 | 8210a8 | R2 | Reverses the discount to find a marked price of \$84. | Reverse the discount by dividing your sale price by $0.75$ to find the marked price. |
+| 178 | 8210a8 | R3 | Uses \$4 per bead to obtain 21 beads. | Divide the marked price by $\$4$ per bead to find the number of beads. |
+| 179 | 8210a8 | CK2 | Identifies 21 beads as Figure 5 in the pattern. | Match your number of beads to the pattern to identify its figure number. |
+| 180 | 8210b0 | CK1 | Recognises that the total for Fortnight 1 is $5 \times 20$ | Find the total number of crates by multiplying the five days by the mean, using $5 \times 20$. |
+| 181 | 8210b0 | AK1 | Calculates the total as $100$ crates | Calculate the product for the total number of crates in Fortnight 1. |
+| 182 | 8210b0 | AK2 | Subtracts the four known values from $100$ to obtain $20$ | Subtract all four known daily harvests from your Fortnight 1 total to find the missing Wednesday harvest. |
+| 183 | 8210b0 | CK2 | Identifies $16$ and $24$ as the extreme values for Fortnight 1 | Look through the Fortnight 1 values and identify the smallest and largest harvest amounts. |
+| 184 | 8210b0 | AK3 | Calculates $24-16=8$; follow-through on "their" Wednesday value | Using your Wednesday value if needed, subtract the smallest Fortnight 1 harvest from the largest to calculate the range. |
+| 185 | 8210b0 | CK3 | Identifies $17$ and $22$ as the extreme values for Fortnight 2 | Look through the Fortnight 2 values and identify the smallest and largest harvest amounts. |
+| 186 | 8210b0 | AK4 | Calculates $22-17=5$ | Subtract the smallest Fortnight 2 harvest from the largest to calculate its range. |
+| 187 | 8210b0 | R1 | Compares "their" two ranges correctly | Compare your two ranges and decide which one is smaller. |
+| 188 | 8210b0 | R2 | Selects Fortnight 2 as having the smaller range | Choose the fortnight that has the smaller range. |
+| 189 | 8210b0 | R3 | Explains that a smaller range means the harvest amounts are more consistent | Explain that a smaller range means the harvest amounts are less spread out and therefore more consistent. |
+| 190 | 8210b8 | CK1 | Identifies the solid as a sphere | Identify the solid shown in the diagram by matching its shape to the correct three-dimensional object. |
+| 191 | 8210b8 | CK2 | Selects the volume formula for a sphere | Choose the volume formula that applies to a sphere. |
+| 192 | 8210b8 | AK1 | Substitutes radius $3$ into $V=\frac{4}{3}\pi r^3$ | Substitute the given radius into $V=\frac{4}{3}\pi r^3$. |
+| 193 | 8210b8 | R1 | Expresses the volume exactly in terms of $\pi$ | Simplify the volume exactly and leave it in terms of $\pi$. |
+| 194 | 8210b8 | CK3 | Forms the replacement volume as eight times "their" volume | Form the replacement volume by multiplying your earlier volume by eight. |
+| 195 | 8210b8 | AK3 | Substitutes "their" replacement volume into $V=\frac{4}{3}\pi r^3$ and makes $r$ the subject | Substitute your replacement volume into $V=\frac{4}{3}\pi r^3$ and rearrange to make $r$ the subject. |
+| 196 | 8210b8 | AK4 | Evaluates the cube root to obtain $r=6$ | Evaluate the cube root to find the radius. |
+| 197 | 8210b8 | R2 | Uses the cubic relationship between volume and radius to give the replacement radius in metres | Use the cubic volume–radius relationship to state the replacement radius in metres. |
+| 198 | 8210c0 | CK1 | Identifies the discount as $15\%$ of the marked price | Calculate the discount as $15\%$ of the marked price. |
+| 199 | 8210c0 | AK2 | Subtracts "their" discount from \$2 400 | Subtract your discount from \$2 400 to find your sale price. |
+| 200 | 8210c0 | CK2 | Applies the sales-tax rate to "their" sale price | Apply the sales-tax rate to your sale price. |
+| 201 | 8210c0 | AK5 | Adds "their" sale price and "their" sales tax to obtain \$2 295 | Add your sale price and your sales tax to find your total paid. |
+| 202 | 8210c0 | R1 | Selects $N$ as the smallest set containing "their" total | Choose $N$ as the smallest set containing your total. |
+| 203 | 8210c0 | R2 | Justifies the choice by identifying "their" total as a positive whole number | Justify your choice by stating that your total is a positive whole number. |
+| 204 | 8210c0 | R3 | Subtracts "their" total from \$2 300 to determine the change | Subtract your total from \$2 300 to find the change. |
+| 205 | 8210c8 | AK1 | Extends the dot pattern to obtain $17$ positions for Figure 4 | Extend the dot pattern to find the number of positions in Figure 4. |
+| 206 | 8210c8 | CK1 | Identifies $17$ as prime | Decide whether your number of positions in Figure 4 is prime. |
+| 207 | 8210c8 | R1 | Justifies prime by giving $1$ and $17$ as the only positive factors | List all the positive factors of your Figure 4 total to justify that it is prime. |
+| 208 | 8210c8 | CK2 | Forms total marked price using \$15 for each of "their" number of positions | Form the total marked price by multiplying your number of positions by $\$15$. |
+| 209 | 8210c8 | AK2 | Calculates \$15 multiplied by "their" number of positions | Calculate $\$15$ multiplied by your number of positions. |
+| 210 | 8210c8 | AK3 | Calculates $20\%$ of "their" total marked price | Calculate $20\%$ of your total marked price. |
+| 211 | 8210c8 | AK4 | Subtracts "their" discount from "their" total marked price | Subtract your discount from your total marked price. |
+| 212 | 8210c8 | CK3 | Identifies profit as sales revenue minus amount paid | Find the profit by subtracting the amount paid from the sales revenue. |
+| 213 | 8210c8 | R2 | Uses \$20 for each of "their" positions and subtracts "their" amount paid to determine profit | Multiply your number of positions by $\$20$ and subtract your amount paid to determine the profit. |
+| 214 | 8210c8 | R3 | States that sales revenue exceeds the amount paid | Compare the sales revenue with the amount paid and state which is greater. |
+| 215 | 8210d0 | CK1 | Identifies the four regions in the Compost set. | Locate all four regions inside the Compost set, including each overlap region. |
+| 216 | 8210d0 | AK1 | Adds the known Compost regions to obtain $7+3+2=12$. | Add the three known numbers in the Compost set before combining the result with $x$. |
+| 217 | 8210d0 | CK2 | Recognises that at least one practice is represented by all seven regions inside the three sets. | Include all seven regions inside the three sets when you count households using at least one practice. |
+| 218 | 8210d0 | AK3 | Adds the seven internal regions using "their" value of $x$. | Add all seven internal regions, using your value of $x$ from the Compost calculation. |
+| 219 | 8210d0 | R1 | Counts each overlap region once only. | Count each overlap region only once, even when it belongs to two or three sets. |
+| 220 | 8210d0 | AK4 | Subtracts "their" number using at least one practice from 80. | Subtract your total for households using at least one practice from 80. |
+| 221 | 8210d0 | R3 | Identifies the region outside all three sets. | Use the region outside all three circles to represent households using none of the practices. |
+| 222 | 8210d8 | R1 | Identifies $PQ$ and $QR$ as the sections of the outward route and adds their lengths | Trace the outward route through $PQ$ and $QR$, then add those two labelled lengths. |
+| 223 | 8210d8 | CK1 | Uses $\text{time}=\text{distance}\div\text{speed}$ | Calculate the journey time using $\text{time}=\text{distance}\div\text{speed}$. |
+| 224 | 8210d8 | CK2 | Uses total distance divided by total time for average speed | Find the average speed by dividing the total journey distance by the total journey time. |
+| 225 | 8210d8 | AK2 | Calculates the return time from "their" outward distance at $30\,000\text{ m/h}$ | Use your outward distance to calculate the return time at $30\,000\text{ m/h}$. |
+| 226 | 8210d8 | AK3 | Divides twice "their" outward distance, converted to kilometres, by the total of "their" journey times | Double your outward distance, convert it to kilometres, and divide by the sum of your outward and return times. |
+| 227 | 8210d8 | R2 | Expresses "their" average speed correct to 3 significant figures | Write your calculated average speed correct to 3 significant figures. |
+| 228 | 8210d8 | CK3 | Recognises that the route distance must be converted to kilometres before applying the per-kilometre charge | Convert the route distance to kilometres before using the per-kilometre charge. |
+| 229 | 8210d8 | AK4 | Converts "their" outward distance to kilometres and calculates the base fare | Convert your outward distance to kilometres, then multiply by the charge per kilometre to find the base fare. |
+| 230 | 8210d8 | R3 | Applies the discount and then the sales tax to "their" base fare | Subtract the discount from your base fare first, then calculate and add the sales tax on the reduced fare. |
+| 231 | 8210e0 | CK2 | Uses $r=\dfrac{\text{their diameter}}{2}$ in the sphere-volume formula | Substitute $r=\dfrac{\text{your diameter}}{2}$ into $V=\dfrac{4}{3}\pi r^3$ before calculating the volume. |
+| 232 | 8210e0 | R1 | Forms $1.25\times$ "their" volume for the required capacity | Convert $125\%$ to a multiplier and multiply it by your volume to find the required capacity. |
+| 233 | 8210e0 | CK3 | Rearranges to obtain $r^3=\dfrac{3V}{4\pi}$ | Multiply both sides of the volume formula by $\dfrac{3}{4\pi}$ to isolate $r^3$. |
+| 234 | 8210e0 | R2 | Uses "their" required capacity in the rearranged relationship | Substitute your required capacity for $V$ in the rearranged relationship. |
+| 235 | 8210e0 | AK3 | Simplifies to $r^3=270$ | Cancel common factors and simplify the right-hand side until you have one value for $r^3$. |
+| 236 | 8210e0 | AK4 | Finds $r=3\sqrt[3]{10}$ | Take the cube root and simplify the result using $\sqrt[3]{\,}$. |
+| 237 | 8210e0 | R3 | Expresses "their" radius in exact form | Write your radius in exact cube-root form instead of as a decimal approximation. |
+| 238 | 8210e8 | CK1 | Identifies that the $y$-intercept occurs when $x=0$ | Identify the $y$-intercept by setting $x=0$ on the graph. |
+| 239 | 8210e8 | AK1 | Forms "their" initial-stock equation $12-2x=0$ | Use your initial number of bags and the daily decrease to form an equation equal to zero. |
+| 240 | 8210e8 | AK2 | Solves "their" equation to obtain $x=6$ | Solve your equation for $x$ to find when the number of bags reaches zero. |
+| 241 | 8210e8 | R2 | States the $x$-intercept as $(6,0)$ | State your $x$-intercept as an ordered pair with zero as its $y$-coordinate. |
+| 242 | 8210e8 | R3 | Finds the new emptying time as "their" $x$-intercept plus 2 days | Add 2 days to your $x$-intercept to find your new emptying time. |
+| 243 | 8210e8 | CK2 | Recognises that the unchanged sale rate is 2 bags per day | Use the unchanged sale rate of 2 bags per day for the new display. |
+| 244 | 8210e8 | AK3 | Forms $-2(\text{their new emptying time})+c=0$ | Form $-2(\text{your new emptying time})+c=0$ using your new emptying time. |
+| 245 | 8210e8 | AK4 | Calculates "their" value of $c$ as 16 | Calculate $c$ from your equation to find the initial number of bags. |
+| 246 | 8210f0 | CK1 | Recognises that total waiting time is mean multiplied by number of patients | Multiply the mean waiting time by the number of patients to find the total waiting time. |
+| 247 | 8210f0 | AK1 | Calculates $18 \times 8 = 144$ | Carry out the multiplication $\times$ carefully to calculate the total waiting time. |
+| 248 | 8210f0 | CK2 | Forms total waiting time as sum of the seven known times and Anisa's time | Write the total waiting time as the sum of the seven known waiting times and Anisa's waiting time. |
+| 249 | 8210f0 | AK2 | Finds sum of the seven known waiting times as $114$ | Add the seven known waiting times carefully before finding Anisa's time. |
+| 250 | 8210f0 | AK3 | Calculates $144 - 114 = 30$ | Subtract the sum of the known waiting times from the total waiting time. |
+| 251 | 8210f0 | CK3 | Identifies the fourth and fifth values as $15$ and $17$ after ordering the data | Order all the waiting times from smallest to largest, then identify the two middle values. |
+| 252 | 8210f0 | AK4 | Calculates median as $(15 + 17) \div 2 = 16$ | Add the two middle values and divide by $\div$ to calculate the median. |
+| 253 | 8210f0 | AK5 | Calculates range as $30 - 8 = 22$ | Subtract the smallest waiting time from the largest waiting time to calculate the range. |
+| 254 | 8210f0 | R1 | Compares 'their' median with the limit of $15$ minutes | Compare your median with the clinic's median limit. |
+| 255 | 8210f0 | R2 | Compares 'their' range with the limit of $20$ minutes | Compare your range with the clinic's range limit. |
+| 256 | 8210f0 | R3 | Explains that the required conditions are not satisfied | Use both comparisons to state whether the clinic meets all the required conditions. |
+| 257 | 8210f8 | CK1 | Recognises that the discounted price is $80\%$ of the marked price | Find the percentage paid after the discount and use $80\%$ of the marked price. |
+| 258 | 8210f8 | AK2 | Divides \$960 by "their" discounted price per bottle | Divide \$960 by your discounted price per bottle. |
+| 259 | 8210f8 | R1 | Interprets the quotient as 24 whole bottles | Interpret your quotient as the number of whole bottles purchased. |
+| 260 | 8210f8 | AK3 | Calculates $12.5\%$ of \$960, giving \$120 | Calculate $12.5\%$ of \$960 for the sales tax. |
+| 261 | 8210f8 | AK4 | Adds "their" sales tax to \$960 | Add your sales tax to \$960 to find the total paid. |
+| 262 | 8210f8 | CK2 | Selects selling revenue excluding sales tax less manufacturing cost, using "their" number of bottles and "their" discounted price | Subtract the manufacturing cost from the selling revenue before sales tax, using your number of bottles and discounted price. |
+| 263 | 8210f8 | CK3 | Identifies 24 as composite | Check whether your number of bottles has factors other than $1$ and itself to classify it. |
+| 264 | 8210f8 | R2 | Determines all valid factors of "their" number of bottles, excluding 1 and the total | List every factor of your number of bottles that is greater than $1$ and less than the total. |
+| 265 | 8210f8 | R3 | Counts six possible carton sizes | Count the valid factors in your list to find the possible carton sizes. |
+| 266 | 821105 | CK1 | Selects the five values for the random sample | Choose the five values that belong to the random sample from the table. |
+| 267 | 821105 | AK1 | Adds the sample values to obtain $70$ | Add the five selected sample values to find the sample total. |
+| 268 | 821105 | R1 | Uses the condition $f(x)=$ "their" mean | Set $f(x)=$ your calculated mean. |
+| 269 | 821105 | AK3 | Identifies $x=1$ where $f(x)=$ "their" mean | Identify the first day number where $f(x)=$ your calculated mean. |
+| 270 | 821105 | AK4 | Identifies $x=5$ where $f(x)=$ "their" mean | Identify the other day number where $f(x)=$ your calculated mean. |
+| 271 | 821105 | R2 | Uses the midpoint of "their" two day numbers to obtain $3$ | Calculate the midpoint of your two day numbers. |
+| 272 | 821105 | R3 | States the axis as the equation $x=3$ | Write the axis as an equation in the form $x=$ your midpoint. |
+| 273 | 821105 | CK2 | Identifies the mean from the random sample as a statistic | Classify the mean calculated from a random sample as a statistic. |
+| 274 | 821105 | CK3 | Identifies the mean for all 7 days as a parameter | Classify the mean calculated from all days as a parameter. |
+| 275 | 82110d | CK1 | Identifies $OA$ as a radius | Identify $OA$ as a radius of the buoy. |
+| 276 | 82110d | AK1 | Rearranges to obtain $r^3 = \frac{3V}{4\pi}$ | Rearrange the volume formula until you have $r^3 = \frac{3V}{4\pi}$. |
+| 277 | 82110d | CK2 | Recognises that a cube root is required to obtain $r$ | Take the cube root to isolate $r$. |
+| 278 | 82110d | AK3 | Substitutes $V = \frac{500\pi}{3}$ into "their" expression for $r$ | Substitute $V = \frac{500\pi}{3}$ into your expression for $r$. |
+| 279 | 82110d | AK4 | Evaluates "their" expression to obtain $5$ | Evaluate your expression carefully to find the radius. |
+| 280 | 82110d | R1 | Interprets "their" radius as the length $OA$, in centimetres | State that your radius is the length $OA$ and give it in centimetres. |
+| 281 | 82110d | CK3 | Uses diameter $= 2 \times$ "their" radius | Calculate the diameter using $2 \times$ your radius. |
+| 282 | 82110d | R2 | Compares "their" diameter with $9\text{ cm}$ and concludes that the buoy will not pass through the opening | Compare your diameter with $9\text{ cm}$ and conclude whether the buoy passes through the opening. |
+| 283 | 821115 | CK1 | Identifies package B as the eligible package | Check the package conditions and choose package B as the eligible package. |
+| 284 | 821115 | CK2 | States that 29 has exactly two factors, 1 and 29 | List the factors of $29$ and verify that it has exactly two factors. |
+| 285 | 821115 | CK3 | Selects the marked price of \$1 450 for "their" selected package | Read the table and use the marked price of \$1 450 for your selected package. |
+| 286 | 821115 | AK1 | Calculates $12\%$ of \$1 450 | Calculate $12\%$ of \$1 450 to find your discount. |
+| 287 | 821115 | AK2 | Subtracts "their" discount from \$1 450 | Subtract your discount from \$1 450 to find your discounted price. |
+| 288 | 821115 | R1 | Uses "their" discounted price as the amount on which sales tax is charged | Use your discounted price, not the original marked price, as the amount on which sales tax is charged. |
+| 289 | 821115 | AK3 | Calculates $10\%$ sales tax on "their" discounted price | Calculate $10\%$ sales tax on your discounted price. |
+| 290 | 821115 | AK4 | Adds "their" sales tax to "their" discounted price | Add your sales tax to your discounted price to find your amount paid. |
+| 291 | 821115 | AK5 | Subtracts "their" sales tax from "their" amount paid | Subtract your sales tax from your amount paid to find your retained amount. |
+| 292 | 821115 | AK6 | Finds the difference between "their" retained amount and \$1 050 | Find the difference between your retained amount and \$1 050. |
+| 293 | 821115 | R2 | Concludes profit when "their" retained amount exceeds the cost | Conclude that you make a profit if your retained amount is greater than the cost. |
+| 294 | 821115 | R3 | Supports the verdict using "their" retained amount, cost and difference | Support your verdict by comparing your retained amount with the \$1 050 cost and stating the difference. |
+| 295 | 821125 | CK1 | Recognises that the eight mutually exclusive regions represent all 80 customers | Treat the eight non-overlapping regions as the complete group of customers. |
+| 296 | 821125 | AK1 | Adds the seven known regions to obtain 68 | Add the seven known region counts to find the total already accounted for. |
+| 297 | 821125 | CK2 | Identifies the three exactly-two regions and the all-three region | Select the three regions shared by exactly two sets and the central region shared by all three sets. |
+| 298 | 821125 | AK3 | Adds $6 + 5 + 4 +$ "their" value of $x$ | Add $6 + 5 + 4 + x$, using your value of $x$. |
+| 299 | 821125 | CK3 | Recognises that customers who bought fewer than two items are the complement of those who bought at least two items | Find the customers who buy fewer than two items by taking the complement of those who buy at least two items. |
+| 300 | 821125 | R1 | Subtracts "their" number from part (b) from 80 | Subtract your number from part (b) from $80$. |
+| 301 | 821125 | R2 | Divides "their" number of customers requiring vouchers by 10 | Divide your number of customers requiring vouchers by $10$. |
+| 302 | 821132 | CK1 | Recognises that the angle at the centre is twice the angle at the circumference on the same arc. | Use the fact that the angle at the centre is twice the angle at the circumference standing on the same arc. |
+| 303 | 821132 | AK1 | Halves $100°$ to obtain $50°$. | Halve the given central angle to find $\angle ACB$. |
+| 304 | 821132 | AK2 | Equates angle $PAB$ to "their" angle $ACB$. | Set $\angle PAB$ equal to your earlier $\angle ACB$. |
+| 305 | 821132 | R1 | Identifies angle $ACB$ as the angle in the alternate segment for chord $AB$. | Identify $\angle ACB$ as the angle in the alternate segment for chord $AB$. |
+| 306 | 821132 | CK2 | States the alternate segment theorem. | State the alternate segment theorem before applying it to the tangent and chord. |
+| 307 | 821132 | R2 | Uses equal tangents from $P$ to establish that $PA=PB$. | Use the equal-tangents property from $P$ to show that $PA=PB$. |
+| 308 | 821132 | R3 | Deduces that angle $PBA$ equals "their" angle $PAB$. | Use $PA=PB$ to make $\angle PBA$ equal to your $\angle PAB$. |
+| 309 | 821132 | AK3 | Uses the angle sum of triangle PAB$: $180°-"their"50°-"their"50°. | Subtract your two base-angle values from the angle sum in triangle $PAB$ to find $\angle APB$. |
+| 310 | 82116c | R1 | Reads that the $y$-intercept occurs when $x=0$ | Put $x=0$ to locate the $y$-intercept on the graph. |
+| 311 | 82116c | CK1 | Recognises that the gradient can be found from the two intercepts | Use the two intercepts as points to find the gradient. |
+| 312 | 82116c | AK1 | Calculates gradient $=-2$ | Subtract the $y$-coordinates and divide by the difference between the $x$-coordinates to calculate the gradient. |
+| 313 | 82116c | AK2 | Uses "their" $y$-intercept to obtain $c=12$ | Substitute your $y$-intercept into $y=mx+c$ and solve for $c$. |
+| 314 | 82116c | R3 | Expresses $y=-2x+12$ in the required form | Write the equation in the form $y=mx+c$, using your gradient and $y$-intercept. |
+| 315 | 82116c | CK2 | Identifies "their" constant term as the starting volume of water | Interpret your constant term as the starting volume of water. |
+| 316 | 82116c | AK3 | Divides "their" starting volume by $4$ | Divide your starting volume by $4$ to find the emptying rate. |
+| 317 | 82116c | R4 | States "their" result as a rate in litres per hour | State your result as a rate in litres per hour. |
+| 318 | 82116c | CK3 | Recognises that $y=0$ at the $x$-intercept | Use $y=0$ at the $x$-intercept. |
+| 319 | 82116c | AK4 | Substitutes $x=9$, $y=0$ and "their" replacement-pump rate into $y=-3x+c$ | Substitute the stated $x$-intercept coordinates and your replacement-pump rate into the given equation, then solve for $c$. |
+| 320 | 82118d | CK1 | Identifies the complete route as $1200 + 1500 + 900$ | Add the lengths of all three parts of the route to find the complete distance. |
+| 321 | 82118d | CK2 | Uses distance divided by time with distance in kilometres and time in hours | Convert the distance to kilometres and the time to hours, then divide distance by time. |
+| 322 | 82118d | R1 | Multiplies "their" average speed by $1.5$ hours to obtain $7.2\text{ km}$ | Multiply your average speed by $1.5\text{ hours}$ to calculate the distance travelled. |
+| 323 | 82118d | CK3 | Identifies the discounted charge as the amount on which sales tax is calculated | Use the charge after the discount as the amount on which you calculate sales tax. |
+| 324 | 82118d | AK3 | Calculates the basic charge from "their" distance at \$40 per kilometre | Multiply your distance travelled by $\$40$ per kilometre to calculate the basic charge. |
+| 325 | 82118d | AK4 | Deducts $15\%$ discount from "their" basic charge | Find $15\%$ of your basic charge and subtract this discount from it. |
+| 326 | 82118d | R2 | Calculates sales tax of $12.5\%$ on "their" discounted charge | Calculate sales tax as $12.5\%$ of your discounted charge. |
+| 327 | 82119a | CK1 | Recognises that the sale price is $75\%$ of the marked price | Treat the sale price as $75\%$ of the marked price. |
+| 328 | 82119a | R1 | Forms an equation connecting the marked price and the sale price | Write an equation by setting $0.75p$ equal to the sale price. |
+| 329 | 82119a | AK1 | Divides $360$ by $0.75$ | Divide $360$ by $0.75$ to find the marked price. |
+| 330 | 82119a | AK3 | Subtracts the cost price from the sale price | Subtract the cost price from the sale price to calculate the profit. |
+| 331 | 82119a | CK2 | Uses profit divided by marked price, multiplied by $100$ | Calculate the percentage using $\frac{\text{profit}}{\text{marked price}}\times100$. |
+| 332 | 82119a | AK4 | Substitutes "their" profit and "their" marked price into the percentage calculation | Substitute your earlier profit and your earlier marked price into the percentage calculation. |
+| 333 | 82119a | CK3 | States $N$ | Choose the smallest listed number set that contains both positive integers. |
+| 334 | 82119a | R3 | Justifies that "their" marked price and "their" profit are positive integers | Explain that your earlier marked price and your earlier profit are both positive integers. |
+| 335 | 8211a2 | CK1 | Identifies the greatest and least mean heights as $9$ m and $0$ m | Read the table and identify the greatest and least mean heights. |
+| 336 | 8211a2 | CK2 | States sample statistic | State that the calculated value is a sample statistic. |
+| 337 | 8211a2 | CK3 | Recognises that the calculation used a random sample of 12 balls | Point out that the calculation uses randomly selected balls rather than every ball in the competition. |
+| 338 | 8211a2 | R1 | Uses "their" range to identify the corresponding height on the quadratic relationship | Use your range to identify the corresponding height on the quadratic relationship. |
+| 339 | 8211a2 | R2 | Writes the axis of symmetry as the equation $t=3$ using "their" time from (c) | Write the axis of symmetry as an equation using your time from part (c). |
+| 340 | 8211a2 | AK3 | Identifies $0$ as one root | Identify the time value where the quadratic relationship has zero height as one root. |
+| 341 | 8211a2 | AK4 | Uses symmetry about $t=3$ to obtain the second root, $6$ | Use symmetry about the axis of the quadratic relationship to find the second root from the root you already identify. |
+| 342 | 8211af | AK1 | Obtains $3V=4\pi r^3$ | Multiply both sides by $3$ to clear the denominator and leave $4\pi r^3$ on the other side. |
+| 343 | 8211af | AK2 | Divides by $4\pi$ to obtain $r^3=\frac{3V}{4\pi}$ | Divide both sides by $4\pi$ to isolate $r^3$ as $\frac{3V}{4\pi}$. |
+| 344 | 8211af | AK3 | Substitutes $V=288\pi$ into "their" expression for $r$ | Substitute $V=288\pi$ into your expression for $r$. |
+| 345 | 8211af | AK4 | Evaluates "their" cube root correctly | Evaluate the cube root in your substituted expression accurately. |
+| 346 | 8211af | CK3 | Recognises that the diameter is twice "their" radius | Find the diameter by multiplying your radius by $2$. |
+| 347 | 8211af | AK5 | Calculates diameter $12\text{ cm}$, or correct follow-through from "their" radius | Calculate the diameter from your radius and write the length using $\text{cm}$. |
+| 348 | 8211af | R1 | Uses $C=\pi d$ with "their" diameter to obtain $12\pi\text{ cm}$, or correct follow-through | Substitute your diameter into $C=\pi d$ and write the circumference using $\text{cm}$. |
+| 349 | 8211af | CK4 | States that an edge is a line segment where faces meet | State that an edge is a line segment where faces meet. |
+| 350 | 8211af | R2 | Identifies the join as a circular curve | Identify the join as a circular curve. |
+| 351 | 8211af | R3 | Concludes that circumference, rather than edge length, describes the join | Describe the distance around the circular join as a circumference rather than an edge length. |
+| 352 | 8211c1 | CK1 | Identifies that a cube root is required to isolate $r$ | Take the cube root of both sides to isolate $r$. |
+| 353 | 8211c1 | AK1 | Rearranges correctly to $r=\sqrt[3]{\frac{3V}{4\pi}}$ | Rearrange the volume formula until $r=\sqrt[3]{\frac{3V}{4\pi}}$. |
+| 354 | 8211c1 | AK2 | Substitutes $V=36\pi$ into "their" formula for $r$ | Substitute $V=36\pi$ into your formula for $r$ and simplify. |
+| 355 | 8211c1 | R1 | Uses "their" radius as the horizontal coordinate and the $4$-unit vertical displacement | Use your radius as the horizontal coordinate and move $4$ units vertically to locate the next point. |
+| 356 | 8211c1 | CK2 | Identifies $OA$ and $BC$ as parallel | Identify $OA$ and $BC$ as the parallel sides. |
+| 357 | 8211c1 | R2 | Explains that both line segments are horizontal or have the same gradient | Explain that $OA$ and $BC$ are parallel because both line segments are horizontal or have the same gradient. |
+| 358 | 8211c1 | CK3 | Identifies $OABC$ as a rectangle | Identify $OABC$ as a rectangle. |
+| 359 | 8211c1 | R3 | Justifies the rectangle using parallel opposite sides and perpendicular adjacent sides | Justify the rectangle by showing that opposite sides are parallel and adjacent sides are perpendicular. |
+| 360 | 9e8750 | CK1 | Recognises that the $90°$ work sector represents one quarter of the passengers | Use the full $360°$ circle to show that the $90°$ work sector is one quarter of all passengers. |
+| 361 | 9e8750 | AK1 | Calculates $75 \times 4 = 300$ | Multiply the work-sector passenger count by $4$ to calculate the total number of passengers. |
+| 362 | 9e8750 | CK2 | Identifies the day-trip fraction as $\frac{144}{360}$ | Write the day-trip share as $\frac{144}{360}$ by comparing its sector angle with the whole pie chart. |
+| 363 | 9e8750 | AK2 | Multiplies $\frac{144}{360}$ by "their" total number of passengers | Multiply $\frac{144}{360}$ by your total number of passengers to find the day-trip passenger count. |
+| 364 | 9e8750 | CK3 | Recognises that passengers travelling on day trips or visiting relatives must be combined | Combine the day-trip passengers and the passengers visiting relatives because both groups need ferry seats. |
+| 365 | 9e8750 | AK4 | Calculates the number visiting relatives as $\frac{54}{360} \times$ "their" total $= 45$ | Calculate the relatives count using $\frac{54}{360} \times$ your total number of passengers. |
+| 366 | 9e8750 | R1 | Adds "their" day-trip passengers to 45 to obtain 165 | Add your day-trip passenger count to your relatives passenger count to find how many seats are needed. |
+| 367 | 9e8750 | R2 | Compares 165 with the capacity of 150 and determines an excess of 15 | Compare the number of seats needed with the ferry capacity and subtract the capacity to find the shortfall. |
+| 368 | 9e8750 | R3 | Concludes that the ferry cannot carry all the required passengers | State that the ferry cannot carry everyone because the required number of seats is greater than its capacity. |
+| 369 | 9e8767 | CK1 | Identifies that $r^3$ must be isolated. | Rearrange the volume equation so that $r^3$ is alone on one side. |
+| 370 | 9e8767 | CK2 | Recognises that the inverse operation for a cube is a cube root. | Use a cube root, such as $\sqrt[3]{r^3}$, to undo the cube. |
+| 371 | 9e8767 | AK1 | Rearranges correctly to obtain $r=\sqrt[3]{\frac{3V}{4\pi}}$. | Divide first and then take the cube root to write $r=\sqrt[3]{\frac{3V}{4\pi}}$. |
+| 372 | 9e8767 | AK2 | Substitutes $V=288\pi$ into "their" formula for $r$. | Substitute $V=288\pi$ into the formula you obtained for $r$ before simplifying. |
+| 373 | 9e8767 | CK3 | Forms the displacement as $\vec{OQ}-\vec{OP}$. | Form the displacement by calculating $\vec{OQ}-\vec{OP}$ in that order. |
+| 374 | 9e8767 | AK4 | Subtracts the position columns to obtain $\begin{pmatrix}-3\\2\end{pmatrix}$. | Subtract corresponding entries in the two position columns to form $\begin{pmatrix}x\\y\end{pmatrix}$. |
+| 375 | 9e8767 | R1 | Uses "their" radius as the scale factor for the coordinate displacement. | Use your radius as the scale factor to convert the coordinate displacement into the required units. |
+| 376 | 9e877e | CK1 | Reads 12 as the greatest whole-number value from the number line | Read the greatest labelled whole number at the rightmost valid position on the number line. |
+| 377 | 9e877e | CK2 | Forms $d+35(\text{their }12)=600$ | Form an equation by adding the delivery fee to $35(\text{your bag count})$ and setting it equal to the budget. |
+| 378 | 9e877e | AK1 | Calculates $35\times\text{their }12$ | Calculate the bag cost by evaluating $35\times\text{your bag count}$. |
+| 379 | 9e877e | AK3 | Calculates the increased delivery fee as \$216 | Find the increased delivery fee by adding the stated percentage increase to your original delivery fee. |
+| 380 | 9e877e | CK3 | Forms $216+35x\leq650$ | Write the budget condition with the new delivery fee plus the bag cost no greater than the budget, using $\leq$. |
+| 381 | 9e877e | AK4 | Obtains $35x\leq434$ | Subtract the new delivery fee from both sides while keeping the $\leq$ sign to isolate the bag-cost term. |
+| 382 | 9e877e | AK5 | Solves to obtain $x\leq12.4$ | Divide both sides by the cost per bag, keeping the $\leq$ sign, to find the upper bound for $x$. |
+| 383 | 9e877e | R1 | Uses the whole-number condition to give 12 bags | Use the whole-number condition to choose the greatest possible number of bags. |
+| 384 | 9e877e | R2 | Uses "their" increased delivery fee in the cost of 13 bags | Use your increased delivery fee and the cost of the stated number of bags to form the total cost. |
+| 385 | 9e877e | R3 | Obtains a total cost of \$671 | Add the delivery fee and bag cost carefully to calculate the total cost. |
+| 386 | 9e877e | R4 | Concludes that \$671 exceeds \$650, so the shopkeeper is incorrect | Compare your total cost with the budget and state that the shopkeeper is incorrect when it is greater. |
+| 387 | 9e878b | CK1 | Recognises that the angle at the centre is twice the angle at the circumference on the same arc | Use the fact that the angle at the centre is twice the angle at the circumference standing on the same arc. |
+| 388 | 9e878b | AK1 | Calculates $2\times32=64°$ | Double the given angle by calculating $2\times32$. |
+| 389 | 9e878b | CK2 | Recognises that $OP=OQ$ as radii, so $\triangle OPQ$ is isosceles | Use $OP=OQ$ to identify $\triangle OPQ$ as isosceles. |
+| 390 | 9e878b | AK2 | Subtracts “their” $\angle POQ$ from $180°$ | Subtract your $\angle POQ$ from $180°$. |
+| 391 | 9e878b | AK3 | Divides the remaining angle equally to obtain $58°$ | Divide the remaining angle equally between the two base angles. |
+| 392 | 9e878b | CK3 | Recognises that the tangent at $P$ is perpendicular to radius $OP$ | Use the fact that the tangent at $P$ is perpendicular to the radius $OP$. |
+| 393 | 9e878b | R1 | Forms the complementary relationship $x+\text{“their” }\angle OPQ=90°$ | Write the complementary relationship $x+\text{your }\angle OPQ=90°$. |
+| 394 | 9e878b | AK4 | Evaluates $90°-\text{“their” }58°$ | Evaluate $90°-\text{your earlier angle}$. |
+| 395 | 9e878b | R2 | Concludes that the tangent-chord angle is $32°$, consistent with $\angle PRQ$ | State that the angle between the tangent and chord equals $\angle PRQ$. |
+| 396 | 9e878b | R3 | States the angle in the alternate segment theorem | State the angle in the alternate segment theorem. |
+| 397 | 9e8793 | CK1 | Uses $\overrightarrow{AB}=\overrightarrow{OB}-\overrightarrow{OA}$. | Find $\overrightarrow{AB}$ by subtracting $\overrightarrow{OA}$ from $\overrightarrow{OB}$: $\overrightarrow{AB}=\overrightarrow{OB}-\overrightarrow{OA}$. |
+| 398 | 9e8793 | CK2 | Forms $\overrightarrow{OC}=\overrightarrow{OB}+2\overrightarrow{AB}$. | Form $\overrightarrow{OC}$ by adding $\overrightarrow{OB}$ to $2\times\overrightarrow{AB}$: $\overrightarrow{OC}=\overrightarrow{OB}+2\overrightarrow{AB}$. |
+| 399 | 9e8793 | AK2 | Finds $2\times$ "their" $\overrightarrow{AB}$. | Multiply each component of your $\overrightarrow{AB}$ by $2$ to find $2\times\overrightarrow{AB}$. |
+| 400 | 9e8793 | AK3 | Adds $\overrightarrow{OB}$ to obtain $\begin{pmatrix}11\\4\end{pmatrix}$, following through from "their" vector. | Add $\overrightarrow{OB}$ to your vector and write the result as $\begin{pmatrix}\cdots\\\cdots\end{pmatrix}$. |
+| 401 | 9e8793 | CK3 | Uses $\overrightarrow{AC}=\overrightarrow{OC}-\overrightarrow{OA}$. | Find $\overrightarrow{AC}$ by subtracting $\overrightarrow{OA}$ from $\overrightarrow{OC}$: $\overrightarrow{AC}=\overrightarrow{OC}-\overrightarrow{OA}$. |
+| 402 | 9e8793 | R1 | Establishes that "their" $\overrightarrow{AC}$ is $3\times$ "their" $\overrightarrow{AB}$. | Show that your $\overrightarrow{AC}$ is $3\times$ your $\overrightarrow{AB}$. |
+| 403 | 9e8793 | R2 | Concludes that $A$, $B$ and $C$ are collinear. | Use the scalar-multiple relationship between the vectors to conclude that $A$, $B$ and $C$ are collinear. |
+| 404 | 9e8793 | R3 | States that the trolley travelled in a straight line, with $C$ beyond $B$. | State that the trolley travels in a straight line, with $C$ beyond $B$. |
+| 405 | 9e87ad | AK1 | Adds $7$ to obtain $28$ | Add the common difference to the last given code to find the next code. |
+| 406 | 9e87ad | AK2 | Adds $7$ again to obtain $35$ | Add the same common difference again to the code you just found. |
+| 407 | 9e87ad | CK1 | Identifies common difference $7$ | Subtract consecutive codes to identify the constant difference. |
+| 408 | 9e87ad | R1 | Forms $T_n = 7n + 7$ from "their" sequence | Use your sequence to form and simplify a rule for $T_n$ in terms of $n$. |
+| 409 | 9e87ad | AK3 | Substitutes $n = 12$ into "their" rule to obtain $91$ | Substitute the requested term number into your rule and simplify. |
+| 410 | 9e87ad | R2 | Gives positive factors $1$, $7$, $13$ and $91$ to justify composite | List every positive factor of the code and use the list to justify that it is composite. |
+| 411 | 9e87ad | R3 | Uses a discount rate of $4\%$ from "their" number of positive factors | Use the number of positive factors you found to choose the corresponding discount rate. |
+| 412 | 9e87ad | CK3 | Uses the discounted price as the base for sales tax | Calculate the sales tax using the discounted price, not the original price, as the base. |
+| 413 | 9e87ad | AK4 | Calculates discounted price \$518.40 | Apply the discount rate to the original price to calculate the discounted price. |
+| 414 | 9e87ad | AK5 | Calculates $12.5\%$ of "their" discounted price | Calculate the stated sales-tax percentage of your discounted price. |
+| 415 | 9e87ad | R4 | Adds "their" sales tax to "their" discounted price to obtain \$583.20 | Add your sales tax to your discounted price to find the amount payable. |
+| 416 | 9e87b5 | AK2 | Divides "their" total depth by $7$ | Divide your total depth by $7$ to calculate the mean depth. |
+| 417 | 9e87b5 | CK1 | Identifies the mean calculated from the seven readings as a sample statistic | Classify the mean from the seven readings as a sample statistic. |
+| 418 | 9e87b5 | CK2 | Identifies the mean from all drainage-channel positions as a population parameter | Classify the mean from all drainage-channel positions as a population parameter. |
+| 419 | 9e87b5 | AK4 | Reads both values of $x$ for which $f(x)$ equals "their" mean depth | Read the two $x$-values on the chart where $f(x)$ equals your mean depth. |
+| 420 | 9e87b5 | R1 | States $x=3$ as the equation of the axis of symmetry using the midpoint of "their" pair of values | Find the midpoint of your pair of $x$-values and write the equation of the axis of symmetry. |
+| 421 | 9e87b5 | R2 | Identifies equal-depth positions equidistant on opposite sides of $x=3$ | Identify the equal-depth positions that are the same distance on opposite sides of the axis of symmetry. |
+| 422 | 9e87b5 | R3 | Links the maximum depth at $x=3$ to the midpoint conclusion | Use the maximum depth at the axis of symmetry to conclude that the deepest point is at the midpoint of the section. |
+| 423 | 9e87bd | AK1 | Uses angles on a straight line to calculate $x = 180° - 72°$ | Use angles on a straight line to calculate $x$ by subtracting $72°$ from $180°$. |
+| 424 | 9e87bd | CK1 | Recognises that corresponding angles on parallel lines are equal | Use the fact that corresponding angles on parallel lines are equal. |
+| 425 | 9e87bd | R1 | Associates $x$ and $y$ as corresponding angles | Identify $x$ and $y$ as corresponding angles in the parallel-line diagram. |
+| 426 | 9e87bd | CK2 | Identifies $y$ as an obtuse angle | Classify $y$ by comparing its size with the angle ranges. |
+| 427 | 9e87bd | R2 | Explains that an obtuse angle is greater than $90°$ and less than $180°$ | Explain that an obtuse angle is greater than $90°$ and less than $180°$. |
+| 428 | 9e87bd | CK3 | Recognises that perpendicular roads meet at $90°$ | Use the fact that perpendicular roads meet at $90°$. |
+| 429 | 9e87bd | AK3 | Calculates the smaller angle between $t$ and $m$ as $180° -$ "their" $y$ | Calculate the smaller angle between $t$ and $m$ by subtracting your value of $y$ from $180°$. |
+| 430 | 9e87bd | AK4 | Calculates the turn from "their" smaller angle to $90°$ | Calculate the turn by finding the difference between your smaller angle and $90°$. |
+| 431 | 9e87c5 | CK1 | Identifies the discount as $15\%$ of the marked price | Calculate the discount by finding $15\%$ of the marked price. |
+| 432 | 9e87c5 | AK2 | Subtracts "their" discount from \$800 | Subtract your discount from \$800 to find the discounted price. |
+| 433 | 9e87c5 | CK2 | Identifies the discounted price as the amount on which sales tax is charged | Use the discounted price, not the marked price, as the amount on which to calculate sales tax. |
+| 434 | 9e87c5 | R1 | Adds "their" sales tax to "their" discounted price | Add your sales tax to your discounted price to find the total amount paid. |
+| 435 | 9e87c5 | R2 | Deducts "their" sales tax from "their" total amount paid before calculating profit | Deduct your sales tax from your total amount paid before calculating the profit. |
+| 436 | 9e87cd | CK1 | Recognises that members attending at least one activity are represented by all seven regions inside the circles | Use every region inside at least one circle to represent members who attend at least one activity. |
+| 437 | 9e87cd | AK1 | Adds the seven regions inside the circles | Add the numbers in all seven regions inside the circles. |
+| 438 | 9e87cd | AK3 | Subtracts "their" number attending at least one activity from $90$ | Subtract your at-least-one-activity total from $90$. |
+| 439 | 9e87cd | CK2 | Recognises that members attending exactly one activity exclude members attending none and members attending two or three activities | For exactly one activity, exclude the members outside all circles and the members in two or three circles. |
+| 440 | 9e87cd | AK5 | Calculates the members still attending no activity as "their" $x-24$ | Calculate the members still attending no activity as your $x-24$. |
+| 441 | 9e87cd | R1 | Subtracts "their" remaining none and the $15$ members attending two or three activities from $90$ | Subtract your remaining none total and the total for two or three activities from $90$. |
+| 442 | 9e87cd | CK3 | Recognises that $75\%$ of $90$, namely $67.5$, is the required comparison value | Calculate $75\%$ of $90$ to find the required comparison value. |
+| 443 | 9e87cd | R3 | Compares "their" exactly-one-activity total with $67.5$ | Compare your exactly-one-activity total with the required comparison value. |
+| 444 | 9e87cd | R4 | States that the coordinator is not correct, with a valid reason | State that the coordinator is not correct because your exactly-one-activity total is below the required comparison value. |
+| 445 | 9e87d5 | CK1 | Recognises that $\angle ACB=90°$, since $AB$ is a diameter. | Use $AB$ being a diameter to identify $\angle ACB$ as a right angle. |
+| 446 | 9e87d5 | R1 | Uses the angle sum of triangle $ABC$ with $90°$ and $38°$. | Use the angle sum in triangle $ABC$ by subtracting the two known angles from the total. |
+| 447 | 9e87d5 | CK2 | Recognises that the angle at the centre is twice the angle at the circumference standing on the same arc. | Use the same-arc theorem to connect a central $\angle$ with the angle at the circumference. |
+| 448 | 9e87d5 | R2 | Relates $\angle AOC$ to “their” $\angle ABC$, standing on arc $AC$. | Relate $\angle AOC$ to your $\angle ABC$ because both stand on arc $AC$. |
+| 449 | 9e87d5 | AK2 | Doubles “their” angle $ABC$. | Double your $\angle ABC$ to find the corresponding angle at the centre. |
+| 450 | 9e87d5 | CK3 | Recognises that the tangent at $A$ is perpendicular to radius $OA$. | Use the radius-tangent fact to make the tangent at $A$ perpendicular to $OA$. |
+| 451 | 9e87d5 | R3 | Uses “their” $\angle AOC$ in isosceles triangle $AOC$. | Use your $\angle AOC$ in isosceles triangle $AOC$ to set up the base angles. |
+| 452 | 9e87d5 | AK3 | Calculates each base angle of triangle $AOC$ as $38°$, using “their” angle $AOC$. | Calculate each base angle of triangle $AOC$ from your $\angle AOC$. |
+| 453 | 9e87d5 | AK4 | Calculates $90°-38°$. | Subtract the base angle you found from $90°$ to calculate the acute angle between the tangent and $AC$. |
+| 454 | 9e87e7 | CK1 | Uses $\overrightarrow{AB}=\overrightarrow{OB}-\overrightarrow{OA}$. | Find the displacement from $A$ to $B$ by using $\overrightarrow{AB}=\overrightarrow{OB}-\overrightarrow{OA}$. |
+| 455 | 9e87e7 | AK1 | Subtracts the horizontal components: $2-(-4)=6$. | Subtract the horizontal component of $A$ from the horizontal component of $B$, taking care when subtracting a negative number. |
+| 456 | 9e87e7 | AK2 | Subtracts the vertical components: $5-2=3$. | Subtract the vertical component of $A$ from the vertical component of $B$. |
+| 457 | 9e87e7 | CK2 | Identifies $\overrightarrow{OC}=\begin{pmatrix}-1\\-3\end{pmatrix}$ from the grid. | Read $\overrightarrow{OC}$ from the grid and write its horizontal and vertical components as $\begin{pmatrix}x\\y\end{pmatrix}$. |
+| 458 | 9e87e7 | R1 | Uses "their" $\overrightarrow{AB}$ as $\overrightarrow{CD}$. | Use your earlier $\overrightarrow{AB}$ as $\overrightarrow{CD}$. |
+| 459 | 9e87e7 | AK3 | Finds the horizontal coordinate of $D$: $-1+6=5$, using "their" horizontal displacement. | Add your horizontal displacement to the horizontal coordinate of $C$ to find the horizontal coordinate of $D$. |
+| 460 | 9e87e7 | AK4 | Finds the vertical coordinate of $D$: $-3+3=0$, giving $\begin{pmatrix}5\\0\end{pmatrix}$. | Add the vertical components to find the vertical coordinate of $D$, then write both coordinates as $\begin{pmatrix}x\\y\end{pmatrix}$. |
+| 461 | 9e87e7 | CK3 | Recognises that a quadrilateral with one pair of opposite sides equal and parallel is a parallelogram. | Use the fact that one pair of opposite sides is equal and parallel to identify the quadrilateral as a parallelogram. |
+| 462 | 9e87e7 | R2 | Establishes that $\overrightarrow{AB}=\overrightarrow{CD}$, using "their" vectors. | Compare your vectors component by component and state that $\overrightarrow{AB}=\overrightarrow{CD}$. |
+| 463 | 9e87e7 | R3 | Concludes that $ABDC$ is a parallelogram. | Conclude that $ABDC$ is a parallelogram. |
+| 464 | 9e87ef | CK1 | Squares both sides to obtain $M^2=P+2M$ | Square both sides and write the resulting equation using $M$ and $P$. |
+| 465 | 9e87ef | AK1 | Subtracts $2M$ to isolate $P$ | Subtract $2M$ from both sides so that $P$ is isolated. |
+| 466 | 9e87ef | CK2 | Substitutes $M=7$ into "their" expression for $P$ | Substitute $M=7$ into your expression for $P$. |
+| 467 | 9e87ef | AK2 | Evaluates $7^2$ | Evaluate the squared term before completing the rest of the calculation. |
+| 468 | 9e87ef | AK3 | Subtracts $2(7)$ from "their" squared value | Subtract $2(7)$ from your squared value. |
+| 469 | 9e87ef | CK3 | Reads that setting B is at $35$ on the diagram | Locate the calculated value of $P$ on the diagram and read the matching setting label. |
+| 470 | 9e87ef | R2 | Selects setting B using "their" value of $P$ | Select the setting that matches your value of $P$. |
+| 471 | 9e87f7 | AK1 | Adds the five 2025 attendance figures. | Add the five 2025 attendance figures to find the total attendance. |
+| 472 | 9e87f7 | CK1 | Uses total attendance divided by 5 to find the mean. | Divide the total attendance by $5$ to find the mean daily attendance. |
+| 473 | 9e87f7 | AK3 | Divides "their" total by 5 to obtain $78$. | Divide your total by $5$ to calculate the mean daily attendance. |
+| 474 | 9e87f7 | R1 | Obtains a 2026 mean of "their" mean plus 2. | Add $2$ to your mean to find the 2026 mean daily attendance. |
+| 475 | 9e87f7 | CK2 | Recognises that the total for five days is $5$ multiplied by the mean. | Multiply the mean daily attendance by $5$ to find the total for five days. |
+| 476 | 9e87f7 | AK4 | Calculates the 2026 total as $5 \times 80 = 400$. | Calculate the 2026 total using $5 \times$ your 2026 mean. |
+| 477 | 9e87f7 | AK5 | Subtracts the four known 2026 values from $400$ to obtain $88$. | Subtract the four known 2026 attendance figures from the 2026 total to find the missing value. |
+| 478 | 9e87f7 | CK3 | Identifies the range as the greatest attendance minus the least attendance. | Find the range by subtracting the least attendance from the greatest attendance. |
+| 479 | 9e87f7 | R2 | Determines the 2025 range as $84 - 72 = 12$. | Subtract the least 2025 attendance from the greatest 2025 attendance to find the range. |
+| 480 | 9e87f7 | R3 | Determines the 2026 range as "their" greatest value minus $70$, giving $18$ for $x = 88$. | Subtract $70$ from your greatest 2026 attendance value to find the 2026 range. |
+| 481 | 9e87f7 | R4 | Chooses 2025 because it has the smaller range. | Choose the year with the smaller range because its attendance is more consistent. |
+| 482 | 9e881d | R3 | Interprets $gf(x)$ as $g(f(x))$ using "their" output from the graph | Treat $gf(x)$ as $g(f(x))$ and use your output from the graph as the input to $g$. |
+| 483 | 9e881d | AK1 | Obtains $f(\text{their }x)=15$ | Read the graph at the $x$ you found and obtain $f(\text{your }x)=15$. |
+| 484 | 9e881d | CK2 | Identifies the mean of the 30 selected bottles as a sample statistic | Classify the mean from the selected bottles as a sample statistic. |
+| 485 | 9e881d | CK3 | Identifies the mean of all bottles produced as a population parameter | Classify the mean from all the bottles produced as a population parameter. |
+| 486 | 9e881d | AK3 | Multiplies 498 by "their" number of bottles | Multiply 498 by the number of bottles you found. |
+| 487 | 9e8825 | CK1 | States or uses $t=\frac{d}{v}$ | Use $t=\frac{d}{v}$ to calculate the time from the distance travelled and the speed. |
+| 488 | 9e8825 | AK2 | Calculates the time for $QR$ as $\frac{240}{480}=0.5$ minute | Divide the distance from $Q$ to $R$ by the speed on that section to find the time taken. |
+| 489 | 9e8825 | AK3 | Adds $0.5$ minute to "their" time for $PQ$ to obtain $1$ minute | Add the time for $QR$ to your time for $PQ$ to find the outward journey time. |
+| 490 | 9e8825 | CK2 | Identifies the complete-route distance as the sum of the three road sections | Add the distances of all three road sections to get the complete-route distance. |
+| 491 | 9e8825 | CK3 | Identifies that the complete journey time includes the return journey from $R$ to $P$ | Include the time from $R$ back to $P$ when finding the time for the complete journey. |
+| 492 | 9e8825 | R1 | Forms an average-speed calculation using $720$ m and "their" outward journey time together with the return time | Divide the complete-route distance by your outward journey time plus the return time to calculate the average speed. |
+| 493 | 9e8825 | R2 | States that Nia is not correct | State that Nia is not correct. |
+| 494 | 9e8825 | R3 | Explains that average speed is total distance divided by total time, not the mean of the separate speeds | Explain that average speed is found by dividing total distance by total time, rather than averaging the separate speeds. |
+| 495 | 9e8832 | CK2 | Uses gradient $= \dfrac{\text{change in }y}{\text{change in }x}$ | Calculate the gradient using $\dfrac{\text{change in }y}{\text{change in }x}$ from two clear points on the line. |
+| 496 | 9e8832 | AK1 | Finds a vertical change of $12$ and a horizontal change of $4$ | Count the vertical change and the horizontal change between two points on the line before forming the gradient. |
+| 497 | 9e8832 | R1 | Expresses "their" equation in the form $y=mx+c$ | Rewrite your equation in the form $y=mx+c$, using your gradient for $m$ and your y-intercept for $c$. |
+| 498 | 9e8832 | CK3 | Sets $y=0$ to determine the x-intercept | Set $y=0$ in the line equation and solve for the x-coordinate of the intercept. |
+| 499 | 9e8832 | AK4 | Solves "their" equation to obtain $x=4$ and gives $(4,0)$ | Solve your equation for $x$, then write the resulting x-intercept as an ordered pair. |
+| 500 | 9e8832 | R2 | Interprets the x-intercept as zero net earnings or break-even point | State that this x-intercept is where the taxi driver has zero net earnings and breaks even. |

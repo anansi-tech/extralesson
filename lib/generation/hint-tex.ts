@@ -30,8 +30,26 @@ const inMath = (s: string, at: number) => mathSpans(s).some(([a, b]) => at >= a 
  * only; and where the criterion writes money as \\$, a bare $ before a digit
  * in the hint is money too, not the start of math.
  */
+/** JSON turns \\a, \\b, \\f, \\n, \\r, \\t, \\v into control characters: the command the criterion has, with its first letter eaten. */
+const JSON_ESCAPES: [RegExp, string][] = [
+  [/\x07/g, 'a'],
+  [/\x08/g, 'b'],
+  [/\x0c/g, 'f'],
+  [/\n/g, 'n'],
+  [/\r/g, 'r'],
+  [/\t/g, 't'],
+  [/\x0b/g, 'v'],
+];
+
 export function repairTex(hint: string, criterion: string): string {
   let out = hint;
+  // A control character followed by the rest of a command the criterion has
+  // is that command with its backslash and first letter swallowed by JSON.
+  for (const c of commandsIn(criterion)) {
+    for (const [ctrl, letter] of JSON_ESCAPES) {
+      if (c.startsWith(letter)) out = out.replace(new RegExp(`${ctrl.source}${c.slice(1)}(?![A-Za-z])`, 'g'), `\\${c}`);
+    }
+  }
   // Only when the dollars do not pair up: a balanced $1.10$ is math and stays.
   const bare = (out.match(/(?<!\\)\$/g) ?? []).length;
   if (/\\\$/.test(criterion) && bare % 2 === 1) out = out.replace(/(?<!\\)\$(?=\d)(?![^$]*\$)/g, '\\$');
