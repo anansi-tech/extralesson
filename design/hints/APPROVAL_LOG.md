@@ -209,7 +209,9 @@ Approved by David on 2026-09-05: all 200 rows. Rows 9, 65, 128, 131, 132, 192 ha
 | 199 | d9c21d | CK3 | States the bearing of $H$ from $P$ as $215°$. | Reverse the bearing from $H$ to $P$ by adding $180°$ and write it as a three-figure bearing. |
 | 200 | d9c21d | AK4 | Calculates angle $HPQ\approx80.3°$ using "their" value of $PQ$. | Use your value of $PQ$ in the cosine rule and record $\angle HPQ\approx\text{your calculated angle}$. |
 
-## Batch 2 — proposed (500 rows, gpt-5.6-terra, 2026-09-05)
+## Batch 2 — approved (500 rows, gpt-5.6-terra, generated 2026-09-05)
+
+Approved by David on 2026-09-05: all 500 rows. Rows 303–312 put in the imperative; 334, 335, 337 lose “using $\times$”; 25 says “under the square root”; 318 “keep the decimal before choosing whole units”; 352 “factorisations”.
 
 | # | question | code | criterion | hint |
 |---|---|---|---|---|
@@ -237,7 +239,7 @@ Approved by David on 2026-09-05: all 200 rows. Rows 9, 65, 128, 131, 132, 192 ha
 | 22 | d9c24c | AK1 | Adds corresponding components to obtain $\begin{pmatrix}5\\3\end{pmatrix}$. | Add the matching components of the two vectors to make one column vector, such as $\begin{pmatrix}x\\y\end{pmatrix}$. |
 | 23 | d9c24c | CK2 | Uses $\|\vec{PR}\|=\sqrt{x^2+y^2}$ with components of "their" $\vec{PR}$. | Use the components of your earlier $\vec{PR}$ in $\|\vec{PR}\|=\sqrt{x^2+y^2}$. |
 | 24 | d9c24c | AK2 | Substitutes components of "their" vector to form $\sqrt{5^2+3^2}$, or equivalent. | Substitute the two components of your earlier vector into the square-root calculation $\sqrt{x^2+y^2}$. |
-| 25 | d9c24c | AK3 | Evaluates to $\sqrt{34}$. | Simplify the value inside your $\sqrt{\phantom{x}}$ and leave the result exact. |
+| 25 | d9c24c | AK3 | Evaluates to $\sqrt{34}$. | Simplify the value under the square root and leave the result exact. |
 | 26 | d9c24c | R1 | Expresses the magnitude in surd form. | State the magnitude as a surd rather than changing it to a decimal. |
 | 27 | d9c24c | CK3 | Recognises that the additional $0.40$ m must be added to "their" direct distance. | Add the stated extra length to your earlier direct distance because the rail must include both. |
 | 28 | d9c24c | AK4 | Adds $0.40$ to "their" magnitude. | Add the stated extra length to your earlier magnitude. |
@@ -515,22 +517,22 @@ Approved by David on 2026-09-05: all 200 rows. Rows 9, 65, 128, 131, 132, 192 ha
 | 300 | d9c3e8 | CK3 | Selects the inverse tangent relationship for the angle of depression | Use $\tan^{-1}$ to find the angle from the vertical height divided by the new horizontal distance. |
 | 301 | d9c3e8 | AK3 | Evaluates $\tan^{-1}\left(18\div\text{their distance from part (b)}\right)$ | Calculate $\tan^{-1}\left(18\div\text{your distance from part (b)}\right)$. |
 | 302 | d9c3e8 | R3 | Expresses "their" angle correct to $1$ decimal place | Round your angle to $1$ decimal place and include the degree sign. |
-| 303 | d9c40e | CK2 | Interprets the magnitude of the negative $y$-intercept as the stall fee | You use the size of the negative $y$-intercept to identify the stall fee. |
-| 304 | d9c40e | CK3 | Recognises that the change in net amount is found from the intercepts | You find the change in net amount by comparing the two intercepts on the graph. |
-| 305 | d9c40e | AK1 | Calculates $10 \div 5$ to obtain \$2 per bag | You calculate $10 \div 5$ to find the increase in net amount per bag in \$. |
-| 306 | d9c40e | CK4 | Recognises that the additional \$4 charge decreases the $y$-intercept by 4 | You decrease the $y$-intercept by the additional transport charge in \$. |
-| 307 | d9c40e | AK2 | Forms $0=2x-14$ for the new $x$-intercept | You set the net amount to zero and form an equation for the new $x$-intercept. |
-| 308 | d9c40e | R1 | Solves "their" intercept equation to obtain $(7,0)$ | You solve your intercept equation and write the resulting intercept as an ordered pair. |
-| 309 | d9c40e | R2 | Interprets $(7,0)$ as no profit or loss after selling 7 bags | You explain that your intercept means there is no profit or loss after selling that number of bags. |
-| 310 | d9c40e | R3 | Concludes loss from a negative net amount using "their" earlier break-even result | You use your earlier break-even result to decide whether the negative net amount represents a loss. |
-| 311 | d9c40e | AK3 | Substitutes 7 bags and the \$5 transport charge into the net-amount relationship | You substitute the stated number of bags and transport charge in \$ into the net-amount relationship. |
-| 312 | d9c40e | R4 | Compares the \$5 charge with "their" \$4 break-even charge for 7 bags | You compare the stated transport charge in \$ with your break-even transport charge for the same number of bags. |
+| 303 | d9c40e | CK2 | Interprets the magnitude of the negative $y$-intercept as the stall fee | Use the size of the negative $y$-intercept to identify the stall fee. |
+| 304 | d9c40e | CK3 | Recognises that the change in net amount is found from the intercepts | Find the change in net amount by comparing the two intercepts on the graph. |
+| 305 | d9c40e | AK1 | Calculates $10 \div 5$ to obtain \$2 per bag | Calculate $10 \div 5$ to find the increase in net amount per bag in \$. |
+| 306 | d9c40e | CK4 | Recognises that the additional \$4 charge decreases the $y$-intercept by 4 | Decrease the $y$-intercept by the additional transport charge in \$. |
+| 307 | d9c40e | AK2 | Forms $0=2x-14$ for the new $x$-intercept | Set the net amount to zero and form an equation for the new $x$-intercept. |
+| 308 | d9c40e | R1 | Solves "their" intercept equation to obtain $(7,0)$ | Solve your intercept equation and write the resulting intercept as an ordered pair. |
+| 309 | d9c40e | R2 | Interprets $(7,0)$ as no profit or loss after selling 7 bags | Explain that your intercept means there is no profit or loss after selling that number of bags. |
+| 310 | d9c40e | R3 | Concludes loss from a negative net amount using "their" earlier break-even result | Use your earlier break-even result to decide whether the negative net amount represents a loss. |
+| 311 | d9c40e | AK3 | Substitutes 7 bags and the \$5 transport charge into the net-amount relationship | Substitute the stated number of bags and transport charge in \$ into the net-amount relationship. |
+| 312 | d9c40e | R4 | Compares the \$5 charge with "their" \$4 break-even charge for 7 bags | Compare the stated transport charge in \$ with your break-even transport charge for the same number of bags. |
 | 313 | d9c416 | CK1 | Recognises that the total bill represents $110\%$ of the charges before tax | Recognise that the total bill is $110\%$ of the charges before tax. |
 | 314 | d9c416 | AK1 | Calculates \$363 divided by $1.10$, giving \$330 | Divide the total bill by $1.10$ to find the charges before tax. |
 | 315 | d9c416 | CK2 | Identifies the electricity charge as "their" pre-tax charges less the fixed service charge | Subtract the fixed service charge from your pre-tax charges to find your electricity charge. |
 | 316 | d9c416 | AK2 | Divides "their" electricity charge by \$0.60 to obtain the number of units | Divide your electricity charge by \$0.60 to find your number of units. |
 | 317 | d9c416 | CK3 | Forms the reverse calculation from a total bill of no more than \$300, including tax and the fixed charge | Work backwards from a total bill no more than \$300 by removing tax, then subtracting the fixed charge before dividing by the unit cost. |
-| 318 | d9c416 | AK3 | Calculates the limiting electricity use as $379.545\ldots$ units | Calculate the limiting electricity use and retain the decimal that continues $\ldots$ before selecting whole units. |
+| 318 | d9c416 | AK3 | Calculates the limiting electricity use as $379.545\ldots$ units | Calculate the limiting electricity use and keep the decimal before choosing whole units. |
 | 319 | d9c416 | R1 | Selects $379$ as the greatest whole number of units and subtracts it from "their" number of units | Choose the greatest whole number of units below the limiting use and subtract it from your number of units. |
 | 320 | d9c416 | CK4 | Uses the reduction as a fraction of "their" original number of units | Write the reduction as a fraction of your original number of units. |
 | 321 | d9c416 | R2 | Calculates $\dfrac{\text{their reduction}}{\text{their original units}}\times100$ | Calculate $\dfrac{\text{your reduction}}{\text{your original units}}\times100$ to find your percentage reduction. |
@@ -546,10 +548,10 @@ Approved by David on 2026-09-05: all 200 rows. Rows 9, 65, 128, 131, 132, 192 ha
 | 331 | d9c41e | R3 | Correctly compares $4.00\text{ m}$ with "their" calculated length and makes a valid decision | Compare $4.00\text{ m}$ with your calculated length and use the comparison to decide whether the cord is long enough. |
 | 332 | d9c426 | CK1 | Recognises that Figure 5 has 5 circles | Count the circles in Figure 5. |
 | 333 | d9c426 | CK2 | Recognises 4 dots are added for each circle | Compare consecutive figures to find how many dots each additional circle contributes. |
-| 334 | d9c426 | CK3 | Forms $5\times$ "their" number of dots in Figure 5 | Form a calculation by multiplying 5 by your Figure 5 dot total using $\times$. |
-| 335 | d9c426 | AK2 | Multiplies 5 by "their" Figure 5 total | Multiply 5 by your Figure 5 total using $\times$. |
+| 334 | d9c426 | CK3 | Forms $5\times$ "their" number of dots in Figure 5 | Form a calculation by multiplying 5 by your Figure 5 dot total. |
+| 335 | d9c426 | AK2 | Multiplies 5 by "their" Figure 5 total | Multiply 5 by your Figure 5 total. |
 | 336 | d9c426 | R1 | Identifies 20 circle dots and 1 centre dot in each copy | Count the dots on the circles separately from the centre dot in one copy. |
-| 337 | d9c426 | R2 | Forms $5\times20+5\times1$ for five copies | Write the five-copy calculation as five times the circle-dot count plus five times the centre-dot count, using $\times$. |
+| 337 | d9c426 | R2 | Forms $5\times20+5\times1$ for five copies | Write the five-copy calculation as five times the circle-dot count plus five times the centre-dot count. |
 | 338 | d9c426 | R3 | Justifies the equivalent calculations using the distributive property | Explain that multiplying each part of a sum separately uses the distributive property. |
 | 339 | d9c42e | CK1 | States $\vec{PQ}=\vec{OQ}-\vec{OP}$ | Find the displacement by writing $\vec{PQ}=\vec{OQ}-\vec{OP}$. |
 | 340 | d9c42e | AK1 | Subtracts components to obtain $\begin{pmatrix}6\\8\end{pmatrix}$ | Subtract the corresponding components to obtain a column vector of the form $\begin{pmatrix}a\\b\end{pmatrix}$. |
@@ -564,7 +566,7 @@ Approved by David on 2026-09-05: all 200 rows. Rows 9, 65, 128, 131, 132, 192 ha
 | 349 | d9c42e | R4 | Uses "their" position vector of $R$ to calculate $\|\vec{OR}\|=13$ km | Use your position vector of $R$ to calculate $\|\vec{OR}\|$ in km. |
 | 350 | 804975 | CK1 | Identifies $4x$ as the highest common factor of $8x^2+12x$. | Find the greatest factor shared by both terms in $8x^2+12x$ and write it as the highest common factor. |
 | 351 | 804975 | CK2 | Identifies $6x$ as the highest common factor of $12x^2+18x$. | Find the greatest factor shared by both terms in $12x^2+18x$ and write it as the highest common factor. |
-| 352 | 804975 | CK3 | States the common factor, $2x+3$, as the common dimension. | Use the factor that appears in both factorizations as the common dimension. |
+| 352 | 804975 | CK3 | States the common factor, $2x+3$, as the common dimension. | Use the factor that appears in both factorisations as the common dimension. |
 | 353 | 804975 | R1 | Explains that $2x+3$ occurs as a factor in both area expressions. | Explain that the same factor occurs in both area expressions, so it represents the common dimension. |
 | 354 | 804975 | AK3 | Evaluates the small-base area as $56\text{ cm}^2$, using “their” factorisation. | Substitute $x=2$ into your factorisation and multiply the resulting dimensions to find the small-base area in $\text{cm}^2$. |
 | 355 | 804975 | AK4 | Evaluates the large-base area as $84\text{ cm}^2$, using “their” factorisation. | Substitute $x=2$ into your factorisation and multiply the resulting dimensions to find the large-base area in $\text{cm}^2$. |
