@@ -1,11 +1,13 @@
 // Predicted outcome (ROUND_1 §6.6): honest arithmetic, no ML, and every figure
-// is an ESTIMATE the UI must label as one. The band cut-offs below and the 60%
-// neutral project carry-over are OUR assumptions, not published CXC cut scores.
-// The estimate covers only the marks we can assess and reports that basis;
-// marks we cannot assess are never extrapolated across — see ROUND_1_6 §4.
+// is an ESTIMATE the UI must label as one. The estimate is built from the
+// marks we can assess and nothing else; what we cannot assess is never
+// extrapolated across, and is not a number here (ROUND_6 Task 6).
 
 import { MIN_MARKS_FOR_PREDICTION } from '@/lib/mastery/config';
 
+// ASSUMED. The module letter and overall grade cut-offs below, and the 60%
+// project carry-over, are our own working assumptions: CXC publishes no cut
+// scores, and none of these has been checked against a real result yet.
 export const PROJECT_NEUTRAL_FRACTION = 0.6;
 
 const P1_WEIGHT = 30;
@@ -24,17 +26,11 @@ export interface ModulePrediction {
   total_estimate: number; // of 100
   /** null until there is enough work to estimate from — see predictOverall. */
   letter: ModuleLetter | null;
-  /** 0..1 share of this module's marks the estimate is based on (R1.6 §4). */
-  coverage: number;
   /** Assessed marks behind this module's estimate; the gate is per module (ROUND_6 Task 5). */
   marks_seen: number;
 }
 
-export function predictModule(
-  module: 1 | 2 | 3,
-  mastery: number,
-  coverage = 1,
-): ModulePrediction {
+export function predictModule(module: 1 | 2 | 3, mastery: number): ModulePrediction {
   const m = Math.min(1, Math.max(0, mastery));
   const p1 = m * P1_WEIGHT;
   const p2 = m * P2_WEIGHT;
@@ -53,7 +49,6 @@ export function predictModule(
     project_assumed: round1(project),
     total_estimate: round1(total),
     letter,
-    coverage: Math.min(1, Math.max(0, coverage)),
     marks_seen: 0,
   };
 }
@@ -70,8 +65,6 @@ export interface OverallPrediction {
   /** Assessed marks this rests on, and whether EVERY module had enough (§2; ROUND_6 Task 5). */
   marks_attempted: number;
   estimable: boolean;
-  /** Mean coverage the estimate rests on; the UI must state it (R1.6 §4). */
-  coverage: number;
 }
 
 // Modules combine with equal weight: each is 100 weighted marks of the 300
@@ -93,7 +86,6 @@ export function predictOverall(
       overall_grade: null,
       marks_attempted: marksAttempted,
       estimable: false,
-      coverage: 1,
     };
   }
   const pct = modules.reduce((s, m) => s + m.total_estimate, 0) / modules.length;
@@ -104,7 +96,6 @@ export function predictOverall(
   else if (pct >= 35) grade = 'IV';
   else if (pct >= 20) grade = 'V';
   else grade = 'VI';
-  const coverage = modules.reduce((s, m) => s + m.coverage, 0) / modules.length;
   // The arithmetic is still computed; what we withhold is the CLAIM, until
   // there is enough work behind it to make one.
   return {
@@ -113,7 +104,6 @@ export function predictOverall(
     overall_grade: estimable ? grade : null,
     marks_attempted: marksAttempted,
     estimable,
-    coverage,
   };
 }
 

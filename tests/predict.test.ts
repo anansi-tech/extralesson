@@ -66,34 +66,6 @@ describe('predictOverall — six-point scale from combined modules', () => {
   });
 });
 
-describe('predictModule — coverage honesty (R1.6 §4)', () => {
-  it('defaults to full coverage so existing behaviour is unchanged', () => {
-    expect(predictModule(1, 0.5).coverage).toBe(1);
-    expect(predictModule(1, 0.5).total_estimate).toBe(52);
-  });
-
-  it('records the share of marks the estimate rests on', () => {
-    const p = predictModule(2, 0.8, 0.93);
-    expect(p.coverage).toBeCloseTo(0.93);
-    // The estimate itself is still computed on what we measured — it is
-    // reported with its basis rather than silently scaled.
-    expect(p.total_estimate).toBe(predictModule(2, 0.8).total_estimate);
-  });
-
-  it('clamps coverage into 0..1', () => {
-    expect(predictModule(1, 0.5, 1.4).coverage).toBe(1);
-    expect(predictModule(1, 0.5, -0.2).coverage).toBe(0);
-  });
-
-  it('overall prediction reports the mean coverage of its modules', () => {
-    const overall = predictOverall(
-      [predictModule(1, 0.6, 0.9), predictModule(2, 0.6, 1.0)],
-      ENOUGH,
-    );
-    expect(overall.coverage).toBeCloseTo(0.95);
-  });
-});
-
 // A cold account has zero mastery, and the arithmetic on zero mastery is U/U/U
 // with an overall VI. That reads as a verdict on the student when what it means
 // is that we have never seen them work.
@@ -155,5 +127,16 @@ describe('predictOverall — enough in every module, not enough in total', () =>
   it('a subset of target modules only needs those modules', () => {
     expect(predictOverall([predictModule(2, 0.6)], { 2: MIN_MARKS_FOR_PREDICTION }).estimable).toBe(true);
     expect(predictOverall([predictModule(2, 0.6)], { 1: 99 }).estimable).toBe(false);
+  });
+});
+
+describe('predict says what it uses (ROUND_6 Task 6)', () => {
+  it('carries no coverage number: coverage changes no arithmetic here', () => {
+    expect(Object.keys(predictModule(1, 0.5))).not.toContain('coverage');
+    expect(Object.keys(predictOverall([predictModule(1, 0.5)], 40))).not.toContain('coverage');
+  });
+  it('says its cut-offs are assumed, once, where they are declared', () => {
+    const src = require('node:fs').readFileSync(require('node:path').join(process.cwd(), 'lib', 'grade', 'predict.ts'), 'utf8') as string;
+    expect(src.match(/ASSUMED\./g)).toHaveLength(1);
   });
 });
