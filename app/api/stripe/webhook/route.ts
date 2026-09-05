@@ -36,6 +36,7 @@ export async function POST(req: Request): Promise<Response> {
   const scope = scopeOfSession(session, paymentLinkAllowlist(process.env.STRIPE_PAYMENT_LINKS));
   if (!scope.ok) {
     console.warn(`[stripe] ${event.id} refused: ${scope.reason} (link ${String(session.payment_link ?? 'none')})`);
+    await recordRefusal(event.id, session, scope.reason);
     return Response.json({ refused: scope.reason }, { status: 200 });
   }
 
@@ -47,6 +48,24 @@ export async function POST(req: Request): Promise<Response> {
     const reason = e instanceof Error ? e.message : String(e);
     console.error(`[stripe] ${event.id} failed: ${reason}`);
     return Response.json({ error: reason }, { status: 500 });
+  }
+}
+
+/** Refused is still a row: a payment nobody can see is the failure /admin/access exists to prevent. */
+async function recordRefusal(eventId: string, session: Record<string, unknown>, reason: string): Promise<void> {
+  await dbConnect();
+  const sessionId = typeof session.id === 'string' ? session.id : eventId;
+  try {
+    await Fulfilment.create({
+      session_id: sessionId,
+      event_id: eventId,
+      status: 'refused',
+      reason,
+      payment_link: typeof session.payment_link === 'string' ? session.payment_link : undefined,
+      ts: new Date(),
+    });
+  } catch (e) {
+    if (!isDuplicateKey(e)) throw e;
   }
 }
 

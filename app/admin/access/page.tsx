@@ -1,4 +1,4 @@
-import { dbConnect, Attempt, Payment, PracticeSession, Student } from '@/lib/db';
+import { dbConnect, Attempt, Fulfilment, Payment, PracticeSession, Student } from '@/lib/db';
 import { FREE_MODES, FREE_SESSIONS, hasAccess } from '@/lib/access';
 import { grantAccess, resolvePayment, revokeAccess } from './actions';
 import { DeleteAccount } from './delete-account';
@@ -39,6 +39,13 @@ export default async function AccessPage() {
     .lean<
       { _id: unknown; event_id: string; email?: string; amount_total?: number; currency?: string; received_at: Date }[]
     >();
+
+  // Checkout sessions the webhook would not grant: another product's link, a
+  // subscription, or not yet paid. Shown so a wrong allowlist is seen, not guessed.
+  const refused = await Fulfilment.find({ status: 'refused' })
+    .sort({ ts: -1 })
+    .limit(50)
+    .lean<{ _id: unknown; session_id: string; event_id: string; reason?: string; payment_link?: string; ts: Date }[]>();
 
   const ids = students.map((s) => s._id);
   const [sessionCounts, attemptCounts] = await Promise.all([
@@ -139,6 +146,27 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                       Mark resolved
                     </button>
                   </form>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {refused.length > 0 && (
+          <section className="mb-6 border-[1.5px] border-[#D9A62E] bg-[#FDF8EC] p-3">
+            <div className="section-label">Refused payments</div>
+            <p className="mt-1 text-[12px] leading-snug">
+              Signed checkouts the webhook did not grant. A link that is ours but missing from the
+              allowlist shows here as link-not-ours; a delayed payment shows as not-paid until Stripe
+              says it is paid.
+            </p>
+            <ul className="mt-2 space-y-1">
+              {refused.map((f) => (
+                <li key={String(f._id)} className="border-t border-dashed border-[#D9A62E] pt-1 font-mono text-[12px]">
+                  {new Date(f.ts).toISOString().slice(0, 16).replace('T', ' ')} · {f.reason}
+                  <span className="ml-2 text-dim">
+                    {f.payment_link ?? 'no link'} · {f.session_id}
+                  </span>
                 </li>
               ))}
             </ul>

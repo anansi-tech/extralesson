@@ -335,6 +335,14 @@ describe('11. a payment for another Anansi product is not ours (ROUND_6 Task 2)'
     expect(await res.json()).toEqual({ refused: 'link-not-ours' });
     expect(await accessOf(email)).toBeUndefined();
     expect(await Payment.countDocuments()).toBe(0);
+    // Refused is still a row, listed on /admin/access under "Refused payments".
+    expect(await Fulfilment.findOne({ session_id: 'cs_evt_11' }).lean()).toMatchObject({
+      status: 'refused',
+      reason: 'link-not-ours',
+      payment_link: 'plink_cognicare',
+    });
+    const admin = readFileSync(join(process.cwd(), 'app', 'admin', 'access', 'page.tsx'), 'utf8');
+    expect(admin).toMatch(/Fulfilment\.find\(\{ status: 'refused' \}\)[\s\S]*Refused payments/);
   });
 
   it('refuses a session that is not in payment mode, or carries no link', async () => {
