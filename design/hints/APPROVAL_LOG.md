@@ -2,7 +2,9 @@
 
 One table per batch. A row is approved by setting its status in the batch file; `pnpm hints:approve <n>` writes approved hints to the bank.
 
-## Batch 1 — proposed (200 rows, gpt-5.6-terra, 2026-09-05)
+## Batch 1 — approved (200 rows, gpt-5.6-terra, generated 2026-09-05)
+
+Approved by David on 2026-09-05: all 200 rows. Rows 9, 65, 128, 131, 132, 192 hand-edited; rows 31, 79, 168, 175 set to his sentences.
 
 | # | question | code | criterion | hint |
 |---|---|---|---|---|
@@ -36,7 +38,7 @@ One table per batch. A row is approved by setting its status in the batch file; 
 | 28 | 6a525e | R2 | Uses opposite angles of cyclic quadrilateral $ACBD$ to form $180° -$ "their" angle $ACB$. | Use opposite angles in cyclic quadrilateral $ACBD$ to calculate $180°-$ your angle $ACB$. |
 | 29 | 6a525e | R3 | Concludes that angle $ADB = 125°$. | State the resulting value of angle $ADB$. |
 | 30 | 6a525e | CK4 | States that opposite angles of a cyclic quadrilateral are supplementary. | State that opposite angles of a cyclic quadrilateral are supplementary. |
-| 31 | 6a5266 | CK1 | Counts 16 dots in Figure 4 | Count every dot in Figure 4 carefully. |
+| 31 | 6a5266 | CK1 | Counts 16 dots in Figure 4 | Continue the pattern to find how many dots Figure 4 would have. |
 | 32 | 6a5266 | CK2 | Recognises the square-dot rule as $n^2$ | Identify the square-number rule for Figure $n$ as $n^2$. |
 | 33 | 6a5266 | AK1 | Adds $5n+6$ to "their" expression for Figure $n$ | Add $5n+6$ to your expression for Figure $n$. |
 | 34 | 6a5266 | CK3 | Identifies factors whose product is 6 and whose sum is 5 | Find two factors of the constant term that add to the coefficient of $n$. |
@@ -84,7 +86,7 @@ One table per batch. A row is approved by setting its status in the batch file; 
 | 76 | 6a52bb | AK3 | Calculates $8 \times 4 = 32$ | Multiply the frequency by the corresponding value in the third row. |
 | 77 | 6a52bb | AK4 | Calculates $9 \times 1 = 9$ | Multiply the frequency by the corresponding value in the fourth row. |
 | 78 | 6a52bb | CK3 | Recognises that a sample statistic estimates a population parameter | Identify the sample statistic as an estimate of the population parameter. |
-| 79 | 6a52bb | R2 | States that the sample does not support the claim | State whether the sample supports the claim. |
+| 79 | 6a52bb | R2 | States that the sample does not support the claim | Compare your sample mean with the claimed 8 hours and say which way it falls. |
 | 80 | 6a52bb | R3 | Compares "their" sample mean with 8 hours to justify the decision | Compare your sample mean with 8 hours and use the comparison to justify your decision. |
 | 81 | 6a52c8 | CK1 | Recognises that $r^3$ must be isolated | Isolate $r^3$ before you solve for $r$. |
 | 82 | 6a52c8 | AK1 | Multiplies both sides by $\frac{3}{4\pi}$ to obtain $r^3=\frac{3V}{4\pi}$ | Multiply both sides by $\frac{3}{4\pi}$ to obtain $r^3=\frac{3V}{4\pi}$. |
@@ -173,14 +175,14 @@ One table per batch. A row is approved by setting its status in the batch file; 
 | 165 | d9c1f8 | R1 | Expresses "their" length correct to 3 significant figures | Round your length to 3 significant figures and state it in $\text{m}$. |
 | 166 | d9c1f8 | CK3 | Identifies $1.15\text{ m}$ as the limiting height of the case | Use the case's limiting height, $1.15\text{ m}$, for the fit check. |
 | 167 | d9c1f8 | R2 | Compares "their" pendulum length with $1.15\text{ m}$ | Compare your pendulum length directly with $1.15\text{ m}$. |
-| 168 | d9c1f8 | R3 | Concludes that the pendulum will not fit | Use the comparison to state that the pendulum will not fit in the case. |
+| 168 | d9c1f8 | R3 | Concludes that the pendulum will not fit | Compare your length with the 1.15 m case height and say which is larger. |
 | 169 | d9c205 | CK1 | Forms products of each number of goals and its corresponding frequency | Multiply each number of goals by the height of its matching bar, then add the products. |
 | 170 | d9c205 | R1 | Uses 20, the number of selected players, as the denominator | Divide the total number of goals by the number of selected players. |
 | 171 | d9c205 | R2 | Identifies 13 selected players who scored at least 2 goals and uses the scale factor $80\div20$ | Count the selected players who score at least two goals, then scale this count using $80\div20$. |
 | 172 | d9c205 | CK2 | Identifies the mean from the selected players as a sample statistic | State that the mean calculated from the selected players is a sample statistic. |
 | 173 | d9c205 | CK3 | Identifies a mean calculated from all 80 players as a population parameter | State that a mean calculated from all players in the population is a population parameter. |
 | 174 | d9c205 | R3 | Explains that the selected players may not represent the full population | Explain that the selected players may not be representative of the whole population, so the means can differ. |
-| 175 | d9c20d | R1 | Reads $g(\text{their }7)=3$ correctly from the graph | You read $g(\text{your input})$ directly from the graph, using your earlier output from $f$ as the input. |
+| 175 | d9c20d | R1 | Reads $g(\text{their }7)=3$ correctly from the graph | Take your answer from part (a) as the input on g's graph and read the output. |
 | 176 | d9c20d | CK1 | Identifies $f$ and $g$ as inverse functions | You use the reflection in $y=x$ to identify the relationship between $f$ and $g$. |
 | 177 | d9c20d | CK2 | Recognises that the inverse reverses the input and output | You reverse the input and output when finding the inverse function. |
 | 178 | d9c20d | AK2 | Interchanges the variables and rearranges $y=2x+1$ to make $y$ the subject | You interchange $x$ and $y$ in $y=2x+1$ and rearrange to make $y$ the subject. |

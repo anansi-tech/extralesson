@@ -4,1399 +4,1399 @@
   "code": "CK1",
   "criterion": "Recognises that $gf(x)=g(f(x))$",
   "hint": "Interpret $gf(x)$ as applying $f$ first and then applying $g$ to the result.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b11711edd390f46a51ef",
   "code": "AK1",
   "criterion": "Substitutes $2x+4$ into $g$",
   "hint": "Replace the input of $g$ with $2x+4$ before simplifying.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b11711edd390f46a51ef",
   "code": "AK2",
   "criterion": "Simplifies to $1.8x+3.6$",
   "hint": "Expand the expression from $g(2x+4)$ and collect the $x$ terms and constants.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b11711edd390f46a51ef",
   "code": "CK2",
   "criterion": "Identifies the intersection as the point where the retained amounts are equal",
   "hint": "Use the point where the two graphs cross, since both plans retain the same amount there.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b11711edd390f46a51ef",
   "code": "AK3",
   "criterion": "Reads the intersection as $x=8$, $y=18$",
   "hint": "Read the $x$-coordinate and $y$-coordinate directly from the graphs\u2019 intersection.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b11711edd390f46a51ef",
   "code": "R1",
   "criterion": "States $(8,18)$ as the solution of the simultaneous equations",
   "hint": "Write the intersection coordinate as the solution to the simultaneous equations.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b11711edd390f46a51ef",
   "code": "R2",
   "criterion": "Uses 10 being greater than \"their\" intersection value to identify Plan B as higher",
   "hint": "Compare $10$ with your intersection value and use the graph to decide which plan is higher.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b11711edd390f46a51ef",
   "code": "CK3",
   "criterion": "Forms the condition $h(x)\\ge20$ for retaining at least \\$20",
   "hint": "Write the requirement for retaining at least $20$ as $h(x)\\ge20$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b11711edd390f46a51ef",
   "code": "R3",
   "criterion": "Solves $3x-6\\ge20$ to obtain $x\\ge\\frac{26}{3}$",
   "hint": "Solve $3x-6\\ge20$ step by step, keeping the inequality sign, and leave $x$ as a fraction.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b11711edd390f46a51ef",
   "code": "R4",
   "criterion": "Justifies that 8 trays give only \\$18, which is less than \\$20",
   "hint": "Substitute $8$ into Plan B\u2019s rule and compare the retained amount with $20$ to justify why it is not enough.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "CK1",
   "criterion": "Writes $\\overrightarrow{OA}$ as the column vector $\\begin{pmatrix}2\\\\-1\\end{pmatrix}$",
   "hint": "Write $\\overrightarrow{OA}$ as a column vector using A's horizontal component above its vertical component: $\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "CK2",
   "criterion": "Writes $\\overrightarrow{OB}$ as the column vector $\\begin{pmatrix}8\\\\5\\end{pmatrix}$",
   "hint": "Write $\\overrightarrow{OB}$ as a column vector using B's horizontal component above its vertical component: $\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "AK1",
   "criterion": "Subtracts position vectors to obtain $\\overrightarrow{AB}=\\begin{pmatrix}8-2\\\\5-(-1)\\end{pmatrix}$",
   "hint": "Subtract A's position vector from B's position vector component by component to form $\\overrightarrow{AB}=\\begin{pmatrix}x_B-x_A\\\\y_B-y_A\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "CK3",
   "criterion": "Forms $\\overrightarrow{OC}=\\overrightarrow{OA}+\\dfrac{3}{2}\\overrightarrow{AB}$",
   "hint": "Find C's position vector by adding A's position vector to $\\dfrac{3}{2}$ of $\\overrightarrow{AB}$: $\\overrightarrow{OC}=\\overrightarrow{OA}+\\dfrac{3}{2}\\overrightarrow{AB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "AK2",
   "criterion": "Finds $\\dfrac{3}{2}$ of \u201ctheir\u201d $\\overrightarrow{AB}$",
   "hint": "Multiply each component of your $\\overrightarrow{AB}$ by $\\dfrac{3}{2}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "CK4",
   "criterion": "Identifies $\\overrightarrow{AD}=\\overrightarrow{OD}-\\overrightarrow{OA}$ and $\\overrightarrow{DC}=\\overrightarrow{OC}-\\overrightarrow{OD}$",
   "hint": "Find each displacement by subtracting position vectors in travel order: $\\overrightarrow{AD}=\\overrightarrow{OD}-\\overrightarrow{OA}$ and $\\overrightarrow{DC}=\\overrightarrow{OC}-\\overrightarrow{OD}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "R1",
   "criterion": "Obtains $\\overrightarrow{AD}=\\begin{pmatrix}3\\\\3\\end{pmatrix}$",
   "hint": "Subtract the components in $\\overrightarrow{AD}=\\overrightarrow{OD}-\\overrightarrow{OA}$ and write the result as $\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "R2",
   "criterion": "Obtains $\\overrightarrow{DC}=\\begin{pmatrix}6\\\\6\\end{pmatrix}$ using \u201ctheir\u201d $\\overrightarrow{OC}$",
   "hint": "Use your $\\overrightarrow{OC}$ and subtract $\\overrightarrow{OD}$ component by component to obtain $\\overrightarrow{DC}=\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "R3",
   "criterion": "Compares corresponding components to derive $AD:DC=1:2$",
   "hint": "Compare the corresponding components of $\\overrightarrow{AD}$ and $\\overrightarrow{DC}$, then simplify the scale factor to write $AD:DC$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "CK5",
   "criterion": "States that a midpoint divides a line segment in the ratio $1:1$",
   "hint": "State the ratio that shows a line segment has been divided into two equal parts: $1:1$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b57311edd390f46a5256",
   "code": "R4",
   "criterion": "Concludes that $D$ is not the midpoint because \u201ctheir\u201d ratio is not $1:1$",
   "hint": "Compare your $AD:DC$ with $1:1$ and use the difference to conclude whether $D$ is the midpoint.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b5c111edd390f46a525e",
   "code": "CK1",
   "criterion": "Recognises that $OA = OB$ as radii of the circle.",
   "hint": "Use the fact that $OA = OB$ because both are radii of the circle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b5c111edd390f46a525e",
   "code": "AK1",
   "criterion": "Finds the remaining two angles: $180\u00b0 - 110\u00b0 = 70\u00b0$.",
   "hint": "Subtract the given central angle from $180\u00b0$ to find the two remaining angles together.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b5c111edd390f46a525e",
   "code": "AK2",
   "criterion": "Divides the remaining angle equally to obtain $35\u00b0$.",
   "hint": "Divide the remaining angle equally between the two base angles to find angle $OAB$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b5c111edd390f46a525e",
   "code": "CK2",
   "criterion": "Uses the fact that a tangent is perpendicular to the radius at the point of contact.",
   "hint": "Use the fact that the tangent at $A$ is perpendicular to radius $OA$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b5c111edd390f46a525e",
   "code": "R1",
   "criterion": "Calculates $90\u00b0 -$ \"their\" angle $OAB$, giving $55\u00b0$.",
   "hint": "Calculate $90\u00b0-$ your angle $OAB$ to find the acute angle between the tangent and $AB$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b5c111edd390f46a525e",
   "code": "CK3",
   "criterion": "Recognises that the angle between a tangent and a chord equals the angle in the alternate segment.",
   "hint": "Use the alternate-segment theorem to equate the angle between the tangent and chord $AB$ with angle $ACB$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b5c111edd390f46a525e",
   "code": "R2",
   "criterion": "Uses opposite angles of cyclic quadrilateral $ACBD$ to form $180\u00b0 -$ \"their\" angle $ACB$.",
   "hint": "Use opposite angles in cyclic quadrilateral $ACBD$ to calculate $180\u00b0-$ your angle $ACB$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b5c111edd390f46a525e",
   "code": "R3",
   "criterion": "Concludes that angle $ADB = 125\u00b0$.",
   "hint": "State the resulting value of angle $ADB$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b5c111edd390f46a525e",
   "code": "CK4",
   "criterion": "States that opposite angles of a cyclic quadrilateral are supplementary.",
   "hint": "State that opposite angles of a cyclic quadrilateral are supplementary.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b60711edd390f46a5266",
   "code": "CK1",
   "criterion": "Counts 16 dots in Figure 4",
-  "hint": "Count every dot in Figure 4 carefully.",
-  "status": "proposed"
+  "hint": "Continue the pattern to find how many dots Figure 4 would have.",
+  "status": "approved"
  },
  {
   "question_id": "6a83b60711edd390f46a5266",
   "code": "CK2",
   "criterion": "Recognises the square-dot rule as $n^2$",
   "hint": "Identify the square-number rule for Figure $n$ as $n^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b60711edd390f46a5266",
   "code": "AK1",
   "criterion": "Adds $5n+6$ to \"their\" expression for Figure $n$",
   "hint": "Add $5n+6$ to your expression for Figure $n$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b60711edd390f46a5266",
   "code": "CK3",
   "criterion": "Identifies factors whose product is 6 and whose sum is 5",
   "hint": "Find two factors of the constant term that add to the coefficient of $n$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b60711edd390f46a5266",
   "code": "AK2",
   "criterion": "Factorises $n^2+5n+6$ as $(n+2)(n+3)$",
   "hint": "Factorise $n^2+5n+6$ into $(n+2)(n+3)$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b60711edd390f46a5266",
   "code": "R1",
   "criterion": "Equates \"their\" factorised total to 132",
   "hint": "Equate your factorised total to the stated number of dots.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b60711edd390f46a5266",
   "code": "CK4",
   "criterion": "Identifies 11 and 12 as consecutive factors of 132",
   "hint": "Find the consecutive factor pair of the stated total.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b60711edd390f46a5266",
   "code": "AK3",
   "criterion": "Uses $n+2=11$ and calculates $n=9$",
   "hint": "Use the equation from the smaller factor to solve for $n$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b60711edd390f46a5266",
   "code": "R2",
   "criterion": "Uses the order $n+2<n+3$ to select the consistent consecutive factors",
   "hint": "Use $n+2<n+3$ to choose the factors in the correct order.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b60711edd390f46a5266",
   "code": "AK4",
   "criterion": "Determines the factor pairs of 130",
   "hint": "List all factor pairs of the stated number of dots.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b60711edd390f46a5266",
   "code": "R3",
   "criterion": "Establishes that no factor pair of 130 is consecutive",
   "hint": "Check whether any factor pair differs by one.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b60711edd390f46a5266",
   "code": "R4",
   "criterion": "Concludes that 130 cannot have the form \"their\" $(n+2)(n+3)$",
   "hint": "Conclude that the stated total cannot be written in the form of your $(n+2)(n+3)$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b6b911edd390f46a5278",
   "code": "CK1",
   "criterion": "Recognises that $fg(x)=f(g(x))$",
   "hint": "Recognise that $fg(x)=f(g(x))$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b6b911edd390f46a5278",
   "code": "AK1",
   "criterion": "Substitutes $x^2$ into $f$",
   "hint": "Substitute $x^2$ into $f$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b6b911edd390f46a5278",
   "code": "CK2",
   "criterion": "Forms $x^2+1=5$ using \"their\" composite function",
   "hint": "Use your composite function to form $x^2+1=5$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b6b911edd390f46a5278",
   "code": "AK3",
   "criterion": "Solves to obtain $x=\\pm2$",
   "hint": "Solve the equation to obtain $x=\\pm2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b6b911edd390f46a5278",
   "code": "CK3",
   "criterion": "Recognises that $gf(x)=g(f(x))$",
   "hint": "Recognise that $gf(x)=g(f(x))$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b6b911edd390f46a5278",
   "code": "R2",
   "criterion": "Applies $f$ and then $g$ to \"their\" raw score",
   "hint": "Apply $f$ and then $g$ to your raw score.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b6b911edd390f46a5278",
   "code": "R4",
   "criterion": "States that the adjustments cannot be applied in either order because \"their\" $gf(x)$ is not $5$",
   "hint": "State that the adjustments cannot be applied in either order because your $gf(x)$ is not $5$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "CK1",
   "criterion": "Uses $-3$ as the first component of $\\overrightarrow{OA}$",
   "hint": "Read the horizontal coordinate of station A from the graph and use it as the first component of $\\overrightarrow{OA}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "CK2",
   "criterion": "Uses $2$ as the second component of $\\overrightarrow{OA}$",
   "hint": "Read the vertical coordinate of station A from the graph and use it as the second component of $\\overrightarrow{OA}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "CK3",
   "criterion": "Uses $2$ as the first component of $\\overrightarrow{OB}$",
   "hint": "Read the horizontal coordinate of station B from the graph and use it as the first component of $\\overrightarrow{OB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "CK4",
   "criterion": "Uses $4$ as the second component of $\\overrightarrow{OB}$",
   "hint": "Read the vertical coordinate of station B from the graph and use it as the second component of $\\overrightarrow{OB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "R1",
   "criterion": "Forms $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$",
   "hint": "Form the displacement by writing $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "AK1",
   "criterion": "Subtracts the first components of \"their\" position vectors",
   "hint": "Subtract the first component of your $\\overrightarrow{OA}$ from the first component of your $\\overrightarrow{OB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "AK2",
   "criterion": "Subtracts the second components of \"their\" position vectors",
   "hint": "Subtract the second component of your $\\overrightarrow{OA}$ from the second component of your $\\overrightarrow{OB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "R2",
   "criterion": "Forms $\\overrightarrow{OC}=\\overrightarrow{OB}+2\\overrightarrow{AB}$ using \"their\" $\\overrightarrow{AB}$",
   "hint": "Use your $\\overrightarrow{AB}$ to form $\\overrightarrow{OC}=\\overrightarrow{OB}+2\\overrightarrow{AB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "AK3",
   "criterion": "Finds twice \"their\" $\\overrightarrow{AB}$",
   "hint": "Multiply each component of your $\\overrightarrow{AB}$ by $2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b79a11edd390f46a528f",
   "code": "R3",
   "criterion": "Adds \"their\" doubled displacement to \"their\" $\\overrightarrow{OB}$",
   "hint": "Add your doubled displacement component by component to your $\\overrightarrow{OB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "CK1",
   "criterion": "Recognises that the angle subtended by diameter $PQ$ at the circumference is a right angle",
   "hint": "Use the fact that a diameter subtends a right angle at the circumference to identify the angle opposite $PQ$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "CK2",
   "criterion": "Recognises from the coordinates that $PA=AQ$",
   "hint": "Calculate the coordinate distances $PA$ and $AQ$ and compare them to show that they are equal.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "AK2",
   "criterion": "Uses $\\left(180\u00b0-\\text{their }\\angle PAQ\\right)\\div2$ to find each base angle",
   "hint": "Calculate each base angle using $\\left(180\u00b0-\\text{your }\\angle PAQ\\right)\\div2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "CK3",
   "criterion": "Identifies the angle between tangent $AT$ and chord $AQ$ with the angle in the alternate segment",
   "hint": "Use the alternate-segment theorem to match the angle between tangent $AT$ and chord $AQ$ to the angle in the opposite segment.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "AK3",
   "criterion": "Uses $P$, $O$ and $Q$ collinear to equate $\\angle APQ$ and $\\angle QPA$",
   "hint": "Use the collinearity of $P$, $O$ and $Q$ to equate $\\angle APQ$ and $\\angle QPA$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "CK4",
   "criterion": "Recognises that $TQ\\perp OQ$, so $TQ$ is a tangent at $Q$",
   "hint": "Show that $TQ\\perp OQ$ from the two gradients, then conclude that $TQ$ is a tangent at $Q$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "R3",
   "criterion": "Uses the alternate-segment angle to obtain $\\angle TQA=\\text{their }\\angle APQ$",
   "hint": "Use the alternate-segment angle to write $\\angle TQA=\\text{your }\\angle APQ$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b94c11edd390f46a52ab",
   "code": "AK4",
   "criterion": "Uses angle sum of triangle $ATQ$: $180\u00b0-\\text{their }\\angle TAQ-\\text{their }\\angle TQA$",
   "hint": "Find the remaining angle in triangle $ATQ$ using $180\u00b0-\\text{your }\\angle TAQ-\\text{your }\\angle TQA$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b99311edd390f46a52b3",
   "code": "CK1",
   "criterion": "States $\\vec{PQ}=\\vec{OQ}-\\vec{OP}$",
   "hint": "Find $\\vec{PQ}$ by subtracting $\\vec{OP}$ from $\\vec{OQ}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b99311edd390f46a52b3",
   "code": "CK2",
   "criterion": "Recognises that each term in $\\vec{PQ}$ is multiplied by $2$",
   "hint": "Multiply each component of your $\\vec{PQ}$ by $2$ to obtain $\\vec{QR}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b99311edd390f46a52b3",
   "code": "CK3",
   "criterion": "States $\\vec{OR}=\\vec{OQ}+\\vec{QR}$",
   "hint": "Find $\\vec{OR}$ by adding $\\vec{OQ}$ and $\\vec{QR}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b99311edd390f46a52b3",
   "code": "AK3",
   "criterion": "Adds corresponding components of $\\vec{OQ}$ and \"their\" $\\vec{QR}$",
   "hint": "Add the corresponding components of $\\vec{OQ}$ and your $\\vec{QR}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b99311edd390f46a52b3",
   "code": "R2",
   "criterion": "Uses \"their\" $\\vec{OR}$ to obtain $\\vec{OS}$ and forms $\\vec{PS}=\\vec{OS}-\\vec{OP}$",
   "hint": "Use your $\\vec{OR}$ to find $\\vec{OS}$, then form $\\vec{PS}=\\vec{OS}-\\vec{OP}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b99311edd390f46a52b3",
   "code": "R3",
   "criterion": "Concludes parallelogram since \"their\" $\\vec{PS}$ equals \"their\" $\\vec{QR}$",
   "hint": "Conclude that $PQRS$ is a parallelogram by showing that your $\\vec{PS}$ equals your $\\vec{QR}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b9cd11edd390f46a52bb",
   "code": "AK1",
   "criterion": "Calculates $6 \\times 2 = 12$",
   "hint": "Multiply the frequency by the corresponding value in the first row.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b9cd11edd390f46a52bb",
   "code": "AK2",
   "criterion": "Calculates $7 \\times 3 = 21$",
   "hint": "Multiply the frequency by the corresponding value in the second row.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b9cd11edd390f46a52bb",
   "code": "AK3",
   "criterion": "Calculates $8 \\times 4 = 32$",
   "hint": "Multiply the frequency by the corresponding value in the third row.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b9cd11edd390f46a52bb",
   "code": "AK4",
   "criterion": "Calculates $9 \\times 1 = 9$",
   "hint": "Multiply the frequency by the corresponding value in the fourth row.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b9cd11edd390f46a52bb",
   "code": "CK3",
   "criterion": "Recognises that a sample statistic estimates a population parameter",
   "hint": "Identify the sample statistic as an estimate of the population parameter.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83b9cd11edd390f46a52bb",
   "code": "R2",
   "criterion": "States that the sample does not support the claim",
-  "hint": "State whether the sample supports the claim.",
-  "status": "proposed"
+  "hint": "Compare your sample mean with the claimed 8 hours and say which way it falls.",
+  "status": "approved"
  },
  {
   "question_id": "6a83b9cd11edd390f46a52bb",
   "code": "R3",
   "criterion": "Compares \"their\" sample mean with 8 hours to justify the decision",
   "hint": "Compare your sample mean with 8 hours and use the comparison to justify your decision.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83ba2711edd390f46a52c8",
   "code": "CK1",
   "criterion": "Recognises that $r^3$ must be isolated",
   "hint": "Isolate $r^3$ before you solve for $r$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83ba2711edd390f46a52c8",
   "code": "AK1",
   "criterion": "Multiplies both sides by $\\frac{3}{4\\pi}$ to obtain $r^3=\\frac{3V}{4\\pi}$",
   "hint": "Multiply both sides by $\\frac{3}{4\\pi}$ to obtain $r^3=\\frac{3V}{4\\pi}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83ba2711edd390f46a52c8",
   "code": "R1",
   "criterion": "Takes the cube root of both sides to show the required result",
   "hint": "Take the cube root of both sides to write $r=\\sqrt[3]{\\frac{3V}{4\\pi}}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83ba2711edd390f46a52c8",
   "code": "CK2",
   "criterion": "Substitutes $V=36\\pi$ into the expression for $r$",
   "hint": "Substitute the given value of $V$, including its $\\pi$ factor, into your expression for $r$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83ba2711edd390f46a52c8",
   "code": "AK2",
   "criterion": "Simplifies $\\frac{3(36\\pi)}{4\\pi}$ to $27$",
   "hint": "Cancel the common $\\pi$ factor and simplify $\\frac{3V}{4\\pi}$ after substituting.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83ba2711edd390f46a52c8",
   "code": "CK3",
   "criterion": "Reads the permitted radius interval as from $2$ m to $4$ m from the number line",
   "hint": "Read the two endpoints of the permitted radius interval directly from the number line.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83ba2711edd390f46a52c8",
   "code": "R2",
   "criterion": "Compares \"their\" radius with the interval from $2$ m to $4$ m",
   "hint": "Compare your radius with the permitted interval you read from the number line.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83ba2711edd390f46a52c8",
   "code": "R3",
   "criterion": "Concludes that the tank meets the requirement with a valid reason",
   "hint": "Conclude that the tank meets the requirement because your radius lies within the permitted interval.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "CK1",
   "criterion": "Uses $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$",
   "hint": "Find the displacement by using $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "AK1",
   "criterion": "Subtracts components to obtain $\\begin{pmatrix}5\\\\3\\end{pmatrix}$",
   "hint": "Subtract the corresponding components to write $\\overrightarrow{AB}$ as $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "CK2",
   "criterion": "Uses $\\overrightarrow{BC}=2\\times$ \"their\" $\\overrightarrow{AB}$",
   "hint": "Multiply your $\\overrightarrow{AB}$ by $2\\times$ to find $\\overrightarrow{BC}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "AK2",
   "criterion": "Calculates $\\overrightarrow{BC}=\\begin{pmatrix}10\\\\6\\end{pmatrix}$, or equivalent follow-through value",
   "hint": "Double each component of your $\\overrightarrow{AB}$ and write $\\overrightarrow{BC}$ as $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "CK3",
   "criterion": "Uses $\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{BC}$",
   "hint": "Find the position vector of $C$ by using $\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{BC}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "AK3",
   "criterion": "Adds vectors to obtain $\\begin{pmatrix}12\\\\11\\end{pmatrix}$, or correct follow-through from \"their\" $\\overrightarrow{BC}$",
   "hint": "Add the corresponding components of $\\overrightarrow{OB}$ and your $\\overrightarrow{BC}$ to write $\\overrightarrow{OC}$ as $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "CK4",
   "criterion": "Recognises that the boundary point with ordinate $11$ has abscissa $10$",
   "hint": "Keep the ordinate unchanged and use the greatest permitted abscissa on the boundary.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "R1",
   "criterion": "Identifies that \"their\" point $C$ is outside the permitted area because its abscissa exceeds $10$",
   "hint": "Compare the abscissa of your point $C$ with the permitted maximum to decide whether it lies outside the area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "R2",
   "criterion": "Selects $(10,11)$, or the corresponding nearest point from \"their\" position vector, as the target point",
   "hint": "Choose the nearest permitted boundary point with the same ordinate as your point $C$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bcae2977095c51fe84a7",
   "code": "R3",
   "criterion": "Finds target position minus \"their\" $\\overrightarrow{OC}$ to obtain $\\begin{pmatrix}-2\\\\0\\end{pmatrix}$",
   "hint": "Subtract your $\\overrightarrow{OC}$ from the target position vector and express the displacement as $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bceb2977095c51fe84af",
   "code": "CK1",
   "criterion": "Identifies gradient $2$ and $y$-intercept $1$ from the graph",
   "hint": "Read the rise over run and the point where the line crosses the $y$-axis directly from the graph.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bceb2977095c51fe84af",
   "code": "CK2",
   "criterion": "Recognises that $fg(x)=f(g(x))$",
   "hint": "Write the composite in the correct order as $fg(x)=f(g(x))$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bceb2977095c51fe84af",
   "code": "AK2",
   "criterion": "Substitutes $x^2$ into \"their\" rule for $f$",
   "hint": "Substitute $x^2$ into your rule for $f$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bceb2977095c51fe84af",
   "code": "CK3",
   "criterion": "Recognises that $gf(x)=g(f(x))$",
   "hint": "Write the composite in the correct order as $gf(x)=g(f(x))$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bceb2977095c51fe84af",
   "code": "AK4",
   "criterion": "Substitutes \"their\" $f(x)$ into $g$, giving $(2x+1)^2$",
   "hint": "Put your expression for $f(x)$ into $g$ and square the resulting bracket.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bceb2977095c51fe84af",
   "code": "R1",
   "criterion": "Compares \"their\" composite expressions and states $fg\\ne gf$",
   "hint": "Compare your two composite expressions and state $fg\\ne gf$ if they are different.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bceb2977095c51fe84af",
   "code": "R2",
   "criterion": "Uses $gf(3)$ for $f$ followed by $g$ and $fg(3)$ for $g$ followed by $f$, follow-through on \"their\" composites",
   "hint": "For $f$ followed by $g$, use $gf(3)$, and for $g$ followed by $f$, use $fg(3)$ with your own composite expressions.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd132977095c51fe84b7",
   "code": "R1",
   "criterion": "Determines an increase of 3 tiles between consecutive figures",
   "hint": "Compare the tile totals in two consecutive figures and find the same increase each time.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd132977095c51fe84b7",
   "code": "CK1",
   "criterion": "Recognises that $3n$ represents the increase in tiles for Figure $n$",
   "hint": "Identify the term that gives the repeated tile increase for Figure $n$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd132977095c51fe84b7",
   "code": "CK2",
   "criterion": "Determines the constant adjustment of 2 tiles",
   "hint": "Find the fixed number of tiles left after accounting for the repeated increase.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd132977095c51fe84b7",
   "code": "R2",
   "criterion": "Forms $T=3n+2$ using \"their\" increase",
   "hint": "Write a rule for $T$ using your increase and your fixed adjustment.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd132977095c51fe84b7",
   "code": "CK3",
   "criterion": "Forms $3n+2=35$ using \"their\" rule",
   "hint": "Set your rule equal to the given number of tiles.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd132977095c51fe84b7",
   "code": "AK1",
   "criterion": "Subtracts 2 from both sides, giving $3n=33$",
   "hint": "Subtract the fixed adjustment from both sides of your equation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd132977095c51fe84b7",
   "code": "AK2",
   "criterion": "Divides \"their\" 33 by \"their\" 3",
   "hint": "Divide your resulting total by your repeated increase.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd132977095c51fe84b7",
   "code": "R3",
   "criterion": "Interprets the solution as the number of the tile figure",
   "hint": "State which figure number your solution represents.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "CK1",
   "criterion": "Identifies that radii $OA$ and $OB$ are perpendicular to tangents $PA$ and $PB$.",
   "hint": "Use the fact that each radius is perpendicular to its tangent, so $OA \\perp PA$ and $OB \\perp PB$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "AK1",
   "criterion": "Uses the angle sum of quadrilateral $OAPB$: $360-90-90-48$.",
   "hint": "Subtract the two right angles and the given angle from $360-90-90-48$ to find the remaining angle in quadrilateral $OAPB$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "CK2",
   "criterion": "Recognises that the angle at the centre is twice the angle at the circumference on arc $AB$.",
   "hint": "Use the circle theorem that the angle at the centre is twice the angle at the circumference standing on arc $AB$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "AK2",
   "criterion": "Halves \"their\" $\\angle AOB$.",
   "hint": "Divide your earlier $\\angle AOB$ by $2$ to find $\\angle ACB$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "CK3",
   "criterion": "Recognises that the angles in triangle $ABC$ sum to $180\u00b0$.",
   "hint": "Use the fact that the angles in triangle $ABC$ add to $180\u00b0$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "AK3",
   "criterion": "Calculates $180-42-\\text{\"their\" }\\angle ACB$.",
   "hint": "Calculate $180-42-\\text{your earlier }\\angle ACB$ to find $\\angle CBA$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "CK4",
   "criterion": "Identifies $\\angle CBA$ as the angle in the alternate segment for chord $CA$.",
   "hint": "Identify $\\angle CBA$ as the angle in the alternate segment made by chord $CA$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "AK4",
   "criterion": "States \"their\" $\\angle CBA$ as the required angle between a tangent at $C$ and chord $CA$.",
   "hint": "State your $\\angle CBA$ as the angle between a tangent at $C$ and chord $CA$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "R3",
   "criterion": "Compares $66\u00b0$ with \"their\" required angle and decides that they are unequal.",
   "hint": "Compare $66\u00b0$ with your required angle and conclude that the two angles are unequal.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bd8e2977095c51fe84c4",
   "code": "R4",
   "criterion": "Justifies that the proposed line is not a tangent using the alternate-segment theorem.",
   "hint": "Use the alternate-segment theorem to conclude that the proposed line is not a tangent at $C$ because the angles do not match.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "CK1",
   "criterion": "Identifies $QR$ as opposite the $30^\\circ$ angle",
   "hint": "Identify $QR$ as the side opposite the $30^\\circ$ angle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "CK2",
   "criterion": "Selects the tangent ratio",
   "hint": "Choose the tangent ratio because it links the opposite side to the adjacent side.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "AK1",
   "criterion": "Substitutes into $\\tan 30^\\circ=\\frac{QR}{45}$",
   "hint": "Substitute the known adjacent length into $\\tan 30^\\circ=\\frac{QR}{45}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "AK2",
   "criterion": "Evaluates $QR=45\\tan30^\\circ$",
   "hint": "Rearrange and evaluate $QR=45\\tan30^\\circ$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "R1",
   "criterion": "Gives $26.0\\text{ m}$ correct to 1 decimal place",
   "hint": "Round your calculated mast height to 1 decimal place and state it in metres.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "CK3",
   "criterion": "Identifies $PR$ as the hypotenuse of the right-angled triangle",
   "hint": "Identify $PR$ as the hypotenuse because it is opposite the right angle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "AK3",
   "criterion": "Uses $\\frac{\\text{their }QR}{\\sin30^\\circ}$ to find $PR$",
   "hint": "Divide your $QR$ by $\\sin30^\\circ$ to find $PR$, using $\\frac{QR}{\\sin30^\\circ}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "AK4",
   "criterion": "Evaluates $PR=\\frac{25.980\\ldots}{\\sin30^\\circ}=51.961\\ldots$",
   "hint": "Divide your height $QR$ by $\\sin30^\\circ$ to find $PR$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "R2",
   "criterion": "Gives $52.0\\text{ m}$ correct to 1 decimal place",
   "hint": "Round your calculated cable length to 1 decimal place and state it in metres.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bdc22977095c51fe84cc",
   "code": "R3",
   "criterion": "Concludes that the cable is not long enough since \"their\" $PR>51\\text{ m}$",
   "hint": "Compare your $PR$ with $51\\text{ m}$ and conclude that the cable is not long enough if your $PR>51\\text{ m}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be012977095c51fe84d4",
   "code": "CK1",
   "criterion": "Identifies the damaged frequency as $20$ out of $100$",
   "hint": "Use the table to write the damaged frequency as a fraction of the total number of bags.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be012977095c51fe84d4",
   "code": "CK2",
   "criterion": "Selects the joint frequency $8$ out of $100$",
   "hint": "Select the table entry that represents bags which are both damaged and underweight, then write it over the total number of bags.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be012977095c51fe84d4",
   "code": "CK3",
   "criterion": "Identifies $P(\\text{underweight}) = \\frac{30}{100} = 0.3$",
   "hint": "Calculate $P(\\text{underweight})$ by writing $\\frac{\\text{underweight frequency}}{\\text{total frequency}}$ and converting it to a decimal.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be012977095c51fe84d4",
   "code": "R1",
   "criterion": "Multiplies probabilities for the independent events using $0.2 \\times 0.3$",
   "hint": "For independent events, multiply $P(\\text{damaged}) \\times P(\\text{underweight})$ to find the theoretical probability.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be012977095c51fe84d4",
   "code": "R2",
   "criterion": "Finds the difference between \u201ctheir\u201d experimental and theoretical probabilities",
   "hint": "Subtract your theoretical probability from your experimental probability to find your difference.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be012977095c51fe84d4",
   "code": "CK4",
   "criterion": "States that \u201ctheir\u201d difference is greater than $0.01$",
   "hint": "Compare your difference with $0.01$ and state whether it is greater.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be012977095c51fe84d4",
   "code": "R3",
   "criterion": "Concludes that the shopkeeper should not use the model",
   "hint": "Use your comparison to decide whether the shopkeeper should use the independent-events model.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "CK1",
   "criterion": "Recognises that $\\overrightarrow{AB}$ is found by subtracting the coordinates of $A$ from those of $B$.",
   "hint": "You find $\\overrightarrow{AB}$ by subtracting each coordinate of $A$ from the corresponding coordinate of $B$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "AK1",
   "criterion": "Subtracts correctly to obtain $\\begin{pmatrix}3\\\\4\\end{pmatrix}$.",
   "hint": "You subtract the coordinates carefully and write the resulting vector as $\\begin{pmatrix}a\\\\b\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "CK2",
   "criterion": "Uses $\\left|\\begin{pmatrix}x\\\\y\\end{pmatrix}\\right|=\\sqrt{x^2+y^2}$.",
   "hint": "You use $\\left|\\begin{pmatrix}x\\\\y\\end{pmatrix}\\right|=\\sqrt{x^2+y^2}$ to find the magnitude.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "AK2",
   "criterion": "Evaluates $\\sqrt{3^2+4^2}$.",
   "hint": "You square both vector components, add the results, and evaluate the square root $\\sqrt{a^2+b^2}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "CK3",
   "criterion": "Recognises that a point on the $x$-axis has second coordinate $0$.",
   "hint": "You write the point on the $x$-axis with $0$ as its second coordinate.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "AK3",
   "criterion": "Uses $|x-1|=$ 'their' magnitude of $\\overrightarrow{AB}$ to obtain $x=6$ or $x=-4$.",
   "hint": "You use $|x-1|=$ your magnitude of $\\overrightarrow{AB}$ and solve for both possible values of $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "R2",
   "criterion": "Uses the condition $AC=AB$ with 'their' magnitude from part (b).",
   "hint": "You set $AC=AB$ by using your magnitude of $\\overrightarrow{AB}$ as the length of $AC$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "R3",
   "criterion": "Selects $x=6$, since $C$ is to the right of $A$, and gives $(6,0)$.",
   "hint": "You choose the solution to the right of $A$ and write the point with second coordinate $0$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be65c24c2d59f4d9c1f0",
   "code": "CK1",
   "criterion": "Recognises that $1$ tonne $= 1 000 000$ g",
   "hint": "Use the tonne-to-gram conversion before calculating the mass in grams.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be65c24c2d59f4d9c1f0",
   "code": "AK1",
   "criterion": "Multiplies $1.274$ by $1 000 000$",
   "hint": "Multiply $1.274$ by $1 000 000$ to express the mass in grams.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be65c24c2d59f4d9c1f0",
   "code": "CK2",
   "criterion": "Divides \"their\" mass in grams by $350$",
   "hint": "Divide your mass in grams by $350$ to find the number of bags.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be65c24c2d59f4d9c1f0",
   "code": "CK3",
   "criterion": "Recognises that each carton holds $18$ bags",
   "hint": "Use $18$ as the number of bags that fit in each carton.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be65c24c2d59f4d9c1f0",
   "code": "AK3",
   "criterion": "Obtains quotient $202$ on dividing \"their\" number of bags by $18$",
   "hint": "Divide your number of bags by $18$ and use the whole-number quotient for the full cartons.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be65c24c2d59f4d9c1f0",
   "code": "R1",
   "criterion": "Interprets the remainder as $4$ bags left after full cartons are packed",
   "hint": "Interpret the remainder as the number of bags left after packing as many full cartons as possible.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be65c24c2d59f4d9c1f0",
   "code": "CK4",
   "criterion": "Establishes that \"their\" number of full cartons is sufficient for the $200$-carton order",
   "hint": "Compare your number of full cartons with the $200$ cartons required to decide whether the order can be packed.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be65c24c2d59f4d9c1f0",
   "code": "CK5",
   "criterion": "Recognises that the load masses must be compared in the same unit",
   "hint": "Convert or express both load masses in the same unit before comparing them.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be65c24c2d59f4d9c1f0",
   "code": "R2",
   "criterion": "Forms the mass of the order as $200 \\times 18 \\times 350$ g",
   "hint": "Calculate the order mass in grams using $200 \\times 18 \\times 350$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be65c24c2d59f4d9c1f0",
   "code": "R3",
   "criterion": "Converts \"their\" mass of the order to tonnes",
   "hint": "Convert your mass of the order from grams to tonnes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be65c24c2d59f4d9c1f0",
   "code": "R4",
   "criterion": "Concludes that one trip is not possible since \"their\" order mass exceeds $1.20$ tonnes",
   "hint": "Compare your order mass in tonnes with $1.20$ tonnes and state whether one trip is possible.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "CK1",
   "criterion": "Divides both sides by $2\\pi$ to isolate the square root",
   "hint": "Divide both sides by $2\\pi$ so that the square root is isolated.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "AK1",
   "criterion": "Squares both sides correctly",
   "hint": "Square both sides of the equation to remove the square root while keeping both sides equal.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "CK2",
   "criterion": "Selects $T = 2.20$ and $g = 9.8$ for substitution into the expression for $l$",
   "hint": "Use $T=2.20$ and $g=9.8$ when substituting into the formula.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "AK3",
   "criterion": "Substitutes into $l = \\frac{gT^2}{4\\pi^2}$ using \"their\" expression from part (a)",
   "hint": "Substitute $T$ and $g$ into the expression you obtained in part (a), $l = \\frac{gT^2}{4\\pi^2}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "AK4",
   "criterion": "Evaluates \"their\" expression, giving $1.201\\ldots\\text{ m}$",
   "hint": "Evaluate the expression you obtained and keep the unrounded result as $\\ldots\\text{ m}$ before rounding.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "R1",
   "criterion": "Expresses \"their\" length correct to 3 significant figures",
   "hint": "Round your length to 3 significant figures and state it in $\\text{m}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "CK3",
   "criterion": "Identifies $1.15\\text{ m}$ as the limiting height of the case",
   "hint": "Use the case's limiting height, $1.15\\text{ m}$, for the fit check.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "R2",
   "criterion": "Compares \"their\" pendulum length with $1.15\\text{ m}$",
   "hint": "Compare your pendulum length directly with $1.15\\text{ m}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83be95c24c2d59f4d9c1f8",
   "code": "R3",
   "criterion": "Concludes that the pendulum will not fit",
-  "hint": "Use the comparison to state that the pendulum will not fit in the case.",
-  "status": "proposed"
+  "hint": "Compare your length with the 1.15 m case height and say which is larger.",
+  "status": "approved"
  },
  {
   "question_id": "6a83bf02c24c2d59f4d9c205",
   "code": "CK1",
   "criterion": "Forms products of each number of goals and its corresponding frequency",
   "hint": "Multiply each number of goals by the height of its matching bar, then add the products.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf02c24c2d59f4d9c205",
   "code": "R1",
   "criterion": "Uses 20, the number of selected players, as the denominator",
   "hint": "Divide the total number of goals by the number of selected players.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf02c24c2d59f4d9c205",
   "code": "R2",
   "criterion": "Identifies 13 selected players who scored at least 2 goals and uses the scale factor $80\\div20$",
   "hint": "Count the selected players who score at least two goals, then scale this count using $80\\div20$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf02c24c2d59f4d9c205",
   "code": "CK2",
   "criterion": "Identifies the mean from the selected players as a sample statistic",
   "hint": "State that the mean calculated from the selected players is a sample statistic.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf02c24c2d59f4d9c205",
   "code": "CK3",
   "criterion": "Identifies a mean calculated from all 80 players as a population parameter",
   "hint": "State that a mean calculated from all players in the population is a population parameter.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf02c24c2d59f4d9c205",
   "code": "R3",
   "criterion": "Explains that the selected players may not represent the full population",
   "hint": "Explain that the selected players may not be representative of the whole population, so the means can differ.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "R1",
   "criterion": "Reads $g(\\text{their }7)=3$ correctly from the graph",
-  "hint": "You read $g(\\text{your input})$ directly from the graph, using your earlier output from $f$ as the input.",
-  "status": "proposed"
+  "hint": "Take your answer from part (a) as the input on g's graph and read the output.",
+  "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "CK1",
   "criterion": "Identifies $f$ and $g$ as inverse functions",
   "hint": "You use the reflection in $y=x$ to identify the relationship between $f$ and $g$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "CK2",
   "criterion": "Recognises that the inverse reverses the input and output",
   "hint": "You reverse the input and output when finding the inverse function.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "AK2",
   "criterion": "Interchanges the variables and rearranges $y=2x+1$ to make $y$ the subject",
   "hint": "You interchange $x$ and $y$ in $y=2x+1$ and rearrange to make $y$ the subject.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "R2",
   "criterion": "States $g:x\\to \\frac{x-1}{2}$",
   "hint": "You state the inverse rule in the form $g:x\\to\\frac{\\text{expression}}{\\text{constant}}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "CK3",
   "criterion": "Forms the composition $g(f(x))$",
   "hint": "You write the composition $g(f(x))$ before simplifying it.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "AK3",
   "criterion": "Substitutes $f(x)=2x+1$ into $g$",
   "hint": "You replace the input of $g$ with $f(x)$ using the given rule for $f$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "R3",
   "criterion": "Simplifies to conclude $g(f(x))=x$",
   "hint": "You simplify the composition fully and state the resulting identity.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf6ac24c2d59f4d9c215",
   "code": "CK1",
   "criterion": "Identifies 3 as the number added for each successive figure",
   "hint": "Compare consecutive figures and identify how many plants are added each time.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf6ac24c2d59f4d9c215",
   "code": "CK2",
   "criterion": "Identifies 1 as the fixed number of plants in the pattern",
   "hint": "Use Figure 1 and remove the repeating contribution to identify the fixed number of plants.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf6ac24c2d59f4d9c215",
   "code": "R1",
   "criterion": "Combines the repeating and fixed parts to form $3n+1$",
   "hint": "Combine the repeating part and the fixed part into one expression in terms of $n$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf6ac24c2d59f4d9c215",
   "code": "CK3",
   "criterion": "Selects \"their\" expression for the number of plants in Figure $n$",
   "hint": "Use your expression for the number of plants in Figure $n$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf6ac24c2d59f4d9c215",
   "code": "CK4",
   "criterion": "Forms $3n+1=52$",
   "hint": "Set the expression for the number of plants equal to the required total.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf6ac24c2d59f4d9c215",
   "code": "AK2",
   "criterion": "Subtracts 1 from both sides",
   "hint": "Subtract the fixed number from both sides of your equation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf6ac24c2d59f4d9c215",
   "code": "AK3",
   "criterion": "Divides by 3 to obtain $n=17$",
   "hint": "Divide both sides by the repeating number to isolate $n$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf6ac24c2d59f4d9c215",
   "code": "R2",
   "criterion": "Interprets \"their\" value as a valid figure number",
   "hint": "State the figure number represented by your value of $n$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf6ac24c2d59f4d9c215",
   "code": "CK5",
   "criterion": "Forms $3n+1=50$ for the remaining plants",
   "hint": "First find the remaining plants, then set the pattern expression equal to that amount.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf6ac24c2d59f4d9c215",
   "code": "R3",
   "criterion": "Solves to obtain $n=\\frac{49}{3}$",
   "hint": "Rearrange the equation and divide by the coefficient of $n$, leaving $n$ as a fraction.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf6ac24c2d59f4d9c215",
   "code": "R4",
   "criterion": "Concludes that no complete display is possible because a figure number must be a whole number",
   "hint": "Conclude that the display is incomplete because a figure number must be a whole number.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf97c24c2d59f4d9c21d",
   "code": "CK1",
   "criterion": "Recognises that angle $PHQ$ is the difference between the two bearings from $H$: $090\u00b0-035\u00b0$.",
   "hint": "Subtract the smaller bearing from the larger bearing to find $\\angle PHQ$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf97c24c2d59f4d9c21d",
   "code": "CK2",
   "criterion": "Selects the cosine rule using the included angle at $H$.",
   "hint": "Use the cosine rule with the included angle at $H$ between the two known sides.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf97c24c2d59f4d9c21d",
   "code": "AK2",
   "criterion": "Substitutes correctly into $PQ^2=10^2+14^2-2(10)(14)\\cos(\\text{their }55\u00b0)$.",
   "hint": "Substitute the given side lengths and your angle at $H$ into $PQ^2=a^2+b^2-2ab\\cos(\\text{your angle})$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf97c24c2d59f4d9c21d",
   "code": "AK3",
   "criterion": "Processes to obtain $PQ\\approx11.6369$ km.",
   "hint": "Evaluate the cosine-rule expression and take the positive square root to obtain $PQ\\approx\\text{a decimal distance}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf97c24c2d59f4d9c21d",
   "code": "R1",
   "criterion": "Expresses the distance as $11.6$ km, correct to 3 significant figures.",
   "hint": "Round your distance to three significant figures and include the unit km.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf97c24c2d59f4d9c21d",
   "code": "CK3",
   "criterion": "States the bearing of $H$ from $P$ as $215\u00b0$.",
   "hint": "Reverse the bearing from $H$ to $P$ by adding $180\u00b0$ and write it as a three-figure bearing.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a83bf97c24c2d59f4d9c21d",
   "code": "AK4",
   "criterion": "Calculates angle $HPQ\\approx80.3\u00b0$ using \"their\" value of $PQ$.",
   "hint": "Use your value of $PQ$ in the cosine rule and record $\\angle HPQ\\approx\\text{your calculated angle}$.",
-  "status": "proposed"
+  "status": "approved"
  }
 ]
