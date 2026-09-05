@@ -19,6 +19,9 @@ export interface OutcomeRow {
 export interface OutcomeQuestion {
   parts?: { label: string; slots?: { label: string; response_mode?: string }[] }[];
   rubric?: OutcomeRow[];
+  /** For a question with no rubric rows: the whole thing is one row. */
+  marks?: number;
+  profile?: Profile;
 }
 
 export interface OutcomeRead {
@@ -56,17 +59,25 @@ const answerSlots = (q: OutcomeQuestion) =>
 const knownSlots = (q: OutcomeQuestion) =>
   new Set((q.parts ?? []).flatMap((p) => (p.slots ?? []).map((s) => `${p.label}.${s.label}`)));
 
+// An MCQ carries no rubric: its one mark is the answer, and `correct` is the grader's verdict.
+const rowsOf = (attempt: { correct?: boolean }, q: OutcomeQuestion): { rows: OutcomeRow[]; graded: Set<string> } => {
+  if (q.rubric?.length) return { rows: q.rubric, graded: new Set() };
+  const row: OutcomeRow = { code: 'ANSWER', profile: q.profile ?? 'CK', mark_value: q.marks ?? 1, slot_ref: '' };
+  return { rows: [row], graded: new Set(attempt.correct ? [row.code] : []) };
+};
+
 export function attemptOutcome(
-  attempt: { rubric_awarded: string[] },
+  attempt: { rubric_awarded: string[]; correct?: boolean },
   question: OutcomeQuestion,
   reads: OutcomeRead[] = [],
 ): AttemptOutcome {
-  const graded = new Set(attempt.rubric_awarded);
+  const whole = rowsOf(attempt, question);
+  const graded = new Set([...attempt.rubric_awarded, ...whole.graded]);
   const answer = answerSlots(question);
   const known = knownSlots(question);
   const judging = reads.filter((r) => r.marker_version && r.legible);
 
-  const rows: RowOutcome[] = (question.rubric ?? []).map((row) => {
+  const rows: RowOutcome[] = whole.rows.map((row) => {
     const decisions = judging.flatMap((r) => (r.method_marks ?? []).filter((m) => m.code === row.code));
     const awardedByRead = reads.some((r) => (r.method_marks ?? []).some((m) => m.code === row.code && m.awarded));
     const latest = decisions.at(-1);

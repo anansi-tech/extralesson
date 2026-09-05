@@ -18,6 +18,8 @@ export interface CaptureResult {
   takesLeft: number;
   method: { code: string; awarded: boolean; reason: string; mark_value: number }[];
   marksAdded: number;
+  /** The marker finished; the fold counts these decisions. */
+  marked: boolean;
 }
 
 interface StoredRead {
@@ -172,5 +174,6 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
     takesLeft: MAX_TAKES - reads.length,
     method: methodMarks.map(({ code, awarded, reason, mark_value }) => ({ code, awarded, reason, mark_value })),
     marksAdded: methodMarks.filter((m) => m.awarded).reduce((n, m) => n + m.mark_value, 0),
+    marked: true,
   };
 }

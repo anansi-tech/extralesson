@@ -46,25 +46,6 @@ export function constructionRows(q: MethodMarkQuestion, awarded: string[]): Rubr
   return (q.rubric ?? []).filter((r) => !earned.has(r.code) && constructRefs.has(r.slot_ref));
 }
 
-/**
- * A row is worth its marks ONCE across takes, so the earned set is the union of
- * awarded codes and never their sum. A later take can add a row the first
- * missed, and a take that reads nothing takes nothing away.
- */
-export function methodMarksEarned(
-  takes: { method_marks?: { code: string; awarded: boolean; mark_value: number }[] }[],
-): number {
-  const byCode = new Map<string, number>();
-  for (const t of takes) {
-    for (const m of t.method_marks ?? []) {
-      if (m.awarded) byCode.set(m.code, m.mark_value);
-    }
-  }
-  let total = 0;
-  for (const v of byCode.values()) total += v;
-  return total;
-}
-
 /** The rows earlier takes already paid for, so a later take never re-judges them. */
 export function alreadyEarnedByMethod(
   takes: { method_marks?: { code: string; awarded: boolean }[] }[],

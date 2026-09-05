@@ -1,4 +1,5 @@
 import 'katex/dist/katex.min.css';
+import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from '@/lib/study/outcome';
 import { dbConnect, Attempt, MarkDispute, Question, Student, Transcription } from '@/lib/db';
 import { renderMathHtml } from '@/lib/katex';
 import { linesForSlot } from '@/lib/grade/transcribe';
@@ -25,8 +26,8 @@ export default async function DisputesPage() {
   const [students, attempts, reads] = await Promise.all([
     Student.find({ _id: { $in: ids('student_id') } }).select('email').lean<{ _id: unknown; email: string }[]>(),
     Attempt.find({ _id: { $in: ids('attempt_id') } })
-      .select('question_id answer')
-      .lean<{ _id: unknown; question_id: unknown; answer: string | number }[]>(),
+      .select('question_id answer rubric_awarded correct')
+      .lean<{ _id: unknown; question_id: unknown; answer: string | number; rubric_awarded: string[]; correct: boolean }[]>(),
     Transcription.find({ _id: { $in: ids('transcription_id') } })
       .select('lines legible method_marks take')
       .lean<
@@ -51,8 +52,11 @@ export default async function DisputesPage() {
   const askedStemBy = new Map(askedQuestions.map((q) => [String(q._id), q.stem]));
 
   const questions = await Question.find({ _id: { $in: [...new Set(attempts.map((a) => String(a.question_id)))] } })
-    .select('stem stimulus rubric')
-    .lean<{ _id: unknown; stem: string; stimulus?: string; rubric?: RubricItem[] }[]>();
+    .select('stem stimulus marks profile parts rubric')
+    .lean<(Omit<OutcomeQuestion, 'rubric'> & { _id: unknown; stem: string; stimulus?: string; rubric?: RubricItem[] })[]>();
+  const allReads = await Transcription.find({ attempt_id: { $in: ids('attempt_id') } })
+    .select('attempt_id legible marker_version method_marks')
+    .lean<(OutcomeRead & { attempt_id: unknown })[]>();
 
   const by = <T extends { _id: unknown }>(rows: T[]) => new Map(rows.map((r) => [String(r._id), r]));
   const studentBy = by(students);
@@ -99,6 +103,10 @@ export default async function DisputesPage() {
         const read = readBy.get(String(d.transcription_id));
         const question = attempt ? questionBy.get(String(attempt.question_id)) : undefined;
         const row = read?.method_marks?.find((m) => m.code === d.code);
+        const state =
+          attempt && question
+            ? attemptOutcome(attempt, question, allReads.filter((r) => String(r.attempt_id) === String(attempt._id))).rows.find((r) => r.code === d.code)?.state
+            : undefined;
         const rubric = question?.rubric?.find((r) => r.code === d.code);
         const part = rubric?.slot_ref.split('.')[0] ?? '';
         const lines = (read?.lines ?? []).map((l) => ({ ...l, part_label: l.part_label ?? null, slot_label: l.slot_label ?? null }));
@@ -129,6 +137,7 @@ export default async function DisputesPage() {
             <div className="mt-3 font-mono text-[10px] uppercase tracking-widest text-dim">The row</div>
             <p className="question-prose mt-1 text-[13px]">
               <span className="font-mono text-[11px]">{d.code}</span>
+              {state && <span className="ml-2 font-mono text-[10px] uppercase tracking-widest text-dim">{state}</span>}
               {rubric && (
                 <>
                   {` (${rubric.profile}, ${rubric.mark_value}) — `}

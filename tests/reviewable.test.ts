@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { methodMarksEarned } from '@/lib/grade/method-marks';
 
 const SRC = readFileSync(join(process.cwd(), 'lib', 'study', 'reviewable.ts'), 'utf8');
 const SESSION_PAGE = readFileSync(
@@ -23,19 +22,9 @@ describe('reviewable questions', () => {
     }
   });
 
-  it('folds method marks with the same function mastery uses', () => {
-    // Not a reimplementation: one row is paid once across takes, here too.
-    expect(SRC).toContain('methodMarksEarned');
-    expect(methodMarksEarned([
-      { method_marks: [{ code: 'R1', awarded: true, mark_value: 1 }] },
-      { method_marks: [{ code: 'R1', awarded: true, mark_value: 1 }] },
-    ])).toBe(1);
-  });
-
-  it('uses the same denominator as mastery, not the question total', () => {
-    // markSplit().auto — self-marked slots are out of the denominator, exactly
-    // as lib/study/state.ts has them.
-    expect(SRC).toContain('markSplit');
+  it('reads the one fold, and sums nothing itself', () => {
+    expect(SRC).toContain('attemptOutcome');
+    expect(SRC).not.toMatch(/profile_marks|method_marks\.filter|markSplit/);
   });
 
   it('opens the sitting the attempt records, not another session holding it', () => {

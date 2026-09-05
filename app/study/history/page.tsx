@@ -43,6 +43,7 @@ export default async function HistoryPage() {
                   <span className="question-prose min-w-0 flex-1 truncate underline" dangerouslySetInnerHTML={{ __html: r.stemHtml }} />
                   <span className="shrink-0 font-mono text-[12px] text-dim">
                     {r.earned}/{r.marks}
+                    {r.unassessed > 0 && ` · ${r.unassessed} not assessed`}
                   </span>
                 </Link>
               </li>

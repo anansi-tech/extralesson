@@ -14,10 +14,9 @@ import { DIAGNOSTIC_MINUTES, SESSION_MINUTES } from '@/lib/session/builder';
 import { diagnosticOpensAt } from '@/lib/access';
 import { rankByVerdict, topicsSeen, verdictFor } from '@/lib/study/diagnostic';
 import { startSession } from '@/app/study/actions';
-import { loadReviewable } from '@/lib/study/reviewable';
 import { loadStudyState } from '@/lib/study/state';
 import { estimatedMinutes } from '@/lib/session/builder';
-import { markSplit } from '@/lib/grade/assessable';
+import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from '@/lib/study/outcome';
 import { boxWidthChars, isMultiValue, readInputShape, showsBoxCount } from '@/lib/grade/input-shape';
 import { inputAffordance } from '@/lib/grade/input-hints';
 import { PROFILE_GLOSS, PROFILE_GLOSS_SHORT, PROFILE_MEANING } from '@/lib/study/profiles';
@@ -70,6 +69,16 @@ export default async function SessionPage({
         rubric_awarded: string[];
       }[]
     >();
+  // THE ONE FOLD (ROUND_6 Task 1): every number on this page comes from it.
+  const foldQuestions = await Question.find({ _id: { $in: attempts.map((a) => a.question_id) } })
+    .select('marks profile parts rubric')
+    .lean<(OutcomeQuestion & { _id: unknown })[]>();
+  const foldQuestionBy = new Map(foldQuestions.map((q) => [String(q._id), q]));
+  const foldReads = await Transcription.find({ attempt_id: { $in: attempts.map((a) => a._id) } })
+    .select('attempt_id legible marker_version method_marks')
+    .lean<(OutcomeRead & { attempt_id: unknown })[]>();
+  const outcomeOf = (a: (typeof attempts)[number]) =>
+    attemptOutcome(a, foldQuestionBy.get(String(a.question_id)) ?? {}, foldReads.filter((r) => String(r.attempt_id) === String(a._id)));
   const total = session.question_ids.length;
   const answered = attempts.length;
 
@@ -99,7 +108,7 @@ export default async function SessionPage({
       loadStudyState(auth.student_id, targetModules),
     ]);
 
-    const reviewable = await loadReviewable(auth.student_id, { sessionId: String(id) });
+    const outcomes = attempts.map((a) => ({ index: attempts.indexOf(a), ...outcomeOf(a) }));
     const questions = await Question.find({ _id: { $in: session.question_ids } })
       .select('objective_ids')
       .lean<{ _id: unknown; objective_ids: string[] }[]>();
@@ -115,14 +124,11 @@ export default async function SessionPage({
       touchedObjectives.map((o) => o.slice(0, o.lastIndexOf('.') + 1)),
     );
 
-    const totals = attempts.reduce(
-      (acc, a) => ({
-        CK: acc.CK + a.profile_marks.CK,
-        AK: acc.AK + a.profile_marks.AK,
-        R: acc.R + a.profile_marks.R,
-      }),
+    const totals = outcomes.reduce(
+      (acc, o) => ({ CK: acc.CK + o.byProfile.CK, AK: acc.AK + o.byProfile.AK, R: acc.R + o.byProfile.R }),
       { CK: 0, AK: 0, R: 0 },
     );
+    const unassessedMarks = outcomes.reduce((n, o) => n + o.unassessedMarks, 0);
     const correctCount = attempts.filter((a) => a.correct).length;
 
     const deltas = after.topics
@@ -135,9 +141,8 @@ export default async function SessionPage({
     // The first question says one thing: what the working earned, and that
     // the diagnostic is next (ROUND_4 Task 2). No ranking, no estimate.
     if (session.mode === 'first') {
-      const marked = reviewable[0];
-      const earned = marked?.earned ?? totals.CK + totals.AK + totals.R;
-      const outOf = marked?.marks ?? attempts.length;
+      const marked = outcomes[0];
+      const photographed = foldReads.length > 0;
       const opensAt = await diagnosticOpensAt(auth.student_id);
       const diagnosticOpen = opensAt === null || Date.now() >= opensAt.getTime();
       return (
@@ -150,17 +155,24 @@ export default async function SessionPage({
             <section className="mt-5 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
               <div className="section-label">What that question earned</div>
               <div className="mt-2 text-5xl font-black text-red-pen">
-                {earned}
-                <span className="text-2xl text-dim">/{outOf}</span>
+                {marked?.earned ?? 0}
+                <span className="text-2xl text-dim">/{marked?.assessed ?? 0}</span>
               </div>
               <p className="mt-2 text-[12px] leading-snug text-dim">
-                {marked?.photographed
+                {photographed
                   ? 'Marks for the answer, and marks for the method we read off your page.'
                   : 'Marks for the answer. Method marks need the working: photograph the page next time.'}
+                {marked && marked.unassessedMarks > 0 && (
+                  <>
+                    {' '}
+                    {marked.unassessedMarks} mark{marked.unassessedMarks === 1 ? '' : 's'}{' '}
+                    {photographed ? 'could not be assessed from this photo' : 'not assessed without the working'}.
+                  </>
+                )}
               </p>
               {marked && (
                 <Link
-                  href={`/study/session/${marked.sessionId}?q=${marked.index}`}
+                  href={`/study/session/${id}?q=${marked.index}`}
                   className="mt-3 block font-mono text-[11px] uppercase tracking-widest underline"
                 >
                   Look at the marking
@@ -331,6 +343,7 @@ export default async function SessionPage({
           </h1>
           <p className="mt-1 text-dim">
             {correctCount} of {total} correct.
+            {unassessedMarks > 0 && ` ${unassessedMarks} mark${unassessedMarks === 1 ? '' : 's'} not assessed.`}
           </p>
 
           <section className="mt-5 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
@@ -386,28 +399,29 @@ export default async function SessionPage({
 
           {/* Read-only: the question, the mark scheme and the reasons are still there, and
               these open the same view paging back inside a session gives. */}
-          {reviewable.length > 0 && (
+          {outcomes.length > 0 && (
             <section className="mt-5">
               <div className="section-label">
                 Look back at a question
               </div>
               <ul className="mt-1 space-y-1">
-                {reviewable.map((r) => (
-                  <li key={`${r.sessionId}:${r.index}`}>
+                {outcomes.map((r) => (
+                  <li key={r.index}>
                     <Link
-                      href={`/study/session/${r.sessionId}?q=${r.index}`}
+                      href={`/study/session/${id}?q=${r.index}`}
                       className="flex min-h-11 items-baseline justify-between gap-2 border-b-[1.5px] border-rule text-[13px]"
                     >
                       <span className="underline">
                         Question {r.index + 1}
-                        {r.photographed && (
+                        {foldReads.some((fr) => String(fr.attempt_id) === String(attempts[r.index]._id)) && (
                           <span className="ml-1 font-mono text-[10px] tracking-widest text-dim">
                             · PHOTO
                           </span>
                         )}
                       </span>
                       <span className="font-mono text-[12px] text-dim">
-                        {r.earned}/{r.marks}
+                        {r.earned}/{r.assessed}
+                        {r.unassessedMarks > 0 && ` · ${r.unassessedMarks} not assessed`}
                       </span>
                     </Link>
                   </li>
@@ -469,7 +483,7 @@ export default async function SessionPage({
       statement?: string;
       slots?: { label: string; prompt?: string; response_mode?: string; answer: string; accept?: string[] }[];
     }[];
-    rubric?: { code: string; profile: string; criterion: string; mark_value: number; part_label?: string; slot_ref?: string }[];
+    rubric?: { code: string; profile: 'CK' | 'AK' | 'R'; criterion: string; mark_value: number; part_label?: string; slot_ref?: string }[];
     answer_key?: number;
     worked_solution: string;
   } | null>();
@@ -548,13 +562,14 @@ export default async function SessionPage({
     // submit earned nothing and is not shown as if it had.
     const takes = await Transcription.find({ attempt_id: attempt._id, marker_version: { $exists: true } })
       .sort({ take: 1 })
-      .select('lines legible notes method_marks take')
+      .select('lines legible notes method_marks marker_version take')
       .lean<
         {
           _id: unknown;
           take: number;
           legible: boolean;
           notes?: string;
+          marker_version?: string;
           lines: { text: string; part_label?: string | null; confidence: number }[];
           method_marks?: { code: string; awarded: boolean; reason: string; mark_value: number }[];
         }[]
@@ -587,13 +602,13 @@ export default async function SessionPage({
           confidence: l.confidence,
         })),
         legible: t.legible,
+        marked: !!t.marker_version,
         notes: t.notes,
         method: (t.method_marks ?? []).map((m) => ({
           code: m.code,
           awarded: m.awarded,
           reason: m.reason,
         })),
-        earned: (t.method_marks ?? []).filter((m) => m.awarded).reduce((n, m) => n + m.mark_value, 0),
       })),
       feedback: {
         attemptId: String(attempt._id),
@@ -640,15 +655,6 @@ export default async function SessionPage({
   // A box in a table-completion part is named by the cell it fills, or the card
   // falls back to "first answer" and boxes filled in reading order get mismatched.
   const cellNames = slotCellNames(question.visual);
-
-  // Slots the student marks themselves; their rubric rows are not auto-awarded.
-  const selfMarkedRefs = new Set(
-    (question.parts ?? []).flatMap((p) =>
-      (p.slots ?? [])
-        .filter((slot) => (slot.response_mode ?? 'answer') !== 'answer')
-        .map((slot) => `${p.label}.${slot.label}`),
-    ),
-  );
 
   const questionSymbols = [
     ...new Set(
@@ -768,20 +774,13 @@ export default async function SessionPage({
     })),
     optionsHtml: question.options?.map(renderMathHtml),
     marks: question.marks,
-    // What is actually on offer, split from what the student marks themselves,
-    // so a full card does not read as 11 out of 12.
-    ...markSplit(question as never),
     rubricCodes:
       question.rubric?.map((r) => ({
         code: r.code,
         profile: r.profile,
         mark_value: r.mark_value,
         part_label: r.part_label ?? 'a',
-        // A row hanging off a self-marked slot is never awarded here, so the
-        // strip must not cross it out and tell a student they failed a row that
-        // was never on offer. It is out of the denominator too
-        // (lib/grade/assessable.ts), so the score still reads 11 out of 11.
-        selfMarked: selfMarkedRefs.has(r.slot_ref ?? ''),
+        slot_ref: r.slot_ref ?? '',
       })) ?? [],
   };
 

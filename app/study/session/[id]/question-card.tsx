@@ -4,6 +4,7 @@ import { Fragment, useCallback, useEffect, useRef, useState, useTransition } fro
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { saveDraft, submitAnswer, type Feedback } from './actions';
+import { attemptOutcome, type OutcomeRead } from '@/lib/study/outcome';
 import type { ReadResult } from './capture';
 import { TypedInput } from './typed-input';
 import { HintLines, SymbolStrip } from './affordance';
@@ -54,10 +55,6 @@ export interface CardQuestion {
   }[];
   optionsHtml?: string[];
   marks: number;
-  /** Marks we award automatically — the denominator a score is out of. */
-  auto: number;
-  /** Marks the student marks themselves, which are out of that denominator. */
-  self: number;
   /** The session's own budget, in the unit it is actually spent in. */
   marksTotal: number;
   marksAnswered: number;
@@ -84,18 +81,18 @@ export interface CardQuestion {
       rejected: number[];
       lines: { text: string; part_label: string | null; confidence: number }[];
       legible: boolean;
+      /** The marker finished on this take; a failed marking decides nothing. */
+      marked: boolean;
       notes?: string;
       method: { code: string; awarded: boolean; reason: string }[];
-      earned: number;
     }[];
   };
   rubricCodes: {
     code: string;
-    profile: string;
+    profile: 'CK' | 'AK' | 'R';
     mark_value: number;
     part_label: string;
-    /** Marked by the student against the solution, so never awarded here. */
-    selfMarked?: boolean;
+    slot_ref: string;
   }[];
 }
 
@@ -402,21 +399,24 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     });
   };
 
-  // Once a page has been read, the rows the grader could not settle have been
-  // marked from it, so the score is out of the whole question.
-  const readRows = [
-    ...(feedback?.working?.method ?? []),
-    ...(question.prior?.working ?? []).flatMap((w) => w.method),
+  // THE ONE FOLD (ROUND_6 Task 1): the same function every other surface calls.
+  const reads: OutcomeRead[] = [
+    ...(feedback?.working ? [{ legible: feedback.working.transcription.legible, marker_version: feedback.working.marked ? 'marked' : undefined, method_marks: feedback.working.method }] : []),
+    ...(question.prior?.working ?? []).map((w) => ({ legible: w.legible, marker_version: w.marked ? 'marked' : undefined, method_marks: w.method })),
   ];
-  const readExists = !!feedback?.working || (question.prior?.working?.length ?? 0) > 0;
-  const methodAwarded = new Set(readRows.filter((m) => m.awarded).map((m) => m.code));
-  const outOf = readExists ? question.marks : question.auto;
-  const earned = feedback
-    ? feedback.profile_marks.CK +
-      feedback.profile_marks.AK +
-      feedback.profile_marks.R +
-      question.rubricCodes.filter((r) => methodAwarded.has(r.code)).reduce((n, r) => n + r.mark_value, 0)
-    : 0;
+  const readExists = reads.length > 0;
+  const outcome = attemptOutcome(
+    { rubric_awarded: feedback?.rubric_awarded ?? [], correct: feedback?.correct },
+    {
+      parts: question.parts.map((part) => ({ label: part.label, slots: part.slots.map((s) => ({ label: s.label, response_mode: s.mode })) })),
+      rubric: question.rubricCodes,
+      marks: question.marks,
+    },
+    reads,
+  );
+  const earned = feedback ? outcome.earned : 0;
+  const outOf = outcome.assessed;
+  const stateOf = new Map(outcome.rows.map((r) => [r.code, r.state]));
 
   return (
     <article className="mt-4 border-[1.5px] border-ink bg-white p-5 shadow-[4px_4px_0_var(--ink)]">
@@ -731,9 +731,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               {earned}/{outOf}
               {earned === 0 && <span className="ml-1 font-hand">✗</span>}
             </b>
-            {question.self > 0 && !readExists && (
+            {outcome.unassessedMarks > 0 && (
               <span className="text-right font-mono text-[10px] text-dim">
-                {question.auto} marked here · {question.self} you mark yourself
+                {outcome.unassessedMarks} mark{outcome.unassessedMarks === 1 ? '' : 's'}{' '}
+                {readExists ? 'could not be assessed from this photo' : 'not assessed without the working'}
               </span>
             )}
           </div>
@@ -750,20 +751,19 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               <p className="mt-2 text-[11px] leading-snug text-dim">{PROFILE_GLOSS}</p>
             <div className="mt-2 flex flex-wrap gap-1">
               {question.rubricCodes.map((r) => {
-                const got = feedback.rubric_awarded.includes(r.code) || methodAwarded.has(r.code);
-                const unmarked = r.selfMarked && !readExists;
+                const state = stateOf.get(r.code) ?? 'unassessed';
                 return (
                   <span
                     key={r.code}
                     className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold ${
-                      unmarked
+                      state === 'unassessed'
                         ? 'border border-dashed border-rule text-dim'
-                        : got
+                        : state === 'awarded'
                           ? chipColor[r.profile]
                           : 'bg-paper-deep text-dim line-through'
                     }`}
                   >
-                    ({r.part_label}) {r.code} {unmarked ? '— you mark' : got ? '✓' : '✗'}
+                    ({r.part_label}) {r.code} {state === 'unassessed' ? '— not assessed' : state === 'awarded' ? '✓' : '✗'}
                   </span>
                 );
               })}
@@ -856,11 +856,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                       ? `${w.take === 1 ? 'First' : 'Second'} photograph — what we read`
                       : undefined
                   }
-                  earnedLabel={
-                    w.earned > 0
-                      ? `This earned ${w.earned} mark${w.earned === 1 ? '' : 's'}`
-                      : 'What this earned'
-                  }
+                  earnedLabel="What this earned"
                 />
               </div>
             ))}

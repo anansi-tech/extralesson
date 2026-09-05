@@ -8,8 +8,7 @@ import {
   type AttemptScore,
 } from '@/lib/mastery/fold';
 import { predictModule, predictOverall, type OverallPrediction } from '@/lib/grade/predict';
-import { markSplit } from '@/lib/grade/assessable';
-import { methodMarksEarned } from '@/lib/grade/method-marks';
+import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from './outcome';
 import { computeCoverage, type Coverage } from '@/lib/targets/coverage';
 import type { MasteryBand } from '@/lib/mastery/config';
 import type { ModuleNumber } from '@/lib/types';
@@ -51,12 +50,11 @@ interface LeanBlueprint {
   allocations: { topic_codes: string[]; items?: number; marks?: number }[];
 }
 
-// question_id -> {objective_ids, marks} is joined by the caller via attempts'
-// stored profile_marks; the fold input is score fraction per attempt.
 export interface AttemptRow {
   objective_ids: string[];
+  /** Earned over assessed, from lib/study/outcome.ts — the one fold. */
   score: number;
-  /** Assessable marks this attempt covered — the evidence it is worth (§2). */
+  /** Marks assessed on this attempt — the evidence it is worth (§2). */
   marks: number;
   ts: number;
 }
@@ -65,16 +63,12 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
   const query: Record<string, unknown> = { student_id: studentId };
   if (before) query.ts = { $lt: before };
   const attempts = await Attempt.find(query)
-    .populate('question_id', 'objective_ids marks parts rubric')
+    .populate('question_id', 'objective_ids marks profile parts rubric')
     .lean<
       {
-        question_id: {
-          objective_ids: string[];
-          marks: number;
-          parts?: { label: string; marks: number; slots?: { label: string; response_mode?: string }[] }[];
-          rubric?: { slot_ref: string; mark_value: number }[];
-        } | null;
-        profile_marks: { CK: number; AK: number; R: number };
+        question_id: (OutcomeQuestion & { objective_ids: string[] }) | null;
+        rubric_awarded: string[];
+        correct: boolean;
         ts: Date;
         _id: unknown;
       }[]
@@ -83,42 +77,25 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
   const reads = await Transcription.find({
     attempt_id: { $in: attempts.map((a) => a._id) },
   })
-    .select('attempt_id method_marks')
-    .lean<{ attempt_id: unknown; method_marks?: { code: string; awarded: boolean; mark_value: number }[] }[]>();
-  // Grouped by attempt, then folded ONCE PER ROW: an attempt can carry two
-  // takes, and the second normally re-reads the same working as the first.
-  const takesByAttempt = new Map<string, typeof reads>();
-  for (const r of reads) {
-    const key = String(r.attempt_id);
-    const list = takesByAttempt.get(key) ?? [];
-    list.push(r);
-    takesByAttempt.set(key, list);
-  }
-  const methodByAttempt = new Map<string, number>();
-  for (const [id, takes] of takesByAttempt) methodByAttempt.set(id, methodMarksEarned(takes));
+    .select('attempt_id legible marker_version method_marks')
+    .lean<(OutcomeRead & { attempt_id: unknown })[]>();
+  const takesByAttempt = new Map<string, OutcomeRead[]>();
+  for (const r of reads) takesByAttempt.set(String(r.attempt_id), [...(takesByAttempt.get(String(r.attempt_id)) ?? []), r]);
 
-  return attempts
-    .filter((a) => a.question_id)
-    .map((a) => {
-      // Denominator is the marks we award (ROUND_1_6 §1/§4): the auto-marked
-      // rows alone, or the whole question once a read has marked the rest.
-      const read = takesByAttempt.has(String(a._id));
-      const marks = (read ? a.question_id!.marks : markSplit(a.question_id!).auto) || a.question_id!.marks || 1;
-      // Method marks from photographed working are added here rather than
-      // written back to the attempt, which is append-only: the attempt records
-      // what the student was told, and mastery is the fold over both.
-      const earned =
-        a.profile_marks.CK +
-        a.profile_marks.AK +
-        a.profile_marks.R +
-        (methodByAttempt.get(String(a._id)) ?? 0);
-      return {
-        objective_ids: a.question_id!.objective_ids,
-        score: Math.min(1, earned / marks),
-        marks,
-        ts: new Date(a.ts).getTime(),
-      };
+  const rows: AttemptRow[] = [];
+  for (const a of attempts) {
+    if (!a.question_id) continue;
+    const outcome = attemptOutcome(a, a.question_id, takesByAttempt.get(String(a._id)) ?? []);
+    // An attempt with nothing assessed is no evidence either way.
+    if (outcome.assessed === 0) continue;
+    rows.push({
+      objective_ids: a.question_id.objective_ids,
+      score: outcome.earned / outcome.assessed,
+      marks: outcome.assessed,
+      ts: new Date(a.ts).getTime(),
     });
+  }
+  return rows;
 }
 
 export function computeStudyState(

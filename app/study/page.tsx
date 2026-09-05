@@ -535,7 +535,7 @@ export default async function StudyDashboard({
               {[
                 { n: progress.sessionsCompleted, label: progress.sessionsCompleted === 1 ? 'session' : 'sessions' },
                 { n: progress.questionsAnswered, label: progress.questionsAnswered === 1 ? 'question' : 'questions' },
-                { n: progress.marksAttempted, label: 'marks attempted' },
+                { n: progress.marksAssessed, label: 'marks assessed' },
                 { n: progress.streakDays, label: progress.streakDays === 1 ? 'day in a row' : 'days in a row' },
               ].map((s) => (
                 <div key={s.label}>

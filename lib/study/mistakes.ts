@@ -1,4 +1,5 @@
-import { Attempt, Question } from '@/lib/db';
+import { Attempt, Question, Transcription } from '@/lib/db';
+import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from './outcome';
 
 /**
  * WHAT THE STUDENT ACTUALLY GOT WRONG, per objective, folded out of attempts.
@@ -25,7 +26,12 @@ export interface Mistakes {
 export async function loadMistakes(studentId: string, now = new Date()): Promise<Mistakes> {
   const attempts = await Attempt.find({ student_id: studentId })
     .sort({ ts: 1 })
-    .lean<{ question_id: unknown; rubric_awarded: string[]; ts: Date }[]>();
+    .lean<{ _id: unknown; question_id: unknown; rubric_awarded: string[]; correct: boolean; ts: Date }[]>();
+  const reads = await Transcription.find({ attempt_id: { $in: attempts.map((a) => a._id) } })
+    .select('attempt_id legible marker_version method_marks')
+    .lean<(OutcomeRead & { attempt_id: unknown })[]>();
+  const takes = new Map<string, OutcomeRead[]>();
+  for (const r of reads) takes.set(String(r.attempt_id), [...(takes.get(String(r.attempt_id)) ?? []), r]);
 
   const cutoff = new Date(now.getTime() - REVISIT_DELAY_DAYS * 24 * 60 * 60 * 1000);
   const attemptedIds = new Set<string>();
@@ -39,27 +45,22 @@ export async function loadMistakes(studentId: string, now = new Date()): Promise
       continue;
     }
     const q = await Question.findById(a.question_id)
-      .select('parts rubric')
-      .lean<{
-        parts?: { label: string; slots?: { label: string; objective_id?: string; response_mode?: string }[] }[];
-        rubric?: { code: string; slot_ref: string; mark_value: number }[];
-      } | null>();
+      .select('marks profile parts rubric')
+      .lean<(OutcomeQuestion & { parts?: { label: string; slots?: { label: string; objective_id?: string }[] }[] }) | null>();
     if (!q) continue;
 
     const objectiveOf = new Map<string, string>();
     for (const p of q.parts ?? []) {
       for (const slot of p.slots ?? []) {
-        // Self-marked work is not marked here, so it cannot be "lost" here.
-        if ((slot.response_mode ?? 'answer') !== 'answer') continue;
         if (slot.objective_id) objectiveOf.set(`${p.label}.${slot.label}`, slot.objective_id);
       }
     }
 
-    const awarded = new Set(a.rubric_awarded);
-    for (const row of q.rubric ?? []) {
+    // Only a WITHHELD row is a loss: an unassessed one was never judged.
+    for (const row of attemptOutcome(a, q, takes.get(String(a._id)) ?? []).rows) {
       const objective = objectiveOf.get(row.slot_ref);
-      if (!objective) continue;
-      if (awarded.has(row.code)) {
+      if (!objective || row.state === 'unassessed') continue;
+      if (row.state === 'awarded') {
         // Got it right SINCE getting it wrong: nothing to revisit. Attempts are
         // read oldest-first, so a later success clears an earlier loss.
         lost.set(objective, 0);
