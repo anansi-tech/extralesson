@@ -30,6 +30,8 @@ import { constructActs, figureGivesAnswer } from '@/lib/targets/construct';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 import type { ModuleNumber, ProfileMarks } from '@/lib/types';
 
+const PARTS_IN_WORDS: Record<number, string> = { 2: 'two', 3: 'three', 4: 'four' };
+
 export const metadata = { title: 'Session — ExtraLesson' };
 export const dynamic = 'force-dynamic';
 
@@ -796,7 +798,7 @@ export default async function SessionPage({
             and the minutes are what make the marks mean something. */}
         <p className="mt-1 text-[12px] leading-snug text-dim">
           {session.mode === 'first' ? (
-            <>One short {paperName} question · {marksTotal} marks. Work it on paper, then photograph the page.</>
+            <>One {paperName} question, {PARTS_IN_WORDS[(question.parts ?? []).length] ?? (question.parts ?? []).length} parts.</>
           ) : (
             <>
               {total === 1 ? 'One' : total} whole {paperName} {total === 1 ? 'question' : 'questions'} ·{' '}

@@ -91,7 +91,7 @@ export default async function LandingPage() {
             <>
               <Link className="btn" href="/study/login">
                 Mark one question free
-                <small>NO CARD · NINETY SECONDS · ANY PHONE WITH A CAMERA</small>
+                <small>NO CARD · ONE REAL QUESTION · ANY PHONE WITH A CAMERA</small>
               </Link>
               <a className="authlink herolink" href="#offer">
                 Full access — {LANDING.price}
