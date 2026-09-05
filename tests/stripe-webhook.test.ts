@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import {
   REPLAY_TOLERANCE_S,
   emailFromSession,
+  paymentLinkAllowlist,
+  scopeOfSession,
   sittingFromLink,
   verifyStripeSignature,
 } from '@/lib/stripe-webhook';
@@ -129,5 +131,29 @@ describe('sittingFromLink', () => {
 
   it('refuses a sitting that is not one of ours', () => {
     expect(sittingFromLink({ payment_link: 'p' }, 'p=may-2029')).toBeNull();
+  });
+});
+
+describe('scopeOfSession — ours, paid, and a payment', () => {
+  const ours = paymentLinkAllowlist(' plink_a, plink_b ,, ');
+  const paid = { payment_link: 'plink_a', mode: 'payment', payment_status: 'paid' };
+
+  it('accepts a paid payment-mode session from one of our links', () => {
+    expect(scopeOfSession(paid, ours)).toEqual({ ok: true });
+    expect(scopeOfSession({ ...paid, payment_link: 'plink_b' }, ours)).toEqual({ ok: true });
+  });
+
+  it('refuses another product’s link, and a session with none', () => {
+    expect(scopeOfSession({ ...paid, payment_link: 'plink_cognicare' }, ours)).toEqual({ ok: false, reason: 'link-not-ours' });
+    expect(scopeOfSession({ mode: 'payment', payment_status: 'paid' }, ours)).toEqual({ ok: false, reason: 'no-link' });
+  });
+
+  it('refuses a subscription, and a session not yet paid', () => {
+    expect(scopeOfSession({ ...paid, mode: 'subscription' }, ours)).toEqual({ ok: false, reason: 'not-payment-mode' });
+    expect(scopeOfSession({ ...paid, payment_status: 'unpaid' }, ours)).toEqual({ ok: false, reason: 'not-paid' });
+  });
+
+  it('an empty allowlist refuses everything', () => {
+    expect(scopeOfSession(paid, paymentLinkAllowlist(undefined))).toEqual({ ok: false, reason: 'link-not-ours' });
   });
 });

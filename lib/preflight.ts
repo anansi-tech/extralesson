@@ -2,6 +2,8 @@
  * Three of these fail silently (ROUND_3 §1): without the payment link a landing
  * page renders and cannot be bought from, without ADMIN_EMAILS the operator is
  * locked out of /admin/access, without the webhook secret every delivery 400s.
+ * A fourth fails loudly but wrongly: without the allowlist every payment is
+ * refused as another product's (ROUND_6 Task 2).
  */
 export const REQUIRED_ENV = [
   'MONGODB_URI',
@@ -10,6 +12,7 @@ export const REQUIRED_ENV = [
   'NEXT_PUBLIC_STRIPE_PAYMENT_LINK',
   'ADMIN_EMAILS',
   'STRIPE_WEBHOOK_SECRET',
+  'STRIPE_PAYMENT_LINKS',
 ] as const;
 
 /**

@@ -98,3 +98,31 @@ export function sittingFromLink(
   }
   return null;
 }
+
+/**
+ * THE STRIPE ACCOUNT IS SHARED ACROSS ANANSI PRODUCTS (ROUND_6 Task 2): a
+ * signed, genuine checkout can be for something else entirely. Only a session
+ * from one of OUR Payment Links, in payment mode, and actually paid, is ours to
+ * grant. Everything else is acknowledged and logged, never granted.
+ */
+export const GRANTING_EVENTS = new Set(['checkout.session.completed', 'checkout.session.async_payment_succeeded']);
+
+export type ScopeRefusal = 'no-link' | 'link-not-ours' | 'not-payment-mode' | 'not-paid';
+
+export function paymentLinkAllowlist(value: string | undefined): Set<string> {
+  return new Set((value ?? '').split(',').map((s) => s.trim()).filter(Boolean));
+}
+
+export function scopeOfSession(
+  session: Record<string, unknown>,
+  allowlist: Set<string>,
+): { ok: true } | { ok: false; reason: ScopeRefusal } {
+  const link = typeof session.payment_link === 'string' ? session.payment_link : null;
+  if (!link) return { ok: false, reason: 'no-link' };
+  if (!allowlist.has(link)) return { ok: false, reason: 'link-not-ours' };
+  if (session.mode !== 'payment') return { ok: false, reason: 'not-payment-mode' };
+  // A delayed payment method completes the session before the money arrives;
+  // Stripe sends async_payment_succeeded once it has, and that is when we grant.
+  if (session.payment_status !== 'paid') return { ok: false, reason: 'not-paid' };
+  return { ok: true };
+}

@@ -1,5 +1,5 @@
 import { dbConnect, Payment, Student } from '@/lib/db';
-import { emailFromSession, sittingFromLink, verifyStripeSignature } from '@/lib/stripe-webhook';
+import { GRANTING_EVENTS, emailFromSession, paymentLinkAllowlist, scopeOfSession, sittingFromLink, verifyStripeSignature } from '@/lib/stripe-webhook';
 import { grantFromPayment } from '@/lib/grant-from-payment';
 
 export const runtime = 'nodejs';
@@ -24,8 +24,16 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const { event } = verified;
-  if (event.type !== 'checkout.session.completed') {
+  if (!GRANTING_EVENTS.has(event.type)) {
     return Response.json({ ignored: event.type }, { status: 200 });
+  }
+
+  // Scoped before anything is written: a payment for another Anansi product,
+  // a subscription, or a session not yet paid is not ours to grant.
+  const scope = scopeOfSession(event.data.object, paymentLinkAllowlist(process.env.STRIPE_PAYMENT_LINKS));
+  if (!scope.ok) {
+    console.warn(`[stripe] ${event.id} refused: ${scope.reason} (link ${String(event.data.object.payment_link ?? 'none')})`);
+    return Response.json({ refused: scope.reason }, { status: 200 });
   }
 
   await dbConnect();

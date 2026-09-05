@@ -20,6 +20,7 @@ import {
 const full = (): Env => ({
   ...Object.fromEntries(REQUIRED_ENV.map((k) => [k, 'set'])),
   NEXT_PUBLIC_STRIPE_PAYMENT_LINK: 'https://buy.stripe.com/14A3cx0IRfZ05sW7n04c806',
+  STRIPE_PAYMENT_LINKS: 'plink_test',
 });
 
 describe('missingEnv', () => {

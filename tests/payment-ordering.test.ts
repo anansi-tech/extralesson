@@ -29,14 +29,20 @@ function checkoutBody(args: {
   studentField?: string;
   payerEmail?: string;
   link?: string;
+  type?: string;
+  mode?: string;
+  payment_status?: string;
 }) {
   const custom_fields = args.studentField ? [{ text: { value: args.studentField } }] : [];
   return JSON.stringify({
     id: args.id,
-    type: 'checkout.session.completed',
+    type: args.type ?? 'checkout.session.completed',
     data: {
       object: {
+        id: `cs_${args.id}`,
         payment_link: args.link ?? 'plink_founding',
+        mode: args.mode ?? 'payment',
+        payment_status: args.payment_status ?? 'paid',
         amount_total: 2500,
         currency: 'usd',
         custom_fields,
@@ -59,6 +65,8 @@ beforeAll(async () => {
   // Mapped links are EVIDENCE only. One is mapped here, deliberately
   // disagreeing with the registration, so the note can be asserted.
   process.env.STRIPE_LINK_SITTINGS = `plink_january=${OTHER_SITTING}`;
+  // Ours, and only ours: the account is shared with other Anansi products.
+  process.env.STRIPE_PAYMENT_LINKS = 'plink_founding, plink_january';
   await mongoose.connect(process.env.MONGODB_URI);
   ({ POST } = await import('@/app/api/stripe/webhook/route'));
   ({ Student, Payment } = await import('@/lib/db'));
@@ -313,6 +321,43 @@ describe('10. a bad signature records nothing', () => {
     });
     expect((await POST(tampered)).status).toBe(400);
     expect(await Payment.countDocuments()).toBe(0);
+  });
+});
+
+describe('11. a payment for another Anansi product is not ours (ROUND_6 Task 2)', () => {
+  it('acknowledges a Cognicare session and grants nothing, writing nothing', async () => {
+    const email = 'cognicare-buyer@test.invalid';
+    await makeStudent(email);
+    const res = await POST(signed(checkoutBody({ id: 'evt_11', studentField: email, link: 'plink_cognicare' })));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ refused: 'link-not-ours' });
+    expect(await accessOf(email)).toBeUndefined();
+    expect(await Payment.countDocuments()).toBe(0);
+  });
+
+  it('refuses a session that is not in payment mode, or carries no link', async () => {
+    const email = 'subscription@test.invalid';
+    await makeStudent(email);
+    expect(await (await POST(signed(checkoutBody({ id: 'evt_11b', studentField: email, mode: 'subscription' })))).json()).toEqual({ refused: 'not-payment-mode' });
+    const noLink = JSON.parse(checkoutBody({ id: 'evt_11c', studentField: email }));
+    delete noLink.data.object.payment_link;
+    expect(await (await POST(signed(JSON.stringify(noLink)))).json()).toEqual({ refused: 'no-link' });
+    expect(await accessOf(email)).toBeUndefined();
+    expect(await Payment.countDocuments()).toBe(0);
+  });
+
+  it('holds a delayed payment until Stripe says it is paid', async () => {
+    const email = 'bank-transfer@test.invalid';
+    await makeStudent(email);
+    const completed = await POST(signed(checkoutBody({ id: 'evt_11d', studentField: email, payment_status: 'unpaid' })));
+    expect(await completed.json()).toEqual({ refused: 'not-paid' });
+    expect(await accessOf(email)).toBeUndefined();
+
+    const paid = await POST(
+      signed(checkoutBody({ id: 'evt_11e', studentField: email, type: 'checkout.session.async_payment_succeeded', payment_status: 'paid' })),
+    );
+    expect(await paid.json()).toEqual({ matched: true });
+    expect((await accessOf(email))?.sitting).toBe(REGISTERED);
   });
 });
 
