@@ -115,14 +115,26 @@ function stickSegments(arrangement: Arrangement, n: number): Seg[] {
   return segs.slice(0, n);
 }
 
-const W = 640;
-const H = 260;
-const PAD = 30;
+// Sized for a phone: 340 units across with 15-unit labels is legible at
+// 227px, which is what a 320px screen leaves inside the card, so the frame
+// never scrolls. Three or four figures take two rows of two rather than one
+// row of four.
+const W = 340;
+const PAD = 16;
+const LABEL = 15;
+const ROW_H = 150;
+const PER_ROW = 2;
+
+function grid(nFig: number) {
+  const cols = Math.min(nFig, PER_ROW);
+  const rows = Math.ceil(nFig / cols);
+  return { cols, rows, slotW: (W - 2 * PAD) / cols, H: rows * ROW_H + 10 };
+}
 
 function renderSvg(p: PatternFigureParams): string {
   const nFig = p.figure_numbers.length;
-  const slotW = (W - 2 * PAD) / nFig;
-  const bottom = H - 55;
+  const { cols, slotW, H } = grid(nFig);
+  const rowBottom = (row: number) => 10 + (row + 1) * ROW_H - 38;
 
   if (p.kind === 'concentric-circles') return renderCircles(p);
 
@@ -146,14 +158,17 @@ function renderSvg(p: PatternFigureParams): string {
   for (const f of figures) {
     const w = Math.max(...f.xs) - Math.min(...f.xs);
     const h = Math.max(...f.ys) - Math.min(...f.ys);
-    if (w > 0) u = Math.min(u, (slotW - 28) / w);
-    if (h > 0) u = Math.min(u, (bottom - PAD - 10) / h);
+    if (w > 0) u = Math.min(u, (slotW - 24) / w);
+    if (h > 0) u = Math.min(u, (ROW_H - 60) / h);
   }
   u = Math.max(u, 3);
 
   const parts: string[] = [svgOpen(W, H)];
   figures.forEach((f, i) => {
-    const cx = PAD + slotW * (i + 0.5);
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const cx = PAD + slotW * (col + 0.5);
+    const bottom = rowBottom(row);
     const minX = Math.min(...f.xs);
     const maxX = Math.max(...f.xs);
     const minY = Math.min(...f.ys);
@@ -165,7 +180,7 @@ function renderSvg(p: PatternFigureParams): string {
     for (const d of f.dots) {
       parts.push(`<circle cx="${round(px(d[0]))}" cy="${round(py(d[1]))}" r="${round(Math.min(4, u * 0.3))}" fill="${INK}" />`);
     }
-    parts.push(text(cx, H - 18, `Figure ${p.figure_numbers[i]}`, { size: 13 }));
+    parts.push(text(cx, bottom + 24, `Figure ${p.figure_numbers[i]}`, { size: LABEL }));
     parts.push('</g>');
   });
   parts.push('</svg>');
@@ -184,14 +199,14 @@ export function circleDotCount(figureNumber: number): number {
 
 function renderCircles(p: PatternFigureParams): string {
   const nFig = p.figure_numbers.length;
-  const slotW = (W - 2 * PAD) / nFig;
+  const { cols, slotW, H } = grid(nFig);
   const maxRings = Math.max(...p.figure_numbers);
-  const u = Math.min((slotW - 20) / (2 * maxRings), (H - 70) / (2 * maxRings));
-  const cy = (H - 45) / 2 + 10;
+  const u = Math.min((slotW - 20) / (2 * maxRings), (ROW_H - 60) / (2 * maxRings));
 
   const parts: string[] = [svgOpen(W, H)];
   p.figure_numbers.forEach((fig, i) => {
-    const cx = PAD + slotW * (i + 0.5);
+    const cx = PAD + slotW * ((i % cols) + 0.5);
+    const cy = 10 + Math.floor(i / cols) * ROW_H + (ROW_H - 40) / 2;
     const rings = ringsFor(fig);
     const outer = rings * u;
     parts.push(`<g data-figure="${fig}">`);
@@ -216,7 +231,7 @@ function renderCircles(p: PatternFigureParams): string {
     for (let k = 1; k <= rings; k++) {
       parts.push(dot(cx + k * u, cy), dot(cx - k * u, cy), dot(cx, cy + k * u), dot(cx, cy - k * u));
     }
-    parts.push(text(cx, H - 18, `Figure ${fig}`, { size: 13 }));
+    parts.push(text(cx, cy + (ROW_H - 40) / 2 + 22, `Figure ${fig}`, { size: LABEL }));
     parts.push('</g>');
   });
   parts.push('</svg>');

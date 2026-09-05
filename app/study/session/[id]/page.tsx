@@ -24,7 +24,7 @@ import QuestionCard, { type CardQuestion } from './question-card';
 import type { ReadResult } from './capture';
 import { MAX_TAKES } from '@/lib/grade/transcribe';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
-import { schemeLine } from '@/lib/grade/reason';
+import { forStudent, schemeLine } from '@/lib/grade/reason';
 import { roundingOf } from '@/lib/grade/rounding';
 import { constructActs, figureGivesAnswer } from '@/lib/targets/construct';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
@@ -604,15 +604,17 @@ export default async function SessionPage({
           const rounding = roundingOf({ answer_format: slot?.answer_format, prompts: [slot?.partPrompt, slot?.prompt], canonical: slot?.answer });
           const correct = answersEquivalentAny(answers[ref] ?? '', slot?.answer ?? '', slot?.accept, rounding);
           const line = correct ? undefined : schemeLine(question.rubric ?? [], ref);
-          return { label: ref, correct, reasonHtml: line ? renderMathHtml(line) : undefined };
+          return { label: ref, correct, reasonHtml: line ? renderMathHtml(forStudent(line)) : undefined };
         }),
         feedbackTitleHtml: 'Worked solution',
         feedbackHtml: renderMathHtml(question.worked_solution),
         isMisconception: false,
         // Same rule as actions.ts on the live path: the figure stands as the
         // construction only when the figure is the answer.
-        construction: constructActs(question.visual as never).length
-          ? {
+        construction:
+          constructActs(question.visual as never).length &&
+          (question.parts ?? []).some((p) => (p.slots ?? []).some((sl) => sl.response_mode === 'construct'))
+            ? {
               figureHtml: figureGivesAnswer(question.visual?.template as never)
                 ? (visualHtml ?? '')
                 : '',

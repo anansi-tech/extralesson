@@ -75,3 +75,24 @@ export function alreadyEarnedByMethod(
   }
   return [...codes];
 }
+
+/**
+ * THE SCHEME'S "dep": a form row pays for the FORM of a value, so it is
+ * earned only when the value row or a method row on the same slot is. A
+ * percentage sign on a wrong number is not a mark (smoke #2, fish-vendor R3).
+ */
+export function applyFormatDependency<D extends { code: string; awarded: boolean; reason: string }>(
+  decisions: D[],
+  rows: { code: string; slot_ref: string; for_format?: boolean }[],
+  settledAwarded: string[],
+): D[] {
+  const rowByCode = new Map(rows.map((r) => [r.code, r]));
+  const awarded = new Set([...settledAwarded, ...decisions.filter((d) => d.awarded).map((d) => d.code)]);
+  const carried = (slotRef: string) =>
+    rows.some((r) => r.slot_ref === slotRef && !r.for_format && awarded.has(r.code));
+  return decisions.map((d) => {
+    const row = rowByCode.get(d.code);
+    if (!row?.for_format || !d.awarded || carried(row.slot_ref)) return d;
+    return { ...d, awarded: false, reason: 'The form is right, but the value it is written on did not earn its mark.' };
+  });
+}

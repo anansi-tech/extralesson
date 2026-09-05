@@ -12,6 +12,9 @@ beforeAll(async () => {
   process.env.MONGODB_URI = mongod.getUri();
   await mongoose.connect(process.env.MONGODB_URI);
   db = await import('@/lib/db');
+  // Mongoose builds a model's indexes asynchronously on first use; a test that
+  // drops them before that build lands sees them come back mid-test.
+  await Promise.all([Transcription.init(), CapturedImage.init()]);
   ({ backfillReadKeys } = await import('@/lib/db/backfill-read-keys'));
 });
 

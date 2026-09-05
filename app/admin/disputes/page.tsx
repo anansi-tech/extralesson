@@ -90,9 +90,14 @@ export default async function DisputesPage() {
             {attempt && <p className="mt-1 font-mono text-[12px]">typed: {String(attempt.answer)}</p>}
 
             <div className="mt-3 font-mono text-[10px] uppercase tracking-widest text-dim">The row</div>
-            <p className="mt-1 text-[13px]">
+            <p className="question-prose mt-1 text-[13px]">
               <span className="font-mono text-[11px]">{d.code}</span>
-              {rubric && ` (${rubric.profile}, ${rubric.mark_value}) — ${rubric.criterion}`}
+              {rubric && (
+                <>
+                  {` (${rubric.profile}, ${rubric.mark_value}) — `}
+                  <span dangerouslySetInnerHTML={{ __html: renderMathHtml(rubric.criterion) }} />
+                </>
+              )}
             </p>
             <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-dim">The reason it was withheld</div>
             <p className="mt-1 border-l-3 border-red-pen bg-[#FDF1F0] px-2 py-1 text-[13px]">{row?.reason ?? 'row not on this read'}</p>

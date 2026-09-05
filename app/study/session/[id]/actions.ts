@@ -7,7 +7,7 @@ import { markMcq, markStructuredParts } from '@/lib/grade/mark';
 import { GRADER_VERSION, questionFingerprint } from '@/lib/grade/version';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
-import { missReason, schemeLine } from '@/lib/grade/reason';
+import { forStudent, missReason, schemeLine } from '@/lib/grade/reason';
 import { earnableByMethod } from '@/lib/grade/method-marks';
 import { readInputShape } from '@/lib/grade/input-shape';
 import { renderMathHtml } from '@/lib/katex';
@@ -153,7 +153,7 @@ export async function submitAnswer(input: {
       const given = inputByRef.get(s.ref);
       const slot = slotByRef2.get(s.ref);
       const line = s.correct ? undefined : schemeLine(question.rubric ?? [], s.ref) ?? missReason(given?.text ?? '', slot?.answer ?? '', given?.values);
-      return { label: s.ref, correct: s.correct, formWithheld: s.form_withheld, reasonHtml: line ? renderMathHtml(line) : undefined };
+      return { label: s.ref, correct: s.correct, formWithheld: s.form_withheld, reasonHtml: line ? renderMathHtml(forStudent(line)) : undefined };
     });
     storedAnswer = entered.map((a) => `(${a.label}) ${a.text}`).join('; ');
   }

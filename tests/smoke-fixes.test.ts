@@ -25,7 +25,7 @@ describe('(d) a wrong answer is told the scheme’s line for the slot', () => {
   });
 
   it('reaches the card as rendered HTML, so TeX in a criterion is set, not shown raw', () => {
-    expect(ACTIONS).toMatch(/reasonHtml: line \? renderMathHtml\(line\)/);
+    expect(ACTIONS).toMatch(/reasonHtml: line \? renderMathHtml\(forStudent\(line\)\)/);
     expect(ACTIONS).toMatch(/formatFeedbackHtml: result\.format_feedback \? renderMathHtml/);
     expect(CARD).toMatch(/__html: partFeedback\.reasonHtml/);
     expect(CARD).toMatch(/__html: feedback\.formatFeedbackHtml/);

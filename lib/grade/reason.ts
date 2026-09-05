@@ -39,6 +39,11 @@ export function schemeLine(
   return rubric.find((r) => r.slot_ref === ref && !r.for_format && !/\bCAO\b/.test(r.criterion))?.criterion;
 }
 
+/** The scheme says "their"; the student reading it is the one meant. */
+export function forStudent(schemeText: string): string {
+  return schemeText.replace(/[“"']their[”"']/g, 'your');
+}
+
 export function missReason(
   given: string,
   canonicalAnswer: string,

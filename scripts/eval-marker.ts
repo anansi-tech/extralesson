@@ -29,6 +29,7 @@ import { MARKER_VERSION } from '@/lib/grade/version';
 
 import { isFollowThrough } from '@/lib/prompts/mark-scheme';
 import { claimsFor } from '@/lib/grade/claim-template';
+import { applyFormatDependency } from '@/lib/grade/method-marks';
 
 const DIR = join(process.cwd(), 'design', 'golden');
 const GATE = 0.9;
@@ -267,13 +268,17 @@ async function main() {
           const canonical = Object.fromEntries(
             (q.parts ?? []).flatMap((p: any) => (p.slots ?? []).map((s: any) => [`${p.label}.${s.label}`, s.answer ?? ''])),
           );
-          decisions = (await markMethod({
-            rows: claimsFor(rows, e.studentAnswers, canonical),
-            workingByPart,
-            typedAnswers: e.studentAnswers,
-            workedSolution: q.worked_solution,
-            questionStem: `${q.stimulus ?? ''} ${q.stem}`.trim(),
-          })).decisions;
+          decisions = applyFormatDependency(
+            (await markMethod({
+              rows: claimsFor(rows, e.studentAnswers, canonical),
+              workingByPart,
+              typedAnswers: e.studentAnswers,
+              workedSolution: q.worked_solution,
+              questionStem: `${q.stimulus ?? ''} ${q.stem}`.trim(),
+            })).decisions,
+            q.rubric ?? [],
+            [],
+          );
         } catch {
           /* counted as disagreement below */
         }
