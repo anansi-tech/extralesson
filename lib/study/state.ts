@@ -21,6 +21,7 @@ export interface TopicState {
   title: string;
   module: ModuleNumber;
   order: number;
+  /** Over the objectives seen; 0 when none has been, which `band` says. */
   mastery: number;
   band: MasteryBand;
 }
@@ -51,10 +52,11 @@ interface LeanBlueprint {
 }
 
 export interface AttemptRow {
+  /** ONE objective per row (ROUND_6 Task 6): the slot's own, so (a) right and (b) wrong move apart. */
   objective_ids: string[];
-  /** Earned over assessed, from lib/study/outcome.ts — the one fold. */
+  /** Earned over assessed on the rows whose slot carries this objective — the one fold. */
   score: number;
-  /** Marks assessed on this attempt — the evidence it is worth (§2). */
+  /** Marks assessed for this objective on this attempt — the evidence it is worth (§2). */
   marks: number;
   ts: number;
 }
@@ -66,7 +68,7 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
     .populate('question_id', 'objective_ids marks profile parts rubric')
     .lean<
       {
-        question_id: (OutcomeQuestion & { objective_ids: string[] }) | null;
+        question_id: (OutcomeQuestion & { objective_ids: string[]; parts?: { label: string; slots?: { label: string; response_mode?: string; objective_id?: string }[] }[] }) | null;
         rubric_awarded: string[];
         correct: boolean;
         ts: Date;
@@ -86,16 +88,41 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
   for (const a of attempts) {
     if (!a.question_id) continue;
     const outcome = attemptOutcome(a, a.question_id, takesByAttempt.get(String(a._id)) ?? []);
-    // An attempt with nothing assessed is no evidence either way.
-    if (outcome.assessed === 0) continue;
-    rows.push({
-      objective_ids: a.question_id.objective_ids,
-      score: outcome.earned / outcome.assessed,
-      marks: outcome.assessed,
-      ts: new Date(a.ts).getTime(),
-    });
+    for (const [objective, marks] of attributeBySlot(outcome, a.question_id)) {
+      // An objective with nothing assessed is no evidence either way.
+      if (marks.assessed === 0) continue;
+      rows.push({ objective_ids: [objective], score: marks.earned / marks.assessed, marks: marks.assessed, ts: new Date(a.ts).getTime() });
+    }
   }
   return rows;
+}
+
+/**
+ * PER SLOT, NOT PER QUESTION (ROUND_6 Task 6): each assessed row counts toward
+ * the objective its slot names, so a question with (a) right and (b) wrong
+ * moves those two objectives in opposite directions. A row whose slot names
+ * no objective falls back to the question's first, which is what every row
+ * did before.
+ */
+export function attributeBySlot(
+  outcome: { rows: { slot_ref: string; mark_value: number; state: string }[] },
+  question: { objective_ids: string[]; parts?: { label: string; slots?: { label: string; objective_id?: string }[] }[] },
+): Map<string, { earned: number; assessed: number }> {
+  const objectiveOf = new Map<string, string>();
+  for (const p of question.parts ?? []) {
+    for (const s of p.slots ?? []) if (s.objective_id) objectiveOf.set(`${p.label}.${s.label}`, s.objective_id);
+  }
+  const out = new Map<string, { earned: number; assessed: number }>();
+  for (const r of outcome.rows) {
+    if (r.state === 'unassessed') continue;
+    const objective = objectiveOf.get(r.slot_ref) ?? question.objective_ids[0];
+    if (!objective) continue;
+    const m = out.get(objective) ?? { earned: 0, assessed: 0 };
+    m.assessed += r.mark_value;
+    if (r.state === 'awarded') m.earned += r.mark_value;
+    out.set(objective, m);
+  }
+  return out;
 }
 
 export function computeStudyState(
@@ -109,16 +136,14 @@ export function computeStudyState(
   const topicStates: TopicState[] = topics
     .sort((a, b) => a.module - b.module || a.order - b.order)
     .map((t) => {
-      const ids = t.objectives.map((o) => o.id);
-      const touched = ids.some((id) => perObjective.has(id));
-      const mastery = topicMastery(ids, perObjective);
+      const mastery = topicMastery(t.objectives.map((o) => o.id), perObjective);
       return {
         code: t.code,
         title: t.title,
         module: t.module,
         order: t.order,
-        mastery,
-        band: touched ? bandFor(mastery) : 'NOT_STARTED',
+        mastery: mastery ?? 0,
+        band: bandFor(mastery),
       };
     });
 
@@ -127,7 +152,7 @@ export function computeStudyState(
   for (const m of [1, 2, 3] as const) {
     const weights = topicWeights(blueprints, m);
     modMastery[m] = moduleMastery(
-      topicStates.filter((t) => t.module === m).map((t) => ({ code: t.code, mastery: t.mastery })),
+      topicStates.filter((t) => t.module === m).map((t) => ({ code: t.code, mastery: t.band === 'NOT_STARTED' ? null : t.mastery })),
       weights,
     );
     for (const t of topics.filter((t) => t.module === m)) {

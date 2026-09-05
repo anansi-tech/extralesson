@@ -45,12 +45,14 @@ export function masteryByObjective(attempts: AttemptScore[]): Map<string, number
   return out;
 }
 
-// Topic mastery: mean over ALL the topic's objectives, counting untouched
-// objectives as 0. Conservative by design — "honest arithmetic" (§6.6).
-export function topicMastery(objectiveIds: string[], perObjective: Map<string, number>): number {
-  if (objectiveIds.length === 0) return 0;
-  const sum = objectiveIds.reduce((s, id) => s + (perObjective.get(id) ?? 0), 0);
-  return sum / objectiveIds.length;
+// Topic mastery: mean over the objectives the student has been SEEN on. An
+// unseen objective is unknown, not zero (ROUND_6 Task 6): counting it as a
+// fail dragged every topic down for as long as one objective went unasked.
+// Null when nothing in the topic has been seen; the band says NOT_STARTED.
+export function topicMastery(objectiveIds: string[], perObjective: Map<string, number>): number | null {
+  const seen = objectiveIds.filter((id) => perObjective.has(id));
+  if (seen.length === 0) return null;
+  return seen.reduce((s, id) => s + perObjective.get(id)!, 0) / seen.length;
 }
 
 export interface TopicWeight {
@@ -81,14 +83,16 @@ export function topicWeights(
   return weights;
 }
 
-// Module mastery: blueprint-weighted rollup of its topics (§6.5).
+// Module mastery: blueprint-weighted rollup of the topics that have been
+// seen (§6.5). A topic with nothing seen is unknown and stays out of the mean.
 export function moduleMastery(
-  topics: { code: string; mastery: number }[],
+  topics: { code: string; mastery: number | null }[],
   weights: Map<string, number>,
 ): number {
   let num = 0;
   let den = 0;
   for (const t of topics) {
+    if (t.mastery === null) continue;
     const w = weights.get(t.code) ?? 0;
     num += w * t.mastery;
     den += w;

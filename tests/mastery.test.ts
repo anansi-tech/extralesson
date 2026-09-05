@@ -66,10 +66,14 @@ describe('masteryByObjective', () => {
   });
 });
 
-describe('topicMastery', () => {
-  it('counts untouched objectives as zero', () => {
+describe('topicMastery — over what has been seen', () => {
+  it('leaves an unseen objective out rather than counting it as a fail', () => {
     const per = new Map([['M1.1.1', 1]]);
-    expect(topicMastery(['M1.1.1', 'M1.1.2'], per)).toBe(0.5);
+    expect(topicMastery(['M1.1.1', 'M1.1.2'], per)).toBe(1);
+  });
+  it('is unknown, not zero, when nothing in the topic has been seen', () => {
+    expect(topicMastery(['M1.1.1', 'M1.1.2'], new Map())).toBeNull();
+    expect(bandFor(topicMastery(['M1.1.1'], new Map()))).toBe('NOT_STARTED');
   });
 });
 
@@ -112,5 +116,10 @@ describe('topicWeights + moduleMastery — blueprint-weighted rollup', () => {
 
   it('returns 0 when no weights match', () => {
     expect(moduleMastery([{ code: 'X', mastery: 1 }], new Map())).toBe(0);
+  });
+
+  it('leaves an unseen topic out of the module mean', () => {
+    const w = topicWeights(blueprints, 1);
+    expect(moduleMastery([{ code: 'T-A', mastery: 0.5 }, { code: 'T-B', mastery: null }], w)).toBeCloseTo(0.5);
   });
 });

@@ -121,7 +121,8 @@ describe('one score fold — ROUND_6 Task 1', () => {
     const id = String(STUDENT);
     expect(await loaders.loadHistory(id)).toMatchObject([{ earned: 3, marks: 3, unassessed: 1 }]);
     expect(await loaders.loadReviewable(id)).toMatchObject([{ earned: 3, marks: 3, unassessed: 1 }]);
-    expect(await loaders.loadAttemptRows(id)).toMatchObject([{ score: 1, marks: 3 }]);
+    // One row per objective (ROUND_6 Task 6): 2 marks on a's objective, 1 on b's; c's is unassessed and absent.
+    expect((await loaders.loadAttemptRows(id)).map((r) => [r.objective_ids[0], r.score, r.marks])).toEqual([['M1.1.1', 1, 2], ['M1.1.2', 1, 1]]);
     expect((await loaders.loadProgress(id)).marksAssessed).toBe(3);
     const mistakes = await loaders.loadMistakes(id, new Date(Date.now() + 4 * DAYS));
     expect([...mistakes.lostByObjective.entries()]).toEqual([]);
@@ -143,7 +144,8 @@ describe('one score fold — ROUND_6 Task 1', () => {
     // R1 from the page, R3 from the grader; R2 and R5 withheld; nothing unassessed.
     expect(await loaders.loadHistory(id)).toMatchObject([{ earned: 2, marks: 4, unassessed: 0 }]);
     expect(await loaders.loadReviewable(id)).toMatchObject([{ earned: 2, marks: 4, photographed: true }]);
-    expect(await loaders.loadAttemptRows(id)).toMatchObject([{ score: 0.5, marks: 4 }]);
+    // Per objective: a's R1 earned of 2, b's R3 earned, c's R5 withheld.
+    expect((await loaders.loadAttemptRows(id)).map((r) => [r.objective_ids[0], r.score, r.marks])).toEqual([['M1.1.1', 0.5, 2], ['M1.1.2', 1, 1], ['M1.2.1', 0, 1]]);
     const mistakes = await loaders.loadMistakes(id, new Date(Date.now() + 4 * DAYS));
     expect(Object.fromEntries(mistakes.lostByObjective)).toEqual({ 'M1.1.1': 1, 'M1.2.1': 1 });
   });

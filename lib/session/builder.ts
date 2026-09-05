@@ -166,6 +166,8 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
           ?
             c.objective_ids.reduce((sum, id) => sum + (lostByObjective?.get(id) ?? 0), 0)
           : c.objective_ids.reduce((sum, id) => {
+              // Unseen is unknown, and unknown is where the marks may be: it
+              // scores as the full deficit, never as a measured zero.
               const mastery = perObjectiveMastery.get(id) ?? 0;
               // A diagnostic is ranking topics it knows nothing about, so
               // weighting by an unmeasured mastery would rank noise. Blueprint

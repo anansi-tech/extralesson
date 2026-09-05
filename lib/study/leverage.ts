@@ -29,12 +29,15 @@ export function topicLeverage(state: StudyState, targetModules: number[]): Lever
     .map((t: TopicState) => {
       const w = state.topicWeightByPrefix.get(`M${t.module}.${t.order}.`) ?? 0;
       const shareOfModule = w / Math.max(1e-9, weightTotals.get(t.module) ?? 1);
+      // An unseen topic is unknown, and unknown is high-leverage: the whole
+      // of its share is still on the table (ROUND_6 Task 6).
+      const deficit = t.band === 'NOT_STARTED' ? 1 : 1 - t.mastery;
       return {
         code: t.code,
         title: t.title,
         module: t.module,
         mastery: t.mastery,
-        pointsAvailable: (1 - t.mastery) * shareOfModule * 80 / moduleCount,
+        pointsAvailable: deficit * shareOfModule * 80 / moduleCount,
       };
     })
     .sort((a, b) => b.pointsAvailable - a.pointsAvailable);
