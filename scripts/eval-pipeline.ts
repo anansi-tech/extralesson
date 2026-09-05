@@ -13,6 +13,7 @@ import { provenance, writeResults } from './eval-provenance';
 import { dbConnect, Attempt, CapturedImage, PracticeSession, Question, Student, Transcription } from '@/lib/db';
 import { attemptOutcome } from '@/lib/study/outcome';
 import { markableSlots } from '@/lib/grade/mark';
+import { supportedSlips } from '@/lib/grade/method-marks';
 
 const GOLDEN = join(process.cwd(), 'design', 'golden');
 const CASES = join(process.cwd(), 'calibration', 'reads');
@@ -47,19 +48,20 @@ async function main() {
   const { markWorking } = await import('@/app/study/session/[id]/mark-working');
 
   interface RowVerdict { code: string; cao: boolean; truth: boolean; got: boolean | null }
-  const rows: { id: string; read: boolean; lines: number; rows: number; agree: number; cao_false: number; method_false: number; verdicts: RowVerdict[]; earned: number; assessed: number; unassessed: number; note?: string }[] = [];
+  interface SlipReport { part: string; quote: string; sentence: string; supported: boolean }
+  const rows: { id: string; read: boolean; lines: number; rows: number; agree: number; cao_false: number; method_false: number; verdicts: RowVerdict[]; slips: SlipReport[]; earned: number; assessed: number; unassessed: number; note?: string }[] = [];
   try {
     for (const p of pages) {
       const q = await Question.findById(p.question_id).lean<any>();
       if (!q) {
-        rows.push({ id: p.id, read: false, lines: 0, rows: 0, agree: 0, cao_false: 0, method_false: 0, verdicts: [], earned: 0, assessed: 0, unassessed: 0, note: 'question not in the bank' });
+        rows.push({ id: p.id, read: false, lines: 0, rows: 0, agree: 0, cao_false: 0, method_false: 0, verdicts: [], slips: [], earned: 0, assessed: 0, unassessed: 0, note: 'question not in the bank' });
         continue;
       }
       const session = await PracticeSession.create({ student_id: student._id, question_ids: [q._id], mode: 'adaptive' });
       const sessionId = String(session._id);
       const read = await readWorking({ sessionId, questionIndex: 0, contentType: 'image/jpeg', data: readFileSync(p.image).toString('base64') });
       if ('error' in read) {
-        rows.push({ id: p.id, read: false, lines: 0, rows: 0, agree: 0, cao_false: 0, method_false: 0, verdicts: [], earned: 0, assessed: 0, unassessed: 0, note: read.error });
+        rows.push({ id: p.id, read: false, lines: 0, rows: 0, agree: 0, cao_false: 0, method_false: 0, verdicts: [], slips: [], earned: 0, assessed: 0, unassessed: 0, note: read.error });
         continue;
       }
       // The typed answers are the reader's own prefill: what a student who
@@ -79,6 +81,9 @@ async function main() {
       });
       const marked = await markWorking(String(attempt._id));
       const reads = await Transcription.find({ attempt_id: attempt._id }).lean<any[]>();
+      // Every stored slip must quote a line on the read; markWorking drops the
+      // rest, so a stored unsupported slip is a defect in that guard.
+      const slips: SlipReport[] = (marked?.slips ?? []).map((s) => ({ ...s, supported: supportedSlips([s], read.transcription.lines.map((l) => l.text)).length === 1 }));
       const outcome = attemptOutcome({ rubric_awarded: [] }, q, reads);
       const truth = p.truth ?? [];
       // Per row, as the marker eval counts them: a false award on a CAO row is
@@ -100,6 +105,7 @@ async function main() {
         cao_false,
         method_false,
         verdicts,
+        slips,
         earned: outcome.earned,
         assessed: outcome.assessed,
         unassessed: outcome.unassessedMarks,
@@ -120,7 +126,9 @@ async function main() {
   for (const r of rows) {
     console.log(`   ${r.id.padEnd(10)} ${r.read ? `read ${r.lines} lines` : 'NOT READ'} · marker agreed ${r.agree}/${r.rows} rows · false awards CAO ${r.cao_false} / method ${r.method_false} · fold ${r.earned}/${r.assessed}, ${r.unassessed} unassessed${r.note ? ` · ${r.note}` : ''}`);
     for (const v of r.verdicts.filter((v) => v.got === true && !v.truth)) console.log(`      false award on ${v.cao ? 'CAO' : 'method'} row ${r.id}/${v.code}`);
+    for (const s of r.slips) console.log(`      slip (${s.part})${s.supported ? '' : ' UNSUPPORTED QUOTE'}: ${s.sentence}`);
   }
+  const unsupported = rows.reduce((n, r) => n + r.slips.filter((s) => !s.supported).length, 0);
   const judged = rows.filter((r) => r.rows > 0);
   const agree = judged.reduce((s, r) => s + r.agree, 0);
   const of = judged.reduce((s, r) => s + r.rows, 0);
@@ -130,9 +138,9 @@ async function main() {
   // code. Agreement is reported and written, not gated — over 28 rows one
   // marker flip moves it 3.6 points, and the marker has its own bar.
   // A CAO false award is the one thing the production path may never do.
-  const passes = rows.every((r) => r.read && !r.note) && caoFalse === 0;
-  const file = writeResults('eval-pipeline', { ...(await provenance()), pages: rows, agreement: of ? agree / of : null, cao_false: caoFalse, method_false: methodFalse, passes });
-  console.log(`   ${passes ? 'PASS' : 'BELOW GATE'} — every page read and marked, CAO false awards 0. Agreement ${of ? `${agree}/${of}` : 'n/a'}, method false awards ${methodFalse}, reported apart from the marker gate. results: ${file}`);
+  const passes = rows.every((r) => r.read && !r.note) && caoFalse === 0 && unsupported === 0;
+  const file = writeResults('eval-pipeline', { ...(await provenance()), pages: rows, agreement: of ? agree / of : null, cao_false: caoFalse, method_false: methodFalse, slips: rows.reduce((n, r) => n + r.slips.length, 0), unsupported_slips: unsupported, passes });
+  console.log(`   ${passes ? 'PASS' : 'BELOW GATE'} — every page read and marked, CAO false awards 0, unsupported slips ${unsupported}. Agreement ${of ? `${agree}/${of}` : 'n/a'}, method false awards ${methodFalse}, reported apart from the marker gate. results: ${file}`);
   await mongoose.disconnect();
   process.exit(passes ? 0 : 1);
 }

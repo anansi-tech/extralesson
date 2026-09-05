@@ -565,7 +565,7 @@ export default async function SessionPage({
     // can be marked again from here (ROUND_6 Task 1).
     const takes = await Transcription.find({ attempt_id: attempt._id, $or: [{ marker_version: { $exists: true } }, { 'marking.status': 'failed' }] })
       .sort({ take: 1 })
-      .select('lines legible notes method_marks marker_version take')
+      .select('lines legible notes method_marks slips marker_version take')
       .lean<
         {
           _id: unknown;
@@ -575,6 +575,7 @@ export default async function SessionPage({
           marker_version?: string;
           lines: { text: string; part_label?: string | null; confidence: number }[];
           method_marks?: { code: string; awarded: boolean; reason: string; mark_value: number }[];
+          slips?: { part: string; quote: string; sentence: string }[];
         }[]
       >();
     const disputes = await MarkDispute.find({ attempt_id: attempt._id })
@@ -612,6 +613,7 @@ export default async function SessionPage({
           awarded: m.awarded,
           reason: m.reason,
         })),
+        slips: t.slips ?? [],
       })),
       feedback: {
         attemptId: String(attempt._id),

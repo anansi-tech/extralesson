@@ -91,6 +91,11 @@ const TranscriptionSchema = new Schema({
     default: [],
   },
   marker_version: { type: String },
+  /** Where the working slipped, one per part, each quote verified against the read (ROUND_7 Task 1). */
+  slips: {
+    type: [new Schema({ part: { type: String, required: true }, quote: { type: String, required: true }, sentence: { type: String, required: true } }, { _id: false })],
+    default: [],
+  },
   /** Why the marker did not finish (ROUND_6 Task 1); cleared when a retry does. */
   marking: {
     type: new Schema(

@@ -19,8 +19,15 @@ export const MethodDecisionZ = z.object({
   needs_review: z.boolean().optional(),
 });
 
-export const MethodResultZ = z.object({ decisions: z.array(MethodDecisionZ) });
+/** Where the working went wrong, for one part: the line, quoted, and one sentence to the student (ROUND_7 Task 1). */
+export const SlipZ = z.object({
+  part: z.string(),
+  quote: z.string(),
+  sentence: z.string(),
+});
+export const MethodResultZ = z.object({ decisions: z.array(MethodDecisionZ), slips: z.array(SlipZ).optional() });
 export type MethodDecision = z.infer<typeof MethodDecisionZ>;
+export type Slip = z.infer<typeof SlipZ>;
 
 export interface MethodMarkArgs {
   /**
@@ -32,6 +39,8 @@ export interface MethodMarkArgs {
   workingByPart: Record<string, string[]>;
   /** What they typed, by slot ref — including slots these rows depend on. */
   typedAnswers: Record<string, string>;
+  /** Parts whose typed value was wrong: the marker names where the working slipped (ROUND_7 Task 1). */
+  slipParts?: string[];
   workedSolution: string;
   questionStem: string;
 }
@@ -119,6 +128,14 @@ Where you DID award, the reason quotes the line that earned it — for a row
 that names a result, the line where that result appears.
 
 confidence is your confidence in the DECISION.
+
+THE SLIP. For each part listed under SLIPS WANTED, return one slip: the part
+label, a QUOTE of the exact line on the page where the working went wrong,
+and ONE sentence to the student saying what went wrong on that line — "In
+'450 - 375 = 76' the subtraction is off by one." The quote
+must be a line you were shown, copied as written; a slip that quotes a line
+not on the page is thrown away. If you cannot point at the line, return no
+slip for that part.
 `;
 
 /** What the marker is told, hashed: a results file that names it can be compared with one that names another. */
@@ -127,10 +144,11 @@ export const promptHash = (): string =>
 
 export async function markMethod(args: MethodMarkArgs): Promise<{
   decisions: MethodDecision[];
+  slips: Slip[];
   usage: { input_tokens?: number; output_tokens?: number };
   model: string;
 }> {
-  const { rows, workingByPart, typedAnswers, workedSolution, questionStem } = args;
+  const { rows, workingByPart, typedAnswers, workedSolution, questionStem, slipParts = [] } = args;
 
   const rowText = rows
     .map((r) => {
@@ -168,11 +186,13 @@ export async function markMethod(args: MethodMarkArgs): Promise<{
       `WHAT THE STUDENT TYPED AS THEIR ANSWERS:\n${answers || '  (none recorded)'}\n\n` +
       `THE MARK SCHEME'S OWN SOLUTION (for reference):\n${workedSolution}\n\n` +
       `${MARK_SCHEME_CONVENTIONS}\n${RULES}\n\n` +
-      `Decide each row below. Return one decision per row, using its exact code.\n\n${rowText}`,
+      `Decide each row below. Return one decision per row, using its exact code.\n\n${rowText}` +
+      (slipParts.length ? `\n\nSLIPS WANTED for parts: ${slipParts.map((p) => `(${p})`).join(', ')}` : ''),
   });
 
   return {
     decisions: result.object.decisions,
+    slips: result.object.slips ?? [],
     usage: {
       input_tokens: result.usage?.inputTokens,
       output_tokens: result.usage?.outputTokens,

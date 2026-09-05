@@ -46,6 +46,12 @@ export function constructionRows(q: MethodMarkQuestion, awarded: string[]): Rubr
   return (q.rubric ?? []).filter((r) => !earned.has(r.code) && constructRefs.has(r.slot_ref));
 }
 
+/** A slip is kept only when its quoted line is on the page (ROUND_7 Task 1). */
+export function supportedSlips<S extends { quote: string }>(slips: S[], lines: string[]): S[] {
+  const page = flatLine(lines.join(' '));
+  return slips.filter((s) => flatLine(s.quote).length >= 2 && page.includes(flatLine(s.quote)));
+}
+
 /**
  * A MARKING IS ALL OR NOTHING (ROUND_6 Task 1): exactly one decision per row
  * asked for. A missing, repeated or unknown code is a failure to store as one,

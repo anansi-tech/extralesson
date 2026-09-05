@@ -86,6 +86,8 @@ export interface CardQuestion {
       marked: boolean;
       notes?: string;
       method: { code: string; awarded: boolean; reason: string }[];
+      /** Where the working slipped, per part; the first line under that part. */
+      slips?: { part: string; quote: string; sentence: string }[];
     }[];
   };
   rubricCodes: {
@@ -406,6 +408,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     ...(question.prior?.working ?? []).map((w) => ({ legible: w.legible, marker_version: w.marked ? 'marked' : undefined, method_marks: w.method })),
   ];
   const readExists = reads.length > 0;
+  // THE SLIP COMES FIRST (ROUND_7 Task 1): one sentence naming the line where
+  // the working went wrong, before any reason or code.
+  const slipFor = (part: string) =>
+    [...(feedback?.working?.slips ?? []), ...(question.prior?.working ?? []).flatMap((w) => w.slips ?? [])].find((s) => s.part === part)?.sentence;
   const outcome = attemptOutcome(
     { rubric_awarded: feedback?.rubric_awarded ?? [], correct: feedback?.correct },
     {
@@ -625,6 +631,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                           </div>
                           </div>
                           <div className={p.slots.length > 1 ? 'sm:ml-auto sm:basis-[62%]' : ''}>
+                            {partFeedback && !partFeedback.correct && slipFor(p.label) && (
+                              <p className="mt-1 font-hand text-[15px] leading-snug text-red-pen">{slipFor(p.label)}</p>
+                            )}
                             {partFeedback && !partFeedback.correct && partFeedback.reasonHtml && (
                               <p
                                 className="question-prose mt-1 border-l-3 border-red-pen bg-[#FDF1F0] px-2 py-1 text-[12px] leading-snug"

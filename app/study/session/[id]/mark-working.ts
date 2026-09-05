@@ -1,8 +1,8 @@
 import { Attempt, CapturedImage, LineRejected, PracticeSession, Question, Transcription } from '@/lib/db';
 import { markableSlots } from '@/lib/grade/mark';
 import { MAX_TAKES, linesForSlot, type TranscriptionResult } from '@/lib/grade/transcribe';
-import { earnableByMethod, constructionRows, alreadyEarnedByMethod, applyFormatDependency, requireEvidence, oneDecisionPerRow } from '@/lib/grade/method-marks';
-import { markMethod, type MethodDecision } from '@/lib/grade/mark-method';
+import { earnableByMethod, constructionRows, alreadyEarnedByMethod, applyFormatDependency, requireEvidence, oneDecisionPerRow, supportedSlips } from '@/lib/grade/method-marks';
+import { markMethod, type MethodDecision, type Slip } from '@/lib/grade/mark-method';
 import { MARKER_VERSION } from '@/lib/grade/version';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 import { claimsFor } from '@/lib/grade/claim-template';
@@ -18,6 +18,8 @@ export interface CaptureResult {
   takesLeft: number;
   method: { code: string; awarded: boolean; reason: string; mark_value: number }[];
   marksAdded: number;
+  /** Where the working slipped, per part, quote-verified; empty when nothing was found. */
+  slips: Slip[];
   /** The marker finished; the fold counts these decisions. */
   marked: boolean;
   /** Why it did not, when it did not. The stored text stands for a retry. */
@@ -95,6 +97,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
     notes: read.notes,
   };
   let decisions: MethodDecision[] = [];
+  let slips: Slip[] = [];
   let usage: { input_tokens?: number; output_tokens?: number } = {};
   let markerModel: string | undefined;
   if (unearned.length > 0) {
@@ -104,6 +107,10 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
       if (lines.length > 0) workingByPart[part.label] = lines;
     }
     const confirmed = splitStoredAnswer(String(attempt.answer), markableSlots(question.parts ?? []));
+    // A slip is asked for where the typed value was wrong and the part has lines.
+    const slipParts = (question.parts ?? [])
+      .filter((p) => workingByPart[p.label] && p.slots.some((s) => (s.response_mode ?? 'answer') === 'answer' && !attempt.rubric_awarded.some((c) => question.rubric?.find((r) => r.code === c)?.slot_ref === `${p.label}.${s.label}`)))
+      .map((p) => p.label);
     const canonical = Object.fromEntries(
       (question.parts ?? []).flatMap((p) => p.slots.map((s) => [`${p.label}.${s.label}`, s.answer ?? ''])),
     );
@@ -114,7 +121,9 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
         typedAnswers: confirmed,
         workedSolution: question.worked_solution ?? '',
         questionStem: `${question.stimulus ?? ''} ${question.stem}`.trim(),
+        slipParts,
       });
+      slips = supportedSlips(result.slips, transcription.lines.map((l) => l.text)).filter((s) => slipParts.includes(s.part));
       decisions = applyFormatDependency(
         requireEvidence(oneDecisionPerRow(result.decisions, unearned.map((r) => r.code)), transcription.lines.map((l) => l.text)),
         question.rubric ?? [],
@@ -133,6 +142,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
         takesLeft: MAX_TAKES - reads.length,
         method: [],
         marksAdded: 0,
+        slips: [],
         marked: false,
         failure: reason,
       };
@@ -176,6 +186,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
     {
       $set: {
         method_marks: methodMarks,
+        slips,
         marker_version: MARKER_VERSION,
         'usage.marking_input': usage.input_tokens,
         'usage.marking_output': usage.output_tokens,
@@ -193,6 +204,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
     takesLeft: MAX_TAKES - reads.length,
     method: methodMarks.map(({ code, awarded, reason, mark_value }) => ({ code, awarded, reason, mark_value })),
     marksAdded: methodMarks.filter((m) => m.awarded).reduce((n, m) => n + m.mark_value, 0),
+    slips,
     marked: true,
   };
 }

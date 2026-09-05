@@ -314,7 +314,7 @@ async function feedbackFor(attempt: StoredAttempt, sessionId: string, questionIn
   }
   const read = await Transcription.findOne({ session_id: sessionId, question_index: questionIndex, marker_version: { $exists: true } })
     .sort({ take: -1 })
-    .lean<{ _id: unknown; take: number; lines: TranscriptionResult['lines']; answers?: TranscriptionResult['answers']; legible: boolean; notes?: string; method_marks?: { code: string; awarded: boolean; reason: string; mark_value: number }[] } | null>();
+    .lean<{ _id: unknown; take: number; lines: TranscriptionResult['lines']; answers?: TranscriptionResult['answers']; legible: boolean; notes?: string; method_marks?: { code: string; awarded: boolean; reason: string; mark_value: number }[]; slips?: { part: string; quote: string; sentence: string }[] } | null>();
   const working: CaptureResult | undefined = read
     ? {
         transcription: { lines: read.lines, answers: read.answers ?? [], legible: read.legible, notes: read.notes },
@@ -324,6 +324,7 @@ async function feedbackFor(attempt: StoredAttempt, sessionId: string, questionIn
         takesLeft: MAX_TAKES - (await Transcription.countDocuments({ session_id: sessionId, question_index: questionIndex })),
         method: (read.method_marks ?? []).map(({ code, awarded, reason, mark_value }) => ({ code, awarded, reason, mark_value })),
         marksAdded: (read.method_marks ?? []).filter((m) => m.awarded).reduce((n, m) => n + m.mark_value, 0),
+        slips: read.slips ?? [],
         marked: true,
       }
     : undefined;
