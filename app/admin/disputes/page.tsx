@@ -1,6 +1,7 @@
 import 'katex/dist/katex.min.css';
 import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from '@/lib/study/outcome';
-import { dbConnect, Attempt, MarkDispute, Question, Student, Transcription } from '@/lib/db';
+import Link from 'next/link';
+import { dbConnect, Attempt, DisputeReview, MarkDispute, Question, Student, Transcription } from '@/lib/db';
 import { renderMathHtml } from '@/lib/katex';
 import { linesForSlot } from '@/lib/grade/transcribe';
 import type { RubricItem } from '@/lib/types';
@@ -50,6 +51,12 @@ export default async function DisputesPage() {
     .select('stem')
     .lean<{ _id: unknown; stem: string }[]>();
   const askedStemBy = new Map(askedQuestions.map((q) => [String(q._id), q.stem]));
+  // The latest look per dispute, so the list says what has been dealt with.
+  const latestReview = new Map<string, Date>();
+  for (const r of await DisputeReview.find({ dispute_id: { $in: disputes.map((d) => d._id) } }).sort({ reviewed_at: -1 }).lean<{ dispute_id: unknown; reviewed_at: Date }[]>()) {
+    const k = String(r.dispute_id);
+    if (!latestReview.has(k)) latestReview.set(k, r.reviewed_at);
+  }
 
   const questions = await Question.find({ _id: { $in: [...new Set(attempts.map((a) => String(a.question_id)))] } })
     .select('stem stimulus marks profile parts rubric')
@@ -75,7 +82,8 @@ export default async function DisputesPage() {
               .map((m) => (
                 <div key={`${String(t._id)}-${m.code}`} className="mt-3 border-l-3 border-[#D9A62E] bg-[#FDF8EC] p-3">
                   <div className="font-mono text-[11px] text-dim">
-                    {t.created_at.toLocaleString('en-GB')} · {m.code}
+                    {t.created_at.toLocaleString('en-GB')} · {m.code} ·{' '}
+                    <Link href={`/admin/disputes/${String(t._id)}?code=${m.code}`} className="text-red-pen underline">open the case</Link>
                   </div>
                   <div
                     className="question-prose mt-1 text-[13px]"
@@ -116,15 +124,15 @@ export default async function DisputesPage() {
             <div className="flex flex-wrap items-baseline justify-between gap-x-3 font-mono text-[11px] text-dim">
               <span>{d.ts.toLocaleString('en-GB')}</span>
               <span className="truncate">{studentBy.get(String(d.student_id))?.email ?? 'account deleted'}</span>
-              {/* A download, not a write: the bundle is built in memory and
-                  enters the golden set only through pnpm golden:import. */}
               <span className="inline-flex items-baseline gap-3">
-                <a href={`/admin/disputes/${String(d._id)}/export`} className="min-h-11 inline-flex items-center uppercase tracking-widest text-red-pen underline">
-                  Export as golden case
-                </a>
-                <a href={`/admin/disputes/${String(d._id)}/export?image=1`} className="min-h-11 inline-flex items-center uppercase tracking-widest text-dim underline">
-                  with image
-                </a>
+                {latestReview.has(String(d._id)) ? (
+                  <span className="uppercase tracking-widest text-green-pen">reviewed {latestReview.get(String(d._id))!.toLocaleDateString('en-GB')}</span>
+                ) : (
+                  <span className="uppercase tracking-widest text-red-pen">not yet reviewed</span>
+                )}
+                <Link href={`/admin/disputes/${String(d._id)}`} className="min-h-11 inline-flex items-center uppercase tracking-widest text-red-pen underline">
+                  Open the case
+                </Link>
               </span>
             </div>
 

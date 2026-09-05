@@ -10,6 +10,7 @@ export { Attempt, type AttemptDoc } from './attempt';
 export { PracticeSession, type SessionDoc } from './session';
 export { SessionDraft, DRAFT_TTL_DAYS, type SessionDraftDoc } from './session-draft';
 export { MarkDispute, type MarkDisputeDoc } from './mark-dispute';
+export { DisputeReview, type DisputeReviewDoc } from './dispute-review';
 export { LineRejected, type LineRejectedDoc } from './line-rejected';
 export {
   CapturedImage,

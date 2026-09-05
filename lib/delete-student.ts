@@ -1,6 +1,7 @@
 import {
   Attempt,
   CapturedImage,
+  DisputeReview,
   LineRejected,
   MarkDispute,
   Payment,
@@ -39,6 +40,7 @@ export interface DeletionCounts {
   Transcription: number;
   CapturedImage: number;
   MarkDispute: number;
+  DisputeReview: number;
   LineRejected: number;
   SessionDraft: number;
   ResetToken: number;
@@ -102,6 +104,9 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
   const attempts = await Attempt.deleteMany({ student_id: studentId });
   const transcriptions = await Transcription.deleteMany({ student_id: studentId });
   const images = await CapturedImage.deleteMany({ student_id: studentId });
+  // Reviews hang off the disputes the way rejections hang off the reads.
+  const disputeIds = (await MarkDispute.find({ student_id: studentId }).select('_id').lean<{ _id: unknown }[]>()).map((d) => d._id);
+  const disputeReviews = await DisputeReview.deleteMany({ dispute_id: { $in: disputeIds } });
   const disputes = await MarkDispute.deleteMany({ student_id: studentId });
   const practiceSessions = await PracticeSession.deleteMany({ student_id: studentId });
   const resets = await ResetToken.deleteMany({ email: address });
@@ -126,6 +131,7 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
       Transcription: transcriptions.deletedCount ?? 0,
       CapturedImage: images.deletedCount ?? 0,
       MarkDispute: disputes.deletedCount ?? 0,
+      DisputeReview: disputeReviews.deletedCount ?? 0,
       LineRejected: rejections.deletedCount ?? 0,
       SessionDraft: drafts.deletedCount ?? 0,
       ResetToken: resets.deletedCount ?? 0,

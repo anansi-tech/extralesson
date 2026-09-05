@@ -41,9 +41,11 @@ describe('the dispute button', () => {
 describe('/admin/disputes', () => {
   const page = at('app', 'admin', 'disputes', 'page.tsx');
 
-  it('is newest first and read-only', () => {
+  it('is newest first and read-only; the case page is where a person acts', () => {
     expect(page).toMatch(/\.sort\(\{ ts: -1 \}\)/);
     expect(page).not.toMatch(/<form|'use server'|updateOne|updateMany|deleteOne|create\(/);
+    expect(page).toMatch(/reviewed \{latestReview/);
+    expect(page).toMatch(/not yet reviewed/);
   });
 
   it('shows the question, the row, the reason and the read', () => {
