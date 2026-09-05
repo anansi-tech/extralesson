@@ -80,10 +80,11 @@ describe('(1)(2)(3) history, the student nav, the admin bar', () => {
     expect(page).toMatch(/href=\{`\/study\/session\/\$\{r\.sessionId\}\?q=\$\{r\.index\}#marking`\}/);
     expect(page).not.toMatch(/updateOne|create\(|deleteOne/);
   });
-  it('replaces the dashboard look-back list with one link to history', () => {
+  it('the dashboard has no look-back list and no History line: History is in the nav', () => {
     const dash = at('app', 'study', 'page.tsx');
-    expect(dash).toContain('href="/study/history"');
+    expect(dash).not.toContain('href="/study/history"');
     expect(dash).not.toMatch(/Look back at a question|groupReviewableByDay/);
+    expect(dash).toMatch(/name="mode" value="revisit"/);
   });
   it('gives every student page the same nav and drops the back link', () => {
     const nav = at('app', 'study', 'study-nav.tsx');

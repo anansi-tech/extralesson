@@ -10,9 +10,6 @@ const PaymentSchema = new Schema({
   email: { type: String, lowercase: true, trim: true },
   amount_total: { type: Number },
   currency: { type: String },
-  /** What the payment LINK mapped to, when a mapping exists. Evidence only —
-   *  the sitting granted is the one the student registered for. */
-  sitting: { type: String, enum: ['jan-2027', 'may-june-2027'] },
   /** Which address was used. 'payer' means the custom field was missing or
    *  misconfigured, the ROUND_2 §8e defect arriving quietly, so it is recorded
    *  and written into the grant note. */

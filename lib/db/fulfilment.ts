@@ -14,8 +14,8 @@ const FulfilmentSchema = new Schema({
   payment_id: { type: Schema.Types.ObjectId, ref: 'Payment' },
   status: { type: String, enum: ['pending', 'granted', 'failed', 'refused'], required: true },
   reason: { type: String },
-  /** The Payment Link the refused session came from, so a wrong allowlist is visible. */
-  payment_link: { type: String },
+  /** What a refused session said about itself, so a Payment Link missing its metadata is seen. */
+  metadata: { type: Schema.Types.Mixed },
   ts: { type: Date, required: true },
 });
 

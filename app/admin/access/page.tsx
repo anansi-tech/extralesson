@@ -50,7 +50,7 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
   const refused = await Fulfilment.find({ status: 'refused' })
     .sort({ ts: -1 })
     .limit(50)
-    .lean<{ _id: unknown; session_id: string; event_id: string; reason?: string; payment_link?: string; ts: Date }[]>();
+    .lean<{ _id: unknown; session_id: string; event_id: string; reason?: string; metadata?: Record<string, string>; ts: Date }[]>();
   // A failed grant, or one still pending an hour on, is a payment a person must finish.
   const needing = await Fulfilment.find({
     $or: [{ status: 'failed' }, { status: 'pending', ts: { $lt: new Date(Date.now() - STALE_PENDING_MS) } }],
@@ -200,16 +200,16 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
           <section className="mb-6 border-[1.5px] border-[#D9A62E] bg-[#FDF8EC] p-3">
             <div className="section-label">Refused payments</div>
             <p className="mt-1 text-[12px] leading-snug">
-              Signed checkouts the webhook did not grant. A link that is ours but missing from the
-              allowlist shows here as link-not-ours; a delayed payment shows as not-paid until Stripe
-              says it is paid.
+              Signed checkouts the webhook did not grant. A Payment Link of ours without
+              metadata product=extralesson shows here as not-ours; a delayed payment shows as not-paid
+              until Stripe says it is paid.
             </p>
             <ul className="mt-2 space-y-1">
               {refused.map((f) => (
                 <li key={String(f._id)} className="break-all border-t border-dashed border-[#D9A62E] pt-1 font-mono text-[12px]">
                   {new Date(f.ts).toISOString().slice(0, 16).replace('T', ' ')} · {f.reason}
                   <span className="ml-2 text-dim">
-                    {f.payment_link ?? 'no link'} · {f.session_id}
+                    metadata {JSON.stringify(f.metadata ?? {})} · {f.session_id}
                   </span>
                 </li>
               ))}

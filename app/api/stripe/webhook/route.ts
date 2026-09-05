@@ -1,5 +1,5 @@
 import { dbConnect, Fulfilment, Payment, Student, StripeEvent, isDuplicateKey } from '@/lib/db';
-import { GRANTING_EVENTS, emailFromSession, paymentLinkAllowlist, scopeOfSession, sittingFromLink, verifyStripeSignature } from '@/lib/stripe-webhook';
+import { GRANTING_EVENTS, emailFromSession, metadataOf, scopeOfSession, verifyStripeSignature } from '@/lib/stripe-webhook';
 import { grantFromPayment } from '@/lib/grant-from-payment';
 
 export const runtime = 'nodejs';
@@ -33,9 +33,9 @@ export async function POST(req: Request): Promise<Response> {
   // Scoped before anything is written: a payment for another Anansi product,
   // a subscription, or a session not yet paid is not ours to grant.
   const session = event.data.object;
-  const scope = scopeOfSession(session, paymentLinkAllowlist(process.env.STRIPE_PAYMENT_LINKS));
+  const scope = scopeOfSession(session);
   if (!scope.ok) {
-    console.warn(`[stripe] ${event.id} refused: ${scope.reason} (link ${String(session.payment_link ?? 'none')})`);
+    console.warn(`[stripe] ${event.id} refused: ${scope.reason} (metadata ${JSON.stringify(metadataOf(session))})`);
     await recordRefusal(event.id, session, scope.reason);
     return Response.json({ refused: scope.reason }, { status: 200 });
   }
@@ -61,7 +61,7 @@ async function recordRefusal(eventId: string, session: Record<string, unknown>, 
       event_id: eventId,
       status: 'refused',
       reason,
-      payment_link: typeof session.payment_link === 'string' ? session.payment_link : undefined,
+      metadata: metadataOf(session),
       ts: new Date(),
     });
   } catch (e) {
@@ -91,10 +91,6 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
       } | null>()
     : null;
 
-  // What the link SAYS, kept as evidence only; the sitting granted is the one
-  // the student registered for — see grantFromPayment.
-  const mapped = sittingFromLink(session, process.env.STRIPE_LINK_SITTINGS);
-
   // The payment as evidence, once per event; /admin/access reads these.
   let payment = await Payment.findOne({ event_id: eventId }).lean<{ _id: unknown } | null>();
   if (!payment) {
@@ -104,7 +100,6 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
         email,
         amount_total: typeof session.amount_total === 'number' ? session.amount_total : undefined,
         currency: typeof session.currency === 'string' ? session.currency : undefined,
-        sitting: mapped ?? undefined,
         email_source: read?.source,
         student_id: student?._id,
       });
@@ -136,7 +131,7 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
     await grantFromPayment({
       studentId: student._id,
       registeredSitting: student.exam_sitting,
-      payment: { _id: payment!._id, event_id: eventId, sitting: mapped, email_source: read?.source },
+      payment: { _id: payment!._id, event_id: eventId, email_source: read?.source },
     });
   } catch (e) {
     const reason = e instanceof Error ? e.message : String(e);

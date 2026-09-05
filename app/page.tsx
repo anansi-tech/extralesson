@@ -106,8 +106,8 @@ export default async function LandingPage() {
           </div>
           <p className="sources">
             Sources:{' '}
-            <a href={LANDING.passRate.source}>{LANDING.passRate.sourceLabel}</a> ·{' '}
-            <a href={LANDING.weighting.source}>{LANDING.weighting.sourceLabel}</a>
+            <a href={LANDING.passRate.source} target="_blank" rel="noopener">{LANDING.passRate.sourceLabel}</a> ·{' '}
+            <a href={LANDING.weighting.source} target="_blank" rel="noopener">{LANDING.weighting.sourceLabel}</a>
           </p>
         </div>
       </div>

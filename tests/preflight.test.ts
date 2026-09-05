@@ -20,7 +20,6 @@ import {
 const full = (): Env => ({
   ...Object.fromEntries(REQUIRED_ENV.map((k) => [k, 'set'])),
   NEXT_PUBLIC_STRIPE_PAYMENT_LINK: 'https://buy.stripe.com/14A3cx0IRfZ05sW7n04c806',
-  STRIPE_PAYMENT_LINKS: 'plink_test',
 });
 
 describe('missingEnv', () => {
@@ -115,7 +114,7 @@ describe('.env.example matches the code', () => {
   });
 
   it('documents the optional ones the operator sets, not the ones the platform sets', () => {
-    const operatorSet = ['RESEND_API_KEY', 'RESEND_FROM', 'NEXT_PUBLIC_BASE_URL', 'STRIPE_LINK_SITTINGS'];
+    const operatorSet = ['RESEND_API_KEY', 'RESEND_FROM', 'NEXT_PUBLIC_BASE_URL'];
     for (const k of operatorSet) expect(documented.has(k), `${k} missing from .env.example`).toBe(true);
     for (const k of ['NODE_ENV', 'VERCEL_URL', 'VERCEL_PROJECT_PRODUCTION_URL']) {
       expect(documented.has(k), `${k} is the platform's, not ours to document`).toBe(false);

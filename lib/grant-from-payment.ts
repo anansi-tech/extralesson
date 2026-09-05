@@ -14,8 +14,6 @@ export async function grantFromPayment(args: {
   payment: {
     _id: unknown;
     event_id: string;
-    /** What the payment LINK said, when a mapping exists. Evidence only. */
-    sitting?: string | null;
     email_source?: EmailSource | null;
   };
 }): Promise<'granted'> {
@@ -27,12 +25,7 @@ export async function grantFromPayment(args: {
   // May/June student locks them out before the exam they are revising for.
   const sitting = registeredSitting;
 
-  // A mapped link that DISAGREES is recorded, not resolved quietly: a wrong
-  // sitting must be visible on /admin/access.
   const notes = [`stripe ${payment.event_id}`];
-  if (payment.sitting && payment.sitting !== registeredSitting) {
-    notes.push(`link says ${payment.sitting}`);
-  }
   if (payment.email_source === 'payer') {
     notes.push('payer address, no student field');
   }
@@ -69,7 +62,6 @@ export async function pendingPaymentFor(email: string) {
     .lean<{
       _id: unknown;
       event_id: string;
-      sitting?: string | null;
       email_source?: EmailSource | null;
     } | null>();
 }

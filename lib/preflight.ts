@@ -2,8 +2,6 @@
  * Three of these fail silently (ROUND_3 §1): without the payment link a landing
  * page renders and cannot be bought from, without ADMIN_EMAILS no operator can
  * be provisioned for /admin/access, without the webhook secret every delivery 400s.
- * A fourth fails loudly but wrongly: without the allowlist every payment is
- * refused as another product's (ROUND_6 Task 2).
  */
 export const REQUIRED_ENV = [
   'MONGODB_URI',
@@ -12,7 +10,6 @@ export const REQUIRED_ENV = [
   'NEXT_PUBLIC_STRIPE_PAYMENT_LINK',
   'ADMIN_EMAILS',
   'STRIPE_WEBHOOK_SECRET',
-  'STRIPE_PAYMENT_LINKS',
 ] as const;
 
 /**
@@ -24,7 +21,6 @@ export const OPTIONAL_ENV: Record<string, string> = {
   RESEND_FROM: 'defaults to the Resend sandbox sender',
   NEXT_PUBLIC_BASE_URL: 'inferred from VERCEL_URL when unset',
   BASE_URL: 'audit scripts only, never the app',
-  STRIPE_LINK_SITTINGS: 'deliberately unset — a link is evidence of payment, never authority over the sitting',
   RUN_AS_STUDENT: 'the composition eval only; ignored in production',
   NODE_ENV: 'set by the runtime',
   VERCEL_URL: 'set by Vercel',

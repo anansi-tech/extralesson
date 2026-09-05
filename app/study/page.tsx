@@ -49,7 +49,6 @@ export default async function StudyDashboard({
     loadTopicChoices(student.target_modules),
     loadMistakes(auth.student_id),
   ]);
-  const hasHistory = mistakes.attemptedIds.size > 0;
   const revisitMarks = [...mistakes.lostByObjective.values()].reduce((a, b) => a + b, 0);
   const isNewStudent = mistakes.attemptedIds.size === 0;
 
@@ -421,19 +420,6 @@ export default async function StudyDashboard({
             </form>
             )}
         </section>
-
-        {/* QUESTIONS YOU HAVE ALREADY DONE — the same read-only view that
-            paging back inside a session gives: no new attempt, nothing
-            re-marked. */}
-        {hasHistory && (
-          <Link
-            href="/study/history"
-            className="mt-6 flex min-h-11 items-baseline justify-between border-t-[1.5px] border-rule pt-3 font-mono text-[11px] uppercase tracking-widest"
-          >
-            <span className="underline">Every question you have answered</span>
-            <span className="text-dim">History →</span>
-          </Link>
-        )}
 
         {progress.sessionsCompleted > 0 && (
           <section className="mt-5 border-[1.5px] border-ink bg-white p-3 shadow-[3px_3px_0_var(--ink)]">

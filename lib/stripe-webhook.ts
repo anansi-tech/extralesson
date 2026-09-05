@@ -82,44 +82,27 @@ export function emailFromSession(
 }
 
 /**
- * What the payment link SAYS the sitting is — evidence, never authority. The
- * sitting granted is the one the student registered for, and a disagreement is
- * recorded on the grant. Null today: STRIPE_LINK_SITTINGS is deliberately unset.
- */
-export function sittingFromLink(
-  session: Record<string, unknown>,
-  mapping: string | undefined,
-): 'jan-2027' | 'may-june-2027' | null {
-  const link = typeof session.payment_link === 'string' ? session.payment_link : null;
-  if (!link || !mapping) return null;
-  for (const pair of mapping.split(',')) {
-    const [id, sitting] = pair.split('=').map((x) => x.trim());
-    if (id === link && (sitting === 'jan-2027' || sitting === 'may-june-2027')) return sitting;
-  }
-  return null;
-}
-
-/**
  * THE STRIPE ACCOUNT IS SHARED ACROSS ANANSI PRODUCTS (ROUND_6 Task 2): a
  * signed, genuine checkout can be for something else entirely. Only a session
- * from one of OUR Payment Links, in payment mode, and actually paid, is ours to
- * grant. Everything else is acknowledged and logged, never granted.
+ * whose metadata names this product, in payment mode, and actually paid, is
+ * ours to grant. Everything else is acknowledged and logged, never granted.
  */
 export const GRANTING_EVENTS = new Set(['checkout.session.completed', 'checkout.session.async_payment_succeeded']);
 
-export type ScopeRefusal = 'no-link' | 'link-not-ours' | 'not-payment-mode' | 'not-paid';
+export const PRODUCT = 'extralesson';
 
-export function paymentLinkAllowlist(value: string | undefined): Set<string> {
-  return new Set((value ?? '').split(',').map((s) => s.trim()).filter(Boolean));
-}
+export type ScopeRefusal = 'not-ours' | 'not-payment-mode' | 'not-paid';
 
-export function scopeOfSession(
-  session: Record<string, unknown>,
-  allowlist: Set<string>,
-): { ok: true } | { ok: false; reason: ScopeRefusal } {
-  const link = typeof session.payment_link === 'string' ? session.payment_link : null;
-  if (!link) return { ok: false, reason: 'no-link' };
-  if (!allowlist.has(link)) return { ok: false, reason: 'link-not-ours' };
+/** What the session said about itself, kept on a refusal so a wrong Payment Link is seen, not guessed. */
+export const metadataOf = (session: Record<string, unknown>): Record<string, string> => {
+  const m = session.metadata;
+  return m && typeof m === 'object' ? Object.fromEntries(Object.entries(m as Record<string, unknown>).map(([k, v]) => [k, String(v)])) : {};
+};
+
+export function scopeOfSession(session: Record<string, unknown>): { ok: true } | { ok: false; reason: ScopeRefusal } {
+  // Every ExtraLesson Payment Link carries metadata product=extralesson; a
+  // session without it is another product's, whatever link it came from.
+  if (metadataOf(session).product !== PRODUCT) return { ok: false, reason: 'not-ours' };
   if (session.mode !== 'payment') return { ok: false, reason: 'not-payment-mode' };
   // A delayed payment method completes the session before the money arrives;
   // Stripe sends async_payment_succeeded once it has, and that is when we grant.

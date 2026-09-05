@@ -28,7 +28,8 @@ function checkoutBody(args: {
   id: string;
   studentField?: string;
   payerEmail?: string;
-  link?: string;
+  /** Session metadata; the default names this product. */
+  metadata?: Record<string, string> | null;
   type?: string;
   mode?: string;
   payment_status?: string;
@@ -40,7 +41,7 @@ function checkoutBody(args: {
     data: {
       object: {
         id: `cs_${args.id}`,
-        payment_link: args.link ?? 'plink_founding',
+        ...(args.metadata === null ? {} : { metadata: args.metadata ?? { product: 'extralesson' } }),
         mode: args.mode ?? 'payment',
         payment_status: args.payment_status ?? 'paid',
         amount_total: 2500,
@@ -64,11 +65,6 @@ beforeAll(async () => {
   mongod = await MongoMemoryServer.create();
   process.env.MONGODB_URI = mongod.getUri();
   process.env.STRIPE_WEBHOOK_SECRET = SECRET;
-  // Mapped links are EVIDENCE only. One is mapped here, deliberately
-  // disagreeing with the registration, so the note can be asserted.
-  process.env.STRIPE_LINK_SITTINGS = `plink_january=${OTHER_SITTING}`;
-  // Ours, and only ours: the account is shared with other Anansi products.
-  process.env.STRIPE_PAYMENT_LINKS = 'plink_founding, plink_january';
   await mongoose.connect(process.env.MONGODB_URI);
   ({ POST } = await import('@/app/api/stripe/webhook/route'));
   ({ Student, Payment, StripeEvent, Fulfilment } = await import('@/lib/db'));
@@ -201,35 +197,12 @@ describe('4. no custom field falls back to the payer address', () => {
   });
 });
 
-describe('5. the sitting comes from the registration, never the link', () => {
-  it('grants the registered sitting when a mapped link disagrees, and records the disagreement', async () => {
-    // Granting January to a May/June candidate would lock them out in February,
-    // before the paper they are revising for. Only one way of being wrong costs
-    // a student their sitting.
-    const email = 'link-disagrees@test.invalid';
+describe('5. the sitting comes from the registration, never from Stripe', () => {
+  it('grants the registered sitting whatever the session says', async () => {
+    const email = 'registered-wins@test.invalid';
     await makeStudent(email, REGISTERED);
-
-    await POST(signed(checkoutBody({ id: 'evt_5', studentField: email, link: 'plink_january' })));
-
-    const access = await accessOf(email);
-    expect(access?.sitting).toBe(REGISTERED);
-    expect(access?.note).toContain(`link says ${OTHER_SITTING}`);
-  });
-
-  it('says nothing about the link when there is nothing to disagree about', async () => {
-    const email = 'link-unmapped@test.invalid';
-    await makeStudent(email, REGISTERED);
-    await POST(signed(checkoutBody({ id: 'evt_5b', studentField: email, link: 'plink_founding' })));
-    expect((await accessOf(email))?.note).not.toContain('link says');
-  });
-
-  it('holds through the pay-first ordering too', async () => {
-    const email = 'link-disagrees-order-a@test.invalid';
-    await POST(signed(checkoutBody({ id: 'evt_5c', studentField: email, link: 'plink_january' })));
-    await registerAndClaim(email, REGISTERED);
-    const access = await accessOf(email);
-    expect(access?.sitting).toBe(REGISTERED);
-    expect(access?.note).toContain(`link says ${OTHER_SITTING}`);
+    await POST(signed(checkoutBody({ id: 'evt_5', studentField: email, metadata: { product: 'extralesson', sitting: OTHER_SITTING } })));
+    expect((await accessOf(email))?.sitting).toBe(REGISTERED);
   });
 });
 
@@ -327,31 +300,27 @@ describe('10. a bad signature records nothing', () => {
 });
 
 describe('11. a payment for another Anansi product is not ours (ROUND_6 Task 2)', () => {
-  it('acknowledges a Cognicare session and grants nothing, writing nothing', async () => {
+  it('acknowledges a Cognicare session and grants nothing, recording the metadata it saw', async () => {
     const email = 'cognicare-buyer@test.invalid';
     await makeStudent(email);
-    const res = await POST(signed(checkoutBody({ id: 'evt_11', studentField: email, link: 'plink_cognicare' })));
+    const res = await POST(signed(checkoutBody({ id: 'evt_11', studentField: email, metadata: { product: 'cognicare' } })));
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ refused: 'link-not-ours' });
+    expect(await res.json()).toEqual({ refused: 'not-ours' });
     expect(await accessOf(email)).toBeUndefined();
     expect(await Payment.countDocuments()).toBe(0);
-    // Refused is still a row, listed on /admin/access under "Refused payments".
-    expect(await Fulfilment.findOne({ session_id: 'cs_evt_11' }).lean()).toMatchObject({
-      status: 'refused',
-      reason: 'link-not-ours',
-      payment_link: 'plink_cognicare',
-    });
+    expect(await Fulfilment.findOne({ session_id: 'cs_evt_11' }).lean()).toMatchObject({ status: 'refused', reason: 'not-ours', metadata: { product: 'cognicare' } });
     const admin = readFileSync(join(process.cwd(), 'app', 'admin', 'access', 'page.tsx'), 'utf8');
     expect(admin).toMatch(/Fulfilment\.find\(\{ status: 'refused' \}\)[\s\S]*Refused payments/);
   });
 
-  it('refuses a session that is not in payment mode, or carries no link', async () => {
-    const email = 'subscription@test.invalid';
+  it('refuses a session with no metadata at all, and one not in payment mode', async () => {
+    const email = 'no-metadata@test.invalid';
     await makeStudent(email);
-    expect(await (await POST(signed(checkoutBody({ id: 'evt_11b', studentField: email, mode: 'subscription' })))).json()).toEqual({ refused: 'not-payment-mode' });
-    const noLink = JSON.parse(checkoutBody({ id: 'evt_11c', studentField: email }));
-    delete noLink.data.object.payment_link;
-    expect(await (await POST(signed(JSON.stringify(noLink)))).json()).toEqual({ refused: 'no-link' });
+    expect(await (await POST(signed(checkoutBody({ id: 'evt_11b', studentField: email, metadata: null })))).json()).toEqual({ refused: 'not-ours' });
+    const bare = await Fulfilment.findOne({ session_id: 'cs_evt_11b' }).lean<{ status: string; metadata?: Record<string, string> }>();
+    expect(bare?.status).toBe('refused');
+    expect(bare?.metadata ?? {}).toEqual({});
+    expect(await (await POST(signed(checkoutBody({ id: 'evt_11c', studentField: email, mode: 'subscription' })))).json()).toEqual({ refused: 'not-payment-mode' });
     expect(await accessOf(email)).toBeUndefined();
     expect(await Payment.countDocuments()).toBe(0);
   });

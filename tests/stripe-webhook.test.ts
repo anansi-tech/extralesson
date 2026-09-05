@@ -3,9 +3,8 @@ import { describe, expect, it } from 'vitest';
 import {
   REPLAY_TOLERANCE_S,
   emailFromSession,
-  paymentLinkAllowlist,
+  metadataOf,
   scopeOfSession,
-  sittingFromLink,
   verifyStripeSignature,
 } from '@/lib/stripe-webhook';
 
@@ -115,45 +114,26 @@ describe('emailFromSession', () => {
   });
 });
 
-describe('sittingFromLink', () => {
-  const map = 'plink_jan=jan-2027,plink_may=may-june-2027';
-
-  it('maps the payment link the student used', () => {
-    expect(sittingFromLink({ payment_link: 'plink_may' }, map)).toBe('may-june-2027');
-    expect(sittingFromLink({ payment_link: 'plink_jan' }, map)).toBe('jan-2027');
-  });
-
-  it('returns null for an unmapped link, so the caller can fall back visibly', () => {
-    expect(sittingFromLink({ payment_link: 'plink_other' }, map)).toBeNull();
-    expect(sittingFromLink({}, map)).toBeNull();
-    expect(sittingFromLink({ payment_link: 'plink_may' }, undefined)).toBeNull();
-  });
-
-  it('refuses a sitting that is not one of ours', () => {
-    expect(sittingFromLink({ payment_link: 'p' }, 'p=may-2029')).toBeNull();
-  });
-});
-
 describe('scopeOfSession — ours, paid, and a payment', () => {
-  const ours = paymentLinkAllowlist(' plink_a, plink_b ,, ');
-  const paid = { payment_link: 'plink_a', mode: 'payment', payment_status: 'paid' };
+  const paid = { metadata: { product: 'extralesson' }, mode: 'payment', payment_status: 'paid' };
 
-  it('accepts a paid payment-mode session from one of our links', () => {
-    expect(scopeOfSession(paid, ours)).toEqual({ ok: true });
-    expect(scopeOfSession({ ...paid, payment_link: 'plink_b' }, ours)).toEqual({ ok: true });
+  it('accepts a paid payment-mode session whose metadata names this product', () => {
+    expect(scopeOfSession(paid)).toEqual({ ok: true });
   });
 
-  it('refuses another product’s link, and a session with none', () => {
-    expect(scopeOfSession({ ...paid, payment_link: 'plink_cognicare' }, ours)).toEqual({ ok: false, reason: 'link-not-ours' });
-    expect(scopeOfSession({ mode: 'payment', payment_status: 'paid' }, ours)).toEqual({ ok: false, reason: 'no-link' });
+  it('refuses another product’s metadata, and a session with none', () => {
+    expect(scopeOfSession({ ...paid, metadata: { product: 'cognicare' } })).toEqual({ ok: false, reason: 'not-ours' });
+    expect(scopeOfSession({ mode: 'payment', payment_status: 'paid' })).toEqual({ ok: false, reason: 'not-ours' });
+    expect(scopeOfSession({ ...paid, metadata: {} })).toEqual({ ok: false, reason: 'not-ours' });
   });
 
   it('refuses a subscription, and a session not yet paid', () => {
-    expect(scopeOfSession({ ...paid, mode: 'subscription' }, ours)).toEqual({ ok: false, reason: 'not-payment-mode' });
-    expect(scopeOfSession({ ...paid, payment_status: 'unpaid' }, ours)).toEqual({ ok: false, reason: 'not-paid' });
+    expect(scopeOfSession({ ...paid, mode: 'subscription' })).toEqual({ ok: false, reason: 'not-payment-mode' });
+    expect(scopeOfSession({ ...paid, payment_status: 'unpaid' })).toEqual({ ok: false, reason: 'not-paid' });
   });
 
-  it('an empty allowlist refuses everything', () => {
-    expect(scopeOfSession(paid, paymentLinkAllowlist(undefined))).toEqual({ ok: false, reason: 'link-not-ours' });
+  it('records the metadata it saw', () => {
+    expect(metadataOf({ metadata: { product: 'cognicare', plan: 3 } })).toEqual({ product: 'cognicare', plan: '3' });
+    expect(metadataOf({})).toEqual({});
   });
 });
