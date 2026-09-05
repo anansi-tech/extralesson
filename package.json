@@ -21,7 +21,8 @@
     "eval:pipeline": "tsx scripts/eval-pipeline.ts",
     "golden:field-prune": "tsx scripts/golden-field-prune.ts",
     "hints:generate": "tsx scripts/generate-hints.ts",
-    "hints:approve": "tsx scripts/approve-hints.ts"
+    "hints:approve": "tsx scripts/approve-hints.ts",
+    "hints:next": "tsx scripts/generate-hints.ts --next"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.118",

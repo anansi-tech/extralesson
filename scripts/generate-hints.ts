@@ -1,9 +1,10 @@
 // Writes design/hints/batch-N.json: a second-person hint for the next 200
 // method rows without one, every row PROPOSED, and its table in
 // design/hints/APPROVAL_LOG.md. Nothing touches the bank until approval.
-// Run: pnpm hints:generate <batch-number> [--redo-tex | --redo-all]
+// Run: pnpm hints:generate <batch-number> [--size N] [--redo-tex | --redo-all]
+//      pnpm hints:next [--size N]   — the next batch number, from the files present
 import 'dotenv/config';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { z } from 'zod';
 import { generateObject } from 'ai';
@@ -14,7 +15,13 @@ import { MARK_SCHEME_CONVENTIONS } from '@/lib/prompts/mark-scheme';
 import { hintProblems, plainYour, repairTex } from '@/lib/generation/hint-tex';
 
 const DIR = join(process.cwd(), 'design', 'hints');
-const BATCH = 200;
+const DEFAULT_BATCH = 200;
+/** --size N sets the batch size; the default is 200. */
+const BATCH = (() => {
+  const at = process.argv.indexOf('--size');
+  const n = at >= 0 ? Number(process.argv[at + 1]) : NaN;
+  return Number.isInteger(n) && n > 0 ? n : DEFAULT_BATCH;
+})();
 
 export interface HintRow {
   question_id: string;
@@ -31,7 +38,7 @@ const PROMPT_RULES =
   `Second person, present tense, addressed to the student ("Find where the two lines cross — that's where the retained amounts are equal.").\n` +
   `Say what to DO, not what the scheme awards; never the words "mark", "criterion", "award", "their". No answer values.\n` +
   `Plain text with TeX only where the criterion has it, and every TeX command the criterion uses appears in the hint with its backslash. ` +
-  `All TeX sits inside $...$ — never \\( \\) and never a bare command outside dollars. Write your without quotation marks. ` +
+  `All TeX sits inside $...$ — never \\( \\) and never a bare command outside dollars. Money is written \\$ (backslash-dollar), never a bare $. Write your without quotation marks. ` +
   `Inside the JSON string, write every backslash DOUBLED: "$\\\\overrightarrow{OA}$", "$x \\\\ge 20$".\n`;
 
 type Row = { code: string; criterion: string };
@@ -103,9 +110,16 @@ async function redo(n: number, file: string, all: boolean): Promise<void> {
   console.log(`${redo.length} ${all ? '' : 'TeX '}rows regenerated in ${file}; table rewritten`);
 }
 
+/** The next batch number: one more than the highest batch file present. */
+function nextBatchNumber(): number {
+  mkdirSync(DIR, { recursive: true });
+  const nums = readdirSync(DIR).map((f) => /^batch-(\d+)\.json$/.exec(f)?.[1]).filter(Boolean).map(Number);
+  return (nums.length ? Math.max(...nums) : 0) + 1;
+}
+
 async function main() {
-  const n = Number(process.argv[2]);
-  if (!Number.isInteger(n) || n < 1) throw new Error('usage: pnpm hints:generate <batch-number> [--redo-tex | --redo-all]');
+  const n = process.argv[2] === '--next' ? nextBatchNumber() : Number(process.argv[2]);
+  if (!Number.isInteger(n) || n < 1) throw new Error('usage: pnpm hints:generate <batch-number> [--size N] [--redo-tex | --redo-all], or pnpm hints:next [--size N]');
   const file = join(DIR, `batch-${n}.json`);
   mkdirSync(DIR, { recursive: true });
   await dbConnect();

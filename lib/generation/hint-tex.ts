@@ -7,12 +7,12 @@
 const TEX_COMMAND = /\\([A-Za-z]+)/g;
 export const commandsIn = (s: string): string[] => [...new Set([...s.matchAll(TEX_COMMAND)].map((m) => m[1]))];
 
-/** The $…$ spans of a hint, as [start, end) offsets; an unclosed $ runs to the end. */
+/** The $…$ spans of a hint, as [start, end) offsets; an unclosed $ runs to the end. A \\$ is money, not math. */
 export function mathSpans(s: string): [number, number][] {
   const spans: [number, number][] = [];
   let open = -1;
   for (let i = 0; i < s.length; i++) {
-    if (s[i] !== '$') continue;
+    if (s[i] !== '$' || s[i - 1] === '\\') continue;
     if (open < 0) open = i;
     else {
       spans.push([open, i + 1]);
@@ -25,9 +25,16 @@ export function mathSpans(s: string): [number, number][] {
 
 const inMath = (s: string, at: number) => mathSpans(s).some(([a, b]) => at >= a && at < b);
 
-/** A bare command name the criterion has gets its backslash back, inside math only. */
+/**
+ * A bare command name the criterion has gets its backslash back, inside math
+ * only; and where the criterion writes money as \\$, a bare $ before a digit
+ * in the hint is money too, not the start of math.
+ */
 export function repairTex(hint: string, criterion: string): string {
   let out = hint;
+  // Only when the dollars do not pair up: a balanced $1.10$ is math and stays.
+  const bare = (out.match(/(?<!\\)\$/g) ?? []).length;
+  if (/\\\$/.test(criterion) && bare % 2 === 1) out = out.replace(/(?<!\\)\$(?=\d)(?![^$]*\$)/g, '\\$');
   for (const c of commandsIn(criterion)) {
     const bare = new RegExp(`(?<!\\\\)\\b${c}(?=[{\\s$])`, 'g');
     out = out.replace(bare, (m, at: number) => (inMath(out, at) ? `\\${c}` : m));

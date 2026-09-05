@@ -1,4 +1,5 @@
 import 'katex/dist/katex.min.css';
+import { hintCoverage } from '@/lib/admin/hints';
 import { dbConnect, Question } from '@/lib/db';
 import { getCoverage, getNextDraftId } from '@/lib/admin/coverage';
 import { renderAnswerHtml, renderMathHtml } from '@/lib/katex';
@@ -24,10 +25,11 @@ export default async function ReviewPage({
 }) {
   await dbConnect();
   const { id: askedId, find, from } = await searchParams;
-  const [{ matrix, approvedTotal, draftsRemaining, objectiveRows }, nextId, found] = await Promise.all([
+  const [{ matrix, approvedTotal, draftsRemaining, objectiveRows }, nextId, found, hints] = await Promise.all([
     getCoverage(),
     getNextDraftId(),
     findQuestions(find ?? ''),
+    hintCoverage(),
   ]);
 
   // An explicitly asked-for question wins over the queue's next draft, so a
@@ -221,6 +223,8 @@ export default async function ReviewPage({
           <div className="font-mono text-xs text-dim">
             <b className="text-ink">{draftsRemaining}</b> drafts remaining ·{' '}
             <b className="text-ink">{approvedTotal}</b> approved ·{' '}
+            {/* Rows a wrong answer can be told a hint on, of the rows that need one. */}
+            <b className={hints.withHint === hints.methodRows ? 'text-green-pen' : 'text-ink'}>Hints: {hints.withHint} of {hints.methodRows}</b> ·{' '}
             {/* Against the matrix, which is the target: what it replaced
                 was a count restated here, rather than read. */}
             <b className={matrix.p1_actual_total >= P1_TOTAL ? 'text-green-pen' : 'text-ink'}>

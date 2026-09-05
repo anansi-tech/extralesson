@@ -28,7 +28,8 @@ describe('hints', () => {
     expect(rows.flatMap((r) => hintProblems(r.hint, r.criterion).map((p) => `${r.question_id.slice(-6)}/${r.code}: ${p}`))).toEqual([]);
     const log = at('design', 'hints', 'APPROVAL_LOG.md');
     expect(log).toMatch(/## Batch 1 — /);
-    expect((log.match(/^\| \d+ \|/gm) ?? []).length).toBe(rows.length);
+    const section = log.slice(log.indexOf('## Batch 1 — '), log.indexOf('## Batch 2 — ') > 0 ? log.indexOf('## Batch 2 — ') : undefined);
+    expect((section.match(/^\| \d+ \|/gm) ?? []).length).toBe(rows.length);
   });
   it('only an approved hint reaches the bank', () => {
     expect(at('scripts', 'approve-hints.ts')).toMatch(/filter\(\(r\) => r\.status === 'approved'\)/);
@@ -59,9 +60,27 @@ describe('the four rules a hint must keep', () => {
     expect(hintProblems('Find \\overrightarrow{AB} first.', 'Forms $\\overrightarrow{AB}$')).toContain('bare TeX outside $…$: \\overrightarrow');
     expect(hintProblems('Find \\(f(3)\\) first.', 'Reads $f(3)$')).toEqual(expect.arrayContaining([expect.stringMatching(/instead of/)]));
     expect(hintProblems('Find $f(3) first.', 'Reads $f(3)$')).toContain('an unclosed $');
+    // Money is not math: \\$100 opens nothing, and a bare $100 is repaired where the criterion writes \\$.
+    expect(hintProblems('Set aside the \\$100 first.', 'Reserves the \\$100')).toEqual([]);
+    expect(repairTex('Set aside the $100 first.', 'Reserves the \\$100')).toBe('Set aside the \\$100 first.');
+    expect(repairTex('Divide the bill by $1.10$ to remove the tax.', 'Calculates \\$363 divided by $1.10$')).toBe('Divide the bill by $1.10$ to remove the tax.');
+    expect(repairTex('Take \\$363 and divide by $1.10$.', 'Calculates \\$363 divided by $1.10$')).toBe('Take \\$363 and divide by $1.10$.');
     expect(hintProblems('Find it\u0007 now.', 'Finds it')).toContain('contains a control character');
     expect(hintProblems('Use "your" value.', 'Uses "their" value')).toContain('quotes "your"');
     expect(hintProblems('Show it from their gradients.', 'Shows it')).toContain('uses a scheme word (mark, criterion, award, their)');
     expect(plainYour('Use “your” value and \'your\' total.')).toBe('Use your value and your total.');
+  });
+});
+
+describe('the next batch, and the count on review', () => {
+  it('hints:next picks the batch number from the files present and takes --size', () => {
+    const g = at('scripts', 'generate-hints.ts');
+    expect(g).toMatch(/function nextBatchNumber\(\)/);
+    expect(g).toMatch(/process\.argv\.indexOf\('--size'\)/);
+    expect(JSON.parse(at('package.json')).scripts['hints:next']).toBe('tsx scripts/generate-hints.ts --next');
+  });
+  it('/admin/review says Hints: N of M', () => {
+    expect(at('app', 'admin', 'review', 'page.tsx')).toMatch(/Hints: \{hints\.withHint\} of \{hints\.methodRows\}/);
+    expect(at('lib', 'admin', 'hints.ts')).toMatch(/earnableByMethod\(q as never, \[\]\)/);
   });
 });
