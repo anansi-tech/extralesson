@@ -145,6 +145,13 @@ summary {
     border: 1px solid var(--paper-deep);
   }
 }
+/* In the rail beside the parts (ROUND_8 Task 2) there is no card edge to bleed to. */
+@media (min-width: 1024px) {
+  .figure-frame {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
 
 /* Question prose rendered by renderMathHtml. Authored line breaks and
    sentence spacing are meaningful (worked solutions read as board work), so

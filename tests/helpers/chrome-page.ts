@@ -33,7 +33,7 @@ export function chromePage(inner: string, sitting = 'May/June 2027'): string {
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500;700&family=Caveat&display=swap">
 <script src="https://cdn.tailwindcss.com"></script><script>${TAILWIND_CONFIG}</script><style>${css}</style></head>
 <body class="bg-paper text-ink">${chromeBar(sitting)}
-<main class="ruled relative px-5 pb-8 pt-7 lg:px-6" style="min-height:100vh">
+<main class="ruled relative px-5 pb-8 pt-7 lg:px-6" style="min-height:100vh;container-type:inline-size">
   <div class="pointer-events-none absolute inset-y-0 left-[var(--rule-offset-sm)] w-[1.5px] bg-margin lg:left-[calc(50%-var(--bar-width)/2+var(--rule-offset-lg))]"></div>
   <div class="relative mx-auto max-w-[var(--bar-width)]">${inner}</div>
 </main></body></html>`;

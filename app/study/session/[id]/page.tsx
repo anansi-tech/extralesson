@@ -20,6 +20,7 @@ import { boxWidthChars, isMultiValue, readInputShape, showsBoxCount } from '@/li
 import { inputAffordance } from '@/lib/grade/input-hints';
 import { PROFILE_GLOSS, PROFILE_GLOSS_SHORT, PROFILE_MEANING } from '@/lib/study/profiles';
 import QuestionCard, { type CardQuestion } from './question-card';
+import { SessionBar } from './session-bar';
 import type { ReadResult } from './capture';
 import { MAX_TAKES } from '@/lib/grade/transcribe';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
@@ -29,7 +30,6 @@ import { constructActs, figureGivesAnswer } from '@/lib/targets/construct';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 import type { ModuleNumber, ProfileMarks } from '@/lib/types';
 
-const PARTS_IN_WORDS: Record<number, string> = { 2: 'two', 3: 'three', 4: 'four' };
 
 export const metadata = { title: 'Session — ExtraLesson' };
 export const dynamic = 'force-dynamic';
@@ -533,12 +533,7 @@ export default async function SessionPage({
   const marksAnswered = session.question_ids.reduce<number>((sum, _, i) => (i < answered ? sum + marksOf(i) : sum), 0);
   // The exam's own pace, from the same constants the budget is built on, so the
   // claim on the card cannot drift from the session it describes.
-  const sessionMinutes = Math.round(
-    sessionQuestions.reduce((sum, sq) => sum + estimatedMinutes({ kind: sq.kind, marks: sq.marks } as never), 0),
-  );
   // A session is usually all of one paper; say which only when it is.
-  const kinds = new Set(sessionQuestions.map((sq) => sq.kind));
-  const paperName = kinds.size === 1 ? ([...kinds][0] === 'mcq' ? 'Paper 1' : 'Paper 2') : 'exam';
 
   // A revisited question is rebuilt from its attempt. Nothing is re-marked and
   // nothing is written; correctness per slot is recomputed with the marker's
@@ -781,23 +776,7 @@ export default async function SessionPage({
 
   return (
     <div>
-      <div className="mt-3 text-right font-mono text-xs text-dim">
-          Q{index + 1} OF {total} · {question.marks} MARK{question.marks === 1 ? '' : 'S'}
-        </div>
-        {/* Why the session is one question: a student who expected eight reads
-            one as a short session rather than a whole exam question,
-            and the minutes are what make the marks mean something. */}
-        <p className="mt-1 text-[12px] leading-snug text-dim">
-          {session.mode === 'first' ? (
-            <>One {paperName} question, {PARTS_IN_WORDS[(question.parts ?? []).length] ?? (question.parts ?? []).length} parts.</>
-          ) : (
-            <>
-              {total === 1 ? 'One' : total} whole {paperName} {total === 1 ? 'question' : 'questions'} ·{' '}
-              {marksTotal} marks · about {sessionMinutes} minutes at exam pace.{' '}
-            </>
-          )}
-          {marksAnswered > 0 && <span className="text-ink">{marksAnswered} answered so far.</span>}
-        </p>
+      <SessionBar index={index} total={total} marksAnswered={marksAnswered} marksTotal={marksTotal} />
         <QuestionCard question={card} />
     </div>
   );

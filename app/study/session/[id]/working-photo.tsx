@@ -39,6 +39,7 @@ export function WorkingPhoto({
   initial,
   onRead,
   onBusy,
+  className,
 }: {
   sessionId: string;
   questionIndex: number;
@@ -52,6 +53,7 @@ export function WorkingPhoto({
   onRead?: (prefill: Record<string, string>) => void;
   /** While a page is being read the answers cannot be handed in. */
   onBusy?: (busy: boolean) => void;
+  className?: string;
 }) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [read, setRead] = useState<TranscriptionResult | null>(initial?.transcription ?? null);
@@ -101,18 +103,33 @@ export function WorkingPhoto({
     });
   };
 
+  const pick = (className: string) => (
+    <button
+      type="button"
+      onClick={() => fileRef.current?.click()}
+      disabled={pending}
+      className={`${className} min-h-11 border-[1.5px] border-ink bg-white font-mono uppercase tracking-[0.1em] disabled:opacity-60`}
+    >
+      {pending ? 'Reading…' : read ? 'Take it again' : 'Photograph your working'}
+    </button>
+  );
+
   return (
-    <div className={attemptId ? 'mt-4 border-t-[1.5px] border-rule pt-4' : 'mt-4 border-l-3 border-margin bg-[#FFFDF6] py-2 pl-3'}>
-      <div className="section-label">Your working on paper</div>
-
-      {!read && (
-        <p className="mt-1 text-[12px] leading-snug text-dim">
-          {attemptId
+    <CameraBox
+      post={!!attemptId}
+      className={className}
+      heading={read && !attemptId ? undefined : 'Your working on paper'}
+      intro={
+        read
+          ? undefined
+          : attemptId
             ? `There ${marks === 1 ? 'is 1 mark' : `are ${marks} marks`} here for the method, and we cannot see your working. Photograph what you wrote and we will type it up beside the mark scheme. Nothing you have already earned can change.`
-            : 'Work it on paper, then photograph the page. We type up what we read and fill in the single-answer boxes; you check them, fill in the rest, and submit.'}
-        </p>
-      )}
-
+            : 'Work it on paper, then photograph the page. We type up what we read and fill in the single-answer boxes; you check them, fill in the rest, and hand in.'
+      }
+      preview={preview}
+      pending={pending}
+      pick={!read && takesLeft > 0 ? pick('mt-2.5 w-full p-3 text-xs') : undefined}
+    >
       <input
         ref={fileRef}
         type="file"
@@ -125,36 +142,10 @@ export function WorkingPhoto({
         }}
       />
 
-      {/* The page, small, in the place the read will appear — never a modal. */}
-      {pending && preview && (
-        <div className="mt-2 flex items-center gap-3" aria-live="polite">
-          <img src={preview} alt="" className="h-16 w-16 border-[1.5px] border-ink object-cover" />
-          <span className="font-mono text-[11px] uppercase tracking-widest text-dim">Reading your page…</span>
-        </div>
-      )}
-
-      {takesLeft > 0 && (
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          disabled={pending}
-          className="mt-2 min-h-11 w-full border-[1.5px] border-ink bg-white p-3 font-mono text-xs uppercase tracking-widest disabled:opacity-60"
-        >
-          {pending ? 'Reading…' : read ? 'Take it again' : 'Photograph your working'}
-        </button>
-      )}
-
       {error && (
         <p className="mt-2 border-l-3 border-red-pen bg-[#FDF1F0] p-2 text-[12px] leading-snug">
           {error}
         </p>
-      )}
-
-      {thumb && !pending && (
-        <details className="mt-2">
-          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">Your photograph</summary>
-          <img src={thumb} alt="The page you photographed" className="mt-1 max-h-64 border-[1.5px] border-ink object-contain" />
-        </details>
       )}
 
       {read && attemptId && marked.failed && (
@@ -184,11 +175,75 @@ export function WorkingPhoto({
           }
           footer={
             takesLeft > 0
-              ? 'If that is not what you wrote, take it again once.'
+              ? undefined
               : `No retakes left for this question. Check the answer boxes below. If we misread your working, tell us: ${LANDING.contactEmail}`
           }
         />
       )}
+
+      {thumb && !pending && (
+        <details className="mt-2">
+          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">Your photograph</summary>
+          <img src={thumb} alt="The page you photographed" className="mt-1 max-h-64 border-[1.5px] border-ink object-contain" />
+        </details>
+      )}
+
+      {/* The way to another take sits under what this one read, with the count beside it. */}
+      {read && takesLeft > 0 && (
+        <div className="mt-2.5 flex items-center gap-2.5">
+          {pick('flex-1 p-2.5 text-[11px]')}
+          <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-dim">
+            {takesLeft} retake{takesLeft === 1 ? '' : 's'} left
+          </span>
+        </div>
+      )}
+    </CameraBox>
+  );
+}
+
+/**
+ * The box above the answer boxes: what to do, the page while it is read, and
+ * the one control. Exported so the reading state can be rendered on its own.
+ */
+export function CameraBox({
+  post,
+  className,
+  heading,
+  intro,
+  preview,
+  pending,
+  pick,
+  children,
+}: {
+  /** After submit the box is a section under the marking, not the panel above the boxes. */
+  post: boolean;
+  className?: string;
+  /** Once a page is read, what was read is the heading. */
+  heading?: string;
+  intro?: string;
+  /** The page as chosen, shown small while it is read. */
+  preview?: string | null;
+  pending: boolean;
+  pick?: React.ReactNode;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div
+      id="camera-box"
+      className={`${post ? 'mt-4 border-t-[1.5px] border-rule pt-4' : 'mt-4 border-l-3 border-margin bg-[#FFFDF6] px-3 py-2 lg:mt-0 lg:py-2.5'} ${className ?? ''}`}
+    >
+      {heading && <div className="section-label">{heading}</div>}
+      {intro && <p className="mt-1.5 text-xs leading-snug text-dim">{intro}</p>}
+
+      {/* The page, small, in the place the read will appear — never a modal. */}
+      {pending && preview && (
+        <div className="mt-2.5 flex items-center gap-3" aria-live="polite">
+          <img src={preview} alt="" className="h-16 w-16 border-[1.5px] border-ink object-cover" />
+          <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-dim">Reading your page…</span>
+        </div>
+      )}
+      {pick}
+      {children}
     </div>
   );
 }

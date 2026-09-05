@@ -146,7 +146,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const [reading, setReading] = useState(false);
   // HONEST PREFILL (ROUND_7 Task 2): a read fills single boxes only. Which
   // boxes it filled and which it did not is said, with a way to each.
-  const [readFilled, setReadFilled] = useState<string[] | null>(null);
+  const [readFilled, setReadFilled] = useState<string[] | null>(() => {
+    const filled = Object.keys(question.draft?.read?.prefill ?? {});
+    return filled.length > 0 ? filled : null;
+  });
   const [error, setError] = useState<string>();
   const [pending, startTransition] = useTransition();
   const startedAt = useRef(Date.now());
@@ -176,6 +179,8 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // on paper and self-marked, so they are not typed in and never gate submit —
   // and a part may hold both kinds at once.
   const markedSlots = question.parts.flatMap((p) => p.slots.filter((s) => s.mode === 'answer'));
+  /** A page has been read for this question and not yet handed in. */
+  const pageRead = readFilled !== null || !!question.draft?.read;
   // The figure has to stay reachable while a later part is answered: at 360px
   // the last input of a 12-mark question sits 909px below it, more than a
   // screen. A control brings the figure back OVER the page, so dismissing it
@@ -303,6 +308,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // is what they get for it; there is no other path to it.
   const canSubmit = question.kind === 'mcq' ? selected !== null : markedSlots.length > 0;
   const blanks = markedSlots.filter((s) => !filled(s)).length;
+  // What the label line under "Hand in" counts: the marks the boxes carry and
+  // the marks only the page can earn, or the boxes a read filled.
+  const modeOf = new Map(question.parts.flatMap((p) => p.slots.map((sl) => [sl.ref, sl.mode] as const)));
+  const typedMarks = question.rubricCodes.filter((r) => modeOf.get(r.slot_ref) === 'answer').reduce((n, r) => n + r.mark_value, 0);
+  const fromPage = (readFilled ?? []).filter((ref) => (partAnswers[ref] ?? '').trim() !== '').length;
 
   // AUTOSAVE writes a draft and never an attempt: attempts stay append-only and
   // are written once, on submit. Debounced while typing, and FLUSHED wherever
@@ -453,7 +463,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const stateOf = new Map(outcome.rows.map((r) => [r.code, r.state]));
 
   return (
-    <article className="mt-4 border-[1.5px] border-ink bg-white p-5 shadow-[4px_4px_0_var(--ink)]">
+    <article className="mt-5 border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-card)] lg:p-7">
       {question.stimulusHtml && (
         <div
           className="question-prose mb-3 border-l-3 border-paper-deep pl-3 text-[15px]"
@@ -473,18 +483,23 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </div>
       )}
 
-      <div id="question" className="flex items-baseline justify-between">
+      <div id="question" className="flex items-baseline justify-between gap-3 lg:gap-4">
         <div
-          className="question-prose text-lg"
+          className="question-prose text-lg lg:max-w-[62ch]"
           dangerouslySetInnerHTML={{ __html: question.stemHtml }}
         />
-        <span className="ml-3 shrink-0 font-mono text-xs text-dim">
+        <span className="shrink-0 font-mono text-xs text-dim">
           [{question.marks} mark{question.marks === 1 ? '' : 's'}]
         </span>
       </div>
 
+      {/* THE FIGURE BESIDE THE PARTS at 1280 (ROUND_8 Task 2): the rail holds the
+          figure and the camera; the column holds the parts and the hand-in. One
+          DOM: the phone's order, a two-column grid at lg. */}
+      <div className="lg:mt-5 lg:grid lg:grid-cols-[minmax(0,1fr)_var(--rail)] lg:items-start lg:gap-x-10">
+      <div className="lg:order-2 lg:flex lg:flex-col lg:gap-5">
       {question.visualHtml && (
-        <div className="figure-frame mt-3" ref={figureRef}>
+        <div className="figure-frame mt-3 lg:mt-0" ref={figureRef}>
           <div
             className="figure-inner [&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
             style={{
@@ -496,8 +511,27 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </div>
       )}
 
+      {/* PHOTO FIRST (ROUND_4 Task 1): the camera sits above the boxes from the
+          start. A read fills the single-box slots; the student checks them and
+          submits, and only then does the read become the answer. */}
+      {question.kind === 'structured' && !reviewing && !feedback && (
+        <WorkingPhoto
+          key={`${question.sessionId}-${question.index}`}
+          sessionId={question.sessionId}
+          questionIndex={question.index}
+          initial={question.draft?.read}
+          onRead={(prefill) => {
+            setPartAnswers((prev) => ({ ...prev, ...prefill }));
+            setReadFilled(Object.keys(prefill));
+          }}
+          onBusy={setReading}
+          className={pageRead ? 'lg:order-first' : undefined}
+        />
+      )}
+      </div>
+      <div className="min-w-0 lg:order-1 lg:flex lg:flex-col lg:gap-5">
       {question.kind === 'mcq' && question.optionsHtml && (
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 space-y-2 lg:mt-0">
           {question.optionsHtml.map((o, i) => (
             <button
               key={i}
@@ -525,28 +559,12 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </div>
       )}
 
-      {/* PHOTO FIRST (ROUND_4 Task 1): the camera sits above the boxes from the
-          start. A read fills the single-box slots; the student checks them and
-          submits, and only then does the read become the answer. */}
-      {question.kind === 'structured' && !reviewing && !feedback && (
-        <WorkingPhoto
-          key={`${question.sessionId}-${question.index}`}
-          sessionId={question.sessionId}
-          questionIndex={question.index}
-          initial={question.draft?.read}
-          onRead={(prefill) => {
-            setPartAnswers((prev) => ({ ...prev, ...prefill }));
-            setReadFilled(Object.keys(prefill));
-          }}
-          onBusy={setReading}
-        />
-      )}
 
       {readFilled && !feedback && (() => {
         const unfilled = markedSlots.filter((sl) => !readFilled.includes(sl.ref));
         const filledRefs = markedSlots.filter((sl) => readFilled.includes(sl.ref)).map((sl) => sl.ref);
         return (
-          <p className="mt-2 border-l-3 border-margin bg-[#FFFDF6] py-1 pl-3 text-[12px] leading-snug text-dim">
+          <p className="mt-2.5 border-l-3 border-margin bg-[#FFFDF6] px-3 py-1.5 text-xs leading-snug text-dim lg:mt-0">
             {filledRefs.length > 0
               ? `We filled the single answers${filledRefs.length < markedSlots.length ? ` for (${filledRefs.join('), (')})` : ''}.`
               : 'We could not fill any boxes from the page.'}
@@ -556,7 +574,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 {unfilled.map((sl, k) => (
                   <span key={sl.ref}>
                     {k > 0 && ', '}
-                    <a href={`#slot-${sl.ref}${sl.input ? '-0' : ''}`} className="underline">({sl.ref})</a>
+                    <a href={`#slot-${sl.ref}${sl.input ? '-0' : ''}`} className="text-ink underline underline-offset-2">({sl.ref})</a>
                   </span>
                 ))}
                 .
@@ -567,11 +585,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       })()}
 
       {question.kind === 'structured' && (
-        <div className="mt-4 space-y-4">
+        <div className="mt-5 space-y-[18px] lg:mt-0 lg:space-y-5">
           {question.parts.map((p) => {
             return (
               <div key={p.label}>
-                <div className="flex items-baseline gap-2 text-sm">
+                <div className="flex items-baseline gap-2 text-sm lg:text-[15px]">
                   <span className="font-mono text-xs font-semibold">({p.label})</span>
                   <span
                     className="question-prose"
@@ -637,7 +655,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               correct answer wrong. */}
                         {/* Stacked on a phone, side by side once there is room: the label held
                             42% of a 360px row, leaving the box too narrow to type a long answer in. */}
-                        <div className="mt-1 flex flex-col items-stretch gap-1 sm:flex-row sm:items-start sm:gap-2">
+                        <div className="mt-2 flex flex-col items-stretch gap-1 sm:flex-row sm:items-start sm:gap-2">
                           {p.slots.length > 1 && (
                             <label
                               htmlFor={`slot-${slot.ref}`}
@@ -666,7 +684,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                           <div className="flex min-w-0 flex-1 items-start gap-2">
                           {slotAnswerInput(slot, {
                             describe: slotAriaLabel(p, slot),
-                            className: 'min-h-11 w-full border-[1.5px] border-ink p-2 font-mono text-base',
+                            className: 'min-h-11 w-full border-[1.5px] border-ink bg-white p-2 font-mono text-base',
                             placeholder:
                               p.slots.length > 1
                                 ? `Answer to (${p.label})(${slot.label})`
@@ -696,6 +714,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                           </div>
                           </div>
                           <div className={p.slots.length > 1 ? 'sm:ml-auto sm:basis-[62%]' : ''}>
+                            {!feedback && readFilled?.includes(slot.ref) && (partAnswers[slot.ref] ?? '').trim() !== '' && (
+                              <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.1em] text-dim">From your page — check it</div>
+                            )}
                             {partFeedback && !partFeedback.correct && slipFor(p.label) && (
                               <p className="mt-1 font-hand text-[15px] leading-snug text-red-pen">{slipFor(p.label)}</p>
                             )}
@@ -735,10 +756,12 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                           — these marks are left out of your estimate.
                         </p>
                       ) : (
-                        <p className="mt-1 border-l-3 border-paper-deep bg-[#FFFDF6] py-1 pl-3 text-[13px] text-dim">
-                          {readExists
-                            ? 'Work this one on paper — it is marked from your photograph.'
-                            : `Work this one on paper. ${feedback ? 'Mark it yourself against the solution below' : 'Photograph the page and it is marked from there'} — until then these marks are left out of your estimate.`}
+                        <p className="mt-2 border-l-3 border-paper-deep bg-[#FFFDF6] px-3 py-1.5 text-[13px] leading-snug text-dim">
+                          {pageRead && !feedback
+                            ? 'Marked from your photograph — nothing to type.'
+                            : readExists
+                              ? 'Work this one on paper — it is marked from your photograph.'
+                              : `Work this one on paper. ${feedback ? 'Mark it yourself against the solution below' : 'Photograph the page and it is marked from there'} — until then these marks are left out of your estimate.`}
                         </p>
                           )}
                         </>
@@ -780,33 +803,21 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       {!feedback ? (
         reviewing ? null : (
         <>
-        <button
-          ref={submitRef}
+        <HandIn
+          submitRef={submitRef}
           onClick={submit}
           disabled={pending || reading || !canSubmit}
-          className="mt-5 w-full bg-red-pen p-3 font-black text-white shadow-[3px_3px_0_var(--ink)] disabled:opacity-50"
-        >
-          {pending
-            ? 'Marking…'
-            : reading
-              ? 'Reading your page…'
-              : blanks > 0 && question.kind === 'structured'
-                ? 'Hand in as is'
-                : 'Submit answer'}
-        </button>
-        {saveState && !pending && (
-          <p aria-live="polite" className={`mt-1 text-right font-mono text-[10px] uppercase tracking-widest ${saveState === 'saved' ? 'text-dim' : 'text-red-pen'}`}>
-            {saveState === 'saved' ? 'Saved' : 'Couldn’t save — check your connection'}
-          </p>
-        )}
-        {blanks > 0 && question.kind === 'structured' && !pending && (
-          <p className="mt-1 text-center text-[12px] text-dim">
-            {blanks} box{blanks === 1 ? '' : 'es'} left blank. Blanks score zero, like the exam.
-          </p>
-        )}
+          phase={pending ? 'marking' : reading ? 'reading' : 'ready'}
+          kind={question.kind}
+          blanks={blanks}
+          typedMarks={typedMarks}
+          pageMarks={question.marks - typedMarks}
+          fromPage={fromPage}
+          saveState={saveState}
+        />
         {/* Inline, in the place the marking will appear; never a modal. */}
         {pending && (
-          <div className="mt-5 animate-pulse" aria-live="polite">
+          <div className="mt-5 animate-pulse lg:mt-0" aria-live="polite">
             <div className="font-mono text-[10px] uppercase tracking-widest text-dim">Marking…</div>
             {[3, 2, 4].map((w, i) => (
               <div key={i} className={`mt-2 h-3 rounded bg-paper-deep w-${w}/5`} />
@@ -992,6 +1003,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </div>
       )}
 
+      </div>
+      </div>
+
       {question.visualHtml && figureAway && !atSubmit && !figureOpen && (
         // In the gutter, not over the text: the page's 20px and the card's 20px
         // of padding put the first character 40px from the edge, so a 40px
@@ -1062,6 +1076,72 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </nav>
       )}
     </article>
+  );
+}
+
+const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+
+/**
+ * The one primary action, its label line and what sits under it, by phase.
+ * Exported so the reading phase can be rendered on its own.
+ */
+export function HandIn({
+  submitRef,
+  onClick,
+  disabled,
+  phase,
+  kind,
+  blanks,
+  typedMarks,
+  pageMarks,
+  fromPage,
+  saveState,
+}: {
+  submitRef?: React.Ref<HTMLButtonElement>;
+  onClick?: () => void;
+  disabled: boolean;
+  phase: 'ready' | 'reading' | 'marking';
+  kind: 'mcq' | 'structured';
+  blanks: number;
+  typedMarks: number;
+  pageMarks: number;
+  /** Boxes a read filled and the student has left standing. */
+  fromPage: number;
+  saveState?: 'saved' | 'failed' | null;
+}) {
+  const asIs = phase === 'ready' && blanks > 0 && kind === 'structured';
+  const label = phase === 'marking' ? 'Marking…' : phase === 'reading' ? 'Reading your page…' : asIs ? 'Hand in as is' : 'Hand in';
+  const line =
+    kind !== 'structured' || asIs || phase !== 'ready'
+      ? null
+      : fromPage > 0
+        ? `${(WORDS[fromPage] ?? String(fromPage)).toUpperCase()} BOX${fromPage === 1 ? '' : 'ES'} FROM YOUR PAGE · CHECKED BY YOU`
+        : `${typedMarks} TYPED MARK${typedMarks === 1 ? '' : 'S'}${pageMarks > 0 ? ` · ${pageMarks} FROM YOUR PAGE` : ''}`;
+  return (
+    <div id="hand-in" className="mt-[22px] lg:mt-0">
+      <button
+        ref={submitRef}
+        onClick={onClick}
+        disabled={disabled}
+        className="min-h-11 w-full bg-red-pen p-3.5 text-base font-black text-white shadow-[var(--shadow-panel)] disabled:opacity-50 lg:p-4"
+      >
+        {label}
+        {line && <small className="mt-1 block font-mono text-[10px] font-medium tracking-[0.1em] opacity-85">{line}</small>}
+      </button>
+      {saveState && phase !== 'marking' && (
+        <p aria-live="polite" className={`mt-1.5 text-right font-mono text-[10px] uppercase tracking-[0.1em] ${saveState === 'saved' ? 'text-dim' : 'text-red-pen'}`}>
+          {saveState === 'saved' ? 'Saved' : 'Couldn’t save — check your connection'}
+        </p>
+      )}
+      {phase === 'reading' && (
+        <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.1em] text-dim">Nothing is handed in until you press it</p>
+      )}
+      {asIs && (
+        <p className="mt-2 text-center text-xs leading-snug text-dim">
+          {blanks} box{blanks === 1 ? '' : 'es'} left blank. Blanks score zero, like the exam. You still get the worked solution.
+        </p>
+      )}
+    </div>
   );
 }
 
