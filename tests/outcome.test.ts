@@ -38,6 +38,13 @@ describe('attemptOutcome — one fold', () => {
     expect(attemptOutcome(allRight, question, [illegible])).toMatchObject({ earned: 5, assessed: 5, unassessedMarks: 3 });
   });
 
+  it('an illegible read is no read: even an award on it counts for nothing', () => {
+    const illegible = { legible: false, marker_version: 'v3', method_marks: [{ code: 'R1', awarded: true, reason: 'seen' }] };
+    const o = attemptOutcome(allRight, question, [illegible]);
+    expect(o).toEqual(attemptOutcome(allRight, question));
+    expect(states(o)).toMatchObject({ R1: 'unassessed' });
+  });
+
   it('a legible read the marker finished assesses the rows it decided', () => {
     const read = {
       legible: true,

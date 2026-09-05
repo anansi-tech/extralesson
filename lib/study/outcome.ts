@@ -75,11 +75,12 @@ export function attemptOutcome(
   const graded = new Set([...attempt.rubric_awarded, ...whole.graded]);
   const answer = answerSlots(question);
   const known = knownSlots(question);
+  // An illegible read is no read at all: nothing it says, either way, counts.
   const judging = reads.filter((r) => r.marker_version && r.legible);
 
   const rows: RowOutcome[] = whole.rows.map((row) => {
     const decisions = judging.flatMap((r) => (r.method_marks ?? []).filter((m) => m.code === row.code));
-    const awardedByRead = reads.some((r) => (r.method_marks ?? []).some((m) => m.code === row.code && m.awarded));
+    const awardedByRead = decisions.some((m) => m.awarded);
     const latest = decisions.at(-1);
     // A row whose slot the question no longer names was the grader's: it was
     // stored before rows named slots, and the grader marked the whole part.
