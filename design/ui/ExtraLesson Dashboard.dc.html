@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #e8e6e1; }
+  a { color: #1e2430; }
+  a:hover { color: #c1121f; }
+</style>
+</helmet>
+
+<section data-screen-label="Dashboard" style="padding:48px 40px 80px;font-family:'IBM Plex Mono',monospace">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#c1121f;font-weight:600">Notebook · /study</div>
+    <div style="font-family:Fraunces,serif;font-size:28px;font-weight:900;letter-spacing:-.02em;color:#1e2430">Dashboard, four states</div>
+    <div style="font-size:12px;color:#6e7687;max-width:720px;line-height:1.7">Chrome nav in a layout bar; one primary action per screen with its evidence beside it; the estimate is a panel, never the headline. 390px first, the same four at 1280px below.</div>
+  </div>
+
+  <!-- ============================ 390 ============================ -->
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+
+    <!-- A · new student -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">A</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">New student · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <div style="display:flex;align-items:center;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">May/June 2027</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Sign out</span></div>
+          </div>
+          <nav style="display:flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid #c1121f;font-weight:700">Notebook</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">History</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Progress</span>
+          </nav>
+        </div>
+        <div style="position:relative;padding:28px 20px 32px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-.015em;margin:0 0 4px">Kiara’s notebook<span style="color:#c1121f">.</span></h1>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-bottom:20px">Nothing in it yet</div>
+
+            <button style="width:100%;background:#c1121f;padding:18px 16px;text-align:left;font-weight:900;color:#fff;box-shadow:4px 4px 0 #1e2430;border:0;font-family:Fraunces,serif;font-size:19px;min-height:44px">Mark one question free
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:6px">ONE REAL QUESTION · NOT ONE OF YOUR SESSIONS</small>
+            </button>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 10px;margin-top:12px;align-items:baseline">
+              <span style="font-family:Caveat,cursive;font-size:18px;color:#c1121f;line-height:1">1</span><span style="font-size:13px;color:#3a4152">Work it on paper, the way the exam is.</span>
+              <span style="font-family:Caveat,cursive;font-size:18px;color:#c1121f;line-height:1">2</span><span style="font-size:13px;color:#3a4152">Photograph the page.</span>
+              <span style="font-family:Caveat,cursive;font-size:18px;color:#c1121f;line-height:1">3</span><span style="font-size:13px;color:#3a4152">Every method mark, and the reason for each.</span>
+            </div>
+
+            <div style="margin-top:24px;border-top:1px solid #e4b8b4;padding-top:14px">
+              <button style="width:100%;border:1.5px solid #1e2430;background:none;padding:12px;text-align:left;font-size:14px;font-family:Fraunces,serif;color:#1e2430;min-height:44px">Or start with the diagnostic
+                <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">About 12 minutes · finds where to start</small>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B · after first question -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">B</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">First question done · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <div style="display:flex;align-items:center;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">May/June 2027</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Sign out</span></div>
+          </div>
+          <nav style="display:flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid #c1121f;font-weight:700">Notebook</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">History</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Progress</span>
+          </nav>
+        </div>
+        <div style="position:relative;padding:28px 20px 32px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-.015em;margin:0 0 4px">Kiara’s notebook<span style="color:#c1121f">.</span></h1>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-bottom:20px">One question marked</div>
+
+            <button style="width:100%;background:#c1121f;padding:18px 16px;text-align:left;font-weight:900;color:#fff;box-shadow:4px 4px 0 #1e2430;border:0;font-family:Fraunces,serif;font-size:19px;min-height:44px">Start with a quick diagnostic
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:6px">ABOUT 12 MINUTES · EIGHT QUESTIONS · NOTHING SCORED</small>
+            </button>
+            <p style="margin:12px 0 0;font-size:13px;color:#3a4152;line-height:1.5">It puts your topics in order. Every session after it starts where it puts you.</p>
+
+            <section style="margin-top:24px;border-top:1.5px solid #1e2430;padding-top:14px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#1e2430">Your first question</div>
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:10px">
+                <span style="font-size:14px">Quadratics — factorising</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;flex:none">2/3</span>
+              </div>
+              <p style="margin:6px 0 0;font-family:Caveat,cursive;font-size:16px;color:#c1121f;line-height:1.375">Sign slip on the second root — the method marks both earned.</p>
+              <span style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px;margin-top:2px">Read the marking again</span>
+            </section>
+
+            <div style="margin-top:18px;border-top:1px solid #e4b8b4;padding-top:14px">
+              <button style="width:100%;border:1.5px solid #1e2430;background:none;padding:12px;text-align:left;font-size:14px;font-family:Fraunces,serif;color:#1e2430;min-height:44px">Or start a session now
+                <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">About 15 minutes at exam pace</small>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C · returning -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">C</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Returning · 390 · revised</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <div style="display:flex;align-items:center;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">May/June 2027</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Sign out</span></div>
+          </div>
+          <nav style="display:flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid #c1121f;font-weight:700">Notebook</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">History</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Progress</span>
+          </nav>
+        </div>
+        <div style="position:relative;padding:28px 20px 32px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <button style="width:100%;background:#c1121f;padding:18px 16px;text-align:left;font-weight:900;color:#fff;box-shadow:4px 4px 0 #1e2430;border:0;font-family:Fraunces,serif;font-size:19px;min-height:44px">Start today’s session
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:6px">15 MINUTES · ALGEBRAIC MANIPULATION FIRST</small>
+            </button>
+
+            <section style="margin-top:26px;border-top:1.5px solid #1e2430;padding-top:14px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#1e2430">Where your marks are</div>
+              <ul style="margin:10px 0 0;padding:0;list-style:none">
+                <li style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #f1eada"><span style="font-size:15px"><b style="font-weight:700">Algebraic manipulation</b></span><span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:#2e7d5b;flex:none">+8 marks</span></li>
+                <li style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #f1eada"><span style="font-size:15px"><b style="font-weight:700">Consumer arithmetic</b></span><span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:#2e7d5b;flex:none">+6 marks</span></li>
+                <li style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0"><span style="font-size:15px"><b style="font-weight:700">Geometry &amp; trigonometry</b></span><span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:#2e7d5b;flex:none">+5 marks</span></li>
+              </ul>
+              <p style="margin:2px 0 0;font-size:12px;line-height:1.5;color:#6e7687">Marks your estimate could gain from that topic. Module 1 comes first, so later modules wait.</p>
+            </section>
+
+            <section style="margin-top:22px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-top:1px solid #e4b8b4;padding-top:12px">
+              <div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Estimate today</div>
+                <div style="display:flex;align-items:baseline;gap:8px;margin-top:2px"><span style="font-size:20px;font-weight:900;color:#c1121f;line-height:1.1">Grade III</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">lower III</span></div>
+              </div>
+              <span style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px;flex:none">Progress</span>
+            </section>
+
+            <section style="margin-top:22px;border-top:1px solid #e4b8b4;padding-top:14px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#1e2430;margin-bottom:12px">Or choose for yourself</div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <button style="width:100%;border:1.5px solid #1e2430;background:none;padding:12px;text-align:left;font-size:14px;font-family:Fraunces,serif;color:#1e2430;min-height:44px">Revisit mistakes
+                  <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">14 marks lost across 6 objectives</small>
+                </button>
+                <button style="width:100%;border:1.5px solid #1e2430;background:none;padding:12px;text-align:left;font-size:14px;font-family:Fraunces,serif;color:#1e2430;min-height:44px">Take a diagnostic
+                  <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">12 minutes · re-ranks your topics</small>
+                </button>
+                <form style="margin:0;display:flex;gap:8px">
+                  <select style="min-width:0;flex:1;border:1.5px solid #1e2430;background:#fbf7ee;padding:10px;font-size:16px;font-family:Fraunces,serif;color:#1e2430"><option>M1 · Algebraic manipulation</option></select>
+                  <button style="border:1.5px solid #1e2430;background:none;padding:0 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430;min-height:44px">Go</button>
+                </form>
+              </div>
+            </section>
+
+            <section style="margin-top:22px;border-top:1px solid #e4b8b4;padding-top:14px">
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+                <div><div style="font-size:22px;font-weight:900">12</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;line-height:1.3;letter-spacing:.08em;color:#6e7687">sessions</div></div>
+                <div><div style="font-size:22px;font-weight:900">31</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;line-height:1.3;letter-spacing:.08em;color:#6e7687">questions</div></div>
+                <div><div style="font-size:22px;font-weight:900">248</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;line-height:1.3;letter-spacing:.08em;color:#6e7687">marks</div></div>
+                <div><div style="font-size:22px;font-weight:900">5</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;line-height:1.3;letter-spacing:.08em;color:#6e7687">day streak</div></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D · no estimate yet -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">D</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">No estimate yet · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <div style="display:flex;align-items:center;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">May/June 2027</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Sign out</span></div>
+          </div>
+          <nav style="display:flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid #c1121f;font-weight:700">Notebook</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">History</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Progress</span>
+          </nav>
+        </div>
+        <div style="position:relative;padding:28px 20px 32px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <button style="width:100%;background:#c1121f;padding:18px 16px;text-align:left;font-weight:900;color:#fff;box-shadow:4px 4px 0 #1e2430;border:0;font-family:Fraunces,serif;font-size:19px;min-height:44px">Start today’s session
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:6px">15 MINUTES · 23 MORE MARKS AND MODULE 1 CAN BE ESTIMATED</small>
+            </button>
+
+            <section style="margin-top:26px;border-top:1.5px solid #1e2430;padding-top:14px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#1e2430">Not yet estimated</div>
+              <p style="margin:8px 0 12px;font-size:13px;color:#3a4152;line-height:1.5">A grade needs enough marks seen in every module it covers. This is how close each one is.</p>
+              <ul style="margin:0;padding:0;list-style:none">
+                <li style="padding:10px 0;border-bottom:1px solid #f1eada">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><span style="font-size:14px"><b style="font-weight:700">Module 1</b></span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">12 of 35 marks seen</span></div>
+                  <div style="margin-top:6px;height:8px;border:1px solid #1e2430;background:#f1eada;border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:34%;background:#d9a62e"></i></div>
+                </li>
+                <li style="padding:10px 0;border-bottom:1px solid #f1eada">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><span style="font-size:14px"><b style="font-weight:700">Module 2</b></span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">0 of 35 marks seen</span></div>
+                  <div style="margin-top:6px;height:8px;border:1px solid #1e2430;background:#f1eada;border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:2%;background:#c1121f"></i></div>
+                </li>
+                <li style="padding:10px 0">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><span style="font-size:14px"><b style="font-weight:700">Module 3</b></span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">4 of 35 marks seen</span></div>
+                  <div style="margin-top:6px;height:8px;border:1px solid #1e2430;background:#f1eada;border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:11%;background:#c1121f"></i></div>
+                </li>
+              </ul>
+              <p style="margin:10px 0 0;font-size:12px;color:#6e7687;line-height:1.5">No letter is shown until then. A cold account’s arithmetic reads as a verdict, and it is not one.</p>
+            </section>
+
+            <section style="margin-top:22px;border-top:1px solid #e4b8b4;padding-top:14px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#1e2430;margin-bottom:12px">Or choose for yourself</div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <button disabled style="width:100%;border:1.5px solid #c9d6e8;background:none;padding:12px;text-align:left;font-size:14px;font-family:Fraunces,serif;color:#6e7687;min-height:44px">Revisit mistakes
+                  <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">Nothing far enough back yet — these are still fresh</small>
+                </button>
+                <button style="width:100%;border:1.5px solid #1e2430;background:none;padding:12px;text-align:left;font-size:14px;font-family:Fraunces,serif;color:#1e2430;min-height:44px">Take a diagnostic
+                  <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">12 minutes · ranks your topics</small>
+                </button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ 1280 ============================ -->
+  <div style="margin:56px 0 20px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">The same four at 1280 — one column of action, a 320px rail for the estimate and the counters</div>
+  <div style="display:flex;flex-direction:column;gap:32px">
+
+    <!-- A 1280 -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">A</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">New student · 1280</span></div>
+      <div style="width:1280px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+          <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;gap:24px">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <nav style="display:flex;align-items:center;gap:4px;flex:1;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid #c1121f;font-weight:700">Notebook</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">History</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Progress</span>
+            </nav>
+            <div style="display:flex;align-items:center;gap:16px;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687"><span>CSEC MATH · MAY/JUNE 2027</span><span style="text-transform:none">kiara@example.com</span><span style="text-decoration:underline;text-underline-offset:3px">Sign out</span></div>
+          </div>
+        </div>
+        <div style="position:relative;padding:32px 24px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="max-width:960px;margin:0 auto"><div style="position:relative">
+            <div style="position:absolute;top:-32px;bottom:-40px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:40px;align-items:start">
+              <div>
+                <h1 style="font-size:34px;font-weight:900;letter-spacing:-.02em;margin:0 0 4px;line-height:1.04">Kiara’s notebook<span style="color:#c1121f">.</span></h1>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-bottom:24px">Nothing in it yet</div>
+                <button style="width:100%;background:#c1121f;padding:20px;text-align:left;font-weight:900;color:#fff;box-shadow:4px 4px 0 #1e2430;border:0;font-family:Fraunces,serif;font-size:21px;min-height:44px">Mark one question free
+                  <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:6px">ONE REAL QUESTION · NOT ONE OF YOUR SESSIONS</small>
+                </button>
+                <div style="margin-top:26px;border-top:1px solid #e4b8b4;padding-top:14px">
+                  <button style="border:1.5px solid #1e2430;background:none;padding:12px 16px;text-align:left;font-size:14px;font-family:Fraunces,serif;color:#1e2430;min-height:44px">Or start with the diagnostic
+                    <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">About 12 minutes · finds where to start</small>
+                  </button>
+                </div>
+              </div>
+              <div style="background:#fff;border:1.5px solid #1e2430;padding:20px;box-shadow:3px 3px 0 #1e2430">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px">What happens next</div>
+                <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 10px;margin-top:14px;align-items:baseline">
+                  <span style="font-family:Caveat,cursive;font-size:20px;color:#c1121f;line-height:1">1</span><span style="font-size:14px">Work it on paper, the way the exam is.</span>
+                  <span style="font-family:Caveat,cursive;font-size:20px;color:#c1121f;line-height:1">2</span><span style="font-size:14px">Photograph the page.</span>
+                  <span style="font-family:Caveat,cursive;font-size:20px;color:#c1121f;line-height:1">3</span><span style="font-size:14px">Every method mark, and the reason for each.</span>
+                </div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B 1280 -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">B</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">First question done · 1280</span></div>
+      <div style="width:1280px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+          <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;gap:24px">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <nav style="display:flex;align-items:center;gap:4px;flex:1;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid #c1121f;font-weight:700">Notebook</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">History</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Progress</span>
+            </nav>
+            <div style="display:flex;align-items:center;gap:16px;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687"><span>CSEC MATH · MAY/JUNE 2027</span><span style="text-transform:none">kiara@example.com</span><span style="text-decoration:underline;text-underline-offset:3px">Sign out</span></div>
+          </div>
+        </div>
+        <div style="position:relative;padding:32px 24px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="max-width:960px;margin:0 auto"><div style="position:relative">
+            <div style="position:absolute;top:-32px;bottom:-40px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:40px;align-items:start">
+              <div>
+                <button style="width:100%;background:#c1121f;padding:20px;text-align:left;font-weight:900;color:#fff;box-shadow:4px 4px 0 #1e2430;border:0;font-family:Fraunces,serif;font-size:21px;min-height:44px">Start with a quick diagnostic
+                  <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:6px">ABOUT 12 MINUTES · EIGHT QUESTIONS · NOTHING SCORED</small>
+                </button>
+                <p style="margin:12px 0 0;font-size:14px;color:#3a4152;max-width:52ch">It puts your topics in order. Every session after it starts where it puts you.</p>
+                <div style="margin-top:26px;border-top:1px solid #e4b8b4;padding-top:14px">
+                  <button style="border:1.5px solid #1e2430;background:none;padding:12px 16px;text-align:left;font-size:14px;font-family:Fraunces,serif;color:#1e2430;min-height:44px">Or start a session now
+                    <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">About 15 minutes at exam pace</small>
+                  </button>
+                </div>
+              </div>
+              <div style="background:#fff;border:1.5px solid #1e2430;padding:20px;box-shadow:3px 3px 0 #1e2430">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px">Your first question</div>
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:14px"><span style="font-size:15px">Quadratics — factorising</span><span style="font-family:'IBM Plex Mono',monospace;font-size:15px;flex:none">2/3</span></div>
+                <p style="margin:8px 0 0;font-family:Caveat,cursive;font-size:17px;color:#c1121f;line-height:1.375">Sign slip on the second root — the method marks both earned.</p>
+                <span style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px;margin-top:4px">Read the marking again</span>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C 1280 -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">C</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Returning · 1280 · revised</span></div>
+      <div style="width:1280px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+          <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;gap:24px">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <nav style="display:flex;align-items:center;gap:4px;flex:1;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid #c1121f;font-weight:700">Notebook</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">History</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Progress</span>
+            </nav>
+            <div style="display:flex;align-items:center;gap:16px;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687"><span>CSEC MATH · MAY/JUNE 2027</span><span style="text-transform:none">kiara@example.com</span><span style="text-decoration:underline;text-underline-offset:3px">Sign out</span></div>
+          </div>
+        </div>
+        <div style="position:relative;padding:32px 24px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="max-width:960px;margin:0 auto"><div style="position:relative">
+            <div style="position:absolute;top:-32px;bottom:-40px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:40px;align-items:start">
+              <div>
+                <button style="width:100%;background:#c1121f;padding:20px;text-align:left;font-weight:900;color:#fff;box-shadow:4px 4px 0 #1e2430;border:0;font-family:Fraunces,serif;font-size:21px;min-height:44px">Start today’s session
+                  <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:6px">15 MINUTES · ALGEBRAIC MANIPULATION FIRST</small>
+                </button>
+
+                <section style="margin-top:28px;border-top:1.5px solid #1e2430;padding-top:16px">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#1e2430">Where your marks are</div>
+                  <ul style="margin:12px 0 0;padding:0;list-style:none">
+                    <li style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid #f1eada"><span style="font-size:16px"><b style="font-weight:700">Algebraic manipulation</b></span><span style="font-family:'IBM Plex Mono',monospace;font-size:15px;color:#2e7d5b;flex:none">+8 marks</span></li>
+                    <li style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid #f1eada"><span style="font-size:16px"><b style="font-weight:700">Consumer arithmetic</b></span><span style="font-family:'IBM Plex Mono',monospace;font-size:15px;color:#2e7d5b;flex:none">+6 marks</span></li>
+                    <li style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:12px 0"><span style="font-size:16px"><b style="font-weight:700">Geometry &amp; trigonometry</b></span><span style="font-family:'IBM Plex Mono',monospace;font-size:15px;color:#2e7d5b;flex:none">+5 marks</span></li>
+                  </ul>
+                  <p style="margin:2px 0 0;font-size:13px;color:#6e7687;line-height:1.5;max-width:56ch">Marks your estimate could gain from that topic. Module 1 comes first, so later modules wait — you can still practise any topic by name.</p>
+                </section>
+
+                <section style="margin-top:28px;border-top:1px solid #e4b8b4;padding-top:16px">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#1e2430;margin-bottom:14px">Or choose for yourself</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <button style="border:1.5px solid #1e2430;background:none;padding:12px;text-align:left;font-size:14px;font-family:Fraunces,serif;color:#1e2430;min-height:44px">Revisit mistakes
+                      <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">14 marks lost across 6 objectives</small>
+                    </button>
+                    <button style="border:1.5px solid #1e2430;background:none;padding:12px;text-align:left;font-size:14px;font-family:Fraunces,serif;color:#1e2430;min-height:44px">Take a diagnostic
+                      <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">12 minutes · re-ranks your topics</small>
+                    </button>
+                    <form style="margin:0;display:flex;gap:8px;grid-column:1 / -1">
+                      <select style="min-width:0;flex:1;border:1.5px solid #1e2430;background:#fbf7ee;padding:10px;font-size:15px;font-family:Fraunces,serif;color:#1e2430"><option>M1 · Algebraic manipulation</option></select>
+                      <button style="border:1.5px solid #1e2430;background:none;padding:0 16px;font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430;min-height:44px">Practise it</button>
+                    </form>
+                  </div>
+                </section>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:24px">
+                <section style="background:#fff;border:1.5px solid #1e2430;padding:20px;box-shadow:3px 3px 0 #1e2430">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px">Estimate today</div>
+                  <div style="display:flex;align-items:baseline;gap:10px;margin-top:12px"><span style="font-size:26px;font-weight:900;color:#c1121f;line-height:1">Grade III</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">lower III</span></div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;margin-top:8px;line-height:1.6">Paper 3 assumed at neutral carry-over. Moves with every question.</div>
+                  <span style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px;margin-top:4px">Topic by topic</span>
+                </section>
+                <section>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px">Since you started</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 12px;margin-top:14px">
+                    <div><div style="font-size:28px;font-weight:900;line-height:1">12</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:3px">sessions</div></div>
+                    <div><div style="font-size:28px;font-weight:900;line-height:1">31</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:3px">questions</div></div>
+                    <div><div style="font-size:28px;font-weight:900;line-height:1">248</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:3px">marks assessed</div></div>
+                    <div><div style="font-size:28px;font-weight:900;line-height:1">5</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:3px">days in a row</div></div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D 1280 -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">D</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">No estimate yet · 1280</span></div>
+      <div style="width:1280px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+          <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;gap:24px">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <nav style="display:flex;align-items:center;gap:4px;flex:1;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid #c1121f;font-weight:700">Notebook</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">History</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Progress</span>
+            </nav>
+            <div style="display:flex;align-items:center;gap:16px;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687"><span>CSEC MATH · MAY/JUNE 2027</span><span style="text-transform:none">kiara@example.com</span><span style="text-decoration:underline;text-underline-offset:3px">Sign out</span></div>
+          </div>
+        </div>
+        <div style="position:relative;padding:32px 24px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="max-width:960px;margin:0 auto"><div style="position:relative">
+            <div style="position:absolute;top:-32px;bottom:-40px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:40px;align-items:start">
+              <div>
+                <button style="width:100%;background:#c1121f;padding:20px;text-align:left;font-weight:900;color:#fff;box-shadow:4px 4px 0 #1e2430;border:0;font-family:Fraunces,serif;font-size:21px;min-height:44px">Start today’s session
+                  <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:6px">15 MINUTES · 23 MORE MARKS AND MODULE 1 CAN BE ESTIMATED</small>
+                </button>
+                <section style="margin-top:28px;border-top:1px solid #e4b8b4;padding-top:16px">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#1e2430;margin-bottom:14px">Or choose for yourself</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <button disabled style="border:1.5px solid #c9d6e8;background:none;padding:12px;text-align:left;font-size:14px;font-family:Fraunces,serif;color:#6e7687;min-height:44px">Revisit mistakes
+                      <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">Nothing far enough back yet</small>
+                    </button>
+                    <button style="border:1.5px solid #1e2430;background:none;padding:12px;text-align:left;font-size:14px;font-family:Fraunces,serif;color:#1e2430;min-height:44px">Take a diagnostic
+                      <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">12 minutes · ranks your topics</small>
+                    </button>
+                  </div>
+                </section>
+              </div>
+              <section style="background:#fff;border:1.5px solid #1e2430;padding:20px;box-shadow:3px 3px 0 #1e2430">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px">Not yet estimated</div>
+                <p style="margin:12px 0 12px;font-size:13px;color:#3a4152;line-height:1.5">A grade needs enough marks seen in every module it covers.</p>
+                <ul style="margin:0;padding:0;list-style:none">
+                  <li style="padding:10px 0;border-bottom:1px solid #f1eada">
+                    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><span style="font-size:14px"><b style="font-weight:700">Module 1</b></span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">12 of 35</span></div>
+                    <div style="margin-top:6px;height:8px;border:1px solid #1e2430;background:#f1eada;border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:34%;background:#d9a62e"></i></div>
+                  </li>
+                  <li style="padding:10px 0;border-bottom:1px solid #f1eada">
+                    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><span style="font-size:14px"><b style="font-weight:700">Module 2</b></span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">0 of 35</span></div>
+                    <div style="margin-top:6px;height:8px;border:1px solid #1e2430;background:#f1eada;border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:2%;background:#c1121f"></i></div>
+                  </li>
+                  <li style="padding:10px 0">
+                    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><span style="font-size:14px"><b style="font-weight:700">Module 3</b></span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">4 of 35</span></div>
+                    <div style="margin-top:6px;height:8px;border:1px solid #1e2430;background:#f1eada;border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:11%;background:#c1121f"></i></div>
+                  </li>
+                </ul>
+                <p style="margin:10px 0 0;font-size:12px;color:#6e7687;line-height:1.5">No letter until then — a cold account’s arithmetic reads as a verdict, and it is not one.</p>
+              </section>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>

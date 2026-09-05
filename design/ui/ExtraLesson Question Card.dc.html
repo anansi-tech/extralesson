@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #e8e6e1; }
+  a { color: #1e2430; }
+  a:hover { color: #c1121f; }
+</style>
+</helmet>
+
+<section data-screen-label="Question card" style="padding:48px 40px 80px;font-family:'IBM Plex Mono',monospace">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#c1121f;font-weight:600">Session · /study/session/[id]</div>
+    <div style="font-family:Fraunces,serif;font-size:28px;font-weight:900;letter-spacing:-.02em;color:#1e2430">Question card, and the capture states</div>
+    <div style="font-size:12px;color:#6e7687;max-width:720px;line-height:1.7">The camera sits above the boxes, because the page is the answer and the boxes are the receipt. One primary action: hand in. 390px first, 1280px below.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+
+    <!-- 1 · base -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">1</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Unanswered · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700">Question 2 of 3</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">7 of 21 marks done</span>
+        </div>
+        <div style="position:relative;padding:20px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <article style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:4px 4px 0 #1e2430">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+              <div style="font-size:18px">The diagram shows triangle ABC, right-angled at B, with AB = 8 cm and angle ACB = 34°.</div>
+              <span style="flex:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687">[7 marks]</span>
+            </div>
+
+            <div style="margin:12px -20px 0;border-top:1px solid #f1eada;border-bottom:1px solid #f1eada;background:#fff;overflow-x:auto">
+              <div style="padding:8px;box-sizing:content-box;margin-inline:auto;width:280px">
+                <svg viewBox="0 0 280 150" style="width:100%;height:auto" role="img" aria-label="Right-angled triangle ABC">
+                  <polygon points="40,120 40,30 240,120" fill="none" stroke="#1e2430" stroke-width="1.5"></polygon>
+                  <polyline points="40,104 56,104 56,120" fill="none" stroke="#1e2430" stroke-width="1.5"></polyline>
+                  <path d="M 216 120 A 26 26 0 0 0 224 108" fill="none" stroke="#1e2430" stroke-width="1.5"></path>
+                  <text x="30" y="26" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">A</text>
+                  <text x="28" y="134" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">B</text>
+                  <text x="240" y="134" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">C</text>
+                  <text x="14" y="80" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#6e7687">8 cm</text>
+                  <text x="196" y="106" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#6e7687">34°</text>
+                </svg>
+              </div>
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#6e7687;text-align:center;margin-top:4px">Not drawn to scale</div>
+
+            <div style="margin-top:16px;border-left:3px solid #e4b8b4;background:#fffdf6;padding:8px 12px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Your working on paper</div>
+              <p style="margin:6px 0 0;font-size:12px;line-height:1.375;color:#6e7687">Work it on paper, then photograph the page. We type up what we read and fill in the single-answer boxes; you check them, fill in the rest, and hand in.</p>
+              <button style="margin-top:10px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Photograph your working</button>
+            </div>
+
+            <div style="margin-top:20px;display:flex;flex-direction:column;gap:18px">
+              <div>
+                <div style="display:flex;align-items:baseline;gap:8px;font-size:14px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(a)</span><span>Calculate the length of BC.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[3]</span></div>
+                <input placeholder="Answer to (a)" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+                <ul style="margin:6px 0 0;padding:0;list-style:none"><li style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.375;color:#6e7687">Give the length in cm to 1 decimal place.</li></ul>
+              </div>
+              <div>
+                <div style="display:flex;align-items:baseline;gap:8px;font-size:14px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(b)</span><span>Calculate the area of triangle ABC.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[2]</span></div>
+                <input placeholder="Answer to (b)" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+                <div style="margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:6px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Insert</span>
+                  <button style="min-height:44px;min-width:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;line-height:1;box-shadow:2px 2px 0 #1e2430">√</button>
+                  <button style="min-height:44px;min-width:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;line-height:1;box-shadow:2px 2px 0 #1e2430">°</button>
+                  <button style="min-height:44px;min-width:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;line-height:1;box-shadow:2px 2px 0 #1e2430">²</button>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;align-items:baseline;gap:8px;font-size:14px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(c)</span><span>Show that the perimeter is less than 35 cm.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[2]</span></div>
+                <p style="margin:8px 0 0;border-left:3px solid #f1eada;background:#fffdf6;padding:6px 12px;font-size:13px;color:#6e7687;line-height:1.375">Work this one on paper. Photograph the page and it is marked from there — until then these marks are left out of your estimate.</p>
+              </div>
+            </div>
+
+            <button style="margin-top:22px;width:100%;background:#c1121f;padding:14px;font-family:Fraunces,serif;font-weight:900;font-size:16px;color:#fff;border:0;box-shadow:3px 3px 0 #1e2430;min-height:44px">Hand in
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:4px">5 TYPED MARKS · 2 FROM YOUR PAGE</small>
+            </button>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 · reading -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">2</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Reading your page · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700">Question 2 of 3</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">7 of 21 marks done</span>
+        </div>
+        <div style="position:relative;padding:20px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <article style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:4px 4px 0 #1e2430">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+              <div style="font-size:18px">The diagram shows triangle ABC, right-angled at B, with AB = 8 cm and angle ACB = 34°.</div>
+              <span style="flex:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687">[7 marks]</span>
+            </div>
+            <div style="margin-top:16px;border-left:3px solid #e4b8b4;background:#fffdf6;padding:8px 12px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Your working on paper</div>
+              <div style="margin-top:10px;display:flex;align-items:center;gap:12px">
+                <div style="width:64px;height:64px;flex:none;border:1.5px solid #1e2430;background:repeating-linear-gradient(to bottom,#fffdf6 0 9px,#c9d6e8 9px 10px);position:relative;overflow:hidden">
+                  <span style="position:absolute;left:6px;top:8px;font-family:Caveat,cursive;font-size:12px;color:#2a3550;line-height:10px">tan34 = 8/BC<br>BC = 8/tan34<br>= 11.9</span>
+                </div>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Reading your page…</span>
+              </div>
+              <button disabled style="margin-top:10px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430;opacity:.6">Reading…</button>
+            </div>
+            <div style="margin-top:20px;display:flex;flex-direction:column;gap:18px">
+              <div>
+                <div style="display:flex;align-items:baseline;gap:8px;font-size:14px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(a)</span><span>Calculate the length of BC.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[3]</span></div>
+                <input placeholder="Answer to (a)" disabled style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430;opacity:.6">
+              </div>
+              <div>
+                <div style="display:flex;align-items:baseline;gap:8px;font-size:14px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(b)</span><span>Calculate the area of triangle ABC.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[2]</span></div>
+                <input placeholder="Answer to (b)" disabled style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430;opacity:.6">
+              </div>
+            </div>
+            <button disabled style="margin-top:22px;width:100%;background:#c1121f;padding:14px;font-family:Fraunces,serif;font-weight:900;font-size:16px;color:#fff;border:0;box-shadow:3px 3px 0 #1e2430;min-height:44px;opacity:.5">Reading your page…</button>
+            <p style="margin:8px 0 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Nothing is handed in until you press it</p>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 · prefilled -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">3</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Read, boxes filled · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700">Question 2 of 3</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">7 of 21 marks done</span>
+        </div>
+        <div style="position:relative;padding:20px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <article style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:4px 4px 0 #1e2430">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+              <div style="font-size:18px">The diagram shows triangle ABC, right-angled at B, with AB = 8 cm and angle ACB = 34°.</div>
+              <span style="flex:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687">[7 marks]</span>
+            </div>
+
+            <div style="margin-top:16px;border-left:3px solid #e4b8b4;background:#fffdf6;padding:8px 12px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">This is what we read</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687;margin-top:6px">(a)</div>
+              <ul style="margin:2px 0 0;padding:0 0 0 12px;list-style:none;border-left:3px solid #f1eada">
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.375">tan 34 = 8 / BC</li>
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.375">BC = 8 / tan 34 = 11.9 <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">hard to read</span></li>
+              </ul>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687;margin-top:8px">(b)</div>
+              <ul style="margin:2px 0 0;padding:0 0 0 12px;list-style:none;border-left:3px solid #f1eada">
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.375">½ × 8 × 11.9 = 47.6</li>
+              </ul>
+              <div style="margin-top:10px;display:flex;gap:10px">
+                <button style="flex:1;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Take it again</button>
+                <span style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">1 retake left</span>
+              </div>
+            </div>
+
+            <p style="margin:10px 0 0;border-left:3px solid #e4b8b4;background:#fffdf6;padding:6px 12px;font-size:12px;line-height:1.375;color:#6e7687">We filled the single answers for (a), (b). Enter the rest yourself: <span style="text-decoration:underline;text-underline-offset:2px;color:#1e2430">(c)</span>.</p>
+
+            <div style="margin-top:20px;display:flex;flex-direction:column;gap:18px">
+              <div>
+                <div style="display:flex;align-items:baseline;gap:8px;font-size:14px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(a)</span><span>Calculate the length of BC.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[3]</span></div>
+                <input value="11.9" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:4px">From your page — check it</div>
+              </div>
+              <div>
+                <div style="display:flex;align-items:baseline;gap:8px;font-size:14px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(b)</span><span>Calculate the area of triangle ABC.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[2]</span></div>
+                <input value="47.6" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:4px">From your page — check it</div>
+              </div>
+              <div>
+                <div style="display:flex;align-items:baseline;gap:8px;font-size:14px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(c)</span><span>Show that the perimeter is less than 35 cm.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[2]</span></div>
+                <p style="margin:8px 0 0;border-left:3px solid #f1eada;background:#fffdf6;padding:6px 12px;font-size:13px;color:#6e7687;line-height:1.375">Marked from your photograph — nothing to type.</p>
+              </div>
+            </div>
+
+            <button style="margin-top:22px;width:100%;background:#c1121f;padding:14px;font-family:Fraunces,serif;font-weight:900;font-size:16px;color:#fff;border:0;box-shadow:3px 3px 0 #1e2430;min-height:44px">Hand in
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:4px">TWO BOXES FROM YOUR PAGE · CHECKED BY YOU</small>
+            </button>
+            <p style="margin:6px 0 0;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Saved</p>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 · hand in as is -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">4</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Blanks left · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700">Question 2 of 3</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">7 of 21 marks done</span>
+        </div>
+        <div style="position:relative;padding:20px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <article style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:4px 4px 0 #1e2430">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+              <div style="font-size:18px">The diagram shows triangle ABC, right-angled at B, with AB = 8 cm and angle ACB = 34°.</div>
+              <span style="flex:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687">[7 marks]</span>
+            </div>
+            <div style="margin-top:20px;display:flex;flex-direction:column;gap:18px">
+              <div>
+                <div style="display:flex;align-items:baseline;gap:8px;font-size:14px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(a)</span><span>Calculate the length of BC.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[3]</span></div>
+                <input value="11.9" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+              </div>
+              <div>
+                <div style="display:flex;align-items:baseline;gap:8px;font-size:14px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(b)</span><span>Calculate the area of triangle ABC.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[2]</span></div>
+                <input placeholder="Answer to (b)" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+              </div>
+            </div>
+            <button style="margin-top:22px;width:100%;background:#c1121f;padding:14px;font-family:Fraunces,serif;font-weight:900;font-size:16px;color:#fff;border:0;box-shadow:3px 3px 0 #1e2430;min-height:44px">Hand in as is</button>
+            <p style="margin:8px 0 0;text-align:center;font-size:12px;color:#6e7687;line-height:1.375">1 box left blank. Blanks score zero, like the exam — and you still get the worked solution.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ 1280 ============================ -->
+  <div style="margin:56px 0 20px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">1280 — the figure stays beside the parts, so nothing has to be recalled</div>
+  <div style="display:flex;flex-direction:column;gap:32px">
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">1</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Unanswered · 1280</span></div>
+      <div style="width:1280px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+          <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;gap:24px;padding:10px 0">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;flex:1">Question 2 of 3</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;flex:none">7 of 21 marks done</span>
+          </div>
+        </div>
+        <div style="position:relative;padding:32px 24px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="max-width:960px;margin:0 auto"><div style="position:relative">
+            <div style="position:absolute;top:-32px;bottom:-40px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+            <article style="border:1.5px solid #1e2430;background:#fff;padding:28px;box-shadow:4px 4px 0 #1e2430">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+                <div style="font-size:18px;max-width:62ch">The diagram shows triangle ABC, right-angled at B, with AB = 8 cm and angle ACB = 34°.</div>
+                <span style="flex:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687">[7 marks]</span>
+              </div>
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:40px;margin-top:20px;align-items:start">
+                <div style="display:flex;flex-direction:column;gap:20px">
+                  <div>
+                    <div style="display:flex;align-items:baseline;gap:8px;font-size:15px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(a)</span><span>Calculate the length of BC.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[3]</span></div>
+                    <input placeholder="Answer to (a)" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+                    <ul style="margin:6px 0 0;padding:0;list-style:none"><li style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">Give the length in cm to 1 decimal place.</li></ul>
+                  </div>
+                  <div>
+                    <div style="display:flex;align-items:baseline;gap:8px;font-size:15px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(b)</span><span>Calculate the area of triangle ABC.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[2]</span></div>
+                    <input placeholder="Answer to (b)" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+                    <div style="margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:6px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Insert</span>
+                      <button style="min-height:44px;min-width:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;line-height:1;box-shadow:2px 2px 0 #1e2430">√</button>
+                      <button style="min-height:44px;min-width:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;line-height:1;box-shadow:2px 2px 0 #1e2430">°</button>
+                      <button style="min-height:44px;min-width:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;line-height:1;box-shadow:2px 2px 0 #1e2430">²</button>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="display:flex;align-items:baseline;gap:8px;font-size:15px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(c)</span><span>Show that the perimeter is less than 35 cm.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[2]</span></div>
+                    <p style="margin:8px 0 0;border-left:3px solid #f1eada;background:#fffdf6;padding:6px 12px;font-size:13px;color:#6e7687">Work this one on paper. Photograph the page and it is marked from there.</p>
+                  </div>
+                  <button style="width:100%;background:#c1121f;padding:16px;font-family:Fraunces,serif;font-weight:900;font-size:17px;color:#fff;border:0;box-shadow:3px 3px 0 #1e2430;min-height:44px">Hand in
+                    <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:4px">5 TYPED MARKS · 2 FROM YOUR PAGE</small>
+                  </button>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:20px">
+                  <div>
+                    <div style="border:1px solid #f1eada;background:#fff;padding:8px">
+                      <svg viewBox="0 0 280 150" style="width:100%;height:auto" role="img" aria-label="Right-angled triangle ABC">
+                        <polygon points="40,120 40,30 240,120" fill="none" stroke="#1e2430" stroke-width="1.5"></polygon>
+                        <polyline points="40,104 56,104 56,120" fill="none" stroke="#1e2430" stroke-width="1.5"></polyline>
+                        <path d="M 216 120 A 26 26 0 0 0 224 108" fill="none" stroke="#1e2430" stroke-width="1.5"></path>
+                        <text x="30" y="26" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">A</text>
+                        <text x="28" y="134" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">B</text>
+                        <text x="240" y="134" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">C</text>
+                        <text x="14" y="80" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#6e7687">8 cm</text>
+                        <text x="196" y="106" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#6e7687">34°</text>
+                      </svg>
+                    </div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#6e7687;text-align:center;margin-top:4px">Not drawn to scale</div>
+                  </div>
+                  <div style="border-left:3px solid #e4b8b4;background:#fffdf6;padding:10px 12px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Your working on paper</div>
+                    <p style="margin:6px 0 0;font-size:12px;line-height:1.375;color:#6e7687">Photograph the page and we type up what we read, then fill the single-answer boxes for you to check.</p>
+                    <button style="margin-top:10px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Photograph your working</button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">3</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Read, boxes filled · 1280</span></div>
+      <div style="width:1280px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+          <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;gap:24px;padding:10px 0">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;flex:1">Question 2 of 3</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;flex:none">7 of 21 marks done</span>
+          </div>
+        </div>
+        <div style="position:relative;padding:32px 24px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="max-width:960px;margin:0 auto"><div style="position:relative">
+            <div style="position:absolute;top:-32px;bottom:-40px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+            <article style="border:1.5px solid #1e2430;background:#fff;padding:28px;box-shadow:4px 4px 0 #1e2430">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+                <div style="font-size:18px;max-width:62ch">The diagram shows triangle ABC, right-angled at B, with AB = 8 cm and angle ACB = 34°.</div>
+                <span style="flex:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687">[7 marks]</span>
+              </div>
+              <p style="margin:16px 0 0;border-left:3px solid #e4b8b4;background:#fffdf6;padding:6px 12px;font-size:13px;line-height:1.375;color:#6e7687;max-width:62ch">We filled the single answers for (a), (b). Enter the rest yourself: <span style="text-decoration:underline;text-underline-offset:2px;color:#1e2430">(c)</span>.</p>
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:40px;margin-top:20px;align-items:start">
+                <div style="display:flex;flex-direction:column;gap:20px">
+                  <div>
+                    <div style="display:flex;align-items:baseline;gap:8px;font-size:15px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(a)</span><span>Calculate the length of BC.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[3]</span></div>
+                    <input value="11.9" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:4px">From your page — check it</div>
+                  </div>
+                  <div>
+                    <div style="display:flex;align-items:baseline;gap:8px;font-size:15px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(b)</span><span>Calculate the area of triangle ABC.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[2]</span></div>
+                    <input value="47.6" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:4px">From your page — check it</div>
+                  </div>
+                  <div>
+                    <div style="display:flex;align-items:baseline;gap:8px;font-size:15px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">(c)</span><span>Show that the perimeter is less than 35 cm.</span><span style="margin-left:auto;flex:none;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">[2]</span></div>
+                    <p style="margin:8px 0 0;border-left:3px solid #f1eada;background:#fffdf6;padding:6px 12px;font-size:13px;color:#6e7687">Marked from your photograph — nothing to type.</p>
+                  </div>
+                  <button style="width:100%;background:#c1121f;padding:16px;font-family:Fraunces,serif;font-weight:900;font-size:17px;color:#fff;border:0;box-shadow:3px 3px 0 #1e2430;min-height:44px">Hand in
+                    <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:4px">TWO BOXES FROM YOUR PAGE · CHECKED BY YOU</small>
+                  </button>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:20px">
+                  <div style="border-left:3px solid #e4b8b4;background:#fffdf6;padding:10px 12px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">This is what we read</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687;margin-top:8px">(a)</div>
+                    <ul style="margin:2px 0 0;padding:0 0 0 12px;list-style:none;border-left:3px solid #f1eada">
+                      <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.375">tan 34 = 8 / BC</li>
+                      <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.375">BC = 8 / tan 34 = 11.9 <span style="font-size:10px;color:#6e7687">hard to read</span></li>
+                    </ul>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687;margin-top:8px">(b)</div>
+                    <ul style="margin:2px 0 0;padding:0 0 0 12px;list-style:none;border-left:3px solid #f1eada">
+                      <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.375">½ × 8 × 11.9 = 47.6</li>
+                    </ul>
+                    <div style="margin-top:10px;display:flex;gap:10px;align-items:center">
+                      <button style="flex:1;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Take it again</button>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;flex:none">1 retake left</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="border:1px solid #f1eada;background:#fff;padding:8px">
+                      <svg viewBox="0 0 280 150" style="width:100%;height:auto" role="img" aria-label="Right-angled triangle ABC">
+                        <polygon points="40,120 40,30 240,120" fill="none" stroke="#1e2430" stroke-width="1.5"></polygon>
+                        <polyline points="40,104 56,104 56,120" fill="none" stroke="#1e2430" stroke-width="1.5"></polyline>
+                        <path d="M 216 120 A 26 26 0 0 0 224 108" fill="none" stroke="#1e2430" stroke-width="1.5"></path>
+                        <text x="30" y="26" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">A</text>
+                        <text x="28" y="134" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">B</text>
+                        <text x="240" y="134" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">C</text>
+                        <text x="14" y="80" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#6e7687">8 cm</text>
+                        <text x="196" y="106" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#6e7687">34°</text>
+                      </svg>
+                    </div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#6e7687;text-align:center;margin-top:4px">Not drawn to scale</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>

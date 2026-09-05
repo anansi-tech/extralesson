@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #fbf7ee; }
+  a { color: #1e2430; text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { color: #c1121f; }
+</style>
+</helmet>
+
+<div style="background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55;padding:0 0 80px">
+
+  <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+    <div style="max-width:960px;margin:0 auto;display:flex;align-items:baseline;gap:24px;padding:14px 0">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">ExtraLesson · notebook system</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Values taken from app/globals.css, app/landing.css and the study components</div>
+    </div>
+  </div>
+
+  <div style="position:relative;padding:32px 24px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+    <div style="max-width:960px;margin:0 auto">
+      <div style="position:relative;max-width:820px">
+        <div style="position:absolute;top:-32px;bottom:-32px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+
+        <h1 style="font-size:34px;font-weight:900;letter-spacing:-.02em;line-height:1.04;margin:0 0 8px">The system<span style="color:#c1121f">.</span></h1>
+        <p style="font-size:15px;color:#3a4152;margin:0 0 32px;max-width:60ch">Chrome nav, ruled paper with a margin rule, serif headings, mono-caps labels, one red, one hard offset shadow reserved for primary cards, one corner radius. Everything below is a value already in the codebase or a value the codebase implies.</p>
+
+        <!-- ============ TOKENS ============ -->
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px">01 · Colour</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:16px;background:#e4b8b4;border:1.5px solid #1e2430">
+          <div style="background:#fff;padding:0"><div style="height:52px;background:#fbf7ee"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em">--paper</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#fbf7ee · page ground</div></div></div>
+          <div style="background:#fff"><div style="height:52px;background:#f1eada"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em">--paper-deep</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#f1eada · inset fills</div></div></div>
+          <div style="background:#fff"><div style="height:52px;background:#1e2430"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em">--ink</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#1e2430 · text, rules</div></div></div>
+          <div style="background:#fff"><div style="height:52px;background:#c1121f"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em">--red</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#c1121f · the one red</div></div></div>
+          <div style="background:#fff"><div style="height:52px;background:#c9d6e8"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em">--rule</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#c9d6e8 · ruled lines</div></div></div>
+          <div style="background:#fff"><div style="height:52px;background:#e4b8b4"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em">--margin</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#e4b8b4 · margin rule</div></div></div>
+          <div style="background:#fff"><div style="height:52px;background:#2e7d5b"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em">--green</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#2e7d5b · awarded</div></div></div>
+          <div style="background:#fff"><div style="height:52px;background:#d9a62e"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em">--amber</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#d9a62e · partial, retry</div></div></div>
+          <div style="background:#fff"><div style="height:52px;background:#6e7687"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em">--dim</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#6e7687 · secondary text</div></div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:1px;background:#e4b8b4;border:1.5px solid #1e2430;border-top:0">
+          <div style="background:#fff"><div style="height:36px;background:#fdf1f0"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px">--red-tint</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#fdf1f0</div></div></div>
+          <div style="background:#fff"><div style="height:36px;background:#e8f0e9"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px">--green-tint</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#e8f0e9</div></div></div>
+          <div style="background:#fff"><div style="height:36px;background:#fdf8ec"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px">--amber-tint</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#fdf8ec</div></div></div>
+          <div style="background:#fff"><div style="height:36px;background:#edf1f8"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px">--blue-tint</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#edf1f8 · AK chip</div></div></div>
+          <div style="background:#fff"><div style="height:36px;background:#fffdf6"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px">--note</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#fffdf6 · margin notes</div></div></div>
+          <div style="background:#fff"><div style="height:36px;background:#b8860b"></div><div style="padding:8px 10px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px">--withheld</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">#b8860b · form withheld</div></div></div>
+        </div>
+
+        <!-- ============ TYPE ============ -->
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px;margin-top:48px">02 · Type</div>
+        <div style="margin-top:16px;border:1.5px solid #1e2430;background:#fff">
+          <div style="display:grid;grid-template-columns:1fr 200px;gap:16px;align-items:baseline;padding:14px 16px;border-bottom:1px solid #f1eada"><div style="font-size:34px;font-weight:900;letter-spacing:-.02em;line-height:1.04">Page heading</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">--text-display<br>34px / 900 / -.02em / 1.04</div></div>
+          <div style="display:grid;grid-template-columns:1fr 200px;gap:16px;align-items:baseline;padding:14px 16px;border-bottom:1px solid #f1eada"><div style="font-size:24px;font-weight:900;letter-spacing:-.015em">Screen title</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">--text-title<br>24px / 900 / -.015em</div></div>
+          <div style="display:grid;grid-template-columns:1fr 200px;gap:16px;align-items:baseline;padding:14px 16px;border-bottom:1px solid #f1eada"><div style="font-size:18px">Question stem, 18px</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">--text-stem<br>18px / 400 / 1.55</div></div>
+          <div style="display:grid;grid-template-columns:1fr 200px;gap:16px;align-items:baseline;padding:14px 16px;border-bottom:1px solid #f1eada"><div style="font-size:15px">Body copy, worked solutions, prose</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">--text-body<br>15px / 400 / 1.55</div></div>
+          <div style="display:grid;grid-template-columns:1fr 200px;gap:16px;align-items:baseline;padding:14px 16px;border-bottom:1px solid #f1eada"><div style="font-size:13px">Rows, reasons, list items</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">--text-sm<br>13px / 1.375</div></div>
+          <div style="display:grid;grid-template-columns:1fr 200px;gap:16px;align-items:baseline;padding:14px 16px;border-bottom:1px solid #f1eada"><div style="font-size:12px;color:#6e7687">Explanatory caption under a control</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">--text-caption<br>12px / dim / 1.375</div></div>
+          <div style="display:grid;grid-template-columns:1fr 200px;gap:16px;align-items:baseline;padding:14px 16px;border-bottom:1px solid #f1eada"><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Section label</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">--label<br>mono 11px / 700 / .14em<br>+ 1.5px margin underline</div></div>
+          <div style="display:grid;grid-template-columns:1fr 200px;gap:16px;align-items:baseline;padding:14px 16px;border-bottom:1px solid #f1eada"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Nav item · meta · button sublabel</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">--label-sm<br>mono 10px / .1em</div></div>
+          <div style="display:grid;grid-template-columns:1fr 200px;gap:16px;align-items:baseline;padding:14px 16px"><div style="font-family:Caveat,cursive;font-size:15px;color:#c1121f">You divided by 3 before squaring.</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">--font-hand<br>Caveat 15px / red · red-pen line only</div></div>
+        </div>
+        <p style="font-size:12px;color:#6e7687;margin:10px 0 0">Three families, no more: Fraunces for everything read as prose, IBM Plex Mono for labels and any figure that is data, Caveat for the red pen and the marking glyphs. Caveat never carries information on its own.</p>
+
+        <!-- ============ SPACE + GEOMETRY ============ -->
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px;margin-top:48px">03 · Space, and the margin rule</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:16px">
+          <div style="border:1.5px solid #1e2430;background:#fff;padding:16px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-bottom:12px">Scale · multiples of 4, ruled at 32</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:4px;background:#c1121f"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">--s1 · 4px · glyph gaps</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:8px;background:#c1121f"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">--s2 · 8px · label to content</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:12px;background:#c1121f"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">--s3 · 12px · row padding</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:16px;background:#c1121f"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">--s4 · 16px · button padding</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:20px;background:#c1121f"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">--s5 · 20px · card padding, page pad 390</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:24px;background:#c1121f"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">--s6 · 24px · block gap, page pad 1280</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:32px;background:#c1121f"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">--s8 · 32px · section gap = one rule</span></div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:40px;background:#c1121f"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">--s10 · 40px · desktop column gap</span></div>
+            </div>
+            <div style="margin-top:14px;border-top:1px solid #f1eada;padding-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.9">--rule-gap 32px<br>--rule-baseline 21px (measured, not derived)<br>--target 44px minimum<br>--radius 4px — chips and bars only</div>
+          </div>
+
+          <div style="border:1.5px solid #1e2430;background:#fff;padding:16px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-bottom:12px">Margin rule at 390</div>
+            <div style="position:relative;height:96px;border:1px solid #f1eada;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+              <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+              <div style="position:absolute;left:20px;top:6px;font-size:12px">Text starts here</div>
+              <div style="position:absolute;left:16px;bottom:4px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:#c1121f">↑ 16px from the viewport</div>
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.9;margin-top:10px">--page-pad-sm 20px<br>--rule-offset-sm 16px<br>rule sits 4px outside the text edge</div>
+
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin:20px 0 12px">Margin rule at 1280</div>
+            <div style="position:relative;height:96px;border:1px solid #f1eada;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px);overflow:hidden">
+              <div style="position:absolute;left:60px;top:0;bottom:0;width:1.5px;background:#e4b8b4"></div>
+              <div style="position:absolute;left:74px;top:6px;font-size:12px">Text column, 576px</div>
+              <div style="position:absolute;left:74px;bottom:4px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:#c1121f">rule tracks the column, not the window</div>
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.9;margin-top:10px">--page-pad-lg 24px<br>--col 576px · --bar-width 960px<br>--rule-offset-lg -14px from the column</div>
+          </div>
+        </div>
+
+        <!-- ============ SHADOW ============ -->
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px;margin-top:48px">04 · The one shadow</div>
+        <div style="display:flex;flex-wrap:wrap;gap:32px;margin-top:20px;align-items:flex-start">
+          <div style="width:200px"><div style="border:1.5px solid #1e2430;background:#fff;padding:14px;box-shadow:4px 4px 0 #1e2430;font-size:13px">Primary card</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;margin-top:8px;line-height:1.7">--shadow-card<br>4px 4px 0 ink · the question, the action</div></div>
+          <div style="width:200px"><div style="border:1.5px solid #1e2430;background:#fff;padding:14px;box-shadow:3px 3px 0 #1e2430;font-size:13px">Panel</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;margin-top:8px;line-height:1.7">--shadow-panel<br>3px 3px 0 ink · estimate, counters</div></div>
+          <div style="width:200px"><div style="border:1.5px solid #1e2430;background:#fff;padding:14px;font-size:13px">Everything else</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;margin-top:8px;line-height:1.7">no shadow · rules and alignment do the work</div></div>
+          <div style="width:200px"><div style="background:#1e2430;color:#fbf7ee;padding:14px;box-shadow:3px 3px 0 #c1121f;font-size:13px">On ink</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;margin-top:8px;line-height:1.7">--shadow-on-ink<br>3px 3px 0 red · ink surfaces only</div></div>
+        </div>
+
+        <!-- ============ BUTTONS ============ -->
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px;margin-top:48px">05 · Buttons</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:20px">
+
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-bottom:10px">Primary · one per screen</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <button style="width:100%;background:#c1121f;color:#fff;border:0;padding:16px;font-family:Fraunces,serif;font-weight:900;font-size:16px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Start today’s session
+                <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;opacity:.85;margin-top:4px">ABOUT 15 MINUTES AT EXAM PACE</small>
+              </button>
+              <div style="display:flex;gap:12px;align-items:flex-start">
+                <div style="flex:1"><button style="width:100%;background:#c1121f;color:#fff;border:0;padding:14px;font-family:Fraunces,serif;font-weight:900;font-size:15px;box-shadow:2px 2px 0 #1e2430;transform:translate(2px,2px);min-height:44px">Pressed</button><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;margin-top:6px">shadow 2px, translate 2px</div></div>
+                <div style="flex:1"><button style="width:100%;background:#c1121f;color:#fff;border:0;padding:14px;font-family:Fraunces,serif;font-weight:900;font-size:15px;box-shadow:4px 4px 0 #1e2430;opacity:.5;min-height:44px">Disabled</button><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;margin-top:6px">opacity .5</div></div>
+              </div>
+              <div><button style="width:100%;background:#c1121f;color:#fff;border:0;padding:14px;font-family:Fraunces,serif;font-weight:900;font-size:15px;box-shadow:4px 4px 0 #1e2430;outline:2px solid #1e2430;outline-offset:2px;min-height:44px">Focus</button><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;margin-top:6px">2px ink ring, 2px offset — red on red is invisible</div></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-bottom:10px">Secondary · outline, equal weight to each other</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <button style="width:100%;border:1.5px solid #1e2430;background:none;padding:12px;text-align:left;font-family:Fraunces,serif;font-size:14px;color:#1e2430;min-height:44px">Revisit mistakes
+                <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">14 marks lost across 6 objectives</small>
+              </button>
+              <button style="width:100%;border:1.5px solid #1e2430;background:#f1eada;padding:12px;text-align:left;font-family:Fraunces,serif;font-size:14px;color:#1e2430;min-height:44px">Hover — paper-deep fill</button>
+              <button style="width:100%;border:1.5px solid #c9d6e8;background:none;padding:12px;text-align:left;font-family:Fraunces,serif;font-size:14px;color:#6e7687;min-height:44px">Disabled — rule border, dim text</button>
+              <button style="width:100%;border:1.5px solid #1e2430;background:#fff;padding:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.1em;min-height:44px">Photograph your working</button>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687">Mono-caps variant for a control that acts on the page rather than the session.</div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-bottom:10px">Quiet link · never competes</div>
+            <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+              <a href="#0" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#1e2430">Every question you have answered</a>
+              <a href="#0" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#c1121f">Query this mark</a>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Sign out</span>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;line-height:1.7">Ink for navigation, red only where the link disputes something, dim for account chrome. Always underlined, always 44px tall.</div>
+            </div>
+            <div style="margin-top:18px;background:#1e2430;padding:14px">
+              <button style="width:100%;background:#1e2430;color:#fbf7ee;border:0;padding:12px;font-family:Fraunces,serif;font-weight:900;font-size:15px;box-shadow:3px 3px 0 #c1121f;min-height:44px">Next question →</button>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#a8aebd;margin-top:8px">Ink button: continuation, not commitment.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ INPUTS ============ -->
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px;margin-top:48px">06 · Inputs</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-top:20px">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div><input placeholder="Answer to (a)" style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;margin-top:6px">Default · 1.5px ink, mono 16px (never below 16 — iOS zooms)</div></div>
+            <div><input value="x = −1/3" style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430;outline:2px solid #c1121f;outline-offset:2px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;margin-top:6px">Focus · 2px red ring, 2px offset</div></div>
+            <div><input value="x = 1/3" disabled style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430;opacity:.7"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;margin-top:6px">Submitted · opacity .7, no border change</div></div>
+            <div>
+              <div style="display:flex;align-items:flex-start;gap:8px"><input value="1/3" style="flex:1;min-width:0;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430;opacity:.7"><span style="flex:none;padding-top:6px;font-family:Caveat,cursive;font-size:20px;color:#c1121f">✗</span></div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;margin-top:6px">Marked · the verdict stays on the input’s line, never under it</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 6px;font-size:14px">The gradient is<input value="2" style="width:80px;box-sizing:border-box;min-height:44px;border:0;border-bottom:1.5px solid #1e2430;background:transparent;padding:8px 4px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;color:#1e2430">and the intercept is<input style="width:80px;box-sizing:border-box;min-height:44px;border:0;border-bottom:1.5px solid #1e2430;background:transparent;padding:8px 4px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;color:#1e2430">.</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;margin-top:6px">Cloze gap · underline only, inside the sentence the paper prints</div>
+            </div>
+            <div>
+              <select style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fbf7ee;padding:10px;font-family:Fraunces,serif;font-size:16px;color:#1e2430"><option>M1 · Algebraic manipulation</option></select>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;margin-top:6px">Select · paper fill, so it reads as a field and not a button</div>
+            </div>
+            <div>
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Insert</span>
+                <button style="min-height:44px;min-width:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;line-height:1;box-shadow:2px 2px 0 #1e2430">√</button>
+                <button style="min-height:44px;min-width:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;line-height:1;box-shadow:2px 2px 0 #1e2430">°</button>
+                <button style="min-height:44px;min-width:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;line-height:1;box-shadow:2px 2px 0 #1e2430">π</button>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;margin-top:6px">Symbol key · 44×44, 2px shadow, labelled “Insert”, 12px clear of the input above</div>
+            </div>
+            <div>
+              <ul style="margin:0;padding:0;list-style:none"><li style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.375;color:#6e7687">Give the answer as a fraction in its lowest terms.</li></ul>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;margin-top:6px">Hint line · mono 11px dim, under the box it belongs to</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ MARKS ============ -->
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px;margin-top:48px">07 · The marks</div>
+        <div style="border:1.5px solid #1e2430;background:#fff;margin-top:16px">
+          <div style="display:grid;grid-template-columns:56px 1fr 200px;gap:12px;align-items:baseline;padding:12px 16px;border-bottom:1px solid #f1eada"><span style="font-family:Caveat,cursive;font-size:20px;line-height:1;color:#2e7d5b">✓</span><span style="font-size:13px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">M1</span> Correct factorisation shown</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">Awarded · Caveat 20px, green</span></div>
+          <div style="display:grid;grid-template-columns:56px 1fr 200px;gap:12px;align-items:baseline;padding:12px 16px;border-bottom:1px solid #f1eada"><span style="font-family:Caveat,cursive;font-size:20px;line-height:1;color:#6e7687">–</span><span style="font-size:13px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">A1</span> Both roots correct — the negative root is missing</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">Withheld · dim dash, not a red cross. A method mark not earned is not an error.</span></div>
+          <div style="display:grid;grid-template-columns:56px 1fr 200px;gap:12px;align-items:baseline;padding:12px 16px;border-bottom:1px solid #f1eada"><span style="font-family:Caveat,cursive;font-size:20px;line-height:1;color:#c1121f">✗</span><span style="font-size:13px">A typed answer that is wrong</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">Red cross · only against something the student asserted</span></div>
+          <div style="display:grid;grid-template-columns:56px 1fr 200px;gap:12px;align-items:baseline;padding:12px 16px;border-bottom:1px solid #f1eada"><span style="font-family:Caveat,cursive;font-size:20px;line-height:1;color:#b8860b">✓</span><span style="font-size:13px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#b8860b">value · form withheld</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">Right number, wrong form</span></div>
+          <div style="display:grid;grid-template-columns:56px 1fr 200px;gap:12px;align-items:baseline;padding:12px 16px"><span style="font-family:Caveat,cursive;font-size:20px;line-height:1;color:#6e7687">☐</span><span style="font-size:13px;color:#6e7687">Not assessed — worked on paper, no photograph</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.6">Empty box, dim. Never counted for or against.</span></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;align-items:center">
+          <span style="border-radius:4px;padding:2px 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;background:#e8f0e9;color:#2e7d5b">(a) CK1 ✓</span>
+          <span style="border-radius:4px;padding:2px 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;background:#edf1f8;color:#3a5a8c">(b) AK2 ✓</span>
+          <span style="border-radius:4px;padding:2px 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;background:#fdf1f0;color:#c1121f">(c) R1 ✓</span>
+          <span style="border-radius:4px;padding:2px 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;background:#f1eada;color:#6e7687;text-decoration:line-through">(c) R2 ✗</span>
+          <span style="border-radius:4px;padding:2px 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;border:1px dashed #c9d6e8;color:#6e7687">(d) M3 — not assessed</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#6e7687;margin-left:8px">The only 4px radius in the system, and the only place a second hue is allowed.</span>
+        </div>
+
+        <!-- ============ RED PEN ============ -->
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px;margin-top:48px">08 · The red-pen line</div>
+        <div style="border:1.5px solid #1e2430;background:#fff;padding:20px;margin-top:16px;max-width:520px;box-shadow:3px 3px 0 #1e2430">
+          <div style="display:flex;align-items:flex-start;gap:8px"><input value="x = 1/3" disabled style="flex:1;min-width:0;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:8px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430;opacity:.7"><span style="flex:none;padding-top:6px;font-family:Caveat,cursive;font-size:20px;color:#c1121f">✗</span></div>
+          <p style="margin:8px 0 0;font-family:Caveat,cursive;font-size:16px;line-height:1.375;color:#c1121f">You wrote 3x + 1 = 0 → x = 1/3. The sign flips.</p>
+          <p style="margin:8px 0 0;border-left:3px solid #c1121f;background:#fdf1f0;padding:6px 8px;font-size:12px;line-height:1.375">3x + 1 = 0 gives x = −1/3. On Paper 2 this is the accuracy mark, not the method mark — the factorisation above still earned.</p>
+          <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.8">Order is fixed: the hand-written sentence naming the line, then the reason on a red-barred tint, then the codes. Never the reverse.</div>
+        </div>
+
+        <!-- ============ CSS ============ -->
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px;margin-top:48px">09 · Hand this to the engineer</div>
+        <pre style="margin:16px 0 0;border:1.5px solid #1e2430;background:#fff;padding:20px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.85;color:#1e2430">:root {
+  /* ── colour ─────────────────────────────── existing tokens keep their names */
+  --paper:            #fbf7ee;   /* page ground                                */
+  --paper-deep:       #f1eada;   /* inset fills, disabled chips                */
+  --ink:              #1e2430;   /* text, borders, rules                       */
+  --rule:             #c9d6e8;   /* ruled lines, disabled borders              */
+  --margin:           #e4b8b4;   /* the margin rule, section underline         */
+  --red:              #c1121f;   /* the one red: primary action, red pen       */
+  --green:            #2e7d5b;   /* awarded                                    */
+  --dim:              #6e7687;   /* secondary text                             */
+  /* added, so the values already inline in the components have a name */
+  --amber:            #d9a62e;   /* partial credit, retry, building band       */
+  --red-tint:         #fdf1f0;
+  --green-tint:       #e8f0e9;
+  --amber-tint:       #fdf8ec;
+  --blue-tint:        #edf1f8;   /* AK chip only                               */
+  --blue-ink:         #3a5a8c;   /* AK chip text only                          */
+  --note:             #fffdf6;   /* margin-note ground                         */
+  --withheld:         #b8860b;   /* right value, wrong form                    */
+
+  /* ── type ───────────────────────────────── three families, no more */
+  --font-display:     var(--font-fraunces), Georgia, serif;
+  --font-mono:        var(--font-plex-mono), ui-monospace, monospace;
+  --font-hand:        var(--font-caveat), cursive;
+
+  --text-display:     34px;  /* page heading                     900 / -.02em  */
+  --text-title:       24px;  /* screen title                     900 / -.015em */
+  --text-stem:        18px;  /* question stem                                  */
+  --text-body:        15px;  /* prose, worked solutions                        */
+  --text-sm:          13px;  /* rows, reasons                                  */
+  --text-caption:     12px;  /* caption under a control          dim           */
+  --text-input:       16px;  /* never lower: iOS zooms the page                */
+  --label:            11px;  /* section label      mono 700 / .14em            */
+  --label-sm:         10px;  /* nav, meta, sublabel  mono / .1em               */
+  --label-xs:          9px;  /* counter labels                                 */
+  --lh-body:          1.55;
+  --lh-snug:          1.375;
+  --track-label:      0.10em;
+  --track-heading:    0.14em;
+
+  /* ── space, on a 4px grid with 32px as the notebook rhythm */
+  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px;
+  --s5: 20px; --s6: 24px; --s8: 32px; --s10: 40px;
+  --rule-gap:         32px;  /* the ruled background repeat                    */
+  --rule-baseline:    21px;  /* measured, not derived — re-measure if type changes */
+  --target:           44px;  /* every interactive element, no exceptions       */
+
+  /* ── line, edge, elevation */
+  --hair:             1px;    /* inside a card: row separators                 */
+  --line:             1.5px;  /* the system's border: cards, inputs, chrome    */
+  --line-strong:      2px;    /* current-tab underline, focus ring             */
+  --bar:              3px;    /* the left bar on a quoted or tinted block      */
+  --radius:           4px;    /* rubric chips and progress bars ONLY           */
+  --shadow-card:      4px 4px 0 var(--ink);   /* the question, the action      */
+  --shadow-panel:     3px 3px 0 var(--ink);   /* estimate, counters            */
+  --shadow-key:       2px 2px 0 var(--ink);   /* symbol keys                   */
+  --shadow-on-ink:    3px 3px 0 var(--red);   /* buttons on an ink surface     */
+
+  /* ── layout, and where the margin rule goes */
+  --page-pad-sm:      20px;   /* ≤640px                                        */
+  --page-pad-lg:      24px;   /* >640px                                        */
+  --col:              576px;  /* the reading column, every student screen      */
+  --bar-width:        960px;  /* the chrome nav's inner width                  */
+  --rail:             320px;  /* desktop rail: estimate + counters             */
+  --rule-offset-sm:   16px;   /* from the viewport: 4px outside the text edge  */
+  --rule-offset-lg:   -14px;  /* from the COLUMN, never from the window        */
+}
+
+/* Focus is themed everywhere, and inverts on red so it stays visible. */
+:focus-visible            { outline: var(--line-strong) solid var(--red); outline-offset: 2px; }
+.btn-primary:focus-visible{ outline-color: var(--ink); }
+
+/* The primary action, pressed: the shadow shortens by the distance it moves. */
+.btn-primary:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+</pre>
+        <p style="font-size:12px;color:#6e7687;margin:12px 0 0;max-width:60ch">Nothing here is new except the names. <code style="font-family:'IBM Plex Mono',monospace;font-size:11px">--amber</code>, the four tints, <code style="font-family:'IBM Plex Mono',monospace;font-size:11px">--withheld</code> and the layout values are already in the components as literals — this only gives them one place to live.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+</body>
+</html>
