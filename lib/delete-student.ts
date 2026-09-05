@@ -10,6 +10,8 @@ import {
   Transcription,
 } from '@/lib/db';
 import { ResetToken } from '@/lib/db/reset-token';
+import { existsSync, readdirSync, unlinkSync } from 'node:fs';
+import { join } from 'node:path';
 
 /**
  * Every collection attached to a student is listed in ONE place; a second copy
@@ -43,6 +45,29 @@ export interface DeletionCounts {
   Student: number;
   /** Kept and stripped of the person, never deleted. */
   PaymentAnonymised: number;
+  /** Field images under design/golden/field/ named by this student's reads. */
+  FieldImage: number;
+}
+
+export const FIELD_DIR = join(process.cwd(), 'design', 'golden', 'field');
+
+/**
+ * A field image is named f-<last six of the read id> (lib/golden/bundle.ts),
+ * so a student's reads name the files that are theirs. Deleted with the
+ * account (ROUND_6 Task 7): the golden entry keeps the transcript, which
+ * names nobody, and the picture of their handwriting goes.
+ */
+export function deleteFieldImages(readIds: unknown[], dir = FIELD_DIR): number {
+  if (!existsSync(dir)) return 0;
+  const tails = new Set(readIds.map((id) => `f-${String(id).slice(-6)}`));
+  let n = 0;
+  for (const f of readdirSync(dir)) {
+    if (tails.has(f.replace(/\.(jpe?g|png)$/i, ''))) {
+      unlinkSync(join(dir, f));
+      n++;
+    }
+  }
+  return n;
 }
 
 export type DeleteResult =
@@ -73,6 +98,7 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
   // Rejections hang off the reads the way drafts hang off the sessions.
   const readIds = (await Transcription.find({ student_id: studentId }).select('_id').lean<{ _id: unknown }[]>()).map((r) => r._id);
   const rejections = await LineRejected.deleteMany({ transcription_id: { $in: readIds } });
+  const fieldImages = deleteFieldImages(readIds);
   const attempts = await Attempt.deleteMany({ student_id: studentId });
   const transcriptions = await Transcription.deleteMany({ student_id: studentId });
   const images = await CapturedImage.deleteMany({ student_id: studentId });
@@ -105,6 +131,7 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
       ResetToken: resets.deletedCount ?? 0,
       Student: removed.deletedCount ?? 0,
       PaymentAnonymised: payments.modifiedCount ?? 0,
+      FieldImage: fieldImages,
     },
   };
 }

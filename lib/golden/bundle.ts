@@ -36,7 +36,14 @@ export interface GoldenBundle {
   source: { dispute_id: string; code: string; transcription_id: string; attempt_id: string; exported_at: string };
 }
 
-export async function buildGoldenBundle(disputeId: string): Promise<GoldenBundle | null> {
+/**
+ * TEXT BY DEFAULT (ROUND_6 Task 7): the transcript is the record the evals
+ * replay; the image is a minor's handwriting and travels only when asked
+ * for. When it does, it is the DISPUTED READ'S OWN TAKE — the page that was
+ * marked — never the attempt's latest photograph, which may be a retake the
+ * marker never saw.
+ */
+export async function buildGoldenBundle(disputeId: string, opts: { withImage?: boolean } = {}): Promise<GoldenBundle | null> {
   const dispute = await MarkDispute.findById(disputeId).lean<{
     _id: unknown; attempt_id: unknown; transcription_id: unknown; code: string; ts: Date;
   } | null>();
@@ -44,6 +51,9 @@ export async function buildGoldenBundle(disputeId: string): Promise<GoldenBundle
   const read = await Transcription.findById(dispute.transcription_id).lean<{
     _id: unknown;
     question_id: unknown;
+    session_id: unknown;
+    question_index: number;
+    take: number;
     lines: { part_label?: string | null; text: string }[];
     method_marks?: { code: string; awarded: boolean; reason: string }[];
   } | null>();
@@ -64,9 +74,10 @@ export async function buildGoldenBundle(disputeId: string): Promise<GoldenBundle
     .map((l) => ({ part_label: l.part_label ?? null, text: l.text }));
   const rejectedTexts = read.lines.filter((_, i) => rejected.has(i)).map((l) => l.text);
 
-  const image = await CapturedImage.findOne({ attempt_id: dispute.attempt_id })
-    .sort({ take: -1 })
-    .lean<{ data: Buffer; content_type: string } | null>();
+  const image = opts.withImage
+    ? await CapturedImage.findOne({ session_id: read.session_id, question_index: read.question_index, take: read.take })
+        .lean<{ data: Buffer; content_type: string } | null>()
+    : null;
   const id = `f-${String(read._id).slice(-6)}`;
   // Under field/, which is gitignored: a real student's page stays on the
   // machine that imported it, while the entry commits like any other.

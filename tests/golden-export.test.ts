@@ -16,7 +16,7 @@ vi.mock('ai', () => ({
     usage: {},
   }),
 }));
-import { mkdtempSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import mongoose from 'mongoose';
@@ -79,6 +79,9 @@ async function smokeDispute() {
   });
   await db.LineRejected.create({ transcription_id: read._id, line_index: 1 });
   await db.CapturedImage.create({ student_id: STUDENT, session_id: session._id, question_index: 0, attempt_id: attempt._id, take: 1, data: Buffer.from('jpegbytes'), content_type: 'image/jpeg' });
+  // A retake the marker never saw: the export must not pick it up.
+  await db.Transcription.create({ student_id: STUDENT, session_id: session._id, question_index: 0, attempt_id: attempt._id, question_id: questionId, take: 2, lines: [], legible: false, reader_model: 'test' });
+  await db.CapturedImage.create({ student_id: STUDENT, session_id: session._id, question_index: 0, attempt_id: attempt._id, take: 2, data: Buffer.from('retakebytes'), content_type: 'image/jpeg' });
   const dispute = await db.MarkDispute.create({ student_id: STUDENT, attempt_id: attempt._id, transcription_id: read._id, code: 'AK1' });
   return { disputeId: String(dispute._id), readId: String(read._id), questionId: String(questionId) };
 }
@@ -95,7 +98,8 @@ function goldenDir(): string {
 describe('export as golden case', () => {
   it('is the golden shape: the read minus rejected lines, the typed answers, every row proposed, the disputed row flagged', async () => {
     const { disputeId, readId, questionId } = await smokeDispute();
-    const b = await buildGoldenBundle(disputeId);
+    // The photo path, asked for explicitly: text is the default.
+    const b = await buildGoldenBundle(disputeId, { withImage: true });
     expect(b).not.toBeNull();
     if (!b) return;
     expect(b.id).toBe(`f-${readId.slice(-6)}`);
@@ -115,7 +119,7 @@ describe('export as golden case', () => {
 
   it('imports into the golden files in their own style, and the loader ignores it until approved', async () => {
     const { disputeId } = await smokeDispute();
-    const b = (await buildGoldenBundle(disputeId))!;
+    const b = (await buildGoldenBundle(disputeId, { withImage: true }))!;
     const dir = goldenDir();
     const before = loadGoldenSet(dir);
     expect(before.inputs.map((e) => e.id)).toEqual(['aaaaaa']);
@@ -130,7 +134,7 @@ describe('export as golden case', () => {
     expect(b.slot_refs).toEqual(['a.i']);
     expect(existsSync(join(dir, 'field', `${b.id}.jpg`))).toBe(true);
     // The page never leaves the machine that imported it.
-    expect(readFileSync(join(process.cwd(), '.gitignore'), 'utf8')).toMatch(/^design\/golden\/field\/$/m);
+    expect(readFileSync(join(process.cwd(), '.gitignore'), 'utf8')).toMatch(/^design\/golden\/field\/\*$/m);
     expect(readFileSync(join(process.cwd(), 'scripts', 'eval-marker.ts'), 'utf8')).toMatch(/field page\(s\) whose image is not on this machine, skipped here and marked below/);
     expect(readFileSync(join(dir, 'APPROVAL_LOG.md'), 'utf8')).toMatch(/## Field cases — proposed[\s\S]*every row proposed, AK1 disputed/);
     // One mark per line, as the real file keeps it.
@@ -160,5 +164,30 @@ describe('export as golden case', () => {
     expect(serialiseReview(JSON.parse(real))).toBe(real);
     const set = readFileSync(join(process.cwd(), 'design', 'golden', 'set.json'), 'utf8');
     expect(serialiseSet(JSON.parse(set))).toBe(set);
+  });
+});
+
+describe('export matches the take (ROUND_6 Task 7)', () => {
+  it('is text by default, and with image carries the disputed read’s own take, not the attempt’s latest', async () => {
+    const { disputeId } = await smokeDispute();
+    const text = (await buildGoldenBundle(disputeId))!;
+    expect(text.image).toBeUndefined();
+    expect(text.set.mode).toBe('typed');
+    const withImage = (await buildGoldenBundle(disputeId, { withImage: true }))!;
+    expect(Buffer.from(withImage.image!.base64, 'base64').toString()).toBe('jpegbytes');
+    expect(withImage.set.mode).toBe('photo');
+  });
+  it('erase deletes the field images a student’s reads name, and the README states the 90-day prune', async () => {
+    const { deleteFieldImages } = await import('@/lib/delete-student');
+    const dir = mkdtempSync(join(tmpdir(), 'field-'));
+    const mine = new mongoose.Types.ObjectId();
+    const theirs = new mongoose.Types.ObjectId();
+    writeFileSync(join(dir, `f-${String(mine).slice(-6)}.jpg`), 'x');
+    writeFileSync(join(dir, `f-${String(theirs).slice(-6)}.jpg`), 'y');
+    expect(deleteFieldImages([mine], dir)).toBe(1);
+    expect(readdirSync(dir)).toEqual([`f-${String(theirs).slice(-6)}.jpg`]);
+    const readme = readFileSync(join(process.cwd(), 'design', 'golden', 'field', 'README.md'), 'utf8');
+    expect(readme).toMatch(/Deleted with the account/);
+    expect(readme).toMatch(/golden:field-prune --yes[\s\S]*90 days/);
   });
 });
