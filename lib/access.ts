@@ -65,13 +65,16 @@ export async function freeSessionsUsed(studentId: string): Promise<number> {
   });
 }
 
+
+
 export async function firstQuestionTaken(studentId: string): Promise<boolean> {
   return Boolean(await PracticeSession.exists({ student_id: studentId, mode: 'first' }));
 }
 
 /** The refusal's reason IS the error code the hub reads. */
 export type SessionGate =
-  | { allowed: true }
+  /** slot: the number the chosen session takes — read HERE, so two starts that saw the same count collide on it (ROUND_6 Task 4). */
+  | { allowed: true; slot?: number }
   | { allowed: false; reason: 'needs-access' | 'access-expired'; used: number }
   | { allowed: false; reason: 'diagnostic-taken'; opensAt: Date }
   | { allowed: false; reason: 'first-taken' };
@@ -92,13 +95,13 @@ export async function canStartSession(
   if (mode === 'first') {
     return (await firstQuestionTaken(studentId)) ? { allowed: false, reason: 'first-taken' } : { allowed: true };
   }
-  if (hasAccess(access, now)) return { allowed: true };
+  const used = await freeSessionsUsed(studentId);
+  if (hasAccess(access, now)) return { allowed: true, slot: used + 1 };
   // An expired account falls back to the free tier EXACTLY as an unpaid one
   // does; the counter is over every session ever started, so the reason only
   // changes which sentence they read.
   const expired = Boolean(access?.sitting);
-  const used = await freeSessionsUsed(studentId);
   return used < FREE_SESSIONS
-    ? { allowed: true }
+    ? { allowed: true, slot: used + 1 }
     : { allowed: false, reason: expired ? 'access-expired' : 'needs-access', used };
 }

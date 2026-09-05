@@ -682,7 +682,7 @@ export default async function SessionPage({
   // are left, so a reload shows what was read rather than offering a third.
   const reads = reviewing
     ? []
-    : await Transcription.find({ session_id: id, question_index: index })
+    : await Transcription.find({ session_id: id, question_index: index, pending: { $ne: true } })
         .sort({ take: 1 })
         .select('lines answers legible notes take')
         .lean<{ _id: unknown; take: number; lines: ReadResult['transcription']['lines']; answers?: ReadResult['transcription']['answers']; legible: boolean; notes?: string }[]>();

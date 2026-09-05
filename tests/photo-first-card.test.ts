@@ -38,7 +38,7 @@ describe('the photo-first card', () => {
   });
 
   it('restores a read taken before a reload, with the takes that remain', () => {
-    expect(page).toMatch(/Transcription\.find\(\{ session_id: id, question_index: index \}\)/);
+    expect(page).toMatch(/Transcription\.find\(\{ session_id: id, question_index: index, pending: \{ \$ne: true \} \}\)/);
     expect(page).toMatch(/takesLeft: MAX_TAKES - reads\.length/);
     expect(card).toMatch(/initial=\{question\.draft\?\.read\}/);
   });

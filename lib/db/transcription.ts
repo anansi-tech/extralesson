@@ -49,12 +49,18 @@ const TranscriptionSchema = new Schema({
   notes: { type: String },
   /** Which read this is: a student may retake once (R2 §2). */
   take: { type: Number, default: 1, required: true },
+  /**
+   * RESERVED BEFORE SPENT (ROUND_6 Task 4): the row is inserted before the
+   * model is called, so a concurrent read fails on the unique index and
+   * spends nothing. Unset once the read lands; deleted if the model fails.
+   */
+  pending: { type: Boolean },
   /** What the read cost, so §7 can be reported from measurement, not estimate. */
   usage: {
     input_tokens: { type: Number },
     output_tokens: { type: Number },
   },
-  reader_model: { type: String, required: true },
+  reader_model: { type: String },
   /**
    * METHOD MARKS EARNED BY THIS WORKING — not on the attempt, which is
    * append-only; loadAttemptRows folds them in at read time. mark_value is

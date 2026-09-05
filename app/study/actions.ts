@@ -1,13 +1,13 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { dbConnect, PracticeSession, Student } from '@/lib/db';
+import { dbConnect, PracticeSession, Student, isDuplicateKey } from '@/lib/db';
 import { clearSessionCookie, requireSession } from '@/lib/auth/session';
 import { type SessionMode } from '@/lib/session/builder';
 import { planSession } from '@/lib/session/plan';
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
-import { canStartSession, type Access } from '@/lib/access';
+import { canStartSession, hasAccess, type Access } from '@/lib/access';
 import type { ModuleNumber } from '@/lib/types';
 
 const MODES: SessionMode[] = ['adaptive', 'topic', 'revisit', 'diagnostic', 'first'];
@@ -52,12 +52,24 @@ export async function startSession(formData?: FormData): Promise<void> {
   if (picked.length === 0) redirect(`/study?error=no-questions&mode=${mode}`);
 
   const modules = new Set(picked.map((p) => p.module));
-  const session = await PracticeSession.create({
-    student_id: auth.student_id,
-    question_ids: picked.map((p) => p.id),
-    module_focus: modules.size === 1 ? [...modules][0] : undefined,
-    mode,
-  });
+  // INSERT FIRST (ROUND_6 Task 4): the free slot and the one first question
+  // are unique indexes, so a racing second start fails here and lands nothing.
+  let session;
+  try {
+    session = await PracticeSession.create({
+      student_id: auth.student_id,
+      question_ids: picked.map((p) => p.id),
+      module_focus: modules.size === 1 ? [...modules][0] : undefined,
+      mode,
+      free_slot: gate.slot,
+    });
+  } catch (e) {
+    if (!isDuplicateKey(e)) throw e;
+    if (mode === 'first') redirect('/study?error=first-taken');
+    // The other start took the slot. A paying student's open session is on
+    // the notebook; an unpaid one has just spent the last free session.
+    redirect(hasAccess(student.access) ? '/study' : '/study?error=needs-access');
+  }
   redirect(`/study/session/${session._id}`);
 }
 

@@ -68,7 +68,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
   );
   await CapturedImage.updateMany({ ...key, attempt_id: { $exists: false } }, { $set: { attempt_id: attempt._id } });
 
-  const reads = await Transcription.find({ attempt_id: attempt._id }).sort({ take: 1 }).lean<StoredRead[]>();
+  const reads = await Transcription.find({ attempt_id: attempt._id, pending: { $ne: true } }).sort({ take: 1 }).lean<StoredRead[]>();
   const marked = reads.filter((r) => r.marker_version);
   const read = reads.filter((r) => !r.marker_version).at(-1);
   if (!read) return null;

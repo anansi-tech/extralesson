@@ -14,9 +14,18 @@ const SessionSchema = new Schema({
   },
   started_at: { type: Date, default: Date.now, required: true },
   completed_at: { type: Date },
+  /**
+   * The nth session this student chose to sit (ROUND_6 Task 4). Unique per
+   * student, so two starts racing for the last free session collide on the
+   * index and exactly one lands. Free modes carry none.
+   */
+  free_slot: { type: Number },
 });
 
 SessionSchema.index({ student_id: 1, started_at: -1 });
+SessionSchema.index({ student_id: 1, free_slot: 1 }, { unique: true, partialFilterExpression: { free_slot: { $exists: true } } });
+// One first question per student, ever, on the index rather than on a count.
+SessionSchema.index({ student_id: 1, mode: 1 }, { unique: true, partialFilterExpression: { mode: 'first' } });
 
 export type SessionDoc = InferSchemaType<typeof SessionSchema>;
 export const PracticeSession = models.PracticeSession ?? model('PracticeSession', SessionSchema);

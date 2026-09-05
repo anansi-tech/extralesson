@@ -9,6 +9,7 @@ import {
   Question,
   SessionDraft,
   Transcription,
+  isDuplicateKey,
   readExpiry,
 } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
@@ -98,10 +99,24 @@ export async function readWorking(input: {
   if (!question) return { error: 'That question could not be found.' };
   const parts = question.parts ?? [];
 
+  // RESERVE BEFORE SPEND (ROUND_6 Task 4): the take is taken on the unique
+  // index before the model sees the image, so a second read of the same take
+  // fails here and costs nothing.
+  const key = { student_id: auth.student_id, session_id: sessionId, question_index: questionIndex, take };
+  let shell;
+  try {
+    shell = await Transcription.create({ ...key, question_id: questionId, lines: [], legible: false, pending: true, expires_at: readExpiry() });
+  } catch (e) {
+    if (!isDuplicateKey(e)) throw e;
+    return { error: 'That page is already being read. Give it a moment.' };
+  }
+
   let read;
   try {
     read = await transcribeWorking({ image: bytes, contentType, slotRefs: markableSlots(parts) });
   } catch {
+    // The reservation goes with the failure, so the take is not spent.
+    await Transcription.deleteOne({ _id: shell._id });
     return { error: 'We could not read that photo. Nothing has changed.' };
   }
 
@@ -127,19 +142,22 @@ export async function readWorking(input: {
     }
   }
 
-  const key = { student_id: auth.student_id, session_id: sessionId, question_index: questionIndex, take };
-  const stored = await Transcription.create({
-    ...key,
-    question_id: questionId,
-    lines: read.transcription.lines,
-    answers: read.transcription.answers,
-    construction,
-    legible: read.transcription.legible,
-    notes: read.transcription.notes,
-    usage: read.usage,
-    reader_model: read.model,
-    expires_at: readExpiry(),
-  });
+  await Transcription.updateOne(
+    { _id: shell._id },
+    {
+      $set: {
+        lines: read.transcription.lines,
+        answers: read.transcription.answers,
+        construction,
+        legible: read.transcription.legible,
+        notes: read.transcription.notes,
+        usage: read.usage,
+        reader_model: read.model,
+      },
+      $unset: { pending: '' },
+    },
+  );
+  const stored = shell;
   // Held only long enough for a retake or a dispute (lib/db/transcription.ts).
   await CapturedImage.create({ ...key, data: bytes, content_type: contentType });
 

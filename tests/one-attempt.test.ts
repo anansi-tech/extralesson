@@ -94,9 +94,10 @@ describe('one attempt per question', () => {
   it('two submits in parallel: one attempt lands, both callers get its outcome, the marker runs once', async () => {
     const sessionId = await session();
     await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
+    // Both wrong, so whichever lands has a method row for the marker to read.
     const [a, b] = await Promise.all([
       submitAnswer({ sessionId, questionIndex: 0, answers: wrong }),
-      submitAnswer({ sessionId, questionIndex: 0, answers: right }),
+      submitAnswer({ sessionId, questionIndex: 0, answers: [{ label: 'a.i', answer: '3' }] }),
     ]);
     if ('error' in a || 'error' in b) throw new Error('a submit errored');
     expect(await db.Attempt.countDocuments({ session_id: sessionId })).toBe(1);
