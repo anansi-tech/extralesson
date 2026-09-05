@@ -166,11 +166,5 @@ export function reviewFlags(q: FlaggableQuestion): ReviewFlag[] {
       text: 'Opens with a construction — check the figure IS what part (a) asks them to draw, and that the later parts read off it',
     });
   }
-  const selfMarked = parts.flatMap((p) =>
-    (p.slots ?? []).filter((s) => s.response_mode === 'show_that' || s.response_mode === 'explain'),
-  );
-  if (selfMarked.length > 0) {
-    flags.push({ level: 'note', text: `${selfMarked.length} self-marked slot(s) — a student marks these against your solution` });
-  }
   return flags;
 }

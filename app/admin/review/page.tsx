@@ -55,6 +55,10 @@ export default async function ReviewPage({
   else onTarget.push('P1');
   if (p2Short > 0) deficits.push({ value: `${p2Short}`, label: 'P2 marks short' });
   else onTarget.push('P2');
+  // THE TRUTH (ROUND_7 Task 3): totals can be met while topics are short,
+  // because a total is a sum. Each short topic opens the search on it.
+  const totalsMet = p1Short <= 0 && p2Short <= 0;
+  const shortTopics = matrix.topics.filter((r) => r.p1_actual < r.p1_target || r.p2_marks_actual < r.p2_marks_target);
 
   let question: ReviewQuestion | null = null;
   if (showId) {
@@ -302,8 +306,18 @@ export default async function ReviewPage({
         <section className="mb-6 border-l-3 border-paper-deep bg-white p-3 text-sm">
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <span className="font-mono text-[10px] uppercase tracking-widest text-dim">deficits</span>
-            {deficits.length === 0 ? (
+            {deficits.length === 0 && shortTopics.length === 0 ? (
               <span className="text-green-pen">Everything on target.</span>
+            ) : totalsMet && shortTopics.length > 0 ? (
+              <span>
+                Overall totals met; <b className="text-red-pen">{shortTopics.length}</b> topic target{shortTopics.length === 1 ? '' : 's'} short:{' '}
+                {shortTopics.map((r, i) => (
+                  <span key={r.code}>
+                    {i > 0 && ', '}
+                    <Link href={`/admin/review?find=${encodeURIComponent(`topic:${r.code}`)}`} className="underline">{r.code}</Link>
+                  </span>
+                ))}
+              </span>
             ) : (
               deficits.map((d) => (
                 <span key={d.label}>

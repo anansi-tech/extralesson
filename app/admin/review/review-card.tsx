@@ -108,16 +108,25 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
       router.replace(`/admin/review?from=${question.id}`);
     });
 
+  // R IS DELIBERATE (ROUND_7 Task 3): retiring an approved question is asked
+  // once; a draft is rejected without a question, as before.
+  const retire = () => {
+    if (question.status === 'approved' && !window.confirm('Retire this approved question? Students stop seeing it; this can be undone from the review queue.')) return;
+    act(rejectQuestion);
+  };
+
+  const cardRef = useRef<HTMLElement | null>(null);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (editing || e.metaKey || e.ctrlKey || e.altKey) return;
       const tag = (e.target as HTMLElement).tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      // The keys do exactly what the buttons do and nothing more. Retiring now
-      // reaches approved questions, and a stray R while reading one back should
-      // not be the way that happens.
+      // Only while the card itself has focus: a keypress anywhere else on the
+      // page — the search box, a link — must not retire a live question.
+      if (!cardRef.current?.contains(document.activeElement)) return;
+      // The keys do exactly what the buttons do and nothing more.
       if ((e.key === 'a' || e.key === 'A') && question.status === 'draft') act(approveQuestion);
-      if ((e.key === 'r' || e.key === 'R') && question.status !== 'retired') act(rejectQuestion);
+      if ((e.key === 'r' || e.key === 'R') && question.status !== 'retired') retire();
       if (e.key === 'e' || e.key === 'E') {
         setEditing(true);
         setTimeout(() => editRef.current?.focus(), 0);
@@ -141,7 +150,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
     });
 
   return (
-    <article className="border-[1.5px] border-ink bg-white p-5 shadow-[4px_4px_0_var(--ink)]">
+    <article ref={cardRef} tabIndex={0} className="border-[1.5px] border-ink bg-white p-5 shadow-[4px_4px_0_var(--ink)] focus:outline-dashed focus:outline-2 focus:outline-red-pen">
       {(question.backTo || question.pinned) && (
         <div className="mb-3 flex flex-wrap items-baseline gap-4 font-mono text-[11px] uppercase tracking-widest text-dim">
           {question.backTo && (
@@ -451,7 +460,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
             Edit <kbd className="font-mono text-xs text-dim">E</kbd>
           </button>
           <button
-            onClick={() => act(rejectQuestion)}
+            onClick={retire}
             disabled={pending || question.status === 'retired'}
             className="bg-red-pen px-4 py-2 font-bold text-white shadow-[3px_3px_0_var(--ink)] disabled:opacity-60"
           >
