@@ -1725,7 +1725,7 @@
   "question_id": "6a83f3169aba6d73cb8210f0",
   "code": "AK1",
   "criterion": "Calculates $18 \\times 8 = 144$",
-  "hint": "Carry out the multiplication $\\times$ carefully to calculate the total waiting time.",
+  "hint": "Carry out the multiplication carefully to calculate the total waiting time.",
   "status": "approved"
  },
  {
@@ -1760,7 +1760,7 @@
   "question_id": "6a83f3169aba6d73cb8210f0",
   "code": "AK4",
   "criterion": "Calculates median as $(15 + 17) \\div 2 = 16$",
-  "hint": "Add the two middle values and divide by $\\div$ to calculate the median.",
+  "hint": "Add the two middle values and divide by two to calculate the median.",
   "status": "approved"
  },
  {

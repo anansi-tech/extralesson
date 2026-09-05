@@ -73,6 +73,10 @@ describe('the four rules a hint must keep', () => {
     expect(hintProblems('Find it\u0007 now.', 'Finds it')).toContain('contains a control character');
     expect(hintProblems('Use "your" value.', 'Uses "their" value')).toContain('quotes "your"');
     expect(hintProblems('Show it from their gradients.', 'Shows it')).toContain('uses a scheme word (mark, criterion, award, their)');
+    expect(hintProblems('You set $x=0$ first.', 'Sets $x=0$')).toContain('begins with "You "');
+    expect(hintProblems('Use $\\times$ to find it.', 'Multiplies')).toContain('a standalone × or ÷');
+    expect(hintProblems('Use distance $=$ speed × time.', 'Selects distance = speed × time')).toContain('a standalone × or ÷');
+    expect(hintProblems('Calculate $4\\times7$ first.', 'Adds $4\\times7$')).toEqual([]);
     expect(plainYour('Use “your” value and \'your\' total.')).toBe('Use your value and your total.');
   });
 });

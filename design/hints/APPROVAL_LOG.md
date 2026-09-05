@@ -4,7 +4,7 @@ One table per batch. A row is approved by setting its status in the batch file; 
 
 ## Batch 1 — approved (200 rows, gpt-5.6-terra, generated 2026-09-05)
 
-Approved by David on 2026-09-05: all 200 rows. Rows 9, 65, 128, 131, 132, 192 hand-edited; rows 31, 79, 168, 175 set to his sentences.
+Approved by David on 2026-09-05: all 200 rows. Rows 9, 65, 128, 131, 132, 192 hand-edited; rows 31, 79, 168, 175 set to his sentences. Rows 141–148 and 176–182 later put in the imperative under the no-leading-You check.
 
 | # | question | code | criterion | hint |
 |---|---|---|---|---|
@@ -148,14 +148,14 @@ Approved by David on 2026-09-05: all 200 rows. Rows 9, 65, 128, 131, 132, 192 ha
 | 138 | fe84d4 | R2 | Finds the difference between “their” experimental and theoretical probabilities | Subtract your theoretical probability from your experimental probability to find your difference. |
 | 139 | fe84d4 | CK4 | States that “their” difference is greater than $0.01$ | Compare your difference with $0.01$ and state whether it is greater. |
 | 140 | fe84d4 | R3 | Concludes that the shopkeeper should not use the model | Use your comparison to decide whether the shopkeeper should use the independent-events model. |
-| 141 | d9c1e8 | CK1 | Recognises that $\overrightarrow{AB}$ is found by subtracting the coordinates of $A$ from those of $B$. | You find $\overrightarrow{AB}$ by subtracting each coordinate of $A$ from the corresponding coordinate of $B$. |
-| 142 | d9c1e8 | AK1 | Subtracts correctly to obtain $\begin{pmatrix}3\\4\end{pmatrix}$. | You subtract the coordinates carefully and write the resulting vector as $\begin{pmatrix}a\\b\end{pmatrix}$. |
-| 143 | d9c1e8 | CK2 | Uses $\left\|\begin{pmatrix}x\\y\end{pmatrix}\right\|=\sqrt{x^2+y^2}$. | You use $\left\|\begin{pmatrix}x\\y\end{pmatrix}\right\|=\sqrt{x^2+y^2}$ to find the magnitude. |
-| 144 | d9c1e8 | AK2 | Evaluates $\sqrt{3^2+4^2}$. | You square both vector components, add the results, and evaluate the square root $\sqrt{a^2+b^2}$. |
-| 145 | d9c1e8 | CK3 | Recognises that a point on the $x$-axis has second coordinate $0$. | You write the point on the $x$-axis with $0$ as its second coordinate. |
-| 146 | d9c1e8 | AK3 | Uses $\|x-1\|=$ 'their' magnitude of $\overrightarrow{AB}$ to obtain $x=6$ or $x=-4$. | You use $\|x-1\|=$ your magnitude of $\overrightarrow{AB}$ and solve for both possible values of $x$. |
-| 147 | d9c1e8 | R2 | Uses the condition $AC=AB$ with 'their' magnitude from part (b). | You set $AC=AB$ by using your magnitude of $\overrightarrow{AB}$ as the length of $AC$. |
-| 148 | d9c1e8 | R3 | Selects $x=6$, since $C$ is to the right of $A$, and gives $(6,0)$. | You choose the solution to the right of $A$ and write the point with second coordinate $0$. |
+| 141 | d9c1e8 | CK1 | Recognises that $\overrightarrow{AB}$ is found by subtracting the coordinates of $A$ from those of $B$. | Find $\overrightarrow{AB}$ by subtracting each coordinate of $A$ from the corresponding coordinate of $B$. |
+| 142 | d9c1e8 | AK1 | Subtracts correctly to obtain $\begin{pmatrix}3\\4\end{pmatrix}$. | Subtract the coordinates carefully and write the resulting vector as $\begin{pmatrix}a\\b\end{pmatrix}$. |
+| 143 | d9c1e8 | CK2 | Uses $\left\|\begin{pmatrix}x\\y\end{pmatrix}\right\|=\sqrt{x^2+y^2}$. | Use $\left\|\begin{pmatrix}x\\y\end{pmatrix}\right\|=\sqrt{x^2+y^2}$ to find the magnitude. |
+| 144 | d9c1e8 | AK2 | Evaluates $\sqrt{3^2+4^2}$. | Square both vector components, add the results, and evaluate the square root $\sqrt{a^2+b^2}$. |
+| 145 | d9c1e8 | CK3 | Recognises that a point on the $x$-axis has second coordinate $0$. | Write the point on the $x$-axis with $0$ as its second coordinate. |
+| 146 | d9c1e8 | AK3 | Uses $\|x-1\|=$ 'their' magnitude of $\overrightarrow{AB}$ to obtain $x=6$ or $x=-4$. | Use $\|x-1\|=$ your magnitude of $\overrightarrow{AB}$ and solve for both possible values of $x$. |
+| 147 | d9c1e8 | R2 | Uses the condition $AC=AB$ with 'their' magnitude from part (b). | Set $AC=AB$ by using your magnitude of $\overrightarrow{AB}$ as the length of $AC$. |
+| 148 | d9c1e8 | R3 | Selects $x=6$, since $C$ is to the right of $A$, and gives $(6,0)$. | Choose the solution to the right of $A$ and write the point with second coordinate $0$. |
 | 149 | d9c1f0 | CK1 | Recognises that $1$ tonne $= 1 000 000$ g | Use the tonne-to-gram conversion before calculating the mass in grams. |
 | 150 | d9c1f0 | AK1 | Multiplies $1.274$ by $1 000 000$ | Multiply $1.274$ by $1 000 000$ to express the mass in grams. |
 | 151 | d9c1f0 | CK2 | Divides "their" mass in grams by $350$ | Divide your mass in grams by $350$ to find the number of bags. |
@@ -183,13 +183,13 @@ Approved by David on 2026-09-05: all 200 rows. Rows 9, 65, 128, 131, 132, 192 ha
 | 173 | d9c205 | CK3 | Identifies a mean calculated from all 80 players as a population parameter | State that a mean calculated from all players in the population is a population parameter. |
 | 174 | d9c205 | R3 | Explains that the selected players may not represent the full population | Explain that the selected players may not be representative of the whole population, so the means can differ. |
 | 175 | d9c20d | R1 | Reads $g(\text{their }7)=3$ correctly from the graph | Take your answer from part (a) as the input on g's graph and read the output. |
-| 176 | d9c20d | CK1 | Identifies $f$ and $g$ as inverse functions | You use the reflection in $y=x$ to identify the relationship between $f$ and $g$. |
-| 177 | d9c20d | CK2 | Recognises that the inverse reverses the input and output | You reverse the input and output when finding the inverse function. |
-| 178 | d9c20d | AK2 | Interchanges the variables and rearranges $y=2x+1$ to make $y$ the subject | You interchange $x$ and $y$ in $y=2x+1$ and rearrange to make $y$ the subject. |
-| 179 | d9c20d | R2 | States $g:x\to \frac{x-1}{2}$ | You state the inverse rule in the form $g:x\to\frac{\text{expression}}{\text{constant}}$. |
-| 180 | d9c20d | CK3 | Forms the composition $g(f(x))$ | You write the composition $g(f(x))$ before simplifying it. |
-| 181 | d9c20d | AK3 | Substitutes $f(x)=2x+1$ into $g$ | You replace the input of $g$ with $f(x)$ using the given rule for $f$. |
-| 182 | d9c20d | R3 | Simplifies to conclude $g(f(x))=x$ | You simplify the composition fully and state the resulting identity. |
+| 176 | d9c20d | CK1 | Identifies $f$ and $g$ as inverse functions | Use the reflection in $y=x$ to identify the relationship between $f$ and $g$. |
+| 177 | d9c20d | CK2 | Recognises that the inverse reverses the input and output | Reverse the input and output when finding the inverse function. |
+| 178 | d9c20d | AK2 | Interchanges the variables and rearranges $y=2x+1$ to make $y$ the subject | Interchange $x$ and $y$ in $y=2x+1$ and rearrange to make $y$ the subject. |
+| 179 | d9c20d | R2 | States $g:x\to \frac{x-1}{2}$ | State the inverse rule in the form $g:x\to\frac{\text{expression}}{\text{constant}}$. |
+| 180 | d9c20d | CK3 | Forms the composition $g(f(x))$ | Write the composition $g(f(x))$ before simplifying it. |
+| 181 | d9c20d | AK3 | Substitutes $f(x)=2x+1$ into $g$ | Replace the input of $g$ with $f(x)$ using the given rule for $f$. |
+| 182 | d9c20d | R3 | Simplifies to conclude $g(f(x))=x$ | Simplify the composition fully and state the resulting identity. |
 | 183 | d9c215 | CK1 | Identifies 3 as the number added for each successive figure | Compare consecutive figures and identify how many plants are added each time. |
 | 184 | d9c215 | CK2 | Identifies 1 as the fixed number of plants in the pattern | Use Figure 1 and remove the repeating contribution to identify the fixed number of plants. |
 | 185 | d9c215 | R1 | Combines the repeating and fixed parts to form $3n+1$ | Combine the repeating part and the fixed part into one expression in terms of $n$. |
@@ -718,7 +718,7 @@ Approved by David on 2026-09-05: all 500 rows. Rows 303–312 put in the imperat
 
 ## Batch 3 — approved (500 rows, gpt-5.6-terra, generated 2026-09-05)
 
-Approved by David on 2026-09-05: all 500 rows. Row 163 set to his sentence; rows 47 and 49 drop the answer values.
+Approved by David on 2026-09-05: all 500 rows. Row 163 set to his sentence; rows 47 and 49 drop the answer values. Rows 247 and 252 later lose a standalone operator symbol.
 
 | # | question | code | criterion | hint |
 |---|---|---|---|---|
@@ -968,12 +968,12 @@ Approved by David on 2026-09-05: all 500 rows. Row 163 set to his sentence; rows
 | 244 | 8210e8 | AK3 | Forms $-2(\text{their new emptying time})+c=0$ | Form $-2(\text{your new emptying time})+c=0$ using your new emptying time. |
 | 245 | 8210e8 | AK4 | Calculates "their" value of $c$ as 16 | Calculate $c$ from your equation to find the initial number of bags. |
 | 246 | 8210f0 | CK1 | Recognises that total waiting time is mean multiplied by number of patients | Multiply the mean waiting time by the number of patients to find the total waiting time. |
-| 247 | 8210f0 | AK1 | Calculates $18 \times 8 = 144$ | Carry out the multiplication $\times$ carefully to calculate the total waiting time. |
+| 247 | 8210f0 | AK1 | Calculates $18 \times 8 = 144$ | Carry out the multiplication carefully to calculate the total waiting time. |
 | 248 | 8210f0 | CK2 | Forms total waiting time as sum of the seven known times and Anisa's time | Write the total waiting time as the sum of the seven known waiting times and Anisa's waiting time. |
 | 249 | 8210f0 | AK2 | Finds sum of the seven known waiting times as $114$ | Add the seven known waiting times carefully before finding Anisa's time. |
 | 250 | 8210f0 | AK3 | Calculates $144 - 114 = 30$ | Subtract the sum of the known waiting times from the total waiting time. |
 | 251 | 8210f0 | CK3 | Identifies the fourth and fifth values as $15$ and $17$ after ordering the data | Order all the waiting times from smallest to largest, then identify the two middle values. |
-| 252 | 8210f0 | AK4 | Calculates median as $(15 + 17) \div 2 = 16$ | Add the two middle values and divide by $\div$ to calculate the median. |
+| 252 | 8210f0 | AK4 | Calculates median as $(15 + 17) \div 2 = 16$ | Add the two middle values and divide by two to calculate the median. |
 | 253 | 8210f0 | AK5 | Calculates range as $30 - 8 = 22$ | Subtract the smallest waiting time from the largest waiting time to calculate the range. |
 | 254 | 8210f0 | R1 | Compares 'their' median with the limit of $15$ minutes | Compare your median with the clinic's median limit. |
 | 255 | 8210f0 | R2 | Compares 'their' range with the limit of $20$ minutes | Compare your range with the clinic's range limit. |
@@ -1223,7 +1223,9 @@ Approved by David on 2026-09-05: all 500 rows. Row 163 set to his sentence; rows
 | 499 | 9e8832 | AK4 | Solves "their" equation to obtain $x=4$ and gives $(4,0)$ | Solve your equation for $x$, then write the resulting x-intercept as an ordered pair. |
 | 500 | 9e8832 | R2 | Interprets the x-intercept as zero net earnings or break-even point | State that this x-intercept is where the taxi driver has zero net earnings and breaks even. |
 
-## Batch 4 — proposed (500 rows, gpt-5.6-terra, 2026-09-05)
+## Batch 4 — approved (500 rows, gpt-5.6-terra, generated 2026-09-05)
+
+Approved by David on 2026-09-05: all 500 rows. Rows 477–487 put in the imperative; row 318 set to his sentence; rows 167 and 257 lose a standalone operator symbol.
 
 | # | question | code | criterion | hint |
 |---|---|---|---|---|
@@ -1393,7 +1395,7 @@ Approved by David on 2026-09-05: all 500 rows. Row 163 set to his sentence; rows
 | 164 | 9e8932 | CK1 | Identifies \$7 as the common increase in fare. | Subtract consecutive fares to find the constant increase for one additional passenger. |
 | 165 | 9e8932 | AK1 | Applies five increases of \$7 to obtain \$53. | Start with the fare for one passenger and add five equal increases to find the fare for six passengers. |
 | 166 | 9e8932 | AK2 | Uses "their" total for 6 passengers as the starting value. | Use your total for six passengers as the starting fare for the next calculation. |
-| 167 | 9e8932 | AK3 | Adds $4\times\$7$ to "their" total. | Use $\times$ to calculate four further equal increases, then add this amount to your total. |
+| 167 | 9e8932 | AK3 | Adds $4\times\$7$ to "their" total. | Calculate four further equal increases, then add this amount to your total. |
 | 168 | 9e8932 | CK2 | Recognises \$7 as the fare added for each passenger. | Identify the amount added to the fare for each extra passenger. |
 | 169 | 9e8932 | AK4 | Determines the fixed charge as \$11 using "their" total. | Subtract the passenger-charge part from your total to find the fixed charge. |
 | 170 | 9e8932 | R1 | Forms a formula relating $C$ and $n$. | Write a formula relating $C$ to $n$ by combining the charge per passenger with the fixed charge. |
@@ -1483,7 +1485,7 @@ Approved by David on 2026-09-05: all 500 rows. Row 163 set to his sentence; rows
 | 254 | d16f03 | R3 | Compares "their" profit percentage with $8\%$ | Compare your profit percentage with $8\%$. |
 | 255 | d16f03 | R4 | States that the requirement is not met, with a valid reason | State that the requirement is not met because your profit percentage is below $8\%$. |
 | 256 | d16f10 | AK1 | Converts $8$ minutes $20$ seconds to $500$ seconds | Convert the minutes to seconds, then add the remaining seconds. |
-| 257 | d16f10 | CK1 | Selects the relationship distance $=$ speed $\times$ time | Use distance $=$ speed $\times$ time. |
+| 257 | d16f10 | CK1 | Selects the relationship distance $=$ speed $\times$ time | Use the relationship that distance equals speed multiplied by time. |
 | 258 | d16f10 | AK2 | Calculates $4.8 \times$ "their" time | Multiply $4.8$ by your converted time. |
 | 259 | d16f10 | CK2 | Recognises that the lap distance is $AB+BC+CA$ | Add $AB$, $BC$, and $CA$ to represent one complete lap. |
 | 260 | d16f10 | R1 | Forms $BC=$ "their" lap distance $-750-900$ | Subtract $750$ and $900$ from your lap distance to find $BC$. |
@@ -1544,7 +1546,7 @@ Approved by David on 2026-09-05: all 500 rows. Row 163 set to his sentence; rows
 | 315 | d16f57 | CK1 | Identifies that the $y$-intercept is on the $y$-axis | Locate the point where the line crosses the $y$-axis. |
 | 316 | d16f57 | R1 | Reads the intercept coordinate as $(0,12)$ | Read and write the coordinate of the point where the line crosses the $y$-axis. |
 | 317 | d16f57 | CK2 | Recognises that $y=0$ represents no bibs remaining | Set $y=0$ to represent the point when no bibs remain. |
-| 318 | d16f57 | AK1 | Calculates $12\div2=6$ | Use $\div$ to divide the initial number of bibs by the number given to each team. |
+| 318 | d16f57 | AK1 | Calculates $12\div2=6$ | Divide the initial number of bibs by the number given to each team. |
 | 319 | d16f57 | R2 | Interprets 6 as the greatest number of teams which can collect bibs | State that this result is the greatest number of teams that can collect bibs. |
 | 320 | d16f57 | R3 | Uses "their" greatest number of teams for the new arrangement | Use your greatest number of teams when planning the new arrangement. |
 | 321 | d16f57 | AK2 | Divides 18 by "their" number of teams | Divide the new total number of bibs by your number of teams. |
@@ -1703,17 +1705,17 @@ Approved by David on 2026-09-05: all 500 rows. Row 163 set to his sentence; rows
 | 474 | d1701e | AK3 | Calculates $18+$ "their" $x$ | Add $18$ to your $x$ value to find the passengers who used neither a bus nor a taxi. |
 | 475 | d1701e | AK4 | Divides "their" number of passengers by 8 | Divide your number of passengers by 8 to find how many shuttles are needed. |
 | 476 | d1701e | R2 | Recognises that a fractional number of shuttles requires a further whole shuttle | Round any fractional shuttle result up to the next whole shuttle, because you cannot use part of a shuttle. |
-| 477 | d17038 | CK1 | Identifies that the $y$-intercept occurs when $x=0$ | You set $x=0$ to locate the $y$-intercept. |
-| 478 | d17038 | R1 | Reads the coordinate $(0,12)$ from the graph | You read the coordinate where the line crosses the vertical axis. |
-| 479 | d17038 | CK2 | Recognises that the $y$-intercept is the constant term in the linear equation | You use the constant term as the $y$-intercept in a linear equation. |
-| 480 | d17038 | AK1 | Forms $B=-2x+12$ using "their" $y$-intercept | You substitute the gradient and your $y$-intercept into $B=mx+c$ to form your equation. |
-| 481 | d17038 | CK3 | Identifies that $B=0$ at the $x$-intercept | You set $B$ to zero to locate the $x$-intercept. |
-| 482 | d17038 | AK2 | Substitutes $B=0$ into "their" equation | You substitute $B=0$ into your equation before solving for $x$. |
-| 483 | d17038 | AK3 | Solves the resulting equation to obtain $x=6$ | You rearrange the resulting equation and solve for $x$. |
-| 484 | d17038 | R2 | Uses "their" initial balance as the change from the balance to zero | You use your initial balance as the total decrease needed to reach zero. |
-| 485 | d17038 | AK5 | Calculates the second gradient as $-12\div4=-3$ | You calculate the second gradient by dividing the change in balance by the change in time, using $\Delta B\div\Delta x$. |
-| 486 | d17038 | R3 | Concludes that the second line is steeper | You identify the second line as steeper after comparing its gradient with the original gradient. |
-| 487 | d17038 | R4 | Justifies the comparison using the magnitudes of the gradients or the shorter time to clear the same balance | You compare the magnitudes of the gradients, or compare which arrangement clears the same balance in less time. |
+| 477 | d17038 | CK1 | Identifies that the $y$-intercept occurs when $x=0$ | Set $x=0$ to locate the $y$-intercept. |
+| 478 | d17038 | R1 | Reads the coordinate $(0,12)$ from the graph | Read the coordinate where the line crosses the vertical axis. |
+| 479 | d17038 | CK2 | Recognises that the $y$-intercept is the constant term in the linear equation | Use the constant term as the $y$-intercept in a linear equation. |
+| 480 | d17038 | AK1 | Forms $B=-2x+12$ using "their" $y$-intercept | Substitute the gradient and your $y$-intercept into $B=mx+c$ to form your equation. |
+| 481 | d17038 | CK3 | Identifies that $B=0$ at the $x$-intercept | Set $B$ to zero to locate the $x$-intercept. |
+| 482 | d17038 | AK2 | Substitutes $B=0$ into "their" equation | Substitute $B=0$ into your equation before solving for $x$. |
+| 483 | d17038 | AK3 | Solves the resulting equation to obtain $x=6$ | Rearrange the resulting equation and solve for $x$. |
+| 484 | d17038 | R2 | Uses "their" initial balance as the change from the balance to zero | Use your initial balance as the total decrease needed to reach zero. |
+| 485 | d17038 | AK5 | Calculates the second gradient as $-12\div4=-3$ | Calculate the second gradient by dividing the change in balance by the change in time. |
+| 486 | d17038 | R3 | Concludes that the second line is steeper | Identify the second line as steeper after comparing its gradient with the original gradient. |
+| 487 | d17038 | R4 | Justifies the comparison using the magnitudes of the gradients or the shorter time to clear the same balance | Compare the magnitudes of the gradients, or compare which arrangement clears the same balance in less time. |
 | 488 | d1704a | CK1 | Recognises that each radius is perpendicular to its tangent. | Use the fact that a radius meets a tangent at a right angle at both points of contact. |
 | 489 | d1704a | R1 | Forms the angle sum in quadrilateral $OADB$: $\angle AOB+90+104+90=360$. | Write the interior-angle equation for quadrilateral $OADB$, including $\angle AOB$ and the three known angles. |
 | 490 | d1704a | AK1 | Evaluates $360-284$. | Subtract $284$ from $360$ to find the central angle. |

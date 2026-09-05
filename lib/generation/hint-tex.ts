@@ -87,5 +87,9 @@ export function hintProblems(hint: string, criterion: string): string[] {
   if (/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(hint)) problems.push('contains a control character');
   if (/[“"']your[”"']/.test(hint)) problems.push('quotes "your"');
   if (/\b(mark|criterion|award|their)\b/i.test(hint)) problems.push('uses a scheme word (mark, criterion, award, their)');
+  // Imperative, not narrated: "Set x to 0", never "You set x to 0".
+  if (/^You\s/.test(hint)) problems.push('begins with "You "');
+  // An operator on its own says nothing: "Use $\\times$" names a symbol, not a step.
+  if (/\$\s*\\(times|div)\s*\$|(^|\s)[×÷](\s|$)/.test(hint)) problems.push('a standalone × or ÷');
   return problems;
 }

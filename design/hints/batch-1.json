@@ -983,56 +983,56 @@
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "CK1",
   "criterion": "Recognises that $\\overrightarrow{AB}$ is found by subtracting the coordinates of $A$ from those of $B$.",
-  "hint": "You find $\\overrightarrow{AB}$ by subtracting each coordinate of $A$ from the corresponding coordinate of $B$.",
+  "hint": "Find $\\overrightarrow{AB}$ by subtracting each coordinate of $A$ from the corresponding coordinate of $B$.",
   "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "AK1",
   "criterion": "Subtracts correctly to obtain $\\begin{pmatrix}3\\\\4\\end{pmatrix}$.",
-  "hint": "You subtract the coordinates carefully and write the resulting vector as $\\begin{pmatrix}a\\\\b\\end{pmatrix}$.",
+  "hint": "Subtract the coordinates carefully and write the resulting vector as $\\begin{pmatrix}a\\\\b\\end{pmatrix}$.",
   "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "CK2",
   "criterion": "Uses $\\left|\\begin{pmatrix}x\\\\y\\end{pmatrix}\\right|=\\sqrt{x^2+y^2}$.",
-  "hint": "You use $\\left|\\begin{pmatrix}x\\\\y\\end{pmatrix}\\right|=\\sqrt{x^2+y^2}$ to find the magnitude.",
+  "hint": "Use $\\left|\\begin{pmatrix}x\\\\y\\end{pmatrix}\\right|=\\sqrt{x^2+y^2}$ to find the magnitude.",
   "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "AK2",
   "criterion": "Evaluates $\\sqrt{3^2+4^2}$.",
-  "hint": "You square both vector components, add the results, and evaluate the square root $\\sqrt{a^2+b^2}$.",
+  "hint": "Square both vector components, add the results, and evaluate the square root $\\sqrt{a^2+b^2}$.",
   "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "CK3",
   "criterion": "Recognises that a point on the $x$-axis has second coordinate $0$.",
-  "hint": "You write the point on the $x$-axis with $0$ as its second coordinate.",
+  "hint": "Write the point on the $x$-axis with $0$ as its second coordinate.",
   "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "AK3",
   "criterion": "Uses $|x-1|=$ 'their' magnitude of $\\overrightarrow{AB}$ to obtain $x=6$ or $x=-4$.",
-  "hint": "You use $|x-1|=$ your magnitude of $\\overrightarrow{AB}$ and solve for both possible values of $x$.",
+  "hint": "Use $|x-1|=$ your magnitude of $\\overrightarrow{AB}$ and solve for both possible values of $x$.",
   "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "R2",
   "criterion": "Uses the condition $AC=AB$ with 'their' magnitude from part (b).",
-  "hint": "You set $AC=AB$ by using your magnitude of $\\overrightarrow{AB}$ as the length of $AC$.",
+  "hint": "Set $AC=AB$ by using your magnitude of $\\overrightarrow{AB}$ as the length of $AC$.",
   "status": "approved"
  },
  {
   "question_id": "6a83be2fc24c2d59f4d9c1e8",
   "code": "R3",
   "criterion": "Selects $x=6$, since $C$ is to the right of $A$, and gives $(6,0)$.",
-  "hint": "You choose the solution to the right of $A$ and write the point with second coordinate $0$.",
+  "hint": "Choose the solution to the right of $A$ and write the point with second coordinate $0$.",
   "status": "approved"
  },
  {
@@ -1228,49 +1228,49 @@
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "CK1",
   "criterion": "Identifies $f$ and $g$ as inverse functions",
-  "hint": "You use the reflection in $y=x$ to identify the relationship between $f$ and $g$.",
+  "hint": "Use the reflection in $y=x$ to identify the relationship between $f$ and $g$.",
   "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "CK2",
   "criterion": "Recognises that the inverse reverses the input and output",
-  "hint": "You reverse the input and output when finding the inverse function.",
+  "hint": "Reverse the input and output when finding the inverse function.",
   "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "AK2",
   "criterion": "Interchanges the variables and rearranges $y=2x+1$ to make $y$ the subject",
-  "hint": "You interchange $x$ and $y$ in $y=2x+1$ and rearrange to make $y$ the subject.",
+  "hint": "Interchange $x$ and $y$ in $y=2x+1$ and rearrange to make $y$ the subject.",
   "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "R2",
   "criterion": "States $g:x\\to \\frac{x-1}{2}$",
-  "hint": "You state the inverse rule in the form $g:x\\to\\frac{\\text{expression}}{\\text{constant}}$.",
+  "hint": "State the inverse rule in the form $g:x\\to\\frac{\\text{expression}}{\\text{constant}}$.",
   "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "CK3",
   "criterion": "Forms the composition $g(f(x))$",
-  "hint": "You write the composition $g(f(x))$ before simplifying it.",
+  "hint": "Write the composition $g(f(x))$ before simplifying it.",
   "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "AK3",
   "criterion": "Substitutes $f(x)=2x+1$ into $g$",
-  "hint": "You replace the input of $g$ with $f(x)$ using the given rule for $f$.",
+  "hint": "Replace the input of $g$ with $f(x)$ using the given rule for $f$.",
   "status": "approved"
  },
  {
   "question_id": "6a83bf33c24c2d59f4d9c20d",
   "code": "R3",
   "criterion": "Simplifies to conclude $g(f(x))=x$",
-  "hint": "You simplify the composition fully and state the resulting identity.",
+  "hint": "Simplify the composition fully and state the resulting identity.",
   "status": "approved"
  },
  {
