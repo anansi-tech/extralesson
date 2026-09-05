@@ -1,7 +1,11 @@
 @import "tailwindcss";
 
-/* Copybook design tokens (ROUND_1 §6 UI) */
+/* THE SYSTEM SHEET'S TOKENS (ROUND_8 Task 0), named as the sheet names them:
+   design/ui/ExtraLesson System Sheet.dc.html. Values that predate the sheet
+   stay where they differ: --dim is darker than the sheet's #6e7687 because
+   4.27:1 on paper failed the contrast floor. */
 :root {
+  /* colour */
   --paper: #fbf7ee;
   --paper-deep: #f1eada;
   --ink: #1e2430;
@@ -9,7 +13,64 @@
   --margin: #e4b8b4;
   --red: #c1121f;
   --green: #2e7d5b;
-  --dim: #5b6373; /* ≥ 4.5:1 on paper (5.65:1); #6e7687 was 4.27 */
+  --dim: #5b6373; /* ≥ 4.5:1 on paper (5.65:1); the sheet's #6e7687 is 4.27 */
+  --amber: #d9a62e;
+  --red-tint: #fdf1f0;
+  --green-tint: #e8f0e9;
+  --amber-tint: #fdf8ec;
+  --blue-tint: #edf1f8;
+  --blue-ink: #3a5a8c;
+  --note: #fffdf6;
+  --withheld: #b8860b;
+  /* type */
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-hand: var(--font-caveat), cursive;
+  --text-display: 34px;
+  --text-title: 24px;
+  --text-stem: 18px;
+  --text-body: 15px;
+  --text-sm: 13px;
+  --text-caption: 12px;
+  --text-input: 16px;
+  --label: 11px;
+  --label-sm: 10px;
+  --label-xs: 9px;
+  --lh-body: 1.55;
+  --lh-snug: 1.375;
+  --track-label: 0.10em;
+  --track-heading: 0.14em;
+  /* space */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+  --s10: 40px;
+  /* the paper */
+  --rule-gap: 32px;
+  --rule-baseline: 21px; /* measured in Chrome at the 14px prose size; re-measure if either changes */
+  --rule-offset-sm: 16px;
+  --rule-offset-lg: -14px;
+  /* lines, targets, corners, shadows */
+  --target: 44px;
+  --hair: 1px;
+  --line: 1.5px;
+  --line-strong: 2px;
+  --bar: 3px;
+  --radius: 4px;
+  --shadow-card: 4px 4px 0 var(--ink);
+  --shadow-panel: 3px 3px 0 var(--ink);
+  --shadow-key: 2px 2px 0 var(--ink);
+  --shadow-on-ink: 3px 3px 0 var(--red);
+  /* layout */
+  --page-pad-sm: 20px;
+  --page-pad-lg: 24px;
+  --col: 576px;
+  --bar-width: 960px;
+  --rail: 320px;
 }
 
 @theme inline {
@@ -21,6 +82,9 @@
   --color-red-pen: var(--red);
   --color-green-pen: var(--green);
   --color-dim: var(--dim);
+  --color-amber: var(--amber);
+  --color-withheld: var(--withheld);
+  --color-blue-ink: var(--blue-ink);
   --font-display: var(--font-fraunces);
   --font-mono: var(--font-plex-mono);
   --font-hand: var(--font-caveat);
@@ -162,24 +226,8 @@ summary {
   color: var(--dim, #6B7280);
 }
 
-/* Ruled-paper background used across study/admin surfaces */
-/* THE NOTEBOOK RHYTHM, named once.
-   The ruled background repeats every 32px, and prose that is meant to sit ON
-   the lines has to use the same number for its line-height. It was a literal in
-   one place and absent from the other, so text landed under and through the
-   rules instead of on them. */
-:root {
-  --rule-gap: 32px;
-  /* Where the BASELINE falls inside a 32px line box at the 14px prose size.
-     Measured in Chrome rather than derived: it is a function of the font's own
-     ascent and descent, so it is a number to re-measure if the prose size or
-     the typeface changes, not one to calculate. Letters rest ON a rule only
-     when the rule is drawn at the baseline; drawn at the bottom of the line box
-     the text floats 11px above it, which is what "under and through the lines"
-     looked like. */
-  --rule-baseline: 21px;
-}
-
+/* Ruled-paper background used across study/admin surfaces. The rhythm
+   (--rule-gap, --rule-baseline) is declared with the other tokens above. */
 .ruled {
   background-image: repeating-linear-gradient(
     to bottom,
