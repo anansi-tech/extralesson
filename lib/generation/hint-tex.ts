@@ -89,7 +89,16 @@ export function hintProblems(hint: string, criterion: string): string[] {
   if (/\b(mark|criterion|award|their)\b/i.test(hint)) problems.push('uses a scheme word (mark, criterion, award, their)');
   // Imperative, not narrated: "Set x to 0", never "You set x to 0".
   if (/^You\s/.test(hint)) problems.push('begins with "You "');
-  // An operator on its own says nothing: "Use $\\times$" names a symbol, not a step.
-  if (/\$\s*\\(times|div)\s*\$|(^|\s)[×÷](\s|$)/.test(hint)) problems.push('a standalone × or ÷');
+  // An operator on its own says nothing: "Use $\\times$" names a symbol, not a
+  // step. Between two operands — "area $\\times$ thickness" — it is the relationship.
+  const standalone = (at: number, len: number) => {
+    const before = hint.slice(0, at).trimEnd();
+    const after = hint.slice(at + len).trimStart();
+    // "Use ×" or "using ×": the word before is a verb, so the symbol stands alone.
+    const verbBefore = /\b(use|using|apply|applying|with|by)$/i.test(before);
+    const operand = /[\w)$}]$/.test(before) && /^[\w($\\]/.test(after) && !verbBefore;
+    return !operand;
+  };
+  for (const m of hint.matchAll(/\$\s*\\(?:times|div)\s*\$|[×÷]/g)) if (standalone(m.index!, m[0].length)) problems.push('a standalone × or ÷');
   return problems;
 }
