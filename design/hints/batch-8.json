@@ -4,3639 +4,3639 @@
   "code": "R3",
   "criterion": "Restricts the result to whole-number discount rates: $\\{0,1,6\\}\\%$.",
   "hint": "List only the whole-number discount rates for which $f(x) \\ge g(x)$, writing the result as a set followed by $\\%$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867525b944c6fb77c0c065",
   "code": "CK2",
   "criterion": "Identifies the roots as the $x$-intercepts of $f$",
   "hint": "Find the points where the curve for $f$ crosses the $x$-axis to identify its roots.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867525b944c6fb77c0c065",
   "code": "AK4",
   "criterion": "Reads both roots as $-1$ and $5$",
   "hint": "Read the $x$-coordinates of both crossings of $f$ with the $x$-axis.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867525b944c6fb77c0c065",
   "code": "R1",
   "criterion": "Uses 'their' roots to select the non-negative whole-number values for which $f(x)<0$",
   "hint": "Use your roots to list the non-negative whole-number $x$-values for which $f(x)<0$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867525b944c6fb77c0c065",
   "code": "CK3",
   "criterion": "Recognises that equal net returns occur where the two graphs intersect",
   "hint": "Find where the two graphs intersect, since these points show equal net returns.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867525b944c6fb77c0c065",
   "code": "R2",
   "criterion": "Reads the intersection abscissae as $-1$ and $6$",
   "hint": "Read the $x$-coordinates of both intersection points from the graph.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867525b944c6fb77c0c065",
   "code": "R3",
   "criterion": "Selects $6$ using the stated domain for the number of crates",
   "hint": "Choose the non-negative intersection value because the number of crates cannot be negative.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86756d274ccc2bbe037e19",
   "code": "R2",
   "criterion": "Reads the intersection representing full use of both resources as $(4,4)$.",
   "hint": "Read the coordinates of the point where both resource boundary lines meet.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86756d274ccc2bbe037e19",
   "code": "CK2",
   "criterion": "Forms the profit expression $P=3x+2y$.",
   "hint": "Form the profit rule as $P=3x+2y$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86756d274ccc2bbe037e19",
   "code": "AK2",
   "criterion": "Substitutes $(4,4)$ to obtain \\$20.",
   "hint": "Substitute the intersection coordinates into the profit rule and calculate the daily profit in \\$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86756d274ccc2bbe037e19",
   "code": "CK3",
   "criterion": "Identifies the remaining corner points of the feasible region.",
   "hint": "Identify every feasible-region corner other than the intersection point.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86756d274ccc2bbe037e19",
   "code": "AK3",
   "criterion": "Calculates the profits at the remaining corner points as \\$0, \\$18 and \\$16.",
   "hint": "Substitute each remaining corner into the profit rule and calculate each profit in \\$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86756d274ccc2bbe037e19",
   "code": "R3",
   "criterion": "Concludes that \\$20 is the greatest profit.",
   "hint": "Compare all the calculated profits and state that the largest one is the maximum daily profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867575b944c6fb77c0c06d",
   "code": "CK2",
   "criterion": "Identifies the relevant point as the intersection of the two production-limit boundaries.",
   "hint": "Find the point where the two production-limit boundary lines intersect, since both limits are met there.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867575b944c6fb77c0c06d",
   "code": "CK3",
   "criterion": "Forms an income equation using plantain-chip income and cassava-chip income.",
   "hint": "Form an equation by adding the income from plantain chips to the income from cassava chips and setting the total to \\$78.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867575b944c6fb77c0c06d",
   "code": "AK3",
   "criterion": "Substitutes \"their\" values of $x$ and $y$ into $6x+py=78$.",
   "hint": "Substitute your values of $x$ and $y$ into $6x+py=78$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867575b944c6fb77c0c06d",
   "code": "R3",
   "criterion": "Solves the resulting equation for $p$, using \"their\" production-plan values.",
   "hint": "Use your production-plan values in the resulting equation and solve for $p$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8675c1274ccc2bbe037e21",
   "code": "CK2",
   "criterion": "Forms the simultaneous boundary equations $x+y=10$ and $2x+y=16$",
   "hint": "Translate each boundary condition into a simultaneous equation in $x$ and $y$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8675c1274ccc2bbe037e21",
   "code": "AK3",
   "criterion": "Solves the simultaneous equations to obtain $B=(6,4)$, or follows through from \"their\" graph",
-  "hint": "Solve the simultaneous equations, or use your graph’s intersection, and write the coordinate of $B$.",
-  "status": "proposed"
+  "hint": "Solve the simultaneous equations, or use your graph\u2019s intersection, and write the coordinate of $B$.",
+  "status": "approved"
  },
  {
   "question_id": "6a8675c1274ccc2bbe037e21",
   "code": "CK3",
   "criterion": "Recognises that the profit must be tested at all vertices of the feasible region",
   "hint": "List every vertex of the feasible region before testing the profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8675c1274ccc2bbe037e21",
   "code": "AK4",
   "criterion": "Substitutes the vertex coordinates, including \"their\" coordinates of $B$, into $P=3x+2y$ to obtain the listed profit values",
   "hint": "Substitute the coordinates of each vertex, including your coordinates of $B$, into $P=3x+2y$ and calculate each profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8675c1274ccc2bbe037e21",
   "code": "R2",
   "criterion": "Compares the profit values and identifies the greatest value, or follows through from \"their\" values",
   "hint": "Compare all your profit values and select the greatest one.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8675c1274ccc2bbe037e21",
   "code": "R3",
   "criterion": "Interprets the maximum as an allocation of 6 hours to Route A and 4 hours to Route B, or follows through from \"their\" point",
   "hint": "State the maximum as the corresponding allocation of hours to Route A and Route B from your selected point.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86778d274ccc2bbe037e40",
   "code": "CK1",
   "criterion": "States tangent in triangle $BCD$ as opposite over adjacent",
   "hint": "Write tangent for triangle $BCD$ as the opposite side divided by the adjacent side.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86778d274ccc2bbe037e40",
   "code": "CK2",
   "criterion": "States tangent in triangle $ACD$ as opposite over adjacent",
   "hint": "Write tangent for triangle $ACD$ as the opposite side divided by the adjacent side.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86778d274ccc2bbe037e40",
   "code": "R1",
   "criterion": "Forms $h=x$ from the angle of elevation of $45^\\circ$",
   "hint": "Use $\\tan 45^\\circ=1$ to form $h=x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86778d274ccc2bbe037e40",
   "code": "CK3",
   "criterion": "Recognises that $AC=x+12$",
   "hint": "Add the two horizontal lengths to write $AC=x+12$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86778d274ccc2bbe037e40",
   "code": "R2",
   "criterion": "Forms $x+12=\\sqrt{3}h$ from the angle of elevation of $30^\\circ$",
   "hint": "Use the $30^\\circ$ angle of elevation to form $x+12=\\sqrt{3}h$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86778d274ccc2bbe037e40",
   "code": "AK1",
   "criterion": "Substitutes $h=x$ into $x+12=\\sqrt{3}h$",
   "hint": "Substitute $h=x$ into $x+12=\\sqrt{3}h$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86778d274ccc2bbe037e40",
   "code": "AK2",
   "criterion": "Rearranges to obtain $(\\sqrt{3}-1)x=12$",
   "hint": "Rearrange the equation to obtain $(\\sqrt{3}-1)x=12$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86778d274ccc2bbe037e40",
   "code": "AK4",
   "criterion": "Uses $h=x$ and substitutes \"their\" value of $x$",
   "hint": "Use $h=x$ to substitute your value of $x$ and find the height $h$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86778d274ccc2bbe037e40",
   "code": "R3",
   "criterion": "Expresses \"their\" height correct to 3 significant figures",
   "hint": "Round your height to 3 significant figures and state it in metres.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86779db944c6fb77c0c08e",
   "code": "CK1",
   "criterion": "States $\\tan BAC = \\frac{BC}{AB}$ from the right-angled triangle",
   "hint": "Use the right-angled triangle to write $\\tan BAC = \\frac{BC}{AB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86779db944c6fb77c0c08e",
   "code": "AK1",
   "criterion": "Evaluates $12\\tan 36.9^\\circ$ to obtain $9.0$",
   "hint": "Calculate $12\\tan 36.9^\\circ$ to find the vertical-pole length.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86779db944c6fb77c0c08e",
   "code": "R1",
   "criterion": "Expresses the length correct to 1 decimal place",
   "hint": "Round your vertical-pole length to 1 decimal place and include metres.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86779db944c6fb77c0c08e",
   "code": "CK2",
   "criterion": "Identifies $BC$ as the opposite side and $AC$ as the hypotenuse for angle $BAC$",
   "hint": "For angle $BAC$, identify $BC$ as the opposite side and $AC$ as the hypotenuse.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86779db944c6fb77c0c08e",
   "code": "AK2",
   "criterion": "Uses $\\sin 36.9^\\circ = \\frac{\\text{their }BC}{AC}$ to calculate $AC$",
   "hint": "Use $\\sin 36.9^\\circ = \\frac{\\text{your }BC}{AC}$ and rearrange to calculate $AC$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86779db944c6fb77c0c08e",
   "code": "R2",
   "criterion": "Expresses the length correct to 1 decimal place",
   "hint": "Round your diagonal-pole length to 1 decimal place and include metres.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86779db944c6fb77c0c08e",
   "code": "CK3",
   "criterion": "Defines variables for the numbers of vertical and diagonal poles",
   "hint": "Let one variable represent the number of vertical poles and the other represent the number of diagonal poles.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86779db944c6fb77c0c08e",
   "code": "R3",
   "criterion": "Forms $x+y=12$ and $9x+15y=144$, using their earlier pole lengths",
   "hint": "Form one equation from the total number of poles and another from the total length, using your earlier pole lengths.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86779db944c6fb77c0c08e",
   "code": "AK3",
   "criterion": "Solves the simultaneous equations using their equations",
   "hint": "Eliminate one variable from your two equations, then substitute back to find both numbers of poles.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8677d6274ccc2bbe037e48",
   "code": "CK1",
   "criterion": "Substitutes $x=2$ into $f(x)$",
   "hint": "Substitute $x=2$ into $f(x)$ before you calculate the ball height.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8677d6274ccc2bbe037e48",
   "code": "AK1",
   "criterion": "Evaluates $-2^2+8(2)$ to obtain $12$",
   "hint": "Evaluate $-2^2+8(2)$ carefully, applying the square and negative sign in the correct order.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8677d6274ccc2bbe037e48",
   "code": "CK2",
   "criterion": "Uses $g(2)=2+2$ for the screen height",
   "hint": "Use $g(2)=2+2$ to find the screen height.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8677d6274ccc2bbe037e48",
   "code": "AK2",
   "criterion": "Subtracts the screen height from \"their\" ball height",
   "hint": "Subtract the screen height from your ball height to find the vertical distance.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8677d6274ccc2bbe037e48",
   "code": "R1",
   "criterion": "Concludes that the ball is above the screen since \"their\" vertical distance is positive",
   "hint": "State that the ball is above the screen because your vertical distance is positive.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8677d6274ccc2bbe037e48",
   "code": "CK3",
   "criterion": "Identifies the intersection points of $f$ and $g$ as the boundary positions",
   "hint": "Use the two points where $f$ and $g$ cross as the boundary positions.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8677d6274ccc2bbe037e48",
   "code": "AK3",
   "criterion": "Reads the lower intersection as $x=0.3$, to $1$ decimal place",
   "hint": "Read the lower intersection from the graph and write its $x$-coordinate to $1$ decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8677d6274ccc2bbe037e48",
   "code": "AK4",
   "criterion": "Reads the upper intersection as $x=6.7$, to $1$ decimal place",
   "hint": "Read the upper intersection from the graph and write its $x$-coordinate to $1$ decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8677d6274ccc2bbe037e48",
   "code": "R2",
   "criterion": "Selects the interval between the intersections, consistent with \"their\" conclusion in part (b)",
   "hint": "Choose the interval between the two intersections, consistent with your conclusion that the ball is above the screen.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8677d6274ccc2bbe037e48",
   "code": "R3",
   "criterion": "Expresses the boundary values to $1$ decimal place",
   "hint": "Read the two intersection $x$-coordinates from the graph and write each boundary value to $1$ decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867804274ccc2bbe037e50",
   "code": "CK1",
   "criterion": "Identifies $g(2) = -(2)^2 + 8(2)$",
   "hint": "Substitute the given input into $g(x)$, applying the negative sign to the squared term before adding the linear term.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867804274ccc2bbe037e50",
   "code": "AK1",
   "criterion": "Evaluates $g(2) = 12$",
   "hint": "Evaluate your substituted expression carefully to obtain the revenue value.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867804274ccc2bbe037e50",
   "code": "CK2",
   "criterion": "Recognises that break-even occurs where cost equals revenue",
   "hint": "Find the point where cost and revenue are equal, since this is the break-even point.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867804274ccc2bbe037e50",
   "code": "R1",
   "criterion": "Uses \"their\" revenue value to identify the lower intersection, $x=2$",
   "hint": "Use your revenue value to locate the lower intersection on the graph and read its $x$-coordinate.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867804274ccc2bbe037e50",
   "code": "R2",
   "criterion": "Identifies from the graph that revenue exceeds cost between the break-even points",
   "hint": "Identify the interval where the revenue graph lies above the cost graph.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867804274ccc2bbe037e50",
   "code": "R3",
   "criterion": "Restricts \"their\" profitable interval to the whole-number value $3$",
   "hint": "Restrict your profitable interval to the whole-number production quantity within it.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867804274ccc2bbe037e50",
   "code": "CK3",
   "criterion": "Forms profit as $g(\\text{their }3)-f(\\text{their }3)$",
   "hint": "Form profit by subtracting cost from revenue as $g(\\text{your number})-f(\\text{your number})$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867804274ccc2bbe037e50",
   "code": "AK2",
   "criterion": "Evaluates revenue and cost as $g(3)=15$ and $f(3)=14$, using \"their\" number of stools",
   "hint": "Substitute your number of stools into both functions and calculate the revenue and cost separately.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867804274ccc2bbe037e50",
   "code": "AK3",
   "criterion": "Finds profit $15-14=\\$1$, follow-through from \"their\" values",
   "hint": "Subtract your calculated cost from your calculated revenue and state the profit in the form $\\$\\,\\text{amount}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86780db944c6fb77c0c09b",
   "code": "CK1",
   "criterion": "Recognises that equal fares occur at the points of intersection.",
   "hint": "Find where the line and curve cross, because those intersection points show equal fares.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86780db944c6fb77c0c09b",
   "code": "R1",
   "criterion": "Reads $1$ km and $5$ km from the graph.",
   "hint": "Read the two distance values in kilometres from the graph at the intersection points.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86780db944c6fb77c0c09b",
   "code": "CK2",
   "criterion": "Recognises that plan $g$ is cheaper where its curve is below the line for $f$.",
   "hint": "Identify the plan whose graph lies below the other graph, since it has the lower fare.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86780db944c6fb77c0c09b",
   "code": "CK3",
   "criterion": "Recognises that the equal-fare distances are not included for a strict less-than comparison.",
   "hint": "Use a strict inequality, so exclude the distances where the graphs meet.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86780db944c6fb77c0c09b",
   "code": "R2",
   "criterion": "Uses \"their\" equal-fare distances as the boundaries of the interval.",
   "hint": "Use your equal-fare distances as the endpoints of the interval.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86780db944c6fb77c0c09b",
   "code": "AK1",
   "criterion": "Finds $f(4)=2(4)+3=11$.",
   "hint": "Substitute $4$ into $f(x)=2x+3$ and calculate the fare.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86780db944c6fb77c0c09b",
   "code": "AK2",
   "criterion": "Finds $g(4)=4^2-4(4)+8=8$.",
   "hint": "Substitute $4$ into $g(x)=x^2-4x+8$ and calculate the fare.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86780db944c6fb77c0c09b",
   "code": "AK3",
   "criterion": "Subtracts the lower fare from the higher fare.",
   "hint": "Subtract the lower fare from the higher fare to find the saving.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86780db944c6fb77c0c09b",
   "code": "R3",
   "criterion": "Uses \"their\" interval to select the cheaper plan at $4$ km.",
   "hint": "Use your interval to decide which plan is cheaper at $4$ km.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867895274ccc2bbe037e5d",
   "code": "CK1",
   "criterion": "Recognises that $BT$ is perpendicular to the level ground.",
   "hint": "Recognise that $BT$ is perpendicular to the level ground, so you can use a right-angled triangle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867895274ccc2bbe037e5d",
   "code": "CK2",
   "criterion": "Selects the tangent ratio for the $45^\\circ$ angle of elevation.",
   "hint": "Select the tangent ratio using the $45^\\circ$ angle of elevation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867895274ccc2bbe037e5d",
   "code": "AK2",
   "criterion": "Simplifies $\\tan45^\\circ=h/d$ to give $h=d$.",
   "hint": "Simplify $\\tan45^\\circ=h/d$ to show the relationship between $h$ and $d$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867895274ccc2bbe037e5d",
   "code": "R1",
   "criterion": "States that $XB=d+20$.",
   "hint": "State the full horizontal distance as $XB=d+20$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867895274ccc2bbe037e5d",
   "code": "R2",
   "criterion": "Forms $\\tan(\\text{their answer to (a)})=(d+20)/h$.",
   "hint": "Form $\\tan(\\text{your angle from (a)})=(d+20)/h$ using your angle from part (a).",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867895274ccc2bbe037e5d",
   "code": "AK3",
   "criterion": "Substitutes $h=d$ and solves using their angle.",
   "hint": "Substitute $h=d$ into your tangent equation and solve for $d$ using your angle from part (a).",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867895274ccc2bbe037e5d",
   "code": "AK5",
   "criterion": "Uses $h=d$ and their value of $d$ to obtain $h\\approx27.3205$.",
   "hint": "Use $h=d$ and your value of $d$ to calculate the unrounded height, writing it as $h\\approx\\text{(your decimal)}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867895274ccc2bbe037e5d",
   "code": "R3",
   "criterion": "Expresses their height correct to 3 significant figures.",
   "hint": "Round your height to 3 significant figures.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867895274ccc2bbe037e5d",
   "code": "CK3",
   "criterion": "Identifies triangle $YBT$ as an isosceles right triangle.",
   "hint": "Identify triangle $YBT$ as an isosceles right triangle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867895274ccc2bbe037e5d",
   "code": "R4",
   "criterion": "Justifies the classification using equal perpendicular sides.",
   "hint": "Justify this by showing that $YB=BT$ and that these equal sides meet at a right angle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8678e6b944c6fb77c0c0ad",
   "code": "CK1",
   "criterion": "Uses the angle sum of triangle $QRS$",
   "hint": "Find the remaining angle at $S$ by subtracting the other two interior angles of triangle $QRS$ from $180^\\circ$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8678e6b944c6fb77c0c0ad",
   "code": "CK2",
   "criterion": "Recognises from the $30^\\circ$-$60^\\circ$-$90^\\circ$ triangle that $RS=\\sqrt{3}QR$",
   "hint": "Use the side ratio for a $30^\\circ$-$60^\\circ$-$90^\\circ$ triangle to write $RS=\\sqrt{3}QR$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8678e6b944c6fb77c0c0ad",
   "code": "CK3",
   "criterion": "States $PR=20+QR$",
   "hint": "Write $PR=20+QR$ by adding the two adjacent lengths along the straight line.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8678e6b944c6fb77c0c0ad",
   "code": "R1",
   "criterion": "Forms $\\tan30^\\circ=RS/(20+QR)$",
   "hint": "Form $\\tan30^\\circ=\\dfrac{RS}{20+QR}$ using opposite over adjacent in triangle $PRS$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8678e6b944c6fb77c0c0ad",
   "code": "AK2",
   "criterion": "Substitutes $RS=\\sqrt{3}QR$ and evaluates $\\tan30^\\circ$ correctly",
   "hint": "Substitute $RS=\\sqrt{3}QR$ into your tangent equation and use the exact value of $\\tan30^\\circ$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8678e6b944c6fb77c0c0ad",
   "code": "R2",
   "criterion": "Solves the resulting equation and establishes $RS=10\\sqrt{3}\\text{ m}$",
   "hint": "Solve the equation for $QR$, substitute into $RS=\\sqrt{3}QR$, and write the resulting length in $\\text{m}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8678e6b944c6fb77c0c0ad",
   "code": "AK3",
   "criterion": "Uses $\\sin30^\\circ=\\dfrac{\\text{their }RS}{PS}$",
   "hint": "Use $\\sin30^\\circ=\\dfrac{\\text{your }RS}{PS}$ in triangle $PRS$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8678e6b944c6fb77c0c0ad",
   "code": "AK4",
   "criterion": "Calculates $PS$ from \"their\" value of $RS$",
   "hint": "Rearrange your sine equation to calculate $PS$ using your earlier value of $RS$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8678e6b944c6fb77c0c0ad",
   "code": "R3",
   "criterion": "Expresses \"their\" distance correct to 1 decimal place",
   "hint": "Round your calculated distance to 1 decimal place and include metres.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a0d274ccc2bbe037e74",
   "code": "CK2",
   "criterion": "Forms the condition $f(x)=6$.",
   "hint": "Set $f(x)=6$ to represent the order for six coconut drinks.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a0d274ccc2bbe037e74",
   "code": "AK3",
   "criterion": "Solves $-x^2+8x-6=6$ to obtain $x=2$ and $x=6$.",
   "hint": "Rearrange the equation into a quadratic equal to zero, factorise it, and solve each factor for $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a0d274ccc2bbe037e74",
   "code": "R2",
   "criterion": "States both possible values of $x$.",
   "hint": "State both values of $x$ that you obtain from the factorised equation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a0d274ccc2bbe037e74",
   "code": "CK3",
-  "criterion": "Uses $y=6$ with “their” possible values of $x$.",
+  "criterion": "Uses $y=6$ with \u201ctheir\u201d possible values of $x$.",
   "hint": "Use $y=6$ with each of your possible values of $x$ to form both allocations.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a0d274ccc2bbe037e74",
   "code": "CK4",
   "criterion": "Uses the income relationship $I=3x+2y$.",
   "hint": "Use $I=3x+2y$ to calculate the income for an allocation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a0d274ccc2bbe037e74",
   "code": "AK4",
-  "criterion": "Tests “their” allocation $(6,6)$ against the constraints.",
+  "criterion": "Tests \u201ctheir\u201d allocation $(6,6)$ against the constraints.",
   "hint": "Substitute your allocation with the larger $x$-value into both constraints and decide whether it is feasible.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a0d274ccc2bbe037e74",
   "code": "AK5",
-  "criterion": "Calculates $I=3(2)+2(6)=18$ for “their” feasible allocation.",
+  "criterion": "Calculates $I=3(2)+2(6)=18$ for \u201ctheir\u201d feasible allocation.",
   "hint": "Substitute your feasible allocation into $I=3x+2y$ and calculate the income.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a0d274ccc2bbe037e74",
   "code": "R3",
   "criterion": "Concludes that $(2,6)$ gives the greatest income because the other possible allocation is outside the feasible region.",
   "hint": "Conclude that the feasible allocation gives the greatest income because your other possible allocation lies outside the feasible region.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a7e274ccc2bbe037e81",
   "code": "CK1",
   "criterion": "Selects the trigonometric ratio relating the mast height to $PR$.",
   "hint": "Choose the tangent ratio by matching the mast height as the opposite side and $PR$ as the adjacent side.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a7e274ccc2bbe037e81",
   "code": "AK1",
   "criterion": "Rearranges $\\tan 30^\\circ=\\frac{24}{PR}$ to obtain $PR=24\\sqrt{3}$.",
   "hint": "Rearrange $\\tan 30^\\circ=\\frac{24}{PR}$ to make $PR$ the subject, using the exact value involving $\\sqrt{3}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a7e274ccc2bbe037e81",
   "code": "R1",
   "criterion": "Expresses the distance in surd form.",
   "hint": "Write your distance exactly in surd form, keeping the $\\sqrt{}$ notation instead of converting to a decimal.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a7e274ccc2bbe037e81",
   "code": "CK2",
   "criterion": "Recognises that $PR=PQ+QR$.",
   "hint": "Treat $PR$ as the complete horizontal distance made up of $PQ$ and $QR$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a7e274ccc2bbe037e81",
   "code": "CK3",
   "criterion": "Selects the trigonometric ratio relating the mast height to \"their\" $QR$.",
   "hint": "Use your earlier $QR$ as the adjacent side and the mast height as the opposite side, so you choose tangent.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a7e274ccc2bbe037e81",
   "code": "AK3",
   "criterion": "Forms $\\tan \\theta=\\frac{24}{\\text{their }QR}$.",
   "hint": "Form $\\tan \\theta=\\frac{\\text{mast height}}{\\text{your earlier }QR}$ using your earlier horizontal distance.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a7e274ccc2bbe037e81",
   "code": "AK4",
   "criterion": "Evaluates the inverse trigonometric ratio to obtain \"their\" angle.",
   "hint": "Use $\\tan^{-1}$ on your ratio to calculate your angle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867a7e274ccc2bbe037e81",
   "code": "R3",
   "criterion": "Explains that the horizontal distance to the mast is smaller at $Q$ while its height is unchanged.",
   "hint": "State that the horizontal distance to the mast is smaller at $Q$ while the mast height remains unchanged.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867acb274ccc2bbe037e89",
   "code": "CK1",
   "criterion": "Forms the total-crates constraint $x+y\\le 12$.",
   "hint": "Add the two crate quantities and write the constraint $x+y\\le 12$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867acb274ccc2bbe037e89",
   "code": "CK2",
   "criterion": "Forms the ice constraint $2x+y\\le 18$.",
   "hint": "Use 2 bags of ice for each flying-fish crate and 1 bag for each tuna crate, then write $2x+y\\le 18$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867acb274ccc2bbe037e89",
   "code": "CK3",
   "criterion": "States both non-negativity constraints $x\\ge 0$ and $y\\ge 0$.",
   "hint": "State that neither number of crates can be negative: $x\\ge 0$ and $y\\ge 0$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867acb274ccc2bbe037e89",
   "code": "AK1",
   "criterion": "Identifies the axis vertices $(0,0)$, $(9,0)$ and $(0,12)$.",
   "hint": "Read the feasible region on the axes and list the corner points $(0,0)$, $(9,0)$ and $(0,12)$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867acb274ccc2bbe037e89",
   "code": "AK2",
   "criterion": "Obtains the intersection vertex $(6,6)$.",
   "hint": "Find where the two boundary lines cross to obtain the intersection vertex $(6,6)$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867acb274ccc2bbe037e89",
   "code": "AK3",
   "criterion": "Uses $30x+20y$ to calculate earnings at \"their\" vertices.",
   "hint": "Substitute the coordinates of your vertices into $30x+20y$ to calculate the earnings at each one.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867acb274ccc2bbe037e89",
   "code": "R1",
   "criterion": "Compares \"their\" calculated earnings to identify the greatest value.",
   "hint": "Compare your calculated earnings and identify the greatest value.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867acb274ccc2bbe037e89",
   "code": "R2",
   "criterion": "Selects the vertex corresponding to \"their\" greatest earnings.",
   "hint": "Choose the vertex that corresponds to your greatest earnings.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867acb274ccc2bbe037e89",
   "code": "R3",
   "criterion": "Justifies the choice by linking the plan to the greatest daily earnings.",
   "hint": "Explain that this plan is chosen because it gives the greatest daily earnings.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867adcb944c6fb77c0c0ce",
   "code": "CK1",
   "criterion": "Recognises that the total number of crates is $x+y$",
   "hint": "Write the total number of crates as $x+y$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867adcb944c6fb77c0c0ce",
   "code": "R1",
-  "criterion": "Translates “no more than 12” to give $x+y\\leq12$",
+  "criterion": "Translates \u201cno more than 12\u201d to give $x+y\\leq12$",
   "hint": "Use $\\leq$ to show that the total $x+y$ cannot exceed the stated limit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867adcb944c6fb77c0c0ce",
   "code": "CK2",
   "criterion": "Recognises that the vertices occur on the axes or where the constraint boundaries meet",
   "hint": "Find feasible vertices by checking where boundary lines meet each other and where they meet the axes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867adcb944c6fb77c0c0ce",
   "code": "AK1",
   "criterion": "Reads $(0,0)$ and $(12,0)$ from the shaded region",
   "hint": "Read the coordinates of the first two feasible vertices directly from the shaded region on the axes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867adcb944c6fb77c0c0ce",
   "code": "AK2",
   "criterion": "Reads $(6,6)$ and $(0,10)$ from the shaded region",
   "hint": "Read the coordinates of the remaining feasible vertices where the boundary lines meet.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867adcb944c6fb77c0c0ce",
   "code": "CK3",
   "criterion": "Uses the profit expression $P=70x+90y$",
   "hint": "Form the profit expression by multiplying each type of crate by its stated profit and adding the results.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867adcb944c6fb77c0c0ce",
   "code": "AK3",
-  "criterion": "Calculates profits of $0$ and \\$840 at “their” first two vertices",
+  "criterion": "Calculates profits of $0$ and \\$840 at \u201ctheir\u201d first two vertices",
   "hint": "Substitute your first two feasible vertices into your profit expression and calculate each profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867adcb944c6fb77c0c0ce",
   "code": "AK4",
-  "criterion": "Calculates profits of \\$960 and \\$900 at “their” remaining vertices",
+  "criterion": "Calculates profits of \\$960 and \\$900 at \u201ctheir\u201d remaining vertices",
   "hint": "Substitute your remaining feasible vertices into your profit expression and calculate each profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867adcb944c6fb77c0c0ce",
   "code": "R2",
-  "criterion": "Compares the profits at “their” feasible vertices and selects the vertex giving the greatest profit",
+  "criterion": "Compares the profits at \u201ctheir\u201d feasible vertices and selects the vertex giving the greatest profit",
   "hint": "Compare the profits at your feasible vertices and choose the vertex with the greatest profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867adcb944c6fb77c0c0ce",
   "code": "R3",
   "criterion": "Justifies the decision by stating that \\$960 is greater than the profit from every other feasible vertex",
   "hint": "Justify your choice by stating that its profit is greater than the profit at every other feasible vertex.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867b32b944c6fb77c0c0d6",
   "code": "CK1",
   "criterion": "Forms $\\tan 30^\\circ = \\frac{QR}{6}$",
   "hint": "Use the opposite and adjacent sides relative to $30^\\circ$ to write $\\tan 30^\\circ = \\frac{QR}{6}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867b32b944c6fb77c0c0d6",
   "code": "R1",
   "criterion": "Uses \"their\" trigonometric equation to make $QR$ the subject",
   "hint": "Rearrange the trigonometric equation you wrote to make $QR$ the subject.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867b32b944c6fb77c0c0d6",
   "code": "R2",
   "criterion": "Expresses $QR$ in surd form",
   "hint": "Simplify $QR$ fully and write it in surd form.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867b32b944c6fb77c0c0d6",
   "code": "CK2",
   "criterion": "Selects $\\sin 30^\\circ = \\frac{QR}{PR}$",
   "hint": "Use the opposite side and hypotenuse to select $\\sin 30^\\circ = \\frac{QR}{PR}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867b32b944c6fb77c0c0d6",
   "code": "R3",
   "criterion": "Expresses $PR$ in surd form",
   "hint": "Rearrange and simplify to express $PR$ in surd form.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867b32b944c6fb77c0c0d6",
   "code": "CK3",
   "criterion": "Identifies $\\cos 30^\\circ = \\frac{PQ}{PR}$",
   "hint": "Use the adjacent side and hypotenuse to identify $\\cos 30^\\circ = \\frac{PQ}{PR}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867c3fb944c6fb77c0c0ed",
   "code": "CK2",
   "criterion": "States reflection.",
   "hint": "State that the transformation is a reflection.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867c3fb944c6fb77c0c0ed",
   "code": "R1",
   "criterion": "Identifies the mirror line as the $x$-axis from corresponding points being equal distances above and below it.",
   "hint": "Compare corresponding points and identify the $x$-axis as the mirror line because they are equal distances above and below it.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867c3fb944c6fb77c0c0ed",
   "code": "R2",
   "criterion": "Uses the candidate's own triangle $DEF$ as the object for the translation.",
   "hint": "Use your own triangle $DEF$ as the object before carrying out the translation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867c3fb944c6fb77c0c0ed",
   "code": "AK3",
   "criterion": "Adds $\\begin{pmatrix}1\\\\-2\\end{pmatrix}$ correctly to the candidate's coordinates of $D$ and $E$.",
   "hint": "Add $\\begin{pmatrix}1\\\\-2\\end{pmatrix}$ to each coordinate of your own points $D$ and $E$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867c3fb944c6fb77c0c0ed",
   "code": "AK4",
   "criterion": "Adds $\\begin{pmatrix}1\\\\-2\\end{pmatrix}$ correctly to the candidate's coordinate of $F$.",
   "hint": "Add $\\begin{pmatrix}1\\\\-2\\end{pmatrix}$ to both coordinates of your own point $F$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867c3fb944c6fb77c0c0ed",
   "code": "R3",
   "criterion": "States all three image vertices consistently from the candidate's translated triangle.",
   "hint": "State all three translated image vertices consistently from your own translated triangle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867c3fb944c6fb77c0c0ed",
   "code": "CK3",
   "criterion": "Selects the area relationship $\\frac12 ab\\sin C$ for the original pennant.",
   "hint": "Select the triangle area formula $\\frac12 ab\\sin C$ for the original pennant.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867c3fb944c6fb77c0c0ed",
   "code": "AK5",
-  "criterion": "Calculates the area of the original pennant as $\\frac12(5)(8)\\sin60°=10\\sqrt3$.",
-  "hint": "Substitute the given side lengths and angle into $\\frac12(5)(8)\\sin60°$ and simplify the result as a multiple of $\\sqrt3$.",
-  "status": "proposed"
+  "criterion": "Calculates the area of the original pennant as $\\frac12(5)(8)\\sin60\u00b0=10\\sqrt3$.",
+  "hint": "Substitute the given side lengths and angle into $\\frac12(5)(8)\\sin60\u00b0$ and simplify the result as a multiple of $\\sqrt3$.",
+  "status": "approved"
  },
  {
   "question_id": "6a867c3fb944c6fb77c0c0ed",
   "code": "R4",
   "criterion": "Uses scale factor $2$ to multiply the candidate's original area by $2^2$, recognising that reflection and translation do not change area, giving $40\\sqrt3\\text{ m}^2$.",
   "hint": "Multiply your own original area by $2^2$, recognise that reflection and translation preserve area, and state the result in $\\text{m}^2$ while retaining the $\\sqrt3$ factor.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867cdbb944c6fb77c0c0fa",
   "code": "CK1",
   "criterion": "Selects the tangent ratio for triangle $QRT$",
   "hint": "Use the tangent ratio in triangle $QRT$ by dividing the side opposite the angle by the adjacent side.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867cdbb944c6fb77c0c0fa",
   "code": "AK2",
   "criterion": "Finds $PR=12+$ \"their\" $QR$",
   "hint": "Add the labelled horizontal length to your $QR$ to find $PR$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867cdbb944c6fb77c0c0fa",
   "code": "AK3",
   "criterion": "Calculates $\\tan \\angle TPR=18\\div$ \"their\" $PR$, giving $\\dfrac{3}{5}$",
   "hint": "Calculate $\\tan\\angle TPR$ using $TR\\div PR$, substitute your $PR$, and write the result as $\\dfrac{TR}{PR}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867cdbb944c6fb77c0c0fa",
   "code": "CK2",
   "criterion": "Recognises inverse variation as $y=\\dfrac{k}{x}$",
   "hint": "Recognise inverse variation and write it as $y=\\dfrac{k}{x}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867cdbb944c6fb77c0c0fa",
   "code": "CK3",
   "criterion": "Identifies that at $Q$, $x=$ \"their\" $QR$ and $y=\\tan45^\\circ=1$",
   "hint": "At $Q$, use your $QR$ as $x$ and evaluate $y=\\tan45^\\circ$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867cdbb944c6fb77c0c0fa",
   "code": "R1",
   "criterion": "Uses the values at $Q$ to determine $k$ and forms $y=\\dfrac{18}{x}$",
   "hint": "Substitute the values at $Q$ into $y=\\dfrac{k}{x}$, solve for $k$, and use it to form the equation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867cdbb944c6fb77c0c0fa",
   "code": "R2",
   "criterion": "Compares \"their\" distance in (d)(i) with $PR=12+$ \"their\" $QR$",
   "hint": "Compare your distance from part (d)(i) with $PR$, calculated from the labelled length and your $QR$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867cdbb944c6fb77c0c0fa",
   "code": "R3",
   "criterion": "Concludes that the point is farther from $R$, with a valid numerical reason",
   "hint": "Use the numerical comparison to state whether the point is farther from $R$ than $P$ and support your conclusion with the two distances.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867d0eb944c6fb77c0c102",
   "code": "CK1",
   "criterion": "Recognises that the 10 students in $J \\cap P$ are included in $J$",
   "hint": "Recognise that everyone in $J \\cap P$ is already counted in $J$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867d0eb944c6fb77c0c102",
   "code": "AK1",
   "criterion": "Subtracts 10 from 27",
   "hint": "Subtract the intersection count from the total in $J$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867d0eb944c6fb77c0c102",
   "code": "CK2",
   "criterion": "Recognises that the juice-only group and set $P$ form the union without overlap",
   "hint": "Recognise that the juice-only group and $P$ do not overlap, so together they make the union.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867d0eb944c6fb77c0c102",
   "code": "AK2",
   "criterion": "Adds \"their\" juice-only number to 21",
   "hint": "Add your earlier juice-only number to the total in $P$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867d0eb944c6fb77c0c102",
   "code": "R1",
   "criterion": "States $n(J \\cup P)=38$, following through from \"their\" juice-only number",
   "hint": "State $n(J \\cup P)$ using your earlier juice-only number plus the total in $P$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867d0eb944c6fb77c0c102",
   "code": "CK3",
   "criterion": "Recognises that students who bought neither item are in the complement of $J \\cup P$",
   "hint": "Recognise that students who buy neither item belong in the complement of $J \\cup P$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867d0eb944c6fb77c0c102",
   "code": "AK3",
   "criterion": "Subtracts \"their\" union from 50",
   "hint": "Subtract your earlier union total from the total number of students.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867d0eb944c6fb77c0c102",
   "code": "R3",
   "criterion": "States $(J \\cup P)'$ or an equivalent set notation",
   "hint": "Write the set for students who buy neither item as $(J \\cup P)'$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867e62519aa120d69cc663",
   "code": "CK1",
   "criterion": "States enlargement.",
   "hint": "Identify the transformation as an enlargement by checking how corresponding lengths change.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867e62519aa120d69cc663",
   "code": "R1",
   "criterion": "Identifies the centre as the origin from corresponding vertices.",
   "hint": "Compare corresponding vertices and trace the lines joining each pair back to the origin to identify the centre.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867e62519aa120d69cc663",
   "code": "AK1",
   "criterion": "Enlarges $P(2,3)$ about the origin to obtain $(4,6)$.",
   "hint": "Enlarge $P(2,3)$ about the origin by doubling each coordinate.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867e62519aa120d69cc663",
   "code": "AK2",
-  "criterion": "Applies the translation to obtain $(5,4)$, follow-through from “their” enlarged centre.",
+  "criterion": "Applies the translation to obtain $(5,4)$, follow-through from \u201ctheir\u201d enlarged centre.",
   "hint": "Apply the stated horizontal and vertical translation shifts to your enlarged centre.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867e62519aa120d69cc663",
   "code": "CK3",
   "criterion": "Recognises that translation does not change the radius.",
   "hint": "Keep the radius unchanged when you translate the circle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867e62519aa120d69cc663",
   "code": "AK3",
   "criterion": "Multiplies the original radius by scale factor $2$ to obtain $6$ units.",
   "hint": "Multiply the original radius by the enlargement scale factor.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867e62519aa120d69cc663",
   "code": "CK4",
   "criterion": "Identifies the minor segment as sector area minus triangle area.",
   "hint": "Find the minor segment area by subtracting the triangle area from the sector area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867e62519aa120d69cc663",
   "code": "AK4",
-  "criterion": "Calculates sector area $\\frac{120}{360}\\pi(6)^2=12\\pi$, follow-through using “their” radius.",
+  "criterion": "Calculates sector area $\\frac{120}{360}\\pi(6)^2=12\\pi$, follow-through using \u201ctheir\u201d radius.",
   "hint": "Use your radius in the sector formula $\\frac{\\theta}{360}\\pi r^2$ and calculate the sector area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867e62519aa120d69cc663",
   "code": "AK5",
-  "criterion": "Calculates triangle area $\\frac12(6)^2\\sin120°=9\\sqrt3$, follow-through using “their” radius.",
-  "hint": "Use your radius in the triangle formula $\\frac12r^2\\sin\\theta$, evaluating $\\sin120°$ exactly with $\\sqrt{3}$.",
-  "status": "proposed"
+  "criterion": "Calculates triangle area $\\frac12(6)^2\\sin120\u00b0=9\\sqrt3$, follow-through using \u201ctheir\u201d radius.",
+  "hint": "Use your radius in the triangle formula $\\frac12r^2\\sin\\theta$, evaluating $\\sin120\u00b0$ exactly with $\\sqrt{3}$.",
+  "status": "approved"
  },
  {
   "question_id": "6a867e62519aa120d69cc663",
   "code": "R2",
-  "criterion": "Subtracts “their” triangle area from “their” sector area.",
+  "criterion": "Subtracts \u201ctheir\u201d triangle area from \u201ctheir\u201d sector area.",
   "hint": "Subtract your triangle area from your sector area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867e62519aa120d69cc663",
   "code": "R3",
-  "criterion": "Expresses “their” area in exact form.",
+  "criterion": "Expresses \u201ctheir\u201d area in exact form.",
   "hint": "Write your area in exact form, retaining $\\pi$ and any surd instead of using a decimal.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f0c519aa120d69cc675",
   "code": "CK1",
   "criterion": "Uses the decrease as a fraction of the earlier value",
   "hint": "Divide the annual decrease by the earlier value, then multiply by $100\\%$ to find the depreciation percentage.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f0c519aa120d69cc675",
   "code": "CK2",
   "criterion": "Recognises that a reverse depreciation step requires division by $0.9$",
   "hint": "Undo one depreciation step by dividing by $0.9$ rather than multiplying by it.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f0c519aa120d69cc675",
   "code": "R1",
   "criterion": "Works backwards through two annual depreciation periods using \"their\" rate",
   "hint": "Work backwards through two annual depreciation periods by applying the reverse step twice using your rate.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f0c519aa120d69cc675",
   "code": "AK2",
   "criterion": "Obtains \\$32 400 from \\$29 160 by one reverse step",
   "hint": "Divide \\$29 160 by $0.9$ to complete one reverse depreciation step.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f0c519aa120d69cc675",
   "code": "CK3",
   "criterion": "Uses $0.9$ as the annual depreciation multiplier on \"their\" purchase value",
   "hint": "Multiply your purchase value by $0.9$ once for each year of depreciation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f0c519aa120d69cc675",
   "code": "R2",
   "criterion": "Finds the excess of \\$27 000 over \"their\" estimated value",
   "hint": "Subtract your estimated value from \\$27 000 to find how much greater the offer is.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f0c519aa120d69cc675",
   "code": "R3",
   "criterion": "Concludes that Kemar should accept because the offer exceeds \"their\" estimated value",
   "hint": "Conclude that Kemar should accept because the offer exceeds your estimated value.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f40519aa120d69cc67d",
   "code": "CK1",
   "criterion": "Uses vertical change divided by horizontal change for the gradient.",
   "hint": "Find the gradient by dividing the vertical change by the horizontal change between two clear points on the line.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f40519aa120d69cc67d",
   "code": "CK2",
   "criterion": "Recognises the linear form $C = mx + c$.",
   "hint": "Recognise that a straight-line relationship can be written as $C = mx + c$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f40519aa120d69cc67d",
   "code": "R1",
   "criterion": "Expresses the relationship in the form $C = mx + c$.",
   "hint": "Use the gradient and $C$-intercept to write the relationship as $C = mx + c$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f40519aa120d69cc67d",
   "code": "AK3",
   "criterion": "Substitutes $x = 9$ into \"their\" equation.",
   "hint": "Substitute $x = 9$ into your equation and simplify to find the delivery charge.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f40519aa120d69cc67d",
   "code": "CK3",
   "criterion": "Restricts the number of packs to whole-number values.",
   "hint": "Restrict the number of packs to whole-number values.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f40519aa120d69cc67d",
   "code": "R2",
   "criterion": "Forms and solves the delivery-budget constraint using \"their\" linear relationship.",
   "hint": "Use your linear relationship with the budget limit to form an inequality, then solve it for the number of packs.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f40519aa120d69cc67d",
   "code": "R3",
   "criterion": "Selects the greatest permissible whole number of packs.",
   "hint": "Select the greatest whole number that satisfies your inequality.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f75519aa120d69cc685",
   "code": "CK1",
   "criterion": "Recognises that $\\tan \\theta = \\frac{\\text{vertical rise}}{\\text{horizontal distance}}$",
   "hint": "Set up $\\tan \\theta = \\frac{\\text{vertical rise}}{\\text{horizontal distance}}$ using the opposite vertical rise and adjacent horizontal distance.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f75519aa120d69cc685",
   "code": "CK2",
   "criterion": "Identifies $\\theta$ using the inverse tangent of \"their\" ratio",
   "hint": "Use $\\tan^{-1}$ of your ratio to identify $\\theta$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f75519aa120d69cc685",
   "code": "AK2",
   "criterion": "Evaluates $\\tan^{-1}$(\"their\" ratio)",
   "hint": "Evaluate $\\tan^{-1}$ of your ratio on your calculator.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f75519aa120d69cc685",
   "code": "CK3",
   "criterion": "Recognises that $\\cos \\theta = \\frac{\\text{horizontal distance}}{\\text{length of ramp}}$",
   "hint": "Set up $\\cos \\theta = \\frac{\\text{horizontal distance}}{\\text{length of ramp}}$ using the horizontal distance and ramp length.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f75519aa120d69cc685",
   "code": "AK3",
   "criterion": "Uses $5 \\div \\cos$(\"their\" angle) to find the ramp length",
   "hint": "Find the ramp length by calculating $5 \\div \\cos(\\text{your angle})$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867f75519aa120d69cc685",
   "code": "R3",
   "criterion": "Compares $5.10$ m with \"their\" required length and states that the rail is not long enough",
   "hint": "Compare $5.10\\text{ m}$ with your required length and state that the rail is not long enough if it is shorter.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867fd5519aa120d69cc68d",
   "code": "CK2",
   "criterion": "Forms the profit expression $P=3x+4y$",
   "hint": "Form the profit expression by multiplying each crate quantity by its profit and adding the results.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867fd5519aa120d69cc68d",
   "code": "AK4",
   "criterion": "Evaluates $3x+4y$ at the vertices of 'their' feasible region",
   "hint": "Substitute the coordinates of every vertex of your feasible region into $3x+4y$ and calculate each profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867fd5519aa120d69cc68d",
   "code": "R2",
   "criterion": "Selects $(4,6)$, or the vertex giving the greatest value from 'their' evaluations",
   "hint": "Choose the vertex from your evaluations that gives the greatest profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867fd5519aa120d69cc68d",
   "code": "CK3",
   "criterion": "Uses the mango-crate value from 'their' part (b) plan as the $x$-coordinate on the curve",
   "hint": "Use the mango-crate value from your part (b) plan as the $x$-coordinate on the curve.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867fd5519aa120d69cc68d",
   "code": "AK5",
   "criterion": "Obtains the corresponding curve point $(4,1)$, or follows through using 'their' $x$-coordinate",
   "hint": "Substitute your $x$-coordinate into the curve equation and write the resulting coordinate pair.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867fd5519aa120d69cc68d",
   "code": "R3",
   "criterion": "Concludes correctly whether 'their' packing-plan point lies on or below the curved guide",
   "hint": "Compare your packing-plan point with the curved guide and state whether it lies on or below it.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a867fd5519aa120d69cc68d",
   "code": "R4",
   "criterion": "Justifies using 'their' plan ordinate and 'their' corresponding ordinate on the curve",
   "hint": "Justify your conclusion by comparing your plan ordinate with the corresponding ordinate on the curve for the same $x$-coordinate.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86800d519aa120d69cc695",
   "code": "CK1",
   "criterion": "Recognises that $18+x=25$.",
   "hint": "Set the total in $A$ by equating $18+x$ to $25$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86800d519aa120d69cc695",
   "code": "AK1",
   "criterion": "Solves to obtain $x=7$.",
   "hint": "Rearrange $18+x=25$ by subtracting $18$ from both sides to find $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86800d519aa120d69cc695",
   "code": "CK2",
   "criterion": "Identifies the three disjoint regions in $A \\cup B$.",
   "hint": "Identify the separate $A$-only, overlap, and $B$-only regions that make up $A \\cup B$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86800d519aa120d69cc695",
   "code": "AK2",
   "criterion": "Adds $18$, \"their\" intersection and $12$.",
   "hint": "Add $18$, your earlier intersection value, and $12$ to calculate $n(A \\cup B)$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86800d519aa120d69cc695",
   "code": "CK3",
   "criterion": "Recognises that patrons who bought neither item are in $(A \\cup B)'$.",
   "hint": "Recognise that patrons who buy neither item lie in $(A \\cup B)'$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86800d519aa120d69cc695",
   "code": "AK4",
   "criterion": "Subtracts \"their\" $n(A \\cup B)$ from $50$.",
   "hint": "Subtract your earlier $n(A \\cup B)$ from $50$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86800d519aa120d69cc695",
   "code": "R1",
   "criterion": "Interprets the complement as the number of patrons who bought neither item.",
   "hint": "Interpret the complement as the number of patrons who buy neither item.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86800d519aa120d69cc695",
   "code": "R2",
   "criterion": "Forms the number who bought exactly one item as $50-$ \"their\" neither $-$ \"their\" intersection.",
   "hint": "Calculate $50$ minus your earlier neither count minus your earlier intersection count to find the number who buy exactly one item.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86800d519aa120d69cc695",
   "code": "R3",
   "criterion": "Divides \"their\" number by $8$ and rounds up to whole packets.",
   "hint": "Divide your earlier exactly-one count by $8$ and round up to a whole number of packets.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8680d3519aa120d69cc6a7",
   "code": "CK1",
   "criterion": "Selects the cosine rule for finding $PR$.",
   "hint": "Use the cosine rule to find $PR$ from the two known sides and the included angle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8680d3519aa120d69cc6a7",
   "code": "AK1",
-  "criterion": "Substitutes correctly: $PR^2=8^2+11^2-2(8)(11)\\cos62°$.",
+  "criterion": "Substitutes correctly: $PR^2=8^2+11^2-2(8)(11)\\cos62\u00b0$.",
   "hint": "Substitute the two known side lengths and the included angle correctly into the cosine-rule equation for $PR^2$, using $\\cos$ of the included angle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8680d3519aa120d69cc6a7",
   "code": "R1",
   "criterion": "Expresses $PR$ correct to 3 significant figures.",
   "hint": "Take the positive square root of your value for $PR^2$ and round $PR$ to 3 significant figures.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8680d3519aa120d69cc6a7",
   "code": "CK2",
   "criterion": "Selects the sine rule, matching $QR$ with angle $QPR$.",
   "hint": "Use the sine rule, pairing $QR$ with its opposite angle $QPR$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8680d3519aa120d69cc6a7",
   "code": "AK2",
-  "criterion": "Substitutes $11$, $62°$ and \"their\" value of $PR$ into the sine rule.",
-  "hint": "Substitute $11$, $62°$, and your value of $PR$ into the sine rule in the matching opposite-side and opposite-angle positions.",
-  "status": "proposed"
+  "criterion": "Substitutes $11$, $62\u00b0$ and \"their\" value of $PR$ into the sine rule.",
+  "hint": "Substitute $11$, $62\u00b0$, and your value of $PR$ into the sine rule in the matching opposite-side and opposite-angle positions.",
+  "status": "approved"
  },
  {
   "question_id": "6a8680d3519aa120d69cc6a7",
   "code": "R2",
   "criterion": "Expresses \"their\" angle correct to 1 decimal place.",
   "hint": "Round your calculated angle to 1 decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8680d3519aa120d69cc6a7",
   "code": "CK3",
-  "criterion": "Recognises that the interior angles of a triangle total $180°$.",
-  "hint": "Use the fact that the interior angles of a triangle add to $180°$.",
-  "status": "proposed"
+  "criterion": "Recognises that the interior angles of a triangle total $180\u00b0$.",
+  "hint": "Use the fact that the interior angles of a triangle add to $180\u00b0$.",
+  "status": "approved"
  },
  {
   "question_id": "6a8680d3519aa120d69cc6a7",
   "code": "AK4",
-  "criterion": "Calculates $180°-62°-$ \"their\" angle at $P$, giving $44.3°$.",
-  "hint": "Calculate $180°-62°-P$ using your angle at $P$.",
-  "status": "proposed"
+  "criterion": "Calculates $180\u00b0-62\u00b0-$ \"their\" angle at $P$, giving $44.3\u00b0$.",
+  "hint": "Calculate $180\u00b0-62\u00b0-P$ using your angle at $P$.",
+  "status": "approved"
  },
  {
   "question_id": "6a8680d3519aa120d69cc6a7",
   "code": "R3",
   "criterion": "Concludes that $R$ has the smallest interior angle, with a valid comparison.",
   "hint": "Compare all three interior angles and choose $R$ because its angle is the smallest.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8681d5519aa120d69cc6b9",
   "code": "CK1",
   "criterion": "Relates the angle of elevation to opposite side $BT$ and adjacent side $PB$",
   "hint": "At $\\theta$, identify $BT$ as the opposite side and $PB$ as the adjacent side.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8681d5519aa120d69cc6b9",
   "code": "AK1",
   "criterion": "Uses $\\tan\\theta=\\frac{3}{4}$ to obtain $y=\\frac{3x}{4}$",
   "hint": "Use $\\tan\\theta=\\frac{3}{4}$ and rearrange the ratio of opposite to adjacent sides to make $y$ the subject.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8681d5519aa120d69cc6b9",
   "code": "CK2",
   "criterion": "Identifies $PT$ as the hypotenuse of the right-angled triangle",
   "hint": "Identify $PT$ as the hypotenuse because it is opposite the right angle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8681d5519aa120d69cc6b9",
   "code": "CK3",
   "criterion": "Selects Pythagoras' theorem",
   "hint": "Apply Pythagoras' theorem to the right-angled triangle using the two shorter sides and the hypotenuse.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8681d5519aa120d69cc6b9",
   "code": "AK2",
   "criterion": "Substitutes $PT=10$ and \"their\" $y=\\frac{3x}{4}$, obtaining $25x^2=1600$",
   "hint": "Substitute the given hypotenuse length and your earlier $y=\\frac{3x}{4}$ into Pythagoras' theorem, then clear fractions and simplify.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8681d5519aa120d69cc6b9",
   "code": "R1",
   "criterion": "Reduces \"their\" equation to $x^2=64$",
   "hint": "Reduce your equation by dividing through by the coefficient of $x^2$ so that $x^2$ is isolated.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8681d5519aa120d69cc6b9",
   "code": "AK3",
   "criterion": "Extracts the square roots to obtain $x=\\pm8$",
   "hint": "Take both square roots of your value for $x^2$, including the positive and negative roots.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8681d5519aa120d69cc6b9",
   "code": "R2",
   "criterion": "Selects $x=8$ because $PB$ is a positive distance",
   "hint": "Choose the positive root because $PB$ represents a distance.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8681d5519aa120d69cc6b9",
   "code": "R3",
   "criterion": "Uses \"their\" value of $PB$ in \"their\" relationship to obtain $BT=6$",
   "hint": "Substitute your value of $PB$ into your earlier relationship for $y$ to find $BT$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868210519aa120d69cc6c1",
   "code": "CK1",
   "criterion": "Recognises that an enlargement of scale factor $2$ about the origin has diagonal entries $2$.",
   "hint": "Recognise that an enlargement about the origin uses the scale factor on both diagonal entries.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868210519aa120d69cc6c1",
   "code": "AK1",
   "criterion": "Places $2$ in the first diagonal position of $E$.",
   "hint": "Put the scale factor in the top-left diagonal position of $E$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868210519aa120d69cc6c1",
   "code": "AK2",
   "criterion": "Places $2$ in the second diagonal position of $E$, with zero off-diagonal entries.",
   "hint": "Complete $E$ with the scale factor in the other diagonal position and zeros off the diagonal.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868210519aa120d69cc6c1",
   "code": "CK2",
-  "criterion": "States the correct matrix for a $90°$ anticlockwise rotation.",
-  "hint": "Write the standard matrix for a $90°$ anticlockwise rotation.",
-  "status": "proposed"
+  "criterion": "States the correct matrix for a $90\u00b0$ anticlockwise rotation.",
+  "hint": "Write the standard matrix for a $90\u00b0$ anticlockwise rotation.",
+  "status": "approved"
  },
  {
   "question_id": "6a868210519aa120d69cc6c1",
   "code": "AK3",
-  "criterion": "Multiplies the rotation matrix by “their” matrix $E$.",
+  "criterion": "Multiplies the rotation matrix by \u201ctheir\u201d matrix $E$.",
   "hint": "Multiply the rotation matrix by your matrix $E$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868210519aa120d69cc6c1",
   "code": "R1",
   "criterion": "Uses the matrices in the correct order for enlargement followed by rotation.",
   "hint": "Place $E$ on the right of the rotation matrix because the enlargement happens first.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868210519aa120d69cc6c1",
   "code": "CK3",
-  "criterion": "Recognises that “their” matrix $M$ is non-singular by obtaining a non-zero determinant.",
+  "criterion": "Recognises that \u201ctheir\u201d matrix $M$ is non-singular by obtaining a non-zero determinant.",
   "hint": "Calculate the determinant of your matrix $M$ and check that it is non-zero.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868210519aa120d69cc6c1",
   "code": "AK4",
-  "criterion": "Obtains $det(M)=4$ from “their” matrix $M$.",
+  "criterion": "Obtains $det(M)=4$ from \u201ctheir\u201d matrix $M$.",
   "hint": "Use the diagonal-product subtraction rule to find $det(M)$ from your matrix $M$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868210519aa120d69cc6c1",
   "code": "AK5",
   "criterion": "Forms the inverse by using the adjoint and dividing by the determinant.",
   "hint": "Form the adjoint of your matrix $M$ and divide every entry by its determinant to obtain the inverse.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868210519aa120d69cc6c1",
   "code": "CK4",
   "criterion": "States the identity matrix in $MM^{-1}=I$.",
   "hint": "State the identity matrix in the relationship $MM^{-1}=I$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868210519aa120d69cc6c1",
   "code": "R2",
-  "criterion": "Applies “their” inverse matrix to $Q'$ to reverse the combined transformation.",
+  "criterion": "Applies \u201ctheir\u201d inverse matrix to $Q'$ to reverse the combined transformation.",
   "hint": "Multiply your inverse matrix by $Q'$ to reverse the combined transformation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868210519aa120d69cc6c1",
   "code": "R3",
   "criterion": "Concludes the original coordinates of the calibration point.",
   "hint": "State the resulting ordered pair as the original coordinates of the calibration point.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868241519aa120d69cc6c9",
   "code": "CK1",
   "criterion": "Selects multiplication by 2.70 to convert the US-dollar amount to dollars",
   "hint": "Multiply the US-dollar amount by $2.70$ to convert it to dollars.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868241519aa120d69cc6c9",
   "code": "CK2",
   "criterion": "Recognises that commission is 2.5% of \"their\" exchanged amount",
   "hint": "Find the commission as $2.5\\%$ of your exchanged amount.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868241519aa120d69cc6c9",
   "code": "AK2",
   "criterion": "Calculates 2.5% of \"their\" exchanged amount",
   "hint": "Calculate $2.5\\%$ of your exchanged amount to obtain the commission.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868241519aa120d69cc6c9",
   "code": "CK3",
   "criterion": "Uses the Bank B rate as \\$0.04 more per US dollar and recognises that no commission is added",
   "hint": "Increase the Bank B rate by $0.04$ per US dollar and do not add any commission.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868241519aa120d69cc6c9",
   "code": "R1",
   "criterion": "Compares \"their\" two total costs and identifies Bank B as the lower-cost bank",
   "hint": "Compare your two total costs and choose Bank B because it has the lower cost.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868241519aa120d69cc6c9",
   "code": "R2",
   "criterion": "Subtracts \"their\" Bank B total from \"their\" Bank A total",
   "hint": "Subtract your Bank B total from your Bank A total to find the saving.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86827d519aa120d69cc6d1",
   "code": "R1",
   "criterion": "Reads the fare corresponding to $4$ km from the graph",
   "hint": "Read the fare from the graph at the point directly above $4$ km.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86827d519aa120d69cc6d1",
   "code": "CK1",
   "criterion": "Identifies $c$ as the fare when the distance is zero",
-  "hint": "Use the graph’s value when the distance is zero to identify $c$ as the fixed fare.",
-  "status": "proposed"
+  "hint": "Use the graph\u2019s value when the distance is zero to identify $c$ as the fixed fare.",
+  "status": "approved"
  },
  {
   "question_id": "6a86827d519aa120d69cc6d1",
   "code": "CK3",
   "criterion": "Forms $(\\text{their }22 - \\text{their }10) \\div 4$",
   "hint": "Form $(\\text{your fare} - \\text{your fixed charge}) \\div 4$ to find the charge per kilometre.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86827d519aa120d69cc6d1",
   "code": "AK2",
   "criterion": "Subtracts \"their\" fixed charge from \"their\" fare",
   "hint": "Subtract your fixed charge from your fare before finding the charge per kilometre.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86827d519aa120d69cc6d1",
   "code": "R2",
   "criterion": "Forms $\\text{their }10 + \\text{their }3d = 31$",
   "hint": "Form $\\text{your fixed charge} + \\text{your charge per kilometre}d = \\text{the stated fare}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86827d519aa120d69cc6d1",
   "code": "AK4",
   "criterion": "Solves the equation using \"their\" fixed charge and charge per kilometre",
   "hint": "Solve the equation using your fixed charge and your charge per kilometre.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86827d519aa120d69cc6d1",
   "code": "R3",
   "criterion": "Interprets the solution as a distance of $7$ km",
   "hint": "State that your solution represents the distance travelled in kilometres.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8682ed519aa120d69cc6de",
   "code": "CK1",
   "criterion": "Identifies the median value and excludes it when separating the data",
   "hint": "Find the central data value, then leave it out before splitting the remaining values into two halves.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8682ed519aa120d69cc6de",
   "code": "CK2",
   "criterion": "Identifies the middle values of the lower and upper halves",
   "hint": "Find the middle value in each of the lower and upper halves to identify the two quartiles.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8682ed519aa120d69cc6de",
   "code": "CK3",
   "criterion": "Recognises that the interquartile range is the upper quartile minus the lower quartile",
   "hint": "Find the interquartile range by subtracting the lower quartile from the upper quartile.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8682ed519aa120d69cc6de",
   "code": "R1",
   "criterion": "Forms the subtraction using \"their\" upper quartile and \"their\" lower quartile in the correct order",
   "hint": "Subtract your lower quartile from your upper quartile, using the values you found earlier.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8682ed519aa120d69cc6de",
   "code": "R2",
   "criterion": "Compares \"their\" semi-interquartile range with 4",
   "hint": "Compare your semi-interquartile range with 4 to decide which set of daily sales is more consistent.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8682ed519aa120d69cc6de",
   "code": "R3",
   "criterion": "Concludes that Rohan has the more consistent daily sales",
   "hint": "State that Rohan has the more consistent daily sales.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868336519aa120d69cc6e6",
   "code": "AK4",
   "criterion": "Obtains left intersection $x=2$ from the candidate's graph",
   "hint": "Read the $x$-coordinate where your curve first crosses the horizontal line.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868336519aa120d69cc6e6",
   "code": "AK5",
   "criterion": "Obtains right intersection $x=4$ from the candidate's graph",
   "hint": "Read the $x$-coordinate where your curve next crosses the horizontal line.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868336519aa120d69cc6e6",
   "code": "R1",
   "criterion": "States that the rate is above the line between 'their' intersections",
   "hint": "State that the curve lies above the horizontal line between your two intersection values.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868336519aa120d69cc6e6",
   "code": "R2",
   "criterion": "Identifies the required safety condition as $f(x)\\leq8$",
   "hint": "Write the safety requirement as $f(x)\\leq8$ for the whole event.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868336519aa120d69cc6e6",
   "code": "R3",
   "criterion": "Uses 'their' interval to establish that $f(x)>8$ for $2<x<4$",
   "hint": "Use your interval between the intersections to state that $f(x)>8$ throughout it.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868336519aa120d69cc6e6",
   "code": "R4",
   "criterion": "Concludes that checking only the endpoint values does not establish safety throughout the event",
   "hint": "Explain that endpoint checks alone cannot show safety for the whole event because the graph may exceed the limit between them.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86836b519aa120d69cc6ee",
   "code": "CK1",
   "criterion": "Selects right-angled triangle $BCD$, with $BD$ as the hypotenuse",
   "hint": "Choose right-angled triangle $BCD$ and identify $BD$ as the hypotenuse.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86836b519aa120d69cc6ee",
   "code": "AK1",
   "criterion": "Forms $CD^2 + 9^2 = 15^2$",
   "hint": "Form the equation $CD^2 + 9^2 = 15^2$ using Pythagoras' theorem.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86836b519aa120d69cc6ee",
   "code": "CK2",
   "criterion": "Identifies $AC$ and \"their\" $CD$ as the perpendicular sides of triangle $ACD$",
   "hint": "Identify $AC$ and your earlier $CD$ value as the perpendicular sides of triangle $ACD$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86836b519aa120d69cc6ee",
   "code": "AK3",
   "criterion": "Forms $AD^2 = 14^2 + (\\text{their } CD)^2$",
   "hint": "Form $AD^2 = 14^2 + (\\text{your } CD)^2$ using the two perpendicular sides.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86836b519aa120d69cc6ee",
   "code": "AK4",
   "criterion": "Obtains $AD = \\sqrt{340}$, or the equivalent using \"their\" $CD$",
   "hint": "Calculate $AD = \\sqrt{340}$, or use the equivalent expression based on your earlier $CD$ value.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86836b519aa120d69cc6ee",
   "code": "R1",
   "criterion": "Expresses \"their\" length correct to 3 significant figures",
   "hint": "Round your length to 3 significant figures.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86836b519aa120d69cc6ee",
   "code": "CK3",
   "criterion": "Recognises that the replacement cable length must be a whole number not less than \"their\" $AD$",
   "hint": "Recognise that the replacement cable must be a whole number of metres that is not less than your $AD$ length.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a86836b519aa120d69cc6ee",
   "code": "R2",
   "criterion": "Selects the next whole metre above \"their\" cable length",
   "hint": "Select the next whole metre above your cable length.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868398519aa120d69cc6f6",
   "code": "CK1",
   "criterion": "Selects the triangle-area relationship using the two given sides and their included angle",
   "hint": "Use the triangle-area relationship $\\frac12 ab\\sin C$ with the two given sides and the angle between them.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868398519aa120d69cc6f6",
   "code": "AK1",
-  "criterion": "Substitutes correctly: $\\frac12 \\times 38 \\times 24 \\times \\sin 57°$",
-  "hint": "Substitute the given measurements into $\\frac12 \\times 38 \\times 24 \\times \\sin 57°$ before calculating.",
-  "status": "proposed"
+  "criterion": "Substitutes correctly: $\\frac12 \\times 38 \\times 24 \\times \\sin 57\u00b0$",
+  "hint": "Substitute the given measurements into $\\frac12 \\times 38 \\times 24 \\times \\sin 57\u00b0$ before calculating.",
+  "status": "approved"
  },
  {
   "question_id": "6a868398519aa120d69cc6f6",
   "code": "AK2",
   "criterion": "Evaluates the area as approximately $382.434$ m$^2$",
   "hint": "Evaluate your triangle-area calculation on your calculator and keep sufficient decimal places before rounding.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868398519aa120d69cc6f6",
   "code": "R1",
   "criterion": "Expresses the area correct to 3 significant figures",
   "hint": "Round your area to 3 significant figures and include the correct square-metre units.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868398519aa120d69cc6f6",
   "code": "CK2",
   "criterion": "Recognises that the required number of rolls is found by dividing area by the coverage of one roll",
   "hint": "Divide the nursery area by the area covered by one roll to find how many rolls are needed.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868398519aa120d69cc6f6",
   "code": "AK3",
   "criterion": "Calculates $\\text{their area} \\div 45$",
   "hint": "Calculate $\\text{your area} \\div 45$ using your earlier area value.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868398519aa120d69cc6f6",
   "code": "R2",
   "criterion": "Rounds up to the next whole roll, giving 9 rolls for a correct follow-through",
   "hint": "Round any fractional number of rolls upwards to the next whole roll because you cannot buy part of a roll.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868398519aa120d69cc6f6",
   "code": "CK3",
   "criterion": "Recognises that 9 rolls can be bought as 3 packs of 3 rolls",
   "hint": "Group the required rolls into packs of 3 to determine how many packs you need.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868398519aa120d69cc6f6",
   "code": "AK4",
   "criterion": "Calculates the pack cost as $3 \\times \\$225 = \\$675$",
   "hint": "Calculate the pack cost using $3 \\times \\$225$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868398519aa120d69cc6f6",
   "code": "R3",
   "criterion": "Compares the available purchase costs and selects the lower cost for a correct follow-through from 'their' number of rolls",
   "hint": "Calculate each available buying cost from your number of rolls, then choose the lower cost.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868401519aa120d69cc703",
   "code": "CK1",
   "criterion": "Selects $3(2)-1(1)$ for $\\det A$",
   "hint": "Multiply the main-diagonal entries, multiply the other diagonal entries, then subtract the second product from the first.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868401519aa120d69cc703",
   "code": "CK2",
   "criterion": "Recognises that a matrix with non-zero determinant is non-singular",
   "hint": "Recognise that a matrix with a non-zero determinant is non-singular.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868401519aa120d69cc703",
   "code": "R1",
   "criterion": "States non-singular using \"their\" non-zero determinant",
   "hint": "State that the matrix is non-singular using your non-zero determinant.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868401519aa120d69cc703",
   "code": "CK3",
   "criterion": "Uses $A^{-1}=\\frac{1}{\\det A}\\operatorname{adj}A$",
   "hint": "Use $A^{-1}=\\frac{1}{\\det A}\\operatorname{adj}A$ to set up the inverse calculation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868401519aa120d69cc703",
   "code": "AK2",
   "criterion": "Obtains $\\operatorname{adj}A=\\begin{pmatrix}2 & -1 \\\\ -1 & 3\\end{pmatrix}$",
   "hint": "Form $\\operatorname{adj}A=\\begin{pmatrix}\\text{swapped diagonal}&\\text{negated off-diagonal}\\\\\\text{negated off-diagonal}&\\text{swapped diagonal}\\end{pmatrix}$ by swapping the diagonal entries and changing the signs of the off-diagonal entries.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868401519aa120d69cc703",
   "code": "AK3",
   "criterion": "Multiplies the adjoint by $\\frac{1}{\\text{their }\\det A}$",
   "hint": "Multiply $\\operatorname{adj}A$ by $\\frac{1}{\\text{your }\\det A}$ using your determinant.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a868401519aa120d69cc703",
   "code": "R2",
   "criterion": "Proceeds with the inverse calculation using \"their\" conclusion that the matrix is non-singular",
   "hint": "Continue the inverse calculation using your conclusion that the matrix is non-singular.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a878efec9e9c423972ee799",
   "code": "CK1",
-  "criterion": "Recognises the standard matrix for a $90°$ anticlockwise rotation about the origin.",
-  "hint": "Recognise that a $90°$ anticlockwise rotation about the origin uses the standard rotation matrix $\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$.",
-  "status": "proposed"
+  "criterion": "Recognises the standard matrix for a $90\u00b0$ anticlockwise rotation about the origin.",
+  "hint": "Recognise that a $90\u00b0$ anticlockwise rotation about the origin uses the standard rotation matrix $\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$.",
+  "status": "approved"
  },
  {
   "question_id": "6a878efec9e9c423972ee799",
   "code": "AK1",
   "criterion": "Writes $R=\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$.",
   "hint": "Write $R=\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a878efec9e9c423972ee799",
   "code": "CK2",
   "criterion": "Forms the composite matrix in the correct order, $T=\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}R$.",
   "hint": "Form the composite in transformation order by writing $T=\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}R$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a878efec9e9c423972ee799",
   "code": "AK2",
   "criterion": "Multiplies the matrices to obtain $\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$.",
   "hint": "Multiply the two matrices carefully, row by column, to obtain $\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a878efec9e9c423972ee799",
   "code": "R1",
   "criterion": "Relates $(x,y)$ mapping to $(y,x)$ and concludes that the transformation is reflection in $y=x$.",
   "hint": "Show that $(x,y)$ maps to $(y,x)$, then identify this as reflection in $y=x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a878efec9e9c423972ee799",
   "code": "CK3",
   "criterion": "States that a multiplicative inverse satisfies $AB=BA=I$.",
   "hint": "State that a multiplicative inverse satisfies $AB=BA=I$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a878efec9e9c423972ee799",
   "code": "AK3",
   "criterion": "Gives $T^{-1}=\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$.",
   "hint": "Give $T^{-1}=\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a878efec9e9c423972ee799",
   "code": "R2",
   "criterion": "Establishes that $T^2=I$, using their matrix $T$.",
   "hint": "Multiply your matrix $T$ by itself to establish that $T^2=I$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a878efec9e9c423972ee799",
   "code": "R3",
   "criterion": "Uses the inverse transformation to reverse the display, $\\mathbf{p}=T^{-1}\\mathbf{p'}$.",
   "hint": "Reverse the display transformation by using $\\mathbf{p}=T^{-1}\\mathbf{p'}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a878efec9e9c423972ee799",
   "code": "AK4",
   "criterion": "Substitutes their inverse matrix and the displayed position vector correctly.",
   "hint": "Substitute your inverse matrix and the displayed position vector correctly before multiplying.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a878efec9e9c423972ee799",
   "code": "AK5",
   "criterion": "Multiplies to obtain $\\begin{pmatrix}-2\\\\6\\end{pmatrix}$ from their values.",
   "hint": "Multiply your matrices row by column to find $\\begin{pmatrix}\\cdot\\\\\\cdot\\end{pmatrix}$ from your values.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a878efec9e9c423972ee799",
   "code": "R4",
   "criterion": "States $\\begin{pmatrix}-2\\\\6\\end{pmatrix}$ as the position before the display transformation.",
   "hint": "State $\\begin{pmatrix}\\cdot\\\\\\cdot\\end{pmatrix}$ as the position vector before the display transformation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8790c1c9e9c423972ee7b5",
   "code": "R1",
   "criterion": "Reads the $x$-coordinate of the intersection as $2$",
   "hint": "Read the $x$-coordinate at the point where the two lines intersect.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8790c1c9e9c423972ee7b5",
   "code": "R2",
   "criterion": "Reads the $y$-coordinate of the intersection as $3$",
   "hint": "Read the $y$-coordinate at the point where the two lines intersect.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8790c1c9e9c423972ee7b5",
   "code": "CK2",
   "criterion": "Recognises that $\\det A=(1)(1)-(2)(3)=-5\\ne0$, so an inverse exists",
   "hint": "Calculate $\\det A$ and check that $\\det A\\ne0$ before deciding that an inverse exists.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8790c1c9e9c423972ee7b5",
   "code": "AK3",
   "criterion": "Obtains the adjoint matrix $\\begin{pmatrix}1&-2\\\\-3&1\\end{pmatrix}$",
   "hint": "Form the adjoint by swapping the main-diagonal entries and changing the signs of the off-diagonal entries in $\\begin{pmatrix}a&b\\\\c&d\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8790c1c9e9c423972ee7b5",
   "code": "AK4",
   "criterion": "Multiplies the adjoint by $-\\frac15$ to obtain $A^{-1}$",
   "hint": "Multiply every entry of the adjoint by the reciprocal of the determinant to write $A^{-1}=\\frac{1}{\\det A}\\operatorname{adj}A$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8790c1c9e9c423972ee7b5",
   "code": "CK3",
   "criterion": "States $I_2$ as the product of a matrix and its multiplicative inverse",
   "hint": "State that multiplying a matrix by its multiplicative inverse in either order gives $I_2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8790c1c9e9c423972ee7b5",
   "code": "R3",
   "criterion": "Forms $A^{-1}\\binom{8}{9}$ to obtain the prices from the receipt totals",
   "hint": "Form $A^{-1}\\binom{r}{s}$ using the receipt-total column vector to find the prices.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8790c1c9e9c423972ee7b5",
   "code": "AK5",
   "criterion": "Correctly evaluates $A^{-1}\\binom{8}{9}=\\binom{2}{3}$",
   "hint": "Evaluate $A^{-1}\\binom{r}{s}$ by multiplying each row of the inverse by the column vector.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8790c1c9e9c423972ee7b5",
   "code": "R4",
   "criterion": "Concludes that the matrix result agrees with the candidate's values from the graph",
   "hint": "Compare your matrix result with your coordinates from the graph and state whether they agree.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8794cd63d03456fd5cb2de",
   "code": "CK1",
   "criterion": "Selects the arc-length relationship for a sector.",
   "hint": "Use the sector arc-length formula $\\frac{\\theta}{360}\\times2\\pi r$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8794cd63d03456fd5cb2de",
   "code": "AK1",
   "criterion": "Substitutes $90$, $360$, $\\frac{22}{7}$ and $7$ correctly.",
   "hint": "Substitute the given angle, full-turn angle, value of $\\pi$, and radius carefully into $\\frac{\\theta}{360}\\times2\\pi r$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8794cd63d03456fd5cb2de",
   "code": "CK2",
   "criterion": "Recognises that the sector occupies the same fraction of the circle as its arc.",
   "hint": "Use the same fraction of the complete circle for the sector area as for its arc length.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8794cd63d03456fd5cb2de",
   "code": "AK3",
   "criterion": "Uses \"their\" arc length to obtain the fraction $\\frac14$ of the circle.",
   "hint": "Divide your earlier arc length by the complete circumference to find $\\frac{\\text{arc length}}{\\text{circumference}}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8794cd63d03456fd5cb2de",
   "code": "R1",
   "criterion": "Applies \"their\" fraction of the circle to determine the sector area.",
   "hint": "Multiply your fraction of the circle by the area of the complete circle to find the sector area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8794cd63d03456fd5cb2de",
   "code": "CK3",
   "criterion": "Recognises that four $5$-litre tins provide a total capacity of $20$ litres.",
   "hint": "Multiply the number of tins by the capacity of each tin to find the total litres available.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8794cd63d03456fd5cb2de",
   "code": "CK4",
   "criterion": "Forms the required coverage rate as \"their\" area divided by $20$ litres.",
   "hint": "Divide your sector area by the total litres available to form the required coverage rate.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8794cd63d03456fd5cb2de",
   "code": "AK5",
   "criterion": "Calculates $38.5\\div20=1.925$.",
   "hint": "Calculate the division $38.5\\div20$ accurately.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8794cd63d03456fd5cb2de",
   "code": "R2",
   "criterion": "Interprets the result as the minimum coverage required per litre for all four tins to be sufficient.",
   "hint": "State that this rate is the minimum area one litre must cover so that all the tins are sufficient.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8794cd63d03456fd5cb2de",
   "code": "R3",
   "criterion": "Expresses the coverage rate correct to 2 decimal places.",
   "hint": "Round your coverage rate to $2$ decimal places and include the correct square-metre-per-litre units.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87950863d03456fd5cb2e6",
   "code": "CK1",
   "criterion": "Recognises that the sector is one-third of a complete circle.",
   "hint": "Identify the sector as one-third of a complete circle before finding its area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87950863d03456fd5cb2e6",
   "code": "CK2",
   "criterion": "Uses \"their\" sector area as the curved surface area of the cone.",
   "hint": "Use your sector area as the curved surface area of the cone.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87950863d03456fd5cb2e6",
   "code": "AK2",
   "criterion": "Calculates the arc length as $10\\pi$ m.",
   "hint": "Calculate the arc length of the sector using its angle, radius and $2\\pi r$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87950863d03456fd5cb2e6",
   "code": "AK3",
   "criterion": "Equates $10\\pi$ to $2\\pi r$ to obtain $r=5$ m.",
   "hint": "Set the arc length equal to the base circumference $2\\pi r$ and solve for $r$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87950863d03456fd5cb2e6",
   "code": "R1",
   "criterion": "Combines \"their\" curved surface area with the circular base area to show $100\\pi\\text{ m}^2$.",
   "hint": "Add your curved surface area to the area of the circular base, keeping the result in terms of $\\pi\\text{ m}^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87950863d03456fd5cb2e6",
   "code": "CK3",
   "criterion": "Recognises the slant height, base radius and perpendicular height as sides of a right-angled triangle.",
   "hint": "Recognise that the slant height, base radius and perpendicular height form a right-angled triangle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87950863d03456fd5cb2e6",
   "code": "AK5",
   "criterion": "Substitutes $r=5$ and $h=10\\sqrt{2}$ into the cone volume calculation.",
   "hint": "Substitute $r$ and $h$ into the cone volume formula, keeping the $\\sqrt{}$ term exact.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87950863d03456fd5cb2e6",
   "code": "R2",
   "criterion": "Uses \"their\" base radius and \"their\" perpendicular height in the volume calculation.",
   "hint": "Use your base radius and your perpendicular height in the cone volume calculation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87950863d03456fd5cb2e6",
   "code": "R3",
   "criterion": "Simplifies the volume to $\\frac{250\\sqrt{2}\\pi}{3}$.",
   "hint": "Simplify the volume into one exact expression containing $\\frac{}{}$, $\\sqrt{}$ and $\\pi$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87950863d03456fd5cb2e6",
   "code": "R4",
   "criterion": "Expresses \"their\" volume in exact form.",
   "hint": "Express your volume exactly, without changing $\\pi$ or any surd into decimals.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87957763d03456fd5cb2f3",
   "code": "CK1",
   "criterion": "Selects the arc as $\\frac{216}{360}$ of the circumference",
   "hint": "Take the curved edge as the $\\frac{216}{360}$ fraction of the full circumference.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87957763d03456fd5cb2f3",
   "code": "AK1",
   "criterion": "Substitutes $216$, $360$, $\\pi=\\frac{22}{7}$ and radius $70$ correctly",
   "hint": "Substitute $216$, $360$, $\\pi=\\frac{22}{7}$ and radius $70$ into the arc-length calculation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87957763d03456fd5cb2f3",
   "code": "CK2",
   "criterion": "Identifies the boundary as one arc and two radii",
   "hint": "Form the boundary by using one curved arc and two straight radii.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87957763d03456fd5cb2f3",
   "code": "AK3",
   "criterion": "Finds the total length of the two radii as $140\\text{ cm}$",
   "hint": "Add the lengths of the two equal radii and give the result in $\\text{cm}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87957763d03456fd5cb2f3",
   "code": "AK4",
   "criterion": "Adds \"their\" arc length and $140\\text{ cm}$ to obtain $404\\text{ cm}$",
   "hint": "Add your arc length to the combined radii length and state the perimeter in $\\text{cm}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87957763d03456fd5cb2f3",
   "code": "CK3",
   "criterion": "Uses $100\\text{ cm}=1\\text{ m}$",
   "hint": "Use $100\\text{ cm}=1\\text{ m}$ to change from centimetres to metres.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87957763d03456fd5cb2f3",
   "code": "AK5",
   "criterion": "Converts \"their\" perimeter from centimetres to metres",
   "hint": "Convert your perimeter from centimetres to metres by dividing by $100$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87957763d03456fd5cb2f3",
   "code": "CK4",
   "criterion": "Recognises that the purchase must be a whole number of metres",
   "hint": "Choose a whole number of metres because the braid is sold only in complete metres.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87957763d03456fd5cb2f3",
   "code": "R1",
   "criterion": "Compares \"their\" metre length with $4\\text{ m}$",
   "hint": "Compare your length in metres with $4\\text{ m}$ before deciding whether it is enough.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87957763d03456fd5cb2f3",
   "code": "R3",
   "criterion": "Explains that $4\\text{ m}$ is insufficient and $5\\text{ m}$ is the least whole number that is enough",
   "hint": "Explain why the smaller whole-metre length is too short and choose the least whole number of $\\text{m}$ that is enough.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8795ce63d03456fd5cb2fb",
   "code": "R1",
   "criterion": "Uses the horizontal level $y=16$ to locate the corresponding positive value of $x$",
   "hint": "Draw the horizontal level $y=16$ to the positive side of the curve, then read the matching $x$-coordinate.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8795ce63d03456fd5cb2fb",
   "code": "R3",
   "criterion": "Uses radius equal to \"their\" side length plus $1$ and reads the corresponding area from the graph",
   "hint": "Add $1$ to your side length for the radius, then use that $x$-value to read the area from the graph.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8795ce63d03456fd5cb2fb",
   "code": "CK2",
   "criterion": "Selects the area relationship for a circle",
   "hint": "Use the circle-area relationship $A=\\pi r^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8795ce63d03456fd5cb2fb",
   "code": "AK3",
   "criterion": "Substitutes $\\pi=3.14$ and \"their\" value of $r^2$",
   "hint": "Substitute the stated approximation for $\\pi$ and your value of $r^2$ into the area calculation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8795ce63d03456fd5cb2fb",
   "code": "CK3",
   "criterion": "Recognises that the sector angle is the same fraction of $360^\\circ$ as its area is of the complete circle",
   "hint": "Use the same fraction of $360^\\circ$ for the central angle as the sector area is of the complete-circle area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8795ce63d03456fd5cb2fb",
   "code": "AK5",
   "criterion": "Calculates $\\frac{39.25}{\\text{their }78.5}\\times360^\\circ$ to obtain $180^\\circ$",
   "hint": "Calculate the angle using $\\frac{\\text{sector area}}{\\text{your complete-badge area}}\\times360^\\circ$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8795ce63d03456fd5cb2fb",
   "code": "R4",
   "criterion": "Explains that $39.25$ cm$^2$ is one-half of \"their\" complete-badge area, so the sector is half a circle",
   "hint": "Explain that the sector area is one-half of your complete-badge area, so the sector is half a circle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87968492a2aaa2a2c29c18",
   "code": "CK1",
   "criterion": "Identifies the 5th and 6th positions as the median positions for \"their\" total of 10 values",
   "hint": "For your total of 10 values, identify the two central positions in the ordered data to find the median.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87968492a2aaa2a2c29c18",
   "code": "AK2",
   "criterion": "Locates the 5th and 6th values as $12$",
   "hint": "Use the bar chart to locate the values in the two median positions.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87968492a2aaa2a2c29c18",
   "code": "R1",
   "criterion": "Concludes that the median is $12$",
   "hint": "State the median using the common value from the two central positions.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87968492a2aaa2a2c29c18",
   "code": "R2",
   "criterion": "Uses \"their\" median to separate the ordered data into lower and upper halves",
   "hint": "Use your median to split the ordered data into a lower half and an upper half.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87968492a2aaa2a2c29c18",
   "code": "CK2",
   "criterion": "Identifies $Q_1=10$ and $Q_3=14$",
   "hint": "Find the middle value of each half to identify the lower and upper quartiles.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a87968492a2aaa2a2c29c18",
   "code": "CK3",
   "criterion": "Recognises that the semi-interquartile range is half the interquartile range",
   "hint": "Divide the interquartile range by two to find the semi-interquartile range.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796c392a2aaa2a2c29c20",
   "code": "AK1",
   "criterion": "Subtracts the smaller standard deviation from the larger standard deviation",
   "hint": "Subtract the smaller standard deviation from the larger standard deviation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796c392a2aaa2a2c29c20",
   "code": "R1",
   "criterion": "States Week 1 from the comparison of the standard deviations",
   "hint": "Choose Week 1 because it has the smaller standard deviation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796c392a2aaa2a2c29c20",
   "code": "CK1",
   "criterion": "Recognises standard deviation as a measure of variation in the sales",
   "hint": "Use standard deviation to compare how much the daily sales vary.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796c392a2aaa2a2c29c20",
   "code": "CK2",
   "criterion": "Recognises that a smaller standard deviation indicates more consistent sales",
   "hint": "Recognise that a smaller standard deviation means the daily sales are more consistent.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796c392a2aaa2a2c29c20",
   "code": "CK3",
   "criterion": "Recognises that the mean daily sales for Week 1 are 50 mangoes",
-  "hint": "Identify that Week 1’s mean daily sales match the proposed daily order.",
-  "status": "proposed"
+  "hint": "Identify that Week 1\u2019s mean daily sales match the proposed daily order.",
+  "status": "approved"
  },
  {
   "question_id": "6a8796c392a2aaa2a2c29c20",
   "code": "AK3",
   "criterion": "Applies \"their\" Week 1 conclusion to the daily order of 50 mangoes",
   "hint": "Use your Week 1 conclusion to decide whether the proposed daily order is suitable.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796c392a2aaa2a2c29c20",
   "code": "R2",
   "criterion": "Links the smaller standard deviation with sales being closer to the mean",
   "hint": "Explain that the smaller standard deviation means the daily sales are closer to the mean.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796c392a2aaa2a2c29c20",
   "code": "R3",
   "criterion": "Concludes that ordering 50 mangoes is less likely to result in shortages or unsold mangoes",
   "hint": "Conclude that the proposed daily order is less likely to cause shortages or unsold mangoes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796fe92a2aaa2a2c29c28",
   "code": "CK1",
   "criterion": "Recognises that $gf(x)=g(f(x))$",
   "hint": "Recognise that $gf(x)$ means $g(f(x))$ before you calculate the composite function.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796fe92a2aaa2a2c29c28",
   "code": "AK1",
   "criterion": "Substitutes $2x$ into $g$ to obtain $3(2x)-6$",
   "hint": "Substitute $2x$ into $g$ and simplify the resulting expression.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796fe92a2aaa2a2c29c28",
   "code": "CK2",
   "criterion": "Selects \"their\" composite function for a crate of mass $12$ kg",
   "hint": "Use your composite function and substitute the crate mass given for part (b).",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796fe92a2aaa2a2c29c28",
   "code": "CK3",
   "criterion": "Obtains the sample size by summing all frequencies",
   "hint": "Add every frequency in the table to find the total sample size.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796fe92a2aaa2a2c29c28",
   "code": "R1",
   "criterion": "Identifies that payments greater than \"their\" payment in (b) come from crate masses greater than $12$ kg",
   "hint": "Identify that a payment greater than your payment in part (b) corresponds to a crate mass greater than the stated mass.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796fe92a2aaa2a2c29c28",
   "code": "AK4",
   "criterion": "Finds the frequency of crates with mass greater than $12$ kg as $4+2=6$",
   "hint": "Add the frequencies for all crate masses greater than the stated mass.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8796fe92a2aaa2a2c29c28",
   "code": "R2",
   "criterion": "Forms the proportion using $6$ qualifying crates out of the total sample",
   "hint": "Form the proportion by dividing your qualifying-crate frequency by your total sample size.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797656af0b4c2ed486413",
   "code": "CK1",
   "criterion": "Recognises that the smaller standard deviation indicates greater consistency.",
   "hint": "Choose the section with the smaller standard deviation as the more consistent one.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797656af0b4c2ed486413",
   "code": "AK1",
   "criterion": "Compares $0.18$ and $0.26$ correctly.",
   "hint": "Compare the two standard deviations carefully and identify which one is smaller.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797656af0b4c2ed486413",
   "code": "CK2",
   "criterion": "Uses 'their' more consistent section from part (a) for the comparison with Hill.",
   "hint": "Use your more consistent section from part (a) when you compare it with Hill.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797656af0b4c2ed486413",
   "code": "AK3",
   "criterion": "Finds the difference between the standard deviation for Hill and that for 'their' selected section.",
   "hint": "Subtract Hill's standard deviation from the standard deviation of your selected section to find the difference.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797656af0b4c2ed486413",
   "code": "CK3",
   "criterion": "States that a smaller standard deviation means data values are closer to the mean.",
   "hint": "State that a smaller standard deviation means the data values lie closer to the mean.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797656af0b4c2ed486413",
   "code": "R3",
   "criterion": "Explains that less variation gives mangoes with more similar masses for packing.",
   "hint": "Explain that less variation means the mangoes have more similar masses, so they are suitable for packing together.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797946af0b4c2ed48641b",
   "code": "CK1",
   "criterion": "Recognises that the number required is $35\\%$ of 40",
   "hint": "Find $35\\%$ of 40 to determine the number of deliveries below 20 minutes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797946af0b4c2ed48641b",
   "code": "AK1",
   "criterion": "Evaluates $0.35 \\times 40 = 14$",
   "hint": "Evaluate $0.35 \\times 40$ accurately.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797946af0b4c2ed48641b",
   "code": "R1",
   "criterion": "Forms $5 + x =$ \"their\" number of deliveries below 20 minutes",
   "hint": "Form $5+x=$ your earlier number of deliveries below 20 minutes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797946af0b4c2ed48641b",
   "code": "AK2",
   "criterion": "Solves for $x = 9$",
   "hint": "Rearrange your equation to isolate $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797946af0b4c2ed48641b",
   "code": "CK2",
   "criterion": "Identifies the first three classes as deliveries taking less than 30 minutes",
   "hint": "Identify the first three frequency classes as the deliveries taking less than 30 minutes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797946af0b4c2ed48641b",
   "code": "AK3",
   "criterion": "Finds $5 +$ \"their\" $x + 14 = 28$",
   "hint": "Add the first frequency, your value of $x$, and the third frequency to find the total below 30 minutes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797946af0b4c2ed48641b",
   "code": "AK4",
   "criterion": "Calculates $\\frac{\\text{their }28}{40} \\times 100 = 70\\%$",
   "hint": "Calculate $\\frac{\\text{your subtotal}}{40}\\times100$ to find the percentage.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797946af0b4c2ed48641b",
   "code": "CK3",
   "criterion": "Recognises that the percentage taking more than 30 minutes is the complement of \"their\" percentage",
   "hint": "Recognise that the percentage taking more than 30 minutes is the complement of your percentage taking less than 30 minutes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797946af0b4c2ed48641b",
   "code": "R2",
   "criterion": "Determines $100\\% -$ \"their\" $70\\% = 30\\%$",
   "hint": "Subtract your percentage from $100\\%$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8797946af0b4c2ed48641b",
   "code": "R3",
   "criterion": "Compares $30\\%$ with $33\\frac{1}{3}\\%$ and concludes that the customer is correct",
   "hint": "Compare the percentage above 30 minutes with one third and use the comparison to decide whether the customer is correct.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fac58857de878d2266546",
   "code": "CK1",
   "criterion": "Identifies the two standard deviations as $1.8$ min and $1.2$ min.",
   "hint": "Read the table and identify the standard deviation for each shift.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fac58857de878d2266546",
   "code": "AK1",
   "criterion": "Subtracts to obtain $1.8-1.2=0.6$ min.",
   "hint": "Subtract the smaller standard deviation from the larger standard deviation to find the difference in minutes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fac58857de878d2266546",
   "code": "CK2",
   "criterion": "Uses the early-shift standard deviation, $1.2$ min, as the reference value.",
   "hint": "Use the early-shift standard deviation as the reference value for the percentage increase.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fac58857de878d2266546",
   "code": "AK2",
   "criterion": "Divides \"their\" difference by $1.2$.",
   "hint": "Divide your difference by the early-shift standard deviation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fac58857de878d2266546",
   "code": "AK3",
   "criterion": "Multiplies by $100$ to show $50\\%$.",
   "hint": "Multiply your quotient by $100$ and write the result as a percentage using $\\%$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fac58857de878d2266546",
   "code": "R1",
   "criterion": "Interprets the larger standard deviation as a greater spread of check-in times.",
   "hint": "Explain that the shift with the larger standard deviation has check-in times that are more spread out.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fac58857de878d2266546",
   "code": "R2",
   "criterion": "States that the late-shift check-in times are less consistent or less predictable.",
   "hint": "State that the late-shift check-in times are less consistent or less predictable.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fac58857de878d2266546",
   "code": "AK4",
   "criterion": "Calculates the reduced standard deviation as $1.8-(0.50\\times1.8)=0.9$ min.",
   "hint": "Calculate the reduction as $50\\% \\times$ the original late-shift standard deviation, then subtract it from that standard deviation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fac58857de878d2266546",
   "code": "R3",
   "criterion": "Concludes that the late shift will not be as consistent as the early shift.",
   "hint": "State that the late shift will not be as consistent as the early shift.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fac58857de878d2266546",
   "code": "CK3",
   "criterion": "Recognises that equally consistent sets have equal standard deviations.",
   "hint": "Recognise that two sets are equally consistent when they have the same standard deviation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8face0857de878d2266557",
   "code": "AK1",
   "criterion": "Finds the missing frequency: $18-14=4$",
   "hint": "Subtract the earlier cumulative frequency from the later cumulative frequency to find the missing frequency.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8face0857de878d2266557",
   "code": "AK2",
   "criterion": "Adds the frequencies, including \"their\" missing frequency, to obtain the final cumulative frequency",
   "hint": "Add all the frequencies, including your missing frequency, to find the final cumulative frequency.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8face0857de878d2266557",
   "code": "CK1",
   "criterion": "Identifies the fifth value as the lower-quartile position",
   "hint": "Count to the lower-quartile position in the ordered data.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8face0857de878d2266557",
   "code": "CK2",
   "criterion": "Identifies the tenth and eleventh values as the median positions",
   "hint": "Locate the two middle positions in the ordered data for the median.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8face0857de878d2266557",
   "code": "R1",
   "criterion": "Averages the tenth and eleventh values to obtain $14.5$",
   "hint": "Add the values at the two median positions and divide by two to find the median.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8face0857de878d2266557",
   "code": "AK3",
   "criterion": "Uses \"their\" cumulative frequency to obtain upper quartile $16$",
   "hint": "Use your final cumulative frequency to locate the upper-quartile value in the ordered data.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8face0857de878d2266557",
   "code": "CK3",
   "criterion": "Recognises that the interquartile range is upper quartile minus lower quartile",
   "hint": "Find the interquartile range by subtracting the lower quartile from the upper quartile.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8face0857de878d2266557",
   "code": "R2",
   "criterion": "Subtracts \"their\" lower quartile from \"their\" upper quartile",
   "hint": "Subtract your lower quartile from your upper quartile.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8face0857de878d2266557",
   "code": "R3",
   "criterion": "Halves \"their\" interquartile range to obtain the semi-interquartile range",
   "hint": "Divide your interquartile range by two to find the semi-interquartile range.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae200b810d6232b77065",
   "code": "CK1",
   "criterion": "Selects the total surface-area expression for a closed cylinder",
   "hint": "Use $2\\pi r^2 + 2\\pi rh$ for the total exterior surface area of the closed cylinder.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae200b810d6232b77065",
   "code": "AK1",
   "criterion": "Substitutes the dimensions and evaluates the total exterior surface area as $616\\text{ m}^2$",
   "hint": "Substitute the given radius and height, use the stated value of $\\pi$, and calculate the total exterior area in $\\text{m}^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae200b810d6232b77065",
   "code": "CK2",
   "criterion": "Identifies the coating cost as the principal borrowed",
   "hint": "Treat the coating cost as the principal borrowed.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae200b810d6232b77065",
   "code": "R1",
   "criterion": "Multiplies \\$10 by \"their\" surface area to obtain the principal",
   "hint": "Multiply \\$10 by your surface area to find the principal borrowed.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae200b810d6232b77065",
   "code": "CK3",
   "criterion": "Selects the simple-interest relationship $I = Prt$",
   "hint": "Use the simple-interest relationship $I = Prt$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae200b810d6232b77065",
   "code": "AK2",
   "criterion": "Substitutes \"their\" principal, $5\\%$ and $3$ years into the simple-interest relationship",
   "hint": "Substitute your principal, $5\\%$, and $3$ years into the simple-interest relationship.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae200b810d6232b77065",
   "code": "R2",
   "criterion": "Forms the total repayment by adding \"their\" interest to \"their\" principal",
   "hint": "Add your interest to your principal to form your total repayment.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae200b810d6232b77065",
   "code": "R3",
   "criterion": "Divides \"their\" total repayment into $4$ equal instalments",
   "hint": "Divide your total repayment into $4$ equal instalments.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae580b810d6232b7706f",
   "code": "CK1",
   "criterion": "Selects a compound-interest calculation for one annual period",
   "hint": "Use a compound-interest calculation for one annual period.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae580b810d6232b7706f",
   "code": "CK2",
   "criterion": "Uses \"their\" end-of-first-year balance as the principal for the further 2 years",
   "hint": "Use your end-of-first-year balance as the principal for the next two years.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae580b810d6232b7706f",
   "code": "AK2",
   "criterion": "Applies compound growth at $4\\%$ for 2 further annual periods to \"their\" balance",
   "hint": "Apply compound growth at $4\\%$ for two further annual periods to your balance.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae580b810d6232b7706f",
   "code": "CK3",
   "criterion": "Identifies total interest as the accumulated balance less the original deposit",
   "hint": "Find the total interest by subtracting the original deposit from the accumulated balance.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae580b810d6232b7706f",
   "code": "AK4",
   "criterion": "Subtracts \\$60 000 from \"their\" third-year balance",
   "hint": "Subtract $\\$60 000$ from your third-year balance.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae580b810d6232b7706f",
   "code": "R1",
   "criterion": "Compares \"their\" third-year balance with the refrigerator cost",
   "hint": "Compare your third-year balance with the refrigerator cost.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae580b810d6232b7706f",
   "code": "R2",
   "criterion": "Subtracts \\$67 000 from \"their\" balance",
   "hint": "Subtract $\\$67 000$ from your balance.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae580b810d6232b7706f",
   "code": "R3",
   "criterion": "States that the positive difference is money remaining",
   "hint": "State that the positive difference is money remaining.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae7f0b810d6232b77079",
   "code": "CK1",
   "criterion": "Identifies the increase as \\$13 230 minus \\$12 600",
   "hint": "Find the increase by subtracting \\$12 600 from \\$13 230.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae7f0b810d6232b77079",
   "code": "R1",
   "criterion": "Uses \\$12 600 as the original value for the percentage increase",
   "hint": "Use \\$12 600 as the original value when calculating the percentage increase.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae7f0b810d6232b77079",
   "code": "AK2",
   "criterion": "Divides \"their\" increase by 12 600 and multiplies by 100",
   "hint": "Divide your increase by 12 600 and multiply by 100.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae7f0b810d6232b77079",
   "code": "CK2",
   "criterion": "Forms the one-year appreciation relationship $12 600=P(1+r)$",
   "hint": "Form the one-year appreciation equation $12 600=P(1+r)$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae7f0b810d6232b77079",
   "code": "R2",
   "criterion": "Divides 12 600 by \"their\" growth factor to obtain the opening deposit",
   "hint": "Divide 12 600 by your growth factor to find the opening deposit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae7f0b810d6232b77079",
   "code": "CK3",
   "criterion": "Identifies total appreciation as final value less opening deposit",
   "hint": "Find the total appreciation by subtracting the opening deposit from the final value.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae7f0b810d6232b77079",
   "code": "AK4",
   "criterion": "Calculates the end-of-year-3 value using \"their\" opening deposit and annual rate",
   "hint": "Calculate the end-of-year-3 value using your opening deposit and annual rate.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fae7f0b810d6232b77079",
   "code": "R3",
   "criterion": "Subtracts \"their\" opening deposit from \"their\" end-of-year-3 value",
   "hint": "Subtract your opening deposit from your end-of-year-3 value.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faeaf0b810d6232b77083",
   "code": "CK1",
   "criterion": "Identifies that the bank buying rate is used for the US dollars exchanged",
   "hint": "Use the bank buying rate because you exchange US dollars for credit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faeaf0b810d6232b77083",
   "code": "AK1",
   "criterion": "Multiplies $250 \\times 2.68$",
   "hint": "Multiply $250 \\times 2.68$ to find the amount credited before commission.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faeaf0b810d6232b77083",
   "code": "CK3",
   "criterion": "Recognises that the commission is $1.5\\%$ of the amount credited",
   "hint": "Recognise that the commission is $1.5\\%$ of the amount credited.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faeaf0b810d6232b77083",
   "code": "R1",
   "criterion": "Finds $1.5\\%$ of \"their\" credited amount",
   "hint": "Calculate $1.5\\%$ of your credited amount to find the commission.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faeaf0b810d6232b77083",
   "code": "R2",
   "criterion": "Subtracts \"their\" commission from \"their\" credited amount",
   "hint": "Subtract your commission from your credited amount to find the remaining credit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faeaf0b810d6232b77083",
   "code": "R3",
   "criterion": "States that the credit is insufficient after comparing \"their\" remaining credit with \\$660",
   "hint": "Compare your remaining credit with \\$660 and state whether it is sufficient.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf2a0b810d6232b77094",
   "code": "CK1",
   "criterion": "Selects the volume formula for a cylinder",
   "hint": "Use the cylinder volume formula $V=\\pi r^2h$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf2a0b810d6232b77094",
   "code": "AK1",
   "criterion": "Substitutes $r = 0.7$ and $h = 2$ to obtain $3.08\\text{ m}^3$",
   "hint": "Substitute the given $r$ and $h$ into $V=\\pi r^2h$ and calculate the volume in $\\text{m}^3$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf2a0b810d6232b77094",
   "code": "CK2",
   "criterion": "Recognises that the amount borrowed is the cash price less the deposit",
   "hint": "Find the amount borrowed by subtracting the deposit from the cash price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf2a0b810d6232b77094",
   "code": "R1",
   "criterion": "Subtracts \"their\" deposit from \"their\" cash price to obtain the amount borrowed",
   "hint": "Subtract your deposit from your cash price to calculate your amount borrowed.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf2a0b810d6232b77094",
   "code": "R3",
   "criterion": "States Yes following a correct comparison with \"their\" total payment, FT",
-  "hint": "Compare your total payment with the cash price and state Yes if the comparison supports the customer’s claim.",
-  "status": "proposed"
+  "hint": "Compare your total payment with the cash price and state Yes if the comparison supports the customer\u2019s claim.",
+  "status": "approved"
  },
  {
   "question_id": "6a8faf2a0b810d6232b77094",
   "code": "CK3",
   "criterion": "Recognises that the total paid consists of the deposit and six monthly instalments",
   "hint": "Form the total paid by adding the deposit to six monthly instalments.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf5a0b810d6232b7709e",
   "code": "CK1",
   "criterion": "Identifies the amount financed as cash price less deposit",
   "hint": "Subtract the deposit from the cash price to find the amount financed.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf5a0b810d6232b7709e",
   "code": "CK2",
   "criterion": "Selects the simple-interest relationship $I = Prt$",
   "hint": "Use the simple-interest relationship $I = Prt$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf5a0b810d6232b7709e",
   "code": "AK2",
   "criterion": "Substitutes \\\"their\\\" amount financed, 5% and 3 years into the simple-interest calculation",
   "hint": "Substitute your amount financed, $0.05$, and $3$ years into $I = Prt$ to calculate the interest.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf5a0b810d6232b7709e",
   "code": "AK4",
   "criterion": "Adds the deposit, \\\"their\\\" amount financed and \\\"their\\\" interest",
   "hint": "Add the deposit, your amount financed, and your interest to find the total paid.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf5a0b810d6232b7709e",
   "code": "R1",
   "criterion": "Compares \\\"their\\\" total with \\$27 000 and accepts the agreement",
   "hint": "Compare your total with $\\$27\\,000$ and accept the agreement if it is less.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf5a0b810d6232b7709e",
   "code": "CK3",
   "criterion": "Recognises that the deposit is not included in the monthly instalments",
   "hint": "Exclude the deposit because it is paid before the monthly instalments begin.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf5a0b810d6232b7709e",
   "code": "R2",
   "criterion": "Finds the amount to be repaid in instalments by subtracting the deposit from \\\"their\\\" total paid",
   "hint": "Subtract the deposit from your total paid to find the amount repaid in instalments.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf5a0b810d6232b7709e",
   "code": "R3",
   "criterion": "Divides \\\"their\\\" instalment amount by 24 to obtain the monthly instalment",
   "hint": "Divide your instalment amount by $24$ to find the monthly instalment.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf900b810d6232b770a8",
   "code": "CK1",
   "criterion": "Identifies the annual compound multiplier as $1.05$",
   "hint": "Write the annual compound multiplier as $1.05$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf900b810d6232b770a8",
   "code": "CK2",
   "criterion": "Recognises that the first-year balance is compounded for two further years",
   "hint": "Apply the annual multiplier for two further years to the first-year balance.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf900b810d6232b770a8",
   "code": "AK2",
   "criterion": "Correctly evaluates \"their\" first-year amount multiplied by $1.05^2$",
   "hint": "Calculate your first-year amount multiplied by $1.05^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf900b810d6232b770a8",
   "code": "R1",
   "criterion": "Uses \"their\" amount from part (a) to reach the stated third-year amount",
   "hint": "Use your amount from part (a) to state the balance at the end of the third year.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf900b810d6232b770a8",
   "code": "CK3",
   "criterion": "Identifies interest earned as accumulated amount less original deposit",
   "hint": "Find the interest by subtracting the original deposit from the accumulated amount.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf900b810d6232b770a8",
   "code": "AK3",
   "criterion": "Subtracts \\$20 000 from \"their\" final amount to obtain \\$3 152.50",
   "hint": "Subtract \\$20 000 from your final amount to obtain \\$3 152.50.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf900b810d6232b770a8",
   "code": "R2",
   "criterion": "Compares \"their\" interest with \\$3 200",
   "hint": "Compare your interest with \\$3 200.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8faf900b810d6232b770a8",
   "code": "R3",
   "criterion": "Concludes correctly that the interest will not be transferred",
   "hint": "Use your comparison to decide whether the interest will be transferred.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fafe80b810d6232b770b2",
   "code": "AK1",
   "criterion": "Calculates $1.5\\%$ of \"their\" local-dollar value",
   "hint": "Calculate $1.5\\%$ of your local-dollar value to find your service fee.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fafe80b810d6232b770b2",
   "code": "AK2",
   "criterion": "Adds \"their\" service fee to \"their\" local-dollar value",
   "hint": "Add your service fee to your local-dollar value to find your total paid.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fafe80b810d6232b770b2",
   "code": "CK2",
   "criterion": "Selects the depreciation factor $(0.85)^2$",
   "hint": "Use the depreciation factor $(0.85)^2$ for two years of depreciation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fafe80b810d6232b770b2",
   "code": "AK3",
   "criterion": "Substitutes \"their\" total paid into the depreciation calculation",
   "hint": "Substitute your total paid into the depreciation calculation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fafe80b810d6232b770b2",
   "code": "AK4",
   "criterion": "Calculates \"their\" depreciated value",
   "hint": "Calculate your depreciated value after applying the depreciation factor.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fafe80b810d6232b770b2",
   "code": "R1",
   "criterion": "Expresses \"their\" buyout amount correct to 2 decimal places",
   "hint": "Write your buyout amount correct to 2 decimal places.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fafe80b810d6232b770b2",
   "code": "CK3",
   "criterion": "Identifies the loss as \"their\" buyout amount minus \\$1 400",
   "hint": "Find your loss by subtracting \\$1 400 from your buyout amount.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fafe80b810d6232b770b2",
   "code": "AK5",
   "criterion": "Divides \"their\" loss by \"their\" buyout amount and multiplies by $100$",
   "hint": "Divide your loss by your buyout amount and multiply by $100$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fafe80b810d6232b770b2",
   "code": "R2",
   "criterion": "Expresses \"their\" percentage loss correct to 3 significant figures",
   "hint": "Write your percentage loss correct to 3 significant figures.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fafe80b810d6232b770b2",
   "code": "CK4",
   "criterion": "Recognises that an offer of $85\\%$ permits a loss of $15\\%$",
   "hint": "Recognise that an offer of $85\\%$ allows a loss of $15\\%$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fafe80b810d6232b770b2",
   "code": "R3",
   "criterion": "Compares \"their\" percentage loss with \"their\" permitted loss and gives a supported decision",
   "hint": "Compare your percentage loss with your permitted loss and use this comparison to decide whether the mechanic should accept the offer.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0260b810d6232b770bc",
   "code": "CK1",
   "criterion": "Recognises that the amount before purchase tax is the total payment less the purchase tax.",
   "hint": "Recognise that you find the amount before purchase tax by subtracting the purchase tax from the total payment.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0260b810d6232b770bc",
   "code": "AK1",
   "criterion": "Subtracts \\$144 from \\$1 584.",
   "hint": "Subtract \\$144 from \\$1 584.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0260b810d6232b770bc",
   "code": "CK2",
   "criterion": "Forms a relationship using 80% of the marked price and \"their\" before-tax payment.",
   "hint": "Set $80\\%$ of the marked price equal to your before-tax payment.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0260b810d6232b770bc",
   "code": "AK2",
   "criterion": "Divides \"their\" before-tax payment by 0.80.",
   "hint": "Divide your before-tax payment by $0.80$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0260b810d6232b770bc",
   "code": "R1",
   "criterion": "Identifies the discount as the difference between \"their\" marked price and \"their\" before-tax payment.",
   "hint": "Identify the discount as the difference between your marked price and your before-tax payment.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0260b810d6232b770bc",
   "code": "AK4",
   "criterion": "Subtracts \"their\" before-tax payment from \"their\" marked price.",
   "hint": "Subtract your before-tax payment from your marked price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0260b810d6232b770bc",
   "code": "CK3",
   "criterion": "Identifies the marked price as the base value for the discount percentage.",
   "hint": "Use your marked price as the base value when calculating the discount percentage.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0260b810d6232b770bc",
   "code": "R2",
   "criterion": "Forms the percentage comparison using \"their\" discount divided by \"their\" marked price.",
   "hint": "Form the percentage by dividing your discount by your marked price and multiplying by $100\\%$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0610b810d6232b770c6",
   "code": "CK1",
   "criterion": "Recognises that the markup is calculated from the cost price.",
   "hint": "Calculate the markup as a percentage of the cost price, not the marked price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0610b810d6232b770c6",
   "code": "AK1",
   "criterion": "Calculates the markup as \\$1 200.",
   "hint": "Find the markup by taking 25% of \\$4 800.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0610b810d6232b770c6",
   "code": "CK2",
   "criterion": "Recognises that the discount is calculated from the marked price.",
   "hint": "Calculate the discount as a percentage of the marked price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0610b810d6232b770c6",
   "code": "CK3",
   "criterion": "Recognises that selling price equals marked price less discount.",
   "hint": "Find the selling price by subtracting the discount from the marked price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8fb0610b810d6232b770c6",
   "code": "R2",
   "criterion": "Uses \"their\" selling price as the total payable and subtracts the deposit.",
   "hint": "Use your selling price as the total payable and subtract the \\$1 000 deposit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901065c82b6d3fb145e796",
   "code": "CK2",
   "criterion": "Uses cumulative frequency $20$ to locate the median",
   "hint": "Find the middle cumulative frequency by halving the total number of students, then use that level to locate the median.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901065c82b6d3fb145e796",
   "code": "R2",
   "criterion": "Reads median time as $30$ minutes from their graph",
   "hint": "From your graph, read across from the median cumulative frequency to the curve and then down to the time axis in minutes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901065c82b6d3fb145e796",
   "code": "CK3",
   "criterion": "Identifies cumulative frequency $20$ at \"their\" median time",
   "hint": "At your median time, read the corresponding cumulative frequency from the graph.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901065c82b6d3fb145e796",
   "code": "AK3",
   "criterion": "Calculates $40 - 20$ using \"their\" cumulative frequency",
   "hint": "Subtract your cumulative frequency from the total number of students to find how many take longer than the median time.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901125c82b6d3fb145e7b5",
   "code": "R1",
   "criterion": "Reads the cumulative frequency at 24 minutes from their graph.",
   "hint": "Read the cumulative frequency at 24 minutes directly from your graph.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901125c82b6d3fb145e7b5",
   "code": "R2",
   "criterion": "Recognises that the number waiting more than 24 minutes is $50-$ 'their' answer from part (b).",
   "hint": "Recognise that the number waiting more than 24 minutes is found by subtracting your answer from part (b) from the total sample size.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901125c82b6d3fb145e7b5",
   "code": "AK3",
   "criterion": "Calculates $50-$ 'their' answer from part (b).",
   "hint": "Calculate the number waiting more than 24 minutes by subtracting your answer from part (b) from $50$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901125c82b6d3fb145e7b5",
   "code": "AK4",
   "criterion": "Calculates the percentage using 'their' number waiting more than 24 minutes out of 50.",
   "hint": "Calculate the percentage by dividing your number waiting more than 24 minutes by $50$ and multiplying by $100\\%$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901125c82b6d3fb145e7b5",
   "code": "R3",
   "criterion": "States the result as a percentage of the sample.",
   "hint": "State your result as a percentage of the sample, using the $\\%$ symbol.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9011f2c82b6d3fb145e7cd",
   "code": "R1",
   "criterion": "Reads lower quartile as $10$ items from their graph",
   "hint": "Read the lower quartile from your graph at cumulative frequency $10$ and state the corresponding number of items.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9011f2c82b6d3fb145e7cd",
   "code": "R2",
   "criterion": "Reads upper quartile as $20$ items from their graph",
   "hint": "Read the upper quartile from your graph at cumulative frequency $30$ and state the corresponding number of items.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9011f2c82b6d3fb145e7cd",
   "code": "CK2",
   "criterion": "Identifies interquartile range as upper quartile minus lower quartile",
   "hint": "Find the interquartile range by subtracting the lower quartile from the upper quartile.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9011f2c82b6d3fb145e7cd",
   "code": "AK4",
   "criterion": "Subtracts 'their' lower quartile from 'their' upper quartile to obtain $10$ items",
   "hint": "Subtract your lower quartile from your upper quartile to obtain $10$ items.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9011f2c82b6d3fb145e7cd",
   "code": "CK3",
   "criterion": "Recognises that the lower and upper quartiles bound the middle $50\\%$ of the data",
   "hint": "Recognise that the lower and upper quartiles are the boundaries of the middle $50\\%$ of the data.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9011f2c82b6d3fb145e7cd",
   "code": "R3",
   "criterion": "Uses 'their' quartiles to justify that the middle half lies from $10$ to $20$ items",
   "hint": "Use your quartiles to justify that the middle half of the baskets lies from $10$ to $20$ items.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901232c82b6d3fb145e7d7",
   "code": "CK2",
   "criterion": "Identifies the median position as cumulative frequency $15$",
   "hint": "Find the median position by halving the total number of deliveries.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901232c82b6d3fb145e7d7",
   "code": "AK3",
   "criterion": "Uses cumulative frequency $15$ on the graph",
   "hint": "Use the median cumulative frequency on the graph by reading across to the curve and then down to the time axis.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901232c82b6d3fb145e7d7",
   "code": "CK3",
   "criterion": "Recognises that the smaller standard deviation indicates more consistent delivery times",
   "hint": "Recognise that the smaller standard deviation shows more consistent delivery times.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901232c82b6d3fb145e7d7",
   "code": "R2",
   "criterion": "Compares Route B median with 'their' Route A median and establishes that the typical times are equal",
-  "hint": "Compare Route B’s median with your Route A median and state that the typical times are equal.",
-  "status": "proposed"
+  "hint": "Compare Route B\u2019s median with your Route A median and state that the typical times are equal.",
+  "status": "approved"
  },
  {
   "question_id": "6a901232c82b6d3fb145e7d7",
   "code": "R3",
   "criterion": "Selects Route B because its standard deviation of $3$ minutes is less than Route A standard deviation of $5$ minutes",
-  "hint": "Choose Route B because its standard deviation is less than Route A’s.",
-  "status": "proposed"
+  "hint": "Choose Route B because its standard deviation is less than Route A\u2019s.",
+  "status": "approved"
  },
  {
   "question_id": "6a901277c82b6d3fb145e7e1",
   "code": "CK2",
   "criterion": "Identifies the lower- and upper-quartile cumulative frequencies as $10$ and $30$.",
   "hint": "Find the lower- and upper-quartile positions on the cumulative frequency scale as $10$ and $30$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901277c82b6d3fb145e7e1",
   "code": "AK3",
   "criterion": "Reads the lower quartile as $4$ minutes.",
   "hint": "Read the lower quartile from the cumulative frequency curve at $10$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901277c82b6d3fb145e7e1",
   "code": "AK4",
   "criterion": "Reads the upper quartile as $8$ minutes.",
   "hint": "Read the upper quartile from the cumulative frequency curve at $30$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901277c82b6d3fb145e7e1",
   "code": "R2",
   "criterion": "Subtracts \"their\" lower quartile from \"their\" upper quartile to obtain $4$ minutes.",
   "hint": "Subtract your lower quartile from your upper quartile to find the interquartile range in minutes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901277c82b6d3fb145e7e1",
   "code": "CK3",
   "criterion": "Recognises that a waiting time greater than the upper quartile is in the longest quarter of the data.",
   "hint": "Recognise that waiting longer than the upper quartile places a customer in the longest quarter of the data.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901277c82b6d3fb145e7e1",
   "code": "R3",
   "criterion": "Chooses the least whole number greater than \"their\" upper quartile.",
   "hint": "Choose the least whole-number waiting time greater than your upper quartile.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9012a4c82b6d3fb145e7eb",
   "code": "CK2",
   "criterion": "Identifies the cumulative frequency at \\$60 as the number spending \\$60 or less",
   "hint": "Use the cumulative frequency at \\$60 as the number of customers who spend \\$60 or less.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9012a4c82b6d3fb145e7eb",
   "code": "R2",
   "criterion": "Reads $30$ from the graph at \\$60",
   "hint": "Read $30$ from the graph at \\$60.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9012a4c82b6d3fb145e7eb",
   "code": "CK3",
   "criterion": "Recognises that the number spending more than \\$60 is found by subtracting \"their\" cumulative frequency from $50$",
   "hint": "Subtract your cumulative frequency from $50$ to find the number who spend more than \\$60.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9012a4c82b6d3fb145e7eb",
   "code": "AK3",
   "criterion": "Calculates $50 - \\text{their }30 = 20$, or equivalent follow-through",
   "hint": "Calculate $50 - \\text{your }30 = 20$, using your cumulative frequency.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9012a4c82b6d3fb145e7eb",
   "code": "R3",
   "criterion": "Forms $\\dfrac{\\text{their }20}{50}\\times100$, or equivalent follow-through",
   "hint": "Form $\\dfrac{\\text{your }20}{50}\\times100$ using your number who spend more than \\$60.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901301c82b6d3fb145e7f5",
   "code": "CK1",
   "criterion": "Forms the equation $x+2x+3x+4x=360$.",
   "hint": "Add the four sector angles and set the total equal to $360$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901301c82b6d3fb145e7f5",
   "code": "AK1",
   "criterion": "Solves the equation to obtain $x=36$.",
   "hint": "Collect the $x$ terms in $x+2x+3x+4x=360$ and divide to find $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901301c82b6d3fb145e7f5",
   "code": "AK2",
-  "criterion": "Calculates $2\\times36=72°$ for the Website sector.",
+  "criterion": "Calculates $2\\times36=72\u00b0$ for the Website sector.",
   "hint": "Substitute $x=36$ into $2\\times36$ and write the Website angle in degrees.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901301c82b6d3fb145e7f5",
   "code": "AK3",
-  "criterion": "Calculates $3\\times36=108°$ for the Travel agent sector.",
+  "criterion": "Calculates $3\\times36=108\u00b0$ for the Travel agent sector.",
   "hint": "Substitute $x=36$ into $3\\times36$ and write the Travel agent angle in degrees.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901301c82b6d3fb145e7f5",
   "code": "R1",
   "criterion": "Uses \"their\" value of $x$ to calculate $4x$ for the Email sector.",
   "hint": "Use your value of $x$ to calculate $4x$ for the Email sector.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901301c82b6d3fb145e7f5",
   "code": "CK2",
-  "criterion": "Recognises that 180 bookings correspond to $360°$, so one booking corresponds to $2°$.",
-  "hint": "Use the fact that 180 bookings fill $360°$ to find the angle for one booking.",
-  "status": "proposed"
+  "criterion": "Recognises that 180 bookings correspond to $360\u00b0$, so one booking corresponds to $2\u00b0$.",
+  "hint": "Use the fact that 180 bookings fill $360\u00b0$ to find the angle for one booking.",
+  "status": "approved"
  },
  {
   "question_id": "6a901301c82b6d3fb145e7f5",
   "code": "R2",
   "criterion": "Uses \"their\" sector angles to determine the corresponding frequencies.",
   "hint": "Use your sector angles and the angle for one booking to calculate each corresponding frequency.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901301c82b6d3fb145e7f5",
   "code": "CK3",
   "criterion": "Constructs a table with appropriate headings for booking method and frequency.",
   "hint": "Draw a table with headings for booking method and frequency.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a901301c82b6d3fb145e7f5",
   "code": "R3",
   "criterion": "Records the four frequencies against the correct methods and obtains a total of 180.",
   "hint": "Place each calculated frequency beside its correct booking method and check that all four add to 180.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9013acc82b6d3fb145e806",
   "code": "AK1",
   "criterion": "Finds class midpoint: $(20 + 29) \\div 2 = 24.5$",
   "hint": "Add the class limits and divide by $2$ to find the midpoint of $20-29$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9013acc82b6d3fb145e806",
   "code": "R1",
   "criterion": "Forms the equation $\\dfrac{480 + 24.5x}{20 + x} = 24.25$",
   "hint": "Form a weighted-mean equation with the total frequency-multiplied-by-midpoint sum over the total frequency, using $\\dfrac{\\text{sum of products}}{\\text{total frequency}}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9013acc82b6d3fb145e806",
   "code": "AK2",
   "criterion": "Rearranges to $480 + 24.5x = 485 + 24.25x$",
   "hint": "Multiply through by the denominator and expand both sides before collecting the $x$ terms.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9013acc82b6d3fb145e806",
   "code": "AK3",
   "criterion": "Solves the equation to obtain $x = 20$",
   "hint": "Collect the $x$ terms on one side and solve the resulting linear equation for $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9013acc82b6d3fb145e806",
   "code": "R2",
   "criterion": "Accepts $20$ as a feasible whole-number frequency",
   "hint": "Check that your value of $x$ is a feasible whole-number frequency.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9013acc82b6d3fb145e806",
   "code": "AK4",
   "criterion": "Uses the lower-quartile position and interpolates to obtain $19.5$",
   "hint": "Find the lower-quartile position from the total frequency, locate it on the cumulative frequencies, and interpolate within that class.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9013acc82b6d3fb145e806",
   "code": "AK5",
   "criterion": "Uses the upper-quartile position and interpolates to obtain $29.5$",
   "hint": "Find the upper-quartile position from the total frequency, locate it on the cumulative frequencies, and interpolate within that class.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9013acc82b6d3fb145e806",
   "code": "R3",
   "criterion": "Finds the interquartile range from 'their' quartiles: $29.5 - 19.5 = 10$",
   "hint": "Subtract your lower quartile from your upper quartile to find your interquartile range.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a9013acc82b6d3fb145e806",
   "code": "R4",
   "criterion": "States that the claim is not supported because 'their' interquartile range is not less than $10$",
   "hint": "Compare your interquartile range with the stated limit and state whether the claim is supported.",
-  "status": "proposed"
+  "status": "approved"
  }
 ]

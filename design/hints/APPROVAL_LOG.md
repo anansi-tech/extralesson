@@ -3251,7 +3251,9 @@ Approved by David on 2026-09-05: all 500 rows. Row 25 set to his sentence; row 1
 | 499 | 037e11 | R1 | Uses 'their' intersection values as boundary values for comparing the two plans. | Use your intersection values as boundary values to split the domain before comparing the two plans. |
 | 500 | 037e11 | R2 | Identifies the values for which $f(x)\ge g(x)$ on the stated domain. | Identify the $x$-values on the stated domain where $f(x)\ge g(x)$ by finding where the graph of $f$ is on or above the graph of $g$. |
 
-## Batch 8 — proposed (520 rows, gpt-5.6-terra, 2026-09-05)
+## Batch 8 — approved (520 rows, gpt-5.6-terra, generated 2026-09-05)
+
+Approved by David on 2026-09-05: all 520 rows, the last batch. Every method row in the approved bank now has a hint.
 
 | # | question | code | criterion | hint |
 |---|---|---|---|---|
