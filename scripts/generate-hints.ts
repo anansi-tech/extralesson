@@ -36,7 +36,7 @@ const HintsZ = z.object({ hints: z.array(z.object({ code: z.string(), hint: z.st
 const PROMPT_RULES =
   `You write ONE sentence per mark-scheme row for a CSEC Mathematics student who got that part wrong.\n` +
   `Second person, present tense, addressed to the student ("Find where the two lines cross — that's where the retained amounts are equal.").\n` +
-  `Say what to DO, not what the scheme awards; never the words "mark", "criterion", "award", "their". No answer values.\n` +
+  `Say what to DO, not what the scheme awards; never the words "mark", "criterion", "award", "their". No answer values. British spelling throughout (factorise, recognise, centre, metres).\n` +
   `Plain text with TeX only where the criterion has it, and every TeX command the criterion uses appears in the hint with its backslash. ` +
   `All TeX sits inside $...$ — never \\( \\) and never a bare command outside dollars. Money is written \\$ (backslash-dollar), never a bare $. Write your without quotation marks. ` +
   `Inside the JSON string, write every backslash DOUBLED: "$\\\\overrightarrow{OA}$", "$x \\\\ge 20$".\n`;

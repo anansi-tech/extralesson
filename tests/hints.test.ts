@@ -76,6 +76,8 @@ describe('the four rules a hint must keep', () => {
     expect(hintProblems('Use "your" value.', 'Uses "their" value')).toContain('quotes "your"');
     expect(hintProblems('Show it from their gradients.', 'Shows it')).toContain('uses a scheme word (mark, criterion, award, their)');
     expect(hintProblems('You set $x=0$ first.', 'Sets $x=0$')).toContain('begins with "You "');
+    expect(hintProblems('Factorize the numerator first.', 'Factorises')).toContain('an American spelling');
+    expect(hintProblems('Factorise the numerator first.', 'Factorises')).toEqual([]);
     expect(hintProblems('Use $\\times$ to find it.', 'Multiplies')).toContain('a standalone × or ÷');
     expect(hintProblems('Multiply the two values using ×.', 'Multiplies')).toContain('a standalone × or ÷');
     expect(hintProblems('Calculate $4\\times7$ first.', 'Adds $4\\times7$')).toEqual([]);

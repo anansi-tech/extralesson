@@ -2744,7 +2744,9 @@ Approved by David on 2026-09-05: all 500 rows. Row 185 set to his sentence.
 | 499 | c0bed3 | AK4 | Divides "their" number of plain sweets by 5 | Divide your number of plain sweets by the number that goes into each bag. |
 | 500 | c0bed3 | R3 | Compares "their" required number of bags with 30 and concludes that the bags are sufficient | Compare your required number of bags with the available bags and state whether there are enough. |
 
-## Batch 7 — proposed (500 rows, gpt-5.6-terra, 2026-09-05)
+## Batch 7 — approved (500 rows, gpt-5.6-terra, generated 2026-09-05)
+
+Approved by David on 2026-09-05: all 500 rows. Row 25 set to his sentence; row 177 “factorising”.
 
 | # | question | code | criterion | hint |
 |---|---|---|---|---|
@@ -2772,7 +2774,7 @@ Approved by David on 2026-09-05: all 500 rows. Row 185 set to his sentence.
 | 22 | 037c9d | AK1 | Evaluates $2(2)+3$ to obtain $7$ | Evaluate $2(2)+3$ by multiplying before adding. |
 | 23 | 037c9d | CK2 | Uses "their" Round 1 code as the first entry for Round 2 | Use your Round 1 code as the first entry for Round 2. |
 | 24 | 037c9d | AK2 | Applies the operation as $2(\text{their }7)+4$ | Apply the operation to your Round 1 code and the second Round 2 entry as $2(\text{your Round 1 code})+4$. |
-| 25 | 037c9d | R1 | Shows that the Round 2 code is $18$ | State the Round 2 code you calculate. |
+| 25 | 037c9d | R1 | Shows that the Round 2 code is $18$ | Apply the round rule to your Round 1 code to find the Round 2 code. |
 | 26 | 037c9d | CK3 | Recognises that the Round 2 code is the first entry for Round 3 | Use the Round 2 code as the first entry for Round 3. |
 | 27 | 037c9d | R2 | Forms $2(18)+n=40$, or equivalent using "their" Round 2 code | Form an equation by substituting your Round 2 code into $2(\text{your Round 2 code})+n=40$. |
 | 28 | 037c9d | AK3 | Solves "their" equation for $n$ | Solve your equation by isolating $n$. |
@@ -2924,7 +2926,7 @@ Approved by David on 2026-09-05: all 500 rows. Row 185 set to his sentence.
 | 174 | c0bf51 | R3 | Determines the perpendicular gradient as the negative reciprocal of the gradient of the original segment | Calculate the gradient of the original segment, then take its negative reciprocal for the perpendicular gradient. |
 | 175 | c0bf51 | AK5 | Uses "their" midpoint and "their" length on the perpendicular line to obtain the two grid-point endpoints | Starting from your midpoint, move along the perpendicular line by half of your length in opposite directions to locate both grid-point endpoints. |
 | 176 | 037d13 | CK2 | Factorizes the numerator as $(n+1)(n+4)$ | Factor the numerator into two binomials and check by expanding your factors. |
-| 177 | 037d13 | AK2 | Writes the fraction as $\dfrac{(n+1)(n+4)}{n+1}$ | Rewrite the fraction as $\dfrac{(n+1)(n+4)}{n+1}$ after factorizing the numerator. |
+| 177 | 037d13 | AK2 | Writes the fraction as $\dfrac{(n+1)(n+4)}{n+1}$ | Rewrite the fraction as $\dfrac{(n+1)(n+4)}{n+1}$ after factorising the numerator. |
 | 178 | 037d13 | AK3 | Cancels the common factor and obtains $n+4$ | Cancel the common factor in the numerator and denominator, then simplify the expression. |
 | 179 | 037d13 | R2 | Forms $n+4=8$ using "their" simplified expression | Set your simplified expression equal to the supervisor’s stated number of dots. |
 | 180 | 037d13 | R3 | Solves to obtain figure number $4$ | Solve the equation to identify the figure number. |
