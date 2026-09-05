@@ -1,23 +1,13 @@
 import { dbConnect, Student } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { loadStudyState } from '@/lib/study/state';
-import { coverageDetail } from '@/lib/targets/coverage';
-import { paperShape } from '@/lib/exam/paper-shape';
 import Link from 'next/link';
 import { StudyNav, sittingTag } from './study-nav';
 import { logout, startSession } from './actions';
 import { openSession } from '@/lib/study/open-session';
 import { loadProgress } from '@/lib/study/progress';
-import {
-  examDateFor,
-  gradeLabel,
-  gradePlace,
-  projectTrajectory,
-  topicLeverage,
-  trajectoryGap,
-  type TrajectoryGap,
-} from '@/lib/study/trajectory';
-import { PracticeSession } from '@/lib/db';
+import { gradeLabel, gradePlace, topicLeverage } from '@/lib/study/trajectory';
+import { MIN_MARKS_FOR_PREDICTION } from '@/lib/mastery/config';
 import { DIAGNOSTIC_MINUTES, m1GateHolds, SESSION_MINUTES } from '@/lib/session/builder';
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
@@ -29,22 +19,6 @@ import type { ModuleNumber } from '@/lib/types';
 
 export const metadata = { title: 'Your notebook — ExtraLesson' };
 export const dynamic = 'force-dynamic';
-
-/**
- * Says what is actually missing before a rate can be shown — sessions, days, or
- * both. Telling a student with sixteen sessions to "finish a couple more" asks
- * for something they have already done, and asks for it again every visit.
- */
-function trajectoryWait(gap: TrajectoryGap | null): string {
-  if (!gap) return 'Your rate will appear here once there is enough to measure.';
-  const s = gap.sessionsShort;
-  const d = gap.daysShort;
-  const sessions = `${s} more session${s === 1 ? '' : 's'}`;
-  const days = `${d} more day${d === 1 ? '' : 's'} of study`;
-  if (s > 0 && d > 0) return `After ${sessions}, spread over ${days}, we can show you the grade your current rate is heading for.`;
-  if (s > 0) return `After ${sessions} we can show you the grade your current rate is heading for.`;
-  return `You have done enough sessions. A rate needs time as well, so after ${days} we can show you the grade it is heading for.`;
-}
 
 export default async function StudyDashboard({
   searchParams,
@@ -70,17 +44,6 @@ export default async function StudyDashboard({
     loadProgress(auth.student_id),
   ]);
 
-  // TRAJECTORY: the estimate before their recent sessions against the estimate
-  // now — the session summary's own before/after fold, over a longer window.
-  const RECENT = 5;
-  const completed = await PracticeSession.find({
-    student_id: auth.student_id,
-    completed_at: { $ne: null },
-  })
-    .sort({ started_at: -1 })
-    .limit(RECENT + 1)
-    .select('started_at')
-    .lean<{ started_at: Date }[]>();
   // What the student can ask for, beyond the session the app would choose.
   const [topicChoices, mistakes] = await Promise.all([
     loadTopicChoices(student.target_modules),
@@ -103,29 +66,6 @@ export default async function StudyDashboard({
     diagnosticTaken: diagnosticOpensAtDate !== null,
   });
 
-  // What the trajectory is still waiting for, named rather than guessed at.
-  const gap = trajectoryGap({
-    sessionsBetween: Math.max(0, completed.length - 1),
-    firstSessionAt: completed.length ? new Date(completed[completed.length - 1].started_at) : null,
-    now: new Date(),
-  });
-
-  const windowStart = completed.length > 1 ? completed[completed.length - 1].started_at : null;
-  const before = windowStart
-    ? await loadStudyState(auth.student_id, student.target_modules, new Date(windowStart))
-    : null;
-  const trajectory =
-    before && progress.firstSessionAt
-      ? projectTrajectory({
-          percentNow: prediction.overall_percent,
-          percentBefore: before.prediction.overall_percent,
-          sessionsBetween: completed.length - 1,
-          firstSessionAt: progress.firstSessionAt,
-          now: new Date(),
-          examDate: examDateFor(student.exam_sitting),
-        })
-      : null;
-
   // Lead with what is reachable while the estimate still reads as a verdict:
   // below grade III every letter is U, and putting that at the top of the page
   // is the app agreeing with it every morning. A student with no estimate yet
@@ -145,10 +85,6 @@ export default async function StudyDashboard({
     estimable: prediction.estimable,
     overallPercent: prediction.overall_percent,
   });
-
-  // Stating what we cannot mark is a trust asset — it sits with the estimate it
-  // qualifies, not in a footnote (R1.6 §3).
-  const coverageMore = coverageDetail(state.coverage);
 
   return (
     <main className="ruled relative min-h-screen px-5 py-8">
@@ -296,10 +232,14 @@ export default async function StudyDashboard({
               <div className="mt-1 section-label">
                 Not yet estimated
               </div>
-              <p className="mt-2 text-[11px] leading-snug text-dim">
-                Finish one session and your predicted grade appears here. It moves with every
-                session after that.
-              </p>
+              {/* The gate is per module: a grade needs enough seen in every module it covers. */}
+              <ul className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 font-mono text-[11px] text-dim">
+                {prediction.modules.map((m) => (
+                  <li key={m.module}>
+                    M{m.module}: {Math.min(m.marks_seen, MIN_MARKS_FOR_PREDICTION)} of {MIN_MARKS_FOR_PREDICTION} marks seen
+                  </li>
+                ))}
+              </ul>
             </>
           ) : (
             // The overall grade only: the per-module letters are on the
@@ -320,40 +260,6 @@ export default async function StudyDashboard({
               Paper 3 project assumed at neutral carry-over — estimates move as you practise.
             </div>
           )}
-          {/* The rate belongs with the estimate it moves, not under the list
-              of topics. */}
-          {trajectory && !trajectory.flat ? (
-            <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-left text-[12px] leading-snug">
-              At the rate you have been working —{' '}
-              <b>{trajectory.sessionsPerWeek.toFixed(1)} sessions a week</b>, each moving your
-              estimate about <b>{trajectory.perSession.toFixed(1)} points</b> — you are on track for{' '}
-              <b className="text-green-pen">{gradeLabel(trajectory.projectedGrade)}</b>,{' '}
-              {gradePlace(trajectory.projectedGrade)}, by the exam. That is your own rate over your
-              last {trajectory.sessionsMeasured} sessions, capped at the next grade up — a
-              direction, not a promise.
-            </p>
-          ) : trajectory ? (
-            <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-left text-[12px] leading-snug text-dim">
-              Your estimate has not moved over your last {trajectory.sessionsMeasured} sessions.
-            </p>
-          ) : (
-            <p className="mt-3 border-t border-dashed border-paper-deep pt-3 text-left text-[12px] leading-snug text-dim">
-              {trajectoryWait(gap)}
-            </p>
-          )}
-          <details className="mt-2 text-left">
-            <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">
-              What we cover
-            </summary>
-            <ul className="mt-2 space-y-2">
-              {coverageMore.map((line) => (
-                <li key={line} className="text-[11px] leading-snug text-dim">
-                  {line}
-                </li>
-              ))}
-            </ul>
-            <p className="mt-2 text-[11px] leading-snug text-dim">{paperShape(student.syllabus_mode)}</p>
-          </details>
         </section>
 
         {/* THE PAYWALL takes nothing away: the notebook, the marks and the

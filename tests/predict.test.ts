@@ -135,3 +135,25 @@ describe('predictOverall — no grade before there is evidence for one', () => {
     expect(MIN_MARKS_FOR_PREDICTION).toBeGreaterThan(12);
   });
 });
+
+// ROUND_6 Task 5: the gate is PER MODULE. Thirty-five marks seen in Module 1
+// say nothing about Module 3, so an overall grade waits for every module.
+describe('predictOverall — enough in every module, not enough in total', () => {
+  const mods = () => [predictModule(1, 0.6), predictModule(2, 0.6), predictModule(3, 0.6)];
+  it('withholds the grade while any target module is short, and says how far each has got', () => {
+    const p = predictOverall(mods(), { 1: MIN_MARKS_FOR_PREDICTION, 2: MIN_MARKS_FOR_PREDICTION, 3: 12 });
+    expect(p.estimable).toBe(false);
+    expect(p.overall_grade).toBeNull();
+    expect(p.modules.map((m) => m.marks_seen)).toEqual([MIN_MARKS_FOR_PREDICTION, MIN_MARKS_FOR_PREDICTION, 12]);
+    expect(p.marks_attempted).toBe(2 * MIN_MARKS_FOR_PREDICTION + 12);
+  });
+  it('speaks once every module has the minimum', () => {
+    const p = predictOverall(mods(), { 1: MIN_MARKS_FOR_PREDICTION, 2: 40, 3: MIN_MARKS_FOR_PREDICTION });
+    expect(p.estimable).toBe(true);
+    expect(p.overall_grade).not.toBeNull();
+  });
+  it('a subset of target modules only needs those modules', () => {
+    expect(predictOverall([predictModule(2, 0.6)], { 2: MIN_MARKS_FOR_PREDICTION }).estimable).toBe(true);
+    expect(predictOverall([predictModule(2, 0.6)], { 1: 99 }).estimable).toBe(false);
+  });
+});

@@ -113,11 +113,21 @@ describe('(8) progress off the dashboard', () => {
     expect(progress).toMatch(/prediction\.modules\.find/);
     expect(progress).not.toMatch(/updateOne|create\(|deleteOne/);
     const dash = at('app', 'study', 'page.tsx');
-    expect(dash).not.toMatch(/topic strength|BAND_LABEL|prediction\.modules|coverageSummary/);
+    expect(dash).not.toMatch(/topic strength|BAND_LABEL|prediction\.modules\.find|m\.letter|coverageSummary/);
   });
   it('ends the dashboard at the streak stats', () => {
     const dash = at('app', 'study', 'page.tsx');
     const afterStats = dash.slice(dash.indexOf('days in a row'));
     expect(afterStats).not.toMatch(/<section|<Link/);
+  });
+});
+
+describe('the dashboard says less (ROUND_6 Task 5)', () => {
+  it('has no coverage block and no trajectory line, and counts marks seen per module until a grade exists', () => {
+    const dash = at('app', 'study', 'page.tsx');
+    expect(dash).not.toMatch(/What we cover|coverageDetail|paperShape|projectTrajectory|trajectoryWait|sessions a week/);
+    expect(dash).toMatch(/of \{MIN_MARKS_FOR_PREDICTION\} marks seen/);
+    expect(at('app', 'page.tsx')).toMatch(/The same skill comes back a few days later, so the fix sticks/);
+    expect(at('app', 'page.tsx')).not.toMatch(/similar question immediately/);
   });
 });

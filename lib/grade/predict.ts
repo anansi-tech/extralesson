@@ -26,6 +26,8 @@ export interface ModulePrediction {
   letter: ModuleLetter | null;
   /** 0..1 share of this module's marks the estimate is based on (R1.6 §4). */
   coverage: number;
+  /** Assessed marks behind this module's estimate; the gate is per module (ROUND_6 Task 5). */
+  marks_seen: number;
 }
 
 export function predictModule(
@@ -52,6 +54,7 @@ export function predictModule(
     total_estimate: round1(total),
     letter,
     coverage: Math.min(1, Math.max(0, coverage)),
+    marks_seen: 0,
   };
 }
 
@@ -64,7 +67,7 @@ export interface OverallPrediction {
    * surface must decide what to show instead.
    */
   overall_grade: OverallGrade | null;
-  /** Assessable marks this rests on, and whether that was enough (§2). */
+  /** Assessed marks this rests on, and whether EVERY module had enough (§2; ROUND_6 Task 5). */
   marks_attempted: number;
   estimable: boolean;
   /** Mean coverage the estimate rests on; the UI must state it (R1.6 §4). */
@@ -72,12 +75,16 @@ export interface OverallPrediction {
 }
 
 // Modules combine with equal weight: each is 100 weighted marks of the 300
-// total, Assessment Grid A.
+// total, Assessment Grid A. The claim needs MIN_MARKS_FOR_PREDICTION assessed
+// in EVERY module: one module's evidence says nothing about another's.
 export function predictOverall(
   modules: ModulePrediction[],
-  marksAttempted: number,
+  marksSeen: Partial<Record<1 | 2 | 3, number>> | number,
 ): OverallPrediction {
-  const estimable = marksAttempted >= MIN_MARKS_FOR_PREDICTION;
+  const seenOf = (m: 1 | 2 | 3) => (typeof marksSeen === 'number' ? marksSeen : (marksSeen[m] ?? 0));
+  const withSeen = modules.map((m) => ({ ...m, marks_seen: seenOf(m.module) }));
+  const marksAttempted = withSeen.reduce((s, m) => s + m.marks_seen, 0);
+  const estimable = withSeen.length > 0 && withSeen.every((m) => m.marks_seen >= MIN_MARKS_FOR_PREDICTION);
   const withheld = (ms: ModulePrediction[]) => ms.map((m) => ({ ...m, letter: null }));
   if (modules.length === 0) {
     return {
@@ -101,7 +108,7 @@ export function predictOverall(
   // The arithmetic is still computed; what we withhold is the CLAIM, until
   // there is enough work behind it to make one.
   return {
-    modules: estimable ? modules : withheld(modules),
+    modules: estimable ? withSeen : withheld(withSeen),
     overall_percent: round1(pct),
     overall_grade: estimable ? grade : null,
     marks_attempted: marksAttempted,

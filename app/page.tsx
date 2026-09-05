@@ -148,7 +148,7 @@ export default async function LandingPage() {
                 </li>
                 <li>
                   <span className="chip">NEXT</span>
-                  <span>A similar question immediately, so the fix sticks</span>
+                  <span>The same skill comes back a few days later, so the fix sticks</span>
                 </li>
               </ul>
               <p>

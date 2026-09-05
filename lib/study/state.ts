@@ -135,11 +135,17 @@ export function computeStudyState(
     }
   }
 
-  // Predict from the marks we can actually assess, not the whole paper (§4).
+  // Predict from the marks we can actually assess, not the whole paper (§4),
+  // counted per module: an objective id is M<module>.<topic>.<n>.
   const coverage = computeCoverage(topics, blueprints);
+  const marksSeen: Partial<Record<ModuleNumber, number>> = {};
+  for (const a of attemptRows) {
+    const m = Number(a.objective_ids[0]?.match(/^M([123])\./)?.[1]) as ModuleNumber;
+    if (m) marksSeen[m] = (marksSeen[m] ?? 0) + a.marks;
+  }
   const prediction = predictOverall(
     targetModules.map((m) => predictModule(m, modMastery[m], coverage.byModule[m])),
-    attemptRows.reduce((sum, a) => sum + a.marks, 0),
+    marksSeen,
   );
 
   return {
