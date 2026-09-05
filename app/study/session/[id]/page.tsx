@@ -2,7 +2,8 @@ import 'katex/dist/katex.min.css';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { dbConnect, Attempt, LineRejected, MarkDispute, PracticeSession, Question, Student, Topic, Transcription } from '@/lib/db';
-import { requireSession } from '@/lib/auth/session';
+import { isAdminEmail, requireSession } from '@/lib/auth/session';
+import { StudyNav, sittingTag } from '../../study-nav';
 import { renderMathHtml } from '@/lib/katex';
 import { renderVisual, renderStimulusTable } from '@/lib/visuals';
 import { planSession, topicPrefixesOf } from '@/lib/session/plan';
@@ -451,6 +452,7 @@ export default async function SessionPage({
     );
   }
 
+  const sittingStudent = await Student.findById(auth.student_id).select('syllabus_mode').lean<{ syllabus_mode: string } | null>();
   const question = await Question.findById(session.question_ids[index]).lean<{
     _id: unknown;
     kind: 'mcq' | 'structured';
@@ -787,14 +789,10 @@ export default async function SessionPage({
     <main className="ruled relative min-h-screen px-5 py-8">
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
       <div className="mx-auto max-w-xl">
-        <header className="flex items-baseline justify-between font-mono text-xs text-dim">
-          <Link href="/study" className="underline">
-            ← notebook
-          </Link>
-          <span>
-            Q{index + 1} OF {total} · {question.marks} MARK{question.marks === 1 ? '' : 'S'}
-          </span>
-        </header>
+        <StudyNav current={null} sitting={sittingTag(sittingStudent?.syllabus_mode ?? '')} email={auth.email} isAdmin={isAdminEmail(auth.email)} />
+        <div className="mt-3 text-right font-mono text-xs text-dim">
+          Q{index + 1} OF {total} · {question.marks} MARK{question.marks === 1 ? '' : 'S'}
+        </div>
         {/* Why the session is one question: a student who expected eight reads
             one as a short session rather than a whole exam question,
             and the minutes are what make the marks mean something. */}

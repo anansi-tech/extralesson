@@ -70,6 +70,8 @@ const TranscriptionSchema = new Schema({
           confidence: { type: Number },
           mark_value: { type: Number, required: true },
           profile: { type: String },
+          /** The marker asked a person to look; shown on /admin/disputes. */
+          needs_review: { type: Boolean },
         },
         { _id: false },
       ),

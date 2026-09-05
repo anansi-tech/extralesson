@@ -41,7 +41,7 @@ describe('(1) a form row depends on the value or a method row on its slot', () =
   });
 
   it('runs on the marking path and in the eval', () => {
-    expect(at('app', 'study', 'session', '[id]', 'mark-working.ts')).toMatch(/applyFormatDependency\(result\.decisions, question\.rubric \?\? \[\], settled\)/);
+    expect(at("app", "study", "session", "[id]", "mark-working.ts")).toMatch(/applyFormatDependency\(\s*requireEvidence\(result\.decisions[\s\S]*question\.rubric \?\? \[\],\s*settled,?\s*\)/);
     expect(at('scripts', 'eval-marker.ts')).toMatch(/decisions = applyFormatDependency\(/);
   });
 });

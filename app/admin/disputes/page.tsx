@@ -39,6 +39,17 @@ export default async function DisputesPage() {
         }[]
       >(),
   ]);
+  // Rows the marker could not decide, asked for a person instead of a guess.
+  const asked = await Transcription.find({ 'method_marks.needs_review': true })
+    .sort({ created_at: -1 })
+    .limit(LIMIT)
+    .select('question_id attempt_id created_at lines method_marks')
+    .lean<{ _id: unknown; question_id: unknown; attempt_id: unknown; created_at: Date; lines: { text: string }[]; method_marks: { code: string; reason: string; needs_review?: boolean }[] }[]>();
+  const askedQuestions = await Question.find({ _id: { $in: [...new Set(asked.map((t) => String(t.question_id)))] } })
+    .select('stem')
+    .lean<{ _id: unknown; stem: string }[]>();
+  const askedStemBy = new Map(askedQuestions.map((q) => [String(q._id), q.stem]));
+
   const questions = await Question.find({ _id: { $in: [...new Set(attempts.map((a) => String(a.question_id)))] } })
     .select('stem stimulus rubric')
     .lean<{ _id: unknown; stem: string; stimulus?: string; rubric?: RubricItem[] }[]>();
@@ -51,6 +62,32 @@ export default async function DisputesPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
+      {asked.length > 0 && (
+        <section className="mb-6">
+          <div className="section-label">The marker asked for a look</div>
+          {asked.map((t) =>
+            t.method_marks
+              .filter((m) => m.needs_review)
+              .map((m) => (
+                <div key={`${String(t._id)}-${m.code}`} className="mt-3 border-l-3 border-[#D9A62E] bg-[#FDF8EC] p-3">
+                  <div className="font-mono text-[11px] text-dim">
+                    {t.created_at.toLocaleString('en-GB')} · {m.code}
+                  </div>
+                  <div
+                    className="question-prose mt-1 text-[13px]"
+                    dangerouslySetInnerHTML={{ __html: renderMathHtml(askedStemBy.get(String(t.question_id)) ?? '') }}
+                  />
+                  <p className="mt-1 text-[13px]">{m.reason}</p>
+                  <ul className="mt-1 border-l-3 border-paper-deep pl-3">
+                    {t.lines.map((l, i) => (
+                      <li key={i} className="font-mono text-[12px] leading-snug">{l.text}</li>
+                    ))}
+                  </ul>
+                </div>
+              )),
+          )}
+        </section>
+      )}
       <p className="text-[12px] leading-snug text-dim">
         {disputes.length === 0
           ? 'No disputes yet.'

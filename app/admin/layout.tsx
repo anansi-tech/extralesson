@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { requireAdmin } from '@/lib/auth/session';
 import { launchWarnings } from '@/lib/preflight';
-import { AdminNav, AdminTitle } from './admin-nav';
+import { AdminNav } from './admin-nav';
 import { Lockup } from '../lockup';
 
 // Every /admin/* route is allowlist-gated (ROUND_1 §2).
@@ -35,9 +35,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           in a header reads as unfinished rather than as a logo. */}
       <div className="border-b-[1.5px] border-ink bg-white px-6">
         <div className="mx-auto max-w-3xl sm:flex sm:items-center sm:gap-x-4">
-          <div className="flex min-w-0 items-center gap-x-3 py-2 sm:py-0">
+          <div className="flex min-w-0 items-center py-2 sm:py-0">
             <Lockup width={130} className="shrink-0" />
-            <AdminTitle />
           </div>
           <AdminNav />
         </div>

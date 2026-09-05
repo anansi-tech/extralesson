@@ -96,3 +96,23 @@ export function applyFormatDependency<D extends { code: string; awarded: boolean
     return { ...d, awarded: false, reason: 'The form is right, but the value it is written on did not earn its mark.' };
   });
 }
+
+const flatLine = (t: string) => t.toLowerCase().replace(/[“”"']/g, '').replace(/\s+/g, ' ').replace(/[.,;:]+$/, '').trim();
+
+/**
+ * A QUOTE IS EVIDENCE ONLY IF IT IS ON THE PAGE. The marker quotes the line
+ * that earned a row; a quote the read does not contain is a line the marker
+ * made up, and the row is withheld for it. Unquoted reasons are not checked.
+ */
+export function requireEvidence<D extends { awarded: boolean; reason: string }>(decisions: D[], lines: string[]): D[] {
+  // A sentence the page broke across two lines is one quote; the whole page,
+  // joined, is what a quote is matched against.
+  const page = flatLine(lines.join(' '));
+  return decisions.map((d) => {
+    if (!d.awarded) return d;
+    const quotes = [...d.reason.matchAll(/[“"]([^“”"]{2,})[”"]/g)].map((m) => flatLine(m[1]));
+    if (quotes.length === 0) return d;
+    const supported = quotes.every((q) => page.includes(q));
+    return supported ? d : { ...d, awarded: false, reason: 'no line on the page supports this' };
+  });
+}

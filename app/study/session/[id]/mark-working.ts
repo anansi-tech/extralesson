@@ -1,7 +1,7 @@
 import { Attempt, CapturedImage, LineRejected, PracticeSession, Question, Transcription } from '@/lib/db';
 import { markableSlots } from '@/lib/grade/mark';
 import { MAX_TAKES, linesForSlot, type TranscriptionResult } from '@/lib/grade/transcribe';
-import { earnableByMethod, constructionRows, alreadyEarnedByMethod, applyFormatDependency } from '@/lib/grade/method-marks';
+import { earnableByMethod, constructionRows, alreadyEarnedByMethod, applyFormatDependency, requireEvidence } from '@/lib/grade/method-marks';
 import { markMethod, type MethodDecision } from '@/lib/grade/mark-method';
 import { MARKER_VERSION } from '@/lib/grade/version';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
@@ -108,7 +108,11 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
         workedSolution: question.worked_solution ?? '',
         questionStem: `${question.stimulus ?? ''} ${question.stem}`.trim(),
       });
-      decisions = applyFormatDependency(result.decisions, question.rubric ?? [], settled);
+      decisions = applyFormatDependency(
+        requireEvidence(result.decisions, transcription.lines.map((l) => l.text)),
+        question.rubric ?? [],
+        settled,
+      );
       usage = result.usage;
     } catch {
       // The reading stands; the student keeps everything determinism gave them.
@@ -140,11 +144,12 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
     .filter((d) => byCode.has(d.code))
     .map((d) => ({
       code: d.code,
-      awarded: d.awarded,
+      awarded: d.awarded && !d.needs_review,
       reason: d.reason,
       confidence: d.confidence,
       mark_value: byCode.get(d.code)!.mark_value,
       profile: byCode.get(d.code)!.profile,
+      ...(d.needs_review ? { needs_review: true } : {}),
     }));
 
   await Transcription.updateOne(

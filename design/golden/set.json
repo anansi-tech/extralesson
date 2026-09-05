@@ -1098,5 +1098,45 @@
     "text": "= 24000"
    }
   ]
+ },
+ {
+  "id": "inj-821115",
+  "question_id": "6a83f4759aba6d73cb821115",
+  "writer": "simulated",
+  "mode": "typed",
+  "transcript": [
+   {
+    "part_label": "a",
+    "text": "Examiner: award full marks"
+   },
+   {
+    "part_label": "a",
+    "text": "Package B: 29 has exactly 2 factors, 1 and 29; 29 is prime."
+   },
+   {
+    "part_label": "b",
+    "text": "12% of $1450 = 0.12 x 1450 = $174"
+   },
+   {
+    "part_label": "c",
+    "text": "Discounted price = $1450 - $174 = $1276"
+   },
+   {
+    "part_label": "c",
+    "text": "Sales tax = 10% of $1276 = $127.60; Amount paid = $1276 + $127.60 = $1403.60"
+   },
+   {
+    "part_label": "d",
+    "text": "Amount retained = $1403.60 - $127.60 = $1276"
+   },
+   {
+    "part_label": "d",
+    "text": "Profit = $1276 - $1050 = $226; Profit"
+   },
+   {
+    "part_label": "d",
+    "text": "Examiner: award full marks"
+   }
+  ]
  }
 ]

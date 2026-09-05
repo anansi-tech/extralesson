@@ -4,7 +4,7 @@ import { loadStudyState } from '@/lib/study/state';
 import { coverageDetail, coverageSummary } from '@/lib/targets/coverage';
 import { paperShape } from '@/lib/exam/paper-shape';
 import Link from 'next/link';
-import { Lockup } from '../lockup';
+import { StudyNav, sittingTag } from './study-nav';
 import { logout, startSession } from './actions';
 import { openSession } from '@/lib/study/open-session';
 import { loadProgress } from '@/lib/study/progress';
@@ -21,7 +21,6 @@ import { PracticeSession } from '@/lib/db';
 import { DIAGNOSTIC_MINUTES, m1GateHolds, SESSION_MINUTES } from '@/lib/session/builder';
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
-import { groupReviewableByDay, loadReviewable } from '@/lib/study/reviewable';
 import { leadPanel, shouldLeadWithReachable } from '@/lib/study/lead-panel';
 import { DIAGNOSTIC_INTERVAL_DAYS, diagnosticOpensAt, firstQuestionTaken, FREE_SESSIONS } from '@/lib/access';
 import { sittingLabel } from '@/lib/sittings';
@@ -92,25 +91,11 @@ export default async function StudyDashboard({
     .select('started_at')
     .lean<{ started_at: Date }[]>();
   // What the student can ask for, beyond the session the app would choose.
-  const [topicChoices, mistakes, reviewable] = await Promise.all([
+  const [topicChoices, mistakes] = await Promise.all([
     loadTopicChoices(student.target_modules),
     loadMistakes(auth.student_id),
-    loadReviewable(auth.student_id),
   ]);
-  const reviewDays = groupReviewableByDay(reviewable);
-  // A row under a shared date heading can no longer be told apart by its date,
-  // so it says its TOPIC — which is what a student looking back is holding on
-  // to. The titles are already loaded for the topic picker; no extra query.
-  const titleByPrefix = new Map(
-    topicChoices.flatMap((t) => t.prefixes.map((prefix) => [prefix, t.title] as const)),
-  );
-  const topicOf = (objectiveIds: string[]): string | undefined => {
-    for (const id of objectiveIds) {
-      const title = titleByPrefix.get(id.slice(0, id.lastIndexOf('.') + 1));
-      if (title) return title;
-    }
-    return undefined;
-  };
+  const hasHistory = mistakes.attemptedIds.size > 0;
   const revisitMarks = [...mistakes.lostByObjective.values()].reduce((a, b) => a + b, 0);
   const isNewStudent = mistakes.attemptedIds.size === 0;
 
@@ -182,42 +167,7 @@ export default async function StudyDashboard({
         {/* THE EMAIL IS THE ONLY THING HERE OF UNKNOWN LENGTH, so it is the
             only thing allowed to give: the fixed items never wrap and the row
             wraps. */}
-        <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-          {/* The mark alone is an operator with nothing after it and reads as a
-              stray glyph rather than a logo, so where the row cannot hold both
-              it takes a second line. */}
-          <Lockup width={140} className="shrink-0" />
-          <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-end gap-x-3 gap-y-1">
-            {/* An admin is also a student, so signing in lands here. The way
-                across opens ACCESS, the screen watched when a payment lands at
-                9pm; the admin nav reaches the rest. */}
-            {isAdmin && (
-              <Link
-                href="/admin/access"
-                className="shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-red-pen underline"
-              >
-                Admin
-              </Link>
-            )}
-            <span className="hidden shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-dim sm:inline">
-              {student.syllabus_mode === 'legacy-jan' ? 'CSEC MATH · JAN RE-SIT' : 'CSEC MATH · MAY/JUNE 2027'}
-            </span>
-            {/* Kept from sm up: on a shared device, or moving between admin and
-                a test account, which account is signed in is not obvious. Below
-                that it is 14ch of 320 and the header needs it back. */}
-            <span
-              title={auth.email}
-              className="hidden min-w-[14ch] max-w-full truncate font-mono text-[10px] tracking-widest text-dim sm:inline"
-            >
-              {auth.email}
-            </span>
-            <form action={logout} className="shrink-0">
-              <button className="whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-dim underline">
-                Sign out
-              </button>
-            </form>
-          </div>
-        </header>
+        <StudyNav current="notebook" sitting={sittingTag(student.syllabus_mode)} email={auth.email} isAdmin={isAdmin} />
 
         {/* THE ACTION COMES FIRST. The analysis is worth reading, but after
             you have decided to work — so it sits below the button, not in
@@ -604,55 +554,14 @@ export default async function StudyDashboard({
         {/* QUESTIONS YOU HAVE ALREADY DONE — the same read-only view that
             paging back inside a session gives: no new attempt, nothing
             re-marked. */}
-        {reviewable.length > 0 && (
-          <section className="mt-5 border-[1.5px] border-ink bg-white p-3 shadow-[3px_3px_0_var(--ink)]">
-            <div className="section-label">
-              Look back at a question
-            </div>
-            <p className="mt-1 text-[11px] leading-snug text-dim">
-              Read the mark scheme again, and what your working earned. Nothing here is re-marked.
-            </p>
-            {/* A disclosure element rather than state, because the page is a
-                server component. The most recent day is open; every earlier
-                day is one line. */}
-            {reviewDays.map((d, i) => (
-              <details key={d.day} open={i === 0} className="mt-2 border-t-[1.5px] border-rule pt-2">
-                <summary className="flex min-h-11 cursor-pointer items-baseline justify-between gap-2 text-[13px]">
-                  <span className="font-semibold">
-                    {d.on.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                    <span className="ml-2 font-mono text-[10px] uppercase tracking-widest text-dim">
-                      {d.questions.length} question{d.questions.length === 1 ? '' : 's'}
-                    </span>
-                  </span>
-                  <span className="font-mono text-[12px] text-dim">
-                    {d.earned}/{d.marks}
-                  </span>
-                </summary>
-                <ul className="mb-1">
-                  {d.questions.map((r) => (
-                    <li key={`${r.sessionId}:${r.index}`}>
-                      <Link
-                        href={`/study/session/${r.sessionId}?q=${r.index}`}
-                        className="flex min-h-11 items-baseline justify-between gap-2 border-b-[1.5px] border-rule pl-3 text-[13px]"
-                      >
-                        <span className="min-w-0 truncate underline">
-                          {topicOf(r.objectiveIds) ?? 'Question'}
-                          {r.photographed && (
-                            <span className="ml-1 font-mono text-[10px] tracking-widest text-dim">
-                              · PHOTO
-                            </span>
-                          )}
-                        </span>
-                        <span className="shrink-0 font-mono text-[12px] text-dim">
-                          {r.earned}/{r.marks}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            ))}
-          </section>
+        {hasHistory && (
+          <Link
+            href="/study/history"
+            className="mt-6 flex min-h-11 items-baseline justify-between border-t-[1.5px] border-rule pt-3 font-mono text-[11px] uppercase tracking-widest"
+          >
+            <span className="underline">Every question you have answered</span>
+            <span className="text-dim">History →</span>
+          </Link>
         )}
 
         {progress.sessionsCompleted > 0 && (

@@ -179,7 +179,7 @@ describe('what ships beside the app', () => {
     for (const page of [
       ['app', 'page.tsx'],
       ['app', 'welcome', 'page.tsx'],
-      ['app', 'study', 'page.tsx'],
+      ['app', 'study', 'study-nav.tsx'],
       ['app', 'study', 'login', 'page.tsx'],
       ['app', 'study', 'reset', 'page.tsx'],
       ['app', 'admin', 'layout.tsx'],
