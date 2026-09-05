@@ -77,7 +77,7 @@ describe('(1)(2)(3) history, the student nav, the admin bar', () => {
   it('has a history page of every attempt, newest first, each linking to its look back', () => {
     expect(at('lib', 'study', 'history.ts')).toMatch(/\.sort\(\{ ts: -1 \}\)/);
     const page = at('app', 'study', 'history', 'page.tsx');
-    expect(page).toMatch(/href=\{`\/study\/session\/\$\{r\.sessionId\}\?q=\$\{r\.index\}`\}/);
+    expect(page).toMatch(/href=\{`\/study\/session\/\$\{r\.sessionId\}\?q=\$\{r\.index\}#marking`\}/);
     expect(page).not.toMatch(/updateOne|create\(|deleteOne/);
   });
   it('replaces the dashboard look-back list with one link to history', () => {

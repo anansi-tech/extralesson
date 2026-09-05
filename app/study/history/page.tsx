@@ -25,7 +25,7 @@ export default async function HistoryPage() {
           Every question you have answered<span className="text-red-pen">.</span>
         </h1>
         <p className="mt-1 text-[12px] leading-snug text-dim">
-          Newest first. Each opens the marking as it was; nothing here is re-marked.
+          Newest first. Each opens at your marking, as it was; nothing here is re-marked.
         </p>
         {rows.length === 0 ? (
           <p className="mt-6 text-sm text-dim">Nothing yet. Your first question is on your notebook.</p>
@@ -34,7 +34,7 @@ export default async function HistoryPage() {
             {rows.map((r) => (
               <li key={`${r.sessionId}:${r.index}:${r.ts.getTime()}`}>
                 <Link
-                  href={`/study/session/${r.sessionId}?q=${r.index}`}
+                  href={`/study/session/${r.sessionId}?q=${r.index}#marking`}
                   className="flex min-h-11 items-baseline gap-3 border-b-[1.5px] border-rule py-2 text-[13px]"
                 >
                   <span className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-dim">

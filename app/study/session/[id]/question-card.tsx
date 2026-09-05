@@ -408,6 +408,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     ...(question.prior?.working ?? []).map((w) => ({ legible: w.legible, marker_version: w.marked ? 'marked' : undefined, method_marks: w.method })),
   ];
   const readExists = reads.length > 0;
+  // A marking that did not finish is not the photograph's fault, and says so.
+  const markingFailed =
+    (!!feedback?.working && !feedback.working.marked) || (question.prior?.working ?? []).some((w) => !w.marked);
   // THE SLIP COMES FIRST (ROUND_7 Task 1): one sentence naming the line where
   // the working went wrong, before any reason or code.
   const slipFor = (part: string) =>
@@ -446,7 +449,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </div>
       )}
 
-      <div className="flex items-baseline justify-between">
+      <div id="question" className="flex items-baseline justify-between">
         <div
           className="question-prose text-lg"
           dangerouslySetInnerHTML={{ __html: question.stemHtml }}
@@ -696,6 +699,22 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </p>
       )}
 
+      {/* THE MARKED QUESTION READS TOP-DOWN (ROUND_7 Task 1): one line that
+          says what was earned, and three places to go. */}
+      {feedback && (
+        <nav id="marking" className="mt-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b-[1.5px] border-rule pb-2">
+          <b className="font-mono text-sm">
+            {earned} of {outOf} marks
+            {outcome.unassessedMarks > 0 && <span className="font-normal text-dim"> · {outcome.unassessedMarks} unassessed</span>}
+          </b>
+          <span className="flex gap-x-3 font-mono text-[10px] uppercase tracking-widest">
+            <a href="#your-marking" className="underline">Your marking</a>
+            <a href="#question" className="underline">Question</a>
+            <a href="#worked-solution" className="underline">Worked solution</a>
+          </span>
+        </nav>
+      )}
+
       {!feedback ? (
         reviewing ? null : (
         <>
@@ -741,44 +760,24 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               {earned}/{outOf}
               {earned === 0 && <span className="ml-1 font-hand">✗</span>}
             </b>
-            {outcome.unassessedMarks > 0 && (
-              <span className="text-right font-mono text-[10px] text-dim">
-                {outcome.unassessedMarks} mark{outcome.unassessedMarks === 1 ? '' : 's'}{' '}
-                {readExists ? 'could not be assessed from this photo' : 'not assessed without the working'}
-              </span>
+            {markingFailed ? (
+              <span className="text-right font-mono text-[10px] text-dim">marking did not finish — try again below</span>
+            ) : (
+              outcome.unassessedMarks > 0 && (
+                <span className="text-right font-mono text-[10px] text-dim">
+                  {outcome.unassessedMarks} mark{outcome.unassessedMarks === 1 ? '' : 's'}{' '}
+                  {readExists ? 'could not be assessed from this photo' : 'not assessed without the working'}
+                </span>
+              )
             )}
           </div>
+          <div id="your-marking" />
 
           {feedback.formatFeedbackHtml && (
             <p
               className="question-prose mt-2 border-l-3 border-[#D9A62E] bg-[#FDF8EC] p-2 text-sm"
               dangerouslySetInnerHTML={{ __html: feedback.formatFeedbackHtml }}
             />
-          )}
-
-          {question.rubricCodes.length > 0 && (
-            <>
-              <p className="mt-2 text-[11px] leading-snug text-dim">{PROFILE_GLOSS}</p>
-            <div className="mt-2 flex flex-wrap gap-1">
-              {question.rubricCodes.map((r) => {
-                const state = stateOf.get(r.code) ?? 'unassessed';
-                return (
-                  <span
-                    key={r.code}
-                    className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold ${
-                      state === 'unassessed'
-                        ? 'border border-dashed border-rule text-dim'
-                        : state === 'awarded'
-                          ? chipColor[r.profile]
-                          : 'bg-paper-deep text-dim line-through'
-                    }`}
-                  >
-                    ({r.part_label}) {r.code} {state === 'unassessed' ? '— not assessed' : state === 'awarded' ? '✓' : '✗'}
-                  </span>
-                );
-              })}
-            </div>
-            </>
           )}
 
           {feedback.construction && (
@@ -815,7 +814,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             </div>
           )}
 
-          <div className="mt-3">
+          <div id="worked-solution" className="mt-3">
             <div className="section-label">
               {feedback.isMisconception ? (
                 <span dangerouslySetInnerHTML={{ __html: feedback.feedbackTitleHtml }} />
@@ -871,6 +870,32 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 {!w.marked && <RetryMarkingButton attemptId={question.prior!.feedback.attemptId} />}
               </div>
             ))}
+
+          {/* CODES BELOW THE SENTENCE (ROUND_7 Task 1): after the slip or hint and the rows with reasons, never before them. */}
+          {question.rubricCodes.length > 0 && (
+            <>
+              <p className="mt-2 text-[11px] leading-snug text-dim">{PROFILE_GLOSS}</p>
+            <div className="mt-2 flex flex-wrap gap-1">
+              {question.rubricCodes.map((r) => {
+                const state = stateOf.get(r.code) ?? 'unassessed';
+                return (
+                  <span
+                    key={r.code}
+                    className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold ${
+                      state === 'unassessed'
+                        ? 'border border-dashed border-rule text-dim'
+                        : state === 'awarded'
+                          ? chipColor[r.profile]
+                          : 'bg-paper-deep text-dim line-through'
+                    }`}
+                  >
+                    ({r.part_label}) {r.code} {state === 'unassessed' ? '— not assessed' : state === 'awarded' ? '✓' : '✗'}
+                  </span>
+                );
+              })}
+            </div>
+            </>
+          )}
 
           {reviewing ? (
             // No ?q= at all: the session resumes at the first unanswered
