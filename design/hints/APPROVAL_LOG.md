@@ -3250,3 +3250,528 @@ Approved by David on 2026-09-05: all 500 rows. Row 25 set to his sentence; row 1
 | 498 | 037e11 | AK5 | Reads the other solution as $x=6$. | Read the $x$-coordinate of the other intersection from the graph and write it as a solution. |
 | 499 | 037e11 | R1 | Uses 'their' intersection values as boundary values for comparing the two plans. | Use your intersection values as boundary values to split the domain before comparing the two plans. |
 | 500 | 037e11 | R2 | Identifies the values for which $f(x)\ge g(x)$ on the stated domain. | Identify the $x$-values on the stated domain where $f(x)\ge g(x)$ by finding where the graph of $f$ is on or above the graph of $g$. |
+
+## Batch 8 — proposed (520 rows, gpt-5.6-terra, 2026-09-05)
+
+| # | question | code | criterion | hint |
+|---|---|---|---|---|
+| 1 | 037e11 | R3 | Restricts the result to whole-number discount rates: $\{0,1,6\}\%$. | List only the whole-number discount rates for which $f(x) \ge g(x)$, writing the result as a set followed by $\%$. |
+| 2 | c0c065 | CK2 | Identifies the roots as the $x$-intercepts of $f$ | Find the points where the curve for $f$ crosses the $x$-axis to identify its roots. |
+| 3 | c0c065 | AK4 | Reads both roots as $-1$ and $5$ | Read the $x$-coordinates of both crossings of $f$ with the $x$-axis. |
+| 4 | c0c065 | R1 | Uses 'their' roots to select the non-negative whole-number values for which $f(x)<0$ | Use your roots to list the non-negative whole-number $x$-values for which $f(x)<0$. |
+| 5 | c0c065 | CK3 | Recognises that equal net returns occur where the two graphs intersect | Find where the two graphs intersect, since these points show equal net returns. |
+| 6 | c0c065 | R2 | Reads the intersection abscissae as $-1$ and $6$ | Read the $x$-coordinates of both intersection points from the graph. |
+| 7 | c0c065 | R3 | Selects $6$ using the stated domain for the number of crates | Choose the non-negative intersection value because the number of crates cannot be negative. |
+| 8 | 037e19 | R2 | Reads the intersection representing full use of both resources as $(4,4)$. | Read the coordinates of the point where both resource boundary lines meet. |
+| 9 | 037e19 | CK2 | Forms the profit expression $P=3x+2y$. | Form the profit rule as $P=3x+2y$. |
+| 10 | 037e19 | AK2 | Substitutes $(4,4)$ to obtain \$20. | Substitute the intersection coordinates into the profit rule and calculate the daily profit in \$. |
+| 11 | 037e19 | CK3 | Identifies the remaining corner points of the feasible region. | Identify every feasible-region corner other than the intersection point. |
+| 12 | 037e19 | AK3 | Calculates the profits at the remaining corner points as \$0, \$18 and \$16. | Substitute each remaining corner into the profit rule and calculate each profit in \$. |
+| 13 | 037e19 | R3 | Concludes that \$20 is the greatest profit. | Compare all the calculated profits and state that the largest one is the maximum daily profit. |
+| 14 | c0c06d | CK2 | Identifies the relevant point as the intersection of the two production-limit boundaries. | Find the point where the two production-limit boundary lines intersect, since both limits are met there. |
+| 15 | c0c06d | CK3 | Forms an income equation using plantain-chip income and cassava-chip income. | Form an equation by adding the income from plantain chips to the income from cassava chips and setting the total to \$78. |
+| 16 | c0c06d | AK3 | Substitutes "their" values of $x$ and $y$ into $6x+py=78$. | Substitute your values of $x$ and $y$ into $6x+py=78$. |
+| 17 | c0c06d | R3 | Solves the resulting equation for $p$, using "their" production-plan values. | Use your production-plan values in the resulting equation and solve for $p$. |
+| 18 | 037e21 | CK2 | Forms the simultaneous boundary equations $x+y=10$ and $2x+y=16$ | Translate each boundary condition into a simultaneous equation in $x$ and $y$. |
+| 19 | 037e21 | AK3 | Solves the simultaneous equations to obtain $B=(6,4)$, or follows through from "their" graph | Solve the simultaneous equations, or use your graph’s intersection, and write the coordinate of $B$. |
+| 20 | 037e21 | CK3 | Recognises that the profit must be tested at all vertices of the feasible region | List every vertex of the feasible region before testing the profit. |
+| 21 | 037e21 | AK4 | Substitutes the vertex coordinates, including "their" coordinates of $B$, into $P=3x+2y$ to obtain the listed profit values | Substitute the coordinates of each vertex, including your coordinates of $B$, into $P=3x+2y$ and calculate each profit. |
+| 22 | 037e21 | R2 | Compares the profit values and identifies the greatest value, or follows through from "their" values | Compare all your profit values and select the greatest one. |
+| 23 | 037e21 | R3 | Interprets the maximum as an allocation of 6 hours to Route A and 4 hours to Route B, or follows through from "their" point | State the maximum as the corresponding allocation of hours to Route A and Route B from your selected point. |
+| 24 | 037e40 | CK1 | States tangent in triangle $BCD$ as opposite over adjacent | Write tangent for triangle $BCD$ as the opposite side divided by the adjacent side. |
+| 25 | 037e40 | CK2 | States tangent in triangle $ACD$ as opposite over adjacent | Write tangent for triangle $ACD$ as the opposite side divided by the adjacent side. |
+| 26 | 037e40 | R1 | Forms $h=x$ from the angle of elevation of $45^\circ$ | Use $\tan 45^\circ=1$ to form $h=x$. |
+| 27 | 037e40 | CK3 | Recognises that $AC=x+12$ | Add the two horizontal lengths to write $AC=x+12$. |
+| 28 | 037e40 | R2 | Forms $x+12=\sqrt{3}h$ from the angle of elevation of $30^\circ$ | Use the $30^\circ$ angle of elevation to form $x+12=\sqrt{3}h$. |
+| 29 | 037e40 | AK1 | Substitutes $h=x$ into $x+12=\sqrt{3}h$ | Substitute $h=x$ into $x+12=\sqrt{3}h$. |
+| 30 | 037e40 | AK2 | Rearranges to obtain $(\sqrt{3}-1)x=12$ | Rearrange the equation to obtain $(\sqrt{3}-1)x=12$. |
+| 31 | 037e40 | AK4 | Uses $h=x$ and substitutes "their" value of $x$ | Use $h=x$ to substitute your value of $x$ and find the height $h$. |
+| 32 | 037e40 | R3 | Expresses "their" height correct to 3 significant figures | Round your height to 3 significant figures and state it in metres. |
+| 33 | c0c08e | CK1 | States $\tan BAC = \frac{BC}{AB}$ from the right-angled triangle | Use the right-angled triangle to write $\tan BAC = \frac{BC}{AB}$. |
+| 34 | c0c08e | AK1 | Evaluates $12\tan 36.9^\circ$ to obtain $9.0$ | Calculate $12\tan 36.9^\circ$ to find the vertical-pole length. |
+| 35 | c0c08e | R1 | Expresses the length correct to 1 decimal place | Round your vertical-pole length to 1 decimal place and include metres. |
+| 36 | c0c08e | CK2 | Identifies $BC$ as the opposite side and $AC$ as the hypotenuse for angle $BAC$ | For angle $BAC$, identify $BC$ as the opposite side and $AC$ as the hypotenuse. |
+| 37 | c0c08e | AK2 | Uses $\sin 36.9^\circ = \frac{\text{their }BC}{AC}$ to calculate $AC$ | Use $\sin 36.9^\circ = \frac{\text{your }BC}{AC}$ and rearrange to calculate $AC$. |
+| 38 | c0c08e | R2 | Expresses the length correct to 1 decimal place | Round your diagonal-pole length to 1 decimal place and include metres. |
+| 39 | c0c08e | CK3 | Defines variables for the numbers of vertical and diagonal poles | Let one variable represent the number of vertical poles and the other represent the number of diagonal poles. |
+| 40 | c0c08e | R3 | Forms $x+y=12$ and $9x+15y=144$, using their earlier pole lengths | Form one equation from the total number of poles and another from the total length, using your earlier pole lengths. |
+| 41 | c0c08e | AK3 | Solves the simultaneous equations using their equations | Eliminate one variable from your two equations, then substitute back to find both numbers of poles. |
+| 42 | 037e48 | CK1 | Substitutes $x=2$ into $f(x)$ | Substitute $x=2$ into $f(x)$ before you calculate the ball height. |
+| 43 | 037e48 | AK1 | Evaluates $-2^2+8(2)$ to obtain $12$ | Evaluate $-2^2+8(2)$ carefully, applying the square and negative sign in the correct order. |
+| 44 | 037e48 | CK2 | Uses $g(2)=2+2$ for the screen height | Use $g(2)=2+2$ to find the screen height. |
+| 45 | 037e48 | AK2 | Subtracts the screen height from "their" ball height | Subtract the screen height from your ball height to find the vertical distance. |
+| 46 | 037e48 | R1 | Concludes that the ball is above the screen since "their" vertical distance is positive | State that the ball is above the screen because your vertical distance is positive. |
+| 47 | 037e48 | CK3 | Identifies the intersection points of $f$ and $g$ as the boundary positions | Use the two points where $f$ and $g$ cross as the boundary positions. |
+| 48 | 037e48 | AK3 | Reads the lower intersection as $x=0.3$, to $1$ decimal place | Read the lower intersection from the graph and write its $x$-coordinate to $1$ decimal place. |
+| 49 | 037e48 | AK4 | Reads the upper intersection as $x=6.7$, to $1$ decimal place | Read the upper intersection from the graph and write its $x$-coordinate to $1$ decimal place. |
+| 50 | 037e48 | R2 | Selects the interval between the intersections, consistent with "their" conclusion in part (b) | Choose the interval between the two intersections, consistent with your conclusion that the ball is above the screen. |
+| 51 | 037e48 | R3 | Expresses the boundary values to $1$ decimal place | Read the two intersection $x$-coordinates from the graph and write each boundary value to $1$ decimal place. |
+| 52 | 037e50 | CK1 | Identifies $g(2) = -(2)^2 + 8(2)$ | Substitute the given input into $g(x)$, applying the negative sign to the squared term before adding the linear term. |
+| 53 | 037e50 | AK1 | Evaluates $g(2) = 12$ | Evaluate your substituted expression carefully to obtain the revenue value. |
+| 54 | 037e50 | CK2 | Recognises that break-even occurs where cost equals revenue | Find the point where cost and revenue are equal, since this is the break-even point. |
+| 55 | 037e50 | R1 | Uses "their" revenue value to identify the lower intersection, $x=2$ | Use your revenue value to locate the lower intersection on the graph and read its $x$-coordinate. |
+| 56 | 037e50 | R2 | Identifies from the graph that revenue exceeds cost between the break-even points | Identify the interval where the revenue graph lies above the cost graph. |
+| 57 | 037e50 | R3 | Restricts "their" profitable interval to the whole-number value $3$ | Restrict your profitable interval to the whole-number production quantity within it. |
+| 58 | 037e50 | CK3 | Forms profit as $g(\text{their }3)-f(\text{their }3)$ | Form profit by subtracting cost from revenue as $g(\text{your number})-f(\text{your number})$. |
+| 59 | 037e50 | AK2 | Evaluates revenue and cost as $g(3)=15$ and $f(3)=14$, using "their" number of stools | Substitute your number of stools into both functions and calculate the revenue and cost separately. |
+| 60 | 037e50 | AK3 | Finds profit $15-14=\$1$, follow-through from "their" values | Subtract your calculated cost from your calculated revenue and state the profit in the form $\$\,\text{amount}$. |
+| 61 | c0c09b | CK1 | Recognises that equal fares occur at the points of intersection. | Find where the line and curve cross, because those intersection points show equal fares. |
+| 62 | c0c09b | R1 | Reads $1$ km and $5$ km from the graph. | Read the two distance values in kilometres from the graph at the intersection points. |
+| 63 | c0c09b | CK2 | Recognises that plan $g$ is cheaper where its curve is below the line for $f$. | Identify the plan whose graph lies below the other graph, since it has the lower fare. |
+| 64 | c0c09b | CK3 | Recognises that the equal-fare distances are not included for a strict less-than comparison. | Use a strict inequality, so exclude the distances where the graphs meet. |
+| 65 | c0c09b | R2 | Uses "their" equal-fare distances as the boundaries of the interval. | Use your equal-fare distances as the endpoints of the interval. |
+| 66 | c0c09b | AK1 | Finds $f(4)=2(4)+3=11$. | Substitute $4$ into $f(x)=2x+3$ and calculate the fare. |
+| 67 | c0c09b | AK2 | Finds $g(4)=4^2-4(4)+8=8$. | Substitute $4$ into $g(x)=x^2-4x+8$ and calculate the fare. |
+| 68 | c0c09b | AK3 | Subtracts the lower fare from the higher fare. | Subtract the lower fare from the higher fare to find the saving. |
+| 69 | c0c09b | R3 | Uses "their" interval to select the cheaper plan at $4$ km. | Use your interval to decide which plan is cheaper at $4$ km. |
+| 70 | 037e5d | CK1 | Recognises that $BT$ is perpendicular to the level ground. | Recognise that $BT$ is perpendicular to the level ground, so you can use a right-angled triangle. |
+| 71 | 037e5d | CK2 | Selects the tangent ratio for the $45^\circ$ angle of elevation. | Select the tangent ratio using the $45^\circ$ angle of elevation. |
+| 72 | 037e5d | AK2 | Simplifies $\tan45^\circ=h/d$ to give $h=d$. | Simplify $\tan45^\circ=h/d$ to show the relationship between $h$ and $d$. |
+| 73 | 037e5d | R1 | States that $XB=d+20$. | State the full horizontal distance as $XB=d+20$. |
+| 74 | 037e5d | R2 | Forms $\tan(\text{their answer to (a)})=(d+20)/h$. | Form $\tan(\text{your angle from (a)})=(d+20)/h$ using your angle from part (a). |
+| 75 | 037e5d | AK3 | Substitutes $h=d$ and solves using their angle. | Substitute $h=d$ into your tangent equation and solve for $d$ using your angle from part (a). |
+| 76 | 037e5d | AK5 | Uses $h=d$ and their value of $d$ to obtain $h\approx27.3205$. | Use $h=d$ and your value of $d$ to calculate the unrounded height, writing it as $h\approx\text{(your decimal)}$. |
+| 77 | 037e5d | R3 | Expresses their height correct to 3 significant figures. | Round your height to 3 significant figures. |
+| 78 | 037e5d | CK3 | Identifies triangle $YBT$ as an isosceles right triangle. | Identify triangle $YBT$ as an isosceles right triangle. |
+| 79 | 037e5d | R4 | Justifies the classification using equal perpendicular sides. | Justify this by showing that $YB=BT$ and that these equal sides meet at a right angle. |
+| 80 | c0c0ad | CK1 | Uses the angle sum of triangle $QRS$ | Find the remaining angle at $S$ by subtracting the other two interior angles of triangle $QRS$ from $180^\circ$. |
+| 81 | c0c0ad | CK2 | Recognises from the $30^\circ$-$60^\circ$-$90^\circ$ triangle that $RS=\sqrt{3}QR$ | Use the side ratio for a $30^\circ$-$60^\circ$-$90^\circ$ triangle to write $RS=\sqrt{3}QR$. |
+| 82 | c0c0ad | CK3 | States $PR=20+QR$ | Write $PR=20+QR$ by adding the two adjacent lengths along the straight line. |
+| 83 | c0c0ad | R1 | Forms $\tan30^\circ=RS/(20+QR)$ | Form $\tan30^\circ=\dfrac{RS}{20+QR}$ using opposite over adjacent in triangle $PRS$. |
+| 84 | c0c0ad | AK2 | Substitutes $RS=\sqrt{3}QR$ and evaluates $\tan30^\circ$ correctly | Substitute $RS=\sqrt{3}QR$ into your tangent equation and use the exact value of $\tan30^\circ$. |
+| 85 | c0c0ad | R2 | Solves the resulting equation and establishes $RS=10\sqrt{3}\text{ m}$ | Solve the equation for $QR$, substitute into $RS=\sqrt{3}QR$, and write the resulting length in $\text{m}$. |
+| 86 | c0c0ad | AK3 | Uses $\sin30^\circ=\dfrac{\text{their }RS}{PS}$ | Use $\sin30^\circ=\dfrac{\text{your }RS}{PS}$ in triangle $PRS$. |
+| 87 | c0c0ad | AK4 | Calculates $PS$ from "their" value of $RS$ | Rearrange your sine equation to calculate $PS$ using your earlier value of $RS$. |
+| 88 | c0c0ad | R3 | Expresses "their" distance correct to 1 decimal place | Round your calculated distance to 1 decimal place and include metres. |
+| 89 | 037e74 | CK2 | Forms the condition $f(x)=6$. | Set $f(x)=6$ to represent the order for six coconut drinks. |
+| 90 | 037e74 | AK3 | Solves $-x^2+8x-6=6$ to obtain $x=2$ and $x=6$. | Rearrange the equation into a quadratic equal to zero, factorise it, and solve each factor for $x$. |
+| 91 | 037e74 | R2 | States both possible values of $x$. | State both values of $x$ that you obtain from the factorised equation. |
+| 92 | 037e74 | CK3 | Uses $y=6$ with “their” possible values of $x$. | Use $y=6$ with each of your possible values of $x$ to form both allocations. |
+| 93 | 037e74 | CK4 | Uses the income relationship $I=3x+2y$. | Use $I=3x+2y$ to calculate the income for an allocation. |
+| 94 | 037e74 | AK4 | Tests “their” allocation $(6,6)$ against the constraints. | Substitute your allocation with the larger $x$-value into both constraints and decide whether it is feasible. |
+| 95 | 037e74 | AK5 | Calculates $I=3(2)+2(6)=18$ for “their” feasible allocation. | Substitute your feasible allocation into $I=3x+2y$ and calculate the income. |
+| 96 | 037e74 | R3 | Concludes that $(2,6)$ gives the greatest income because the other possible allocation is outside the feasible region. | Conclude that the feasible allocation gives the greatest income because your other possible allocation lies outside the feasible region. |
+| 97 | 037e81 | CK1 | Selects the trigonometric ratio relating the mast height to $PR$. | Choose the tangent ratio by matching the mast height as the opposite side and $PR$ as the adjacent side. |
+| 98 | 037e81 | AK1 | Rearranges $\tan 30^\circ=\frac{24}{PR}$ to obtain $PR=24\sqrt{3}$. | Rearrange $\tan 30^\circ=\frac{24}{PR}$ to make $PR$ the subject, using the exact value involving $\sqrt{3}$. |
+| 99 | 037e81 | R1 | Expresses the distance in surd form. | Write your distance exactly in surd form, keeping the $\sqrt{}$ notation instead of converting to a decimal. |
+| 100 | 037e81 | CK2 | Recognises that $PR=PQ+QR$. | Treat $PR$ as the complete horizontal distance made up of $PQ$ and $QR$. |
+| 101 | 037e81 | CK3 | Selects the trigonometric ratio relating the mast height to "their" $QR$. | Use your earlier $QR$ as the adjacent side and the mast height as the opposite side, so you choose tangent. |
+| 102 | 037e81 | AK3 | Forms $\tan \theta=\frac{24}{\text{their }QR}$. | Form $\tan \theta=\frac{\text{mast height}}{\text{your earlier }QR}$ using your earlier horizontal distance. |
+| 103 | 037e81 | AK4 | Evaluates the inverse trigonometric ratio to obtain "their" angle. | Use $\tan^{-1}$ on your ratio to calculate your angle. |
+| 104 | 037e81 | R3 | Explains that the horizontal distance to the mast is smaller at $Q$ while its height is unchanged. | State that the horizontal distance to the mast is smaller at $Q$ while the mast height remains unchanged. |
+| 105 | 037e89 | CK1 | Forms the total-crates constraint $x+y\le 12$. | Add the two crate quantities and write the constraint $x+y\le 12$. |
+| 106 | 037e89 | CK2 | Forms the ice constraint $2x+y\le 18$. | Use 2 bags of ice for each flying-fish crate and 1 bag for each tuna crate, then write $2x+y\le 18$. |
+| 107 | 037e89 | CK3 | States both non-negativity constraints $x\ge 0$ and $y\ge 0$. | State that neither number of crates can be negative: $x\ge 0$ and $y\ge 0$. |
+| 108 | 037e89 | AK1 | Identifies the axis vertices $(0,0)$, $(9,0)$ and $(0,12)$. | Read the feasible region on the axes and list the corner points $(0,0)$, $(9,0)$ and $(0,12)$. |
+| 109 | 037e89 | AK2 | Obtains the intersection vertex $(6,6)$. | Find where the two boundary lines cross to obtain the intersection vertex $(6,6)$. |
+| 110 | 037e89 | AK3 | Uses $30x+20y$ to calculate earnings at "their" vertices. | Substitute the coordinates of your vertices into $30x+20y$ to calculate the earnings at each one. |
+| 111 | 037e89 | R1 | Compares "their" calculated earnings to identify the greatest value. | Compare your calculated earnings and identify the greatest value. |
+| 112 | 037e89 | R2 | Selects the vertex corresponding to "their" greatest earnings. | Choose the vertex that corresponds to your greatest earnings. |
+| 113 | 037e89 | R3 | Justifies the choice by linking the plan to the greatest daily earnings. | Explain that this plan is chosen because it gives the greatest daily earnings. |
+| 114 | c0c0ce | CK1 | Recognises that the total number of crates is $x+y$ | Write the total number of crates as $x+y$. |
+| 115 | c0c0ce | R1 | Translates “no more than 12” to give $x+y\leq12$ | Use $\leq$ to show that the total $x+y$ cannot exceed the stated limit. |
+| 116 | c0c0ce | CK2 | Recognises that the vertices occur on the axes or where the constraint boundaries meet | Find feasible vertices by checking where boundary lines meet each other and where they meet the axes. |
+| 117 | c0c0ce | AK1 | Reads $(0,0)$ and $(12,0)$ from the shaded region | Read the coordinates of the first two feasible vertices directly from the shaded region on the axes. |
+| 118 | c0c0ce | AK2 | Reads $(6,6)$ and $(0,10)$ from the shaded region | Read the coordinates of the remaining feasible vertices where the boundary lines meet. |
+| 119 | c0c0ce | CK3 | Uses the profit expression $P=70x+90y$ | Form the profit expression by multiplying each type of crate by its stated profit and adding the results. |
+| 120 | c0c0ce | AK3 | Calculates profits of $0$ and \$840 at “their” first two vertices | Substitute your first two feasible vertices into your profit expression and calculate each profit. |
+| 121 | c0c0ce | AK4 | Calculates profits of \$960 and \$900 at “their” remaining vertices | Substitute your remaining feasible vertices into your profit expression and calculate each profit. |
+| 122 | c0c0ce | R2 | Compares the profits at “their” feasible vertices and selects the vertex giving the greatest profit | Compare the profits at your feasible vertices and choose the vertex with the greatest profit. |
+| 123 | c0c0ce | R3 | Justifies the decision by stating that \$960 is greater than the profit from every other feasible vertex | Justify your choice by stating that its profit is greater than the profit at every other feasible vertex. |
+| 124 | c0c0d6 | CK1 | Forms $\tan 30^\circ = \frac{QR}{6}$ | Use the opposite and adjacent sides relative to $30^\circ$ to write $\tan 30^\circ = \frac{QR}{6}$. |
+| 125 | c0c0d6 | R1 | Uses "their" trigonometric equation to make $QR$ the subject | Rearrange the trigonometric equation you wrote to make $QR$ the subject. |
+| 126 | c0c0d6 | R2 | Expresses $QR$ in surd form | Simplify $QR$ fully and write it in surd form. |
+| 127 | c0c0d6 | CK2 | Selects $\sin 30^\circ = \frac{QR}{PR}$ | Use the opposite side and hypotenuse to select $\sin 30^\circ = \frac{QR}{PR}$. |
+| 128 | c0c0d6 | R3 | Expresses $PR$ in surd form | Rearrange and simplify to express $PR$ in surd form. |
+| 129 | c0c0d6 | CK3 | Identifies $\cos 30^\circ = \frac{PQ}{PR}$ | Use the adjacent side and hypotenuse to identify $\cos 30^\circ = \frac{PQ}{PR}$. |
+| 130 | c0c0ed | CK2 | States reflection. | State that the transformation is a reflection. |
+| 131 | c0c0ed | R1 | Identifies the mirror line as the $x$-axis from corresponding points being equal distances above and below it. | Compare corresponding points and identify the $x$-axis as the mirror line because they are equal distances above and below it. |
+| 132 | c0c0ed | R2 | Uses the candidate's own triangle $DEF$ as the object for the translation. | Use your own triangle $DEF$ as the object before carrying out the translation. |
+| 133 | c0c0ed | AK3 | Adds $\begin{pmatrix}1\\-2\end{pmatrix}$ correctly to the candidate's coordinates of $D$ and $E$. | Add $\begin{pmatrix}1\\-2\end{pmatrix}$ to each coordinate of your own points $D$ and $E$. |
+| 134 | c0c0ed | AK4 | Adds $\begin{pmatrix}1\\-2\end{pmatrix}$ correctly to the candidate's coordinate of $F$. | Add $\begin{pmatrix}1\\-2\end{pmatrix}$ to both coordinates of your own point $F$. |
+| 135 | c0c0ed | R3 | States all three image vertices consistently from the candidate's translated triangle. | State all three translated image vertices consistently from your own translated triangle. |
+| 136 | c0c0ed | CK3 | Selects the area relationship $\frac12 ab\sin C$ for the original pennant. | Select the triangle area formula $\frac12 ab\sin C$ for the original pennant. |
+| 137 | c0c0ed | AK5 | Calculates the area of the original pennant as $\frac12(5)(8)\sin60°=10\sqrt3$. | Substitute the given side lengths and angle into $\frac12(5)(8)\sin60°$ and simplify the result as a multiple of $\sqrt3$. |
+| 138 | c0c0ed | R4 | Uses scale factor $2$ to multiply the candidate's original area by $2^2$, recognising that reflection and translation do not change area, giving $40\sqrt3\text{ m}^2$. | Multiply your own original area by $2^2$, recognise that reflection and translation preserve area, and state the result in $\text{m}^2$ while retaining the $\sqrt3$ factor. |
+| 139 | c0c0fa | CK1 | Selects the tangent ratio for triangle $QRT$ | Use the tangent ratio in triangle $QRT$ by dividing the side opposite the angle by the adjacent side. |
+| 140 | c0c0fa | AK2 | Finds $PR=12+$ "their" $QR$ | Add the labelled horizontal length to your $QR$ to find $PR$. |
+| 141 | c0c0fa | AK3 | Calculates $\tan \angle TPR=18\div$ "their" $PR$, giving $\dfrac{3}{5}$ | Calculate $\tan\angle TPR$ using $TR\div PR$, substitute your $PR$, and write the result as $\dfrac{TR}{PR}$. |
+| 142 | c0c0fa | CK2 | Recognises inverse variation as $y=\dfrac{k}{x}$ | Recognise inverse variation and write it as $y=\dfrac{k}{x}$. |
+| 143 | c0c0fa | CK3 | Identifies that at $Q$, $x=$ "their" $QR$ and $y=\tan45^\circ=1$ | At $Q$, use your $QR$ as $x$ and evaluate $y=\tan45^\circ$. |
+| 144 | c0c0fa | R1 | Uses the values at $Q$ to determine $k$ and forms $y=\dfrac{18}{x}$ | Substitute the values at $Q$ into $y=\dfrac{k}{x}$, solve for $k$, and use it to form the equation. |
+| 145 | c0c0fa | R2 | Compares "their" distance in (d)(i) with $PR=12+$ "their" $QR$ | Compare your distance from part (d)(i) with $PR$, calculated from the labelled length and your $QR$. |
+| 146 | c0c0fa | R3 | Concludes that the point is farther from $R$, with a valid numerical reason | Use the numerical comparison to state whether the point is farther from $R$ than $P$ and support your conclusion with the two distances. |
+| 147 | c0c102 | CK1 | Recognises that the 10 students in $J \cap P$ are included in $J$ | Recognise that everyone in $J \cap P$ is already counted in $J$. |
+| 148 | c0c102 | AK1 | Subtracts 10 from 27 | Subtract the intersection count from the total in $J$. |
+| 149 | c0c102 | CK2 | Recognises that the juice-only group and set $P$ form the union without overlap | Recognise that the juice-only group and $P$ do not overlap, so together they make the union. |
+| 150 | c0c102 | AK2 | Adds "their" juice-only number to 21 | Add your earlier juice-only number to the total in $P$. |
+| 151 | c0c102 | R1 | States $n(J \cup P)=38$, following through from "their" juice-only number | State $n(J \cup P)$ using your earlier juice-only number plus the total in $P$. |
+| 152 | c0c102 | CK3 | Recognises that students who bought neither item are in the complement of $J \cup P$ | Recognise that students who buy neither item belong in the complement of $J \cup P$. |
+| 153 | c0c102 | AK3 | Subtracts "their" union from 50 | Subtract your earlier union total from the total number of students. |
+| 154 | c0c102 | R3 | States $(J \cup P)'$ or an equivalent set notation | Write the set for students who buy neither item as $(J \cup P)'$. |
+| 155 | 9cc663 | CK1 | States enlargement. | Identify the transformation as an enlargement by checking how corresponding lengths change. |
+| 156 | 9cc663 | R1 | Identifies the centre as the origin from corresponding vertices. | Compare corresponding vertices and trace the lines joining each pair back to the origin to identify the centre. |
+| 157 | 9cc663 | AK1 | Enlarges $P(2,3)$ about the origin to obtain $(4,6)$. | Enlarge $P(2,3)$ about the origin by doubling each coordinate. |
+| 158 | 9cc663 | AK2 | Applies the translation to obtain $(5,4)$, follow-through from “their” enlarged centre. | Apply the stated horizontal and vertical translation shifts to your enlarged centre. |
+| 159 | 9cc663 | CK3 | Recognises that translation does not change the radius. | Keep the radius unchanged when you translate the circle. |
+| 160 | 9cc663 | AK3 | Multiplies the original radius by scale factor $2$ to obtain $6$ units. | Multiply the original radius by the enlargement scale factor. |
+| 161 | 9cc663 | CK4 | Identifies the minor segment as sector area minus triangle area. | Find the minor segment area by subtracting the triangle area from the sector area. |
+| 162 | 9cc663 | AK4 | Calculates sector area $\frac{120}{360}\pi(6)^2=12\pi$, follow-through using “their” radius. | Use your radius in the sector formula $\frac{\theta}{360}\pi r^2$ and calculate the sector area. |
+| 163 | 9cc663 | AK5 | Calculates triangle area $\frac12(6)^2\sin120°=9\sqrt3$, follow-through using “their” radius. | Use your radius in the triangle formula $\frac12r^2\sin\theta$, evaluating $\sin120°$ exactly with $\sqrt{3}$. |
+| 164 | 9cc663 | R2 | Subtracts “their” triangle area from “their” sector area. | Subtract your triangle area from your sector area. |
+| 165 | 9cc663 | R3 | Expresses “their” area in exact form. | Write your area in exact form, retaining $\pi$ and any surd instead of using a decimal. |
+| 166 | 9cc675 | CK1 | Uses the decrease as a fraction of the earlier value | Divide the annual decrease by the earlier value, then multiply by $100\%$ to find the depreciation percentage. |
+| 167 | 9cc675 | CK2 | Recognises that a reverse depreciation step requires division by $0.9$ | Undo one depreciation step by dividing by $0.9$ rather than multiplying by it. |
+| 168 | 9cc675 | R1 | Works backwards through two annual depreciation periods using "their" rate | Work backwards through two annual depreciation periods by applying the reverse step twice using your rate. |
+| 169 | 9cc675 | AK2 | Obtains \$32 400 from \$29 160 by one reverse step | Divide \$29 160 by $0.9$ to complete one reverse depreciation step. |
+| 170 | 9cc675 | CK3 | Uses $0.9$ as the annual depreciation multiplier on "their" purchase value | Multiply your purchase value by $0.9$ once for each year of depreciation. |
+| 171 | 9cc675 | R2 | Finds the excess of \$27 000 over "their" estimated value | Subtract your estimated value from \$27 000 to find how much greater the offer is. |
+| 172 | 9cc675 | R3 | Concludes that Kemar should accept because the offer exceeds "their" estimated value | Conclude that Kemar should accept because the offer exceeds your estimated value. |
+| 173 | 9cc67d | CK1 | Uses vertical change divided by horizontal change for the gradient. | Find the gradient by dividing the vertical change by the horizontal change between two clear points on the line. |
+| 174 | 9cc67d | CK2 | Recognises the linear form $C = mx + c$. | Recognise that a straight-line relationship can be written as $C = mx + c$. |
+| 175 | 9cc67d | R1 | Expresses the relationship in the form $C = mx + c$. | Use the gradient and $C$-intercept to write the relationship as $C = mx + c$. |
+| 176 | 9cc67d | AK3 | Substitutes $x = 9$ into "their" equation. | Substitute $x = 9$ into your equation and simplify to find the delivery charge. |
+| 177 | 9cc67d | CK3 | Restricts the number of packs to whole-number values. | Restrict the number of packs to whole-number values. |
+| 178 | 9cc67d | R2 | Forms and solves the delivery-budget constraint using "their" linear relationship. | Use your linear relationship with the budget limit to form an inequality, then solve it for the number of packs. |
+| 179 | 9cc67d | R3 | Selects the greatest permissible whole number of packs. | Select the greatest whole number that satisfies your inequality. |
+| 180 | 9cc685 | CK1 | Recognises that $\tan \theta = \frac{\text{vertical rise}}{\text{horizontal distance}}$ | Set up $\tan \theta = \frac{\text{vertical rise}}{\text{horizontal distance}}$ using the opposite vertical rise and adjacent horizontal distance. |
+| 181 | 9cc685 | CK2 | Identifies $\theta$ using the inverse tangent of "their" ratio | Use $\tan^{-1}$ of your ratio to identify $\theta$. |
+| 182 | 9cc685 | AK2 | Evaluates $\tan^{-1}$("their" ratio) | Evaluate $\tan^{-1}$ of your ratio on your calculator. |
+| 183 | 9cc685 | CK3 | Recognises that $\cos \theta = \frac{\text{horizontal distance}}{\text{length of ramp}}$ | Set up $\cos \theta = \frac{\text{horizontal distance}}{\text{length of ramp}}$ using the horizontal distance and ramp length. |
+| 184 | 9cc685 | AK3 | Uses $5 \div \cos$("their" angle) to find the ramp length | Find the ramp length by calculating $5 \div \cos(\text{your angle})$. |
+| 185 | 9cc685 | R3 | Compares $5.10$ m with "their" required length and states that the rail is not long enough | Compare $5.10\text{ m}$ with your required length and state that the rail is not long enough if it is shorter. |
+| 186 | 9cc68d | CK2 | Forms the profit expression $P=3x+4y$ | Form the profit expression by multiplying each crate quantity by its profit and adding the results. |
+| 187 | 9cc68d | AK4 | Evaluates $3x+4y$ at the vertices of 'their' feasible region | Substitute the coordinates of every vertex of your feasible region into $3x+4y$ and calculate each profit. |
+| 188 | 9cc68d | R2 | Selects $(4,6)$, or the vertex giving the greatest value from 'their' evaluations | Choose the vertex from your evaluations that gives the greatest profit. |
+| 189 | 9cc68d | CK3 | Uses the mango-crate value from 'their' part (b) plan as the $x$-coordinate on the curve | Use the mango-crate value from your part (b) plan as the $x$-coordinate on the curve. |
+| 190 | 9cc68d | AK5 | Obtains the corresponding curve point $(4,1)$, or follows through using 'their' $x$-coordinate | Substitute your $x$-coordinate into the curve equation and write the resulting coordinate pair. |
+| 191 | 9cc68d | R3 | Concludes correctly whether 'their' packing-plan point lies on or below the curved guide | Compare your packing-plan point with the curved guide and state whether it lies on or below it. |
+| 192 | 9cc68d | R4 | Justifies using 'their' plan ordinate and 'their' corresponding ordinate on the curve | Justify your conclusion by comparing your plan ordinate with the corresponding ordinate on the curve for the same $x$-coordinate. |
+| 193 | 9cc695 | CK1 | Recognises that $18+x=25$. | Set the total in $A$ by equating $18+x$ to $25$. |
+| 194 | 9cc695 | AK1 | Solves to obtain $x=7$. | Rearrange $18+x=25$ by subtracting $18$ from both sides to find $x$. |
+| 195 | 9cc695 | CK2 | Identifies the three disjoint regions in $A \cup B$. | Identify the separate $A$-only, overlap, and $B$-only regions that make up $A \cup B$. |
+| 196 | 9cc695 | AK2 | Adds $18$, "their" intersection and $12$. | Add $18$, your earlier intersection value, and $12$ to calculate $n(A \cup B)$. |
+| 197 | 9cc695 | CK3 | Recognises that patrons who bought neither item are in $(A \cup B)'$. | Recognise that patrons who buy neither item lie in $(A \cup B)'$. |
+| 198 | 9cc695 | AK4 | Subtracts "their" $n(A \cup B)$ from $50$. | Subtract your earlier $n(A \cup B)$ from $50$. |
+| 199 | 9cc695 | R1 | Interprets the complement as the number of patrons who bought neither item. | Interpret the complement as the number of patrons who buy neither item. |
+| 200 | 9cc695 | R2 | Forms the number who bought exactly one item as $50-$ "their" neither $-$ "their" intersection. | Calculate $50$ minus your earlier neither count minus your earlier intersection count to find the number who buy exactly one item. |
+| 201 | 9cc695 | R3 | Divides "their" number by $8$ and rounds up to whole packets. | Divide your earlier exactly-one count by $8$ and round up to a whole number of packets. |
+| 202 | 9cc6a7 | CK1 | Selects the cosine rule for finding $PR$. | Use the cosine rule to find $PR$ from the two known sides and the included angle. |
+| 203 | 9cc6a7 | AK1 | Substitutes correctly: $PR^2=8^2+11^2-2(8)(11)\cos62°$. | Substitute the two known side lengths and the included angle correctly into the cosine-rule equation for $PR^2$, using $\cos$ of the included angle. |
+| 204 | 9cc6a7 | R1 | Expresses $PR$ correct to 3 significant figures. | Take the positive square root of your value for $PR^2$ and round $PR$ to 3 significant figures. |
+| 205 | 9cc6a7 | CK2 | Selects the sine rule, matching $QR$ with angle $QPR$. | Use the sine rule, pairing $QR$ with its opposite angle $QPR$. |
+| 206 | 9cc6a7 | AK2 | Substitutes $11$, $62°$ and "their" value of $PR$ into the sine rule. | Substitute $11$, $62°$, and your value of $PR$ into the sine rule in the matching opposite-side and opposite-angle positions. |
+| 207 | 9cc6a7 | R2 | Expresses "their" angle correct to 1 decimal place. | Round your calculated angle to 1 decimal place. |
+| 208 | 9cc6a7 | CK3 | Recognises that the interior angles of a triangle total $180°$. | Use the fact that the interior angles of a triangle add to $180°$. |
+| 209 | 9cc6a7 | AK4 | Calculates $180°-62°-$ "their" angle at $P$, giving $44.3°$. | Calculate $180°-62°-P$ using your angle at $P$. |
+| 210 | 9cc6a7 | R3 | Concludes that $R$ has the smallest interior angle, with a valid comparison. | Compare all three interior angles and choose $R$ because its angle is the smallest. |
+| 211 | 9cc6b9 | CK1 | Relates the angle of elevation to opposite side $BT$ and adjacent side $PB$ | At $\theta$, identify $BT$ as the opposite side and $PB$ as the adjacent side. |
+| 212 | 9cc6b9 | AK1 | Uses $\tan\theta=\frac{3}{4}$ to obtain $y=\frac{3x}{4}$ | Use $\tan\theta=\frac{3}{4}$ and rearrange the ratio of opposite to adjacent sides to make $y$ the subject. |
+| 213 | 9cc6b9 | CK2 | Identifies $PT$ as the hypotenuse of the right-angled triangle | Identify $PT$ as the hypotenuse because it is opposite the right angle. |
+| 214 | 9cc6b9 | CK3 | Selects Pythagoras' theorem | Apply Pythagoras' theorem to the right-angled triangle using the two shorter sides and the hypotenuse. |
+| 215 | 9cc6b9 | AK2 | Substitutes $PT=10$ and "their" $y=\frac{3x}{4}$, obtaining $25x^2=1600$ | Substitute the given hypotenuse length and your earlier $y=\frac{3x}{4}$ into Pythagoras' theorem, then clear fractions and simplify. |
+| 216 | 9cc6b9 | R1 | Reduces "their" equation to $x^2=64$ | Reduce your equation by dividing through by the coefficient of $x^2$ so that $x^2$ is isolated. |
+| 217 | 9cc6b9 | AK3 | Extracts the square roots to obtain $x=\pm8$ | Take both square roots of your value for $x^2$, including the positive and negative roots. |
+| 218 | 9cc6b9 | R2 | Selects $x=8$ because $PB$ is a positive distance | Choose the positive root because $PB$ represents a distance. |
+| 219 | 9cc6b9 | R3 | Uses "their" value of $PB$ in "their" relationship to obtain $BT=6$ | Substitute your value of $PB$ into your earlier relationship for $y$ to find $BT$. |
+| 220 | 9cc6c1 | CK1 | Recognises that an enlargement of scale factor $2$ about the origin has diagonal entries $2$. | Recognise that an enlargement about the origin uses the scale factor on both diagonal entries. |
+| 221 | 9cc6c1 | AK1 | Places $2$ in the first diagonal position of $E$. | Put the scale factor in the top-left diagonal position of $E$. |
+| 222 | 9cc6c1 | AK2 | Places $2$ in the second diagonal position of $E$, with zero off-diagonal entries. | Complete $E$ with the scale factor in the other diagonal position and zeros off the diagonal. |
+| 223 | 9cc6c1 | CK2 | States the correct matrix for a $90°$ anticlockwise rotation. | Write the standard matrix for a $90°$ anticlockwise rotation. |
+| 224 | 9cc6c1 | AK3 | Multiplies the rotation matrix by “their” matrix $E$. | Multiply the rotation matrix by your matrix $E$. |
+| 225 | 9cc6c1 | R1 | Uses the matrices in the correct order for enlargement followed by rotation. | Place $E$ on the right of the rotation matrix because the enlargement happens first. |
+| 226 | 9cc6c1 | CK3 | Recognises that “their” matrix $M$ is non-singular by obtaining a non-zero determinant. | Calculate the determinant of your matrix $M$ and check that it is non-zero. |
+| 227 | 9cc6c1 | AK4 | Obtains $det(M)=4$ from “their” matrix $M$. | Use the diagonal-product subtraction rule to find $det(M)$ from your matrix $M$. |
+| 228 | 9cc6c1 | AK5 | Forms the inverse by using the adjoint and dividing by the determinant. | Form the adjoint of your matrix $M$ and divide every entry by its determinant to obtain the inverse. |
+| 229 | 9cc6c1 | CK4 | States the identity matrix in $MM^{-1}=I$. | State the identity matrix in the relationship $MM^{-1}=I$. |
+| 230 | 9cc6c1 | R2 | Applies “their” inverse matrix to $Q'$ to reverse the combined transformation. | Multiply your inverse matrix by $Q'$ to reverse the combined transformation. |
+| 231 | 9cc6c1 | R3 | Concludes the original coordinates of the calibration point. | State the resulting ordered pair as the original coordinates of the calibration point. |
+| 232 | 9cc6c9 | CK1 | Selects multiplication by 2.70 to convert the US-dollar amount to dollars | Multiply the US-dollar amount by $2.70$ to convert it to dollars. |
+| 233 | 9cc6c9 | CK2 | Recognises that commission is 2.5% of "their" exchanged amount | Find the commission as $2.5\%$ of your exchanged amount. |
+| 234 | 9cc6c9 | AK2 | Calculates 2.5% of "their" exchanged amount | Calculate $2.5\%$ of your exchanged amount to obtain the commission. |
+| 235 | 9cc6c9 | CK3 | Uses the Bank B rate as \$0.04 more per US dollar and recognises that no commission is added | Increase the Bank B rate by $0.04$ per US dollar and do not add any commission. |
+| 236 | 9cc6c9 | R1 | Compares "their" two total costs and identifies Bank B as the lower-cost bank | Compare your two total costs and choose Bank B because it has the lower cost. |
+| 237 | 9cc6c9 | R2 | Subtracts "their" Bank B total from "their" Bank A total | Subtract your Bank B total from your Bank A total to find the saving. |
+| 238 | 9cc6d1 | R1 | Reads the fare corresponding to $4$ km from the graph | Read the fare from the graph at the point directly above $4$ km. |
+| 239 | 9cc6d1 | CK1 | Identifies $c$ as the fare when the distance is zero | Use the graph’s value when the distance is zero to identify $c$ as the fixed fare. |
+| 240 | 9cc6d1 | CK3 | Forms $(\text{their }22 - \text{their }10) \div 4$ | Form $(\text{your fare} - \text{your fixed charge}) \div 4$ to find the charge per kilometre. |
+| 241 | 9cc6d1 | AK2 | Subtracts "their" fixed charge from "their" fare | Subtract your fixed charge from your fare before finding the charge per kilometre. |
+| 242 | 9cc6d1 | R2 | Forms $\text{their }10 + \text{their }3d = 31$ | Form $\text{your fixed charge} + \text{your charge per kilometre}d = \text{the stated fare}$. |
+| 243 | 9cc6d1 | AK4 | Solves the equation using "their" fixed charge and charge per kilometre | Solve the equation using your fixed charge and your charge per kilometre. |
+| 244 | 9cc6d1 | R3 | Interprets the solution as a distance of $7$ km | State that your solution represents the distance travelled in kilometres. |
+| 245 | 9cc6de | CK1 | Identifies the median value and excludes it when separating the data | Find the central data value, then leave it out before splitting the remaining values into two halves. |
+| 246 | 9cc6de | CK2 | Identifies the middle values of the lower and upper halves | Find the middle value in each of the lower and upper halves to identify the two quartiles. |
+| 247 | 9cc6de | CK3 | Recognises that the interquartile range is the upper quartile minus the lower quartile | Find the interquartile range by subtracting the lower quartile from the upper quartile. |
+| 248 | 9cc6de | R1 | Forms the subtraction using "their" upper quartile and "their" lower quartile in the correct order | Subtract your lower quartile from your upper quartile, using the values you found earlier. |
+| 249 | 9cc6de | R2 | Compares "their" semi-interquartile range with 4 | Compare your semi-interquartile range with 4 to decide which set of daily sales is more consistent. |
+| 250 | 9cc6de | R3 | Concludes that Rohan has the more consistent daily sales | State that Rohan has the more consistent daily sales. |
+| 251 | 9cc6e6 | AK4 | Obtains left intersection $x=2$ from the candidate's graph | Read the $x$-coordinate where your curve first crosses the horizontal line. |
+| 252 | 9cc6e6 | AK5 | Obtains right intersection $x=4$ from the candidate's graph | Read the $x$-coordinate where your curve next crosses the horizontal line. |
+| 253 | 9cc6e6 | R1 | States that the rate is above the line between 'their' intersections | State that the curve lies above the horizontal line between your two intersection values. |
+| 254 | 9cc6e6 | R2 | Identifies the required safety condition as $f(x)\leq8$ | Write the safety requirement as $f(x)\leq8$ for the whole event. |
+| 255 | 9cc6e6 | R3 | Uses 'their' interval to establish that $f(x)>8$ for $2<x<4$ | Use your interval between the intersections to state that $f(x)>8$ throughout it. |
+| 256 | 9cc6e6 | R4 | Concludes that checking only the endpoint values does not establish safety throughout the event | Explain that endpoint checks alone cannot show safety for the whole event because the graph may exceed the limit between them. |
+| 257 | 9cc6ee | CK1 | Selects right-angled triangle $BCD$, with $BD$ as the hypotenuse | Choose right-angled triangle $BCD$ and identify $BD$ as the hypotenuse. |
+| 258 | 9cc6ee | AK1 | Forms $CD^2 + 9^2 = 15^2$ | Form the equation $CD^2 + 9^2 = 15^2$ using Pythagoras' theorem. |
+| 259 | 9cc6ee | CK2 | Identifies $AC$ and "their" $CD$ as the perpendicular sides of triangle $ACD$ | Identify $AC$ and your earlier $CD$ value as the perpendicular sides of triangle $ACD$. |
+| 260 | 9cc6ee | AK3 | Forms $AD^2 = 14^2 + (\text{their } CD)^2$ | Form $AD^2 = 14^2 + (\text{your } CD)^2$ using the two perpendicular sides. |
+| 261 | 9cc6ee | AK4 | Obtains $AD = \sqrt{340}$, or the equivalent using "their" $CD$ | Calculate $AD = \sqrt{340}$, or use the equivalent expression based on your earlier $CD$ value. |
+| 262 | 9cc6ee | R1 | Expresses "their" length correct to 3 significant figures | Round your length to 3 significant figures. |
+| 263 | 9cc6ee | CK3 | Recognises that the replacement cable length must be a whole number not less than "their" $AD$ | Recognise that the replacement cable must be a whole number of metres that is not less than your $AD$ length. |
+| 264 | 9cc6ee | R2 | Selects the next whole metre above "their" cable length | Select the next whole metre above your cable length. |
+| 265 | 9cc6f6 | CK1 | Selects the triangle-area relationship using the two given sides and their included angle | Use the triangle-area relationship $\frac12 ab\sin C$ with the two given sides and the angle between them. |
+| 266 | 9cc6f6 | AK1 | Substitutes correctly: $\frac12 \times 38 \times 24 \times \sin 57°$ | Substitute the given measurements into $\frac12 \times 38 \times 24 \times \sin 57°$ before calculating. |
+| 267 | 9cc6f6 | AK2 | Evaluates the area as approximately $382.434$ m$^2$ | Evaluate your triangle-area calculation on your calculator and keep sufficient decimal places before rounding. |
+| 268 | 9cc6f6 | R1 | Expresses the area correct to 3 significant figures | Round your area to 3 significant figures and include the correct square-metre units. |
+| 269 | 9cc6f6 | CK2 | Recognises that the required number of rolls is found by dividing area by the coverage of one roll | Divide the nursery area by the area covered by one roll to find how many rolls are needed. |
+| 270 | 9cc6f6 | AK3 | Calculates $\text{their area} \div 45$ | Calculate $\text{your area} \div 45$ using your earlier area value. |
+| 271 | 9cc6f6 | R2 | Rounds up to the next whole roll, giving 9 rolls for a correct follow-through | Round any fractional number of rolls upwards to the next whole roll because you cannot buy part of a roll. |
+| 272 | 9cc6f6 | CK3 | Recognises that 9 rolls can be bought as 3 packs of 3 rolls | Group the required rolls into packs of 3 to determine how many packs you need. |
+| 273 | 9cc6f6 | AK4 | Calculates the pack cost as $3 \times \$225 = \$675$ | Calculate the pack cost using $3 \times \$225$. |
+| 274 | 9cc6f6 | R3 | Compares the available purchase costs and selects the lower cost for a correct follow-through from 'their' number of rolls | Calculate each available buying cost from your number of rolls, then choose the lower cost. |
+| 275 | 9cc703 | CK1 | Selects $3(2)-1(1)$ for $\det A$ | Multiply the main-diagonal entries, multiply the other diagonal entries, then subtract the second product from the first. |
+| 276 | 9cc703 | CK2 | Recognises that a matrix with non-zero determinant is non-singular | Recognise that a matrix with a non-zero determinant is non-singular. |
+| 277 | 9cc703 | R1 | States non-singular using "their" non-zero determinant | State that the matrix is non-singular using your non-zero determinant. |
+| 278 | 9cc703 | CK3 | Uses $A^{-1}=\frac{1}{\det A}\operatorname{adj}A$ | Use $A^{-1}=\frac{1}{\det A}\operatorname{adj}A$ to set up the inverse calculation. |
+| 279 | 9cc703 | AK2 | Obtains $\operatorname{adj}A=\begin{pmatrix}2 & -1 \\ -1 & 3\end{pmatrix}$ | Form $\operatorname{adj}A=\begin{pmatrix}\text{swapped diagonal}&\text{negated off-diagonal}\\\text{negated off-diagonal}&\text{swapped diagonal}\end{pmatrix}$ by swapping the diagonal entries and changing the signs of the off-diagonal entries. |
+| 280 | 9cc703 | AK3 | Multiplies the adjoint by $\frac{1}{\text{their }\det A}$ | Multiply $\operatorname{adj}A$ by $\frac{1}{\text{your }\det A}$ using your determinant. |
+| 281 | 9cc703 | R2 | Proceeds with the inverse calculation using "their" conclusion that the matrix is non-singular | Continue the inverse calculation using your conclusion that the matrix is non-singular. |
+| 282 | 2ee799 | CK1 | Recognises the standard matrix for a $90°$ anticlockwise rotation about the origin. | Recognise that a $90°$ anticlockwise rotation about the origin uses the standard rotation matrix $\begin{pmatrix}0&-1\\1&0\end{pmatrix}$. |
+| 283 | 2ee799 | AK1 | Writes $R=\begin{pmatrix}0&-1\\1&0\end{pmatrix}$. | Write $R=\begin{pmatrix}0&-1\\1&0\end{pmatrix}$. |
+| 284 | 2ee799 | CK2 | Forms the composite matrix in the correct order, $T=\begin{pmatrix}-1&0\\0&1\end{pmatrix}R$. | Form the composite in transformation order by writing $T=\begin{pmatrix}-1&0\\0&1\end{pmatrix}R$. |
+| 285 | 2ee799 | AK2 | Multiplies the matrices to obtain $\begin{pmatrix}0&1\\1&0\end{pmatrix}$. | Multiply the two matrices carefully, row by column, to obtain $\begin{pmatrix}0&1\\1&0\end{pmatrix}$. |
+| 286 | 2ee799 | R1 | Relates $(x,y)$ mapping to $(y,x)$ and concludes that the transformation is reflection in $y=x$. | Show that $(x,y)$ maps to $(y,x)$, then identify this as reflection in $y=x$. |
+| 287 | 2ee799 | CK3 | States that a multiplicative inverse satisfies $AB=BA=I$. | State that a multiplicative inverse satisfies $AB=BA=I$. |
+| 288 | 2ee799 | AK3 | Gives $T^{-1}=\begin{pmatrix}0&1\\1&0\end{pmatrix}$. | Give $T^{-1}=\begin{pmatrix}0&1\\1&0\end{pmatrix}$. |
+| 289 | 2ee799 | R2 | Establishes that $T^2=I$, using their matrix $T$. | Multiply your matrix $T$ by itself to establish that $T^2=I$. |
+| 290 | 2ee799 | R3 | Uses the inverse transformation to reverse the display, $\mathbf{p}=T^{-1}\mathbf{p'}$. | Reverse the display transformation by using $\mathbf{p}=T^{-1}\mathbf{p'}$. |
+| 291 | 2ee799 | AK4 | Substitutes their inverse matrix and the displayed position vector correctly. | Substitute your inverse matrix and the displayed position vector correctly before multiplying. |
+| 292 | 2ee799 | AK5 | Multiplies to obtain $\begin{pmatrix}-2\\6\end{pmatrix}$ from their values. | Multiply your matrices row by column to find $\begin{pmatrix}\cdot\\\cdot\end{pmatrix}$ from your values. |
+| 293 | 2ee799 | R4 | States $\begin{pmatrix}-2\\6\end{pmatrix}$ as the position before the display transformation. | State $\begin{pmatrix}\cdot\\\cdot\end{pmatrix}$ as the position vector before the display transformation. |
+| 294 | 2ee7b5 | R1 | Reads the $x$-coordinate of the intersection as $2$ | Read the $x$-coordinate at the point where the two lines intersect. |
+| 295 | 2ee7b5 | R2 | Reads the $y$-coordinate of the intersection as $3$ | Read the $y$-coordinate at the point where the two lines intersect. |
+| 296 | 2ee7b5 | CK2 | Recognises that $\det A=(1)(1)-(2)(3)=-5\ne0$, so an inverse exists | Calculate $\det A$ and check that $\det A\ne0$ before deciding that an inverse exists. |
+| 297 | 2ee7b5 | AK3 | Obtains the adjoint matrix $\begin{pmatrix}1&-2\\-3&1\end{pmatrix}$ | Form the adjoint by swapping the main-diagonal entries and changing the signs of the off-diagonal entries in $\begin{pmatrix}a&b\\c&d\end{pmatrix}$. |
+| 298 | 2ee7b5 | AK4 | Multiplies the adjoint by $-\frac15$ to obtain $A^{-1}$ | Multiply every entry of the adjoint by the reciprocal of the determinant to write $A^{-1}=\frac{1}{\det A}\operatorname{adj}A$. |
+| 299 | 2ee7b5 | CK3 | States $I_2$ as the product of a matrix and its multiplicative inverse | State that multiplying a matrix by its multiplicative inverse in either order gives $I_2$. |
+| 300 | 2ee7b5 | R3 | Forms $A^{-1}\binom{8}{9}$ to obtain the prices from the receipt totals | Form $A^{-1}\binom{r}{s}$ using the receipt-total column vector to find the prices. |
+| 301 | 2ee7b5 | AK5 | Correctly evaluates $A^{-1}\binom{8}{9}=\binom{2}{3}$ | Evaluate $A^{-1}\binom{r}{s}$ by multiplying each row of the inverse by the column vector. |
+| 302 | 2ee7b5 | R4 | Concludes that the matrix result agrees with the candidate's values from the graph | Compare your matrix result with your coordinates from the graph and state whether they agree. |
+| 303 | 5cb2de | CK1 | Selects the arc-length relationship for a sector. | Use the sector arc-length formula $\frac{\theta}{360}\times2\pi r$. |
+| 304 | 5cb2de | AK1 | Substitutes $90$, $360$, $\frac{22}{7}$ and $7$ correctly. | Substitute the given angle, full-turn angle, value of $\pi$, and radius carefully into $\frac{\theta}{360}\times2\pi r$. |
+| 305 | 5cb2de | CK2 | Recognises that the sector occupies the same fraction of the circle as its arc. | Use the same fraction of the complete circle for the sector area as for its arc length. |
+| 306 | 5cb2de | AK3 | Uses "their" arc length to obtain the fraction $\frac14$ of the circle. | Divide your earlier arc length by the complete circumference to find $\frac{\text{arc length}}{\text{circumference}}$. |
+| 307 | 5cb2de | R1 | Applies "their" fraction of the circle to determine the sector area. | Multiply your fraction of the circle by the area of the complete circle to find the sector area. |
+| 308 | 5cb2de | CK3 | Recognises that four $5$-litre tins provide a total capacity of $20$ litres. | Multiply the number of tins by the capacity of each tin to find the total litres available. |
+| 309 | 5cb2de | CK4 | Forms the required coverage rate as "their" area divided by $20$ litres. | Divide your sector area by the total litres available to form the required coverage rate. |
+| 310 | 5cb2de | AK5 | Calculates $38.5\div20=1.925$. | Calculate the division $38.5\div20$ accurately. |
+| 311 | 5cb2de | R2 | Interprets the result as the minimum coverage required per litre for all four tins to be sufficient. | State that this rate is the minimum area one litre must cover so that all the tins are sufficient. |
+| 312 | 5cb2de | R3 | Expresses the coverage rate correct to 2 decimal places. | Round your coverage rate to $2$ decimal places and include the correct square-metre-per-litre units. |
+| 313 | 5cb2e6 | CK1 | Recognises that the sector is one-third of a complete circle. | Identify the sector as one-third of a complete circle before finding its area. |
+| 314 | 5cb2e6 | CK2 | Uses "their" sector area as the curved surface area of the cone. | Use your sector area as the curved surface area of the cone. |
+| 315 | 5cb2e6 | AK2 | Calculates the arc length as $10\pi$ m. | Calculate the arc length of the sector using its angle, radius and $2\pi r$. |
+| 316 | 5cb2e6 | AK3 | Equates $10\pi$ to $2\pi r$ to obtain $r=5$ m. | Set the arc length equal to the base circumference $2\pi r$ and solve for $r$. |
+| 317 | 5cb2e6 | R1 | Combines "their" curved surface area with the circular base area to show $100\pi\text{ m}^2$. | Add your curved surface area to the area of the circular base, keeping the result in terms of $\pi\text{ m}^2$. |
+| 318 | 5cb2e6 | CK3 | Recognises the slant height, base radius and perpendicular height as sides of a right-angled triangle. | Recognise that the slant height, base radius and perpendicular height form a right-angled triangle. |
+| 319 | 5cb2e6 | AK5 | Substitutes $r=5$ and $h=10\sqrt{2}$ into the cone volume calculation. | Substitute $r$ and $h$ into the cone volume formula, keeping the $\sqrt{}$ term exact. |
+| 320 | 5cb2e6 | R2 | Uses "their" base radius and "their" perpendicular height in the volume calculation. | Use your base radius and your perpendicular height in the cone volume calculation. |
+| 321 | 5cb2e6 | R3 | Simplifies the volume to $\frac{250\sqrt{2}\pi}{3}$. | Simplify the volume into one exact expression containing $\frac{}{}$, $\sqrt{}$ and $\pi$. |
+| 322 | 5cb2e6 | R4 | Expresses "their" volume in exact form. | Express your volume exactly, without changing $\pi$ or any surd into decimals. |
+| 323 | 5cb2f3 | CK1 | Selects the arc as $\frac{216}{360}$ of the circumference | Take the curved edge as the $\frac{216}{360}$ fraction of the full circumference. |
+| 324 | 5cb2f3 | AK1 | Substitutes $216$, $360$, $\pi=\frac{22}{7}$ and radius $70$ correctly | Substitute $216$, $360$, $\pi=\frac{22}{7}$ and radius $70$ into the arc-length calculation. |
+| 325 | 5cb2f3 | CK2 | Identifies the boundary as one arc and two radii | Form the boundary by using one curved arc and two straight radii. |
+| 326 | 5cb2f3 | AK3 | Finds the total length of the two radii as $140\text{ cm}$ | Add the lengths of the two equal radii and give the result in $\text{cm}$. |
+| 327 | 5cb2f3 | AK4 | Adds "their" arc length and $140\text{ cm}$ to obtain $404\text{ cm}$ | Add your arc length to the combined radii length and state the perimeter in $\text{cm}$. |
+| 328 | 5cb2f3 | CK3 | Uses $100\text{ cm}=1\text{ m}$ | Use $100\text{ cm}=1\text{ m}$ to change from centimetres to metres. |
+| 329 | 5cb2f3 | AK5 | Converts "their" perimeter from centimetres to metres | Convert your perimeter from centimetres to metres by dividing by $100$. |
+| 330 | 5cb2f3 | CK4 | Recognises that the purchase must be a whole number of metres | Choose a whole number of metres because the braid is sold only in complete metres. |
+| 331 | 5cb2f3 | R1 | Compares "their" metre length with $4\text{ m}$ | Compare your length in metres with $4\text{ m}$ before deciding whether it is enough. |
+| 332 | 5cb2f3 | R3 | Explains that $4\text{ m}$ is insufficient and $5\text{ m}$ is the least whole number that is enough | Explain why the smaller whole-metre length is too short and choose the least whole number of $\text{m}$ that is enough. |
+| 333 | 5cb2fb | R1 | Uses the horizontal level $y=16$ to locate the corresponding positive value of $x$ | Draw the horizontal level $y=16$ to the positive side of the curve, then read the matching $x$-coordinate. |
+| 334 | 5cb2fb | R3 | Uses radius equal to "their" side length plus $1$ and reads the corresponding area from the graph | Add $1$ to your side length for the radius, then use that $x$-value to read the area from the graph. |
+| 335 | 5cb2fb | CK2 | Selects the area relationship for a circle | Use the circle-area relationship $A=\pi r^2$. |
+| 336 | 5cb2fb | AK3 | Substitutes $\pi=3.14$ and "their" value of $r^2$ | Substitute the stated approximation for $\pi$ and your value of $r^2$ into the area calculation. |
+| 337 | 5cb2fb | CK3 | Recognises that the sector angle is the same fraction of $360^\circ$ as its area is of the complete circle | Use the same fraction of $360^\circ$ for the central angle as the sector area is of the complete-circle area. |
+| 338 | 5cb2fb | AK5 | Calculates $\frac{39.25}{\text{their }78.5}\times360^\circ$ to obtain $180^\circ$ | Calculate the angle using $\frac{\text{sector area}}{\text{your complete-badge area}}\times360^\circ$. |
+| 339 | 5cb2fb | R4 | Explains that $39.25$ cm$^2$ is one-half of "their" complete-badge area, so the sector is half a circle | Explain that the sector area is one-half of your complete-badge area, so the sector is half a circle. |
+| 340 | c29c18 | CK1 | Identifies the 5th and 6th positions as the median positions for "their" total of 10 values | For your total of 10 values, identify the two central positions in the ordered data to find the median. |
+| 341 | c29c18 | AK2 | Locates the 5th and 6th values as $12$ | Use the bar chart to locate the values in the two median positions. |
+| 342 | c29c18 | R1 | Concludes that the median is $12$ | State the median using the common value from the two central positions. |
+| 343 | c29c18 | R2 | Uses "their" median to separate the ordered data into lower and upper halves | Use your median to split the ordered data into a lower half and an upper half. |
+| 344 | c29c18 | CK2 | Identifies $Q_1=10$ and $Q_3=14$ | Find the middle value of each half to identify the lower and upper quartiles. |
+| 345 | c29c18 | CK3 | Recognises that the semi-interquartile range is half the interquartile range | Divide the interquartile range by two to find the semi-interquartile range. |
+| 346 | c29c20 | AK1 | Subtracts the smaller standard deviation from the larger standard deviation | Subtract the smaller standard deviation from the larger standard deviation. |
+| 347 | c29c20 | R1 | States Week 1 from the comparison of the standard deviations | Choose Week 1 because it has the smaller standard deviation. |
+| 348 | c29c20 | CK1 | Recognises standard deviation as a measure of variation in the sales | Use standard deviation to compare how much the daily sales vary. |
+| 349 | c29c20 | CK2 | Recognises that a smaller standard deviation indicates more consistent sales | Recognise that a smaller standard deviation means the daily sales are more consistent. |
+| 350 | c29c20 | CK3 | Recognises that the mean daily sales for Week 1 are 50 mangoes | Identify that Week 1’s mean daily sales match the proposed daily order. |
+| 351 | c29c20 | AK3 | Applies "their" Week 1 conclusion to the daily order of 50 mangoes | Use your Week 1 conclusion to decide whether the proposed daily order is suitable. |
+| 352 | c29c20 | R2 | Links the smaller standard deviation with sales being closer to the mean | Explain that the smaller standard deviation means the daily sales are closer to the mean. |
+| 353 | c29c20 | R3 | Concludes that ordering 50 mangoes is less likely to result in shortages or unsold mangoes | Conclude that the proposed daily order is less likely to cause shortages or unsold mangoes. |
+| 354 | c29c28 | CK1 | Recognises that $gf(x)=g(f(x))$ | Recognise that $gf(x)$ means $g(f(x))$ before you calculate the composite function. |
+| 355 | c29c28 | AK1 | Substitutes $2x$ into $g$ to obtain $3(2x)-6$ | Substitute $2x$ into $g$ and simplify the resulting expression. |
+| 356 | c29c28 | CK2 | Selects "their" composite function for a crate of mass $12$ kg | Use your composite function and substitute the crate mass given for part (b). |
+| 357 | c29c28 | CK3 | Obtains the sample size by summing all frequencies | Add every frequency in the table to find the total sample size. |
+| 358 | c29c28 | R1 | Identifies that payments greater than "their" payment in (b) come from crate masses greater than $12$ kg | Identify that a payment greater than your payment in part (b) corresponds to a crate mass greater than the stated mass. |
+| 359 | c29c28 | AK4 | Finds the frequency of crates with mass greater than $12$ kg as $4+2=6$ | Add the frequencies for all crate masses greater than the stated mass. |
+| 360 | c29c28 | R2 | Forms the proportion using $6$ qualifying crates out of the total sample | Form the proportion by dividing your qualifying-crate frequency by your total sample size. |
+| 361 | 486413 | CK1 | Recognises that the smaller standard deviation indicates greater consistency. | Choose the section with the smaller standard deviation as the more consistent one. |
+| 362 | 486413 | AK1 | Compares $0.18$ and $0.26$ correctly. | Compare the two standard deviations carefully and identify which one is smaller. |
+| 363 | 486413 | CK2 | Uses 'their' more consistent section from part (a) for the comparison with Hill. | Use your more consistent section from part (a) when you compare it with Hill. |
+| 364 | 486413 | AK3 | Finds the difference between the standard deviation for Hill and that for 'their' selected section. | Subtract Hill's standard deviation from the standard deviation of your selected section to find the difference. |
+| 365 | 486413 | CK3 | States that a smaller standard deviation means data values are closer to the mean. | State that a smaller standard deviation means the data values lie closer to the mean. |
+| 366 | 486413 | R3 | Explains that less variation gives mangoes with more similar masses for packing. | Explain that less variation means the mangoes have more similar masses, so they are suitable for packing together. |
+| 367 | 48641b | CK1 | Recognises that the number required is $35\%$ of 40 | Find $35\%$ of 40 to determine the number of deliveries below 20 minutes. |
+| 368 | 48641b | AK1 | Evaluates $0.35 \times 40 = 14$ | Evaluate $0.35 \times 40$ accurately. |
+| 369 | 48641b | R1 | Forms $5 + x =$ "their" number of deliveries below 20 minutes | Form $5+x=$ your earlier number of deliveries below 20 minutes. |
+| 370 | 48641b | AK2 | Solves for $x = 9$ | Rearrange your equation to isolate $x$. |
+| 371 | 48641b | CK2 | Identifies the first three classes as deliveries taking less than 30 minutes | Identify the first three frequency classes as the deliveries taking less than 30 minutes. |
+| 372 | 48641b | AK3 | Finds $5 +$ "their" $x + 14 = 28$ | Add the first frequency, your value of $x$, and the third frequency to find the total below 30 minutes. |
+| 373 | 48641b | AK4 | Calculates $\frac{\text{their }28}{40} \times 100 = 70\%$ | Calculate $\frac{\text{your subtotal}}{40}\times100$ to find the percentage. |
+| 374 | 48641b | CK3 | Recognises that the percentage taking more than 30 minutes is the complement of "their" percentage | Recognise that the percentage taking more than 30 minutes is the complement of your percentage taking less than 30 minutes. |
+| 375 | 48641b | R2 | Determines $100\% -$ "their" $70\% = 30\%$ | Subtract your percentage from $100\%$. |
+| 376 | 48641b | R3 | Compares $30\%$ with $33\frac{1}{3}\%$ and concludes that the customer is correct | Compare the percentage above 30 minutes with one third and use the comparison to decide whether the customer is correct. |
+| 377 | 266546 | CK1 | Identifies the two standard deviations as $1.8$ min and $1.2$ min. | Read the table and identify the standard deviation for each shift. |
+| 378 | 266546 | AK1 | Subtracts to obtain $1.8-1.2=0.6$ min. | Subtract the smaller standard deviation from the larger standard deviation to find the difference in minutes. |
+| 379 | 266546 | CK2 | Uses the early-shift standard deviation, $1.2$ min, as the reference value. | Use the early-shift standard deviation as the reference value for the percentage increase. |
+| 380 | 266546 | AK2 | Divides "their" difference by $1.2$. | Divide your difference by the early-shift standard deviation. |
+| 381 | 266546 | AK3 | Multiplies by $100$ to show $50\%$. | Multiply your quotient by $100$ and write the result as a percentage using $\%$. |
+| 382 | 266546 | R1 | Interprets the larger standard deviation as a greater spread of check-in times. | Explain that the shift with the larger standard deviation has check-in times that are more spread out. |
+| 383 | 266546 | R2 | States that the late-shift check-in times are less consistent or less predictable. | State that the late-shift check-in times are less consistent or less predictable. |
+| 384 | 266546 | AK4 | Calculates the reduced standard deviation as $1.8-(0.50\times1.8)=0.9$ min. | Calculate the reduction as $50\% \times$ the original late-shift standard deviation, then subtract it from that standard deviation. |
+| 385 | 266546 | R3 | Concludes that the late shift will not be as consistent as the early shift. | State that the late shift will not be as consistent as the early shift. |
+| 386 | 266546 | CK3 | Recognises that equally consistent sets have equal standard deviations. | Recognise that two sets are equally consistent when they have the same standard deviation. |
+| 387 | 266557 | AK1 | Finds the missing frequency: $18-14=4$ | Subtract the earlier cumulative frequency from the later cumulative frequency to find the missing frequency. |
+| 388 | 266557 | AK2 | Adds the frequencies, including "their" missing frequency, to obtain the final cumulative frequency | Add all the frequencies, including your missing frequency, to find the final cumulative frequency. |
+| 389 | 266557 | CK1 | Identifies the fifth value as the lower-quartile position | Count to the lower-quartile position in the ordered data. |
+| 390 | 266557 | CK2 | Identifies the tenth and eleventh values as the median positions | Locate the two middle positions in the ordered data for the median. |
+| 391 | 266557 | R1 | Averages the tenth and eleventh values to obtain $14.5$ | Add the values at the two median positions and divide by two to find the median. |
+| 392 | 266557 | AK3 | Uses "their" cumulative frequency to obtain upper quartile $16$ | Use your final cumulative frequency to locate the upper-quartile value in the ordered data. |
+| 393 | 266557 | CK3 | Recognises that the interquartile range is upper quartile minus lower quartile | Find the interquartile range by subtracting the lower quartile from the upper quartile. |
+| 394 | 266557 | R2 | Subtracts "their" lower quartile from "their" upper quartile | Subtract your lower quartile from your upper quartile. |
+| 395 | 266557 | R3 | Halves "their" interquartile range to obtain the semi-interquartile range | Divide your interquartile range by two to find the semi-interquartile range. |
+| 396 | b77065 | CK1 | Selects the total surface-area expression for a closed cylinder | Use $2\pi r^2 + 2\pi rh$ for the total exterior surface area of the closed cylinder. |
+| 397 | b77065 | AK1 | Substitutes the dimensions and evaluates the total exterior surface area as $616\text{ m}^2$ | Substitute the given radius and height, use the stated value of $\pi$, and calculate the total exterior area in $\text{m}^2$. |
+| 398 | b77065 | CK2 | Identifies the coating cost as the principal borrowed | Treat the coating cost as the principal borrowed. |
+| 399 | b77065 | R1 | Multiplies \$10 by "their" surface area to obtain the principal | Multiply \$10 by your surface area to find the principal borrowed. |
+| 400 | b77065 | CK3 | Selects the simple-interest relationship $I = Prt$ | Use the simple-interest relationship $I = Prt$. |
+| 401 | b77065 | AK2 | Substitutes "their" principal, $5\%$ and $3$ years into the simple-interest relationship | Substitute your principal, $5\%$, and $3$ years into the simple-interest relationship. |
+| 402 | b77065 | R2 | Forms the total repayment by adding "their" interest to "their" principal | Add your interest to your principal to form your total repayment. |
+| 403 | b77065 | R3 | Divides "their" total repayment into $4$ equal instalments | Divide your total repayment into $4$ equal instalments. |
+| 404 | b7706f | CK1 | Selects a compound-interest calculation for one annual period | Use a compound-interest calculation for one annual period. |
+| 405 | b7706f | CK2 | Uses "their" end-of-first-year balance as the principal for the further 2 years | Use your end-of-first-year balance as the principal for the next two years. |
+| 406 | b7706f | AK2 | Applies compound growth at $4\%$ for 2 further annual periods to "their" balance | Apply compound growth at $4\%$ for two further annual periods to your balance. |
+| 407 | b7706f | CK3 | Identifies total interest as the accumulated balance less the original deposit | Find the total interest by subtracting the original deposit from the accumulated balance. |
+| 408 | b7706f | AK4 | Subtracts \$60 000 from "their" third-year balance | Subtract $\$60 000$ from your third-year balance. |
+| 409 | b7706f | R1 | Compares "their" third-year balance with the refrigerator cost | Compare your third-year balance with the refrigerator cost. |
+| 410 | b7706f | R2 | Subtracts \$67 000 from "their" balance | Subtract $\$67 000$ from your balance. |
+| 411 | b7706f | R3 | States that the positive difference is money remaining | State that the positive difference is money remaining. |
+| 412 | b77079 | CK1 | Identifies the increase as \$13 230 minus \$12 600 | Find the increase by subtracting \$12 600 from \$13 230. |
+| 413 | b77079 | R1 | Uses \$12 600 as the original value for the percentage increase | Use \$12 600 as the original value when calculating the percentage increase. |
+| 414 | b77079 | AK2 | Divides "their" increase by 12 600 and multiplies by 100 | Divide your increase by 12 600 and multiply by 100. |
+| 415 | b77079 | CK2 | Forms the one-year appreciation relationship $12 600=P(1+r)$ | Form the one-year appreciation equation $12 600=P(1+r)$. |
+| 416 | b77079 | R2 | Divides 12 600 by "their" growth factor to obtain the opening deposit | Divide 12 600 by your growth factor to find the opening deposit. |
+| 417 | b77079 | CK3 | Identifies total appreciation as final value less opening deposit | Find the total appreciation by subtracting the opening deposit from the final value. |
+| 418 | b77079 | AK4 | Calculates the end-of-year-3 value using "their" opening deposit and annual rate | Calculate the end-of-year-3 value using your opening deposit and annual rate. |
+| 419 | b77079 | R3 | Subtracts "their" opening deposit from "their" end-of-year-3 value | Subtract your opening deposit from your end-of-year-3 value. |
+| 420 | b77083 | CK1 | Identifies that the bank buying rate is used for the US dollars exchanged | Use the bank buying rate because you exchange US dollars for credit. |
+| 421 | b77083 | AK1 | Multiplies $250 \times 2.68$ | Multiply $250 \times 2.68$ to find the amount credited before commission. |
+| 422 | b77083 | CK3 | Recognises that the commission is $1.5\%$ of the amount credited | Recognise that the commission is $1.5\%$ of the amount credited. |
+| 423 | b77083 | R1 | Finds $1.5\%$ of "their" credited amount | Calculate $1.5\%$ of your credited amount to find the commission. |
+| 424 | b77083 | R2 | Subtracts "their" commission from "their" credited amount | Subtract your commission from your credited amount to find the remaining credit. |
+| 425 | b77083 | R3 | States that the credit is insufficient after comparing "their" remaining credit with \$660 | Compare your remaining credit with \$660 and state whether it is sufficient. |
+| 426 | b77094 | CK1 | Selects the volume formula for a cylinder | Use the cylinder volume formula $V=\pi r^2h$. |
+| 427 | b77094 | AK1 | Substitutes $r = 0.7$ and $h = 2$ to obtain $3.08\text{ m}^3$ | Substitute the given $r$ and $h$ into $V=\pi r^2h$ and calculate the volume in $\text{m}^3$. |
+| 428 | b77094 | CK2 | Recognises that the amount borrowed is the cash price less the deposit | Find the amount borrowed by subtracting the deposit from the cash price. |
+| 429 | b77094 | R1 | Subtracts "their" deposit from "their" cash price to obtain the amount borrowed | Subtract your deposit from your cash price to calculate your amount borrowed. |
+| 430 | b77094 | R3 | States Yes following a correct comparison with "their" total payment, FT | Compare your total payment with the cash price and state Yes if the comparison supports the customer’s claim. |
+| 431 | b77094 | CK3 | Recognises that the total paid consists of the deposit and six monthly instalments | Form the total paid by adding the deposit to six monthly instalments. |
+| 432 | b7709e | CK1 | Identifies the amount financed as cash price less deposit | Subtract the deposit from the cash price to find the amount financed. |
+| 433 | b7709e | CK2 | Selects the simple-interest relationship $I = Prt$ | Use the simple-interest relationship $I = Prt$. |
+| 434 | b7709e | AK2 | Substitutes \"their\" amount financed, 5% and 3 years into the simple-interest calculation | Substitute your amount financed, $0.05$, and $3$ years into $I = Prt$ to calculate the interest. |
+| 435 | b7709e | AK4 | Adds the deposit, \"their\" amount financed and \"their\" interest | Add the deposit, your amount financed, and your interest to find the total paid. |
+| 436 | b7709e | R1 | Compares \"their\" total with \$27 000 and accepts the agreement | Compare your total with $\$27\,000$ and accept the agreement if it is less. |
+| 437 | b7709e | CK3 | Recognises that the deposit is not included in the monthly instalments | Exclude the deposit because it is paid before the monthly instalments begin. |
+| 438 | b7709e | R2 | Finds the amount to be repaid in instalments by subtracting the deposit from \"their\" total paid | Subtract the deposit from your total paid to find the amount repaid in instalments. |
+| 439 | b7709e | R3 | Divides \"their\" instalment amount by 24 to obtain the monthly instalment | Divide your instalment amount by $24$ to find the monthly instalment. |
+| 440 | b770a8 | CK1 | Identifies the annual compound multiplier as $1.05$ | Write the annual compound multiplier as $1.05$. |
+| 441 | b770a8 | CK2 | Recognises that the first-year balance is compounded for two further years | Apply the annual multiplier for two further years to the first-year balance. |
+| 442 | b770a8 | AK2 | Correctly evaluates "their" first-year amount multiplied by $1.05^2$ | Calculate your first-year amount multiplied by $1.05^2$. |
+| 443 | b770a8 | R1 | Uses "their" amount from part (a) to reach the stated third-year amount | Use your amount from part (a) to state the balance at the end of the third year. |
+| 444 | b770a8 | CK3 | Identifies interest earned as accumulated amount less original deposit | Find the interest by subtracting the original deposit from the accumulated amount. |
+| 445 | b770a8 | AK3 | Subtracts \$20 000 from "their" final amount to obtain \$3 152.50 | Subtract \$20 000 from your final amount to obtain \$3 152.50. |
+| 446 | b770a8 | R2 | Compares "their" interest with \$3 200 | Compare your interest with \$3 200. |
+| 447 | b770a8 | R3 | Concludes correctly that the interest will not be transferred | Use your comparison to decide whether the interest will be transferred. |
+| 448 | b770b2 | AK1 | Calculates $1.5\%$ of "their" local-dollar value | Calculate $1.5\%$ of your local-dollar value to find your service fee. |
+| 449 | b770b2 | AK2 | Adds "their" service fee to "their" local-dollar value | Add your service fee to your local-dollar value to find your total paid. |
+| 450 | b770b2 | CK2 | Selects the depreciation factor $(0.85)^2$ | Use the depreciation factor $(0.85)^2$ for two years of depreciation. |
+| 451 | b770b2 | AK3 | Substitutes "their" total paid into the depreciation calculation | Substitute your total paid into the depreciation calculation. |
+| 452 | b770b2 | AK4 | Calculates "their" depreciated value | Calculate your depreciated value after applying the depreciation factor. |
+| 453 | b770b2 | R1 | Expresses "their" buyout amount correct to 2 decimal places | Write your buyout amount correct to 2 decimal places. |
+| 454 | b770b2 | CK3 | Identifies the loss as "their" buyout amount minus \$1 400 | Find your loss by subtracting \$1 400 from your buyout amount. |
+| 455 | b770b2 | AK5 | Divides "their" loss by "their" buyout amount and multiplies by $100$ | Divide your loss by your buyout amount and multiply by $100$. |
+| 456 | b770b2 | R2 | Expresses "their" percentage loss correct to 3 significant figures | Write your percentage loss correct to 3 significant figures. |
+| 457 | b770b2 | CK4 | Recognises that an offer of $85\%$ permits a loss of $15\%$ | Recognise that an offer of $85\%$ allows a loss of $15\%$. |
+| 458 | b770b2 | R3 | Compares "their" percentage loss with "their" permitted loss and gives a supported decision | Compare your percentage loss with your permitted loss and use this comparison to decide whether the mechanic should accept the offer. |
+| 459 | b770bc | CK1 | Recognises that the amount before purchase tax is the total payment less the purchase tax. | Recognise that you find the amount before purchase tax by subtracting the purchase tax from the total payment. |
+| 460 | b770bc | AK1 | Subtracts \$144 from \$1 584. | Subtract \$144 from \$1 584. |
+| 461 | b770bc | CK2 | Forms a relationship using 80% of the marked price and "their" before-tax payment. | Set $80\%$ of the marked price equal to your before-tax payment. |
+| 462 | b770bc | AK2 | Divides "their" before-tax payment by 0.80. | Divide your before-tax payment by $0.80$. |
+| 463 | b770bc | R1 | Identifies the discount as the difference between "their" marked price and "their" before-tax payment. | Identify the discount as the difference between your marked price and your before-tax payment. |
+| 464 | b770bc | AK4 | Subtracts "their" before-tax payment from "their" marked price. | Subtract your before-tax payment from your marked price. |
+| 465 | b770bc | CK3 | Identifies the marked price as the base value for the discount percentage. | Use your marked price as the base value when calculating the discount percentage. |
+| 466 | b770bc | R2 | Forms the percentage comparison using "their" discount divided by "their" marked price. | Form the percentage by dividing your discount by your marked price and multiplying by $100\%$. |
+| 467 | b770c6 | CK1 | Recognises that the markup is calculated from the cost price. | Calculate the markup as a percentage of the cost price, not the marked price. |
+| 468 | b770c6 | AK1 | Calculates the markup as \$1 200. | Find the markup by taking 25% of \$4 800. |
+| 469 | b770c6 | CK2 | Recognises that the discount is calculated from the marked price. | Calculate the discount as a percentage of the marked price. |
+| 470 | b770c6 | CK3 | Recognises that selling price equals marked price less discount. | Find the selling price by subtracting the discount from the marked price. |
+| 471 | b770c6 | R2 | Uses "their" selling price as the total payable and subtracts the deposit. | Use your selling price as the total payable and subtract the \$1 000 deposit. |
+| 472 | 45e796 | CK2 | Uses cumulative frequency $20$ to locate the median | Find the middle cumulative frequency by halving the total number of students, then use that level to locate the median. |
+| 473 | 45e796 | R2 | Reads median time as $30$ minutes from their graph | From your graph, read across from the median cumulative frequency to the curve and then down to the time axis in minutes. |
+| 474 | 45e796 | CK3 | Identifies cumulative frequency $20$ at "their" median time | At your median time, read the corresponding cumulative frequency from the graph. |
+| 475 | 45e796 | AK3 | Calculates $40 - 20$ using "their" cumulative frequency | Subtract your cumulative frequency from the total number of students to find how many take longer than the median time. |
+| 476 | 45e7b5 | R1 | Reads the cumulative frequency at 24 minutes from their graph. | Read the cumulative frequency at 24 minutes directly from your graph. |
+| 477 | 45e7b5 | R2 | Recognises that the number waiting more than 24 minutes is $50-$ 'their' answer from part (b). | Recognise that the number waiting more than 24 minutes is found by subtracting your answer from part (b) from the total sample size. |
+| 478 | 45e7b5 | AK3 | Calculates $50-$ 'their' answer from part (b). | Calculate the number waiting more than 24 minutes by subtracting your answer from part (b) from $50$. |
+| 479 | 45e7b5 | AK4 | Calculates the percentage using 'their' number waiting more than 24 minutes out of 50. | Calculate the percentage by dividing your number waiting more than 24 minutes by $50$ and multiplying by $100\%$. |
+| 480 | 45e7b5 | R3 | States the result as a percentage of the sample. | State your result as a percentage of the sample, using the $\%$ symbol. |
+| 481 | 45e7cd | R1 | Reads lower quartile as $10$ items from their graph | Read the lower quartile from your graph at cumulative frequency $10$ and state the corresponding number of items. |
+| 482 | 45e7cd | R2 | Reads upper quartile as $20$ items from their graph | Read the upper quartile from your graph at cumulative frequency $30$ and state the corresponding number of items. |
+| 483 | 45e7cd | CK2 | Identifies interquartile range as upper quartile minus lower quartile | Find the interquartile range by subtracting the lower quartile from the upper quartile. |
+| 484 | 45e7cd | AK4 | Subtracts 'their' lower quartile from 'their' upper quartile to obtain $10$ items | Subtract your lower quartile from your upper quartile to obtain $10$ items. |
+| 485 | 45e7cd | CK3 | Recognises that the lower and upper quartiles bound the middle $50\%$ of the data | Recognise that the lower and upper quartiles are the boundaries of the middle $50\%$ of the data. |
+| 486 | 45e7cd | R3 | Uses 'their' quartiles to justify that the middle half lies from $10$ to $20$ items | Use your quartiles to justify that the middle half of the baskets lies from $10$ to $20$ items. |
+| 487 | 45e7d7 | CK2 | Identifies the median position as cumulative frequency $15$ | Find the median position by halving the total number of deliveries. |
+| 488 | 45e7d7 | AK3 | Uses cumulative frequency $15$ on the graph | Use the median cumulative frequency on the graph by reading across to the curve and then down to the time axis. |
+| 489 | 45e7d7 | CK3 | Recognises that the smaller standard deviation indicates more consistent delivery times | Recognise that the smaller standard deviation shows more consistent delivery times. |
+| 490 | 45e7d7 | R2 | Compares Route B median with 'their' Route A median and establishes that the typical times are equal | Compare Route B’s median with your Route A median and state that the typical times are equal. |
+| 491 | 45e7d7 | R3 | Selects Route B because its standard deviation of $3$ minutes is less than Route A standard deviation of $5$ minutes | Choose Route B because its standard deviation is less than Route A’s. |
+| 492 | 45e7e1 | CK2 | Identifies the lower- and upper-quartile cumulative frequencies as $10$ and $30$. | Find the lower- and upper-quartile positions on the cumulative frequency scale as $10$ and $30$. |
+| 493 | 45e7e1 | AK3 | Reads the lower quartile as $4$ minutes. | Read the lower quartile from the cumulative frequency curve at $10$. |
+| 494 | 45e7e1 | AK4 | Reads the upper quartile as $8$ minutes. | Read the upper quartile from the cumulative frequency curve at $30$. |
+| 495 | 45e7e1 | R2 | Subtracts "their" lower quartile from "their" upper quartile to obtain $4$ minutes. | Subtract your lower quartile from your upper quartile to find the interquartile range in minutes. |
+| 496 | 45e7e1 | CK3 | Recognises that a waiting time greater than the upper quartile is in the longest quarter of the data. | Recognise that waiting longer than the upper quartile places a customer in the longest quarter of the data. |
+| 497 | 45e7e1 | R3 | Chooses the least whole number greater than "their" upper quartile. | Choose the least whole-number waiting time greater than your upper quartile. |
+| 498 | 45e7eb | CK2 | Identifies the cumulative frequency at \$60 as the number spending \$60 or less | Use the cumulative frequency at \$60 as the number of customers who spend \$60 or less. |
+| 499 | 45e7eb | R2 | Reads $30$ from the graph at \$60 | Read $30$ from the graph at \$60. |
+| 500 | 45e7eb | CK3 | Recognises that the number spending more than \$60 is found by subtracting "their" cumulative frequency from $50$ | Subtract your cumulative frequency from $50$ to find the number who spend more than \$60. |
+| 501 | 45e7eb | AK3 | Calculates $50 - \text{their }30 = 20$, or equivalent follow-through | Calculate $50 - \text{your }30 = 20$, using your cumulative frequency. |
+| 502 | 45e7eb | R3 | Forms $\dfrac{\text{their }20}{50}\times100$, or equivalent follow-through | Form $\dfrac{\text{your }20}{50}\times100$ using your number who spend more than \$60. |
+| 503 | 45e7f5 | CK1 | Forms the equation $x+2x+3x+4x=360$. | Add the four sector angles and set the total equal to $360$. |
+| 504 | 45e7f5 | AK1 | Solves the equation to obtain $x=36$. | Collect the $x$ terms in $x+2x+3x+4x=360$ and divide to find $x$. |
+| 505 | 45e7f5 | AK2 | Calculates $2\times36=72°$ for the Website sector. | Substitute $x=36$ into $2\times36$ and write the Website angle in degrees. |
+| 506 | 45e7f5 | AK3 | Calculates $3\times36=108°$ for the Travel agent sector. | Substitute $x=36$ into $3\times36$ and write the Travel agent angle in degrees. |
+| 507 | 45e7f5 | R1 | Uses "their" value of $x$ to calculate $4x$ for the Email sector. | Use your value of $x$ to calculate $4x$ for the Email sector. |
+| 508 | 45e7f5 | CK2 | Recognises that 180 bookings correspond to $360°$, so one booking corresponds to $2°$. | Use the fact that 180 bookings fill $360°$ to find the angle for one booking. |
+| 509 | 45e7f5 | R2 | Uses "their" sector angles to determine the corresponding frequencies. | Use your sector angles and the angle for one booking to calculate each corresponding frequency. |
+| 510 | 45e7f5 | CK3 | Constructs a table with appropriate headings for booking method and frequency. | Draw a table with headings for booking method and frequency. |
+| 511 | 45e7f5 | R3 | Records the four frequencies against the correct methods and obtains a total of 180. | Place each calculated frequency beside its correct booking method and check that all four add to 180. |
+| 512 | 45e806 | AK1 | Finds class midpoint: $(20 + 29) \div 2 = 24.5$ | Add the class limits and divide by $2$ to find the midpoint of $20-29$. |
+| 513 | 45e806 | R1 | Forms the equation $\dfrac{480 + 24.5x}{20 + x} = 24.25$ | Form a weighted-mean equation with the total frequency-multiplied-by-midpoint sum over the total frequency, using $\dfrac{\text{sum of products}}{\text{total frequency}}$. |
+| 514 | 45e806 | AK2 | Rearranges to $480 + 24.5x = 485 + 24.25x$ | Multiply through by the denominator and expand both sides before collecting the $x$ terms. |
+| 515 | 45e806 | AK3 | Solves the equation to obtain $x = 20$ | Collect the $x$ terms on one side and solve the resulting linear equation for $x$. |
+| 516 | 45e806 | R2 | Accepts $20$ as a feasible whole-number frequency | Check that your value of $x$ is a feasible whole-number frequency. |
+| 517 | 45e806 | AK4 | Uses the lower-quartile position and interpolates to obtain $19.5$ | Find the lower-quartile position from the total frequency, locate it on the cumulative frequencies, and interpolate within that class. |
+| 518 | 45e806 | AK5 | Uses the upper-quartile position and interpolates to obtain $29.5$ | Find the upper-quartile position from the total frequency, locate it on the cumulative frequencies, and interpolate within that class. |
+| 519 | 45e806 | R3 | Finds the interquartile range from 'their' quartiles: $29.5 - 19.5 = 10$ | Subtract your lower quartile from your upper quartile to find your interquartile range. |
+| 520 | 45e806 | R4 | States that the claim is not supported because 'their' interquartile range is not less than $10$ | Compare your interquartile range with the stated limit and state whether the claim is supported. |
