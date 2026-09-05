@@ -51,9 +51,9 @@ describe('TeX through the generator', () => {
     expect(missingCommands('Solve for $x$ step by step.', 'Solves $3x-6\\ge20$ to obtain $x\\ge\\frac{26}{3}$')).toEqual([]);
     expect(missingCommands('Add the two vectors.', 'Forms $\\overrightarrow{OC}$')).toEqual([]);
   });
-  it('the card falls back to the criterion until a row has a hint', () => {
+  it('the card says nothing from the scheme when a row has no hint', () => {
     const rows = [{ slot_ref: 'a.i', criterion: 'Subtracts "their" total', hint: undefined as string | undefined }];
-    expect(hintLine(rows, 'a.i')).toBe('Subtracts your total');
+    expect(hintLine(rows, 'a.i')).toBeUndefined();
     rows[0].hint = 'Take your total away.';
     expect(hintLine(rows, 'a.i')).toBe('Take your total away.');
   });
