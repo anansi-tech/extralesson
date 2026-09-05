@@ -3,3 +3,6 @@ allowBuilds:
   mongodb-memory-server: true
   sharp: true
   unrs-resolver: true
+overrides:
+  # next 15.5.25 accepts ^0.35.4; the lockfile had kept 0.34.5 (GHSA-f88m-g3jw-g9cj).
+  sharp: ^0.35.4
