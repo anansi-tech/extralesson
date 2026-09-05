@@ -1730,7 +1730,9 @@ Approved by David on 2026-09-05: all 500 rows. Rows 477–487 put in the imperat
 | 499 | d17052 | AK2 | Rearranges correctly to obtain $r=\sqrt[3]{\frac{3V}{4\pi}}$ | Rearrange the formula to make $r$ the subject: $r=\sqrt[3]{\frac{3V}{4\pi}}$. |
 | 500 | d17052 | CK3 | Recognises that the capacity gives $V=250$ | Use the stated capacity by setting $V=250$. |
 
-## Batch 5 — proposed (500 rows, gpt-5.6-terra, 2026-09-05)
+## Batch 5 — approved (500 rows, gpt-5.6-terra, generated 2026-09-05)
+
+Approved by David on 2026-09-05: all 500 rows. Rows 13, 487 and 490 rewritten to the step without the answer.
 
 | # | question | code | criterion | hint |
 |---|---|---|---|---|
@@ -1746,7 +1748,7 @@ Approved by David on 2026-09-05: all 500 rows. Rows 477–487 put in the imperat
 | 10 | d1705a | AK3 | Doubles the second component of "their" $\vec{AB}$ | Multiply the second component of your earlier $\vec{AB}$ by $2$. |
 | 11 | d1705a | AK4 | Adds "their" $\vec{BC}$ to $\vec{OB}$ to obtain $\vec{OC}=\begin{pmatrix}16\\-3\end{pmatrix}$ | Add your earlier $\vec{BC}$ component by component to $\vec{OB}$ to find $\vec{OC}=\begin{pmatrix}\cdots\\\cdots\end{pmatrix}$. |
 | 12 | d1705a | CK3 | States $\vec{AC}=\vec{OC}-\vec{OA}$ | Find the displacement by subtracting $\vec{OA}$ from $\vec{OC}$, writing $\vec{AC}=\vec{OC}-\vec{OA}$. |
-| 13 | d1705a | R1 | Obtains $\vec{AC}=\begin{pmatrix}18\\-6\end{pmatrix}=3\times$ "their" $\vec{AB}$ | Calculate $\vec{AC}$ as $\begin{pmatrix}\cdots\\\cdots\end{pmatrix}$ and express it as a whole-number multiple using $\times$ your earlier $\vec{AB}$. |
+| 13 | d1705a | R1 | Obtains $\vec{AC}=\begin{pmatrix}18\\-6\end{pmatrix}=3\times$ "their" $\vec{AB}$ | Calculate $\vec{AC}$ and express it as a whole-number multiple of your earlier $\vec{AB}$. |
 | 14 | d1705a | R2 | Concludes that $A$, $B$ and $C$ are collinear because $\vec{AC}$ is a scalar multiple of $\vec{AB}$ | State that $A$, $B$ and $C$ are collinear because $\vec{AC}$ is a scalar multiple of $\vec{AB}$. |
 | 15 | d17067 | CK1 | Identifies the discount as $15\%$ of the marked price | Calculate the discount as $15\%$ of the marked price. |
 | 16 | d17067 | CK2 | Uses marked price less "their" discount | Subtract your discount from the marked price to get the discounted selling price. |
@@ -2220,10 +2222,10 @@ Approved by David on 2026-09-05: all 500 rows. Rows 477–487 put in the imperat
 | 484 | 797cd7 | AK1 | Writes the identified elements correctly in listing form | Write your identified elements of $A$ in a comma-separated listing. |
 | 485 | 797cd7 | CK2 | Recognises that each required subset contains type 3 and one other element of "their" set $A$ | Form each required pair by combining type 3 with one other element from your set $A$. |
 | 486 | 797cd7 | AK2 | Lists $\{1,3\}$ and $\{2,3\}$ | List the two-element subsets that contain 3 by pairing it with 1 and with 2: $\{1,3\}$ and $\{2,3\}$. |
-| 487 | 797cd7 | AK3 | Lists $\{3,4\}$ and $\{3,6\}$ | Continue pairing 3 with the remaining elements, 4 and 6: $\{3,4\}$ and $\{3,6\}$. |
+| 487 | 797cd7 | AK3 | Lists $\{3,4\}$ and $\{3,6\}$ | Continue pairing 3 with each of the remaining elements, one pair at a time. |
 | 488 | 797cd7 | CK3 | Recognises that type 3 is drought-tolerant | Check whether type 3 belongs to the drought-tolerant set. |
 | 489 | 797cd7 | CK4 | Identifies 2 and 6 as the butterfly-attracting elements of "their" set $A$ | Identify the butterfly-attracting elements in your set $A$. |
-| 490 | 797cd7 | AK4 | Selects $\{2,3\}$ from "their" list | From your list, select $\{2,3\}$ because it contains a drought-tolerant type and a butterfly-attracting type. |
+| 490 | 797cd7 | AK4 | Selects $\{2,3\}$ from "their" list | From your list, select the pair that contains one drought-tolerant type and one butterfly-attracting type. |
 | 491 | 797cd7 | AK5 | Selects $\{3,6\}$ from "their" list | From your list, select $\{3,6\}$ because it contains a drought-tolerant type and a butterfly-attracting type. |
 | 492 | 797cd7 | R1 | Tests all possible additions to "their" selection $\{2,3\}$ against both conditions | Add each remaining type to your selection $\{2,3\}$ and check both conditions each time. |
 | 493 | 797cd7 | R2 | Tests all possible additions to "their" selection $\{3,6\}$ against both conditions | Add each remaining type to your selection $\{3,6\}$ and check both conditions each time. |

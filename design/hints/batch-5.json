@@ -4,3499 +4,3499 @@
   "code": "AK3",
   "criterion": "Substitutes $250$ into \"their\" expression for $r$",
   "hint": "Substitute $250$ for $V$ in your expression for $r$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421335222177bc0d17052",
   "code": "AK4",
   "criterion": "Evaluates $\\sqrt[3]{\\frac{3(250)}{4\\pi}}$",
   "hint": "Evaluate $\\sqrt[3]{\\frac{3(250)}{4\\pi}}$ using your calculator.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421335222177bc0d17052",
   "code": "R1",
   "criterion": "Expresses \"their\" radius correct to 3 significant figures",
   "hint": "Write your radius correct to 3 significant figures.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421335222177bc0d17052",
   "code": "R2",
   "criterion": "Compares \"their\" required radius with \"their\" greatest possible radius",
   "hint": "Compare your required radius with your greatest possible radius using an inequality.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421335222177bc0d17052",
   "code": "R3",
   "criterion": "Concludes correctly that the tank fits",
   "hint": "Use your comparison to state whether the tank fits between the supports.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421645222177bc0d1705a",
   "code": "CK1",
   "criterion": "States $\\vec{AB}=\\vec{OB}-\\vec{OA}$",
   "hint": "Find the displacement by subtracting $\\vec{OA}$ from $\\vec{OB}$, writing $\\vec{AB}=\\vec{OB}-\\vec{OA}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421645222177bc0d1705a",
   "code": "AK1",
   "criterion": "Subtracts corresponding components to obtain $\\begin{pmatrix}6\\\\-2\\end{pmatrix}$",
   "hint": "Subtract the corresponding components carefully and write the resulting vector as $\\begin{pmatrix}\\cdots\\\\\\cdots\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421645222177bc0d1705a",
   "code": "CK2",
   "criterion": "Forms $\\vec{BC}=2\\times$ \"their\" $\\vec{AB}$",
   "hint": "Use your earlier $\\vec{AB}$ to form $\\vec{BC}=2\\times\\vec{AB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421645222177bc0d1705a",
   "code": "AK2",
   "criterion": "Doubles the first component of \"their\" $\\vec{AB}$",
   "hint": "Multiply the first component of your earlier $\\vec{AB}$ by $2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421645222177bc0d1705a",
   "code": "AK3",
   "criterion": "Doubles the second component of \"their\" $\\vec{AB}$",
   "hint": "Multiply the second component of your earlier $\\vec{AB}$ by $2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421645222177bc0d1705a",
   "code": "AK4",
   "criterion": "Adds \"their\" $\\vec{BC}$ to $\\vec{OB}$ to obtain $\\vec{OC}=\\begin{pmatrix}16\\\\-3\\end{pmatrix}$",
   "hint": "Add your earlier $\\vec{BC}$ component by component to $\\vec{OB}$ to find $\\vec{OC}=\\begin{pmatrix}\\cdots\\\\\\cdots\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421645222177bc0d1705a",
   "code": "CK3",
   "criterion": "States $\\vec{AC}=\\vec{OC}-\\vec{OA}$",
   "hint": "Find the displacement by subtracting $\\vec{OA}$ from $\\vec{OC}$, writing $\\vec{AC}=\\vec{OC}-\\vec{OA}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421645222177bc0d1705a",
   "code": "R1",
   "criterion": "Obtains $\\vec{AC}=\\begin{pmatrix}18\\\\-6\\end{pmatrix}=3\\times$ \"their\" $\\vec{AB}$",
-  "hint": "Calculate $\\vec{AC}$ as $\\begin{pmatrix}\\cdots\\\\\\cdots\\end{pmatrix}$ and express it as a whole-number multiple using $\\times$ your earlier $\\vec{AB}$.",
-  "status": "proposed"
+  "hint": "Calculate $\\vec{AC}$ and express it as a whole-number multiple of your earlier $\\vec{AB}$.",
+  "status": "approved"
  },
  {
   "question_id": "6a8421645222177bc0d1705a",
   "code": "R2",
   "criterion": "Concludes that $A$, $B$ and $C$ are collinear because $\\vec{AC}$ is a scalar multiple of $\\vec{AB}$",
   "hint": "State that $A$, $B$ and $C$ are collinear because $\\vec{AC}$ is a scalar multiple of $\\vec{AB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421dd5222177bc0d17067",
   "code": "CK1",
   "criterion": "Identifies the discount as $15\\%$ of the marked price",
   "hint": "Calculate the discount as $15\\%$ of the marked price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421dd5222177bc0d17067",
   "code": "CK2",
   "criterion": "Uses marked price less \"their\" discount",
   "hint": "Subtract your discount from the marked price to get the discounted selling price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421dd5222177bc0d17067",
   "code": "CK3",
   "criterion": "Applies sales tax to \"their\" discounted selling price",
   "hint": "Apply the sales tax rate to your discounted selling price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421dd5222177bc0d17067",
   "code": "AK3",
   "criterion": "Calculates $12.5\\%$ of \"their\" selling price",
   "hint": "Calculate $12.5\\%$ of your selling price to find the sales tax.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421dd5222177bc0d17067",
   "code": "AK4",
   "criterion": "Adds \"their\" sales tax to \"their\" selling price",
   "hint": "Add your sales tax to your selling price to find the total amount paid.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421dd5222177bc0d17067",
   "code": "CK4",
   "criterion": "Selects the selling price before sales tax as the income for calculating profit",
   "hint": "Use the selling price before sales tax as the income when calculating profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421dd5222177bc0d17067",
   "code": "AK5",
   "criterion": "Subtracts the cost from \"their\" pre-tax selling price",
   "hint": "Subtract the cost from your pre-tax selling price to calculate profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421dd5222177bc0d17067",
   "code": "R1",
   "criterion": "Concludes that the claim is incorrect using \"their\" profit",
-  "hint": "Use your profit to conclude that the manager’s claim is incorrect.",
-  "status": "proposed"
+  "hint": "Use your profit to conclude that the manager\u2019s claim is incorrect.",
+  "status": "approved"
  },
  {
   "question_id": "6a8421dd5222177bc0d17067",
   "code": "R2",
   "criterion": "Recognises that \\$49.50 is found using the total amount paid, including sales tax",
   "hint": "Recognise that the stated amount comes from the total paid and includes sales tax.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8421dd5222177bc0d17067",
   "code": "R3",
   "criterion": "States that sales tax must be remitted and is not profit",
   "hint": "State that sales tax must be remitted, so it is not profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a84221b5222177bc0d1706f",
   "code": "CK1",
   "criterion": "Recognises that $Qp$ gives the ticket revenue for each session",
   "hint": "Use $Qp$ to represent the ticket revenue for each session.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a84221b5222177bc0d1706f",
   "code": "AK1",
   "criterion": "Forms $38(15)+24(8)$, or equivalent",
   "hint": "Calculate $38(15)+24(8)$ to find the morning-session revenue.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a84221b5222177bc0d1706f",
   "code": "CK2",
   "criterion": "Recognises that $Np=1.1(Qp)$",
   "hint": "Use $Np=1.1(Qp)$ to model the projected revenues.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a84221b5222177bc0d1706f",
   "code": "R1",
   "criterion": "Uses \"their\" result from (a) to obtain the projected revenues",
   "hint": "Use your result from part (a) and multiply each session revenue by $1.1$ to obtain the projected revenues.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a84221b5222177bc0d1706f",
   "code": "AK3",
   "criterion": "Calculates $1.1\\times762$, or $1.1\\times$ \"their\" first entry",
   "hint": "Calculate $1.1\\times762$, or multiply the first entry of your matrix from part (a) by $1.1$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a84221b5222177bc0d1706f",
   "code": "CK3",
   "criterion": "Identifies the expected total as the sum of the two entries in \"their\" projected revenue matrix",
   "hint": "Add the two entries in your projected revenue matrix to find the expected total.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a84221b5222177bc0d1706f",
   "code": "R2",
   "criterion": "Adds \"their\" projected revenues and compares the result with \\$1 650",
   "hint": "Add your projected revenues and compare the total with \\$1 650.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a84221b5222177bc0d1706f",
   "code": "R3",
   "criterion": "Concludes that the target will not be met",
   "hint": "State whether the target is met after making your comparison.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8422b25222177bc0d1707c",
   "code": "AK1",
   "criterion": "Locates week $6$ as another element with image \"their\" $f(2)$",
   "hint": "Find the later week where the predicted mass equals your value of $f(2)$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8422b25222177bc0d1707c",
   "code": "R1",
   "criterion": "States both weeks, $2$ and $6$",
   "hint": "State the first week and the later matching week together.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8422b25222177bc0d1707c",
   "code": "AK2",
   "criterion": "Counts the whole weeks from \"their\" first week to \"their\" second week, inclusively",
   "hint": "Count every whole week from your first week to your second week, including both ends.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8422b25222177bc0d1707c",
   "code": "R2",
   "criterion": "Uses the condition at least \"their\" $f(2)$, including the end weeks",
   "hint": "Use all weeks for which the predicted mass is at least your value of $f(2)$, including the end weeks.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8422b25222177bc0d1707c",
   "code": "AK3",
   "criterion": "Identifies the maximum predicted mass as $16$",
   "hint": "Scan the table and select the greatest predicted mass.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8422b25222177bc0d1707c",
   "code": "AK4",
   "criterion": "Identifies week $4$ as the week of maximum predicted mass",
   "hint": "Find the week paired with the greatest predicted mass.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8422b25222177bc0d1707c",
   "code": "R3",
   "criterion": "States the axis of symmetry as the equation $x = 4$",
   "hint": "Write the vertical line through the peak as an equation beginning with $x =$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8422b25222177bc0d1707c",
   "code": "CK2",
   "criterion": "Identifies the mean from the 8 selected trees as a sample statistic",
   "hint": "Classify the mean calculated from the selected trees as a statistic from a sample.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8422b25222177bc0d1707c",
   "code": "CK3",
   "criterion": "Identifies the mean from all 40 trees as a population parameter",
   "hint": "Classify the mean calculated from all the trees as a parameter from a population.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8522946d7444309a004444",
   "code": "CK1",
   "criterion": "Forms $b+c=4$ from Figure 1.",
   "hint": "Use the number of shells in Figure 1 to form an equation in $b$ and $c$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8522946d7444309a004444",
   "code": "CK2",
   "criterion": "Forms $2b+c=6$ from Figure 2.",
   "hint": "Use the number of shells in Figure 2 to form a second equation in $b$ and $c$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8522946d7444309a004444",
   "code": "AK1",
   "criterion": "Eliminates one variable to obtain $b=2$.",
   "hint": "Subtract one equation from the other to eliminate one variable, then solve for $b$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8522946d7444309a004444",
   "code": "AK2",
   "criterion": "Substitutes to obtain $c=2$, follow-through from \"their\" value of $b$.",
   "hint": "Substitute your value of $b$ into one of your equations and solve for $c$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8522946d7444309a004444",
   "code": "CK3",
   "criterion": "Forms $n^2+2n+2$ using \"their\" values of $b$ and $c$.",
   "hint": "Substitute your values of $b$ and $c$ into the expression for the number of shells and simplify.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8522946d7444309a004444",
   "code": "AK3",
   "criterion": "Completes the square for \"their\" quadratic expression.",
   "hint": "Complete the square for your quadratic expression by adding and subtracting the needed constant.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8522946d7444309a004444",
   "code": "R1",
   "criterion": "States $(n+1)^2+1$ in the requested form.",
   "hint": "Write your completed-square expression in the requested form.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8522946d7444309a004444",
   "code": "CK4",
   "criterion": "Equates \"their\" completed-square expression to 82.",
   "hint": "Set your completed-square expression equal to the given number of shells.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8522946d7444309a004444",
   "code": "AK4",
   "criterion": "Rearranges to obtain $(n+1)^2=81$, follow-through from \"their\" expression.",
   "hint": "Rearrange your equation by moving the constant outside the square to the other side.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8522946d7444309a004444",
   "code": "AK5",
   "criterion": "Solves to obtain $n=8$ or $n=-10$.",
   "hint": "Take both square roots and solve each resulting equation for $n$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8522946d7444309a004444",
   "code": "R2",
   "criterion": "Identifies $-10$ as the other algebraic solution.",
   "hint": "Identify the negative value of $n$ as the other algebraic solution.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8522946d7444309a004444",
   "code": "R3",
   "criterion": "Rejects $-10$ because a figure number is a positive whole number.",
   "hint": "Reject the negative solution because a figure number must be a positive whole number.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852665bd8b8cbd670ab933",
   "code": "CK1",
   "criterion": "Recognises $12\\%$ as $\\frac{12}{100}$ of the total harvest",
   "hint": "Write $12\\%$ as $\\frac{12}{100}$ of the total harvest.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852665bd8b8cbd670ab933",
   "code": "AK1",
   "criterion": "Calculates $0.12 \\times 1\\,200\\,000$",
   "hint": "Calculate $0.12 \\times 1\\,200\\,000$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852665bd8b8cbd670ab933",
   "code": "CK2",
   "criterion": "Recognises that suitable beans equal the total harvest less rejected beans",
   "hint": "Find the suitable-bean total by subtracting the rejected-bean total from the total harvest.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852665bd8b8cbd670ab933",
   "code": "AK2",
   "criterion": "Subtracts \"their\" rejected-bean total from 1 200 000",
   "hint": "Subtract your rejected-bean total from 1 200 000.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852665bd8b8cbd670ab933",
   "code": "AK3",
   "criterion": "Divides \"their\" suitable-bean total by 1 200 000 and multiplies by 100",
   "hint": "Divide your suitable-bean total by 1 200 000, then multiply by 100.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852665bd8b8cbd670ab933",
   "code": "R2",
   "criterion": "Compares \"their\" percentage of suitable beans with 90%",
   "hint": "Compare your percentage of suitable beans with $90\\%$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852665bd8b8cbd670ab933",
   "code": "R3",
   "criterion": "Concludes that the harvest will not be accepted",
   "hint": "Use the comparison to state whether the harvest is accepted.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852665bd8b8cbd670ab933",
   "code": "CK3",
   "criterion": "Identifies the required number of suitable beans as 90% of 1 200 000",
   "hint": "Find the required suitable-bean total by calculating $90\\%$ of 1 200 000.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852665bd8b8cbd670ab933",
   "code": "AK4",
   "criterion": "Calculates the required number of suitable beans as 1 080 000",
   "hint": "Calculate the required number of suitable beans.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852665bd8b8cbd670ab933",
   "code": "AK5",
   "criterion": "Subtracts \"their\" suitable-bean total from 1 080 000",
   "hint": "Subtract your suitable-bean total from the required suitable-bean total.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852665bd8b8cbd670ab933",
   "code": "R4",
   "criterion": "Expresses \"their\" answer in standard form",
   "hint": "Write your final number in standard form as $a \\times 10^n$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85272ebd8b8cbd670ab945",
   "code": "CK1",
   "criterion": "Substitutes $t=1$ into the mapping for $f$",
   "hint": "Substitute $t=1$ into the rule for $f$ and simplify carefully.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85272ebd8b8cbd670ab945",
   "code": "AK2",
   "criterion": "Obtains the turning-point height $9$",
   "hint": "Read the height-coordinate of the turning point from the function or graph.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85272ebd8b8cbd670ab945",
   "code": "R1",
   "criterion": "States that $9$ is a maximum, using the negative coefficient of the squared term",
   "hint": "Use the negative coefficient of the squared term to state that the turning-point height is a maximum.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85272ebd8b8cbd670ab945",
   "code": "AK3",
   "criterion": "Locates the other time as $5$ seconds from the graph or by calculation",
   "hint": "Find the second time at the same height by reading the matching point on the graph or calculating it.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85272ebd8b8cbd670ab945",
   "code": "R2",
   "criterion": "Uses \"their\" height from (a) and \"their\" axis of symmetry to identify the second time",
   "hint": "Use your height from part (a) and your axis of symmetry to identify the second time.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85272ebd8b8cbd670ab945",
   "code": "R3",
   "criterion": "Justifies the answer using symmetry about $t=3$",
   "hint": "Justify the second time by showing that the two times are equally far from the axis of symmetry.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85272ebd8b8cbd670ab945",
   "code": "AK4",
   "criterion": "Substitutes $f(t)$ into $g$, obtaining $f(t)-5$",
   "hint": "Replace the input of $g$ with $f(t)$ and simplify the resulting expression.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85272ebd8b8cbd670ab945",
   "code": "CK3",
   "criterion": "Recognises that the required number is the number of roots of $gf(t)=0$",
   "hint": "Set $gf(t)=0$ and count the distinct roots of the resulting equation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85272ebd8b8cbd670ab945",
   "code": "R4",
   "criterion": "Uses the two distinct times, $t=1$ and \"their\" time from (c), to justify two roots",
   "hint": "Use the two distinct times, including $t=1$ and your time from part (c), to justify the number of roots.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852887ed771942b6d0dc6a",
   "code": "CK1",
   "criterion": "Recognises that $1$ cm on the plan represents $2$ m in reality",
   "hint": "Use the scale to convert one centimetre on the plan into metres in reality.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852887ed771942b6d0dc6a",
   "code": "CK2",
   "criterion": "Recognises that the slab area is the outer rectangular area less the cut-out area",
   "hint": "Find the slab area by subtracting the cut-out rectangular area from the outer rectangular area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852887ed771942b6d0dc6a",
   "code": "AK3",
   "criterion": "Calculates the areas of the outer rectangle and the cut-out",
-  "hint": "Calculate each rectangle’s area by multiplying its length by its width.",
-  "status": "proposed"
+  "hint": "Calculate each rectangle\u2019s area by multiplying its length by its width.",
+  "status": "approved"
  },
  {
   "question_id": "6a852887ed771942b6d0dc6a",
   "code": "R1",
   "criterion": "Subtracts \"their\" cut-out area from \"their\" outer area to obtain $336\\text{ m}^2$",
   "hint": "Subtract your cut-out area from your outer area and state the result in $\\text{m}^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852887ed771942b6d0dc6a",
   "code": "CK3",
   "criterion": "Uses volume $=$ area $\\times$ thickness",
   "hint": "Use volume $=$ area $\\times$ thickness to link the concrete volume, slab area, and thickness.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852887ed771942b6d0dc6a",
   "code": "CK4",
   "criterion": "Uses upper bounds for the outer dimensions and lower bounds for the cut-out dimensions",
   "hint": "Use the largest possible outer dimensions and the smallest possible cut-out dimensions when finding the greatest slab area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852887ed771942b6d0dc6a",
   "code": "R2",
   "criterion": "Shows that $16.8 \\div$ \"their\" greatest area is less than $0.050$ m",
   "hint": "Calculate thickness using volume $\\div$ your greatest area, then show that it is less than the required thickness.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852887ed771942b6d0dc6a",
   "code": "R3",
   "criterion": "Concludes that the delivery does not guarantee the required thickness",
   "hint": "State that the delivery does not guarantee the required thickness because the greatest possible slab area gives a thickness below the requirement.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8528caed771942b6d0dc72",
   "code": "CK1",
   "criterion": "States class width $10$ kg.",
   "hint": "Find the class width by subtracting the lower class boundary from the upper class boundary.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8528caed771942b6d0dc72",
   "code": "CK2",
   "criterion": "Identifies the midpoint of the class as $34.5$ kg.",
   "hint": "Find the class midpoint by averaging the two class limits.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8528caed771942b6d0dc72",
   "code": "CK3",
-  "criterion": "Uses class midpoints and frequencies, including “their” midpoint for the class $30–39$.",
-  "hint": "Multiply each class midpoint by its frequency, using your earlier midpoint for the class $30–39$.",
-  "status": "proposed"
+  "criterion": "Uses class midpoints and frequencies, including \u201ctheir\u201d midpoint for the class $30\u201339$.",
+  "hint": "Multiply each class midpoint by its frequency, using your earlier midpoint for the class $30\u201339$.",
+  "status": "approved"
  },
  {
   "question_id": "6a8528caed771942b6d0dc72",
   "code": "AK1",
   "criterion": "Calculates $\\sum fx = 1207.5$.",
-  "hint": "Add all the frequency–midpoint products to calculate $\\sum fx$.",
-  "status": "proposed"
+  "hint": "Add all the frequency\u2013midpoint products to calculate $\\sum fx$.",
+  "status": "approved"
  },
  {
   "question_id": "6a8528caed771942b6d0dc72",
   "code": "AK2",
   "criterion": "Divides $1207.5$ by $35$ to obtain $34.5$ kg.",
   "hint": "Divide your $\\sum fx$ by the total frequency to estimate the mean mass.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8528caed771942b6d0dc72",
   "code": "AK3",
   "criterion": "Calculates the lower quartile as approximately $26.3$ kg using the grouped data.",
   "hint": "Locate the lower-quartile position in the cumulative frequencies and interpolate within the relevant class using the grouped-data boundaries.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8528caed771942b6d0dc72",
   "code": "AK4",
   "criterion": "Calculates the upper quartile as approximately $43.1$ kg using the grouped data.",
   "hint": "Locate the upper-quartile position in the cumulative frequencies and interpolate within the relevant class using the grouped-data boundaries.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8528caed771942b6d0dc72",
   "code": "AK5",
-  "criterion": "Finds the interquartile range and halves “their” interquartile range.",
+  "criterion": "Finds the interquartile range and halves \u201ctheir\u201d interquartile range.",
   "hint": "Subtract your lower quartile from your upper quartile to find the interquartile range, then divide your interquartile range by two.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8528caed771942b6d0dc72",
   "code": "R1",
   "criterion": "Expresses both estimates correct to 1 decimal place.",
   "hint": "Write both estimates to 1 decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8528caed771942b6d0dc72",
   "code": "CK4",
   "criterion": "Uses both stated acceptance conditions.",
   "hint": "Check that the estimated mean meets the minimum condition and that the semi-interquartile range meets the maximum condition.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8528caed771942b6d0dc72",
   "code": "R2",
-  "criterion": "Compares “their” estimated mean and semi-interquartile range with the required limits.",
+  "criterion": "Compares \u201ctheir\u201d estimated mean and semi-interquartile range with the required limits.",
   "hint": "Compare your estimated mean and your semi-interquartile range with the required limits.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8528caed771942b6d0dc72",
   "code": "R3",
   "criterion": "Concludes that the shipment is accepted, based on both conditions.",
   "hint": "State whether the shipment is accepted after using both conditions.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852949ed771942b6d0dc7f",
   "code": "CK1",
   "criterion": "Forms the displacement as position of $A'$ minus position of $A$",
   "hint": "Subtract the coordinates of $A$ from the corresponding coordinates of $A'$ to form the displacement vector.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852949ed771942b6d0dc7f",
   "code": "AK1",
   "criterion": "Calculates $\\binom{1-(-3)}{0-2}=\\binom{4}{-2}$",
   "hint": "Calculate each component of the displacement as $\\binom{x_{A'}-x_A}{y_{A'}-y_A}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852949ed771942b6d0dc7f",
   "code": "CK2",
   "criterion": "Uses the same translation vector for the image of $B$",
   "hint": "Apply the same translation vector you found for $A$ to point $B$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852949ed771942b6d0dc7f",
   "code": "AK2",
   "criterion": "Adds \"their\" translation vector to $B$ to obtain $B'(3,3)$",
   "hint": "Add each component of your translation vector to the corresponding coordinate of $B$ to find $B'$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852949ed771942b6d0dc7f",
   "code": "AK3",
   "criterion": "Adds \"their\" translation vector to $C$ to obtain $C'(6,2)$",
   "hint": "Add each component of your translation vector to the corresponding coordinate of $C$ to find $C'$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852949ed771942b6d0dc7f",
   "code": "CK3",
   "criterion": "States that a translation preserves length and orientation",
   "hint": "State that a translation keeps lengths and orientation unchanged.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852949ed771942b6d0dc7f",
   "code": "R1",
   "criterion": "Uses \"their\" image coordinates to show $\\overrightarrow{A'B'}=\\overrightarrow{AB}$",
   "hint": "Use your image coordinates to calculate both $\\overrightarrow{A'B'}$ and $\\overrightarrow{AB}$ by subtracting start-point coordinates from end-point coordinates, then show that the vectors are equal.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852949ed771942b6d0dc7f",
   "code": "R2",
   "criterion": "Uses equal corresponding side vectors to justify congruency and unchanged orientation",
   "hint": "Use the equal corresponding side vectors to justify that the triangles are congruent and have unchanged orientation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852949ed771942b6d0dc7f",
   "code": "AK4",
   "criterion": "Subtracts the horizontal component of \"their\" translation vector from the x-coordinate of $P'$",
   "hint": "Reverse the translation by subtracting the horizontal component of your translation vector from the x-coordinate of $P'$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852949ed771942b6d0dc7f",
   "code": "AK5",
   "criterion": "Subtracts the vertical component of \"their\" translation vector from the y-coordinate of $P'$ to obtain $P=(4,5)$",
   "hint": "Subtract the vertical component of your translation vector from the y-coordinate of $P'$ and write the resulting coordinates of $P$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852949ed771942b6d0dc7f",
   "code": "R3",
   "criterion": "Shows that $\\overrightarrow{AP}=\\binom{7}{3}$ is not a scalar multiple of $\\overrightarrow{AC}=\\binom{5}{2}$",
   "hint": "Compare $\\overrightarrow{AP}=\\binom{7}{3}$ with $\\overrightarrow{AC}=\\binom{5}{2}$ by checking whether one vector is a single scalar multiple of the other.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852949ed771942b6d0dc7f",
   "code": "R4",
   "criterion": "Concludes that $P$ cannot lie on $AC$",
   "hint": "Conclude that $P$ cannot lie on $AC$ because the vectors from $A$ are not scalar multiples.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852996ed771942b6d0dc87",
   "code": "CK1",
   "criterion": "Forms $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$.",
   "hint": "Subtract the position vector $\\overrightarrow{OA}$ from $\\overrightarrow{OB}$ to form $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852996ed771942b6d0dc87",
   "code": "CK2",
   "criterion": "Forms $\\tan \\theta=\\dfrac{2}{4}$ using components of \"their\" $\\overrightarrow{AB}$.",
   "hint": "Form $\\tan \\theta=\\dfrac{\\text{vertical component}}{\\text{horizontal component}}$ using the components of your $\\overrightarrow{AB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852996ed771942b6d0dc87",
   "code": "AK2",
-  "criterion": "Evaluates $\\theta=\\tan^{-1}(2/4)=26.565\\ldots°$.",
+  "criterion": "Evaluates $\\theta=\\tan^{-1}(2/4)=26.565\\ldots\u00b0$.",
   "hint": "Calculate $\\theta=\\tan^{-1}(\\text{your ratio})$, show the unrounded decimal with $\\ldots$, and then round it suitably.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852996ed771942b6d0dc87",
   "code": "CK3",
   "criterion": "Recognises that the opposite direction gives $\\overrightarrow{CD}=-\\overrightarrow{AB}$.",
   "hint": "Reverse the direction of $\\overrightarrow{AB}$ by writing $\\overrightarrow{CD}=-\\overrightarrow{AB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852996ed771942b6d0dc87",
   "code": "AK3",
   "criterion": "Obtains $\\overrightarrow{CD}=\\begin{pmatrix}-4\\\\-2\\end{pmatrix}$ from \"their\" $\\overrightarrow{AB}$.",
   "hint": "Negate both components of your $\\overrightarrow{AB}$ to write $\\overrightarrow{CD}$ as $\\begin{pmatrix}-a\\\\-b\\end{pmatrix}$ when your vector is $\\begin{pmatrix}a\\\\b\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852996ed771942b6d0dc87",
   "code": "AK4",
   "criterion": "Adds \"their\" displacement to $C(8,7)$ to obtain $D(4,5)$.",
   "hint": "Add the corresponding components of your displacement to the coordinates of $C$ to find the coordinates of $D$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852996ed771942b6d0dc87",
   "code": "R2",
   "criterion": "Uses the direction opposite to \"their\" direction in part (b) to select the negative displacement from $C$.",
   "hint": "Use the direction opposite to your direction from part (b) to choose the negative displacement starting from $C$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852996ed771942b6d0dc87",
   "code": "CK4",
   "criterion": "Sets up the determinant $\\begin{vmatrix}4&3\\\\2&4\\end{vmatrix}=4(4)-2(3)$.",
   "hint": "Place the components of $\\overrightarrow{AB}$ and $\\overrightarrow{AD}$ into $\\begin{vmatrix}a&c\\\\b&d\\end{vmatrix}=a(d)-b(c)$ and evaluate the determinant.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852996ed771942b6d0dc87",
   "code": "R3",
   "criterion": "Concludes that the paths are not parallel because \"their\" determinant is non-zero.",
   "hint": "If your determinant is non-zero, conclude that the paths are not parallel.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8529eeed771942b6d0dc8f",
   "code": "CK3",
   "criterion": "Identifies $BD$ as half of $BC$",
   "hint": "Divide the length of $BC$ by $2$ to find $BD$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8529eeed771942b6d0dc8f",
   "code": "R1",
   "criterion": "Explains that reflection in $AD$ makes $D$ the midpoint of $BC$",
   "hint": "Explain that reflecting in $AD$ swaps $B$ and $C$, so $D$ is the midpoint of $BC$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8529eeed771942b6d0dc8f",
   "code": "AK2",
   "criterion": "Forms $AD^2 + (\"their\" BD)^2 = 13^2$",
   "hint": "Use your value of $BD$ in $AD^2 + (BD)^2 = 13^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8529eeed771942b6d0dc8f",
   "code": "AK3",
   "criterion": "Evaluates $AD^2 = 13^2 - (\"their\" BD)^2$",
   "hint": "Rearrange to calculate $AD^2 = 13^2 - (BD)^2$ using your value of $BD$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8529eeed771942b6d0dc8f",
   "code": "CK4",
   "criterion": "Recognises that both sloping sides contribute $13$ m",
   "hint": "Include both sloping sides, with each contributing $13$ m, when finding the timber length.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8529eeed771942b6d0dc8f",
   "code": "R2",
   "criterion": "Includes the central support as part of the required timber length",
   "hint": "Add the central support $AD$ to the outside edges when finding the required timber length.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8529eeed771942b6d0dc8f",
   "code": "R3",
   "criterion": "Compares $47.5$ m with \"their\" total and concludes that it is insufficient",
   "hint": "Compare \\$47.5 m with your total length and state that it is insufficient if the total is greater.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852bc0ed771942b6d0dcb1",
   "code": "CK1",
   "criterion": "Recognises that net change is money received less cost of trays",
   "hint": "Take the money received and subtract the cost of the trays to define the net change.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852bc0ed771942b6d0dcb1",
   "code": "R1",
   "criterion": "Forms $7n-18-4n$",
   "hint": "Write the money-received expression minus the tray-cost expression.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852bc0ed771942b6d0dcb1",
   "code": "AK1",
   "criterion": "Substitutes $n=4$ into \"their\" net-change expression",
   "hint": "Replace every $n$ in your net-change expression from part (a) with $4$ and evaluate.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852bc0ed771942b6d0dcb1",
   "code": "AK3",
   "criterion": "Simplifies \"their\" net-change expression to $3n-18$",
   "hint": "Collect the like $n$-terms in your net-change expression and then combine the constants.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852bc0ed771942b6d0dcb1",
   "code": "AK4",
   "criterion": "Expands $3(n-6)$ to obtain $3n-18$",
   "hint": "Multiply $3$ by each term inside the bracket in $3(n-6)$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852bc0ed771942b6d0dcb1",
   "code": "CK2",
   "criterion": "States that the expressions are identical because both simplify to $3n-18$",
   "hint": "Simplify both expressions fully and state that they are identical because they have the same simplified form.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852bc0ed771942b6d0dcb1",
   "code": "CK3",
   "criterion": "Recognises from \"their\" $3(n-6)$ that each additional tray increases net change by $3$ dollars",
   "hint": "Read the coefficient multiplying the bracket as the increase in net change for each additional tray.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852bc0ed771942b6d0dcb1",
   "code": "CK4",
   "criterion": "Recognises that the number of additional trays must be a whole number",
   "hint": "Use a whole-number value for the number of additional trays, rounding up when necessary.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852bc0ed771942b6d0dcb1",
   "code": "R2",
   "criterion": "Forms an inequality using \"their\" net change for four trays, for example $-6+3k\\ge0$",
   "hint": "Use your net change for four trays as the starting amount, add $3k$, and make the inequality $\\ge 0$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852bc0ed771942b6d0dcb1",
   "code": "AK5",
   "criterion": "Solves \"their\" inequality to obtain $k\\ge2$",
   "hint": "Solve your inequality by isolating $k$ to find the least whole-number value that satisfies it.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852c7aed771942b6d0dcc3",
   "code": "CK1",
   "criterion": "Recognises that marked price is selling price plus discount.",
   "hint": "Add the selling price and the discount to find the marked price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852c7aed771942b6d0dcc3",
   "code": "AK1",
   "criterion": "Adds $208 + 52$ to obtain \\$260.",
   "hint": "Add $208 + 52$ to find the marked price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852c7aed771942b6d0dcc3",
   "code": "CK2",
   "criterion": "Uses marked price as the base value for the percentage discount.",
   "hint": "Use the marked price as the whole amount when finding the discount percentage.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852c7aed771942b6d0dcc3",
   "code": "AK2",
   "criterion": "Calculates $\\frac{52}{\\text{their }260}\\times100$ to obtain $20\\%$.",
   "hint": "Calculate $\\frac{52}{\\text{your marked price}}\\times100$ to find the discount percentage.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852c7aed771942b6d0dcc3",
   "code": "R1",
   "criterion": "Determines markup as \"their\" discount percentage plus 10 percentage points.",
   "hint": "Add 10 percentage points to your discount percentage to find the markup percentage.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852c7aed771942b6d0dcc3",
   "code": "CK3",
   "criterion": "Forms the relationship marked price $=130\\%$ of cost price.",
   "hint": "Write the marked price as $130\\%$ of the cost price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852c7aed771942b6d0dcc3",
   "code": "AK3",
   "criterion": "Divides \"their\" marked price by $1.30$.",
   "hint": "Divide your marked price by $1.30$ to find the cost price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852c7aed771942b6d0dcc3",
   "code": "R2",
   "criterion": "Finds profit by subtracting \"their\" cost price from the selling price.",
   "hint": "Subtract your cost price from the selling price to find the profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852c7aed771942b6d0dcc3",
   "code": "R3",
   "criterion": "Uses \"their\" cost price as the base value for percentage profit.",
   "hint": "Use your cost price as the whole amount when finding the percentage profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852c7aed771942b6d0dcc3",
   "code": "AK5",
   "criterion": "Calculates $\\frac{\\text{their profit}}{\\text{their cost price}}\\times100$.",
   "hint": "Calculate $\\frac{\\text{your profit}}{\\text{your cost price}}\\times100$ to find the percentage profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852cc0ed771942b6d0dccb",
   "code": "AK1",
   "criterion": "Counts the frequencies for 2 and 3 baskets correctly",
   "hint": "Count how many times each of the first two basket numbers appears in the table and enter those frequencies.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852cc0ed771942b6d0dccb",
   "code": "AK2",
   "criterion": "Counts the frequency for 4 baskets correctly",
   "hint": "Count every occurrence of the basket number in this row and record its frequency.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852cc0ed771942b6d0dccb",
   "code": "AK3",
   "criterion": "Counts the frequencies for 5 and 10 baskets correctly",
   "hint": "Count the occurrences of each of the last two basket numbers and record both frequencies.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852cc0ed771942b6d0dccb",
   "code": "CK1",
   "criterion": "Forms a weighted total from the completed frequency table",
   "hint": "Multiply each basket number by its frequency, then add all the products to form the weighted total.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852cc0ed771942b6d0dccb",
   "code": "CK2",
   "criterion": "Identifies the 10th and 11th values as the middle values",
   "hint": "Order the data using the frequency table and locate the two central positions before finding the median.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852cc0ed771942b6d0dccb",
   "code": "R1",
   "criterion": "Uses \"their\" modal value to select the relevant frequency",
   "hint": "Use your modal value to select the matching frequency from the completed table.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852cc0ed771942b6d0dccb",
   "code": "R2",
   "criterion": "States that \"their\" modal value occurred on 7 of the 20 days",
   "hint": "State how many days your modal value occurs, out of the total number of days.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852cc0ed771942b6d0dccb",
   "code": "R3",
   "criterion": "Compares $\\frac{7}{20}$ with $\\frac{1}{3}$ correctly",
   "hint": "Compare $\\frac{f}{n}$ with one third by writing both fractions with a common denominator.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852cc0ed771942b6d0dccb",
   "code": "R4",
   "criterion": "Concludes that the supplier should make the arrangement, based on \"their\" comparison",
   "hint": "Use your comparison to decide whether the supplier should make the arrangement and state the conclusion.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d0fed771942b6d0dcd3",
   "code": "CK1",
   "criterion": "Recognises that the translation vector is found from $B'-B$.",
   "hint": "Subtract the coordinates of $B$ from those of $B'$ to form $B'-B$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d0fed771942b6d0dcd3",
   "code": "AK1",
   "criterion": "Calculates $\\binom{8-4}{4-1}=\\binom{4}{3}$.",
   "hint": "Calculate $\\binom{8-4}{4-1}$ carefully to obtain the translation vector.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d0fed771942b6d0dcd3",
   "code": "CK2",
   "criterion": "Applies the same translation vector to the coordinates of $A$.",
   "hint": "Add the translation vector to both coordinates of $A$ to locate $A'$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d0fed771942b6d0dcd3",
   "code": "AK3",
   "criterion": "Applies \"their\" translation vector to $C$ to obtain $C'=(6,6)$.",
   "hint": "Apply your translation vector to both coordinates of $C$ to locate $C'$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d0fed771942b6d0dcd3",
   "code": "CK3",
   "criterion": "Recognises that an enlargement of scale factor $\\frac{1}{2}$ about the origin halves each coordinate.",
   "hint": "Multiply each coordinate by $\\frac{1}{2}$ for an enlargement about the origin.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d0fed771942b6d0dcd3",
   "code": "AK4",
   "criterion": "Obtains $A''=\\left(\\frac{5}{2},2\\right)$ using \"their\" $A'$.",
   "hint": "Use your $A'$ coordinates and calculate $A''=\\left(\\frac{1}{2}\\times x,\\frac{1}{2}\\times y\\right)$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d0fed771942b6d0dcd3",
   "code": "AK5",
   "criterion": "Obtains $C''=(3,3)$ using \"their\" $C'$.",
   "hint": "Use your $C'$ coordinates, multiplying each by $\\frac{1}{2}$, to locate $C''$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d0fed771942b6d0dcd3",
   "code": "CK4",
   "criterion": "States that a positive enlargement preserves orientation.",
   "hint": "State that a positive enlargement keeps the orientation unchanged.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d0fed771942b6d0dcd3",
   "code": "R1",
   "criterion": "Compares corresponding lengths using \"their\" image coordinates, for example $AC=\\sqrt{5}$ and $A''C''=\\frac{\\sqrt{5}}{2}$.",
   "hint": "Using your image coordinates, calculate corresponding lengths with the distance formula, such as $AC=\\sqrt{...}$ and $A''C''=\\frac{\\sqrt{...}}{...}$, then compare them.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d0fed771942b6d0dcd3",
   "code": "R2",
   "criterion": "Concludes that the triangles are not congruent because corresponding side lengths differ.",
   "hint": "Conclude that the triangles are not congruent because corresponding side lengths are different.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d0fed771942b6d0dcd3",
   "code": "R3",
   "criterion": "Decides that Devon is not correct since the replacement stencil does not meet both requirements.",
   "hint": "Decide that Devon is not correct by checking that the replacement fails to keep both orientation and corresponding side lengths the same.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d95ed771942b6d0dce0",
   "code": "CK1",
   "criterion": "Uses $\\vec{AB}=\\vec{OB}-\\vec{OA}$",
   "hint": "Compute $\\vec{AB}=\\vec{OB}-\\vec{OA}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d95ed771942b6d0dce0",
   "code": "CK2",
   "criterion": "Forms $\\tan \\theta=3/6$ using components of \"their\" $\\vec{AB}$",
   "hint": "Form $\\tan \\theta$ from the horizontal and vertical components of your $\\vec{AB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d95ed771942b6d0dce0",
   "code": "AK2",
   "criterion": "Evaluates $\\tan^{-1}(3/6)$",
   "hint": "Evaluate $\\tan^{-1}$ of your component ratio.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d95ed771942b6d0dce0",
   "code": "R1",
   "criterion": "Gives \"their\" direction correct to 1 decimal place",
   "hint": "Give your direction rounded to 1 decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d95ed771942b6d0dce0",
   "code": "CK3",
   "criterion": "Selects $ad-bc$ for the determinant of a $2 \\times 2$ matrix",
   "hint": "Find the determinant of your $2 \\times 2$ matrix using $ad-bc$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d95ed771942b6d0dce0",
   "code": "AK3",
   "criterion": "Calculates $\\vec{BC}=\\begin{pmatrix}3\\\\6\\end{pmatrix}$",
   "hint": "Calculate $\\vec{BC}=\\vec{OC}-\\vec{OB}$ and write the result as $\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d95ed771942b6d0dce0",
   "code": "AK4",
   "criterion": "Forms $M=\\begin{pmatrix}6&3\\\\3&6\\end{pmatrix}$ using \"their\" $\\vec{AB}$",
   "hint": "Form $M=\\begin{pmatrix}\\vec{AB}\\\\\\vec{BC}\\end{pmatrix}$ by using your vectors as the rows.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d95ed771942b6d0dce0",
   "code": "R2",
-  "criterion": "Compares \"their\" direction with the interval from $25°$ to $28°$",
-  "hint": "Check whether your direction lies in the interval from $25°$ to $28°$.",
-  "status": "proposed"
+  "criterion": "Compares \"their\" direction with the interval from $25\u00b0$ to $28\u00b0$",
+  "hint": "Check whether your direction lies in the interval from $25\u00b0$ to $28\u00b0$.",
+  "status": "approved"
  },
  {
   "question_id": "6a852d95ed771942b6d0dce0",
   "code": "R3",
   "criterion": "Compares \"their\" determinant with $30$",
   "hint": "Compare your determinant with $30$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852d95ed771942b6d0dce0",
   "code": "R4",
   "criterion": "Concludes correctly that the plot meets both conditions",
   "hint": "State whether the plot meets both inspection conditions after making both comparisons.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852debed771942b6d0dce8",
   "code": "CK1",
   "criterion": "Identifies $AC$ as the line of symmetry",
   "hint": "Identify $AC$ as the line that divides the banner into two matching mirror-image halves.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852debed771942b6d0dce8",
   "code": "CK2",
   "criterion": "States rotational symmetry of order $1$",
   "hint": "State the rotational symmetry order by checking how many complete turns map the banner onto itself.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852debed771942b6d0dce8",
   "code": "CK3",
   "criterion": "Recognises that a line of symmetry is a perpendicular bisector of the segment joining corresponding points",
   "hint": "Use the fact that the symmetry line is the perpendicular bisector of the segment joining corresponding points.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852debed771942b6d0dce8",
   "code": "R1",
   "criterion": "Uses the symmetry to justify $BO=DO$ and $\\angle AOB=90^\\circ$",
   "hint": "Use reflection in $AC$ to justify $BO=DO$ and $\\angle AOB=90^\\circ$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852debed771942b6d0dce8",
   "code": "CK4",
   "criterion": "Forms the Pythagorean relationships $AO^2+BO^2=20^2$ and $(25-AO)^2+BO^2=15^2$",
   "hint": "Apply Pythagoras to both right-angled triangles to form $AO^2+BO^2=20^2$ and $(25-AO)^2+BO^2=15^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852debed771942b6d0dce8",
   "code": "AK1",
   "criterion": "Eliminates $BO$ and obtains $AO=16$",
   "hint": "Subtract the two Pythagorean equations to eliminate $BO$ and solve the resulting equation for $AO$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852debed771942b6d0dce8",
   "code": "AK2",
   "criterion": "Substitutes \"their\" $AO$ into a correct Pythagorean relationship to obtain $BO^2$",
   "hint": "Substitute your earlier $AO$ into a correct Pythagorean relationship and rearrange to obtain $BO^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852debed771942b6d0dce8",
   "code": "AK4",
   "criterion": "Obtains \"their\" $BD$ as twice \"their\" $BO$",
   "hint": "Find your $BD$ by doubling your $BO$, since $O$ is the midpoint of $BD$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852debed771942b6d0dce8",
   "code": "AK5",
   "criterion": "Compares \"their\" banner height with the frame height of $20\\text{ cm}$",
   "hint": "Compare your banner height with the frame height of $20\\text{ cm}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852debed771942b6d0dce8",
   "code": "R2",
   "criterion": "Interprets $BO$ and $DO$ as the perpendicular distances on opposite sides of the central bar $AC$",
   "hint": "Interpret $BO$ and $DO$ as equal perpendicular distances from the central bar $AC$ on opposite sides.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852debed771942b6d0dce8",
   "code": "R3",
   "criterion": "Concludes correctly, with justification, that the banner will not fit",
   "hint": "Use the height comparison to conclude whether the banner fits inside the frame, and give the reason.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e29ed771942b6d0dcf0",
   "code": "R1",
   "criterion": "Forms $20p-c=500$ from the first day's sales",
-  "hint": "Subtract the fixed cost from the first day’s sales income and set the result equal to the first day’s net receipts.",
-  "status": "proposed"
+  "hint": "Subtract the fixed cost from the first day\u2019s sales income and set the result equal to the first day\u2019s net receipts.",
+  "status": "approved"
  },
  {
   "question_id": "6a852e29ed771942b6d0dcf0",
   "code": "R2",
   "criterion": "Forms $30p-c=800$ from the second day's sales",
-  "hint": "Subtract the same fixed cost from the second day’s sales income and set the result equal to the second day’s net receipts.",
-  "status": "proposed"
+  "hint": "Subtract the same fixed cost from the second day\u2019s sales income and set the result equal to the second day\u2019s net receipts.",
+  "status": "approved"
  },
  {
   "question_id": "6a852e29ed771942b6d0dcf0",
   "code": "AK1",
   "criterion": "Eliminates $c$ to obtain $p=30$",
   "hint": "Subtract one sales equation from the other to eliminate $c$ and solve for $p$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e29ed771942b6d0dcf0",
   "code": "AK2",
   "criterion": "Substitutes to obtain $c=100$",
   "hint": "Substitute your value of $p$ into either sales equation and solve for $c$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e29ed771942b6d0dcf0",
   "code": "CK1",
   "criterion": "Recognises that $-2$ must be factored from the quadratic and linear terms",
   "hint": "Factor out the common negative coefficient from both the quadratic and linear terms.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e29ed771942b6d0dcf0",
   "code": "AK3",
   "criterion": "Substitutes \"their\" $p$ and $c$ and expands to obtain $P=-2x^2+30x-100$",
   "hint": "Substitute your $p$ and $c$ into the profit expression, then expand and collect like terms.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e29ed771942b6d0dcf0",
   "code": "AK4",
   "criterion": "Completes the square for \"their\" quadratic expression",
   "hint": "Complete the square for your quadratic expression by halving the coefficient of $x$, squaring it, and balancing the constant term.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e29ed771942b6d0dcf0",
   "code": "R3",
   "criterion": "Adjusts the constant correctly to state an equivalent completed-square expression",
   "hint": "Multiply back through your completed-square expression and adjust the constant so it stays equivalent to your original quadratic.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e29ed771942b6d0dcf0",
   "code": "CK2",
   "criterion": "Uses $P=0$ to identify the break-even boundaries",
   "hint": "Set $P=0$ to find the break-even boundaries.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e29ed771942b6d0dcf0",
   "code": "CK3",
   "criterion": "Recognises that no loss requires $P\\geq0$",
   "hint": "Use $P\\geq0$ to represent the condition for no loss.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e29ed771942b6d0dcf0",
   "code": "AK5",
   "criterion": "Solves \"their\" quadratic to obtain the boundary values $x=5$ and $x=10$",
   "hint": "Solve your quadratic equation to find both boundary values of $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e29ed771942b6d0dcf0",
   "code": "R4",
   "criterion": "Selects all positive whole-number values from 5 to 10 inclusive",
   "hint": "List every positive whole-number value of $x$ between the two break-even boundaries, including both boundaries.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e55ed771942b6d0dcf8",
   "code": "CK1",
   "criterion": "Recognises that the 18% is divided into 18 equal 1% parts",
   "hint": "Split the given $18\\%$ into $18$ equal $1\\%$ parts to find the amount for one part.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e55ed771942b6d0dcf8",
   "code": "AK1",
   "criterion": "Divides $72\\,000$ by $18$",
   "hint": "Divide $72\\,000$ by $18$ to calculate your $1\\%$ amount.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e55ed771942b6d0dcf8",
   "code": "CK2",
   "criterion": "Recognises that the total represents $100\\%$",
   "hint": "Use $100\\%$ as the percentage representing the whole production.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e55ed771942b6d0dcf8",
   "code": "AK2",
   "criterion": "Multiplies \"their\" 1% value by $100$",
   "hint": "Multiply your $1\\%$ value by $100$ to find your total production.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e55ed771942b6d0dcf8",
   "code": "CK3",
   "criterion": "Identifies dispatched sachets as total produced less rejected sachets",
   "hint": "Find the dispatched sachets by subtracting the rejected sachets from the total produced.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e55ed771942b6d0dcf8",
   "code": "AK3",
   "criterion": "Subtracts $72\\,000$ from \"their\" total",
   "hint": "Subtract $72\\,000$ from your total to calculate your dispatched number.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e55ed771942b6d0dcf8",
   "code": "CK4",
   "criterion": "States percentage as dispatched number divided by total number, multiplied by $100$",
   "hint": "Divide the dispatched number by the total number and multiply by $100$ to form the percentage.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e55ed771942b6d0dcf8",
   "code": "R2",
   "criterion": "Uses \"their\" dispatched number and \"their\" total to obtain the percentage",
   "hint": "Use your dispatched number and your total in the percentage calculation, then simplify the result.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e55ed771942b6d0dcf8",
   "code": "CK5",
   "criterion": "Identifies that a power of $10^5$ is required",
   "hint": "Choose a standard-form expression with a power of $10^5$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e55ed771942b6d0dcf8",
   "code": "AK4",
   "criterion": "Obtains coefficient $3.28$ from \"their\" dispatched number",
   "hint": "Move the decimal point in your dispatched number until the coefficient is at least $1$ and less than $10$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852e55ed771942b6d0dcf8",
   "code": "R3",
   "criterion": "Expresses \"their\" answer in standard form",
   "hint": "Write your result in standard form using your coefficient multiplied by the appropriate power of $10$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852ec4ed771942b6d0dd05",
   "code": "CK1",
   "criterion": "Recognises that the line has a negative gradient.",
   "hint": "Read the line from left to right and identify that it goes down, so the gradient is negative.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852ec4ed771942b6d0dd05",
   "code": "AK1",
   "criterion": "Calculates gradient $= -3$.",
   "hint": "Choose two clear points on the line and calculate the gradient using $\\frac{y_2-y_1}{x_2-x_1}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852ec4ed771942b6d0dd05",
   "code": "CK2",
   "criterion": "Identifies the $y$-intercept as $36$.",
   "hint": "Read the point where the line crosses the $y$-axis to identify the $y$-intercept.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852ec4ed771942b6d0dd05",
   "code": "AK2",
   "criterion": "Uses \"their\" gradient as the coefficient of $x$.",
   "hint": "Use your gradient as the coefficient of $x$ in your equation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852ec4ed771942b6d0dd05",
   "code": "R1",
   "criterion": "Expresses \"their\" equation in the form $y = mx + c$.",
   "hint": "Write your equation in the form $y = mx + c$, using your gradient for $m$ and the $y$-intercept for $c$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852ec4ed771942b6d0dd05",
   "code": "AK4",
   "criterion": "Substitutes $x = 7$ into \"their\" equation.",
   "hint": "Substitute $x = 7$ into your equation and simplify to find $y$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852ec4ed771942b6d0dd05",
   "code": "CK3",
   "criterion": "Recognises that retaining exactly $15$ m satisfies the condition \"at least 15 m\".",
   "hint": "Treat exactly $15$ m retained as satisfying at least $15$ m, because equality is included.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852ec4ed771942b6d0dd05",
   "code": "R2",
   "criterion": "Uses \"their\" result from part (c) to identify 7 costumes as meeting the requirement.",
   "hint": "Use your result from part (c) to identify the number of costumes that still leaves at least $15$ m.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852ec4ed771942b6d0dd05",
   "code": "R3",
   "criterion": "Determines that an eighth costume would leave $12$ m, or correct follow-through from \"their\" result in part (c).",
   "hint": "Starting from your result in part (c), subtract the fabric needed for one more costume to find what eight costumes leave.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852ec4ed771942b6d0dd05",
   "code": "R4",
   "criterion": "Concludes that 7 is the greatest possible whole number of costumes, with a valid comparison to the 15 m requirement.",
   "hint": "Compare the amount left after seven and after eight costumes with $15$ m, then state the greatest whole number that still meets the requirement.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852f6fed771942b6d0dd12",
   "code": "CK1",
   "criterion": "Recognises that $fg(t)=f(g(t))$",
   "hint": "Treat $fg(t)$ as $f(g(t))$ before carrying out the composition.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852f6fed771942b6d0dd12",
   "code": "AK1",
   "criterion": "Substitutes $t-3$ for $x$ in $f(x)$",
   "hint": "Replace $x$ in $f(x)$ with $t-3$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852f6fed771942b6d0dd12",
   "code": "AK2",
   "criterion": "Simplifies to $12-(t-3)^2$",
   "hint": "Simplify the composed expression by evaluating the square and then combining the constant terms.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852f6fed771942b6d0dd12",
   "code": "R1",
   "criterion": "States that the graph opens downwards, so the vertex gives a greatest value",
   "hint": "State that the parabola opens downwards, so its vertex represents the greatest water level.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852f6fed771942b6d0dd12",
   "code": "CK4",
   "criterion": "Forms the condition $h\\ge8$ using \"their\" model",
   "hint": "Use your model to write the safety condition as $h\\ge8$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852f6fed771942b6d0dd12",
   "code": "AK3",
   "criterion": "Uses \"their\" expression to obtain $(t-3)^2\\le4$",
   "hint": "Rearrange your expression to isolate the squared term in an inequality of the form $(t-3)^2\\le\\ldots$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852f6fed771942b6d0dd12",
   "code": "AK4",
   "criterion": "Obtains boundary times $t=1$ and $t=5$ from \"their\" inequality",
   "hint": "Solve your inequality at its two boundary cases to find the starting and ending times.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852f6fed771942b6d0dd12",
   "code": "R2",
   "criterion": "Selects the interval between the boundary times, following through on \"their\" maximum and axis",
   "hint": "Choose all times between your two boundary times, using your earlier maximum and axis of symmetry.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852f6fed771942b6d0dd12",
   "code": "AK5",
   "criterion": "Calculates the gradient of the tangent as $2$",
   "hint": "Calculate the tangent gradient by dividing the vertical change by the horizontal change between two clear points on the tangent.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852f6fed771942b6d0dd12",
   "code": "R3",
   "criterion": "Interprets a positive gradient as an increasing water level",
   "hint": "Interpret the positive gradient by stating that the water level is increasing.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852fcaed771942b6d0dd1a",
   "code": "CK2",
   "criterion": "Uses the grouped-data mean with the class midpoints",
   "hint": "Multiply each class frequency by its class midpoint, add these products, and divide by the total frequency to find the grouped-data mean.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852fcaed771942b6d0dd1a",
   "code": "AK1",
   "criterion": "Forms $\\frac{489 + 24.5x}{22 + x} = 23.5$",
   "hint": "Form the mean equation $\\frac{T+mx}{N+x}=\\bar{x}$ by adding the unknown class contribution to the known weighted total and total frequency.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852fcaed771942b6d0dd1a",
   "code": "AK2",
   "criterion": "Solves the equation to obtain $x = 28$",
   "hint": "Solve your mean equation carefully for $x$ by clearing the denominator first and collecting the $x$ terms.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852fcaed771942b6d0dd1a",
   "code": "R1",
   "criterion": "Interprets the solution as a valid whole-number frequency",
   "hint": "Check that your value of $x$ can represent a frequency by confirming that it is a non-negative whole number.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852fcaed771942b6d0dd1a",
   "code": "AK3",
   "criterion": "Calculates lower quartile as $9.5 + \\frac{12.5-4}{9}\\times10 = 18.9$ to 1 d.p., using \"their\" frequency",
   "hint": "Use your frequency in the lower-quartile interpolation formula $L+\\frac{p-c}{f}\\times w$ and round the estimate to one decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852fcaed771942b6d0dd1a",
   "code": "AK4",
   "criterion": "Calculates upper quartile as $19.5 + \\frac{37.5-13}{28}\\times10 = 28.3$ to 1 d.p., using \"their\" frequency",
   "hint": "Use your frequency in the upper-quartile interpolation formula $L+\\frac{p-c}{f}\\times w$ and round the estimate to one decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852fcaed771942b6d0dd1a",
   "code": "AK5",
   "criterion": "Finds $28.25 - 18.94\\ldots = 9.3$ to 1 d.p.",
   "hint": "Subtract your lower-quartile estimate from your upper-quartile estimate, use $\\ldots$ for any continuing decimal if needed, and round the interquartile range to one decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852fcaed771942b6d0dd1a",
   "code": "R2",
   "criterion": "Concludes that the claim is false since \"their\" lower quartile is below the lower boundary $19.5$ of the modal class",
   "hint": "Compare your lower-quartile estimate with the lower boundary of the modal class and use this comparison to decide whether the claim is false.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a852fcaed771942b6d0dd1a",
   "code": "R3",
   "criterion": "Expresses the quartile estimates and interquartile range to 1 decimal place",
   "hint": "Write both quartile estimates and the interquartile range consistently to one decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853865ed771942b6d0dd93",
   "code": "CK1",
   "criterion": "Recognises that $1\\text{ cm}$ on the plan represents $2\\text{ m}$ in reality",
   "hint": "Use the scale to state what $1\\text{ cm}$ on the plan represents in reality.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853865ed771942b6d0dd93",
   "code": "AK1",
   "criterion": "Calculates $4.5\\times2=9\\text{ m}$",
   "hint": "Multiply the plan measurement by the scale conversion, using $l\\times s$, to find the real length in $\\text{m}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853865ed771942b6d0dd93",
   "code": "CK2",
   "criterion": "Recognises the region as a rectangle and a semicircle",
   "hint": "Split the region into a rectangle and a semicircle before finding its area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853865ed771942b6d0dd93",
   "code": "AK2",
   "criterion": "Uses the scale to obtain a diameter of $14\\text{ m}$ and uses \"their\" length for the rectangular area",
   "hint": "Convert the diameter using the scale, then multiply it by your own converted length to find the rectangular area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853865ed771942b6d0dd93",
   "code": "AK3",
   "criterion": "Calculates the semicircle area and combines it with the rectangular area",
   "hint": "Find the area of the semicircle from its radius, find the rectangular area, and add the two areas.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853865ed771942b6d0dd93",
   "code": "R1",
   "criterion": "Expresses the area correct to $1$ decimal place",
   "hint": "Round your total area to one decimal place and write it in $\\text{m}^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853865ed771942b6d0dd93",
   "code": "CK3",
   "criterion": "States upper plan measurements of $7.05\\text{ cm}$ and $4.55\\text{ cm}$",
   "hint": "Use the upper bound for each plan measurement and state both values in $\\text{cm}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853865ed771942b6d0dd93",
   "code": "AK4",
   "criterion": "Converts the upper measurements to $14.1\\text{ m}$ and $9.1\\text{ m}$",
   "hint": "Convert each upper plan measurement separately into $\\text{m}$ using the scale.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853865ed771942b6d0dd93",
   "code": "AK5",
   "criterion": "Calculates a maximum possible area of approximately $206.4\\text{ m}^2$",
   "hint": "Use both converted upper dimensions to calculate the maximum possible area in $\\text{m}^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853865ed771942b6d0dd93",
   "code": "R2",
   "criterion": "Uses both upper measurements to determine the greatest possible area",
   "hint": "Use both upper measurements when deciding the greatest possible area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853865ed771942b6d0dd93",
   "code": "R3",
   "criterion": "Compares $205\\text{ m}^2$ with \"their\" maximum possible area",
   "hint": "Compare the given turf area with your maximum possible area, both in $\\text{m}^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853865ed771942b6d0dd93",
   "code": "R4",
   "criterion": "Concludes that the turf is insufficient, with a supporting reason",
   "hint": "Conclude whether the turf is sufficient and support your conclusion by stating how the two areas compare.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8538a6ed771942b6d0dd9b",
   "code": "CK1",
   "criterion": "Equates corresponding upper entries and obtains $x=2$",
   "hint": "Equate the corresponding upper entries and solve the resulting equation for $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8538a6ed771942b6d0dd9b",
   "code": "CK2",
   "criterion": "Forms $\\overrightarrow{OQ}=\\overrightarrow{OP}+\\overrightarrow{PQ}$",
   "hint": "Form $\\overrightarrow{OQ}=\\overrightarrow{OP}+\\overrightarrow{PQ}$ by adding the displacement from $P$ to $Q$ to the position vector of $P$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8538a6ed771942b6d0dd9b",
   "code": "AK2",
   "criterion": "Substitutes \"their\" $\\overrightarrow{OP}$ and the given $\\overrightarrow{PQ}$",
   "hint": "Substitute your earlier $\\overrightarrow{OP}$ and the given $\\overrightarrow{PQ}$ into $\\overrightarrow{OQ}=\\overrightarrow{OP}+\\overrightarrow{PQ}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8538a6ed771942b6d0dd9b",
   "code": "R1",
   "criterion": "Forms $\\overrightarrow{QR}=\\overrightarrow{OR}-\\overrightarrow{OQ}$ using \"their\" $\\overrightarrow{OQ}$",
   "hint": "Use your earlier $\\overrightarrow{OQ}$ to form $\\overrightarrow{QR}=\\overrightarrow{OR}-\\overrightarrow{OQ}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8538a6ed771942b6d0dd9b",
   "code": "AK4",
   "criterion": "Determines $\\overrightarrow{QR}=\\begin{pmatrix}2\\\\5\\end{pmatrix}$ from \"their\" vectors",
   "hint": "Subtract the corresponding components of your vectors to determine $\\overrightarrow{QR}$ as a column vector $\\begin{pmatrix}a\\\\b\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8538a6ed771942b6d0dd9b",
   "code": "R2",
   "criterion": "Uses $\\overrightarrow{PS}=\\overrightarrow{QR}$ for the parallelogram",
   "hint": "Use the equal and parallel opposite sides of the parallelogram to write $\\overrightarrow{PS}=\\overrightarrow{QR}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8538a6ed771942b6d0dd9b",
   "code": "CK3",
   "criterion": "Recognises that the direction vector must be divided by its magnitude to give a unit vector",
   "hint": "Divide the direction vector $\\overrightarrow{PS}$ by its magnitude to obtain a unit vector.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8538a6ed771942b6d0dd9b",
   "code": "AK5",
   "criterion": "Uses \"their\" $\\overrightarrow{PS}$ to obtain magnitude $\\sqrt{29}$ and divides both components by it",
   "hint": "Use your earlier $\\overrightarrow{PS}$ to calculate its magnitude with $\\sqrt{a^2+b^2}$, then divide both components by that magnitude.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8538a6ed771942b6d0dd9b",
   "code": "R4",
   "criterion": "Expresses \"their\" unit vector in exact form",
   "hint": "Write your unit vector in exact form by keeping any surd unrounded.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85394bed771942b6d0dda8",
   "code": "CK1",
   "criterion": "Forms the translation vector from the change in coordinates from $A$ to $A'$",
   "hint": "Subtract the coordinates of $A$ from the corresponding coordinates of $A'$ to form the translation vector.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85394bed771942b6d0dda8",
   "code": "CK2",
   "criterion": "Uses the same translation vector for point $D$",
   "hint": "Apply the same translation vector to point $D$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85394bed771942b6d0dda8",
   "code": "AK2",
   "criterion": "Finds the image x-coordinate: $-6+6=0$",
   "hint": "Add the horizontal component of the translation vector to the x-coordinate of $D$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85394bed771942b6d0dda8",
   "code": "AK3",
   "criterion": "Finds the image y-coordinate: $4-3=1$",
   "hint": "Add the vertical component of the translation vector to the y-coordinate of $D$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85394bed771942b6d0dda8",
   "code": "CK3",
   "criterion": "Identifies $AD$ and $A'D'$ as corresponding sides",
   "hint": "Match side $AD$ with side $A'D'$ as the sides joining the corresponding translated vertices.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85394bed771942b6d0dda8",
   "code": "AK4",
   "criterion": "Finds $\\vec{AD}=\\binom{-1}{3}$",
   "hint": "Calculate $\\vec{AD}$ by subtracting the coordinates of $A$ from those of $D$ and write the result as a $\\binom{}{}$ vector.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85394bed771942b6d0dda8",
   "code": "AK5",
   "criterion": "Finds $\\vec{A'D'}=\\binom{-1}{3}$ using \"their\" coordinates of $D'$",
   "hint": "Use your coordinates of $D'$ to calculate $\\vec{A'D'}$ and write the result as a $\\binom{}{}$ vector.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85394bed771942b6d0dda8",
   "code": "CK4",
   "criterion": "States that a translation preserves lengths, directions or orientation",
   "hint": "State that a translation preserves length, direction, and orientation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85394bed771942b6d0dda8",
   "code": "R1",
   "criterion": "Uses the matching side vectors and translation property to support the comparison",
   "hint": "Compare the matching vectors $\\vec{AD}$ and $\\vec{A'D'}$ and use the translation property to justify your comparison.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85394bed771942b6d0dda8",
   "code": "R2",
   "criterion": "Concludes that the boundaries are congruent",
   "hint": "Use your comparison to conclude whether the two boundaries are congruent.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85394bed771942b6d0dda8",
   "code": "R3",
   "criterion": "Concludes that the order of the vertices is unchanged and decides Yes",
   "hint": "Check whether the corresponding vertices remain in the same order, then state your decision.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85398ded771942b6d0ddb0",
   "code": "CK1",
   "criterion": "Forms $\\vec{AB}=\\vec{OB}-\\vec{OA}$",
   "hint": "Form $\\vec{AB}$ by subtracting $\\vec{OA}$ from $\\vec{OB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85398ded771942b6d0ddb0",
   "code": "AK1",
   "criterion": "Subtracts corresponding components to obtain $\\begin{pmatrix}3\\\\2\\end{pmatrix}$",
   "hint": "Subtract matching components and write the result as $\\begin{pmatrix}\\cdot\\\\\\cdot\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85398ded771942b6d0ddb0",
   "code": "CK2",
   "criterion": "Identifies the vertical-to-horizontal ratio as $2/3$",
   "hint": "Divide the vertical component of the route vector by its horizontal component.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85398ded771942b6d0ddb0",
   "code": "AK2",
   "criterion": "Forms $\\tan \\theta=2/3$ using 'their' vector $\\vec{AB}$",
   "hint": "Use your $\\vec{AB}$ to set $\\tan\\theta$ equal to the vertical component divided by the horizontal component.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85398ded771942b6d0ddb0",
   "code": "AK3",
   "criterion": "Evaluates $\\theta=\\tan^{-1}(2/3)$",
   "hint": "Use $\\tan^{-1}$ on your ratio to calculate $\\theta$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85398ded771942b6d0ddb0",
   "code": "R1",
   "criterion": "Expresses 'their' direction correct to 1 decimal place",
   "hint": "Write your direction in degrees rounded to one decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85398ded771942b6d0ddb0",
   "code": "CK3",
   "criterion": "Uses $ad-bc$ for the determinant of a $2\\times2$ matrix",
   "hint": "For a $2\\times2$ determinant, multiply the leading diagonal and subtract the product of the other diagonal.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85398ded771942b6d0ddb0",
   "code": "AK4",
   "criterion": "Forms the matrix using 'their' $\\vec{AB}$ and $\\vec{DC}=\\begin{pmatrix}6\\\\4\\end{pmatrix}$",
   "hint": "Build the determinant matrix from your $\\vec{AB}$ and $\\vec{DC}$ as columns: $\\begin{pmatrix}\\cdot&\\cdot\\\\\\cdot&\\cdot\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85398ded771942b6d0ddb0",
   "code": "AK5",
   "criterion": "Evaluates the determinant as $(3\\times4)-(2\\times6)=0$",
   "hint": "Evaluate the determinant by subtracting the diagonal products: $(\\cdot\\times\\cdot)-(\\cdot\\times\\cdot)$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85398ded771942b6d0ddb0",
   "code": "R3",
   "criterion": "Interprets a zero determinant as showing that the route vectors are scalar multiples",
   "hint": "State that a zero determinant means the two route vectors are scalar multiples.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85398ded771942b6d0ddb0",
   "code": "R4",
   "criterion": "Uses the scalar-multiple condition to justify that $AB$ is parallel to $DC$",
   "hint": "Use the scalar-multiple relationship to justify that $AB\\parallel DC$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8539f8ed771942b6d0ddb8",
   "code": "CK1",
   "criterion": "Forms $2PQ + 10 = 36$ from the equal sides and the perimeter",
   "hint": "Use the equal sides and the perimeter to write one equation in $PQ$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8539f8ed771942b6d0ddb8",
   "code": "CK2",
   "criterion": "Recognises $PQN$ as a right-angled triangle",
   "hint": "Identify $PQN$ as the triangle containing the right angle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8539f8ed771942b6d0ddb8",
   "code": "CK3",
   "criterion": "Recognises that the perpendicular from the apex of the isosceles triangle bisects $QR$",
   "hint": "Use the isosceles-triangle property that the perpendicular from the apex cuts $QR$ into two equal lengths.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8539f8ed771942b6d0ddb8",
   "code": "R1",
   "criterion": "Deduces $NQ = 5\\text{ m}$",
   "hint": "Divide $QR$ by $2$ to find $NQ$ in $\\text{m}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8539f8ed771942b6d0ddb8",
   "code": "AK2",
   "criterion": "Applies Pythagoras' theorem using \"their\" $PQ$ and $NQ = 5$",
   "hint": "Apply Pythagoras' theorem in $PQN$ using your $PQ$ and your value of $NQ$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8539f8ed771942b6d0ddb8",
   "code": "AK4",
   "criterion": "Calculates the area of the whole cloth using $\\frac12 \\times 10 \\times$ \"their\" $PN$",
   "hint": "Calculate the whole-cloth area using $\\frac12 \\times 10 \\times$ your $PN$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8539f8ed771942b6d0ddb8",
   "code": "R2",
   "criterion": "Explains that no other line maps the triangle onto itself",
   "hint": "Explain that only the line through $P$ and the midpoint of $QR$ reflects the triangle onto itself.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8539f8ed771942b6d0ddb8",
   "code": "R3",
   "criterion": "Concludes that no non-trivial rotation maps the cloth onto itself, giving order $1$",
   "hint": "Check that no rotation smaller than a full turn of $360^\\circ$ maps the cloth onto itself, then state the rotational-symmetry order.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853a81ed771942b6d0ddc5",
   "code": "CK1",
   "criterion": "Recognises that the markup is calculated from the cost price",
   "hint": "Calculate the markup using the cost price as the base value.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853a81ed771942b6d0ddc5",
   "code": "CK2",
   "criterion": "Recognises that the marked price is the base value for the discount percentage",
   "hint": "Use the marked price as the base value when finding the discount percentage.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853a81ed771942b6d0ddc5",
   "code": "CK3",
   "criterion": "Selects the cost price as the base value for percentage profit",
   "hint": "Use the cost price as the base value when calculating percentage profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853a81ed771942b6d0ddc5",
   "code": "AK4",
   "criterion": "Finds profit using \"their\" selling price minus 480",
   "hint": "Subtract 480 from your selling price to find the profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853a81ed771942b6d0ddc5",
   "code": "CK4",
   "criterion": "Recognises that the further reduction must be compared with profit calculated as a percentage of cost",
   "hint": "Compare the further reduction with the cost price, since profit percentage is calculated from cost price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853a81ed771942b6d0ddc5",
   "code": "R1",
   "criterion": "Expresses the further \\$15 reduction as a percentage of 480",
   "hint": "Express the further \\$15 reduction as a percentage of 480.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853a81ed771942b6d0ddc5",
   "code": "R2",
   "criterion": "Subtracts this percentage from \"their\" percentage profit",
   "hint": "Subtract this percentage from your percentage profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853a81ed771942b6d0ddc5",
   "code": "R3",
   "criterion": "Concludes that the farmer should not agree because \"their\" resulting percentage profit is less than $12\\%$",
   "hint": "Conclude that the farmer should not agree because your resulting percentage profit is less than $12\\%$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853ccce7fc40f429797b9e",
   "code": "CK1",
   "criterion": "Uses suitable headings for the value and frequency columns",
   "hint": "Label the two columns with suitable headings for the catch value and its frequency.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853ccce7fc40f429797b9e",
   "code": "AK1",
   "criterion": "Records frequencies $1$, $1$ and $2$ for catches of $3$, $4$ and $5$ fish",
   "hint": "Read the bar heights for catches of 3, 4 and 5 fish and enter each frequency in the table.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853ccce7fc40f429797b9e",
   "code": "AK2",
   "criterion": "Records frequencies $3$, $1$ and $2$ for catches of $6$, $7$ and $8$ fish",
   "hint": "Read the bar heights for catches of 6, 7 and 8 fish and enter each frequency in the table.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853ccce7fc40f429797b9e",
   "code": "R1",
   "criterion": "Organises all distinct catch values in ascending order in a frequency table",
   "hint": "List every distinct catch value once in increasing order and place its frequency beside it in a table.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853ccce7fc40f429797b9e",
   "code": "CK2",
   "criterion": "Selects $\\frac{\\sum fx}{\\sum f}$ to find the mean",
   "hint": "Use $\\frac{\\sum fx}{\\sum f}$ to calculate the mean.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853ccce7fc40f429797b9e",
   "code": "AK3",
   "criterion": "Calculates $\\sum fx=58$",
   "hint": "Multiply each catch value by its frequency and add the products to calculate $\\sum fx$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853ccce7fc40f429797b9e",
   "code": "R2",
   "criterion": "Selects \"their\" modal value as the candidate whole-number typical catch",
   "hint": "Choose your modal value as your whole-number typical catch.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853ccce7fc40f429797b9e",
   "code": "R3",
   "criterion": "Compares \"their\" candidate with \"their\" mean and verifies that it is not less than the mean",
   "hint": "Compare your candidate with your mean and check that it is not less than the mean.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853ccce7fc40f429797b9e",
   "code": "R4",
   "criterion": "Concludes that \"their\" candidate satisfies both stated conditions",
   "hint": "State that your candidate meets both required conditions.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d31e7fc40f429797ba6",
   "code": "CK1",
   "criterion": "Recognises that the four disjoint regions total 35 commuters",
   "hint": "Add the entries in all four disjoint regions, since together they make up the whole universal set.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d31e7fc40f429797ba6",
   "code": "AK1",
   "criterion": "Forms $14 + 10 + x + 5 = 35$",
   "hint": "Write an equation that adds the four region entries and sets the total equal to the number of commuters.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d31e7fc40f429797ba6",
   "code": "R1",
   "criterion": "Solves the equation to obtain $x = 6$",
   "hint": "Rearrange your equation to isolate $x$ and calculate its value.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d31e7fc40f429797ba6",
   "code": "CK2",
   "criterion": "Identifies the positive factors of \"their\" value of $x$",
   "hint": "List every positive integer that divides your value of $x$ exactly.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d31e7fc40f429797ba6",
   "code": "AK2",
   "criterion": "Writes the factors in roster form",
   "hint": "Put the factors in roster form by writing them once each inside curly brackets, separated by commas.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d31e7fc40f429797ba6",
   "code": "CK3",
   "criterion": "Recognises that each required subset contains two distinct elements",
   "hint": "Form each subset by choosing two different elements, without repeating an element in the same subset.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d31e7fc40f429797ba6",
   "code": "AK3",
   "criterion": "Lists $\\{1,2\\}$, $\\{1,3\\}$ and $\\{1,6\\}$",
   "hint": "Start by pairing the smallest element with each larger element exactly once.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d31e7fc40f429797ba6",
   "code": "AK4",
   "criterion": "Lists $\\{2,3\\}$ and $\\{2,6\\}$",
   "hint": "Next, pair the second-smallest element with each larger unused element.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d31e7fc40f429797ba6",
   "code": "AK5",
   "criterion": "Lists $\\{3,6\\}$",
   "hint": "Finish with the one remaining pair of larger elements.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d31e7fc40f429797ba6",
   "code": "R2",
   "criterion": "Tests \"their\" two-element subsets using divisibility by \"their\" value of $x$",
   "hint": "Multiply the two elements in each of your two-element subsets and test whether each product is divisible by your value of $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d31e7fc40f429797ba6",
   "code": "R4",
   "criterion": "Justifies the accepted pairs using products divisible by \"their\" value of $x$",
   "hint": "Explain that you accept a pair only when its product divides exactly by your value of $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d6fe7fc40f429797bae",
   "code": "CK1",
   "criterion": "Represents the heater increase by adding $(3x-2)$",
   "hint": "Add $(3x-2)$ to the starting temperature to represent the heater increase.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d6fe7fc40f429797bae",
   "code": "CK2",
   "criterion": "Represents the ventilation change by subtracting $(x+5)$",
   "hint": "Subtract $(x+5)$ from the running temperature to represent the ventilation change.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d6fe7fc40f429797bae",
   "code": "AK1",
   "criterion": "Simplifies the directed-number expression to $2x-11$",
   "hint": "Combine the constants and like $x$-terms carefully to simplify the directed-number expression.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d6fe7fc40f429797bae",
   "code": "AK2",
   "criterion": "Substitutes $6$ into \"their\" expression for the final temperature",
   "hint": "Substitute $6$ into your expression for the final temperature and evaluate it.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d6fe7fc40f429797bae",
   "code": "CK3",
   "criterion": "Uses the fact that identical expressions have the same simplified form for all values of $x$",
   "hint": "Simplify both expressions and use matching simplified forms to show that they are identical for every value of $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d6fe7fc40f429797bae",
   "code": "AK4",
   "criterion": "Expands $2(x-6)+1$ correctly",
   "hint": "Expand $2(x-6)+1$ by multiplying $2$ by each term inside the bracket before combining constants.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d6fe7fc40f429797bae",
   "code": "R1",
   "criterion": "Shows that $2(x-6)+1$ simplifies to \"their\" expression from part (a)",
   "hint": "Simplify $2(x-6)+1$ and compare the result with your expression from part (a).",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d6fe7fc40f429797bae",
   "code": "CK4",
   "criterion": "Forms an inequality using \"their\" acceptable temperature from part (b)",
   "hint": "Write an inequality that compares the temperature expression with your acceptable temperature.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d6fe7fc40f429797bae",
   "code": "AK5",
   "criterion": "Solves $2(x-6)+1\\geq$ \"their\" temperature to obtain $x\\geq6$",
   "hint": "Solve the inequality using $\\geq$ by undoing the addition and multiplication while keeping the inequality direction correct.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d6fe7fc40f429797bae",
   "code": "R2",
   "criterion": "Selects $6$ as the least permitted whole-number setting",
   "hint": "Choose the smallest permitted whole-number setting that satisfies your inequality.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853d6fe7fc40f429797bae",
   "code": "R3",
   "criterion": "Justifies the minimum by showing that the preceding setting gives a temperature below \"their\" acceptable temperature",
   "hint": "Test the whole-number setting immediately below your least setting and show that its temperature is below your acceptable temperature.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853dafe7fc40f429797bb6",
   "code": "R1",
   "criterion": "Defines suitable variables and forms $l+w=14$ and $l-w=4$",
   "hint": "Let $l$ and $w$ represent the length and width, then translate the perimeter and difference statements into two equations.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853dafe7fc40f429797bb6",
   "code": "AK1",
   "criterion": "Eliminates one variable correctly",
   "hint": "Add or subtract the two equations so that one variable cancels, then solve for the remaining variable.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853dafe7fc40f429797bb6",
   "code": "AK2",
   "criterion": "Determines the second dimension by substitution",
   "hint": "Substitute your first dimension into one original equation and calculate the other dimension.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853dafe7fc40f429797bb6",
   "code": "CK2",
   "criterion": "Forms the enlarged area as $(\\text{their length}+x)(\\text{their width}+x)$",
   "hint": "Increase each of your dimensions by $x$ and write the area as $(\\text{your length}+x)(\\text{your width}+x)$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853dafe7fc40f429797bb6",
   "code": "AK3",
   "criterion": "Expands to obtain $x^2+14x+45$, or correct follow-through from their dimensions",
   "hint": "Expand your area product and collect like terms in descending powers of $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853dafe7fc40f429797bb6",
   "code": "CK3",
   "criterion": "Recognises that $x^2+14x+49=(x+7)^2$, or correct follow-through",
   "hint": "Identify the perfect-square trinomial by squaring the bracket formed from half the coefficient of $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853dafe7fc40f429797bb6",
   "code": "AK4",
   "criterion": "Writes $(x+7)^2-4$, or correct completed-square follow-through",
   "hint": "Use the balancing constant to rewrite your quadratic as a squared bracket minus a constant.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853dafe7fc40f429797bb6",
   "code": "CK4",
   "criterion": "Sets their completed-square expression equal to $60$",
   "hint": "Set your completed-square expression equal to the required area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853dafe7fc40f429797bb6",
   "code": "AK5",
   "criterion": "Solves to obtain $x=1$ and $x=-15$, or correct follow-through",
   "hint": "Isolate the squared bracket, take both square-root branches, and solve each resulting linear equation for $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853dafe7fc40f429797bb6",
   "code": "R2",
   "criterion": "Selects $x=1$ using the allowable interval",
   "hint": "Choose the solution that lies within the allowable interval shown on the number line.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853dafe7fc40f429797bb6",
   "code": "R3",
   "criterion": "Explains that $-15$ is not an allowable value of $x$",
   "hint": "State that you reject the other solution because it lies outside the allowable interval for $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853df3e7fc40f429797bbe",
   "code": "CK1",
   "criterion": "Recognises that Figure 3 contains 40 lamps and identifies 15% of this total",
   "hint": "Count the lamps in Figure 3 and identify the stated percentage of that total.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853df3e7fc40f429797bbe",
   "code": "CK2",
   "criterion": "Recognises that the uncovered lamps are the total less \"their\" covered lamps",
   "hint": "Subtract your covered-lamp total from the total number of lamps to find your uncovered-lamp total.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853df3e7fc40f429797bbe",
   "code": "AK2",
   "criterion": "Calculates the percentage using \"their\" uncovered lamps out of 40",
   "hint": "Divide your uncovered-lamp total by the total number of lamps and multiply by $100\\%$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853df3e7fc40f429797bbe",
   "code": "CK3",
   "criterion": "Selects \"their\" uncovered percentage as the proportion of full-operation flashes produced",
   "hint": "Use your uncovered percentage as the proportion of full-operation flashes the panel produces.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853df3e7fc40f429797bbe",
   "code": "AK3",
   "criterion": "Finds \"their\" percentage of 10 000 000",
   "hint": "Calculate your percentage of the full-operation flash total.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853df3e7fc40f429797bbe",
   "code": "AK5",
   "criterion": "Converts \"their\" number of flashes to $8.5 \\times 10^6$",
   "hint": "Rewrite your number of flashes in standard form, using $a \\times 10^n$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853df3e7fc40f429797bbe",
   "code": "R2",
   "criterion": "Expresses \"their\" answer in standard form",
   "hint": "State your flash output in standard form using $a \\times 10^n$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853df3e7fc40f429797bbe",
   "code": "R3",
   "criterion": "Concludes suitable using \"their\" standard-form output",
   "hint": "Use your standard-form output to decide whether the panel is suitable for the event.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853df3e7fc40f429797bbe",
   "code": "R4",
   "criterion": "States that \"their\" output is greater than the minimum requirement",
   "hint": "Compare your output with the minimum requirement and state that it is greater.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853fa9e7fc40f429797bda",
   "code": "CK3",
   "criterion": "Recognises that underfilling occurs where the curve is below the $x$-axis",
   "hint": "Look for the interval where the curve lies below the $x$-axis to identify when underfilling occurs.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853fa9e7fc40f429797bda",
   "code": "AK2",
   "criterion": "Substitutes $x+1$ into $f$ to form $f(g(x))$",
   "hint": "Replace the input $x$ in $f$ with $x+1$ to write $f(g(x))$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a853fa9e7fc40f429797bda",
   "code": "R2",
   "criterion": "Translates the roots using \"their\" result from (b), giving roots at $0$ and $6$",
   "hint": "Use your roots from part (b) and shift both one unit left to find the roots of the composite.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854012e7fc40f429797be2",
   "code": "CK1",
   "criterion": "States class width $50 - 40 = 10$ kg.",
   "hint": "Subtract the lower class boundary from the upper class boundary to find the class width in kg.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854012e7fc40f429797be2",
   "code": "CK2",
   "criterion": "Selects appropriate class midpoints.",
   "hint": "Find each class midpoint by averaging the two boundaries of that class.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854012e7fc40f429797be2",
   "code": "AK1",
   "criterion": "Obtains weighted total $\\sum fx = 1900$.",
   "hint": "Multiply every class midpoint by its frequency and add the products to calculate $\\sum fx$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854012e7fc40f429797be2",
   "code": "AK2",
   "criterion": "Divides by total frequency to obtain $1900 \\div 40 = 47.5$.",
   "hint": "Divide your weighted total by the total frequency using $\\text{weighted total} \\div \\text{total frequency}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854012e7fc40f429797be2",
   "code": "CK3",
   "criterion": "Identifies the 20th value and the median class $40 \\le m < 50$.",
   "hint": "Find the halfway observation from the total frequency, then identify its class and write the boundaries as lower boundary $\\le m <$ upper boundary.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854012e7fc40f429797be2",
   "code": "AK3",
   "criterion": "Interpolates to obtain estimated median $40 + \\frac{20-11}{12}\\times10 = 47.5$.",
   "hint": "Interpolate within the median class by adding the lower boundary to $\\frac{\\text{position into class}}{\\text{class frequency}}\\times\\text{class width}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854012e7fc40f429797be2",
   "code": "R1",
   "criterion": "Compares their estimated mean and median to conclude that the distribution is approximately symmetrical.",
   "hint": "Compare your estimated mean with your estimated median and use how close they are to state whether the distribution is approximately symmetrical.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854012e7fc40f429797be2",
   "code": "CK4",
   "criterion": "Identifies quartile positions as the 10th and 30th values.",
   "hint": "Find the observations one quarter and three quarters of the way through the total frequency.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854012e7fc40f429797be2",
   "code": "AK4",
   "criterion": "Interpolates to obtain $Q_1 \\approx 38.6$ and $Q_3 \\approx 57.8$.",
   "hint": "Interpolate in the two quartile classes and record the estimates as $Q_1 \\approx \\ldots$ and $Q_3 \\approx \\ldots$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854012e7fc40f429797be2",
   "code": "AK5",
   "criterion": "Uses their quartiles to calculate interquartile range and semi-interquartile range.",
   "hint": "Subtract your lower quartile from your upper quartile, then divide this interquartile range by two to find the semi-interquartile range.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854012e7fc40f429797be2",
   "code": "R2",
   "criterion": "Expresses the estimated semi-interquartile range correct to 1 decimal place.",
   "hint": "Round your estimated semi-interquartile range to one decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854012e7fc40f429797be2",
   "code": "R3",
   "criterion": "Uses their estimated median plus or minus their semi-interquartile range to decide that $58$ kg is not acceptable.",
   "hint": "Use your estimated median plus or minus your semi-interquartile range to form the acceptable interval, compare the bag mass with it, and state that the bag is not acceptable.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8540dbe7fc40f429797bf4",
   "code": "CK1",
   "criterion": "Recognises that the translation vector is found from corresponding image and object coordinates.",
   "hint": "Compare a point on the original outline with its matching point on the image and subtract the object coordinates from the image coordinates to find the translation vector.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8540dbe7fc40f429797bf4",
   "code": "AK1",
   "criterion": "Finds the horizontal displacement as $2-(-4)=6$.",
   "hint": "Subtract the original $x$-coordinate from the matching image $x$-coordinate to find the horizontal displacement.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8540dbe7fc40f429797bf4",
   "code": "AK2",
   "criterion": "Finds the vertical displacement as $3-1=2$, giving $\\binom{6}{2}$.",
   "hint": "Subtract the original $y$-coordinate from the matching image $y$-coordinate and write both displacements as $\\binom{\\text{horizontal}}{\\text{vertical}}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8540dbe7fc40f429797bf4",
   "code": "CK2",
   "criterion": "Recognises that reflection in $y=x$ interchanges the coordinates.",
   "hint": "For a reflection in $y=x$, interchange the $x$- and $y$-coordinates.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8540dbe7fc40f429797bf4",
   "code": "AK3",
   "criterion": "Translates $H$ using 'their' vector to obtain $(5,0)$.",
   "hint": "Add each component of your translation vector to the corresponding coordinate of $H$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8540dbe7fc40f429797bf4",
   "code": "AK4",
   "criterion": "Reflects $(5,0)$ in $y=x$ to obtain $(0,5)$.",
   "hint": "Reflect the point you obtain in $y=x$ by swapping its two coordinates.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8540dbe7fc40f429797bf4",
   "code": "CK3",
   "criterion": "States congruent.",
   "hint": "State that the final triangular image is congruent to $ABC$ because the transformations preserve size and shape.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8540dbe7fc40f429797bf4",
   "code": "R1",
   "criterion": "States that the orientation is reversed because a reflection reverses orientation.",
   "hint": "State that the orientation is reversed because a reflection reverses orientation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8540dbe7fc40f429797bf4",
   "code": "R2",
   "criterion": "Reverses the transformations in the correct order, undoing the reflection before the translation.",
   "hint": "Work backwards from the final image by undoing the reflection first and then undoing the translation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8540dbe7fc40f429797bf4",
   "code": "R3",
   "criterion": "Uses $K''(-1,7)$ to determine the position before reflection as $(7,-1)$.",
   "hint": "Reflect $K''$ in $y=x$ by interchanging its coordinates to locate the point before reflection.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8540dbe7fc40f429797bf4",
   "code": "AK5",
   "criterion": "Subtracts 'their' translation vector from $(7,-1)$.",
   "hint": "Subtract your translation vector from the point before reflection to find your original point.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8540dbe7fc40f429797bf4",
   "code": "R4",
   "criterion": "Confirms that translating 'their' point and then reflecting gives $(-1,7)$.",
   "hint": "Check your point by translating it with your vector and then reflecting it in $y=x$ to see whether it reaches the given final point.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854129e7fc40f429797bfc",
   "code": "CK1",
   "criterion": "Uses $\\vec{AB}=\\vec{OB}-\\vec{OA}$",
   "hint": "Find the displacement by subtracting the position vector of $A$ from the position vector of $B$ using $\\vec{AB}=\\vec{OB}-\\vec{OA}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854129e7fc40f429797bfc",
   "code": "AK1",
   "criterion": "Subtracts corresponding components to obtain $\\begin{pmatrix}6\\\\8\\end{pmatrix}$",
   "hint": "Subtract corresponding components in $\\vec{OB}-\\vec{OA}$ and write the differences in a column vector such as $\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854129e7fc40f429797bfc",
   "code": "AK2",
   "criterion": "Finds $|\\vec{AB}|=\\sqrt{6^2+8^2}=10$ m",
   "hint": "Use Pythagoras on the components of $\\vec{AB}$ with $|\\vec{AB}|=\\sqrt{x^2+y^2}$, then state the length in m.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854129e7fc40f429797bfc",
   "code": "CK2",
   "criterion": "Forms $\\tan\\theta=8/6$ for the angle north of east",
   "hint": "Form $\\tan\\theta$ by dividing the northward component of $\\vec{AB}$ by its eastward component.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854129e7fc40f429797bfc",
   "code": "AK3",
   "criterion": "Evaluates $\\theta=\\tan^{-1}(8/6)$",
   "hint": "Use $\\theta=\\tan^{-1}(\\text{your ratio})$ to calculate the angle.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854129e7fc40f429797bfc",
   "code": "R1",
-  "criterion": "Expresses the direction as $53.1°$ north of east, correct to 1 decimal place",
+  "criterion": "Expresses the direction as $53.1\u00b0$ north of east, correct to 1 decimal place",
   "hint": "State your angle to one decimal place and describe it as north of east.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854129e7fc40f429797bfc",
   "code": "CK3",
   "criterion": "Recognises that $\\vec{AC}=\\dfrac{15}{\\text{their }|\\vec{AB}|}\\vec{AB}$",
   "hint": "Scale your displacement vector with $\\vec{AC}=\\dfrac{15}{\\text{your }|\\vec{AB}|}\\vec{AB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854129e7fc40f429797bfc",
   "code": "R2",
   "criterion": "Uses the scale factor $15/(\\text{their }10)$ to obtain a displacement in the same direction as $\\vec{AB}$",
   "hint": "Multiply every component of $\\vec{AB}$ by $15/(\\text{your }|\\vec{AB}|)$ so that $\\vec{AC}$ stays in the same direction.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854129e7fc40f429797bfc",
   "code": "AK4",
   "criterion": "Adds $\\vec{OA}$ to their $\\vec{AC}$ to obtain $\\vec{OC}=\\begin{pmatrix}11\\\\14\\end{pmatrix}$",
   "hint": "Add $\\vec{OA}$ component by component to your $\\vec{AC}$ and write the result as $\\vec{OC}=\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854129e7fc40f429797bfc",
   "code": "CK4",
   "criterion": "Forms $M$ using $\\vec{AB}$ and their $\\vec{AC}$ as columns",
   "hint": "Form $M$ by placing $\\vec{AB}$ and your $\\vec{AC}$ as its two columns.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854129e7fc40f429797bfc",
   "code": "AK5",
   "criterion": "Evaluates $\\det M=(6)(12)-(9)(8)=0$, using their vectors",
   "hint": "Evaluate $\\det M$ by multiplying the entries on one diagonal and subtracting the product of the entries on the other diagonal, using your vectors.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854129e7fc40f429797bfc",
   "code": "R3",
   "criterion": "Concludes that the markers are collinear since determinant zero shows their displacement vectors are parallel",
   "hint": "Conclude that the points are collinear because $\\det M=0$ shows your displacement vectors are parallel.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854650e7fc40f429797c5f",
   "code": "CK1",
   "criterion": "Recognises that the $y$-intercept occurs when $x=0$.",
   "hint": "Set $x=0$ and read where the line meets the $y$-axis.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854650e7fc40f429797c5f",
   "code": "CK2",
   "criterion": "Identifies $m$ as the gradient of the line.",
   "hint": "Use $m$ to represent the gradient of the line.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854650e7fc40f429797c5f",
   "code": "AK3",
   "criterion": "Forms $y=3x-18$ using the gradient and their $y$-intercept.",
   "hint": "Use your gradient and your $y$-intercept in $y=mx+c$ to form the equation of the line.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854650e7fc40f429797c5f",
   "code": "CK3",
   "criterion": "Sets $y=0$ for the break-even condition.",
   "hint": "Set $y=0$ because break-even means the profit is zero.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854650e7fc40f429797c5f",
   "code": "AK4",
   "criterion": "Solves $0=3x-18$ to obtain $x=6$.",
   "hint": "Solve $0=3x-18$ for $x$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854650e7fc40f429797c5f",
   "code": "R1",
   "criterion": "Interprets $x=6$ as 6 trays sold.",
   "hint": "State that your $x$-value gives the number of trays sold at break-even.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854650e7fc40f429797c5f",
   "code": "CK4",
   "criterion": "Forms the order size as \"their\" break-even number plus 3.",
   "hint": "Add 3 to your break-even number to find the order size.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854650e7fc40f429797c5f",
   "code": "AK5",
   "criterion": "Substitutes 9 into \"their\" equation for the line.",
   "hint": "Substitute the order size into your equation for the line to calculate the profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854650e7fc40f429797c5f",
   "code": "R2",
   "criterion": "Obtains a profit of 9 hundreds of dollars, equivalent to \\$900.",
   "hint": "Convert your profit from hundreds of dollars into dollars.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854650e7fc40f429797c5f",
   "code": "R3",
   "criterion": "Compares \\$900 with \\$1 000 and correctly rejects the order.",
   "hint": "Compare your profit with \\$1 000 and use the comparison to decide whether to reject the order.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854697e7fc40f429797c67",
   "code": "CK1",
   "criterion": "Identifies cost price as the base for the percentage markup",
   "hint": "Use the cost price as the amount you compare the markup with when calculating the percentage markup.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854697e7fc40f429797c67",
   "code": "AK1",
   "criterion": "Finds markup of \\$120",
   "hint": "Subtract the cost price from the marked price to find the markup.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854697e7fc40f429797c67",
   "code": "CK2",
   "criterion": "Uses 60% of \"their\" percentage markup as the discount percentage",
   "hint": "Find the discount percentage by taking $60\\%$ of your percentage markup.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854697e7fc40f429797c67",
   "code": "AK4",
   "criterion": "Deducts \"their\" discount from the marked price to obtain \\$510, or follows through correctly",
   "hint": "Subtract your discount from the marked price to find your selling price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854697e7fc40f429797c67",
   "code": "CK3",
   "criterion": "Identifies profit as selling price less cost price, using cost price as the percentage base",
   "hint": "Subtract the cost price from the selling price for the profit, then use the cost price as the base for the percentage.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854697e7fc40f429797c67",
   "code": "AK5",
   "criterion": "Finds profit of \\$30, or follows through from \"their\" selling price",
   "hint": "Subtract the cost price from your selling price to find your profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854697e7fc40f429797c67",
   "code": "R1",
   "criterion": "Expresses \"their\" profit as a percentage of the cost price to obtain $6.25\\%$",
   "hint": "Express your profit as a percentage of the cost price using $\\%$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854697e7fc40f429797c67",
   "code": "R2",
   "criterion": "Determines 10% of the cost price as \\$48",
   "hint": "Calculate 10% of the cost price to find the required profit.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854697e7fc40f429797c67",
   "code": "R3",
   "criterion": "Adds the required profit to the cost price to obtain \\$528",
   "hint": "Add the required profit to the cost price to find the minimum acceptable selling price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854697e7fc40f429797c67",
   "code": "R4",
   "criterion": "States that the promotional price is not acceptable because \"their\" selling price is below \"their\" minimum price, or because \"their\" percentage profit is less than $10\\%$",
   "hint": "State that the promotional price is not acceptable because your selling price is below your minimum price or your percentage profit is less than $10\\%$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8547e4e7fc40f429797c83",
   "code": "CK1",
   "criterion": "Identifies the distinct passenger numbers as $3,4,5,6,7$",
   "hint": "List each different passenger number shown in the table, without repeating any.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8547e4e7fc40f429797c83",
   "code": "AK1",
   "criterion": "Records frequencies $1$ and $5$ for $3$ and $4$ passengers respectively",
   "hint": "Read the table and record the frequencies for the first two passenger numbers.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8547e4e7fc40f429797c83",
   "code": "AK2",
   "criterion": "Records frequencies $4$, $3$ and $2$ for $5$, $6$ and $7$ passengers respectively",
   "hint": "Read the table and record the frequencies for the remaining three passenger numbers.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8547e4e7fc40f429797c83",
   "code": "R1",
   "criterion": "Forms the weighted total from the frequency table",
   "hint": "Multiply each passenger number by its frequency and add all the products to form the weighted total.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8547e4e7fc40f429797c83",
   "code": "AK3",
   "criterion": "Obtains total passengers $75$",
   "hint": "Calculate the total number of passengers by adding your weighted products accurately.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8547e4e7fc40f429797c83",
   "code": "CK2",
   "criterion": "Identifies the median position as the eighth value",
   "hint": "Order the data using the frequencies and identify the middle position.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8547e4e7fc40f429797c83",
   "code": "R2",
   "criterion": "States that Devon's entire statement is not correct",
   "hint": "State that Devon's statement is not completely correct.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8547e4e7fc40f429797c83",
   "code": "R3",
   "criterion": "Uses \"their\" mean and median to support that $5$ can describe a typical trip",
   "hint": "Use your mean and median to explain why the stated number can represent a typical trip.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8547e4e7fc40f429797c83",
   "code": "R4",
   "criterion": "Uses \"their\" mode to show that $4$, not $5$, is the most common number",
   "hint": "Use your mode to show which passenger number occurs most often, rather than the number Devon claims.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85483ae7fc40f429797c8b",
   "code": "CK1",
   "criterion": "Recognises the courtyard as an outer rectangle with a rectangular cut-out",
   "hint": "Treat the courtyard as one outer rectangle with a smaller rectangular cut-out removed.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85483ae7fc40f429797c8b",
   "code": "AK1",
   "criterion": "Calculates the areas of the outer rectangle and the cut-out",
   "hint": "Calculate the area of the outer rectangle and subtract the area of the rectangular cut-out.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85483ae7fc40f429797c8b",
   "code": "CK2",
   "criterion": "Identifies that $1$ cm on the plan represents $2$ m actually",
   "hint": "Read the scale to identify the actual length represented by each plan length.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85483ae7fc40f429797c8b",
   "code": "R1",
   "criterion": "Uses the squared linear scale factor with \"their\" plan area",
   "hint": "Square the linear scale factor and multiply it by your plan area to convert to actual area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85483ae7fc40f429797c8b",
   "code": "CK3",
   "criterion": "Uses the greatest possible overall dimensions and the least possible cut-out dimensions",
   "hint": "Use the greatest possible overall dimensions and the least possible cut-out dimensions to maximise the area.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85483ae7fc40f429797c8b",
   "code": "AK4",
   "criterion": "Calculates the maximum plan area as $(8.05\\times6.05)-(2.95\\times1.95)=42.95\\text{ cm}^2$",
   "hint": "Calculate the maximum plan area by evaluating $(\\text{greatest overall length}\\times\\text{greatest overall width})-(\\text{least cut-out length}\\times\\text{least cut-out width})$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85483ae7fc40f429797c8b",
   "code": "AK5",
   "criterion": "Converts the maximum plan area to $171.8\\text{ m}^2$",
   "hint": "Convert your maximum plan area to actual area using the squared scale factor.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85483ae7fc40f429797c8b",
   "code": "R2",
   "criterion": "Finds the difference between $171.8\\text{ m}^2$ and \"their\" area in part (b)",
   "hint": "Subtract your area from part (b) from your maximum actual area to find the margin of error.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85483ae7fc40f429797c8b",
   "code": "CK4",
   "criterion": "Compares $170\\text{ m}^2$ with the interval based on \"their\" area and margin of error",
   "hint": "Form the lower and upper limits using your area and margin of error, then check whether the stated area lies between them.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a85483ae7fc40f429797c8b",
   "code": "R3",
   "criterion": "Concludes that the claim is reasonable and supports it using \"their\" allowable interval",
   "hint": "State whether the claim is reasonable and justify your conclusion by referring to your allowable interval.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8548dae7fc40f429797c98",
   "code": "CK1",
   "criterion": "Recognises that $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$",
   "hint": "Find the translation vector by calculating $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8548dae7fc40f429797c98",
   "code": "AK1",
   "criterion": "Subtracts the position vectors to obtain $\\binom{2}{0}$",
   "hint": "Subtract the two position vectors carefully and write the result as a column vector $\\binom{a}{b}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8548dae7fc40f429797c98",
   "code": "CK2",
   "criterion": "Uses \"their\" vector $\\overrightarrow{AB}$ as the translation vector",
   "hint": "Use your vector $\\overrightarrow{AB}$ as the translation vector.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8548dae7fc40f429797c98",
   "code": "AK2",
   "criterion": "Adds \"their\" translation vector to $A$ to obtain $A'$",
   "hint": "Add your translation vector to every coordinate of $A$ to find $A'$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8548dae7fc40f429797c98",
   "code": "AK3",
   "criterion": "Adds \"their\" translation vector to $C$ to obtain $C'$",
   "hint": "Add your translation vector to every coordinate of $C$ to find $C'$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8548dae7fc40f429797c98",
   "code": "CK3",
-  "criterion": "Uses the rule $(x,y)\\mapsto(-y,x)$ for a $90°$ anticlockwise rotation about the origin",
-  "hint": "Apply the rule $(x,y)\\mapsto(-y,x)$ for a $90°$ anticlockwise rotation about the origin.",
-  "status": "proposed"
+  "criterion": "Uses the rule $(x,y)\\mapsto(-y,x)$ for a $90\u00b0$ anticlockwise rotation about the origin",
+  "hint": "Apply the rule $(x,y)\\mapsto(-y,x)$ for a $90\u00b0$ anticlockwise rotation about the origin.",
+  "status": "approved"
  },
  {
   "question_id": "6a8548dae7fc40f429797c98",
   "code": "AK4",
   "criterion": "Rotates \"their\" $A'$ to obtain $A''$",
   "hint": "Apply the rotation rule to your $A'$ coordinates to find $A''$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8548dae7fc40f429797c98",
   "code": "AK5",
   "criterion": "Rotates \"their\" $C'$ to obtain $C''$",
   "hint": "Apply the rotation rule to your $C'$ coordinates to find $C''$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8548dae7fc40f429797c98",
   "code": "CK4",
   "criterion": "States that the original triangle and final image are congruent",
   "hint": "State that the original triangle and its final image are congruent.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8548dae7fc40f429797c98",
   "code": "R1",
   "criterion": "States that the triangles have the same orientation",
   "hint": "State that the original triangle and its final image have the same orientation.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8548dae7fc40f429797c98",
   "code": "R2",
   "criterion": "Gives preservation of side lengths as a reason",
   "hint": "Explain that translations and rotations preserve corresponding side lengths.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8548dae7fc40f429797c98",
   "code": "R3",
   "criterion": "Gives preservation of angle sizes as a reason",
   "hint": "Explain that translations and rotations preserve corresponding angle sizes.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8549c9e7fc40f429797caa",
   "code": "CK1",
   "criterion": "States $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$",
   "hint": "Find $\\overrightarrow{AB}$ by subtracting $\\overrightarrow{OA}$ from $\\overrightarrow{OB}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8549c9e7fc40f429797caa",
   "code": "CK2",
   "criterion": "Uses $\\det M=ad-bc$ for the $2\\times2$ matrix",
   "hint": "Use the determinant rule $\\det M=ad-bc$ for the $2\\times2$ matrix.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8549c9e7fc40f429797caa",
   "code": "AK2",
   "criterion": "Obtains $\\det M=26-2k$ using $\\binom{4}{2}$ and $\\overrightarrow{AC}$",
   "hint": "Write the matrix columns as $\\binom{\\text{horizontal}}{\\text{vertical}}$, use your vector from part (a) and $\\overrightarrow{AC}$, then simplify $\\det M$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8549c9e7fc40f429797caa",
   "code": "R1",
   "criterion": "Equates \"their\" determinant expression to the recorded value $18$",
   "hint": "Set your determinant expression equal to the recorded determinant value.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8549c9e7fc40f429797caa",
   "code": "AK3",
   "criterion": "Solves the resulting equation to obtain $k=4$",
   "hint": "Solve the resulting linear equation for $k$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8549c9e7fc40f429797caa",
   "code": "AK4",
   "criterion": "Uses \"their\" value of $k$ to calculate $\\overrightarrow{DC}=\\binom{4}{2}$",
   "hint": "Substitute your value of $k$ into the coordinates and subtract the position vectors to find $\\overrightarrow{DC}$ as a $\\binom{\\text{horizontal}}{\\text{vertical}}$ vector.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8549c9e7fc40f429797caa",
   "code": "CK3",
   "criterion": "Forms $\\tan\\theta=\\frac{2}{4}$ from \"their\" vector $\\overrightarrow{DC}$",
   "hint": "Use the vertical and horizontal components of your $\\overrightarrow{DC}$ to form $\\tan\\theta=\\frac{\\text{vertical}}{\\text{horizontal}}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8549c9e7fc40f429797caa",
   "code": "AK5",
-  "criterion": "Calculates $\\theta=26.565\\ldots°$ from \"their\" ratio",
-  "hint": "Use inverse tangent on your ratio to calculate $\\theta$, keeping the calculator display in the form $\\theta=\\ldots°$ before rounding.",
-  "status": "proposed"
+  "criterion": "Calculates $\\theta=26.565\\ldots\u00b0$ from \"their\" ratio",
+  "hint": "Use inverse tangent on your ratio to calculate $\\theta$, keeping the calculator display in the form $\\theta=\\ldots\u00b0$ before rounding.",
+  "status": "approved"
  },
  {
   "question_id": "6a8549c9e7fc40f429797caa",
   "code": "R2",
   "criterion": "Expresses \"their\" direction correct to 1 decimal place",
   "hint": "Round your direction to $1$ decimal place.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8549c9e7fc40f429797caa",
   "code": "R3",
   "criterion": "Recognises that \"their\" equal vectors $\\overrightarrow{AB}$ and $\\overrightarrow{DC}$ represent opposite sides which are equal and parallel",
   "hint": "Compare your equal vectors $\\overrightarrow{AB}$ and $\\overrightarrow{DC}$ and state that the corresponding opposite sides are equal and parallel.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a8549c9e7fc40f429797caa",
   "code": "R4",
   "criterion": "Concludes that $ABCD$ is a parallelogram",
   "hint": "Use the equal-and-parallel opposite sides to conclude that $ABCD$ is a parallelogram.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a0de7fc40f429797cb2",
   "code": "CK3",
   "criterion": "Recognises that the line of symmetry bisects $BC$",
   "hint": "Use the line of symmetry to split $BC$ into two equal lengths.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a0de7fc40f429797cb2",
   "code": "R1",
   "criterion": "Forms a correct relationship in right-angled triangle $ABN$",
   "hint": "Use Pythagoras in right-angled triangle $ABN$ to write $AN^2+BN^2=AB^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a0de7fc40f429797cb2",
   "code": "AK2",
   "criterion": "Substitutes $17$ and \"their\" $BN$ correctly",
   "hint": "Substitute $17$ for $AB$ and your earlier $BN$ into $AN^2+BN^2=AB^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a0de7fc40f429797cb2",
   "code": "CK4",
   "criterion": "Recognises that corresponding widths are proportional to their distances from $A$",
   "hint": "Use similar triangles to make the ratio of corresponding widths equal the ratio of distances from $A$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a0de7fc40f429797cb2",
   "code": "AK4",
   "criterion": "Finds the distance from $A$ to the louvre as \"their\" $AN - 6$",
   "hint": "Calculate the louvre's distance from $A$ as your earlier $AN - 6$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a0de7fc40f429797cb2",
   "code": "R2",
   "criterion": "Concludes that the louvre cannot fit",
   "hint": "State that the louvre cannot fit because its required width is greater than the available width.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a0de7fc40f429797cb2",
   "code": "R3",
   "criterion": "Gives a valid comparison between $10\\text{ cm}$ and \"their\" available width",
   "hint": "Compare $10\\text{ cm}$ with your available width and state which is greater.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a6be7fc40f429797cba",
   "code": "CK1",
   "criterion": "Forms $x+y=240$ and $15x+9y=2880$",
   "hint": "Translate the total number of tickets and the total ticket income into two simultaneous equations in $x$ and $y$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a6be7fc40f429797cba",
   "code": "AK1",
   "criterion": "Eliminates one variable correctly",
   "hint": "Multiply one equation if needed, then subtract the equations so that one variable cancels.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a6be7fc40f429797cba",
   "code": "R1",
   "criterion": "Forms number of tickets as \"their\" total $-10(p-12)$",
   "hint": "Form the expected number of tickets by subtracting the reduction caused by the price change from your total.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a6be7fc40f429797cba",
   "code": "CK2",
   "criterion": "Uses revenue $=$ price $\\times$ number of tickets",
   "hint": "Write revenue as price $\\times$ number of tickets.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a6be7fc40f429797cba",
   "code": "AK3",
   "criterion": "Expands to $R=-10p^2+360p$, follow-through on \"their\" total",
   "hint": "Substitute your total into the revenue expression, expand the brackets, and collect the $p^2$ and $p$ terms.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a6be7fc40f429797cba",
   "code": "AK4",
   "criterion": "Completes the square to $R=-10(p-18)^2+3240$, follow-through on \"their\" expanded expression",
   "hint": "Rewrite your expanded expression by completing the square, starting by factoring out the coefficient of $p^2$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a6be7fc40f429797cba",
   "code": "CK3",
   "criterion": "Identifies $R=3200$ as the boundary revenue",
   "hint": "Set $R$ equal to the required revenue level to find the boundary prices.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a6be7fc40f429797cba",
   "code": "AK5",
   "criterion": "Solves the boundary equation to obtain $p=16$ or $p=20$, follow-through on \"their\" completed-square form",
   "hint": "Use your completed-square form to solve the boundary equation and find both possible prices.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a6be7fc40f429797cba",
   "code": "R2",
   "criterion": "Uses \"their\" completed-square form to determine that the revenue condition holds between the boundary prices",
   "hint": "Use your completed-square form to identify the interval between the two boundary prices where revenue is at least the required level.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a6be7fc40f429797cba",
   "code": "R3",
   "criterion": "Selects all whole-dollar values from $16\\le p\\le20$",
   "hint": "List every whole-dollar price in the interval, remembering that each $\\le$ sign includes its boundary price.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854a6be7fc40f429797cba",
   "code": "R4",
   "criterion": "Explains that the revenue requirement and the whole-dollar restriction give the listed values",
   "hint": "Explain that the values must satisfy both the revenue requirement and the whole-dollar price restriction.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854aa9e7fc40f429797cc2",
   "code": "CK1",
   "criterion": "Identifies $48\\ 000$ L as the whole quantity.",
   "hint": "Treat $48\\ 000$ L as the whole weekly water-use quantity before finding the rainwater share.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854aa9e7fc40f429797cc2",
   "code": "AK1",
   "criterion": "Finds one eighth of $48\\ 000$.",
   "hint": "Divide $48\\ 000$ by $8$ to find one eighth of the weekly water use.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854aa9e7fc40f429797cc2",
   "code": "CK2",
   "criterion": "Uses the usual weekly water use as the denominator.",
   "hint": "Use the usual weekly water use as the denominator when calculating the rainwater percentage.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854aa9e7fc40f429797cc2",
   "code": "R1",
-  "criterion": "States that “their” percentage meets the target.",
+  "criterion": "States that \u201ctheir\u201d percentage meets the target.",
   "hint": "State clearly whether your percentage meets the target.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854aa9e7fc40f429797cc2",
   "code": "R2",
-  "criterion": "Justifies the decision by comparing “their” percentage with $35\\%$.",
+  "criterion": "Justifies the decision by comparing \u201ctheir\u201d percentage with $35\\%$.",
   "hint": "Compare your percentage with $35\\%$ and use the comparison to justify your decision.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854aa9e7fc40f429797cc2",
   "code": "CK3",
   "criterion": "Recognises that the annual estimate requires $2\\ 500$ households and $52$ weeks.",
   "hint": "Include both $2\\ 500$ households and $52$ weeks when setting up the annual estimate.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854aa9e7fc40f429797cc2",
   "code": "AK4",
   "criterion": "Calculates the annual usual water use as $48\\ 000 \\times 2\\ 500 \\times 52$.",
   "hint": "Multiply $48\\ 000 \\times 2\\ 500 \\times 52$ to calculate the annual usual water use.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854aa9e7fc40f429797cc2",
   "code": "R3",
-  "criterion": "Applies “their” percentage from part (b) to the annual usual water use.",
+  "criterion": "Applies \u201ctheir\u201d percentage from part (b) to the annual usual water use.",
   "hint": "Convert your percentage from part (b) to a decimal and apply it to the annual usual water use.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854aa9e7fc40f429797cc2",
   "code": "AK5",
   "criterion": "Obtains $2\\ 340\\ 000\\ 000$ L.",
   "hint": "Calculate the annual rainwater total in litres, keeping the thousands groups spaced as $1\\ 000$ when you write it.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854aa9e7fc40f429797cc2",
   "code": "R4",
-  "criterion": "Expresses “their” answer in standard form.",
+  "criterion": "Expresses \u201ctheir\u201d answer in standard form.",
   "hint": "Rewrite your annual litre total in standard form as $a \\times 10^n$, where $1 \\le a < 10$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854afde7fc40f429797cca",
   "code": "CK1",
   "criterion": "Recognises that $fg(1)=f(g(1))$",
   "hint": "Rewrite $fg(1)$ as $f(g(1))$ before evaluating the functions in order.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854afde7fc40f429797cca",
   "code": "CK2",
   "criterion": "Identifies the required height as 4 m below \"their\" height from (a)",
   "hint": "Subtract 4 m from your height from part (a) to find the required height.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854afde7fc40f429797cca",
   "code": "AK2",
   "criterion": "Solves $f(g(p))=5$ to obtain the corresponding horizontal coordinates $0$ and $4$",
   "hint": "Set $f(g(p))=5$ and solve for the corresponding horizontal coordinates on the graph.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854afde7fc40f429797cca",
   "code": "AK3",
   "criterion": "Uses $g(p)=p+1$ to obtain $p=-1$ and $p=3$",
   "hint": "Use $g(p)=p+1$ to convert each horizontal coordinate into a value of $p$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854afde7fc40f429797cca",
   "code": "CK3",
   "criterion": "Recognises that the axis is midway between the two corresponding horizontal coordinates",
   "hint": "Find the midpoint of the two corresponding horizontal coordinates to locate the axis of symmetry.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854afde7fc40f429797cca",
   "code": "AK4",
   "criterion": "States the axis of symmetry as $x=2$",
   "hint": "Write the axis of symmetry as an equation in $x$ using the midpoint.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854afde7fc40f429797cca",
   "code": "R2",
   "criterion": "Uses \"their\" equal-height positions and the position of the maximum to state $0<x<4$",
   "hint": "Use your equal-height positions and the position of the maximum to write the open interval where the graph is above the required height.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854afde7fc40f429797cca",
   "code": "CK4",
   "criterion": "States that $f(x)=0$ has 2 roots",
   "hint": "State how many roots the equation $f(x)=0$ has by counting the intercepts.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854afde7fc40f429797cca",
   "code": "R3",
   "criterion": "Justifies the two roots by identifying two crossings of the $x$-axis",
   "hint": "Justify the number of roots by identifying the two crossings of the $x$-axis.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854b85e7fc40f429797cd7",
   "code": "CK1",
   "criterion": "Identifies 1, 2, 3, 4 and 6 as the elements of $U$ which are factors of 12",
   "hint": "List the elements of $U$ that divide 12 exactly.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854b85e7fc40f429797cd7",
   "code": "AK1",
   "criterion": "Writes the identified elements correctly in listing form",
   "hint": "Write your identified elements of $A$ in a comma-separated listing.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854b85e7fc40f429797cd7",
   "code": "CK2",
   "criterion": "Recognises that each required subset contains type 3 and one other element of \"their\" set $A$",
   "hint": "Form each required pair by combining type 3 with one other element from your set $A$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854b85e7fc40f429797cd7",
   "code": "AK2",
   "criterion": "Lists $\\{1,3\\}$ and $\\{2,3\\}$",
   "hint": "List the two-element subsets that contain 3 by pairing it with 1 and with 2: $\\{1,3\\}$ and $\\{2,3\\}$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854b85e7fc40f429797cd7",
   "code": "AK3",
   "criterion": "Lists $\\{3,4\\}$ and $\\{3,6\\}$",
-  "hint": "Continue pairing 3 with the remaining elements, 4 and 6: $\\{3,4\\}$ and $\\{3,6\\}$.",
-  "status": "proposed"
+  "hint": "Continue pairing 3 with each of the remaining elements, one pair at a time.",
+  "status": "approved"
  },
  {
   "question_id": "6a854b85e7fc40f429797cd7",
   "code": "CK3",
   "criterion": "Recognises that type 3 is drought-tolerant",
   "hint": "Check whether type 3 belongs to the drought-tolerant set.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854b85e7fc40f429797cd7",
   "code": "CK4",
   "criterion": "Identifies 2 and 6 as the butterfly-attracting elements of \"their\" set $A$",
   "hint": "Identify the butterfly-attracting elements in your set $A$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854b85e7fc40f429797cd7",
   "code": "AK4",
   "criterion": "Selects $\\{2,3\\}$ from \"their\" list",
-  "hint": "From your list, select $\\{2,3\\}$ because it contains a drought-tolerant type and a butterfly-attracting type.",
-  "status": "proposed"
+  "hint": "From your list, select the pair that contains one drought-tolerant type and one butterfly-attracting type.",
+  "status": "approved"
  },
  {
   "question_id": "6a854b85e7fc40f429797cd7",
   "code": "AK5",
   "criterion": "Selects $\\{3,6\\}$ from \"their\" list",
   "hint": "From your list, select $\\{3,6\\}$ because it contains a drought-tolerant type and a butterfly-attracting type.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854b85e7fc40f429797cd7",
   "code": "R1",
   "criterion": "Tests all possible additions to \"their\" selection $\\{2,3\\}$ against both conditions",
   "hint": "Add each remaining type to your selection $\\{2,3\\}$ and check both conditions each time.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854b85e7fc40f429797cd7",
   "code": "R2",
   "criterion": "Tests all possible additions to \"their\" selection $\\{3,6\\}$ against both conditions",
   "hint": "Add each remaining type to your selection $\\{3,6\\}$ and check both conditions each time.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854b85e7fc40f429797cd7",
   "code": "R3",
   "criterion": "Concludes that no permitted three-type selection has exactly two elements in each of $D$ and $B$",
   "hint": "State whether any permitted three-type selection has exactly two elements in each of $D$ and $B$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854bc2e7fc40f429797cdf",
   "code": "CK1",
   "criterion": "States lower class boundary $59.5$",
   "hint": "Subtract half a minute from the lower class limit to find the lower class boundary.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854bc2e7fc40f429797cdf",
   "code": "CK2",
   "criterion": "States upper class boundary $69.5$",
   "hint": "Add half a minute to the upper class limit to find the upper class boundary.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854bc2e7fc40f429797cdf",
   "code": "CK3",
   "criterion": "Identifies appropriate class midpoints",
   "hint": "Find each class midpoint by averaging its lower and upper class boundaries.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854bc2e7fc40f429797cdf",
   "code": "AK1",
   "criterion": "Calculates $\\sum fx = 2680$",
   "hint": "Multiply each class midpoint by its frequency and add the products to calculate $\\sum fx$.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854bc2e7fc40f429797cdf",
   "code": "AK2",
   "criterion": "Divides $2680$ by $40$ to obtain $67$",
   "hint": "Divide your total $\\sum fx$ by the total frequency to estimate the mean journey time.",
-  "status": "proposed"
+  "status": "approved"
  },
  {
   "question_id": "6a854bc2e7fc40f429797cdf",
   "code": "CK4",
   "criterion": "Identifies the first- and third-quartile positions as the 10th and 30th values",
   "hint": "Use the total frequency to locate the first- and third-quartile positions in the ordered data.",
-  "status": "proposed"
+  "status": "approved"
  }
 ]
