@@ -716,7 +716,9 @@ Approved by David on 2026-09-05: all 500 rows. Rows 303–312 put in the imperat
 | 499 | 804a64 | R3 | States that there is no profit or loss | State that the situation results in no profit or loss. |
 | 500 | 804a74 | CK1 | Forms $\overrightarrow{AB}=\overrightarrow{OB}-\overrightarrow{OA}$. | Form $\overrightarrow{AB}=\overrightarrow{OB}-\overrightarrow{OA}$ by subtracting the position vector of $A$ from that of $B$. |
 
-## Batch 3 — proposed (500 rows, gpt-5.6-terra, 2026-09-05)
+## Batch 3 — approved (500 rows, gpt-5.6-terra, generated 2026-09-05)
+
+Approved by David on 2026-09-05: all 500 rows. Row 163 set to his sentence; rows 47 and 49 drop the answer values.
 
 | # | question | code | criterion | hint |
 |---|---|---|---|---|
@@ -766,9 +768,9 @@ Approved by David on 2026-09-05: all 500 rows. Rows 303–312 put in the imperat
 | 44 | 804aae | CK1 | Recognises that the grand total is found by combining all four outcomes. | Combine the frequencies from all four outcomes to find the grand total. |
 | 45 | 804aae | AK1 | Adds the frequencies to obtain $50$. | Add all four frequencies to obtain $50$. |
 | 46 | 804aae | CK2 | Selects $15$ as the frequency for tail and odd number. | Read the frequency in the table where tail and odd number meet. |
-| 47 | 804aae | AK2 | Divides $15$ by "their" total and simplifies to $\frac{3}{10}$. | Divide $15$ by your total, then simplify the fraction to $\frac{3}{10}$. |
+| 47 | 804aae | AK2 | Divides $15$ by "their" total and simplifies to $\frac{3}{10}$. | Divide $15$ by your total, then simplify the fraction. |
 | 48 | 804aae | CK3 | Recognises that the theoretical probability is $\frac{1}{2}\times\frac{1}{2}$. | For the theoretical probability, multiply the probability of a tail by the probability of an odd number: $\frac{1}{2}\times\frac{1}{2}$. |
-| 49 | 804aae | AK3 | Evaluates the theoretical probability as $\frac{1}{4}$. | Evaluate $\frac{1}{2}\times\frac{1}{2}$ to get $\frac{1}{4}$. |
+| 49 | 804aae | AK3 | Evaluates the theoretical probability as $\frac{1}{4}$. | Multiply the two probabilities of the independent events. |
 | 50 | 804aae | R1 | Finds the difference between "their" experimental probability and $\frac{1}{4}$, giving $\frac{1}{20}$. | Subtract $\frac{1}{4}$ from your experimental probability and simplify the difference to $\frac{1}{20}$. |
 | 51 | 804aae | R2 | States that the results support the theoretical probability. | State that the experimental result supports the theoretical probability. |
 | 52 | 804aae | R3 | Justifies the conclusion by relating "their" experimental probability to the theoretical probability or by identifying a small difference. | Justify your conclusion by showing that your experimental probability is close to the theoretical probability or that the difference is small. |
@@ -882,7 +884,7 @@ Approved by David on 2026-09-05: all 500 rows. Rows 303–312 put in the imperat
 | 160 | 821070 | CK2 | Identifies discount as marked price minus sale price. | Find the discount by subtracting the sale price from the marked price. |
 | 161 | 821070 | AK3 | Finds "their" marked price minus \$340. | Subtract \$340 from your marked price to find your discount. |
 | 162 | 821070 | R2 | Divides "their" discount by "their" marked price and multiplies by 100. | Divide your discount by your marked price and multiply by 100. |
-| 163 | 821070 | R3 | States the discount as a percentage. | State your discount as a percentage using the \% symbol. |
+| 163 | 821070 | R3 | States the discount as a percentage. | State your discount as a percentage with the % sign. |
 | 164 | 82109b | CK1 | Identifies that the $y$-intercept occurs when $x=0$ | Set $x=0$ to locate the $y$-intercept on the graph. |
 | 165 | 82109b | CK2 | Uses the linear relationship $P=mx+c$ | Use the linear form $P=mx+c$ to organise the equation of the line. |
 | 166 | 82109b | AK1 | Calculates gradient $=\frac{3-(-12)}{10-0}=1.5$ | Choose two points on the line and calculate the gradient as $\frac{\text{change in }P}{\text{change in }x}$. |

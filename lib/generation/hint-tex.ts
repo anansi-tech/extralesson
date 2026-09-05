@@ -80,7 +80,7 @@ export function hintProblems(hint: string, criterion: string): string[] {
   const problems: string[] = [];
   const missing = missingCommands(hint, criterion);
   if (missing.length) problems.push(`lacks \\${missing.join(', \\')} from its criterion`);
-  for (const m of hint.matchAll(/\\[A-Za-z]+/g)) if (!inMath(hint, m.index!)) problems.push(`bare TeX outside $…$: ${m[0]}`);
+  for (const m of hint.matchAll(/\\(?:[A-Za-z]+|%)/g)) if (!inMath(hint, m.index!)) problems.push(`bare TeX outside $…$: ${m[0]}`);
   if (/\\[()[\]]/.test(hint)) problems.push('uses \\( \\) or \\[ \\] instead of $…$');
   if (mathSpans(hint).some(([, b]) => b === hint.length && hint[hint.length - 1] !== '$')) problems.push('an unclosed $');
   // eslint-disable-next-line no-control-regex

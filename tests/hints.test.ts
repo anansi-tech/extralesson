@@ -61,6 +61,8 @@ describe('the four rules a hint must keep', () => {
   it('TeX inside dollars only, no \\( \\), no control characters, no quoted your', () => {
     expect(hintProblems('Find $\\overrightarrow{AB}$ first.', 'Forms $\\overrightarrow{AB}$')).toEqual([]);
     expect(hintProblems('Find \\overrightarrow{AB} first.', 'Forms $\\overrightarrow{AB}$')).toContain('bare TeX outside $…$: \\overrightarrow');
+    expect(hintProblems('State it with the \\% symbol.', 'States a percentage')).toContain('bare TeX outside $…$: \\%');
+    expect(hintProblems('State it as $30\\%$.', 'States $30\\%$')).toEqual([]);
     expect(hintProblems('Find \\(f(3)\\) first.', 'Reads $f(3)$')).toEqual(expect.arrayContaining([expect.stringMatching(/instead of/)]));
     expect(hintProblems('Find $f(3) first.', 'Reads $f(3)$')).toContain('an unclosed $');
     // Money is not math: \\$100 opens nothing, and a bare $100 is repaired where the criterion writes \\$.
