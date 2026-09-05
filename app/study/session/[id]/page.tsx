@@ -24,7 +24,7 @@ import QuestionCard, { type CardQuestion } from './question-card';
 import type { ReadResult } from './capture';
 import { MAX_TAKES } from '@/lib/grade/transcribe';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
-import { forStudent, schemeLine } from '@/lib/grade/reason';
+import { hintLine } from '@/lib/grade/reason';
 import { roundingOf } from '@/lib/grade/rounding';
 import { constructActs, figureGivesAnswer } from '@/lib/targets/construct';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
@@ -484,7 +484,7 @@ export default async function SessionPage({
       statement?: string;
       slots?: { label: string; prompt?: string; response_mode?: string; answer: string; accept?: string[] }[];
     }[];
-    rubric?: { code: string; profile: 'CK' | 'AK' | 'R'; criterion: string; mark_value: number; part_label?: string; slot_ref?: string }[];
+    rubric?: { code: string; profile: 'CK' | 'AK' | 'R'; criterion: string; mark_value: number; part_label?: string; slot_ref?: string; hint?: string }[];
     answer_key?: number;
     worked_solution: string;
   } | null>();
@@ -625,8 +625,8 @@ export default async function SessionPage({
           const slot = slotByRef.get(ref);
           const rounding = roundingOf({ answer_format: slot?.answer_format, prompts: [slot?.partPrompt, slot?.prompt], canonical: slot?.answer });
           const correct = answersEquivalentAny(answers[ref] ?? '', slot?.answer ?? '', slot?.accept, rounding);
-          const line = correct ? undefined : schemeLine(question.rubric ?? [], ref);
-          return { label: ref, correct, reasonHtml: line ? renderMathHtml(forStudent(line)) : undefined };
+          const line = correct ? undefined : hintLine(question.rubric ?? [], ref);
+          return { label: ref, correct, reasonHtml: line ? renderMathHtml(line) : undefined };
         }),
         feedbackTitleHtml: 'Worked solution',
         feedbackHtml: renderMathHtml(question.worked_solution),

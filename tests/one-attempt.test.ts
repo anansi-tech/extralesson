@@ -116,7 +116,8 @@ describe('one attempt per question', () => {
     if ('error' in again) throw new Error(again.error);
     expect(again.attemptId).toBe(first.attemptId);
     expect(again.correct).toBe(false);
-    expect(again.partResults).toEqual([{ label: 'a.i', correct: false, formWithheld: false, reasonHtml: expect.any(String) }]);
+    // No approved hint on this fixture, so nothing from the scheme is said (ROUND_7 Task 1).
+    expect(again.partResults).toEqual([{ label: 'a.i', correct: false, formWithheld: false, reasonHtml: undefined }]);
     expect(again.working?.method).toEqual(first.working?.method);
     expect(await db.Attempt.countDocuments()).toBe(1);
     expect(markerCalls).toBe(1);

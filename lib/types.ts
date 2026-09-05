@@ -77,6 +77,13 @@ export interface RubricItem {
    * criterion where nothing in it is a value.
    */
   template?: string;
+  /**
+   * What a student who got this wrong is told, in the second person, in
+   * place of the criterion (ROUND_7 Task 1). Written by script from the
+   * criterion in batches, approved by hand, and only an approved hint is
+   * ever rendered; a row without one shows nothing from the scheme.
+   */
+  hint?: string;
 }
 
 // R1.5 §2 — question structure

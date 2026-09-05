@@ -19,7 +19,9 @@
     "eval:marker": "tsx scripts/eval-marker.ts",
     "eval:reads": "tsx scripts/eval-reads.ts",
     "eval:pipeline": "tsx scripts/eval-pipeline.ts",
-    "golden:field-prune": "tsx scripts/golden-field-prune.ts"
+    "golden:field-prune": "tsx scripts/golden-field-prune.ts",
+    "hints:generate": "tsx scripts/generate-hints.ts",
+    "hints:approve": "tsx scripts/approve-hints.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.118",

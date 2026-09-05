@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { markStructuredParts } from '@/lib/grade/mark';
-import { schemeLine } from '@/lib/grade/reason';
+import { hintLine } from '@/lib/grade/reason';
 import type { RubricItem } from '@/lib/types';
 
 const at = (...p: string[]) => readFileSync(join(process.cwd(), ...p), 'utf8');
@@ -17,19 +17,18 @@ const rubric: RubricItem[] = [
   { code: 'R2', slot_ref: 'c.ii', part_label: 'c', profile: 'R', mark_value: 1, criterion: 'Expresses "their" answer in standard form', for_format: true },
 ] as RubricItem[];
 
-describe('(d) a wrong answer is told the scheme’s line for the slot', () => {
-  it('is the first method row, never CAO and never the form row', () => {
-    expect(schemeLine(rubric, 'b.i')).toMatch(/suitable beans equal the total harvest less rejected/);
-    expect(schemeLine(rubric, 'b.ii')).toBeUndefined();
-    expect(schemeLine(rubric, 'c.ii')).toBeUndefined();
+describe('(d) a wrong answer is told the hint, never the scheme’s line (ROUND_7 Task 1)', () => {
+  it('is the first method row’s approved hint, never CAO, never the form row, never the criterion', () => {
+    const withHint = rubric.map((r) => (r.code === 'CK1' ? { ...r, hint: 'Take your rejected beans away from the whole harvest.' } : r));
+    expect(hintLine(withHint, 'b.i')).toBe('Take your rejected beans away from the whole harvest.');
+    expect(hintLine(rubric, 'b.i')).toBeUndefined();
+    expect(hintLine(withHint, 'b.ii')).toBeUndefined();
+    expect(hintLine(withHint, 'c.ii')).toBeUndefined();
   });
-
-  it('reaches the card as rendered HTML, so TeX in a criterion is set, not shown raw', () => {
-    expect(ACTIONS).toMatch(/reasonHtml: line \? renderMathHtml\(forStudent\(line\)\)/);
-    expect(ACTIONS).toMatch(/formatFeedbackHtml: result\.format_feedback \? renderMathHtml/);
-    expect(CARD).toMatch(/__html: partFeedback\.reasonHtml/);
-    expect(CARD).toMatch(/__html: feedback\.formatFeedbackHtml/);
-    expect(CARD).not.toMatch(/\{partFeedback\.reason\}|\{feedback\.formatFeedback\}/);
+  it('reaches the card as rendered HTML, and no criterion or "their" rewrite does', () => {
+    expect(ACTIONS).toMatch(/reasonHtml: line \? renderMathHtml\(line\)/);
+    expect(ACTIONS).not.toMatch(/schemeLine|forStudent|\.criterion\b/);
+    expect(readFileSync(join(process.cwd(), 'lib', 'grade', 'reason.ts'), 'utf8')).not.toMatch(/forStudent|their/);
   });
 });
 

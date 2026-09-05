@@ -29,19 +29,16 @@ function numerals(s: string): string[] {
 }
 
 /**
- * What the scheme says the slot is for — its first method row — which is what
- * a wrong answer is told, never a comment on the answer (ROUND_4 post-smoke).
+ * What a wrong answer is told (ROUND_7 Task 1): the approved hint on the
+ * slot's first method row, written to the student. The criterion itself is
+ * the assessor's sentence and never reaches the card; a row with no hint
+ * yet says nothing rather than something in the wrong register.
  */
-export function schemeLine(
-  rubric: { slot_ref?: string; criterion: string; for_format?: boolean }[],
+export function hintLine(
+  rubric: { slot_ref?: string; criterion: string; for_format?: boolean; hint?: string }[],
   ref: string,
 ): string | undefined {
-  return rubric.find((r) => r.slot_ref === ref && !r.for_format && !/\bCAO\b/.test(r.criterion))?.criterion;
-}
-
-/** The scheme says "their"; the student reading it is the one meant. */
-export function forStudent(schemeText: string): string {
-  return schemeText.replace(/[“"']their[”"']/g, 'your');
+  return rubric.find((r) => r.slot_ref === ref && !r.for_format && !/\bCAO\b/.test(r.criterion))?.hint;
 }
 
 export function missReason(

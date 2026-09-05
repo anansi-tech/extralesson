@@ -16,6 +16,8 @@ const RubricItemSchema = new Schema(
     // ROUND_5 Task 1: the criterion with {part.slot} references in place of
     // values, rendered for each student at marking time.
     template: { type: String },
+    // ROUND_7 Task 1: the approved second-person hint; the criterion never reaches a student.
+    hint: { type: String },
   },
   { _id: false },
 );

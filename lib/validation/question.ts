@@ -111,6 +111,7 @@ export const RubricItemZ = z
       part_label: z.string().regex(/^[a-j]$/),
       for_format: optional(z.boolean()),
       template: optional(z.string().min(1)),
+      hint: optional(z.string().min(1)),
     }),
   )
   .refine((r) => r.code.replace(/\d+$/, '') === r.profile, {

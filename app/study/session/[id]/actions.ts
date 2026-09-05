@@ -7,7 +7,7 @@ import { markMcq, markStructuredParts, markableSlots } from '@/lib/grade/mark';
 import { GRADER_VERSION, questionFingerprint, rubricHash } from '@/lib/grade/version';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
-import { forStudent, missReason, schemeLine } from '@/lib/grade/reason';
+import { hintLine, missReason } from '@/lib/grade/reason';
 import { earnableByMethod } from '@/lib/grade/method-marks';
 import { readInputShape } from '@/lib/grade/input-shape';
 import { renderMathHtml } from '@/lib/katex';
@@ -160,8 +160,8 @@ export async function submitAnswer(input: {
     partResults = marked.slot_results.map((s) => {
       const given = inputByRef.get(s.ref);
       const slot = slotByRef2.get(s.ref);
-      const line = s.correct ? undefined : schemeLine(question.rubric ?? [], s.ref) ?? missReason(given?.text ?? '', slot?.answer ?? '', given?.values);
-      return { label: s.ref, correct: s.correct, formWithheld: s.form_withheld, reasonHtml: line ? renderMathHtml(forStudent(line)) : undefined };
+      const line = s.correct ? undefined : hintLine(question.rubric ?? [], s.ref) ?? missReason(given?.text ?? '', slot?.answer ?? '', given?.values);
+      return { label: s.ref, correct: s.correct, formWithheld: s.form_withheld, reasonHtml: line ? renderMathHtml(line) : undefined };
     });
     storedAnswer = entered.map((a) => `(${a.label}) ${a.text}`).join('; ');
   }
@@ -308,8 +308,8 @@ async function feedbackFor(attempt: StoredAttempt, sessionId: string, questionIn
     const answers = splitStoredAnswer(String(attempt.answer), refs);
     const marked = markStructuredParts(question.rubric ?? [], parts, refs.map((ref) => ({ ref, answer: answers[ref] ?? '' })));
     partResults = marked.slot_results.map((sr) => {
-      const line = sr.correct ? undefined : schemeLine(question.rubric ?? [], sr.ref);
-      return { label: sr.ref, correct: sr.correct, formWithheld: sr.form_withheld, reasonHtml: line ? renderMathHtml(forStudent(line)) : undefined };
+      const line = sr.correct ? undefined : hintLine(question.rubric ?? [], sr.ref);
+      return { label: sr.ref, correct: sr.correct, formWithheld: sr.form_withheld, reasonHtml: line ? renderMathHtml(line) : undefined };
     });
   }
   const read = await Transcription.findOne({ session_id: sessionId, question_index: questionIndex, marker_version: { $exists: true } })

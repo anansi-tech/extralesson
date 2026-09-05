@@ -2,7 +2,6 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { applyFormatDependency } from '@/lib/grade/method-marks';
-import { forStudent } from '@/lib/grade/reason';
 import { renderVisual } from '@/lib/visuals';
 import { legibleMinWidth } from '@/lib/visuals/legibility';
 
@@ -43,20 +42,6 @@ describe('(1) a form row depends on the value or a method row on its slot', () =
   it('runs on the marking path and in the eval', () => {
     expect(at("app", "study", "session", "[id]", "mark-working.ts")).toMatch(/applyFormatDependency\(\s*requireEvidence\(oneDecisionPerRow\(result\.decisions[\s\S]*question\.rubric \?\? \[\],\s*settled,?\s*\)/);
     expect(at('scripts', 'eval-marker.ts')).toMatch(/decisions = applyFormatDependency\(/);
-  });
-});
-
-describe('(2) the student is told "your", the scheme keeps "their"', () => {
-  it('rewrites the quoted word only', () => {
-    expect(forStudent('Subtracts "their" rejected-bean total from 1 200 000')).toBe('Subtracts your rejected-bean total from 1 200 000');
-    expect(forStudent('Divides “their” discount by “their” marked price')).toBe('Divides your discount by your marked price');
-    expect(forStudent('their own working')).toBe('their own working');
-  });
-  it('is applied where the scheme line reaches the card, and nowhere the admin reads', () => {
-    expect(at('app', 'study', 'session', '[id]', 'actions.ts')).toMatch(/renderMathHtml\(forStudent\(line\)\)/);
-    expect(at('app', 'study', 'session', '[id]', 'page.tsx')).toMatch(/renderMathHtml\(forStudent\(line\)\)/);
-    expect(at('app', 'admin', 'disputes', 'page.tsx')).not.toMatch(/forStudent/);
-    expect(at('scripts', 'eval-marker.ts')).not.toMatch(/forStudent/);
   });
 });
 
