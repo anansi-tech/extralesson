@@ -144,6 +144,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   );
   const [feedback, setFeedback] = useState<Feedback | null>(question.prior?.feedback ?? null);
   const [reading, setReading] = useState(false);
+  // HONEST PREFILL (ROUND_7 Task 2): a read fills single boxes only. Which
+  // boxes it filled and which it did not is said, with a way to each.
+  const [readFilled, setReadFilled] = useState<string[] | null>(null);
   const [error, setError] = useState<string>();
   const [pending, startTransition] = useTransition();
   const startedAt = useRef(Date.now());
@@ -513,10 +516,37 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           sessionId={question.sessionId}
           questionIndex={question.index}
           initial={question.draft?.read}
-          onRead={(prefill) => setPartAnswers((prev) => ({ ...prev, ...prefill }))}
+          onRead={(prefill) => {
+            setPartAnswers((prev) => ({ ...prev, ...prefill }));
+            setReadFilled(Object.keys(prefill));
+          }}
           onBusy={setReading}
         />
       )}
+
+      {readFilled && !feedback && (() => {
+        const unfilled = markedSlots.filter((sl) => !readFilled.includes(sl.ref));
+        const filledRefs = markedSlots.filter((sl) => readFilled.includes(sl.ref)).map((sl) => sl.ref);
+        return (
+          <p className="mt-2 border-l-3 border-margin bg-[#FFFDF6] py-1 pl-3 text-[12px] leading-snug text-dim">
+            {filledRefs.length > 0
+              ? `We filled the single answers${filledRefs.length < markedSlots.length ? ` for (${filledRefs.join('), (')})` : ''}.`
+              : 'We could not fill any boxes from the page.'}
+            {unfilled.length > 0 && (
+              <>
+                {' '}Enter the rest yourself:{' '}
+                {unfilled.map((sl, k) => (
+                  <span key={sl.ref}>
+                    {k > 0 && ', '}
+                    <a href={`#slot-${sl.ref}${sl.input ? '-0' : ''}`} className="underline">({sl.ref})</a>
+                  </span>
+                ))}
+                .
+              </>
+            )}
+          </p>
+        );
+      })()}
 
       {question.kind === 'structured' && (
         <div className="mt-4 space-y-4">

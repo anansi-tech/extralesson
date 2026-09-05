@@ -20,7 +20,7 @@ describe('the photo-first card', () => {
   });
 
   it('fills the boxes from a read, and leaves what the read did not touch', () => {
-    expect(card).toMatch(/onRead=\{\(prefill\) => setPartAnswers\(\(prev\) => \(\{ \.\.\.prev, \.\.\.prefill \}\)\)\}/);
+    expect(card).toMatch(/onRead=\{\(prefill\) => \{\s*setPartAnswers\(\(prev\) => \(\{ \.\.\.prev, \.\.\.prefill \}\)\);/);
     // Multi-value slots live in boxValues, which a read never writes.
     expect(card).not.toMatch(/onRead[\s\S]{0,120}setBoxValues/);
   });

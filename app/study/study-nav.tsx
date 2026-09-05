@@ -27,7 +27,8 @@ export function StudyNav({
 }) {
   return (
     <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-      <div className="flex min-w-0 items-baseline gap-x-4">
+      {/* Below 400px the lockup and the links take a row each (ROUND_7 Task 2). */}
+      <div className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1 max-[399px]:w-full max-[399px]:flex-col max-[399px]:items-start">
         <Lockup width={140} className="shrink-0" />
         <nav className="flex items-baseline gap-x-3 font-mono text-[11px] uppercase tracking-widest">
           {TABS.map((t) => (
@@ -50,7 +51,7 @@ export function StudyNav({
         )}
         <span className="hidden shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-dim sm:inline">{sitting}</span>
         {/* Which account is signed in matters on a shared phone; below sm the header needs the room back. */}
-        <span title={email} className="hidden min-w-[14ch] max-w-full truncate font-mono text-[10px] tracking-widest text-dim sm:inline">
+        <span title={email} className="hidden min-w-0 max-w-full truncate font-mono text-[10px] tracking-widest text-dim sm:inline">
           {email}
         </span>
         <form action={logout} className="shrink-0">

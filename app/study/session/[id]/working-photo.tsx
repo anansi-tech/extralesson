@@ -104,7 +104,7 @@ export function WorkingPhoto({
         <p className="mt-1 text-[12px] leading-snug text-dim">
           {attemptId
             ? `There ${marks === 1 ? 'is 1 mark' : `are ${marks} marks`} here for the method, and we cannot see your working. Photograph what you wrote and we will type it up beside the mark scheme. Nothing you have already earned can change.`
-            : 'Work it on paper, then photograph the page. We fill in the boxes from what we read — check them, change anything we got wrong, and submit.'}
+            : 'Work it on paper, then photograph the page. We type up what we read and fill in the single-answer boxes; you check them, fill in the rest, and submit.'}
         </p>
       )}
 

@@ -131,7 +131,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                   key={String(p._id)}
                   className="flex flex-wrap items-baseline justify-between gap-2 border-t border-dashed border-red-pen pt-2"
                 >
-                  <span className="font-mono text-[12px]">
+                  <span className="min-w-0 break-all font-mono text-[12px]">
                     {p.email ?? 'no email on the payment'}
                     <span className="ml-2 text-dim">
                       {typeof p.amount_total === 'number'
@@ -162,7 +162,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
             </p>
             <ul className="mt-2 space-y-1">
               {refused.map((f) => (
-                <li key={String(f._id)} className="border-t border-dashed border-[#D9A62E] pt-1 font-mono text-[12px]">
+                <li key={String(f._id)} className="break-all border-t border-dashed border-[#D9A62E] pt-1 font-mono text-[12px]">
                   {new Date(f.ts).toISOString().slice(0, 16).replace('T', ' ')} · {f.reason}
                   <span className="ml-2 text-dim">
                     {f.payment_link ?? 'no link'} · {f.session_id}
@@ -177,7 +177,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
           <section key={r.id} className="mb-3 border-[1.5px] border-ink bg-white p-3">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <div className="min-w-0">
-                <div className="truncate font-mono text-[13px]">{r.email}</div>
+                <div className="min-w-0 break-all font-mono text-[13px]">{r.email}</div>
                 <div className="font-mono text-[11px] text-dim">
                   {r.name} · {r.exam_sitting} · {r.sessions} session{r.sessions === 1 ? '' : 's'} ·{' '}
                   {r.attempts} question{r.attempts === 1 ? '' : 's'}
