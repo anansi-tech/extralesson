@@ -1,13 +1,14 @@
 # CLAUDE.md — ExtraLesson
 
 AI-powered CSEC Mathematics tutoring for the Caribbean. The current spec is
-`ROUND_6_ONE_TRUTH.md` (one score fold, scoped payment, unique attempts and
-reads, the gate as a gate — the last round before a student), on top of
-`ROUND_5_CLAIMS.md` (criteria as claims rendered for the student's own values,
+`ROUND_7_LAST_MILE.md` (feedback that speaks to the student, no dead ends,
+the operator can act, the landing restructured — launch the day Task 4
+merges), on top of `ROUND_6_ONE_TRUTH.md` (one score fold, scoped payment,
+unique attempts and reads, the gate as a gate), `ROUND_5_CLAIMS.md` (criteria as claims rendered for the student's own values,
 "not what I wrote", disputes feeding the golden set), `ROUND_4_FIRST_RUN.md`
 (photo-first answering, the first-question session, mark disputes),
 `ROUND_1_5_FINAL.md` (visuals, multi-part schema, target matrices) and
-`ROUND_1_EXTRALESSON.md` — read all five before any non-trivial change. The photo-grading examiner engine is Round 2. `feat/question-bank-fingerprint` is
+`ROUND_1_EXTRALESSON.md` — read all six before any non-trivial change. The photo-grading examiner engine is Round 2. `feat/question-bank-fingerprint` is
 a quarry, not a merge target — see the R1.5 branch policy.
 
 ## Ground truth
