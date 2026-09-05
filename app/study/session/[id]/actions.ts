@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { dbConnect, Attempt, PracticeSession, Question, SessionDraft, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
-import { markMcq, markStructuredParts } from '@/lib/grade/mark';
+import { markMcq, markStructuredParts, markableSlots } from '@/lib/grade/mark';
 import { GRADER_VERSION, questionFingerprint } from '@/lib/grade/version';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
@@ -16,6 +16,9 @@ import { ANSWER_REF_RE } from '@/lib/notation';
 import { renderVisual } from '@/lib/visuals';
 import { constructActs, constructFamily, figureGivesAnswer } from '@/lib/targets/construct';
 import { markWorking, type CaptureResult } from './mark-working';
+import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
+import { isDuplicateKey } from '@/lib/db';
+import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 
 const SubmitZ = z.object({
   sessionId: z.string().regex(/^[a-f0-9]{24}$/),
@@ -96,6 +99,11 @@ export async function submitAnswer(input: {
   }).lean<{ question_ids: unknown[] } | null>();
   if (!session) return { error: 'Session not found.' };
 
+  // A question already answered is read back, never re-marked: the unique
+  // index on {session_id, question_index} makes the double submit below a
+  // read too, so a second tap can neither insert nor mark twice.
+  const already = await Attempt.findOne({ session_id: sessionId, question_index: questionIndex }).lean<StoredAttempt | null>();
+  if (already) return feedbackFor(already, sessionId, questionIndex);
   const attemptCount = await Attempt.countDocuments({ session_id: sessionId });
   if (questionIndex !== attemptCount || questionIndex >= session.question_ids.length) {
     return { error: 'Out of sequence — reload the page.' };
@@ -163,19 +171,29 @@ export async function submitAnswer(input: {
   await SessionDraft.deleteOne({ session_id: sessionId, question_index: questionIndex });
 
   // Append-only: attempts are never mutated (§3.5).
-  const written = await Attempt.create({
-    student_id: auth.student_id,
-    question_id: session.question_ids[questionIndex],
-    session_id: sessionId,
-    answer: storedAnswer,
-    rubric_awarded: result.rubric_awarded,
-    profile_marks: result.profile_marks,
-    correct: result.correct,
-    duration_ms: durationMs,
-    grader_version: GRADER_VERSION,
-    question_fingerprint: questionFingerprint(question as never),
-    ts: new Date(),
-  });
+  let written;
+  try {
+    written = await Attempt.create({
+      student_id: auth.student_id,
+      question_id: session.question_ids[questionIndex],
+      session_id: sessionId,
+      question_index: questionIndex,
+      answer: storedAnswer,
+      rubric_awarded: result.rubric_awarded,
+      profile_marks: result.profile_marks,
+      correct: result.correct,
+      duration_ms: durationMs,
+      grader_version: GRADER_VERSION,
+      question_fingerprint: questionFingerprint(question as never),
+      ts: new Date(),
+    });
+  } catch (e) {
+    if (!isDuplicateKey(e)) throw e;
+    // The other submit landed first: its attempt is the record.
+    const theirs = await Attempt.findOne({ session_id: sessionId, question_index: questionIndex }).lean<StoredAttempt | null>();
+    if (!theirs) throw e;
+    return feedbackFor(theirs, sessionId, questionIndex);
+  }
 
   let feedbackTitleHtml = 'Worked solution';
   let feedbackHtml = renderMathHtml(question.worked_solution);
@@ -257,6 +275,69 @@ export async function submitAnswer(input: {
   };
 }
 
+
+interface StoredAttempt {
+  _id: unknown;
+  question_id: unknown;
+  answer: string | number;
+  rubric_awarded: string[];
+  profile_marks: ProfileMarks;
+  correct: boolean;
+}
+
+/**
+ * THE OUTCOME OF AN ATTEMPT THAT ALREADY EXISTS (ROUND_6 Task 4): the marks
+ * are what was stored, the per-slot verdicts are recomputed from the stored
+ * answers with the same grader, and the marked read comes back as it stands.
+ * Nothing here writes, marks, or reads an image.
+ */
+async function feedbackFor(attempt: StoredAttempt, sessionId: string, questionIndex: number): Promise<Feedback | { error: string }> {
+  const question = await Question.findById(attempt.question_id).lean<{
+    kind: 'mcq' | 'structured';
+    parts?: QuestionPart[];
+    rubric?: RubricItem[];
+    worked_solution: string;
+  } | null>();
+  if (!question) return { error: 'Question not found.' };
+  let partResults: Feedback['partResults'] = [{ label: 'a', correct: attempt.correct }];
+  if (question.kind === 'structured') {
+    const parts = question.parts ?? [];
+    const refs = markableSlots(parts);
+    const answers = splitStoredAnswer(String(attempt.answer), refs);
+    const marked = markStructuredParts(question.rubric ?? [], parts, refs.map((ref) => ({ ref, answer: answers[ref] ?? '' })));
+    partResults = marked.slot_results.map((sr) => {
+      const line = sr.correct ? undefined : schemeLine(question.rubric ?? [], sr.ref);
+      return { label: sr.ref, correct: sr.correct, formWithheld: sr.form_withheld, reasonHtml: line ? renderMathHtml(forStudent(line)) : undefined };
+    });
+  }
+  const read = await Transcription.findOne({ session_id: sessionId, question_index: questionIndex, marker_version: { $exists: true } })
+    .sort({ take: -1 })
+    .lean<{ _id: unknown; take: number; lines: TranscriptionResult['lines']; answers?: TranscriptionResult['answers']; legible: boolean; notes?: string; method_marks?: { code: string; awarded: boolean; reason: string; mark_value: number }[] } | null>();
+  const working: CaptureResult | undefined = read
+    ? {
+        transcription: { lines: read.lines, answers: read.answers ?? [], legible: read.legible, notes: read.notes },
+        transcriptionId: String(read._id),
+        rejected: [],
+        take: read.take,
+        takesLeft: MAX_TAKES - (await Transcription.countDocuments({ session_id: sessionId, question_index: questionIndex })),
+        method: (read.method_marks ?? []).map(({ code, awarded, reason, mark_value }) => ({ code, awarded, reason, mark_value })),
+        marksAdded: (read.method_marks ?? []).filter((m) => m.awarded).reduce((n, m) => n + m.mark_value, 0),
+        marked: true,
+      }
+    : undefined;
+  return {
+    correct: attempt.correct,
+    profile_marks: attempt.profile_marks,
+    rubric_awarded: attempt.rubric_awarded,
+    partResults,
+    feedbackTitleHtml: 'Worked solution',
+    feedbackHtml: renderMathHtml(question.worked_solution),
+    isMisconception: false,
+    attemptId: String(attempt._id),
+    earnableByMethod: 0,
+    working,
+  };
+}
 
 const DraftZ = z.object({
   sessionId: z.string().regex(/^[a-f0-9]{24}$/),

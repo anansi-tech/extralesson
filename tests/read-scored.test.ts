@@ -214,6 +214,7 @@ describe('marking fails honestly — ROUND_6 Task 1', () => {
       student_id: new mongoose.Types.ObjectId(),
       question_id: await question(),
       session_id: new mongoose.Types.ObjectId(),
+      question_index: 0,
       answer: '',
       rubric_awarded: [],
       profile_marks: { CK: 0, AK: 0, R: 0 },

@@ -6,6 +6,9 @@ const AttemptSchema = new Schema({
   student_id: { type: Schema.Types.ObjectId, ref: 'Student', required: true },
   question_id: { type: Schema.Types.ObjectId, ref: 'Question', required: true },
   session_id: { type: Schema.Types.ObjectId, ref: 'Session', required: true },
+  // ONE ATTEMPT PER QUESTION IN A SESSION (ROUND_6 Task 4): the unique index
+  // below is what makes a second submit a read of the first, never an insert.
+  question_index: { type: Number, required: true },
   answer: { type: Schema.Types.Mixed, required: true }, // string | number
   rubric_awarded: { type: [String], required: true }, // rubric codes earned; [] | [all] for mcq
   profile_marks: {
@@ -23,6 +26,7 @@ const AttemptSchema = new Schema({
 });
 
 AttemptSchema.index({ student_id: 1, ts: -1 });
+AttemptSchema.index({ session_id: 1, question_index: 1 }, { unique: true });
 
 export type AttemptDoc = InferSchemaType<typeof AttemptSchema>;
 export const Attempt = models.Attempt ?? model('Attempt', AttemptSchema);

@@ -61,6 +61,7 @@ async function smokeDispute() {
   const session = await db.PracticeSession.create({ student_id: STUDENT, question_ids: [questionId], mode: 'adaptive', started_at: new Date() });
   const attempt = await db.Attempt.create({
     student_id: STUDENT, question_id: questionId, session_id: session._id, answer: '(a.i) 4', rubric_awarded: [],
+    question_index: 0,
     profile_marks: { CK: 0, AK: 0, R: 0 }, correct: false, duration_ms: 1,
   });
   const read = await db.Transcription.create({

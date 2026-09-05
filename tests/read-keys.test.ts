@@ -73,6 +73,7 @@ describe('the backfill derives both keys from the row’s attempt', () => {
       student_id: student,
       question_id: questions[1],
       session_id: session._id,
+      question_index: 0,
       answer: 'x',
       rubric_awarded: [],
       profile_marks: { CK: 0, AK: 0, R: 0 },

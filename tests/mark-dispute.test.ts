@@ -38,6 +38,7 @@ async function marked(student = STUDENT) {
     student_id: student,
     question_id: question,
     session_id: session,
+    question_index: 0,
     answer: '(a.i) 4',
     rubric_awarded: ['R3'],
     profile_marks: { CK: 1, AK: 0, R: 0 },
