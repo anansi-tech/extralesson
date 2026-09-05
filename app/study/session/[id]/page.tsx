@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { dbConnect, Attempt, LineRejected, MarkDispute, PracticeSession, Question, Student, Topic, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
-import { StudyNav, sittingTag } from '../../study-nav';
 import { renderMathHtml } from '@/lib/katex';
 import { renderVisual, renderStimulusTable } from '@/lib/visuals';
 import { planSession, topicPrefixesOf } from '@/lib/session/plan';
@@ -147,9 +146,7 @@ export default async function SessionPage({
       const opensAt = await diagnosticOpensAt(auth.student_id);
       const diagnosticOpen = opensAt === null || Date.now() >= opensAt.getTime();
       return (
-        <main className="ruled relative min-h-screen px-5 py-8">
-          <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
-          <div className="mx-auto max-w-xl">
+        <div>
             <h1 className="text-2xl font-black">
               Marked<span className="text-red-pen">.</span>
             </h1>
@@ -217,8 +214,7 @@ export default async function SessionPage({
             >
               Back to your notebook
             </Link>
-          </div>
-        </main>
+        </div>
       );
     }
 
@@ -258,9 +254,7 @@ export default async function SessionPage({
       );
 
       return (
-        <main className="ruled relative min-h-screen px-5 py-8">
-          <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
-          <div className="mx-auto max-w-xl">
+        <div>
             <h1 className="text-2xl font-black">
               Where you stand<span className="text-red-pen">.</span>
             </h1>
@@ -330,15 +324,12 @@ export default async function SessionPage({
             >
               Back to your notebook
             </Link>
-          </div>
-        </main>
+        </div>
       );
     }
 
     return (
-      <main className="ruled relative min-h-screen px-5 py-8">
-        <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
-        <div className="mx-auto max-w-xl">
+      <div>
           <h1 className="text-2xl font-black">
             Session complete<span className="text-red-pen">.</span>
           </h1>
@@ -462,12 +453,10 @@ export default async function SessionPage({
           >
             Back to your notebook
           </Link>
-        </div>
-      </main>
+      </div>
     );
   }
 
-  const sittingStudent = await Student.findById(auth.student_id).select('syllabus_mode').lean<{ syllabus_mode: string } | null>();
   const question = await Question.findById(session.question_ids[index]).lean<{
     _id: unknown;
     kind: 'mcq' | 'structured';
@@ -791,11 +780,8 @@ export default async function SessionPage({
   };
 
   return (
-    <main className="ruled relative min-h-screen px-5 py-8">
-      <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
-      <div className="mx-auto max-w-xl">
-        <StudyNav current={null} sitting={sittingTag(sittingStudent?.syllabus_mode ?? '')} email={auth.email} isAdmin={auth.role === 'admin'} />
-        <div className="mt-3 text-right font-mono text-xs text-dim">
+    <div>
+      <div className="mt-3 text-right font-mono text-xs text-dim">
           Q{index + 1} OF {total} · {question.marks} MARK{question.marks === 1 ? '' : 'S'}
         </div>
         {/* Why the session is one question: a student who expected eight reads
@@ -813,7 +799,6 @@ export default async function SessionPage({
           {marksAnswered > 0 && <span className="text-ink">{marksAnswered} answered so far.</span>}
         </p>
         <QuestionCard question={card} />
-      </div>
-    </main>
+    </div>
   );
 }

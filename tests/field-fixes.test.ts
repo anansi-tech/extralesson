@@ -86,11 +86,11 @@ describe('(1)(2)(3) history, the student nav, the admin bar', () => {
     expect(dash).not.toMatch(/Look back at a question|groupReviewableByDay/);
     expect(dash).toMatch(/name="mode" value="revisit"/);
   });
-  it('gives every student page the same nav and drops the back link', () => {
-    const nav = at('app', 'study', 'study-nav.tsx');
-    expect(nav).toMatch(/Notebook[\s\S]*History[\s\S]*Progress/);
+  it('gives every student page the same chrome, and no page draws its own', () => {
+    expect(at('app', 'study', 'study-tabs.tsx')).toMatch(/Notebook[\s\S]*History[\s\S]*Progress/);
+    expect(at('app', 'study', 'layout.tsx')).toMatch(/<StudyChrome sitting=/);
     for (const f of [['app', 'study', 'page.tsx'], ['app', 'study', 'history', 'page.tsx'], ['app', 'study', 'progress', 'page.tsx'], ['app', 'study', 'session', '[id]', 'page.tsx']]) {
-      expect(at(...f), f.join('/')).toMatch(/<StudyNav /);
+      expect(at(...f), f.join('/')).not.toMatch(/<StudyNav |className="ruled/);
     }
     expect(at('app', 'study', 'session', '[id]', 'page.tsx')).not.toContain('← notebook');
   });

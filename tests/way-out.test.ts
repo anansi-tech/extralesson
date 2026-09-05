@@ -24,9 +24,8 @@ describe('the way out', () => {
     const photo = at('app', 'study', 'session', '[id]', 'working-photo.tsx');
     expect(photo).toMatch(/No retakes left for this question\. Check the answer boxes below\. If we misread your working, tell us: \$\{LANDING\.contactEmail\}/);
   });
-  it('the nav has a compact account disclosure with email, sitting, help and a 44px sign out', () => {
-    const nav = at('app', 'study', 'study-nav.tsx');
-    expect(nav).toMatch(/<details[\s\S]*<summary[^>]*>Account<\/summary>/);
-    expect(nav).toMatch(/\{email\}[\s\S]*\{sitting\}[\s\S]*LANDING\.contactEmail[\s\S]*<button className="min-h-11[^"]*">Sign out<\/button>/);
+  it('the chrome carries the sitting, Help and a 44px Sign out', () => {
+    const chrome = at('app', 'study', 'study-chrome.tsx');
+    expect(chrome).toMatch(/\{sitting\}[\s\S]*LANDING\.contactEmail[\s\S]*<button className="min-h-11[^"]*">Sign out<\/button>/);
   });
 });

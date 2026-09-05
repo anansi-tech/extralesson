@@ -2,7 +2,6 @@ import { dbConnect, Student } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { loadStudyState } from '@/lib/study/state';
 import Link from 'next/link';
-import { StudyNav, sittingTag } from './study-nav';
 import { logout, startSession } from './actions';
 import { openSession } from '@/lib/study/open-session';
 import { loadProgress } from '@/lib/study/progress';
@@ -86,14 +85,10 @@ export default async function StudyDashboard({
   });
 
   return (
-    <main className="ruled relative min-h-screen px-5 py-8">
-      <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
-      <div className="mx-auto max-w-xl">
+    <div>
         {/* THE EMAIL IS THE ONLY THING HERE OF UNKNOWN LENGTH, so it is the
             only thing allowed to give: the fixed items never wrap and the row
             wraps. */}
-        <StudyNav current="notebook" sitting={sittingTag(student.syllabus_mode)} email={auth.email} isAdmin={isAdmin} />
-
         {/* THE ACTION COMES FIRST. The analysis is worth reading, but after
             you have decided to work — so it sits below the button, not in
             front of it. */}
@@ -440,7 +435,6 @@ export default async function StudyDashboard({
             </div>
           </section>
         )}
-      </div>
-    </main>
+    </div>
   );
 }

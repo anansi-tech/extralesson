@@ -18,7 +18,7 @@ describe('honest prefill', () => {
     expect(at('app', 'page.tsx')).not.toMatch(/fill(s|ed)? in the boxes/i);
   });
   it('stacks the nav below 400px and wraps admin identifiers', () => {
-    expect(at('app', 'study', 'study-nav.tsx')).toMatch(/max-\[399px\]:flex-col/);
+    expect(at('app', 'study', 'study-chrome.tsx')).toMatch(/lg:hidden[\s\S]*hidden[\s\S]*lg:flex/);
     expect((at('app', 'admin', 'access', 'page.tsx').match(/break-all/g) ?? []).length).toBeGreaterThanOrEqual(3);
   });
 });

@@ -4,7 +4,6 @@ import { loadStudyState } from '@/lib/study/state';
 import { BAND_LABEL } from '@/lib/study/profiles';
 import type { ModuleNumber } from '@/lib/types';
 import type { MasteryBand } from '@/lib/mastery/config';
-import { StudyNav, sittingTag } from '../study-nav';
 
 export const metadata = { title: 'Progress — ExtraLesson' };
 export const dynamic = 'force-dynamic';
@@ -31,11 +30,8 @@ export default async function ProgressPage() {
     student.syllabus_mode === 'legacy-jan' || !prediction.estimable ? null : prediction.modules.find((x) => x.module === m)?.letter ?? null;
 
   return (
-    <main className="ruled relative min-h-screen px-5 py-8">
-      <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
-      <div className="mx-auto max-w-xl">
-        <StudyNav current="progress" sitting={sittingTag(student.syllabus_mode)} email={auth.email} isAdmin={auth.role === 'admin'} />
-        <h1 className="mt-5 text-2xl font-black">
+    <div>
+      <h1 className="mt-5 text-2xl font-black">
           Where you stand, topic by topic<span className="text-red-pen">.</span>
         </h1>
         <p className="mt-1 text-[12px] leading-snug text-dim">
@@ -81,7 +77,6 @@ export default async function ProgressPage() {
               </section>
             );
           })}
-      </div>
-    </main>
+    </div>
   );
 }
