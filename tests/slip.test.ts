@@ -12,7 +12,7 @@ describe('the slip', () => {
   it('is kept only when its quote is on the page, however the symbols are written', () => {
     const kept = supportedSlips(
       [
-        { part: 'b', quote: '1200000 − 144000 = 156000', sentence: 'the subtraction is off by 900 000' },
+        { part: '(b)', quote: '1200000 − 144000 = 156000', sentence: 'the subtraction is off by 900 000' },
         { part: 'c', quote: '156000 x 100 = 13', sentence: 'not on the page' },
         { part: 'd', quote: '', sentence: 'no quote at all' },
       ],

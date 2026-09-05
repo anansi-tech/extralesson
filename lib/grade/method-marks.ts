@@ -46,10 +46,15 @@ export function constructionRows(q: MethodMarkQuestion, awarded: string[]): Rubr
   return (q.rubric ?? []).filter((r) => !earned.has(r.code) && constructRefs.has(r.slot_ref));
 }
 
-/** A slip is kept only when its quoted line is on the page (ROUND_7 Task 1). */
-export function supportedSlips<S extends { quote: string }>(slips: S[], lines: string[]): S[] {
+/**
+ * A slip is kept only when its quoted line is on the page (ROUND_7 Task 1).
+ * The marker writes the part as "(b)" as often as "b"; the label is bare here.
+ */
+export function supportedSlips<S extends { quote: string; part: string }>(slips: S[], lines: string[]): S[] {
   const page = flatLine(lines.join(' '));
-  return slips.filter((s) => flatLine(s.quote).length >= 2 && page.includes(flatLine(s.quote)));
+  return slips
+    .map((s) => ({ ...s, part: s.part.replace(/[()\s]/g, '').toLowerCase() }))
+    .filter((s) => flatLine(s.quote).length >= 2 && page.includes(flatLine(s.quote)));
 }
 
 /**
