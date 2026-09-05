@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   buildSession,
   estimatedMinutes,
+  FIRST_MAX_MARKS,
+  FIRST_MAX_PARTS,
   hasMarkableParts,
   m1GateHolds,
   SESSION_MINUTES,
@@ -546,18 +548,49 @@ describe("buildSession — 'first' is one question that shows the examiner", () 
     expect(picked).toEqual([]);
   });
 
-  // Five marks or fewer, two parts or fewer: the first five minutes are for
-  // seeing the examiner, not for a twelve-mark question.
-  it('takes a short question: five marks or fewer, two parts or fewer', () => {
+  // The shortest the bank has: nine marks and three parts is the smallest cap
+  // leaving 20 Module 1 questions (28, measured 2026-09-04). Five marks left none.
+  it('takes a short question within the cap the bank supports', () => {
+    expect(FIRST_MAX_MARKS).toBe(9);
+    expect(FIRST_MAX_PARTS).toBe(3);
     const picked = buildSession({
       ...base,
       candidates: [
-        { ...withRows(q('long', 1, 'M1.1.1', 'structured', 9), 3), part_count: 4 },
-        { ...withRows(q('many-parts', 1, 'M1.1.2', 'structured', 5), 3), part_count: 3 },
-        { ...withRows(q('short', 1, 'M1.1.3', 'structured', 5), 2), part_count: 2 },
+        { ...withRows(q('long', 1, 'M1.1.1', 'structured', 12), 3), part_count: 4 },
+        { ...withRows(q('many-parts', 1, 'M1.1.2', 'structured', 9), 3), part_count: 4 },
+        { ...withRows(q('short', 1, 'M1.1.3', 'structured', 9), 2), part_count: 3 },
       ],
     });
     expect(picked.map((p) => p.id)).toEqual(['short']);
+  });
+
+  // A cap that empties the pool is worse than a long first question: with
+  // nothing short in the target modules, adaptive's top-ranked structured
+  // question with method rows is taken instead, so no new student meets
+  // "check back soon".
+  it('falls back to the top-ranked structured question with method rows when nothing is short', () => {
+    const picked = buildSession({
+      ...base,
+      candidates: [
+        { ...withRows(q('twelve', 1, 'M1.1.1', 'structured', 12), 3), part_count: 4 },
+        { ...withRows(q('ten', 1, 'M1.5.1', 'structured', 10), 2), part_count: 4 },
+        { ...withRows(q('no-rows', 1, 'M1.1.2', 'structured', 9), 0), part_count: 3 },
+        q('mcq', 1, 'M1.1.3', 'mcq'),
+      ],
+    });
+    expect(picked).toHaveLength(1);
+    expect(picked[0].id).toBe('twelve'); // M1.1 weighs 10, M1.5 weighs 8
+  });
+
+  it('keeps the cap when the short pool exists, even if a long question ranks higher', () => {
+    const picked = buildSession({
+      ...base,
+      candidates: [
+        { ...withRows(q('heavy-long', 1, 'M1.1.1', 'structured', 12), 3), part_count: 4 },
+        { ...withRows(q('light-short', 1, 'M1.5.1', 'structured', 9), 2), part_count: 3 },
+      ],
+    });
+    expect(picked.map((p) => p.id)).toEqual(['light-short']);
   });
 
   it('returns nothing rather than a question with nothing for a photograph to earn', () => {

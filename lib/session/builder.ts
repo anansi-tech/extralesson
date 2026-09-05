@@ -45,9 +45,18 @@ export interface CandidateQuestion {
   part_count?: number;
 }
 
-/** The first question is short: five marks or fewer, two parts or fewer. */
-export const FIRST_MAX_MARKS = 5;
-export const FIRST_MAX_PARTS = 2;
+/**
+ * The first question is the shortest the bank has. Module 1's approved
+ * structured questions run 9–12 marks over 3–4 parts (171 of them, measured
+ * 2026-09-04); nine marks and three parts is the smallest cap that leaves 20
+ * or more — it leaves 28. A cap that leaves none is a "check back soon" for
+ * every new student, which is what a five-mark cap did.
+ */
+export const FIRST_MAX_MARKS = 9;
+export const FIRST_MAX_PARTS = 3;
+
+const isFirstCandidate = (c: CandidateQuestion) => c.kind === 'structured' && (c.method_rows ?? 0) > 0;
+const isShort = (c: CandidateQuestion) => c.marks <= FIRST_MAX_MARKS && (c.part_count ?? 1) <= FIRST_MAX_PARTS;
 
 // A question belongs in the session when it has anything to mark; self-marked
 // parts are revealed inline. See ROUND_1_6 §1.
@@ -122,14 +131,15 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
     [...(attemptedObjectives ?? [])].map(objectivePrefix),
   );
 
+  // The first question shows the examiner: structured, photographed, with
+  // method marks to earn (ROUND_4 Task 2), ranked as adaptive would rank it,
+  // and short where the bank allows. When nothing short is in the target
+  // modules the cap is dropped rather than the question: a new student never
+  // sees an empty session.
+  const shortPool = mode === 'first' && candidates.some((c) => isFirstCandidate(c) && isShort(c) && targetModules.includes(c.module));
   const eligible = (c: CandidateQuestion): boolean => {
     if (!hasMarkableParts(c)) return false;
-    // The first question shows the examiner: structured, photographed, with
-    // method marks to earn (ROUND_4 Task 2). Ranked as adaptive would rank it.
-    if (mode === 'first') {
-      if (c.kind !== 'structured' || !(c.method_rows ?? 0)) return false;
-      if (c.marks > FIRST_MAX_MARKS || (c.part_count ?? 1) > FIRST_MAX_PARTS) return false;
-    }
+    if (mode === 'first' && (!isFirstCandidate(c) || (shortPool && !isShort(c)))) return false;
     if (mode === 'topic') {
       return (focusPrefixes ?? []).some((prefix) =>
         c.objective_ids.some((id) => id.startsWith(prefix)),
