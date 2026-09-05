@@ -15,7 +15,6 @@ import { hasShowThat, SHOW_THAT_SHARE } from '@/lib/targets/show-that';
 import { CONSTRUCT_SHARE } from '@/lib/targets/construct';
 import { STRUCTURED_ARCHETYPE_TARGETS } from '@/lib/targets/representation';
 import { TARGET_ACTS_PER_MARK, TARGET_CHAIN_DEPTH } from '@/lib/targets/difficulty';
-import { LANDING } from '@/lib/landing-content';
 import { NAMES, NAMING_RATE, namesAPerson, recentActors } from '@/lib/generation/territories';
 
 /**
@@ -164,24 +163,10 @@ async function main() {
   // lead it, and under-claiming by a point costs nothing. 84.6% is stated as
   // 84%, and would be an overstatement at 85%.
   const claimable = Math.floor(workingPct);
-  const claimed = Number(LANDING.statWorking.replace('%', ''));
   console.log(
     `MARKS   ${workingMarks}/${rubricMarks} for the working (${workingPct.toFixed(1)}%) · ` +
-      `${answerMarks} for the answer (CAO)`,
+      `${answerMarks} for the answer (CAO) · claimable as ${claimable}% (the landing page no longer states it)\n`,
   );
-  if (claimed > claimable) {
-    console.log(
-      `        ⚠ LANDING PAGE CLAIMS ${LANDING.statWorking} AND THE BANK SUPPORTS ${claimable}% — ` +
-        `that overstates it. Lower LANDING.statWorking in lib/landing-content.ts\n`,
-    );
-  } else if (claimable - claimed > 1) {
-    console.log(
-      `        landing page says ${LANDING.statWorking}, bank now supports ${claimable}% — ` +
-        `safe, but stale enough to raise\n`,
-    );
-  } else {
-    console.log(`        landing page says ${LANDING.statWorking} — supported\n`);
-  }
 
   // --- shape ---------------------------------------------------------------
   const paper = structured.filter((q) => q.shape === 'paper');

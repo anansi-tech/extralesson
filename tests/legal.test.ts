@@ -120,7 +120,7 @@ describe('buyer-facing surfaces address whoever is paying', () => {
   it('tells the buyer the checkout email is the STUDENT\'s, not theirs', () => {
     // The defect this replaced: "sign up with the same email you used at
     // checkout" put the account under the payer when they differ.
-    expect(buyerFacing.replace(/\s+/g, ' ')).toMatch(/STUDENT&rsquo;S EMAIL ADDRESS, WHICH NEED NOT BE YOURS/);
+    expect(buyerFacing.replace(/\s+/g, ' ')).toMatch(/student&rsquo;s email address, which need not be yours/);
     expect(buyerFacing).not.toMatch(/SAME EMAIL ADDRESS YOU USED AT CHECKOUT/i);
   });
 
@@ -143,7 +143,8 @@ describe('buyer-facing surfaces address whoever is paying', () => {
   // parent understands it is for their child, a teacher thinks of their class.
   it('addresses the reader directly in the hero and the shared-link metadata', () => {
     const hero = LANDING.slice(0, LANDING.indexOf('<section id="offer">'));
-    expect(hero).toMatch(/Your own/);
+    // "the way you'll sit it" is read correctly by a student, a parent and a teacher alike.
+    expect(hero).toMatch(/the way you&rsquo;ll sit it/);
     for (const assumed of [/your child/i, /parent/i]) {
       expect(hero, String(assumed)).not.toMatch(assumed);
     }
@@ -228,7 +229,7 @@ describe('sittings are derived, not named', () => {
 
   it('promises the sitting the buyer chooses, not a hardcoded one', () => {
     expect(LANDING).not.toMatch(/through the January sitting/i);
-    expect(LANDING).toMatch(/through the sitting you choose/i);
+    expect(LANDING).toMatch(/through your chosen exam sitting/i);
   });
 
   it('builds the sitting note from the same record the paywall reads', () => {
@@ -318,7 +319,8 @@ describe('public claims are ones we can show', () => {
     // has sat an exam after using this, so there was nothing behind it. What it
     // says now is what the product demonstrably does.
     expect(LANDING).not.toMatch(/turns a Grade/i);
-    expect(LANDING.replace(/\s+/g, ' ')).toMatch(/every method mark, and the reason for each/i);
+    // Said once now (ROUND_7 Task 4): every second occurrence of the phrase went.
+    expect(LANDING.replace(/\s+/g, ' ')).toMatch(/every method mark, awarded or withheld, with the reason/i);
   });
 
   it('keeps the limits, which are what make the rest believable', () => {
@@ -329,40 +331,53 @@ describe('public claims are ones we can show', () => {
   });
 });
 
-// EVERY STATISTIC ON THE PAGE NAMES ITS SOURCE IN THE LABEL.
+// EVERY STATISTIC ON THE PAGE NAMES ITS SOURCE, AND THE SOURCE IS CXC'S.
 //
-// The page carried "56% of Caribbean students miss the 5-subject benchmark",
-// which nobody could source, beside a mean mark labelled with the wrong year.
-// A number is a claim like any other: if it needs a footnote to defend, the
-// footnote goes in the label or the number goes.
-describe('landing statistics', () => {
-  const stats = [
-    [LANDING_CONTENT.statAvgScore, LANDING_CONTENT.statAvgScoreLabel],
-    [LANDING_CONTENT.statWorking, LANDING_CONTENT.statWorkingLabel],
-  ] as const;
-
-  it('states each as a percentage', () => {
-    for (const [n] of stats) expect(n).toMatch(/^\d+%$/);
+// The page once carried a benchmark nobody could source and a mean mark with
+// the wrong year. The band now has two lines, each pinned here to the cxc.org
+// document it came from (ROUND_7 Task 4). Both were read on 2026-09-05.
+describe('the landing band', () => {
+  it('states the pass rate from the most recent CXC Subject Report, by year and percentage', () => {
+    const { passRate } = LANDING_CONTENT;
+    // cxc.org, CSEC Mathematics Subject Report May–June 2026: 23 169 of 79 917
+    // candidates (36.02 per cent) gained Grades I–III.
+    expect(passRate.percent).toBe(36);
+    expect(passRate.caption).toMatch(/36%/);
+    expect(passRate.caption).toMatch(/Subject Report, May–June 2026/);
+    expect(passRate.source).toMatch(/^https:\/\/www\.cxc\.org\/.*RPT2026CSECMayJuneMathematicsSubjectReport\.pdf$/);
+    expect(passRate.line).toMatch(/Fewer than four in ten/);
   });
 
-  it('cites a source and a date in every label of an external figure', () => {
-    // The second is measured from our own bank and says so; the CXC figure
-    // must name CXC and a sitting or a date.
-    for (const [, label] of stats.slice(0, 1)) {
-      expect(label).toMatch(/CXC/);
-      expect(label).toMatch(/20\d\d/);
-    }
-    expect(LANDING_CONTENT.statWorkingLabel).toMatch(/our mark schemes/i);
+  it('states the Paper 2 weighting from the syllabus by its document code, with only the date the document prints', () => {
+    const { weighting } = LANDING_CONTENT;
+    // CXC 05/G/SYLL 16 assessment grid: Paper 02 is 15 CK, 20 AK, 15 R of 50 weighted marks.
+    expect(weighting.percent).toBe(70);
+    expect(weighting.caption).toMatch(/CXC 05\/G\/SYLL 16/);
+    expect(weighting.caption).toMatch(/effective for examinations from May–June 2027/i);
+    expect(weighting.source).toMatch(/^https:\/\/www\.cxc\.org\//);
+    expect(weighting.line).toMatch(/70 of every 100 marks on Paper 2/);
   });
 
-  it('does not call the mean mark a pass rate, or the pass rate a score', () => {
-    expect(LANDING_CONTENT.statAvgScoreLabel).toMatch(/mean mark/i);
-    expect(LANDING_CONTENT.statAvgScoreLabel).not.toMatch(/pass/i);
-  });
-
-  it('has dropped the unsourceable benchmark figure, and then the pass rate beside it', () => {
-    for (const [, label] of stats) expect(label).not.toMatch(/5-subject benchmark/i);
+  it('has dropped the bank-measured figure and the mean mark', () => {
+    expect(LANDING_CONTENT).not.toHaveProperty('statWorking');
+    expect(LANDING_CONTENT).not.toHaveProperty('statAvgScore');
     expect(LANDING_CONTENT).not.toHaveProperty('statBenchmark');
+  });
+});
+
+// THE LEDE, PINNED (ROUND_7 Task 4).
+describe('the landing lede', () => {
+  const page = read('app', 'page.tsx').replace(/\s+/g, ' ');
+  it('is the agreed sentence, under the agreed h1, with one free button and its label', () => {
+    expect(page).toContain('<h1>Practise CSEC Maths the way you&rsquo;ll sit it.</h1>');
+    expect(page).toMatch(/Work original, past-paper-style questions on paper\. Photograph your page\. See where your working earns marks &mdash; and where it loses them &mdash; so you know what to improve before exam day\./);
+    expect(page).toMatch(/Mark one question free <small>No card required\.<\/small>/);
+  });
+  it('says CXC examiner nowhere, and in May nowhere', () => {
+    for (const f of [['app', 'page.tsx'], ['app', 'layout.tsx'], ['app', 'opengraph-image.tsx'], ['app', 'welcome', 'page.tsx']]) {
+      expect(read(...f), f.join('/')).not.toMatch(/CXC examiner/);
+      expect(read(...f), f.join('/')).not.toMatch(/\bin May\b/);
+    }
   });
 });
 

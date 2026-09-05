@@ -28,7 +28,7 @@ export const metadata: Metadata = {
    * externalBaseUrl() never reads the Host header and gives the CANONICAL one.
    */
   metadataBase: new URL(externalBaseUrl()),
-  title: "ExtraLesson — Your own CXC examiner",
+  title: "ExtraLesson — Practise CSEC Maths the way you’ll sit it",
   description:
     "Photograph your working. ExtraLesson marks it the way a Paper 2 examiner does — every method mark, and the reason for each. Built by a Grenadian island scholar.",
   /**

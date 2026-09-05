@@ -81,7 +81,8 @@ describe('(e) the figure recall sits in the gutter', () => {
 });
 
 describe('(i) the landing step', () => {
-  it('is titled Every day.', () => {
-    expect(at('app', 'page.tsx')).toContain('<h3>Every day.</h3>');
+  it('is titled by what the student sees, with the daily line beneath (ROUND_7 Task 4)', () => {
+    expect(at('app', 'page.tsx')).toContain('<h3>See what earned marks &mdash; and why</h3>');
+    expect(at('app', 'page.tsx')).toMatch(/className="daily"[\s\S]*Fifteen minutes a day/);
   });
 });

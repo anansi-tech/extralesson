@@ -8,7 +8,7 @@ import { lockupSvgMarkup } from './lockup';
 
 const LOCKUP = `data:image/svg+xml;base64,${Buffer.from(lockupSvgMarkup()).toString('base64')}`;
 
-export const alt = 'ExtraLesson — Your own CXC examiner. In red pen.';
+export const alt = 'ExtraLesson — Practise CSEC Maths the way you’ll sit it. Marked in red pen.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -30,11 +30,14 @@ export default function OgImage() {
         }}
       >
         <img src={LOCKUP} width={306} height={80} alt="" />
-        <div style={{ display: 'flex', fontSize: 92, fontWeight: 900, lineHeight: 1.05, marginTop: 30 }}>
-          Your own CXC examiner.
+        <div style={{ display: 'flex', fontSize: 72, fontWeight: 900, lineHeight: 1.05, marginTop: 30 }}>
+          Practise CSEC Maths
         </div>
-        <div style={{ display: 'flex', fontSize: 92, fontWeight: 900, color: '#C1121F' }}>
-          In red pen.
+        <div style={{ display: 'flex', fontSize: 72, fontWeight: 900, lineHeight: 1.05 }}>
+          the way you’ll sit it.
+        </div>
+        <div style={{ display: 'flex', fontSize: 56, fontWeight: 900, color: '#C1121F', marginTop: 10 }}>
+          Marked in red pen.
         </div>
         <div style={{ display: 'flex', fontSize: 30, color: '#6E7687', marginTop: 30 }}>
           CSEC Mathematics · marked the way examiners award marks — step by step

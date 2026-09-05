@@ -16,14 +16,31 @@ export const LANDING = {
     .map((s) => s.label)
     .join(' & ')
     .toUpperCase(),
-  // 3789/4481 non-CAO marks in the approved bank, 2026-08-25, floored.
-  // report-bank.ts recomputes and flags this constant if the bank drifts.
-  statWorking: '84%',
-  statWorkingLabel:
-    'Of the marks in our mark schemes are for the working, not the final answer',
-  // CXC CSEC Mathematics Subject Report May/June 2025: mean 76.05 (38.02%).
-  statAvgScore: '38%',
-  statAvgScoreLabel: 'Mean mark in CSEC Mathematics\n76.05 of 200 · CXC, May/June 2025',
+  // THE BAND (ROUND_7 Task 4): two lines, each with its caption and its
+  // source, checked on cxc.org on 2026-09-05. No effective date is stated
+  // unless the document prints one.
+  //
+  // CSEC Mathematics Subject Report, May–June 2026 (cxc.org, subject reports):
+  // "Overall, 23 169 candidates (36.02 per cent of candidates) gained
+  // acceptable grades (Grades I–III)" of 79 917 entered.
+  passRate: {
+    line: 'Fewer than four in ten students who sit CSEC Maths pass it.',
+    caption: '36% gained Grades I–III, CXC CSEC Mathematics Subject Report, May–June 2026',
+    percent: 36,
+    source: 'https://www.cxc.org/wp-content/uploads/2018/11/RPT2026CSECMayJuneMathematicsSubjectReport.pdf',
+    sourceLabel: 'CXC Subject Report, May–June 2026',
+  },
+  // CSEC Mathematics syllabus CXC 05/G/SYLL 16, amended 2025 and 2026,
+  // "Effective for examinations from May–June 2027": the assessment grid
+  // gives Paper 02 as 15 CK, 20 AK, 15 R weighted marks of 50 — AK and R
+  // are 35 of 50, which is 70 of every 100.
+  weighting: {
+    line: '70 of every 100 marks on Paper 2 are for applying method and reasoning, not recalling facts.',
+    caption: 'Assessment grid, CSEC Mathematics syllabus CXC 05/G/SYLL 16, effective for examinations from May–June 2027',
+    percent: 70,
+    source: 'https://www.cxc.org/wp-content/uploads/2018/11/CSEC-Mathematics-Amended-2026-for-Exams-2027V2.pdf',
+    sourceLabel: 'CXC 05/G/SYLL 16',
+  },
   contactEmail: 'extralesson@anansi.xyz',
 } as const;
 
