@@ -97,7 +97,20 @@ export function applyFormatDependency<D extends { code: string; awarded: boolean
   });
 }
 
-const flatLine = (t: string) => t.toLowerCase().replace(/[“”"']/g, '').replace(/\s+/g, ' ').replace(/[.,;:]+$/, '').trim();
+// Compared the way the grader reads a line, not character by character: the
+// marker writes ≥ and − where the page has >= and -, and a space before a unit
+// is not a different line.
+const flatLine = (t: string) =>
+  t
+    .toLowerCase()
+    .replace(/[“”"'$\\]/g, '')
+    .replace(/≥/g, '>=')
+    .replace(/≤/g, '<=')
+    .replace(/[−–—]/g, '-')
+    .replace(/[÷]/g, '/')
+    .replace(/[×·]/g, 'x')
+    .replace(/\s+/g, '')
+    .replace(/[.,;:]+$/, '');
 
 /**
  * A QUOTE IS EVIDENCE ONLY IF IT IS ON THE PAGE. The marker quotes the line

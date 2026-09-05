@@ -20,6 +20,14 @@ describe('(4) a quoted line must be on the page', () => {
     ];
     expect(requireEvidence(stub, page).map((d) => d.awarded)).toEqual([true, true]);
   });
+  it('matches a quote written with ≥ and − against a page written with >= and -', () => {
+    const inequality = ['-3x + 36 >= 15', '-3x >= -21,  x <= 7', 'y = -3(7) + 36 = 15 m'];
+    const stub = [
+      { code: 'R3', awarded: true, reason: 'You solved “−3x + 36 ≥ 15” to “x ≤ 7”.' },
+      { code: 'R4', awarded: true, reason: 'Your line “y = −3(7) + 36 = 15m” gives the remainder.' },
+    ];
+    expect(requireEvidence(stub, inequality).map((d) => d.awarded)).toEqual([true, true]);
+  });
   it('accepts a quote the page broke across two lines', () => {
     const wrapped = ['AC = AB, so A, B and C lie on', 'a straight line.'];
     const stub = [{ code: 'R2', awarded: true, reason: '“AC = AB, so A, B and C lie on a straight line” concludes it.' }];
