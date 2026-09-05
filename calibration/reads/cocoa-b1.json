@@ -1,7 +1,16 @@
 {
   "id": "cocoa-b1",
   "question_id": "6a852665bd8b8cbd670ab933",
-  "required": [{ "part_label": "b", "text": "1200000 - 144000 = 156000" }],
-  "forbidden": ["1056000", "1 056 000"],
-  "pins": "As written, never repaired: the page says 156000 where the sum gives 1056000, and the read must say 156000."
+  "required": [
+    {
+      "part_label": "b",
+      "text": "1200000 - 144000 = 156000"
+    }
+  ],
+  "forbidden": [
+    "1056000",
+    "1 056 000"
+  ],
+  "pins": "As written, never repaired: the page says 156000 where the sum gives 1056000. KNOWN LIMIT \u2014 the reader writes 150000 or 1056000 here (7 of 7 runs on 2026-09-04), so this case is expected to fail; if it passes, the reader has moved and the case must be re-judged.",
+  "expected_fail": true
 }

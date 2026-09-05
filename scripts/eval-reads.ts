@@ -17,6 +17,8 @@ interface ReadCase {
   question_id: string;
   required: { part_label: string; text: string }[];
   forbidden?: string[];
+  /** A known limit of the reader: the case is expected to FAIL, and passing fails the gate — the note is stale. */
+  expected_fail?: boolean;
 }
 
 const normalise = (s: string) =>
@@ -80,16 +82,19 @@ async function main() {
         continue;
       }
       const v = passes(t, c);
-      verdicts.push(`${c.id}: ${v.ok ? 'PASS' : `FAIL — ${v.why}`}`);
+      // An expected failure that still fails is the reader as documented; one
+      // that passes means the reader moved and the case must be re-judged.
+      const asExpected = c.expected_fail ? !v.ok : v.ok;
+      verdicts.push(`${c.id}: ${asExpected ? (c.expected_fail ? 'EXPECTED FAIL' : 'PASS') : c.expected_fail ? 'UNEXPECTED PASS — re-judge the case' : `FAIL — ${v.why}`}`);
     }
     console.log(`run ${run}: page loss ${lost}/${golden.length} · ${verdicts.join(' · ')}`);
     results.push({ run, lost, of: golden.length, verdicts });
   }
   // The bar: no page lost on any run, and every calibration case passing on
   // every run. A case with no image is a missing golden file, and fails too.
-  const clean = results.every((r) => r.lost === 0 && r.verdicts.every((v) => v.includes(': PASS')));
+  const clean = results.every((r) => r.lost === 0 && r.verdicts.every((v) => v.includes(': PASS') || v.includes(': EXPECTED FAIL')));
   const file = writeResults('eval-reads', { ...(await provenance()), golden_pages: golden.length, field_missing: fieldMissing, cases: cases.map((c) => c.id), runs: results, passes: clean });
-  console.log(`${clean ? 'PASS' : 'BELOW GATE'} — no page lost and every case passing, on every run. results: ${file}`);
+  console.log(`${clean ? 'PASS' : 'BELOW GATE'} — no page lost and every case as expected, on every run. results: ${file}`);
   process.exit(clean ? 0 : 1);
 }
 

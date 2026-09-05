@@ -33,7 +33,9 @@ import { applyFormatDependency, requireEvidence } from '@/lib/grade/method-marks
 import { provenance, writeResults } from './eval-provenance';
 
 const DIR = join(process.cwd(), 'design', 'golden');
-const GATE = 0.9;
+// THE BARS (ROUND_6 Task 7): CAO false award 0 in every run, method false
+// award at most 1, median agreement 88%, worst run 84%.
+const BAR = { median: 0.88, worst: 0.84, methodFalse: 1 };
 // --reasoning: the rows on explain and show-that slots only (APPROVAL_LOG
 // Batch 7), no reading pass, every disagreement printed with both reasons.
 const REASONING = process.argv.includes('--reasoning');
@@ -369,8 +371,8 @@ async function main() {
   console.log('   no method marks at all on 424 of 427 questions.');
   console.log(`   disagreements traceable to a misread (worst run): ${worst.misread} of ${worst.n - worst.agree}`);
 
-  const passes = ag.min > GATE && caoSp.max === 0;
-  console.log(`\n   ${passes ? 'PASS' : 'BELOW GATE'} — worst of ${RUNS} runs must exceed ${GATE * 100}% with no CAO false award.`);
+  const passes = caoSp.max === 0 && methodSp.max <= BAR.methodFalse && ag.median >= BAR.median && ag.min >= BAR.worst;
+  console.log(`\n   ${passes ? 'PASS' : 'BELOW GATE'} — CAO false 0, method false ≤ ${BAR.methodFalse}, median ≥ ${BAR.median * 100}%, worst of ${RUNS} ≥ ${BAR.worst * 100}%.`);
   console.log(`   worst run disagreements:`);
   for (const l of REASONING ? worst.lines : worst.lines.slice(0, 10)) console.log(`      ${l}`);
 
@@ -385,7 +387,7 @@ async function main() {
     marking: {
       runs: runs.map((r) => ({ n: r.n, agree: r.agree, cao_false: r.falseAwardCao, method_false: r.falseAwardMethod, withheld_should_award: r.withheldShouldAward, disagreed: r.lines.map((l) => l.split(' ')[0]) })),
       agreement: { min: ag.min, median: ag.median, max: ag.max },
-      gate: GATE,
+      bar: BAR,
     },
     passes,
   });

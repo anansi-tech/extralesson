@@ -20,6 +20,12 @@ describe('the evals exit by their bar', () => {
     for (const k of ['marker_model', 'reader_model', 'prompt_hash', 'rubric_version', 'commit']) expect(src).toContain(`${k}:`);
     expect(promptHash()).toMatch(/^[0-9a-f]{12}$/);
   });
+  it('bars: CAO false 0, method false ≤ 1, median ≥ 88, worst ≥ 84; reads page loss 0 with cocoa-b1 an expected failure', () => {
+    expect(at('scripts', 'eval-marker.ts')).toMatch(/const BAR = \{ median: 0\.88, worst: 0\.84, methodFalse: 1 \}/);
+    expect(at('scripts', 'eval-marker.ts')).toMatch(/caoSp\.max === 0 && methodSp\.max <= BAR\.methodFalse && ag\.median >= BAR\.median && ag\.min >= BAR\.worst/);
+    expect(at('scripts', 'eval-reads.ts')).toMatch(/UNEXPECTED PASS/);
+    expect(JSON.parse(at('calibration', 'reads', 'cocoa-b1.json')).expected_fail).toBe(true);
+  });
   it('count an omitted truth line against the reader', () => {
     const src = at('scripts', 'eval-marker.ts');
     expect(src).toMatch(/for \(const t of truth\) \{\s*w\.lines\+\+;\s*if \(gotKeys\.includes\(t\)\) w\.right\+\+;/);
