@@ -89,14 +89,23 @@ export function WorkingRead({
                     {line.confidence < 0.6 && (
                       <span className="ml-2 font-mono text-[10px] text-dim">hard to read</span>
                     )}
-                    {reject && (
-                      <RejectLineButton
-                        transcriptionId={reject.transcriptionId}
-                        lineIndex={line.index}
-                        onRejected={() => setStruck((prev) => new Set(prev).add(line.index))}
-                      />
-                    )}
                   </>
+                )}
+                {/* Reversible until submit: the same control puts a line back. */}
+                {reject && (
+                  <RejectLineButton
+                    transcriptionId={reject.transcriptionId}
+                    lineIndex={line.index}
+                    rejected={struck.has(line.index)}
+                    onToggled={(now) =>
+                      setStruck((prev) => {
+                        const next = new Set(prev);
+                        if (now) next.add(line.index);
+                        else next.delete(line.index);
+                        return next;
+                      })
+                    }
+                  />
                 )}
               </li>
             ))}

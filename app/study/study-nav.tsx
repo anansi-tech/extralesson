@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Lockup } from '../lockup';
 import { logout } from './actions';
+import { LANDING } from '@/lib/landing-content';
 
 /**
  * One header for every student page: the lockup, three places to be, and the
@@ -49,14 +50,21 @@ export function StudyNav({
             Admin
           </Link>
         )}
-        <span className="hidden shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-dim sm:inline">{sitting}</span>
-        {/* Which account is signed in matters on a shared phone; below sm the header needs the room back. */}
-        <span title={email} className="hidden min-w-0 max-w-full truncate font-mono text-[10px] tracking-widest text-dim sm:inline">
-          {email}
-        </span>
-        <form action={logout} className="shrink-0">
-          <button className="whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-dim underline">Sign out</button>
-        </form>
+        {/* ACCOUNT AND HELP (ROUND_7 Task 2): one compact disclosure — who is
+            signed in, which sitting, where help is, and the way out. */}
+        <details className="relative shrink-0">
+          <summary className="min-h-11 cursor-pointer list-none font-mono text-[10px] uppercase tracking-widest text-dim underline">Account</summary>
+          <div className="absolute right-0 z-10 mt-1 w-[min(20rem,calc(100vw-2rem))] border-[1.5px] border-ink bg-white p-3 text-[12px] shadow-[3px_3px_0_var(--ink)]">
+            <div className="break-all font-mono text-[11px]">{email}</div>
+            <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-dim">{sitting}</div>
+            <div className="mt-2 text-dim">
+              Help: <a href={`mailto:${LANDING.contactEmail}`} className="underline">{LANDING.contactEmail}</a>
+            </div>
+            <form action={logout} className="mt-2">
+              <button className="min-h-11 w-full border-[1.5px] border-ink bg-paper font-mono text-[11px] uppercase tracking-widest">Sign out</button>
+            </form>
+          </div>
+        </details>
       </div>
     </header>
   );

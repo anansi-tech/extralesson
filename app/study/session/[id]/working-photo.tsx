@@ -6,6 +6,7 @@ import type { CaptureResult } from './mark-working';
 import { WorkingRead } from './working-read';
 import { RetryMarkingButton } from './retry-marking-button';
 import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
+import { LANDING } from '@/lib/landing-content';
 
 /**
  * PHOTO FIRST (ROUND_4 Task 1): before submit the page is read and the boxes
@@ -63,11 +64,18 @@ export function WorkingPhoto({
   );
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  /** The page as photographed, kept while this page is open so the read can be checked against it. */
+  const [thumb, setThumb] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
   const send = (file: File) => {
     setError(null);
-    setPreview(URL.createObjectURL(file));
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    setThumb((old) => {
+      if (old) URL.revokeObjectURL(old);
+      return url;
+    });
     onBusy?.(true);
     start(async () => {
       try {
@@ -87,10 +95,7 @@ export function WorkingPhoto({
       } catch {
         setError('That photo could not be prepared on this device.');
       } finally {
-        setPreview((url) => {
-          if (url) URL.revokeObjectURL(url);
-          return null;
-        });
+        setPreview(null);
         onBusy?.(false);
       }
     });
@@ -145,6 +150,13 @@ export function WorkingPhoto({
         </p>
       )}
 
+      {thumb && !pending && (
+        <details className="mt-2">
+          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">Your photograph</summary>
+          <img src={thumb} alt="The page you photographed" className="mt-1 max-h-64 border-[1.5px] border-ink object-contain" />
+        </details>
+      )}
+
       {read && attemptId && marked.failed && (
         <RetryMarkingButton
           attemptId={attemptId}
@@ -173,7 +185,7 @@ export function WorkingPhoto({
           footer={
             takesLeft > 0
               ? 'If that is not what you wrote, take it again once.'
-              : 'That is the second photograph, so it stands.'
+              : `No retakes left for this question. Check the answer boxes below. If we misread your working, tell us: ${LANDING.contactEmail}`
           }
         />
       )}

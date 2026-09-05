@@ -33,3 +33,24 @@ export async function rejectLine(input: { transcriptionId: string; lineIndex: nu
   }
   return { ok: true };
 }
+
+/**
+ * Puts a line back (ROUND_7 Task 2): the exclusion is reversible until
+ * submit, and after submit the marks stand and a dispute is the route.
+ */
+export async function restoreLine(input: { transcriptionId: string; lineIndex: number }): Promise<{ ok: true } | { error: string }> {
+  const auth = await requireSession();
+  const parsed = RejectZ.safeParse(input);
+  if (!parsed.success) return { error: 'That could not be sent.' };
+  const { transcriptionId, lineIndex } = parsed.data;
+
+  await dbConnect();
+  const read = await Transcription.findOne({ _id: transcriptionId, student_id: auth.student_id })
+    .select('marker_version')
+    .lean<{ marker_version?: string } | null>();
+  if (!read) return { error: 'That line could not be found.' };
+  if (read.marker_version) return { error: 'This page has been marked; query the mark instead.' };
+
+  await LineRejected.deleteOne({ transcription_id: transcriptionId, line_index: lineIndex });
+  return { ok: true };
+}
