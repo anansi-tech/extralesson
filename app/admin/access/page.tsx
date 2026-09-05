@@ -11,12 +11,17 @@ const SITTINGS = [
   { value: 'jan-2027', label: 'Jan 2027 re-sit' },
 ] as const;
 
+/** A pending fulfilment older than this needs a person: the webhook should have finished in seconds. */
+const STALE_PENDING_MS = 60 * 60 * 1000;
+
 /**
  * Who has paid, and who the webhook could not settle. Every grant is visible and
  * revocable here and an unmatched payment surfaces instead of vanishing, which
- * is what makes the automatic path safe (ROUND_2 §8c). Ordered by who is waiting.
+ * is what makes the automatic path safe (ROUND_2 §8c). What needs a person
+ * comes first (ROUND_7 Task 3), then paid access, then the free allowance used.
  */
-export default async function AccessPage() {
+export default async function AccessPage({ searchParams }: { searchParams: Promise<{ find?: string; attention?: string; granted?: string; sitting?: string }> }) {
+  const { find = '', attention, granted, sitting: grantedSitting } = await searchParams;
   await dbConnect();
   const students = await Student.find()
     .sort({ created_at: -1 })
@@ -46,6 +51,13 @@ export default async function AccessPage() {
     .sort({ ts: -1 })
     .limit(50)
     .lean<{ _id: unknown; session_id: string; event_id: string; reason?: string; payment_link?: string; ts: Date }[]>();
+  // A failed grant, or one still pending an hour on, is a payment a person must finish.
+  const needing = await Fulfilment.find({
+    $or: [{ status: 'failed' }, { status: 'pending', ts: { $lt: new Date(Date.now() - STALE_PENDING_MS) } }],
+  })
+    .sort({ ts: -1 })
+    .limit(50)
+    .lean<{ _id: unknown; session_id: string; event_id: string; status: string; reason?: string; ts: Date }[]>();
 
   const ids = students.map((s) => s._id);
   const [sessionCounts, attemptCounts] = await Promise.all([
@@ -61,21 +73,20 @@ export default async function AccessPage() {
   const sessionsBy = new Map(sessionCounts.map((r) => [String(r._id), r.n]));
   const attemptsBy = new Map(attemptCounts.map((r) => [String(r._id), r.n]));
 
-  const rows = students
+  const needle = find.trim().toLowerCase();
+  const all = students
     .map((s) => ({
       ...s,
       id: String(s._id),
       sessions: sessionsBy.get(String(s._id)) ?? 0,
       attempts: attemptsBy.get(String(s._id)) ?? 0,
     }))
-    .sort((a, b) => {
-      // Waiting means "has paid us nothing and cannot continue". An expired
-      // sitting is not waiting on anyone — it ended on its own.
-      const wait = (r: typeof a) => (r.access ? 2 : r.sessions >= FREE_SESSIONS ? 0 : 1);
-      return wait(a) - wait(b) || b.sessions - a.sessions;
-    });
-  const waiting = rows.filter((r) => !r.access && r.sessions >= FREE_SESSIONS).length;
-  const paid = rows.filter((r) => hasAccess(r.access)).length;
+    .filter((r) => !needle || r.email.toLowerCase().includes(needle));
+  const paidRows = all.filter((r) => hasAccess(r.access)).sort((a, b) => b.sessions - a.sessions);
+  const usedRows = all.filter((r) => !hasAccess(r.access) && r.sessions >= FREE_SESSIONS).sort((a, b) => b.sessions - a.sessions);
+  const freeRows = all.filter((r) => !hasAccess(r.access) && r.sessions < FREE_SESSIONS).sort((a, b) => b.sessions - a.sessions);
+  const attentionOnly = attention === '1';
+  const paid = paidRows.length;
 
   return (
     <main className="ruled relative min-h-screen px-6 py-8">
@@ -85,10 +96,42 @@ export default async function AccessPage() {
           <div className="flex flex-wrap items-center gap-x-4 font-mono text-xs text-dim">
             <span>
               <b className="text-ink">{paid}</b> with access ·{' '}
-              <b className={waiting > 0 ? 'text-red-pen' : 'text-ink'}>{waiting}</b> waiting
+              <b className={needing.length + unmatched.length > 0 ? 'text-red-pen' : 'text-ink'}>{needing.length + unmatched.length}</b> payments needing attention ·{' '}
+              <b className="text-ink">{usedRows.length}</b> free allowance used
             </span>
           </div>
+          <form className="flex flex-wrap items-center gap-2" action="/admin/access">
+            <input name="find" defaultValue={find} placeholder="find an email" className="min-h-11 border-[1.5px] border-ink px-2 font-mono text-base" />
+            <label className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-widest text-dim">
+              <input type="checkbox" name="attention" value="1" defaultChecked={attentionOnly} /> attention only
+            </label>
+            <button className="min-h-11 border-[1.5px] border-ink px-3 font-mono text-[11px] uppercase tracking-widest">Search</button>
+          </form>
         </header>
+        {granted && (
+          <p className="mb-4 border-l-3 border-green-pen bg-[#E8F0E9] p-2 font-mono text-[12px]">
+            Granted: <b className="break-all">{granted}</b> · {grantedSitting}
+          </p>
+        )}
+
+        {needing.length > 0 && (
+          <section className="mb-6 border-[1.5px] border-red-pen bg-[#FDF1F0] p-3">
+            <div className="section-label is-alert">Payments needing attention</div>
+            <ul className="mt-2 space-y-2">
+              {needing.map((f) => (
+                <li key={String(f._id)} className="break-all border-t border-dashed border-red-pen pt-2 font-mono text-[12px]">
+                  {f.status === 'failed' ? 'grant FAILED' : 'still pending after an hour'} · {new Date(f.ts).toISOString().slice(0, 16).replace('T', ' ')}
+                  <span className="ml-2 text-dim">{f.session_id} · {f.event_id}{f.reason ? ` · ${f.reason}` : ''}</span>
+                  <div className="mt-1 text-ink">
+                    {f.status === 'failed'
+                      ? 'Next: resend the event from Stripe once; if it fails again, grant the account by hand below with the event id as the note.'
+                      : 'Next: find the session in Stripe; if it is paid, grant the account by hand below with the event id as the note, then resend the event so the record closes.'}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <p className="mb-3 max-w-prose text-[13px] leading-snug text-dim">
           Free tier is the diagnostic plus {FREE_SESSIONS} sessions. Match a Stripe payment to the
@@ -140,8 +183,9 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                       · {new Date(p.received_at).toISOString().slice(0, 10)} · {p.event_id}
                     </span>
                   </span>
-                  <form action={resolvePayment}>
+                  <form action={resolvePayment} className="flex flex-wrap items-center gap-2">
                     <input type="hidden" name="id" value={String(p._id)} />
+                    <input name="reason" required minLength={3} placeholder="why: refund · duplicate · granted to …" className="min-h-11 min-w-0 flex-1 border-[1.5px] border-ink px-2 font-mono text-base" />
                     <button className="min-h-11 font-mono text-[11px] uppercase tracking-widest underline">
                       Mark resolved
                     </button>
@@ -173,7 +217,15 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
           </section>
         )}
 
-        {rows.map((r) => (
+        {([
+          ['Paid access', paidRows],
+          ['Free allowance used', usedRows],
+          ['Free tier', attentionOnly ? [] : freeRows],
+        ] as const).map(([title, list]) =>
+          list.length === 0 ? null : (
+            <div key={title}>
+              <div className="section-label mb-2 mt-6">{title} · {list.length}</div>
+              {list.map((r) => (
           <section key={r.id} className="mb-3 border-[1.5px] border-ink bg-white p-3">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <div className="min-w-0">
@@ -193,7 +245,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                 </span>
               ) : r.sessions >= FREE_SESSIONS ? (
                 <span className="font-mono text-[11px] uppercase tracking-widest text-red-pen">
-                  waiting
+                  free allowance used
                 </span>
               ) : (
                 <span className="font-mono text-[11px] uppercase tracking-widest text-dim">
@@ -245,7 +297,10 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
               </form>
             )}
           </section>
-        ))}
+              ))}
+            </div>
+          ),
+        )}
         <DeleteAccount />
       </div>
     </main>

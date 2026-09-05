@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { dbConnect, Payment, Student } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth/session';
@@ -25,11 +26,14 @@ export async function grantAccess(formData: FormData): Promise<void> {
   const sitting = SittingZ.parse(String(formData.get('sitting')));
   const note = String(formData.get('note') ?? '').slice(0, 200);
   await dbConnect();
+  const student = await Student.findById(id).select('email').lean<{ email: string } | null>();
   await Student.updateOne(
     { _id: id },
     { $set: { access: { sitting, granted_at: new Date(), source: 'manual', note } } },
   );
   revalidatePath('/admin/access');
+  // Success names the account and the sitting, so a slip is seen at once (ROUND_7 Task 3).
+  redirect(`/admin/access?granted=${encodeURIComponent(student?.email ?? id)}&sitting=${sitting}`);
 }
 
 /** Refunds, chargebacks, and grants made against the wrong account. */
@@ -49,8 +53,11 @@ export async function revokeAccess(formData: FormData): Promise<void> {
 export async function resolvePayment(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = IdZ.parse(String(formData.get('id')));
+  // A reason is the record: a payment resolved with none is a payment nobody can explain later.
+  const reason = String(formData.get('reason') ?? '').trim().slice(0, 200);
+  if (reason.length < 3) return;
   await dbConnect();
-  await Payment.updateOne({ _id: id }, { $set: { resolved_at: new Date() } });
+  await Payment.updateOne({ _id: id }, { $set: { resolved_at: new Date(), note: `resolved: ${reason}` } });
   revalidatePath('/admin/access');
 }
 
