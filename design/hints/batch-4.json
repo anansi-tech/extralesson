@@ -1,0 +1,3502 @@
+[
+ {
+  "question_id": "6a8407220676ebb26b9e8847",
+  "code": "CK2",
+  "criterion": "Recognises that the frame has two triangular ends",
+  "hint": "Identify the two triangular ends of the frame.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407220676ebb26b9e8847",
+  "code": "CK3",
+  "criterion": "Recognises that three edges meet at each vertex",
+  "hint": "Count the three edges that meet at each vertex.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407220676ebb26b9e8847",
+  "code": "AK2",
+  "criterion": "Calculates \"their\" 6 $\\times 3 = 18$ edge-ends",
+  "hint": "Multiply your vertex total by three to find the total number of edge-ends.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407220676ebb26b9e8847",
+  "code": "R1",
+  "criterion": "Accounts for each edge being counted at both of its endpoints",
+  "hint": "Divide the edge-end total by two because each edge has two endpoints.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407220676ebb26b9e8847",
+  "code": "AK4",
+  "criterion": "Divides \"their\" 9 by 4",
+  "hint": "Divide your total number of straws by the number of straws in one packet.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407220676ebb26b9e8847",
+  "code": "R2",
+  "criterion": "Selects 3 whole packets as the minimum number required",
+  "hint": "Choose the smallest whole number of packets that provides enough straws.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407a00676ebb26b9e8854",
+  "code": "CK1",
+  "criterion": "Recognises that the angle at the centre is twice the angle at the circumference subtended by chord $AB$.",
+  "hint": "Use the circle fact that the angle at the centre is twice the angle at the circumference subtended by chord $AB$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407a00676ebb26b9e8854",
+  "code": "AK1",
+  "criterion": "Doubles $55°$.",
+  "hint": "Multiply $55°$ by $2$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407a00676ebb26b9e8854",
+  "code": "CK2",
+  "criterion": "Recognises that $OA=OB$ as radii, so $\\triangle OAB$ is isosceles.",
+  "hint": "Identify $OA=OB$ as radii and use this to treat $\\triangle OAB$ as isosceles.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407a00676ebb26b9e8854",
+  "code": "AK3",
+  "criterion": "Subtracts \"their\" $\\angle AOB$ from $180°$.",
+  "hint": "Subtract your earlier $\\angle AOB$ from $180°$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407a00676ebb26b9e8854",
+  "code": "R1",
+  "criterion": "Divides the remaining angle equally between the two base angles.",
+  "hint": "Divide the remaining angle equally between the two base angles of the isosceles triangle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407a00676ebb26b9e8854",
+  "code": "CK3",
+  "criterion": "Recognises the perpendicular relationship between radius $OA$ and tangent $AT$.",
+  "hint": "Use the fact that radius $OA$ is perpendicular to tangent $AT$ at the point of contact.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407a00676ebb26b9e8854",
+  "code": "AK4",
+  "criterion": "Evaluates $90°-$ \"their\" $\\angle OAB$.",
+  "hint": "Calculate $90°-\\angle OAB$ using your earlier $\\angle OAB$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407a00676ebb26b9e8854",
+  "code": "R2",
+  "criterion": "Forms $\\angle TAB=90°-$ \"their\" $\\angle OAB$.",
+  "hint": "Form $\\angle TAB=90°-\\angle OAB$ using your earlier $\\angle OAB$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8407a00676ebb26b9e8854",
+  "code": "R3",
+  "criterion": "Gives a valid tangent-radius justification.",
+  "hint": "State that a tangent is perpendicular to the radius at the point of contact.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84086b0676ebb26b9e886b",
+  "code": "CK1",
+  "criterion": "States $\\vec{AB}=\\vec{OB}-\\vec{OA}$",
+  "hint": "Write $\\vec{AB}=\\vec{OB}-\\vec{OA}$ before calculating the displacement.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84086b0676ebb26b9e886b",
+  "code": "AK1",
+  "criterion": "Subtracts the components to obtain $\\begin{pmatrix}3\\\\2\\end{pmatrix}$",
+  "hint": "Subtract the corresponding horizontal and vertical components and write the displacement as $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84086b0676ebb26b9e886b",
+  "code": "CK2",
+  "criterion": "Recognises that $\\vec{BC}=\\vec{AB}$",
+  "hint": "Set $\\vec{BC}$ equal to $\\vec{AB}$ because the move from $B$ to $C$ matches the move from $A$ to $B$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84086b0676ebb26b9e886b",
+  "code": "R1",
+  "criterion": "Forms $\\vec{OC}=\\vec{OB}+$ \"their\" $\\vec{AB}$",
+  "hint": "Form $\\vec{OC}=\\vec{OB}+\\vec{AB}$ using your earlier $\\vec{AB}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84086b0676ebb26b9e886b",
+  "code": "AK2",
+  "criterion": "Adds the vector components to obtain $\\begin{pmatrix}2\\\\5\\end{pmatrix}$, following through on \"their\" $\\vec{AB}$",
+  "hint": "Add the corresponding components of $\\vec{OB}$ and your earlier $\\vec{AB}$, then write the result as $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84086b0676ebb26b9e886b",
+  "code": "R2",
+  "criterion": "Recognises that $\\vec{CD}=$ \"their\" $\\vec{AB}$",
+  "hint": "Set $\\vec{CD}$ equal to your earlier $\\vec{AB}$ because this move is the same size and direction.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84086b0676ebb26b9e886b",
+  "code": "R3",
+  "criterion": "Forms $\\vec{OD}=$ \"their\" $\\vec{OC}+$ \"their\" $\\vec{AB}$",
+  "hint": "Form $\\vec{OD}=\\vec{OC}+\\vec{AB}$ using your earlier $\\vec{OC}$ and $\\vec{AB}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84086b0676ebb26b9e886b",
+  "code": "AK3",
+  "criterion": "Adds the horizontal components using \"their\" vectors",
+  "hint": "Add the horizontal components of your earlier vectors to find the horizontal component of $\\vec{OD}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84086b0676ebb26b9e886b",
+  "code": "AK4",
+  "criterion": "Adds the vertical components and obtains $\\begin{pmatrix}5\\\\7\\end{pmatrix}$, following through on \"their\" vectors",
+  "hint": "Add the vertical components of your earlier vectors and write the completed result as $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409420676ebb26b9e887d",
+  "code": "AK1",
+  "criterion": "Multiplies 35 by \\$16.",
+  "hint": "Multiply the regular hours by the hourly rate, $35 \\times \\$16$, to find the regular pay.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409420676ebb26b9e887d",
+  "code": "CK2",
+  "criterion": "Recognises that take-home pay is gross pay less the bus-pass deduction.",
+  "hint": "Subtract the bus-pass deduction from gross pay to get take-home pay.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409420676ebb26b9e887d",
+  "code": "AK2",
+  "criterion": "Uses \"their\" regular pay and represents overtime pay by $24x$.",
+  "hint": "Use your regular-pay result and write the overtime pay as $24x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409420676ebb26b9e887d",
+  "code": "R1",
+  "criterion": "Expresses the relationship as an equation in $x$.",
+  "hint": "Set take-home pay, after subtracting the bus-pass deduction, equal to the required amount and write this as an equation in $x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409420676ebb26b9e887d",
+  "code": "AK3",
+  "criterion": "Collects terms to obtain $24x = 240$, or equivalent.",
+  "hint": "Collect the constant terms on one side of the equation and the $24x$ term on the other side.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409420676ebb26b9e887d",
+  "code": "AK4",
+  "criterion": "Divides by 24.",
+  "hint": "Divide both sides of your equation by $24$ to isolate $x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409420676ebb26b9e887d",
+  "code": "AK5",
+  "criterion": "Solves $560 + 24h - 30 \\ge 820$ to obtain $h \\ge \\frac{145}{12}$, or equivalent.",
+  "hint": "Rearrange $560 + 24h - 30 \\ge 820$ by collecting constants and dividing by $24$, then write the result in the form $h \\ge \\frac{\\text{difference}}{24}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409420676ebb26b9e887d",
+  "code": "R2",
+  "criterion": "Uses the whole-number condition to determine that at least 13 overtime hours are required.",
+  "hint": "Round the required number of overtime hours up to the next whole number to find the minimum needed.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409420676ebb26b9e887d",
+  "code": "R3",
+  "criterion": "Finds a maximum of \"their\" overtime hours from part (c), plus 2.",
+  "hint": "Add $2$ to your overtime-hours result from part (c) to find the maximum allowed.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409420676ebb26b9e887d",
+  "code": "R4",
+  "criterion": "Concludes correctly that the target cannot be met.",
+  "hint": "Compare the minimum whole number of hours needed with your maximum allowed hours and state whether the target can be met.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409f00676ebb26b9e888a",
+  "code": "CK1",
+  "criterion": "Forms $N$ from the coordinate columns in the stated order",
+  "hint": "Place the coordinate columns into $N$ in the stated order, keeping each column’s top and bottom entries aligned.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409f00676ebb26b9e888a",
+  "code": "R1",
+  "criterion": "Forms a total-volume equation using \"their\" numbers of mango and coconut trays",
+  "hint": "Form a total-volume equation using your numbers of mango and coconut trays, with the coconut-tray volume represented by $x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409f00676ebb26b9e888a",
+  "code": "CK2",
+  "criterion": "Uses $200\\text{ cm}^3$ as the volume for each mango-drink tray",
+  "hint": "Use $200\\text{ cm}^3$ as the volume of every mango-drink tray in your total-volume equation.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409f00676ebb26b9e888a",
+  "code": "CK3",
+  "criterion": "Recognises that the container volume is $V=x$",
+  "hint": "Replace $V$ with $x$ because the container volume is given by $V=x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409f00676ebb26b9e888a",
+  "code": "AK3",
+  "criterion": "Rearranges correctly to obtain $r=\\left(\\frac{3x}{4\\pi}\\right)^{1/3}$",
+  "hint": "Rearrange the volume formula step by step until you isolate $r=\\left(\\frac{3x}{4\\pi}\\right)^{1/3}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409f00676ebb26b9e888a",
+  "code": "R2",
+  "criterion": "Substitutes \"their\" value of $x$ into \"their\" expression for $r$",
+  "hint": "Substitute your value of $x$ into your expression for $r$ before calculating the radius.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409f00676ebb26b9e888a",
+  "code": "AK4",
+  "criterion": "Evaluates the cube root, giving $3.627\\ldots$",
+  "hint": "Evaluate the cube root in your radius expression accurately using your calculator.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8409f00676ebb26b9e888a",
+  "code": "R3",
+  "criterion": "Expresses \"their\" radius correct to $3$ significant figures",
+  "hint": "Round your radius to $3$ significant figures and include the correct unit.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a180676ebb26b9e8892",
+  "code": "CK1",
+  "criterion": "Identifies that the next increase in the number of markers is $5$",
+  "hint": "Compare consecutive figures and continue the pattern of increases to find the next increase.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a180676ebb26b9e8892",
+  "code": "AK1",
+  "criterion": "Adds $5$ to $10$ to obtain $15$",
+  "hint": "Add the next increase you find to the total in the previous figure.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a180676ebb26b9e8892",
+  "code": "CK2",
+  "criterion": "Recognises that Figure $n$ has $n+1$ rows of markers",
+  "hint": "Count the rows in Figure $n$ and express the number of rows in terms of $n$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a180676ebb26b9e8892",
+  "code": "R1",
+  "criterion": "Represents the total as $1+2+\\cdots+(n+1)$",
+  "hint": "Write $D$ by summing the row lengths as $1+2+\\cdots+(n+1)$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a180676ebb26b9e8892",
+  "code": "R2",
+  "criterion": "Equates \"their\" expression for $D$ to $78$",
+  "hint": "Set your expression for $D$ equal to the total specified in the question.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a180676ebb26b9e8892",
+  "code": "AK3",
+  "criterion": "Expands and rearranges \"their\" equation to a quadratic equation in $n$",
+  "hint": "Expand and rearrange your equation into a quadratic equation in $n$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a180676ebb26b9e8892",
+  "code": "AK4",
+  "criterion": "Solves \"their\" quadratic equation",
+  "hint": "Solve your quadratic equation for all possible values of $n$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a180676ebb26b9e8892",
+  "code": "R3",
+  "criterion": "Rejects the negative root since $n$ is a natural number",
+  "hint": "Discard any negative solution because $n$ represents a natural-numbered figure.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a4f0676ebb26b9e889a",
+  "code": "CK1",
+  "criterion": "Identifies the discount as $15\\%$ of the listed price",
+  "hint": "Find $15\\%$ of the listed price to identify the discount.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a4f0676ebb26b9e889a",
+  "code": "AK1",
+  "criterion": "Calculates $0.15 \\times 2400 = 360$",
+  "hint": "Calculate $0.15 \\times 2400$ carefully to find the discount.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a4f0676ebb26b9e889a",
+  "code": "AK2",
+  "criterion": "Subtracts \"their\" discount from \\$2 400",
+  "hint": "Subtract your discount from \\$2 400 to find the discounted price.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a4f0676ebb26b9e889a",
+  "code": "CK2",
+  "criterion": "Uses the discounted price as the taxable amount",
+  "hint": "Use the discounted price, not the listed price, as the taxable amount.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a4f0676ebb26b9e889a",
+  "code": "AK3",
+  "criterion": "Calculates $12.5\\%$ of \"their\" discounted price",
+  "hint": "Calculate $12.5\\%$ of your discounted price to find the sales tax.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a4f0676ebb26b9e889a",
+  "code": "CK3",
+  "criterion": "Identifies total cost as \"their\" discounted price plus \"their\" sales tax",
+  "hint": "Treat the total cost as your discounted price plus your sales tax.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a4f0676ebb26b9e889a",
+  "code": "AK4",
+  "criterion": "Adds \"their\" discounted price and sales tax",
+  "hint": "Add your discounted price and sales tax to find the total cost.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a4f0676ebb26b9e889a",
+  "code": "R1",
+  "criterion": "States the correct affordability decision from \"their\" total cost",
+  "hint": "Use your total cost to state whether Kemar can afford the tiles.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a4f0676ebb26b9e889a",
+  "code": "R2",
+  "criterion": "Compares \"their\" total cost with \\$2 300 to find the amount less",
+  "hint": "Compare your total cost with \\$2 300 to find how much less it is.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a950676ebb26b9e88a2",
+  "code": "AK1",
+  "criterion": "Multiplies each waiting time by its frequency",
+  "hint": "Multiply each waiting time by its frequency and add the resulting products to find the total waiting time.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a950676ebb26b9e88a2",
+  "code": "AK3",
+  "criterion": "Divides \"their\" total waiting time by 30",
+  "hint": "Divide your total waiting time by the number of customers in the sample to calculate the mean.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a950676ebb26b9e88a2",
+  "code": "CK1",
+  "criterion": "Identifies the mean calculated from the sample as a statistic",
+  "hint": "Identify the mean calculated from the selected customers as a statistic.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a950676ebb26b9e88a2",
+  "code": "CK2",
+  "criterion": "Identifies all 180 customers as the population",
+  "hint": "Identify all the customers being investigated as the population.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a950676ebb26b9e88a2",
+  "code": "R1",
+  "criterion": "Uses \"their\" sample mean as an estimate of the population mean before finding the total",
+  "hint": "Use your sample mean as an estimate of the population mean before calculating the estimated total waiting time.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a950676ebb26b9e88a2",
+  "code": "R2",
+  "criterion": "States that the manager's conclusion is not justified",
+  "hint": "State that the manager's conclusion is not justified.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a950676ebb26b9e88a2",
+  "code": "CK3",
+  "criterion": "Identifies 7.4 minutes as a sample statistic",
+  "hint": "Identify the calculated mean waiting time as a sample statistic.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a950676ebb26b9e88a2",
+  "code": "CK4",
+  "criterion": "Identifies the actual mean for all customers as a population parameter",
+  "hint": "Identify the actual mean waiting time for all customers as a population parameter.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840a950676ebb26b9e88a2",
+  "code": "R3",
+  "criterion": "Explains that a sample statistic estimates but does not establish the exact population parameter",
+  "hint": "Explain that a sample statistic estimates the population parameter but does not give its exact value.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840af90676ebb26b9e88aa",
+  "code": "CK1",
+  "criterion": "Recognises that both sides must be squared",
+  "hint": "Square both sides of the equation before simplifying.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840af90676ebb26b9e88aa",
+  "code": "AK1",
+  "criterion": "Squares and simplifies to obtain $T^2=\\frac{4\\pi^2l}{g}$",
+  "hint": "Square both sides and simplify the constants to obtain $T^2=\\frac{4\\pi^2l}{g}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840af90676ebb26b9e88aa",
+  "code": "CK2",
+  "criterion": "Identifies the coefficient of $l$ as the gradient, $\\frac{4\\pi^2}{g}$",
+  "hint": "Identify the coefficient multiplying $l$ as the gradient, $\\frac{4\\pi^2}{g}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840af90676ebb26b9e88aa",
+  "code": "CK3",
+  "criterion": "Forms $mg=4\\pi^2$ by clearing the denominator",
+  "hint": "Clear the denominator by multiplying through by $g$ to form $mg=4\\pi^2$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840af90676ebb26b9e88aa",
+  "code": "R1",
+  "criterion": "Reads a correct gradient of 4 from the graph",
+  "hint": "Use two clear points on the graph and calculate rise divided by run to read the gradient.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840af90676ebb26b9e88aa",
+  "code": "AK3",
+  "criterion": "Substitutes \"their\" gradient into $g=\\frac{4\\pi^2}{m}$",
+  "hint": "Substitute your gradient into $g=\\frac{4\\pi^2}{m}$ and simplify.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840af90676ebb26b9e88aa",
+  "code": "R2",
+  "criterion": "Expresses \"their\" value of $g$ correct to 3 significant figures",
+  "hint": "Write your value of $g$ correct to 3 significant figures.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840af90676ebb26b9e88aa",
+  "code": "R3",
+  "criterion": "States that \"their\" value rounds to $9.9\\text{ m s}^{-2}$ to 1 decimal place",
+  "hint": "Round your value of $g$, with units $\\text{ m s}^{-2}$, to 1 decimal place and compare it with the accepted value.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840c320676ebb26b9e88c1",
+  "code": "CK1",
+  "criterion": "States the axis of symmetry as the equation $x=3$",
+  "hint": "Read the vertical line through the turning point and state the equation of the axis of symmetry.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840c320676ebb26b9e88c1",
+  "code": "R2",
+  "criterion": "Uses symmetry about $x=3$ and “their” image from (a) to obtain $4$",
+  "hint": "Reflect your image from (a) across the axis $x=3$ to find the matching input.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840c320676ebb26b9e88c1",
+  "code": "CK2",
+  "criterion": "Recognises that $gf(2)=g(f(2))$",
+  "hint": "Rewrite $gf(2)$ as $g(f(2))$ before evaluating it.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840c320676ebb26b9e88c1",
+  "code": "AK1",
+  "criterion": "Substitutes “their” value of $f(2)$ into $g$",
+  "hint": "Substitute your value of $f(2)$ into $g$ and simplify.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840c320676ebb26b9e88c1",
+  "code": "CK3",
+  "criterion": "Recognises that $gf(x)=0$ when $f(x)=-3$",
+  "hint": "Set $g(f(x))$ equal to zero, then find the corresponding required value of $f(x)$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840c320676ebb26b9e88c1",
+  "code": "AK4",
+  "criterion": "Adds 3 to the minimum value of $f$",
+  "hint": "Add $3$ to the minimum value of $f$ to obtain the minimum value of $gf$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840cd00676ebb26b9e88ce",
+  "code": "CK1",
+  "criterion": "Recognises that angles opposite equal sides are equal",
+  "hint": "Use the equal sides to identify the opposite angles as equal.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840cd00676ebb26b9e88ce",
+  "code": "AK2",
+  "criterion": "Adds $65°$ and \"their\" $\\angle PRQ$",
+  "hint": "Add $65°$ to your value for $\\angle PRQ$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840cd00676ebb26b9e88ce",
+  "code": "CK2",
+  "criterion": "Recognises that the angles in a triangle total $180°$",
+  "hint": "Use the fact that the angles in a triangle add to $180°$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840cd00676ebb26b9e88ce",
+  "code": "AK3",
+  "criterion": "Subtracts \"their\" sum of the two base angles from $180°$",
+  "hint": "Subtract your sum of the two base angles from $180°$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840cd00676ebb26b9e88ce",
+  "code": "CK3",
+  "criterion": "Identifies an angle less than $90°$ as acute",
+  "hint": "Classify an angle less than $90°$ as acute.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840cd00676ebb26b9e88ce",
+  "code": "R3",
+  "criterion": "States that \"their\" angle is less than $90°$",
+  "hint": "State that your angle is less than $90°$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840d160676ebb26b9e88d6",
+  "code": "CK1",
+  "criterion": "Recognises $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$",
+  "hint": "Form $\\overrightarrow{AB}$ by subtracting $\\overrightarrow{OA}$ from $\\overrightarrow{OB}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840d160676ebb26b9e88d6",
+  "code": "AK1",
+  "criterion": "Subtracts coordinates to obtain $\\begin{pmatrix}3\\\\2\\end{pmatrix}$",
+  "hint": "Subtract the corresponding coordinates and write the result as $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840d160676ebb26b9e88d6",
+  "code": "CK2",
+  "criterion": "Recognises $\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{BC}$",
+  "hint": "Form $\\overrightarrow{AC}$ by adding $\\overrightarrow{AB}$ and $\\overrightarrow{BC}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840d160676ebb26b9e88d6",
+  "code": "AK2",
+  "criterion": "Finds $\\overrightarrow{BC}=2\\begin{pmatrix}3\\\\2\\end{pmatrix}=\\begin{pmatrix}6\\\\4\\end{pmatrix}$",
+  "hint": "Double each component of $\\overrightarrow{AB}$ to find $\\overrightarrow{BC}$ and write it as $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840d160676ebb26b9e88d6",
+  "code": "R1",
+  "criterion": "Adds $\\overrightarrow{AB}$ to $2\\overrightarrow{AB}$ to obtain $\\begin{pmatrix}9\\\\6\\end{pmatrix}$; follow-through using \"their\" $\\overrightarrow{AB}$",
+  "hint": "Add your $\\overrightarrow{AB}$ to $2\\overrightarrow{AB}$ component by component to obtain $\\overrightarrow{AC}$ as $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840d160676ebb26b9e88d6",
+  "code": "CK3",
+  "criterion": "Recognises $\\overrightarrow{OC}=\\overrightarrow{OA}+\\overrightarrow{AC}$",
+  "hint": "Form $\\overrightarrow{OC}$ by adding $\\overrightarrow{OA}$ and $\\overrightarrow{AC}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840d160676ebb26b9e88d6",
+  "code": "AK3",
+  "criterion": "Adds $\\begin{pmatrix}-4\\\\-3\\end{pmatrix}$ to \"their\" $\\overrightarrow{AC}$",
+  "hint": "Add $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$ for $\\overrightarrow{OA}$ to your $\\overrightarrow{AC}$ component by component.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840d160676ebb26b9e88d6",
+  "code": "R2",
+  "criterion": "States the resulting position vector $\\begin{pmatrix}5\\\\3\\end{pmatrix}$; follow-through from \"their\" $\\overrightarrow{AC}$",
+  "hint": "Use your $\\overrightarrow{AC}$ to state the resulting position vector $\\overrightarrow{OC}$ as $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840d160676ebb26b9e88d6",
+  "code": "AK4",
+  "criterion": "Compares $x=5$ with the upper boundary $x=4$",
+  "hint": "Compare the $x$-coordinate of $C$ with the upper $x$-boundary.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840d160676ebb26b9e88d6",
+  "code": "AK5",
+  "criterion": "Compares $y=3$ with the upper boundary $y=2$",
+  "hint": "Compare the $y$-coordinate of $C$ with the upper $y$-boundary.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840d160676ebb26b9e88d6",
+  "code": "R3",
+  "criterion": "Uses \"their\" coordinates of $C$ to test the storage-area conditions",
+  "hint": "Use your coordinates of $C$ to check both storage-area boundary conditions.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840d160676ebb26b9e88d6",
+  "code": "R4",
+  "criterion": "Concludes that $C$ is not in the storage area, with a valid reason",
+  "hint": "Conclude whether $C$ is in the storage area and give the boundary comparison that justifies your conclusion.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840da70676ebb26b9e88e3",
+  "code": "CK1",
+  "criterion": "Recognises that the total number of packets is the sum of all frequencies",
+  "hint": "Add the frequencies for every bar to form the total number of packets.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840da70676ebb26b9e88e3",
+  "code": "AK1",
+  "criterion": "Adds the frequencies to obtain $40$",
+  "hint": "Add all the bar frequencies carefully and write the resulting total.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840da70676ebb26b9e88e3",
+  "code": "CK2",
+  "criterion": "Selects the classes from $500$ g onwards",
+  "hint": "Select every class beginning at $500$ g and continuing to larger masses.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840da70676ebb26b9e88e3",
+  "code": "AK2",
+  "criterion": "Adds the qualifying frequencies: $10+14+6+2=32$",
+  "hint": "Add the frequencies of only the selected classes to find the qualifying number of packets.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840da70676ebb26b9e88e3",
+  "code": "AK3",
+  "criterion": "Calculates $(32/\\text{their }40)\\times100=80\\%$",
+  "hint": "Calculate $(\\text{your qualifying total}/\\text{your total})\\times100\\%$ to find the percentage.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840da70676ebb26b9e88e3",
+  "code": "CK3",
+  "criterion": "Recognises that $75\\%$ of the total batch gives the required minimum number",
+  "hint": "Find the required minimum number of packets by taking $75\\%$ of your total batch.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840da70676ebb26b9e88e3",
+  "code": "AK4",
+  "criterion": "Calculates $0.75\\times\\text{their }40=30$",
+  "hint": "Calculate $\\text{your total}\\times\\text{the decimal form of the required percentage}$ to find the minimum number.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840da70676ebb26b9e88e3",
+  "code": "R1",
+  "criterion": "Interprets “at least $75\\%$” as a percentage that is greater than or equal to $75\\%$",
+  "hint": "Treat at least $75\\%$ as including $75\\%$ itself as well as any larger percentage.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840da70676ebb26b9e88e3",
+  "code": "R2",
+  "criterion": "Compares “their” percentage with $75\\%$ correctly",
+  "hint": "Compare your percentage with $75\\%$ using the correct greater-than-or-equal-to idea.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840da70676ebb26b9e88e3",
+  "code": "R3",
+  "criterion": "States that the batch meets the requirement",
+  "hint": "Use your comparison to state whether the batch meets the requirement.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e250676ebb26b9e88f0",
+  "code": "R1",
+  "criterion": "Equates the angle between tangent $t$ and chord $AB$ to $\\angle ACB$",
+  "hint": "Set the angle between tangent $t$ and chord $AB$ equal to $\\angle ACB$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e250676ebb26b9e88f0",
+  "code": "CK1",
+  "criterion": "States angle in the alternate segment",
+  "hint": "State that the tangent-chord angle equals the angle in the alternate segment.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e250676ebb26b9e88f0",
+  "code": "CK2",
+  "criterion": "States that a radius is perpendicular to a tangent at the point of contact",
+  "hint": "State that a radius is perpendicular to a tangent at the point of contact.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e250676ebb26b9e88f0",
+  "code": "R2",
+  "criterion": "Forms $90°-$ “their” angle from part (a)",
+  "hint": "Subtract your angle from part (a) from $90°$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e250676ebb26b9e88f0",
+  "code": "AK2",
+  "criterion": "Evaluates $90°-$ “their” angle from part (a)",
+  "hint": "Evaluate the result of subtracting your angle from part (a) from $90°$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e250676ebb26b9e88f0",
+  "code": "CK3",
+  "criterion": "Identifies $OA=OB$ as radii of the same circle",
+  "hint": "Identify $OA=OB$ as radii of the same circle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e250676ebb26b9e88f0",
+  "code": "R3",
+  "criterion": "Uses equal base angles in isosceles triangle $OAB$",
+  "hint": "Use the equal base angles in isosceles triangle $OAB$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e250676ebb26b9e88f0",
+  "code": "AK3",
+  "criterion": "Doubles “their” value of $\\angle OAB$",
+  "hint": "Double your value of $\\angle OAB$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e250676ebb26b9e88f0",
+  "code": "AK4",
+  "criterion": "Subtracts “their” doubled angle from $180°$",
+  "hint": "Subtract your doubled angle from $180°$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e4e0676ebb26b9e88f8",
+  "code": "AK1",
+  "criterion": "Adds the three distances travelled.",
+  "hint": "Add the three distances travelled to find your total distance.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e4e0676ebb26b9e88f8",
+  "code": "CK1",
+  "criterion": "Selects $\\text{time}=\\dfrac{\\text{distance}}{\\text{speed}}$.",
+  "hint": "Use $\\text{time}=\\dfrac{\\text{distance}}{\\text{speed}}$ to choose the calculation for the journey time.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e4e0676ebb26b9e88f8",
+  "code": "AK2",
+  "criterion": "Divides \"their\" total distance by $240$.",
+  "hint": "Divide your total distance by $240$ to calculate your time.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e4e0676ebb26b9e88f8",
+  "code": "CK2",
+  "criterion": "Identifies that the total cost includes the running cost and the fixed charge.",
+  "hint": "Include both the running cost and the fixed charge when finding the total cost.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e4e0676ebb26b9e88f8",
+  "code": "AK3",
+  "criterion": "Calculates the running cost using $16\\times$ \"their\" time.",
+  "hint": "Calculate the running cost using $16\\times$ your time.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e4e0676ebb26b9e88f8",
+  "code": "AK4",
+  "criterion": "Adds \\$40 to \"their\" running cost.",
+  "hint": "Add \\$40 to your running cost to find your total cost.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e4e0676ebb26b9e88f8",
+  "code": "R1",
+  "criterion": "Determines the revenue needed by adding \\$72 profit to \"their\" total cost.",
+  "hint": "Add \\$72 profit to your total cost to determine the required revenue.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840e4e0676ebb26b9e88f8",
+  "code": "R2",
+  "criterion": "Divides \"their\" required revenue by $8$ passengers.",
+  "hint": "Divide your required revenue by $8$ passengers to find the fare per passenger.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840ec50676ebb26b9e8905",
+  "code": "CK1",
+  "criterion": "Recognises that the $y$-intercept occurs when $x=0$",
+  "hint": "Locate the $y$-intercept by finding where the line meets the vertical axis.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840ec50676ebb26b9e8905",
+  "code": "R1",
+  "criterion": "Reads the $y$-intercept as $(0,12)$",
+  "hint": "Read the coordinate where the line crosses the vertical axis and write it as an ordered pair.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840ec50676ebb26b9e8905",
+  "code": "CK2",
+  "criterion": "Uses \"their\" $y$-intercept as the value of $c$",
+  "hint": "Use your $y$-intercept as the value of $c$ in the line equation.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840ec50676ebb26b9e8905",
+  "code": "AK1",
+  "criterion": "Obtains gradient $-2$ from the graph",
+  "hint": "Calculate the gradient from two points on the graph by dividing the change in $y$ by the change in $x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840ec50676ebb26b9e8905",
+  "code": "AK2",
+  "criterion": "Forms $y=-2x+12$ using \"their\" values",
+  "hint": "Form $y=mx+c$ by using your gradient and your $y$-intercept.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840ec50676ebb26b9e8905",
+  "code": "CK3",
+  "criterion": "Sets $y=0$ to determine the $x$-intercept",
+  "hint": "Set $y=0$ before solving for the $x$-intercept.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840ec50676ebb26b9e8905",
+  "code": "AK3",
+  "criterion": "Solves \"their\" equation for $x=6$ when $y=0$",
+  "hint": "Substitute $y=0$ into your equation and solve for $x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840ec50676ebb26b9e8905",
+  "code": "R2",
+  "criterion": "States the $x$-intercept as the coordinate $(6,0)$",
+  "hint": "State the $x$-intercept as a coordinate with zero as its second coordinate.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840ec50676ebb26b9e8905",
+  "code": "CK4",
+  "criterion": "Recognises that a load which fits must be represented by a point on or below the line",
+  "hint": "Check that a load that fits lies on the line or below it on the graph.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840ec50676ebb26b9e8905",
+  "code": "AK4",
+  "criterion": "Substitutes $x=5$ into \"their\" equation to obtain $y=2$",
+  "hint": "Substitute $x=5$ into your equation and calculate the corresponding value of $y$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840ec50676ebb26b9e8905",
+  "code": "AK5",
+  "criterion": "Compares 3 plastic bags with \"their\" maximum of 2 plastic bags",
+  "hint": "Compare the proposed number of plastic bags with your maximum number of plastic bags.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840ec50676ebb26b9e8905",
+  "code": "R3",
+  "criterion": "Concludes that the proposed load cannot be transported in one trip, with a valid reason",
+  "hint": "Conclude whether one trip is possible by explaining how the proposed load compares with the maximum permitted load.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f370676ebb26b9e8915",
+  "code": "CK1",
+  "criterion": "Recognises that all seven interior regions are included in $n(H \\cup D \\cup C)$",
+  "hint": "Include every one of the seven regions inside the circles when finding $n(H \\cup D \\cup C)$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f370676ebb26b9e8915",
+  "code": "AK1",
+  "criterion": "Adds the entries in the seven interior regions",
+  "hint": "Add the numbers in all seven interior regions of the Venn diagram.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f370676ebb26b9e8915",
+  "code": "CK2",
+  "criterion": "Recognises that adults with no condition are outside $H \\cup D \\cup C$",
+  "hint": "Use the region outside $H \\cup D \\cup C$ for adults with no condition.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f370676ebb26b9e8915",
+  "code": "AK3",
+  "criterion": "Subtracts \"their\" $n(H \\cup D \\cup C)$ from $80$",
+  "hint": "Subtract your total for $n(H \\cup D \\cup C)$ from $80$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f370676ebb26b9e8915",
+  "code": "R1",
+  "criterion": "Identifies the remainder as the number with none of the three conditions, FT from \"their\" union",
+  "hint": "Identify the remainder from your union total as the number with none of the three conditions.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f370676ebb26b9e8915",
+  "code": "CK3",
+  "criterion": "Uses \"their\" number with no condition as the favourable outcomes and $80$ as the total outcomes",
+  "hint": "Use your number with no condition as the favourable outcomes and $80$ as the total outcomes.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f370676ebb26b9e8915",
+  "code": "AK4",
+  "criterion": "Forms the probability $\\frac{\\text{their }29}{80}$",
+  "hint": "Form the probability as $\\frac{\\text{your number with no condition}}{80}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f370676ebb26b9e8915",
+  "code": "R2",
+  "criterion": "Expresses \"their\" probability in lowest terms",
+  "hint": "Simplify your probability to its lowest terms.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f370676ebb26b9e8915",
+  "code": "R3",
+  "criterion": "Correctly compares \"their\" probability with $\\frac{1}{3}$",
+  "hint": "Compare your probability carefully with $\\frac{1}{3}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f650676ebb26b9e891d",
+  "code": "CK1",
+  "criterion": "Recognises that the marked price is 125% of the growing cost",
+  "hint": "Treat the marked price as $125\\%$ of the growing cost.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f650676ebb26b9e891d",
+  "code": "CK2",
+  "criterion": "Identifies that the 10% reduction is calculated from \"their\" marked price",
+  "hint": "Calculate the $10\\%$ reduction from your marked price.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f650676ebb26b9e891d",
+  "code": "AK3",
+  "criterion": "Subtracts \"their\" reduction from \"their\" marked price",
+  "hint": "Subtract your reduction from your marked price to find your selling price.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f650676ebb26b9e891d",
+  "code": "AK4",
+  "criterion": "Subtracts \\$12 000 from \"their\" selling price to obtain 1 500",
+  "hint": "Subtract the growing cost from your selling price to find the difference.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f650676ebb26b9e891d",
+  "code": "R1",
+  "criterion": "Identifies the positive difference between selling price and cost as profit",
+  "hint": "State that a positive difference between the selling price and the cost is profit.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840f650676ebb26b9e891d",
+  "code": "R2",
+  "criterion": "Forms the comparison $\\frac{\\text{their profit}}{12\\,000}\\times100$",
+  "hint": "Calculate the percentage profit using $\\frac{\\text{your profit}}{12\\,000}\\times100$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840fe60676ebb26b9e8925",
+  "code": "CK3",
+  "criterion": "Recognises that both sides must be squared to remove the square root",
+  "hint": "Square both sides of the equation to remove the square root.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840fe60676ebb26b9e8925",
+  "code": "AK1",
+  "criterion": "Squares correctly to obtain $M^2=P+2M$",
+  "hint": "Square both sides carefully and simplify the right-hand side.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840fe60676ebb26b9e8925",
+  "code": "AK2",
+  "criterion": "Rearranges to obtain $P=M^2-2M$",
+  "hint": "Rearrange the equation so that $P$ is the subject.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840fe60676ebb26b9e8925",
+  "code": "CK4",
+  "criterion": "Uses $M=8$",
+  "hint": "Use the given value of $M$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840fe60676ebb26b9e8925",
+  "code": "AK3",
+  "criterion": "Substitutes \"their\" expression for $P$ and \"their\" value of $M$",
+  "hint": "Substitute your expression for $P$ and your value of $M$ into the equation.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840fe60676ebb26b9e8925",
+  "code": "R1",
+  "criterion": "Expresses the structural rating as an integer",
+  "hint": "Write the structural rating as an integer.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840fe60676ebb26b9e8925",
+  "code": "AK5",
+  "criterion": "Calculates total edge length as $4(4+3+2)=36\\text{ m}$",
+  "hint": "Add the three listed dimensions, multiply the sum by four, and give the length in $\\text{ m}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840fe60676ebb26b9e8925",
+  "code": "R2",
+  "criterion": "Compares \"their\" value of $P$ with the total edge length",
+  "hint": "Compare your value of $P$ with your total edge length using an inequality.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a840fe60676ebb26b9e8925",
+  "code": "R3",
+  "criterion": "Concludes correctly whether the frame is approved, using \"their\" values",
+  "hint": "State whether the frame is approved using your two calculated values.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410670676ebb26b9e8932",
+  "code": "CK1",
+  "criterion": "Identifies \\$7 as the common increase in fare.",
+  "hint": "Subtract consecutive fares to find the constant increase for one additional passenger.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410670676ebb26b9e8932",
+  "code": "AK1",
+  "criterion": "Applies five increases of \\$7 to obtain \\$53.",
+  "hint": "Start with the fare for one passenger and add five equal increases to find the fare for six passengers.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410670676ebb26b9e8932",
+  "code": "AK2",
+  "criterion": "Uses \"their\" total for 6 passengers as the starting value.",
+  "hint": "Use your total for six passengers as the starting fare for the next calculation.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410670676ebb26b9e8932",
+  "code": "AK3",
+  "criterion": "Adds $4\\times\\$7$ to \"their\" total.",
+  "hint": "Use $\\times$ to calculate four further equal increases, then add this amount to your total.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410670676ebb26b9e8932",
+  "code": "CK2",
+  "criterion": "Recognises \\$7 as the fare added for each passenger.",
+  "hint": "Identify the amount added to the fare for each extra passenger.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410670676ebb26b9e8932",
+  "code": "AK4",
+  "criterion": "Determines the fixed charge as \\$11 using \"their\" total.",
+  "hint": "Subtract the passenger-charge part from your total to find the fixed charge.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410670676ebb26b9e8932",
+  "code": "R1",
+  "criterion": "Forms a formula relating $C$ and $n$.",
+  "hint": "Write a formula relating $C$ to $n$ by combining the charge per passenger with the fixed charge.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410670676ebb26b9e8932",
+  "code": "CK3",
+  "criterion": "Substitutes \\$123 for $C$ to form $7n+11=123$.",
+  "hint": "Replace $C$ with the given total fare in your formula before solving.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410670676ebb26b9e8932",
+  "code": "R2",
+  "criterion": "Rearranges \"their\" equation to determine $n$.",
+  "hint": "Rearrange your equation to isolate $n$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410ad0676ebb26b9e893a",
+  "code": "CK1",
+  "criterion": "Recognises that $r^3$ must be isolated before finding $r$",
+  "hint": "Isolate $r^3$ before you take the cube root to find $r$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410ad0676ebb26b9e893a",
+  "code": "AK1",
+  "criterion": "Multiplies by 3 and divides by $4\\pi$ to obtain $r^3=\\frac{3V}{4\\pi}$",
+  "hint": "Multiply by $3$ and divide by $4\\pi$ to write $r^3=\\frac{3V}{4\\pi}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410ad0676ebb26b9e893a",
+  "code": "CK2",
+  "criterion": "Substitutes $V=\\frac{32\\pi}{3}$ into the expression for $r$",
+  "hint": "Substitute the given value of $V$ into $r=\\sqrt[3]{\\frac{3V}{4\\pi}}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410ad0676ebb26b9e893a",
+  "code": "AK3",
+  "criterion": "Simplifies to obtain $r^3=8$",
+  "hint": "Simplify the expression for $r^3$ completely before taking the cube root.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410ad0676ebb26b9e893a",
+  "code": "CK3",
+  "criterion": "Identifies $2.5\\text{ m}$ as the greatest permitted radius from the number line",
+  "hint": "Read the rightmost included point on the number line as the greatest permitted radius in $\\text{m}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410ad0676ebb26b9e893a",
+  "code": "R2",
+  "criterion": "Concludes that the proposed tank will fit using \"their\" radius from part (b)",
+  "hint": "Use your radius from part (b) to conclude whether the proposed tank will fit.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410ad0676ebb26b9e893a",
+  "code": "R3",
+  "criterion": "States that \"their\" radius is less than the maximum permitted radius",
+  "hint": "Compare your radius with the maximum permitted radius and state that it is less.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410e70676ebb26b9e8942",
+  "code": "CK1",
+  "criterion": "Recognises that the angle at the centre is twice the angle at the circumference on arc $AB$",
+  "hint": "Identify the central angle and the angle at the circumference that both subtend arc $AB$, then use the fact that the central angle is twice the circumference angle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410e70676ebb26b9e8942",
+  "code": "AK1",
+  "criterion": "Calculates $120 \\div 2 = 60°$",
+  "hint": "Write the division $120 \\div 2$ and calculate the angle at the circumference.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410e70676ebb26b9e8942",
+  "code": "CK2",
+  "criterion": "Identifies $\\angle ACB$ as the angle in the alternate segment for chord $AB$",
+  "hint": "Use chord $AB$ to identify $\\angle ACB$ as the angle in the alternate segment.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410e70676ebb26b9e8942",
+  "code": "AK2",
+  "criterion": "Gives $\\angle TAB = 60°$ using “their” $\\angle ACB$",
+  "hint": "Set $\\angle TAB$ equal to your earlier value for $\\angle ACB$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410e70676ebb26b9e8942",
+  "code": "R1",
+  "criterion": "States the tangent-chord theorem",
+  "hint": "State that the angle between a tangent and a chord equals the angle in the alternate segment.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410e70676ebb26b9e8942",
+  "code": "CK3",
+  "criterion": "Recognises that tangents from $T$ are equal, so triangle $TAB$ is isosceles",
+  "hint": "Use the fact that the tangents from $T$ are equal to show that triangle $TAB$ is isosceles.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410e70676ebb26b9e8942",
+  "code": "AK3",
+  "criterion": "Obtains $\\angle TBA = 60°$ from “their” $\\angle TAB$",
+  "hint": "Make $\\angle TBA$ equal to your earlier value for $\\angle TAB$ because these are the base angles of isosceles triangle $TAB$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410e70676ebb26b9e8942",
+  "code": "R2",
+  "criterion": "Forms the angle sum in triangle $TAB$ using “their” base angles",
+  "hint": "Form the triangle angle sum $\\angle ATB + \\angle TAB + \\angle TBA = 180°$ using your base angles.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8410e70676ebb26b9e8942",
+  "code": "AK4",
+  "criterion": "Calculates $\\angle ATB = 180° - 60° - 60° = 60°$",
+  "hint": "Subtract the two base angles from $180°$ to calculate $\\angle ATB$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84112a0676ebb26b9e894a",
+  "code": "CK1",
+  "criterion": "States $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$",
+  "hint": "Find the displacement by subtracting the position vector of $A$ from that of $B$: $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84112a0676ebb26b9e894a",
+  "code": "CK2",
+  "criterion": "Expresses $\\overrightarrow{OC}=\\overrightarrow{OA}+k\\overrightarrow{AB}$, where $k>1$",
+  "hint": "Write the position vector of $C$ as $\\overrightarrow{OC}=\\overrightarrow{OA}+k\\overrightarrow{AB}$ and use $k>1$ because $C$ lies beyond $B$ on the ray.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84112a0676ebb26b9e894a",
+  "code": "R1",
+  "criterion": "Forms the east-coordinate equation $-5+6k=10$, using “their” $\\overrightarrow{AB}$",
+  "hint": "Use your $\\overrightarrow{AB}$ to form an equation by making the east-coordinate of $\\overrightarrow{OC}$ equal to the given east-coordinate of $C$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84112a0676ebb26b9e894a",
+  "code": "AK2",
+  "criterion": "Solves for $k=\\frac{5}{2}$",
+  "hint": "Solve your east-coordinate equation for $k$ and write the result as a simplified fraction using $\\frac{\\text{numerator}}{\\text{denominator}}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84112a0676ebb26b9e894a",
+  "code": "AK3",
+  "criterion": "Substitutes to obtain $\\overrightarrow{OC}=\\begin{pmatrix}10\\\\-3\\end{pmatrix}$, or correct follow-through",
+  "hint": "Substitute your value of $k$ into $\\overrightarrow{OC}=\\overrightarrow{OA}+k\\overrightarrow{AB}$ and calculate both entries of $\\overrightarrow{OC}$ as $\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84112a0676ebb26b9e894a",
+  "code": "AK4",
+  "criterion": "Finds $\\overrightarrow{BC}=\\overrightarrow{OC}-\\overrightarrow{OB}=\\begin{pmatrix}9\\\\-6\\end{pmatrix}$, or correct follow-through",
+  "hint": "Subtract $\\overrightarrow{OB}$ from your $\\overrightarrow{OC}$ to find $\\overrightarrow{BC}$ as $\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84112a0676ebb26b9e894a",
+  "code": "CK3",
+  "criterion": "Uses $BC=\\sqrt{9^2+(-6)^2}$, or correct follow-through from “their” vector",
+  "hint": "Use the two components of your $\\overrightarrow{BC}$ in the distance formula $BC=\\sqrt{x^2+y^2}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84112a0676ebb26b9e894a",
+  "code": "AK5",
+  "criterion": "Simplifies the distance to $3\\sqrt{13}$, or correct follow-through",
+  "hint": "Factor the number inside your square root and simplify it into the form $a\\sqrt{b}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84112a0676ebb26b9e894a",
+  "code": "R2",
+  "criterion": "Expresses “their” distance in surd form",
+  "hint": "Write your distance in simplified surd form, leaving no square factor inside the $\\sqrt{\\ }$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84112a0676ebb26b9e894a",
+  "code": "R3",
+  "criterion": "Uses “their” lengths or parallel displacement vectors to obtain $AB:BC=2:3$, or correct follow-through",
+  "hint": "Use your two lengths, or compare the parallel displacement vectors, and simplify $AB:BC$ to its lowest whole-number ratio.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84112a0676ebb26b9e894a",
+  "code": "R4",
+  "criterion": "States that $B$ is not the midpoint because $AB\\ne BC$",
+  "hint": "Compare the lengths $AB$ and $BC$, then state that $B$ is not the midpoint when $AB\\ne BC$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8411a40676ebb26b9e8957",
+  "code": "CK1",
+  "criterion": "Forms a weighted mean using the passenger numbers and their frequencies",
+  "hint": "Multiply each passenger number by its frequency, add these products, then divide by the total frequency to find the weighted mean.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8411a40676ebb26b9e8957",
+  "code": "AK2",
+  "criterion": "Calculates $\\sum fx = 188$",
+  "hint": "Calculate $\\sum fx$ by multiplying each passenger number by its frequency and adding all the products.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8411a40676ebb26b9e8957",
+  "code": "R1",
+  "criterion": "Uses \"their\" sample mean as the estimated number of passengers per departure for 150 departures",
+  "hint": "Multiply your sample mean by the total number of departures to estimate the total number of passengers.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8411a40676ebb26b9e8957",
+  "code": "R2",
+  "criterion": "Explains that the result is based on only some, rather than all, ferry departures",
+  "hint": "Explain that this is an estimate because the sample includes only some ferry departures, not every departure.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8411a40676ebb26b9e8957",
+  "code": "CK2",
+  "criterion": "Identifies the sample mean as a sample statistic",
+  "hint": "Identify the mean calculated from the sample as a sample statistic.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8411a40676ebb26b9e8957",
+  "code": "CK3",
+  "criterion": "Identifies the mean for all departures as a population parameter",
+  "hint": "Identify the mean for all ferry departures as a population parameter.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8411a40676ebb26b9e8957",
+  "code": "R3",
+  "criterion": "Recognises that a random sample is likely to be representative of the population",
+  "hint": "State that a random sample is likely to represent the whole population.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8411f40676ebb26b9e895f",
+  "code": "CK1",
+  "criterion": "Recognises that the required point has ordinate \"their\" $f(0)$",
+  "hint": "On the graph, locate the point whose ordinate equals your $f(0)$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8411f40676ebb26b9e895f",
+  "code": "AK2",
+  "criterion": "Finds the midpoint of $0$ and \"their\" second input",
+  "hint": "Find the midpoint between $0$ and your second input.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8411f40676ebb26b9e895f",
+  "code": "CK2",
+  "criterion": "Recognises that $gf(0)=g(f(0))$",
+  "hint": "Rewrite $gf(0)$ as $g(f(0))$ before evaluating it.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8411f40676ebb26b9e895f",
+  "code": "CK3",
+  "criterion": "Recognises that zero net gain is represented by the roots of the graph",
+  "hint": "Identify the roots of the graph as the inputs where the net gain is zero.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8411f40676ebb26b9e895f",
+  "code": "R3",
+  "criterion": "Uses \"their\" axis of symmetry to support that the two roots lie on opposite sides of it",
+  "hint": "Use your axis of symmetry to show that the two roots lie on opposite sides of it.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412240676ebb26b9e8967",
+  "code": "CK1",
+  "criterion": "Recognises that the frequencies must total 12.",
+  "hint": "Add the frequencies and check that they equal the total frequency given in the table.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412240676ebb26b9e8967",
+  "code": "AK1",
+  "criterion": "Subtracts the known frequencies from 12 to obtain 3.",
+  "hint": "Subtract the known frequencies from the stated total to find the missing frequency.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412240676ebb26b9e8967",
+  "code": "CK2",
+  "criterion": "Selects the mean from the frequency distribution.",
+  "hint": "Choose the mean of the frequency distribution as the measure for the average number of bottles sold per day.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412240676ebb26b9e8967",
+  "code": "AK2",
+  "criterion": "Calculates $\\sum fx = 216$, using \"their\" missing frequency.",
+  "hint": "Calculate $\\sum fx$ by multiplying each number of bottles by its frequency, using your missing frequency, and adding the products.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412240676ebb26b9e8967",
+  "code": "AK3",
+  "criterion": "Divides \"their\" total by 12 to obtain \"their\" mean.",
+  "hint": "Divide your $\\sum fx$ total by the total frequency to find your mean.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412240676ebb26b9e8967",
+  "code": "CK3",
+  "criterion": "Uses \"their\" mean as the estimated number sold per opening day.",
+  "hint": "Use your mean as the estimated number of bottles sold on one opening day.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412240676ebb26b9e8967",
+  "code": "AK4",
+  "criterion": "Multiplies \"their\" mean by 5 to estimate the number required.",
+  "hint": "Multiply your mean by the number of opening days to estimate the number of bottles required.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412240676ebb26b9e8967",
+  "code": "R1",
+  "criterion": "Compares \"their\" estimated requirement with 95 bottles.",
+  "hint": "Compare your estimated requirement with the number of bottles ordered.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412240676ebb26b9e8967",
+  "code": "R2",
+  "criterion": "Concludes that the order is enough.",
+  "hint": "Conclude that the order is enough if the number ordered is at least your estimated requirement.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412960676ebb26b9e8974",
+  "code": "CK1",
+  "criterion": "Recognises that the pattern has a constant increase.",
+  "hint": "Compare consecutive figures and identify the same increase in matchsticks each time.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412960676ebb26b9e8974",
+  "code": "CK2",
+  "criterion": "Identifies $3n$ as the variable part of the relationship.",
+  "hint": "Multiply the figure number by the constant increase to form the variable part.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412960676ebb26b9e8974",
+  "code": "CK3",
+  "criterion": "Identifies the fixed term as 1.",
+  "hint": "Use the first figure to determine the fixed amount left after the variable part.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412960676ebb26b9e8974",
+  "code": "AK3",
+  "criterion": "Substitutes $n=10$ into \"their\" formula.",
+  "hint": "Substitute $n=10$ into your formula and evaluate it.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412960676ebb26b9e8974",
+  "code": "CK4",
+  "criterion": "Forms an inequality using \"their\" relationship and the limit of 35 matchsticks.",
+  "hint": "Use your relationship to write an inequality showing that the matchstick total cannot exceed the limit.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412960676ebb26b9e8974",
+  "code": "AK5",
+  "criterion": "Solves \"their\" inequality, or calculates successive figure totals, to obtain $n\\leq\\frac{34}{3}$.",
+  "hint": "Rearrange your inequality until it has the form $n \\leq \\frac{\\text{remaining matchsticks}}{\\text{increase per figure}}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412960676ebb26b9e8974",
+  "code": "R1",
+  "criterion": "Uses the whole-number condition to select 11 as the greatest possible figure number.",
+  "hint": "Choose the greatest whole-number figure number that satisfies your inequality.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412960676ebb26b9e8974",
+  "code": "R2",
+  "criterion": "Shows that Figure 12 requires 37 matchsticks.",
+  "hint": "Calculate the matchsticks needed for the next figure after your chosen whole-number figure.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8412960676ebb26b9e8974",
+  "code": "R3",
+  "criterion": "Concludes that Figure 11 is greatest because 37 exceeds 35.",
+  "hint": "State that your chosen figure is greatest because the next figure exceeds the matchstick limit.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8413b50676ebb26b9e898e",
+  "code": "CK1",
+  "criterion": "Identifies the solid as a sphere",
+  "hint": "Identify the solid as a sphere from its one curved surface, no edges, and no vertices.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8413b50676ebb26b9e898e",
+  "code": "CK2",
+  "criterion": "Selects $V=\\frac{4}{3}\\pi r^3$ for the spherical buoy",
+  "hint": "Choose the sphere-volume formula $V=\\frac{4}{3}\\pi r^3$ for the buoy.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8413b50676ebb26b9e898e",
+  "code": "AK1",
+  "criterion": "Rearranges to obtain $r^3=\\frac{3V}{4\\pi}$",
+  "hint": "Rearrange $V=\\frac{4}{3}\\pi r^3$ to make $r^3=\\frac{3V}{4\\pi}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8413b50676ebb26b9e898e",
+  "code": "AK2",
+  "criterion": "Takes the cube root to obtain $r=\\sqrt[3]{\\frac{3V}{4\\pi}}$",
+  "hint": "Take the cube root of $r^3=\\frac{3V}{4\\pi}$ to obtain $r=\\sqrt[3]{\\frac{3V}{4\\pi}}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8413b50676ebb26b9e898e",
+  "code": "AK3",
+  "criterion": "Substitutes $V=288\\pi$ into \"their\" expression for $r$",
+  "hint": "Substitute $V=288\\pi$ into your expression for $r$ and simplify.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8413b50676ebb26b9e898e",
+  "code": "CK3",
+  "criterion": "Recognises that the diameter of the buoy is twice its radius",
+  "hint": "Recognise that the buoy's diameter is twice its radius.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8413b50676ebb26b9e898e",
+  "code": "R1",
+  "criterion": "Finds the diameter using twice \"their\" radius",
+  "hint": "Multiply your radius by two to find your diameter.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8413b50676ebb26b9e898e",
+  "code": "R2",
+  "criterion": "Compares \"their\" diameter with the inside diameter of the access ring",
+  "hint": "Compare your diameter with the inside diameter of the access ring.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8413b50676ebb26b9e898e",
+  "code": "R3",
+  "criterion": "Concludes correctly, with reason, whether the buoy will fit",
+  "hint": "State whether the buoy fits and justify your conclusion using the comparison of the two diameters.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414170676ebb26b9e899b",
+  "code": "CK1",
+  "criterion": "Identifies the angle between a tangent and a chord as equal to the angle in the alternate segment.",
+  "hint": "Use the alternate-segment theorem to set the angle between the tangent and chord equal to the angle in the opposite segment.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414170676ebb26b9e899b",
+  "code": "CK2",
+  "criterion": "Recognises that the radius is perpendicular to the tangent at $A$.",
+  "hint": "Use the fact that the radius meets the tangent at a right angle at $A$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414170676ebb26b9e899b",
+  "code": "AK2",
+  "criterion": "Evaluates $90°-$ \"their\" angle from part (a).",
+  "hint": "Calculate $90°-$ your angle from part (a).",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414170676ebb26b9e899b",
+  "code": "R1",
+  "criterion": "Recognises that $OA=OB$ as radii of the same circle.",
+  "hint": "State that $OA=OB$ because both are radii of the same circle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414170676ebb26b9e899b",
+  "code": "R2",
+  "criterion": "Deduces that $\\angle OBA=$ \"their\" $\\angle OAB$.",
+  "hint": "Set $\\angle OBA=\\angle OAB$ because the triangle has equal radii sides.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414170676ebb26b9e899b",
+  "code": "R3",
+  "criterion": "Forms the triangle angle relationship $\\angle AOB+2($ \"their\" $\\angle OAB)=180°$.",
+  "hint": "Form $\\angle AOB+2(\\text{your }\\angle OAB)=180°$ using the angles in triangle $AOB$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414170676ebb26b9e899b",
+  "code": "AK3",
+  "criterion": "Substitutes \"their\" value from part (b) into the triangle angle relationship.",
+  "hint": "Substitute your value from part (b) into $\\angle AOB+2(\\angle OAB)=180°$ and solve for the remaining angle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414595222177bc0d16f03",
+  "code": "CK1",
+  "criterion": "Selects $15\\%$ of the ticket price as the discount",
+  "hint": "Calculate the discount by finding $15\\%$ of the ticket price.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414595222177bc0d16f03",
+  "code": "AK2",
+  "criterion": "Subtracts \"their\" discount from \\$240",
+  "hint": "Subtract your discount from $\\$240$ to find the discounted ticket price.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414595222177bc0d16f03",
+  "code": "CK2",
+  "criterion": "Uses the discounted ticket price as the basis for sales tax",
+  "hint": "Use the discounted ticket price, not the original ticket price, as the amount on which you calculate sales tax.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414595222177bc0d16f03",
+  "code": "AK3",
+  "criterion": "Calculates $12.5\\%$ of \"their\" discounted ticket price",
+  "hint": "Calculate $12.5\\%$ of your discounted ticket price to find the sales tax.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414595222177bc0d16f03",
+  "code": "AK4",
+  "criterion": "Adds \"their\" discounted ticket price and \"their\" sales tax",
+  "hint": "Add your discounted ticket price and your sales tax to find the amount paid.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414595222177bc0d16f03",
+  "code": "CK3",
+  "criterion": "Identifies net ticket income as \"their\" amount paid less \"their\" sales tax",
+  "hint": "Find the net ticket income by subtracting your sales tax from your amount paid.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414595222177bc0d16f03",
+  "code": "R1",
+  "criterion": "Determines profit and expresses it as a percentage of the \\$190 cost, using \"their\" values",
+  "hint": "Subtract the $\\$190$ cost from your net ticket income, then express the result as a percentage of $\\$190$ using your values.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414595222177bc0d16f03",
+  "code": "R2",
+  "criterion": "Expresses \"their\" percentage correct to 3 significant figures",
+  "hint": "Round your percentage to 3 significant figures.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414595222177bc0d16f03",
+  "code": "R3",
+  "criterion": "Compares \"their\" profit percentage with $8\\%$",
+  "hint": "Compare your profit percentage with $8\\%$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414595222177bc0d16f03",
+  "code": "R4",
+  "criterion": "States that the requirement is not met, with a valid reason",
+  "hint": "State that the requirement is not met because your profit percentage is below $8\\%$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414c85222177bc0d16f10",
+  "code": "AK1",
+  "criterion": "Converts $8$ minutes $20$ seconds to $500$ seconds",
+  "hint": "Convert the minutes to seconds, then add the remaining seconds.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414c85222177bc0d16f10",
+  "code": "CK1",
+  "criterion": "Selects the relationship distance $=$ speed $\\times$ time",
+  "hint": "Use distance $=$ speed $\\times$ time.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414c85222177bc0d16f10",
+  "code": "AK2",
+  "criterion": "Calculates $4.8 \\times$ \"their\" time",
+  "hint": "Multiply $4.8$ by your converted time.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414c85222177bc0d16f10",
+  "code": "CK2",
+  "criterion": "Recognises that the lap distance is $AB+BC+CA$",
+  "hint": "Add $AB$, $BC$, and $CA$ to represent one complete lap.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414c85222177bc0d16f10",
+  "code": "R1",
+  "criterion": "Forms $BC=$ \"their\" lap distance $-750-900$",
+  "hint": "Subtract $750$ and $900$ from your lap distance to find $BC$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414c85222177bc0d16f10",
+  "code": "CK3",
+  "criterion": "Identifies the second-day distance as $AB+BC+CB$",
+  "hint": "Use $AB+BC+CB$ for the second-day distance.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414c85222177bc0d16f10",
+  "code": "R2",
+  "criterion": "Calculates $750+2\\times$ \"their\" $BC$",
+  "hint": "Calculate $750+2\\times$ your value for $BC$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414c85222177bc0d16f10",
+  "code": "R3",
+  "criterion": "Converts $7$ minutes $30$ seconds to $450$ seconds for use with metres per second",
+  "hint": "Convert the minutes to seconds and add the $30$ seconds before using metres per second.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414f95222177bc0d16f18",
+  "code": "CK1",
+  "criterion": "Recognises that corresponding entries are added",
+  "hint": "Add the entries in matching positions in the two matrices.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414f95222177bc0d16f18",
+  "code": "CK2",
+  "criterion": "Recognises that three identical days require scalar multiplication by $3$",
+  "hint": "Multiply your one-day production matrix by $3$ to find the total for three identical days.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414f95222177bc0d16f18",
+  "code": "CK3",
+  "criterion": "Selects $P\\times$ \"their\" three-day production matrix",
+  "hint": "Set up $P\\times$ your three-day production matrix, with $P$ on the left.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414f95222177bc0d16f18",
+  "code": "AK3",
+  "criterion": "Calculates the retail entry using \"their\" matrix",
+  "hint": "Calculate the retail total by multiplying the price row by the first column of your matrix.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414f95222177bc0d16f18",
+  "code": "AK4",
+  "criterion": "Calculates the wholesale entry using \"their\" matrix",
+  "hint": "Calculate the wholesale total by multiplying the price row by the second column of your matrix.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414f95222177bc0d16f18",
+  "code": "R2",
+  "criterion": "States the orders as $2\\times2$ and $1\\times2$",
+  "hint": "State the matrix orders as $2\\times2$ and $1\\times2$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8414f95222177bc0d16f18",
+  "code": "R3",
+  "criterion": "Explains that the inner dimensions are unequal, so the product is not defined",
+  "hint": "Compare the inner dimensions and explain that they are unequal, so the product is not defined.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84156f5222177bc0d16f25",
+  "code": "CK1",
+  "criterion": "Uses $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$.",
+  "hint": "Calculate $\\overrightarrow{AB}$ by subtracting $\\overrightarrow{OA}$ from $\\overrightarrow{OB}$: $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84156f5222177bc0d16f25",
+  "code": "CK2",
+  "criterion": "Forms $\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{BC}$.",
+  "hint": "Form $\\overrightarrow{OC}$ by adding $\\overrightarrow{OB}$ and $\\overrightarrow{BC}$: $\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{BC}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84156f5222177bc0d16f25",
+  "code": "AK2",
+  "criterion": "Substitutes $\\overrightarrow{BC}$ as \"their\" $\\overrightarrow{AB}$.",
+  "hint": "Substitute your $\\overrightarrow{AB}$ for $\\overrightarrow{BC}$ before adding the vectors.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84156f5222177bc0d16f25",
+  "code": "CK3",
+  "criterion": "Uses $\\overrightarrow{AC}=\\overrightarrow{OC}-\\overrightarrow{OA}$.",
+  "hint": "Calculate $\\overrightarrow{AC}$ by subtracting $\\overrightarrow{OA}$ from $\\overrightarrow{OC}$: $\\overrightarrow{AC}=\\overrightarrow{OC}-\\overrightarrow{OA}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84156f5222177bc0d16f25",
+  "code": "AK4",
+  "criterion": "Finds $\\overrightarrow{AC}=\\begin{pmatrix}8\\\\6\\end{pmatrix}$ using \"their\" $\\overrightarrow{OC}$.",
+  "hint": "Use your $\\overrightarrow{OC}$ in $\\overrightarrow{AC}=\\overrightarrow{OC}-\\overrightarrow{OA}$ and write the result as $\\begin{pmatrix}x\\\\y\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84156f5222177bc0d16f25",
+  "code": "R1",
+  "criterion": "Shows that $\\overrightarrow{AC}=2\\overrightarrow{AB}$ using \"their\" $\\overrightarrow{AB}$.",
+  "hint": "Multiply your $\\overrightarrow{AB}$ by $2$ and show that it equals $\\overrightarrow{AC}=2\\overrightarrow{AB}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84156f5222177bc0d16f25",
+  "code": "R2",
+  "criterion": "Concludes that $A$, $B$ and $C$ are collinear because $\\overrightarrow{AC}$ is a scalar multiple of $\\overrightarrow{AB}$.",
+  "hint": "State that $A$, $B$ and $C$ are collinear because $\\overrightarrow{AC}$ is a scalar multiple of $\\overrightarrow{AB}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84161c5222177bc0d16f32",
+  "code": "CK1",
+  "criterion": "Recognises that Figure 4 is a square arrangement with 4 rows of 4 soaps",
+  "hint": "Count the rows and the soaps in each row to recognise the square arrangement.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84161c5222177bc0d16f32",
+  "code": "CK2",
+  "criterion": "Identifies the numbers of soaps as square numbers",
+  "hint": "List the soap totals and identify the pattern as square numbers.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84161c5222177bc0d16f32",
+  "code": "AK2",
+  "criterion": "States $D = n^2$",
+  "hint": "Write the rule for the number of soaps as $D = n^2$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84161c5222177bc0d16f32",
+  "code": "AK3",
+  "criterion": "Substitutes $n = 6$ into $D = n^2$ to obtain 36",
+  "hint": "Substitute $n = 6$ into $D = n^2$ and evaluate the square.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84161c5222177bc0d16f32",
+  "code": "CK3",
+  "criterion": "Identifies the discounted selling price as the amount on which sales tax is charged",
+  "hint": "Use the discounted selling price as the amount on which you calculate sales tax.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84161c5222177bc0d16f32",
+  "code": "AK4",
+  "criterion": "Calculates the discounted price from \"their\" 36 soaps",
+  "hint": "Calculate the discounted price from your number of soaps by finding the tagged value and subtracting the discount.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84161c5222177bc0d16f32",
+  "code": "AK5",
+  "criterion": "Calculates the tax-inclusive total as \\$911.25, using \"their\" discounted price",
+  "hint": "Calculate the tax-inclusive total in $\\$$ by adding the sales tax to your discounted price.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84161c5222177bc0d16f32",
+  "code": "CK4",
+  "criterion": "Selects percentage profit $= \\dfrac{\\text{profit}}{\\text{cost}} \\times 100$",
+  "hint": "Use percentage profit $= \\dfrac{\\text{profit}}{\\text{cost}} \\times 100$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84161c5222177bc0d16f32",
+  "code": "R1",
+  "criterion": "Forms $\\dfrac{\\text{their payment} - (36 \\times 18)}{36 \\times 18} \\times 100$",
+  "hint": "Form $\\dfrac{\\text{your payment} - (\\text{number of soaps} \\times 18)}{\\text{number of soaps} \\times 18} \\times 100$ to calculate the percentage profit.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84161c5222177bc0d16f32",
+  "code": "R3",
+  "criterion": "Concludes that \"their\" percentage profit exceeds $35\\%$",
+  "hint": "Compare your percentage profit with $35\\%$ and state whether it exceeds this amount.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416615222177bc0d16f3a",
+  "code": "CK1",
+  "criterion": "Identifies that set $C$ includes the cement-only region and the intersection.",
+  "hint": "Include both the cement-only region and the overlapping region when you count set $C$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416615222177bc0d16f3a",
+  "code": "AK1",
+  "criterion": "Adds $24 + 9$ to obtain $33$.",
+  "hint": "Add the cement-only count to the count in the overlap.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416615222177bc0d16f3a",
+  "code": "CK2",
+  "criterion": "Recognises that all four disjoint regions are included in the total number of customers.",
+  "hint": "Include all four disjoint regions when you find the total number of customers.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416615222177bc0d16f3a",
+  "code": "AK2",
+  "criterion": "Calculates the total number of customers as $24 + 16 + 9 + 11 = 60$.",
+  "hint": "Add the numbers in all four regions to calculate the total number of customers.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416615222177bc0d16f3a",
+  "code": "R1",
+  "criterion": "Forms the percentage calculation using \"their\" number who ordered cement over the total number of customers.",
+  "hint": "Divide your number who ordered cement by your total number of customers, then multiply by $100$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416615222177bc0d16f3a",
+  "code": "AK3",
+  "criterion": "Evaluates $\\frac{33}{60}\\times100$ to obtain $55\\%$.",
+  "hint": "Evaluate $\\frac{\\text{your cement total}}{\\text{your customer total}}\\times100$ and write the result using $\\%$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416615222177bc0d16f3a",
+  "code": "CK3",
+  "criterion": "Recognises that an amount equal to $55\\%$ satisfies the condition “at least $55\\%$”.",
+  "hint": "Treat a percentage equal to the required percentage as meeting an at-least requirement, written using $\\%$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416615222177bc0d16f3a",
+  "code": "R2",
+  "criterion": "Compares \"their\" percentage with the required $55\\%$ and identifies that they are equal.",
+  "hint": "Compare your percentage with the required percentage and state that they are equal, using $\\%$ correctly.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416615222177bc0d16f3a",
+  "code": "R3",
+  "criterion": "States that the delivery will be arranged from the comparison with the requirement.",
+  "hint": "Use your comparison with the requirement to state whether the delivery is arranged.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416615222177bc0d16f3a",
+  "code": "AK4",
+  "criterion": "Calculates the difference between \"their\" percentage and $55\\%$ as $0$ percentage points.",
+  "hint": "Subtract the required percentage from your percentage to find the difference in percentage points, using $\\%$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416b75222177bc0d16f47",
+  "code": "CK1",
+  "criterion": "Recognises that the square root is removed by squaring both sides",
+  "hint": "Square both sides to remove the square root.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416b75222177bc0d16f47",
+  "code": "AK1",
+  "criterion": "Divides both sides by $2\\pi$",
+  "hint": "Divide both sides of the equation by $2\\pi$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416b75222177bc0d16f47",
+  "code": "AK2",
+  "criterion": "Squares and rearranges to obtain $l = \\frac{gT^2}{4\\pi^2}$",
+  "hint": "Square the equation and rearrange it to make $l = \\frac{gT^2}{4\\pi^2}$ the subject.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416b75222177bc0d16f47",
+  "code": "CK2",
+  "criterion": "Substitutes $T = 2.50$ and $g = 9.8$ into \"their\" expression for $l$",
+  "hint": "Substitute $T = 2.50$ and $g = 9.8$ into your expression for $l$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416b75222177bc0d16f47",
+  "code": "AK3",
+  "criterion": "Evaluates $\\frac{2.50}{2\\pi}$ correctly",
+  "hint": "Evaluate $\\frac{2.50}{2\\pi}$ accurately before continuing.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416b75222177bc0d16f47",
+  "code": "AK4",
+  "criterion": "Squares and multiplies by $9.8$ to obtain \"their\" length",
+  "hint": "Square your result and multiply by $9.8$ to find your length.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416b75222177bc0d16f47",
+  "code": "R1",
+  "criterion": "Expresses \"their\" length correct to $3$ significant figures",
+  "hint": "Round your length to $3$ significant figures and include the unit.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416b75222177bc0d16f47",
+  "code": "CK3",
+  "criterion": "Identifies $1.60\\text{ m}$ as the maximum permitted length",
+  "hint": "Use $1.60\\text{ m}$ as the maximum permitted length.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416b75222177bc0d16f47",
+  "code": "R2",
+  "criterion": "Compares \"their\" calculated length with $1.60\\text{ m}$",
+  "hint": "Compare your calculated length with $1.60\\text{ m}$ using an inequality.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416b75222177bc0d16f47",
+  "code": "R3",
+  "criterion": "States a correct fitting decision consistent with \"their\" comparison",
+  "hint": "State whether the pendulum fits, using the result of your comparison.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416e55222177bc0d16f4f",
+  "code": "CK1",
+  "criterion": "Recognises that total mass is sample mean multiplied by number of packets",
+  "hint": "Multiply the sample mean mass by the number of packets to find the total mass.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416e55222177bc0d16f4f",
+  "code": "R1",
+  "criterion": "Forms $6 \\times 1.95$",
+  "hint": "Calculate $6 \\times 1.95$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416e55222177bc0d16f4f",
+  "code": "R2",
+  "criterion": "Identifies packet F as the difference between the total mass and the masses of the other five packets",
+  "hint": "Find packet F's mass by subtracting the masses of the other five packets from the total mass.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416e55222177bc0d16f4f",
+  "code": "AK2",
+  "criterion": "Adds the five known masses to obtain $9.5$ kg",
+  "hint": "Add the five known packet masses.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416e55222177bc0d16f4f",
+  "code": "R3",
+  "criterion": "Forms \"their\" total mass minus $9.5$",
+  "hint": "Subtract the sum of the five known masses from your total mass.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416e55222177bc0d16f4f",
+  "code": "CK2",
+  "criterion": "Identifies the mean from the six packets as a sample statistic",
+  "hint": "Classify the mean from the six selected packets as a sample statistic.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8416e55222177bc0d16f4f",
+  "code": "CK3",
+  "criterion": "Identifies the mean for all 240 packets as a population parameter",
+  "hint": "Classify the mean for all 240 packets as a population parameter.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84172f5222177bc0d16f57",
+  "code": "CK1",
+  "criterion": "Identifies that the $y$-intercept is on the $y$-axis",
+  "hint": "Locate the point where the line crosses the $y$-axis.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84172f5222177bc0d16f57",
+  "code": "R1",
+  "criterion": "Reads the intercept coordinate as $(0,12)$",
+  "hint": "Read and write the coordinate of the point where the line crosses the $y$-axis.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84172f5222177bc0d16f57",
+  "code": "CK2",
+  "criterion": "Recognises that $y=0$ represents no bibs remaining",
+  "hint": "Set $y=0$ to represent the point when no bibs remain.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84172f5222177bc0d16f57",
+  "code": "AK1",
+  "criterion": "Calculates $12\\div2=6$",
+  "hint": "Use $\\div$ to divide the initial number of bibs by the number given to each team.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84172f5222177bc0d16f57",
+  "code": "R2",
+  "criterion": "Interprets 6 as the greatest number of teams which can collect bibs",
+  "hint": "State that this result is the greatest number of teams that can collect bibs.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84172f5222177bc0d16f57",
+  "code": "R3",
+  "criterion": "Uses \"their\" greatest number of teams for the new arrangement",
+  "hint": "Use your greatest number of teams when planning the new arrangement.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84172f5222177bc0d16f57",
+  "code": "AK2",
+  "criterion": "Divides 18 by \"their\" number of teams",
+  "hint": "Divide the new total number of bibs by your number of teams.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84172f5222177bc0d16f57",
+  "code": "CK3",
+  "criterion": "Forms a decreasing relationship from 18 initial bibs and \"their\" number given to each team",
+  "hint": "Start with the initial number of bibs and subtract your bibs-per-team amount for each team.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84172f5222177bc0d16f57",
+  "code": "AK4",
+  "criterion": "Substitutes \"their\" number of bibs per team as the coefficient of $x$",
+  "hint": "Use your bibs-per-team amount as the negative coefficient of $x$ in the equation.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84172f5222177bc0d16f57",
+  "code": "AK5",
+  "criterion": "Rearranges to $y=-3x+18$ using \"their\" value",
+  "hint": "Rearrange your equation into slope-intercept form using your bibs-per-team value.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84172f5222177bc0d16f57",
+  "code": "R4",
+  "criterion": "Expresses \"their\" equation in the form $y=mx+c$",
+  "hint": "Write your equation in the form $y=mx+c$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84176c5222177bc0d16f5f",
+  "code": "CK1",
+  "criterion": "Identifies that the angle at the centre is twice the angle at the circumference on the same arc",
+  "hint": "Use the fact that the angle at the centre is twice the angle at the circumference on the same arc.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84176c5222177bc0d16f5f",
+  "code": "AK1",
+  "criterion": "Calculates $2 \\times 35 = 70°$",
+  "hint": "Calculate $2 \\times 35$ to find the central angle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84176c5222177bc0d16f5f",
+  "code": "CK2",
+  "criterion": "Recognises $OA = OB$ as radii of the circle",
+  "hint": "Recognise that $OA = OB$ because both are radii of the circle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84176c5222177bc0d16f5f",
+  "code": "AK2",
+  "criterion": "Uses $\\bigl(180 - \\text{their }\\angle AOB\\bigr) \\div 2$ to obtain $55°$",
+  "hint": "Calculate $\\bigl(180 - \\text{your }\\angle AOB\\bigr) \\div 2$ to find the base angle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84176c5222177bc0d16f5f",
+  "code": "CK3",
+  "criterion": "Recognises that a tangent is perpendicular to the radius at the point of contact",
+  "hint": "Use the fact that a tangent is perpendicular to the radius at the point of contact.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84176c5222177bc0d16f5f",
+  "code": "AK3",
+  "criterion": "Calculates $90 - \\text{their }\\angle OAB = 35°$",
+  "hint": "Calculate $90 - \\text{your }\\angle OAB$ to find the angle between the chord and the tangent.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84176c5222177bc0d16f5f",
+  "code": "R1",
+  "criterion": "States that tangents from external point $T$ are equal",
+  "hint": "State that the tangents from external point $T$ are equal.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84176c5222177bc0d16f5f",
+  "code": "R2",
+  "criterion": "Infers that $\\angle TBA$ equals their $\\angle BAT$ in isosceles triangle $ABT$",
+  "hint": "Set $\\angle TBA$ equal to your $\\angle BAT$ because triangle $ABT$ is isosceles.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84176c5222177bc0d16f5f",
+  "code": "R3",
+  "criterion": "Forms the angle sum $\\angle ATB = 180° - 2(\\text{their }\\angle BAT)$",
+  "hint": "Form $\\angle ATB = 180° - 2(\\text{your }\\angle BAT)$ to find the angle at $T$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418165222177bc0d16f6c",
+  "code": "CK1",
+  "criterion": "Identifies $fg(0)$ as $f(g(0))$",
+  "hint": "Rewrite $fg(0)$ as $f(g(0))$ before evaluating it.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418165222177bc0d16f6c",
+  "code": "AK1",
+  "criterion": "Evaluates $g(0)$ as $2$",
+  "hint": "Substitute the input into $g$ and simplify to find the output.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418165222177bc0d16f6c",
+  "code": "R1",
+  "criterion": "Recognises that the given height has two possible time values",
+  "hint": "Look for both points where the horizontal height line meets the curve, since one height can occur at two times.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418165222177bc0d16f6c",
+  "code": "AK3",
+  "criterion": "Reads one time value, $2$, from the graph for height \"their\" answer to (a)",
+  "hint": "Draw a horizontal line at the height given by your answer to (a) and read one intersection time from the graph.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418165222177bc0d16f6c",
+  "code": "AK4",
+  "criterion": "Reads the other time value, $4$, from the graph for height \"their\" answer to (a)",
+  "hint": "Read the time at the other intersection of the horizontal line for your answer to (a) with the graph.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418165222177bc0d16f6c",
+  "code": "R2",
+  "criterion": "Finds the midpoint of \"their\" two time values",
+  "hint": "Add your two time values and divide by two to find the midpoint.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418165222177bc0d16f6c",
+  "code": "CK2",
+  "criterion": "States the axis of symmetry as the vertical-line equation $x=3$",
+  "hint": "Write the midpoint as a vertical-line equation in the form $x=\\ldots$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418165222177bc0d16f6c",
+  "code": "CK3",
+  "criterion": "Identifies \"their\" two values from (b) as the limiting times of the permitted display",
+  "hint": "Use your two times from (b) as the start and end limits of the permitted display.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84186c5222177bc0d16f74",
+  "code": "AK1",
+  "criterion": "Calculates $11-5=6$.",
+  "hint": "Subtract the earlier cumulative frequency from the next cumulative frequency to find the missing frequency.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84186c5222177bc0d16f74",
+  "code": "AK2",
+  "criterion": "Calculates $20-11=9$.",
+  "hint": "Subtract the earlier cumulative frequency from the next cumulative frequency to find the missing frequency.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84186c5222177bc0d16f74",
+  "code": "AK3",
+  "criterion": "Calculates $26-20=6$.",
+  "hint": "Subtract the earlier cumulative frequency from the next cumulative frequency to find the missing frequency.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84186c5222177bc0d16f74",
+  "code": "R1",
+  "criterion": "Gives the greatest frequency, 9, as the reason for the modal interval.",
+  "hint": "Use the greatest frequency to justify your choice of modal interval.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84186c5222177bc0d16f74",
+  "code": "CK2",
+  "criterion": "Selects 'their' frequencies for the two relevant intervals, out of 30 students.",
+  "hint": "Select your frequencies for the two relevant intervals from your completed table and use the total number of students.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84186c5222177bc0d16f74",
+  "code": "AK4",
+  "criterion": "Calculates $\\frac{15}{30}\\times100=50\\%$, following through on 'their' frequencies.",
+  "hint": "Calculate the percentage from your selected frequencies using $\\frac{\\cdots}{\\cdots}\\times100\\%$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84186c5222177bc0d16f74",
+  "code": "R2",
+  "criterion": "States that the conclusion is not supported.",
+  "hint": "State that the conclusion is not supported.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a84186c5222177bc0d16f74",
+  "code": "R3",
+  "criterion": "Explains that 'their' 50% represents half, not more than half.",
+  "hint": "Explain that your percentage represents half of the students, not more than half.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418ad5222177bc0d16f7c",
+  "code": "CK1",
+  "criterion": "Selects the volume formula for a sphere",
+  "hint": "Choose the sphere volume formula $V=\\frac{4}{3}\\pi r^3$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418ad5222177bc0d16f7c",
+  "code": "AK1",
+  "criterion": "Rearranges to obtain $r^3=\\frac{3V}{4\\pi}$",
+  "hint": "Rearrange $V=\\frac{4}{3}\\pi r^3$ by isolating $r^3$ to get $r^3=\\frac{3V}{4\\pi}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418ad5222177bc0d16f7c",
+  "code": "AK2",
+  "criterion": "Takes the cube root to make $r$ the subject",
+  "hint": "Take the cube root of both sides so that $r$ is the subject.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418ad5222177bc0d16f7c",
+  "code": "R1",
+  "criterion": "Expresses the subject correctly in exact form",
+  "hint": "Write the radius exactly as $r=\\sqrt[3]{\\frac{3V}{4\\pi}}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418ad5222177bc0d16f7c",
+  "code": "AK3",
+  "criterion": "Substitutes $V=288\\pi$ into the formula using \"their\" rearrangement",
+  "hint": "Substitute $V=288\\pi$ into your rearranged formula before simplifying.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418ad5222177bc0d16f7c",
+  "code": "CK2",
+  "criterion": "Recognises that the diameter is twice the radius",
+  "hint": "Find the diameter by multiplying the radius by $2$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418ad5222177bc0d16f7c",
+  "code": "R2",
+  "criterion": "Concludes that the ball will not pass through the opening",
+  "hint": "State whether the ball passes through the opening after comparing its size with the opening width.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418ad5222177bc0d16f7c",
+  "code": "R3",
+  "criterion": "Compares \"their\" diameter with the limiting width of $10$ cm",
+  "hint": "Compare your diameter with the limiting width of $10$ cm.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8418ad5222177bc0d16f7c",
+  "code": "R4",
+  "criterion": "Explains that the ball must fit across the shorter side of the rectangular opening",
+  "hint": "Explain that the ball must fit across the shorter side of the rectangular opening.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419395222177bc0d16f89",
+  "code": "CK1",
+  "criterion": "States $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$",
+  "hint": "Write the displacement as $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419395222177bc0d16f89",
+  "code": "AK1",
+  "criterion": "Subtracts the vector components to obtain $\\begin{pmatrix}4\\\\3\\end{pmatrix}$",
+  "hint": "Subtract the corresponding components and write the result as a column vector $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419395222177bc0d16f89",
+  "code": "CK2",
+  "criterion": "Interprets the condition as $\\overrightarrow{BC}=2\\overrightarrow{AB}$",
+  "hint": "Translate twice the magnitude in the same direction into $\\overrightarrow{BC}=2\\overrightarrow{AB}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419395222177bc0d16f89",
+  "code": "AK2",
+  "criterion": "Calculates $2\\times$ “their” $\\overrightarrow{AB}$",
+  "hint": "Multiply each component of your earlier $\\overrightarrow{AB}$ by $2\\times$ to find $\\overrightarrow{BC}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419395222177bc0d16f89",
+  "code": "AK3",
+  "criterion": "Adds “their” $\\overrightarrow{BC}$ to $\\overrightarrow{OB}$ to obtain $\\begin{pmatrix}9\\\\11\\end{pmatrix}$",
+  "hint": "Add your earlier $\\overrightarrow{BC}$ component by component to $\\overrightarrow{OB}$ and write $\\overrightarrow{OC}$ as $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419395222177bc0d16f89",
+  "code": "CK3",
+  "criterion": "Uses midpoint relationship $\\overrightarrow{OD}=2\\overrightarrow{OB}-\\overrightarrow{OC}$",
+  "hint": "Use the midpoint fact to write $\\overrightarrow{OD}=2\\overrightarrow{OB}-\\overrightarrow{OC}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419395222177bc0d16f89",
+  "code": "AK4",
+  "criterion": "Substitutes $\\overrightarrow{OB}$ and “their” $\\overrightarrow{OC}$ to obtain $\\begin{pmatrix}-7\\\\-1\\end{pmatrix}$",
+  "hint": "Substitute $\\overrightarrow{OB}$ and your earlier $\\overrightarrow{OC}$ into the midpoint equation, then simplify to $\\begin{pmatrix}\\text{horizontal component}\\\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419395222177bc0d16f89",
+  "code": "R2",
+  "criterion": "Finds $\\overrightarrow{DA}$ using “their” $\\overrightarrow{OD}$ and $\\overrightarrow{OA}$",
+  "hint": "Find $\\overrightarrow{DA}$ by subtracting your earlier $\\overrightarrow{OD}$ from $\\overrightarrow{OA}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419395222177bc0d16f89",
+  "code": "R3",
+  "criterion": "Identifies $\\overrightarrow{DA}$, “their” $\\overrightarrow{AB}$ and “their” $\\overrightarrow{BC}$ as scalar multiples in the same direction",
+  "hint": "Compare $\\overrightarrow{DA}$ with your earlier $\\overrightarrow{AB}$ and $\\overrightarrow{BC}$, then state that each is a scalar multiple pointing in the same direction.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419865222177bc0d16f91",
+  "code": "AK1",
+  "criterion": "Substitutes $3$ in $f(x)=2x+1$, giving $7$",
+  "hint": "Substitute the given input into $f(x)=2x+1$ and simplify.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419865222177bc0d16f91",
+  "code": "CK1",
+  "criterion": "Recognises that the trial condition is $g(f(3))=16$",
+  "hint": "Use the stated trial condition by writing $g(f(3))=16$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419865222177bc0d16f91",
+  "code": "AK2",
+  "criterion": "Substitutes \"their\" value of $f(3)$ into $g$, giving $7k+2=16$",
+  "hint": "Put your result for $f(3)$ into $g$ and set it equal to the trial output before forming an equation in $k$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419865222177bc0d16f91",
+  "code": "AK3",
+  "criterion": "Solves for $k=2$",
+  "hint": "Rearrange your equation to isolate $k$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419865222177bc0d16f91",
+  "code": "CK2",
+  "criterion": "Recognises that $gf(x)=g(f(x))$",
+  "hint": "Rewrite $gf(x)$ as $g(f(x))$ before simplifying.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419865222177bc0d16f91",
+  "code": "AK4",
+  "criterion": "Evaluates $g(f(x))=2(2x+1)+2=4x+4$",
+  "hint": "Substitute $f(x)$ into $g$ and expand to obtain the composite expression.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419865222177bc0d16f91",
+  "code": "R1",
+  "criterion": "Forms the tank inequality using \"their\" composite function: $4x+4\\le16$",
+  "hint": "Use your composite function and the tank's maximum capacity to write an inequality using $\\le$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419865222177bc0d16f91",
+  "code": "CK3",
+  "criterion": "Recognises that $x$ is restricted to non-negative whole-number values",
+  "hint": "Restrict $x$ to non-negative whole-number values.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419865222177bc0d16f91",
+  "code": "R2",
+  "criterion": "Reads the boundary intersection as $x=3$",
+  "hint": "Read the $x$-coordinate where the shaded boundary meets the tank-capacity line.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8419865222177bc0d16f91",
+  "code": "R3",
+  "criterion": "States the allowable discrete values as $\\{0,1,2,3\\}$",
+  "hint": "List the non-negative whole-number $x$-values from zero up to the point where the shaded region reaches the tank-capacity line, writing them as a set.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841a015222177bc0d16f9e",
+  "code": "CK1",
+  "criterion": "Recognises that the discount is $10\\%$ of the marked cost.",
+  "hint": "Find the discount by calculating $10\\%$ of the marked cost.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841a015222177bc0d16f9e",
+  "code": "CK2",
+  "criterion": "Identifies the discounted cost as \\$1 500 less \"their\" discount.",
+  "hint": "Subtract your discount from \\$1 500 to get the discounted cost.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841a015222177bc0d16f9e",
+  "code": "CK3",
+  "criterion": "Identifies profit as sales revenue less total cost.",
+  "hint": "Find profit by subtracting total cost from sales revenue.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841a015222177bc0d16f9e",
+  "code": "AK3",
+  "criterion": "Calculates the sales revenue as \\$2 100.",
+  "hint": "Multiply the number of items sold by the selling price per item to calculate the sales revenue.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841a015222177bc0d16f9e",
+  "code": "AK4",
+  "criterion": "Calculates total cost using \\$1 500 less \"their\" discount plus \"their\" sales tax.",
+  "hint": "Calculate total cost by subtracting your discount from \\$1 500 and then adding your sales tax.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841a015222177bc0d16f9e",
+  "code": "R1",
+  "criterion": "Subtracts \"their\" total cost from \"their\" sales revenue.",
+  "hint": "Subtract your total cost from your sales revenue.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b355222177bc0d16fb5",
+  "code": "CK1",
+  "criterion": "Recognises that the angle at the centre is twice the angle at the circumference on arc $AB$",
+  "hint": "Identify arc $AB$ and use the fact that the angle at the centre is twice the angle at the circumference standing on that arc.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b355222177bc0d16fb5",
+  "code": "AK1",
+  "criterion": "Calculates $2\\times58=116°$",
+  "hint": "Double the given angle by calculating $2\\times58$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b355222177bc0d16fb5",
+  "code": "CK2",
+  "criterion": "States that $OA=OB$ as radii of the target",
+  "hint": "State that $OA=OB$ because both are radii of the circle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b355222177bc0d16fb5",
+  "code": "AK2",
+  "criterion": "Finds the remaining angles in triangle $OAB$: $180°-\\text{their }116°=64°$",
+  "hint": "Subtract your central angle from $180°$, writing $180°-\\text{your central angle}$, to find the two base angles together.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b355222177bc0d16fb5",
+  "code": "R1",
+  "criterion": "Uses equal base angles to obtain $\\frac{64°}{2}=32°$",
+  "hint": "Divide your remaining angle total equally between the two base angles using $\\frac{\\text{your remaining angle total}}{2}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b355222177bc0d16fb5",
+  "code": "CK3",
+  "criterion": "Recognises that a radius is perpendicular to a tangent at the point of contact",
+  "hint": "Use the fact that a radius is perpendicular to a tangent at the point where the tangent touches the circle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b355222177bc0d16fb5",
+  "code": "AK3",
+  "criterion": "Forms $\\angle PAB=90°-\\text{their }\\angle OAB$",
+  "hint": "Find $\\angle PAB$ by calculating $90°-\\text{your }\\angle OAB$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b355222177bc0d16fb5",
+  "code": "CK4",
+  "criterion": "States that $PA=PB$ because tangents from an external point are equal",
+  "hint": "State that $PA=PB$ because tangents from the same external point are equal.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b355222177bc0d16fb5",
+  "code": "R2",
+  "criterion": "Uses equal tangents to set $\\angle PBA$ equal to \"their\" $\\angle PAB$",
+  "hint": "Set $\\angle PBA$ equal to your $\\angle PAB$ because the tangents are equal.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b355222177bc0d16fb5",
+  "code": "R3",
+  "criterion": "Applies the angle sum of triangle $PAB$: $180°-2(\\text{their }58°)$",
+  "hint": "Use the angle sum of triangle $PAB$ by calculating $180°-2(\\text{your }\\angle PAB)$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b765222177bc0d16fbd",
+  "code": "CK1",
+  "criterion": "Forms the total number of children using frequency multiplied by number of children",
+  "hint": "Multiply each number of children by its frequency, then add the products.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b765222177bc0d16fbd",
+  "code": "AK1",
+  "criterion": "Obtains total number of children, $72$",
+  "hint": "Calculate the total number of children from your frequency products.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b765222177bc0d16fbd",
+  "code": "R1",
+  "criterion": "Relates the sample of $30$ households to the population of $300$ households",
+  "hint": "Compare the sample of $30$ households with the population of $300$ households to find the scale factor.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b765222177bc0d16fbd",
+  "code": "AK3",
+  "criterion": "Multiplies \"their\" sample mean by $300$",
+  "hint": "Multiply your sample mean by $300$ to estimate the total number of children in the population.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b765222177bc0d16fbd",
+  "code": "CK2",
+  "criterion": "Identifies the mean from the sample as a statistic",
+  "hint": "Label the mean calculated from the sample as a statistic.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b765222177bc0d16fbd",
+  "code": "CK3",
+  "criterion": "Identifies the mean from all households as a parameter",
+  "hint": "Label the mean calculated from all households as a parameter.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b765222177bc0d16fbd",
+  "code": "R2",
+  "criterion": "States that the selected households may not be representative of all households",
+  "hint": "State that the selected households may not represent all the households in the population.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841b765222177bc0d16fbd",
+  "code": "R3",
+  "criterion": "Explains that the sample mean can differ from the population mean",
+  "hint": "Explain that the sample mean may differ from the population mean because the sample is only part of the population.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841be85222177bc0d16fca",
+  "code": "CK1",
+  "criterion": "Recognises that $r^3$ must be isolated before finding $r$",
+  "hint": "Isolate $r^3$ before you take the cube root to find $r$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841be85222177bc0d16fca",
+  "code": "AK1",
+  "criterion": "Obtains $r^3=\\dfrac{3V}{4\\pi}$",
+  "hint": "Multiply by $3$, then divide by $4\\pi$, to obtain $r^3=\\dfrac{3V}{4\\pi}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841be85222177bc0d16fca",
+  "code": "CK2",
+  "criterion": "Substitutes $V=288\\pi$ into the expression for $r$",
+  "hint": "Replace $V$ with $288\\pi$ in $r=\\sqrt[3]{\\dfrac{3V}{4\\pi}}$ and simplify.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841be85222177bc0d16fca",
+  "code": "CK3",
+  "criterion": "Uses diameter $=2r$",
+  "hint": "Find the diameter by using $\\text{diameter}=2r$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841be85222177bc0d16fca",
+  "code": "R1",
+  "criterion": "Compares \"their\" diameter with $12.5\\text{ cm}$",
+  "hint": "Compare your diameter with $12.5\\text{ cm}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841be85222177bc0d16fca",
+  "code": "R2",
+  "criterion": "Uses the inclusive condition that the diameter is no more than $12.5\\text{ cm}$",
+  "hint": "Check that your diameter is no more than $12.5\\text{ cm}$, including the case where it is equal.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841be85222177bc0d16fca",
+  "code": "R3",
+  "criterion": "Concludes that the coconut will fit",
+  "hint": "State whether the coconut will fit in the crate from your comparison.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c515222177bc0d16fd7",
+  "code": "CK1",
+  "criterion": "Recognises that the total route is the sum of the three labelled sides",
+  "hint": "Add the three labelled side lengths to find the total route distance.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c515222177bc0d16fd7",
+  "code": "CK2",
+  "criterion": "Uses $t = d \\div s$",
+  "hint": "Use $t = d \\div s$ to calculate the duration.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c515222177bc0d16fd7",
+  "code": "AK2",
+  "criterion": "Divides \"their\" total distance by $1200$",
+  "hint": "Divide your total distance by $1200$ to find the duration.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c515222177bc0d16fd7",
+  "code": "AK3",
+  "criterion": "Multiplies \"their\" duration by \\$30",
+  "hint": "Multiply your duration by \\$30 to find the usual charge.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c515222177bc0d16fd7",
+  "code": "R1",
+  "criterion": "Finds the discount by subtracting \\$54 from \"their\" usual charge",
+  "hint": "Subtract \\$54 from your usual charge to find the discount.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c515222177bc0d16fd7",
+  "code": "R2",
+  "criterion": "Expresses \"their\" discount as a fraction of \"their\" usual charge",
+  "hint": "Write your discount as a fraction of your usual charge.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c965222177bc0d16fdf",
+  "code": "CK1",
+  "criterion": "Forms the revenue expression $27x$.",
+  "hint": "Write revenue as the selling price multiplied by the number of crates, $x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c965222177bc0d16fdf",
+  "code": "CK2",
+  "criterion": "Equates revenue to total cost, $27x=120+15x$.",
+  "hint": "Set your revenue expression equal to the total-cost expression for the no-profit situation.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c965222177bc0d16fdf",
+  "code": "AK1",
+  "criterion": "Collects the $x$-terms to obtain $12x=120$.",
+  "hint": "Move the $x$-terms to one side of the equation and the constant term to the other side.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c965222177bc0d16fdf",
+  "code": "AK2",
+  "criterion": "Divides by 12.",
+  "hint": "Divide both sides by the coefficient of $x$ to find the break-even number of crates.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c965222177bc0d16fdf",
+  "code": "CK3",
+  "criterion": "Recognises that each crate above \"their\" break-even number gives \\$12 profit.",
+  "hint": "Find the profit from each crate sold after your break-even number by subtracting the cost per crate from the selling price.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c965222177bc0d16fdf",
+  "code": "AK4",
+  "criterion": "Finds $18-$ \"their\" break-even number of additional crates.",
+  "hint": "Subtract your break-even number from the maximum number of crates shown on the number line.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c965222177bc0d16fdf",
+  "code": "CK4",
+  "criterion": "Forms an inequality for a profit of at least \\$120, using \"their\" break-even number.",
+  "hint": "Write an inequality for profit being at least the target amount, using your break-even number.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c965222177bc0d16fdf",
+  "code": "R1",
+  "criterion": "Determines the least required number of crates as $20$, or follows through correctly from \"their\" inequality.",
+  "hint": "Solve your inequality to find the least number of crates required.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c965222177bc0d16fdf",
+  "code": "R2",
+  "criterion": "Compares the required number of crates with the maximum shown on the number line, or compares \"their\" greatest profit with \\$120.",
+  "hint": "Compare your required number of crates with the maximum shown on the number line, or compare your greatest profit with \\$120.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841c965222177bc0d16fdf",
+  "code": "R3",
+  "criterion": "Concludes that the target cannot be achieved, with a valid supporting reason.",
+  "hint": "State whether the target is possible and support your conclusion by referring to the maximum capacity or your greatest profit.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841cd45222177bc0d16fe7",
+  "code": "CK1",
+  "criterion": "States that the cuboid has 4 vertical edges",
+  "hint": "Count the edges that run straight up and down on the cuboid.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841cd45222177bc0d16fe7",
+  "code": "CK2",
+  "criterion": "Recognises that each vertical edge has length $25\\text{ cm}$",
+  "hint": "Read the measurement shown on one vertical edge and write it in $\\text{cm}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841cd45222177bc0d16fe7",
+  "code": "CK3",
+  "criterion": "Recognises that there are 4 edges of length $60\\text{ cm}$ and 4 edges of length $40\\text{ cm}$",
+  "hint": "Identify the horizontal edges in each of the two labelled directions, recording how many have each length in $\\text{cm}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841cd45222177bc0d16fe7",
+  "code": "AK2",
+  "criterion": "Calculates $4(60+40)$ for the horizontal edges",
+  "hint": "Calculate $4(60+40)$ to find the total length of the horizontal edges.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841cd45222177bc0d16fe7",
+  "code": "AK3",
+  "criterion": "Adds \"their\" vertical-edge total to obtain $500\\text{ cm}$",
+  "hint": "Add your vertical-edge total to the horizontal total, keeping the result in $\\text{cm}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841cd45222177bc0d16fe7",
+  "code": "AK4",
+  "criterion": "Divides \"their\" total metres by 2",
+  "hint": "Divide your total length in metres by the length of one piece of edging.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841cd45222177bc0d16fe7",
+  "code": "R2",
+  "criterion": "Rounds \"their\" quotient up to 3 complete lengths",
+  "hint": "Round your quotient up because you must buy whole lengths of edging.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841cd45222177bc0d16fe7",
+  "code": "R3",
+  "criterion": "Explains that 2 complete lengths provide only $4\\text{ m}$ and are insufficient",
+  "hint": "Compare the length supplied by two complete pieces with your required total and state why it is insufficient, using $\\text{m}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d4b5222177bc0d16ff4",
+  "code": "AK1",
+  "criterion": "Adds 4 to obtain 18 seedlings for bed 4",
+  "hint": "Add the common increase to the seedling total in the preceding bed to calculate the total for bed 4.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d4b5222177bc0d16ff4",
+  "code": "AK2",
+  "criterion": "Adds 4 to \"their\" bed-4 total to obtain 22 seedlings",
+  "hint": "Add the same common increase to your bed-4 total to calculate the total for bed 5.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d4b5222177bc0d16ff4",
+  "code": "CK1",
+  "criterion": "Identifies a common difference of 4",
+  "hint": "Subtract consecutive seedling totals to identify the constant difference in the sequence.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d4b5222177bc0d16ff4",
+  "code": "CK2",
+  "criterion": "Recognises that each term is 2 more than a multiple of 4",
+  "hint": "Compare each total with the relevant multiple of $4$ and identify the fixed excess.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d4b5222177bc0d16ff4",
+  "code": "CK3",
+  "criterion": "Forms an equation by substituting $D = 102$ into \"their\" expression",
+  "hint": "Substitute $D = 102$ into your expression and form an equation in $n$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d4b5222177bc0d16ff4",
+  "code": "AK4",
+  "criterion": "Solves \"their\" equation to obtain $n = 25$",
+  "hint": "Rearrange your equation step by step until $n$ is isolated.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d4b5222177bc0d16ff4",
+  "code": "R1",
+  "criterion": "Applies \"their\" expression to test whether $D = 100$",
+  "hint": "Use your expression with $D = 100$ and solve for $n$ to test whether the total can occur.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d4b5222177bc0d16ff4",
+  "code": "R2",
+  "criterion": "Obtains $n = 24.5$ from \"their\" equation",
+  "hint": "Solve your equation for $n$ and keep the fractional result you obtain.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d4b5222177bc0d16ff4",
+  "code": "R3",
+  "criterion": "Concludes that 100 is not possible because a bed number must be a natural number",
+  "hint": "Conclude that the stated seedling total is impossible because the bed number you obtain is not a natural number.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d9b5222177bc0d16ffc",
+  "code": "CK1",
+  "criterion": "Uses $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$",
+  "hint": "Calculate the displacement using $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d9b5222177bc0d16ffc",
+  "code": "AK1",
+  "criterion": "Subtracts corresponding components to obtain $\\begin{pmatrix}5\\\\3\\end{pmatrix}$",
+  "hint": "Subtract the corresponding components and write the result as $\\begin{pmatrix}\\text{horizontal component}\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d9b5222177bc0d16ffc",
+  "code": "CK2",
+  "criterion": "Recognises $\\overrightarrow{BC}=\\overrightarrow{AB}$",
+  "hint": "Use the repeated displacement to write $\\overrightarrow{BC}=\\overrightarrow{AB}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d9b5222177bc0d16ffc",
+  "code": "R1",
+  "criterion": "Forms $\\overrightarrow{OC}=\\overrightarrow{OB}+$ 'their' $\\overrightarrow{AB}$",
+  "hint": "Add your $\\overrightarrow{AB}$ to $\\overrightarrow{OB}$ to form $\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{AB}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d9b5222177bc0d16ffc",
+  "code": "AK2",
+  "criterion": "Adds components to obtain $\\begin{pmatrix}6\\\\7\\end{pmatrix}$",
+  "hint": "Add the corresponding components and write the result as $\\begin{pmatrix}\\text{horizontal component}\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d9b5222177bc0d16ffc",
+  "code": "AK3",
+  "criterion": "Finds $\\overrightarrow{AC}$ by subtracting $\\overrightarrow{OA}$ from 'their' $\\overrightarrow{OC}$",
+  "hint": "Find $\\overrightarrow{AC}$ by subtracting $\\overrightarrow{OA}$ from your $\\overrightarrow{OC}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d9b5222177bc0d16ffc",
+  "code": "AK4",
+  "criterion": "Obtains $\\begin{pmatrix}10\\\\6\\end{pmatrix}$",
+  "hint": "Complete the component subtraction and write $\\overrightarrow{AC}$ as $\\begin{pmatrix}\\text{horizontal component}\\\\text{vertical component}\\end{pmatrix}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d9b5222177bc0d16ffc",
+  "code": "R2",
+  "criterion": "Identifies $B$ as the midpoint of $AC$",
+  "hint": "State that $B$ is the midpoint of $AC$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841d9b5222177bc0d16ffc",
+  "code": "R3",
+  "criterion": "Justifies the midpoint using $\\overrightarrow{AB}=\\overrightarrow{BC}$",
+  "hint": "Justify the midpoint by showing that $\\overrightarrow{AB}=\\overrightarrow{BC}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841de85222177bc0d17004",
+  "code": "CK1",
+  "criterion": "Recognises that the angles in the pie chart total $360°$.",
+  "hint": "Use the fact that the sector angles in a pie chart add to $360°$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841de85222177bc0d17004",
+  "code": "R1",
+  "criterion": "Forms $2x+(x+12)+48+120=360$.",
+  "hint": "Set the sum of all four sector-angle expressions equal to the full angle of a circle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841de85222177bc0d17004",
+  "code": "AK1",
+  "criterion": "Solves the equation to obtain $x=60$.",
+  "hint": "Collect the $x$ terms, isolate the term containing $x$, and divide by its coefficient.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841de85222177bc0d17004",
+  "code": "CK2",
+  "criterion": "Identifies the tank sector as $2x=120°$.",
+  "hint": "Use the sector labelled $2x$ for the tanks and substitute your value of $x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841de85222177bc0d17004",
+  "code": "AK2",
+  "criterion": "Calculates the fraction as $120/360=1/3$.",
+  "hint": "Divide the tank-sector angle by $360°$ to calculate its fraction of the whole.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841de85222177bc0d17004",
+  "code": "R2",
+  "criterion": "Expresses the fraction in lowest terms.",
+  "hint": "Simplify your fraction by dividing the numerator and denominator by the same common factor.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841de85222177bc0d17004",
+  "code": "CK3",
+  "criterion": "Recognises that $75$ represents one-third of the households.",
+  "hint": "Treat the stated number of households as the one-third portion of the total surveyed.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841de85222177bc0d17004",
+  "code": "AK3",
+  "criterion": "Calculates the total as $75\\div(1/3)=225$.",
+  "hint": "Divide the given one-third household count by $\\frac{1}{3}$ to find the total number surveyed.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841de85222177bc0d17004",
+  "code": "CK4",
+  "criterion": "Identifies the tank and rain-barrel sectors as the relevant sectors.",
+  "hint": "Select both the tank sector and the rain-barrel sector because either method includes households using either one.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841de85222177bc0d17004",
+  "code": "AK4",
+  "criterion": "Finds their combined angle as $120°+72°=192°$.",
+  "hint": "Find the rain-barrel angle from $x+12$ and add it to the tank angle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841de85222177bc0d17004",
+  "code": "AK5",
+  "criterion": "Calculates $(192/360)\\times225=120$ households.",
+  "hint": "Multiply the combined-sector fraction of $360°$ by the total number surveyed.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841de85222177bc0d17004",
+  "code": "R3",
+  "criterion": "Concludes that the standpipe will be built because $120<125$.",
+  "hint": "Compare your household total with the stated cutoff and state that the standpipe is built when it is below that cutoff.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841e7a5222177bc0d17011",
+  "code": "CK1",
+  "criterion": "Forms $gf(x)$ as $M-f(x)$ using \"their\" maximum value",
+  "hint": "Use your maximum value to write $gf(x)$ as that value minus $f(x)$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841e7a5222177bc0d17011",
+  "code": "AK1",
+  "criterion": "Substitutes $-x^2+6x$ for $f(x)$",
+  "hint": "Replace $f(x)$ with the given function rule before you simplify $gf(x)$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841e7a5222177bc0d17011",
+  "code": "AK2",
+  "criterion": "Simplifies to $x^2-6x+9$, or equivalent",
+  "hint": "Remove the brackets carefully and collect like terms to simplify the quadratic expression.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841e7a5222177bc0d17011",
+  "code": "CK2",
+  "criterion": "Forms the inequality $gf(x)\\leq4$",
+  "hint": "Write the condition that $gf(x)$ is no greater than the stated vertical-distance limit.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841e7a5222177bc0d17011",
+  "code": "AK3",
+  "criterion": "Solves $x^2-6x+9=4$ to obtain one boundary value, $1$ or $5$",
+  "hint": "Set your quadratic expression equal to the stated limit and solve for one boundary value of $x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841e7a5222177bc0d17011",
+  "code": "AK4",
+  "criterion": "Obtains both boundary values $x=1$ and $x=5$ using \"their\" quadratic expression",
+  "hint": "Use your quadratic expression to find both boundary values of $x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841ee75222177bc0d1701e",
+  "code": "CK1",
+  "criterion": "Recognises that the seven regions inside the three sets represent passengers who used at least one mode of transport",
+  "hint": "Add the numbers in all seven regions inside the three circles to find the passengers who used at least one mode of transport.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841ee75222177bc0d1701e",
+  "code": "CK2",
+  "criterion": "Recognises that the total number of passengers is \"their\" union plus the outside region",
+  "hint": "Combine your union total with the number outside all three circles to represent all passengers.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841ee75222177bc0d1701e",
+  "code": "AK2",
+  "criterion": "Subtracts \"their\" union from 150",
+  "hint": "Subtract your union total from 150 to find the number outside the circles.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841ee75222177bc0d1701e",
+  "code": "CK3",
+  "criterion": "Identifies the minibus-only region and the outside region as passengers who used neither a bus nor a taxi",
+  "hint": "Select the minibus-only region and the region outside all three circles, since neither is in the bus or taxi sets.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841ee75222177bc0d1701e",
+  "code": "AK3",
+  "criterion": "Calculates $18+$ \"their\" $x$",
+  "hint": "Add $18$ to your $x$ value to find the passengers who used neither a bus nor a taxi.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841ee75222177bc0d1701e",
+  "code": "AK4",
+  "criterion": "Divides \"their\" number of passengers by 8",
+  "hint": "Divide your number of passengers by 8 to find how many shuttles are needed.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a841ee75222177bc0d1701e",
+  "code": "R2",
+  "criterion": "Recognises that a fractional number of shuttles requires a further whole shuttle",
+  "hint": "Round any fractional shuttle result up to the next whole shuttle, because you cannot use part of a shuttle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420045222177bc0d17038",
+  "code": "CK1",
+  "criterion": "Identifies that the $y$-intercept occurs when $x=0$",
+  "hint": "You set $x=0$ to locate the $y$-intercept.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420045222177bc0d17038",
+  "code": "R1",
+  "criterion": "Reads the coordinate $(0,12)$ from the graph",
+  "hint": "You read the coordinate where the line crosses the vertical axis.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420045222177bc0d17038",
+  "code": "CK2",
+  "criterion": "Recognises that the $y$-intercept is the constant term in the linear equation",
+  "hint": "You use the constant term as the $y$-intercept in a linear equation.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420045222177bc0d17038",
+  "code": "AK1",
+  "criterion": "Forms $B=-2x+12$ using \"their\" $y$-intercept",
+  "hint": "You substitute the gradient and your $y$-intercept into $B=mx+c$ to form your equation.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420045222177bc0d17038",
+  "code": "CK3",
+  "criterion": "Identifies that $B=0$ at the $x$-intercept",
+  "hint": "You set $B$ to zero to locate the $x$-intercept.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420045222177bc0d17038",
+  "code": "AK2",
+  "criterion": "Substitutes $B=0$ into \"their\" equation",
+  "hint": "You substitute $B=0$ into your equation before solving for $x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420045222177bc0d17038",
+  "code": "AK3",
+  "criterion": "Solves the resulting equation to obtain $x=6$",
+  "hint": "You rearrange the resulting equation and solve for $x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420045222177bc0d17038",
+  "code": "R2",
+  "criterion": "Uses \"their\" initial balance as the change from the balance to zero",
+  "hint": "You use your initial balance as the total decrease needed to reach zero.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420045222177bc0d17038",
+  "code": "AK5",
+  "criterion": "Calculates the second gradient as $-12\\div4=-3$",
+  "hint": "You calculate the second gradient by dividing the change in balance by the change in time, using $\\Delta B\\div\\Delta x$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420045222177bc0d17038",
+  "code": "R3",
+  "criterion": "Concludes that the second line is steeper",
+  "hint": "You identify the second line as steeper after comparing its gradient with the original gradient.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420045222177bc0d17038",
+  "code": "R4",
+  "criterion": "Justifies the comparison using the magnitudes of the gradients or the shorter time to clear the same balance",
+  "hint": "You compare the magnitudes of the gradients, or compare which arrangement clears the same balance in less time.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420e75222177bc0d1704a",
+  "code": "CK1",
+  "criterion": "Recognises that each radius is perpendicular to its tangent.",
+  "hint": "Use the fact that a radius meets a tangent at a right angle at both points of contact.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420e75222177bc0d1704a",
+  "code": "R1",
+  "criterion": "Forms the angle sum in quadrilateral $OADB$: $\\angle AOB+90+104+90=360$.",
+  "hint": "Write the interior-angle equation for quadrilateral $OADB$, including $\\angle AOB$ and the three known angles.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420e75222177bc0d1704a",
+  "code": "AK1",
+  "criterion": "Evaluates $360-284$.",
+  "hint": "Subtract $284$ from $360$ to find the central angle.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420e75222177bc0d1704a",
+  "code": "CK2",
+  "criterion": "Uses the fact that the angle at the centre is twice the angle at the circumference on the same arc.",
+  "hint": "Use the theorem that the angle at the centre is twice the angle at the circumference on the same arc.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420e75222177bc0d1704a",
+  "code": "AK3",
+  "criterion": "Divides “their” $\\angle AOB$ by $2$.",
+  "hint": "Divide your earlier $\\angle AOB$ by $2$ to find the angle at the circumference.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420e75222177bc0d1704a",
+  "code": "R2",
+  "criterion": "Judges the statement correct using “their” angle $ACB$.",
+  "hint": "Judge the statement correct by comparing your earlier angle $ACB$ with the angle between the tangent and chord.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420e75222177bc0d1704a",
+  "code": "CK3",
+  "criterion": "States the tangent-chord theorem.",
+  "hint": "State that the angle between a tangent and a chord equals the angle in the alternate segment.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8420e75222177bc0d1704a",
+  "code": "R3",
+  "criterion": "Relates the angle between tangent $DA$ and chord $AB$ to the angle in the alternate segment, $\\angle ACB$.",
+  "hint": "Set the angle between tangent $DA$ and chord $AB$ equal to $\\angle ACB$ in the alternate segment.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8421335222177bc0d17052",
+  "code": "CK1",
+  "criterion": "Recognises that the radius is one half of the diameter",
+  "hint": "Use the fact that the radius is half the diameter.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8421335222177bc0d17052",
+  "code": "AK1",
+  "criterion": "Calculates $8\\div2=4$",
+  "hint": "Divide the given diameter using $8\\div2$ to find the radius.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8421335222177bc0d17052",
+  "code": "CK2",
+  "criterion": "Identifies that $r^3$ must be isolated before finding $r$",
+  "hint": "Rearrange the volume formula until $r^3$ is isolated before taking a cube root.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8421335222177bc0d17052",
+  "code": "AK2",
+  "criterion": "Rearranges correctly to obtain $r=\\sqrt[3]{\\frac{3V}{4\\pi}}$",
+  "hint": "Rearrange the formula to make $r$ the subject: $r=\\sqrt[3]{\\frac{3V}{4\\pi}}$.",
+  "status": "proposed"
+ },
+ {
+  "question_id": "6a8421335222177bc0d17052",
+  "code": "CK3",
+  "criterion": "Recognises that the capacity gives $V=250$",
+  "hint": "Use the stated capacity by setting $V=250$.",
+  "status": "proposed"
+ }
+]
