@@ -27,6 +27,9 @@ export interface ConstructionVerdict {
   legible: boolean;
   /** True only when the drawing satisfies every check the params could state. */
   complete: boolean;
+  /** What the call cost and which model answered, stored on the read (ROUND_6 Task 8). */
+  usage: { input_tokens?: number; output_tokens?: number };
+  model: string;
 }
 
 export async function checkConstruction(args: {
@@ -37,7 +40,7 @@ export async function checkConstruction(args: {
 }): Promise<ConstructionVerdict> {
   const { image, contentType, checks, questionStem } = args;
   if (checks.length === 0) {
-    return { satisfied: [], missing: [], legible: false, complete: false };
+    return { satisfied: [], missing: [], legible: false, complete: false, usage: {}, model: READER_MODEL_ID };
   }
 
   const list = checks.map((c, i) => `${i}. ${c.describes}`).join('\n');
@@ -85,6 +88,8 @@ export async function checkConstruction(args: {
     missing,
     legible: result.object.legible && result.object.axesDrawn,
     complete: result.object.legible && result.object.axesDrawn && missing.length === 0,
+    usage: { input_tokens: result.usage?.inputTokens, output_tokens: result.usage?.outputTokens },
+    model: READER_MODEL_ID,
   };
 }
 

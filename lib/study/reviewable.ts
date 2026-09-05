@@ -1,5 +1,5 @@
 import { Attempt, PracticeSession, Transcription } from '@/lib/db';
-import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from './outcome';
+import { attemptOutcome, type OutcomeQuestion, type OutcomeRead, type OutcomeRow } from './outcome';
 
 // Nothing here is rendered or marked afresh: this is the list of links to the
 // read-only view a session already serves at ?q=<index>. The numbers are the
@@ -66,6 +66,7 @@ export async function loadReviewable(
         question_id: (OutcomeQuestion & { _id: unknown; objective_ids?: string[] }) | null;
         session_id: unknown;
         rubric_awarded: string[];
+        rubric?: OutcomeRow[];
         correct: boolean;
         ts: Date;
       }[]

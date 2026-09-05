@@ -52,6 +52,9 @@ export interface CandidateQuestion {
  * or more — it leaves 28. A cap that leaves none is a "check back soon" for
  * every new student, which is what a five-mark cap did.
  */
+/** A question seen this recently tests memory of its answer, not the skill. */
+export const RECENT_DAYS = 14;
+
 export const FIRST_MAX_MARKS = 9;
 export const FIRST_MAX_PARTS = 3;
 
@@ -74,6 +77,8 @@ export interface BuildSessionArgs {
    * and the heavier topic keeps winning.
    */
   attemptedObjectives?: Set<string>;
+  /** Question ids attempted in the last RECENT_DAYS; adaptive and topic leave them out (ROUND_6 Task 8). */
+  recentIds?: Set<string>;
   m1Mastery: number;
   targetModules: ModuleNumber[];
   // blueprint weight per topic keyed by objective prefix, e.g. 'M1.5.' -> 10
@@ -120,6 +125,7 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
     lostByObjective,
     attemptedIds,
     attemptedObjectives,
+    recentIds,
     minutes = mode === 'diagnostic' ? DIAGNOSTIC_MINUTES : SESSION_MINUTES,
   } = args;
 
@@ -141,11 +147,13 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
     if (!hasMarkableParts(c)) return false;
     if (mode === 'first' && (!isFirstCandidate(c) || (shortPool && !isShort(c)))) return false;
     if (mode === 'topic') {
+      if (recentIds?.has(c.id)) return false;
       return (focusPrefixes ?? []).some((prefix) =>
         c.objective_ids.some((id) => id.startsWith(prefix)),
       );
     }
     if (!targetModules.includes(c.module)) return false;
+    if (mode === 'adaptive' && recentIds?.has(c.id)) return false;
     if (mode === 'revisit') {
       // A NEW question on the missed objective: re-showing the same one tests
       // whether the answer was remembered, not what was got wrong.

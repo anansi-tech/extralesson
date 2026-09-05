@@ -102,6 +102,18 @@ interface Markable {
  * cannot change how an answer was marked, and hashing the whole document would
  * invalidate the audit trail every time someone corrected one.
  */
+/**
+ * THE RUBRIC AS IT WAS WHEN THE ATTEMPT WAS MARKED (ROUND_6 Task 8): the
+ * hash says whether the bank has since changed it, and the snapshot stored
+ * beside it is what every look back and fold renders.
+ */
+export function rubricHash(rubric: { code: string; profile: string; criterion: string; mark_value: number; slot_ref: string }[] | undefined): string {
+  return createHash('sha256')
+    .update(JSON.stringify((rubric ?? []).map((r) => [r.code, r.profile, r.criterion, r.mark_value, r.slot_ref])))
+    .digest('hex')
+    .slice(0, 12);
+}
+
 export function questionFingerprint(q: Markable): string {
   const marking = {
     marks: q.marks,

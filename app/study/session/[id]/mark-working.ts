@@ -96,6 +96,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
   };
   let decisions: MethodDecision[] = [];
   let usage: { input_tokens?: number; output_tokens?: number } = {};
+  let markerModel: string | undefined;
   if (unearned.length > 0) {
     const workingByPart: Record<string, string[]> = {};
     for (const part of question.parts ?? []) {
@@ -120,6 +121,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
         settled,
       );
       usage = result.usage;
+      markerModel = result.model;
     } catch (e) {
       const reason = e instanceof Error ? e.message : String(e);
       await Transcription.updateOne({ _id: read._id }, { $set: { marking: { status: 'failed', reason, ts: new Date() } } });
@@ -177,6 +179,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
         marker_version: MARKER_VERSION,
         'usage.marking_input': usage.input_tokens,
         'usage.marking_output': usage.output_tokens,
+        ...(markerModel ? { marker_model: markerModel } : {}),
       },
       $unset: { marking: '' },
     },

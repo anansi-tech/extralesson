@@ -1,5 +1,5 @@
 import { Attempt, Question, Transcription } from '@/lib/db';
-import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from './outcome';
+import { attemptOutcome, type OutcomeQuestion, type OutcomeRead, type OutcomeRow } from './outcome';
 
 /**
  * WHAT THE STUDENT ACTUALLY GOT WRONG, per objective, folded out of attempts.
@@ -26,7 +26,7 @@ export interface Mistakes {
 export async function loadMistakes(studentId: string, now = new Date()): Promise<Mistakes> {
   const attempts = await Attempt.find({ student_id: studentId })
     .sort({ ts: 1 })
-    .lean<{ _id: unknown; question_id: unknown; rubric_awarded: string[]; correct: boolean; ts: Date }[]>();
+    .lean<{ _id: unknown; question_id: unknown; rubric_awarded: string[]; rubric?: OutcomeRow[]; correct: boolean; ts: Date }[]>();
   const reads = await Transcription.find({ attempt_id: { $in: attempts.map((a) => a._id) } })
     .select('attempt_id legible marker_version method_marks')
     .lean<(OutcomeRead & { attempt_id: unknown })[]>();

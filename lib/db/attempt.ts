@@ -22,6 +22,26 @@ const AttemptSchema = new Schema({
   // described but not audited.
   grader_version: { type: String },
   question_fingerprint: { type: String },
+  // The rubric this attempt was marked against, hashed and kept whole: a
+  // later edit to the bank changes nothing a student was told (ROUND_6 Task 8).
+  rubric_hash: { type: String },
+  rubric: {
+    type: [
+      new Schema(
+        {
+          code: { type: String, required: true },
+          profile: { type: String, enum: ['CK', 'AK', 'R'], required: true },
+          criterion: { type: String, required: true },
+          mark_value: { type: Number, required: true },
+          slot_ref: { type: String, required: true },
+          part_label: { type: String },
+          for_format: { type: Boolean },
+        },
+        { _id: false },
+      ),
+    ],
+    default: undefined,
+  },
   ts: { type: Date, default: Date.now, required: true },
 });
 

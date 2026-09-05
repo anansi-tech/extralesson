@@ -1,5 +1,5 @@
 import { Attempt, PracticeSession, Question, Transcription } from '@/lib/db';
-import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from './outcome';
+import { attemptOutcome, type OutcomeQuestion, type OutcomeRead, type OutcomeRow } from './outcome';
 import { renderMathHtml } from '@/lib/katex';
 
 /**
@@ -22,8 +22,8 @@ export interface HistoryRow {
 export async function loadHistory(studentId: string): Promise<HistoryRow[]> {
   const attempts = await Attempt.find({ student_id: studentId })
     .sort({ ts: -1 })
-    .select('question_id session_id rubric_awarded correct ts')
-    .lean<{ _id: unknown; question_id: unknown; session_id: unknown; rubric_awarded: string[]; correct: boolean; ts: Date }[]>();
+    .select('question_id session_id rubric_awarded rubric correct ts')
+    .lean<{ _id: unknown; question_id: unknown; session_id: unknown; rubric_awarded: string[]; rubric?: OutcomeRow[]; correct: boolean; ts: Date }[]>();
   if (attempts.length === 0) return [];
 
   const sessions = await PracticeSession.find({ _id: { $in: [...new Set(attempts.map((a) => String(a.session_id)))] } })

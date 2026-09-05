@@ -55,12 +55,18 @@ const TranscriptionSchema = new Schema({
    * spends nothing. Unset once the read lands; deleted if the model fails.
    */
   pending: { type: Boolean },
-  /** What the read cost, so §7 can be reported from measurement, not estimate. */
+  /** What each call cost, so §7 is reported from measurement, not estimate (ROUND_6 Task 8). */
   usage: {
     input_tokens: { type: Number },
     output_tokens: { type: Number },
+    marking_input: { type: Number },
+    marking_output: { type: Number },
+    drawing_input: { type: Number },
+    drawing_output: { type: Number },
   },
   reader_model: { type: String },
+  marker_model: { type: String },
+  drawing_model: { type: String },
   /**
    * METHOD MARKS EARNED BY THIS WORKING — not on the attempt, which is
    * append-only; loadAttemptRows folds them in at read time. mark_value is

@@ -1,5 +1,5 @@
 import { Attempt, PracticeSession, Transcription } from '@/lib/db';
-import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from './outcome';
+import { attemptOutcome, type OutcomeQuestion, type OutcomeRead, type OutcomeRow } from './outcome';
 
 // What a student has actually done, counted from the append-only record. The
 // predicted grade does not move on most days early on, so a page showing only
@@ -49,8 +49,8 @@ export async function loadProgress(studentId: string, now: Date = new Date()): P
       .lean<{ completed_at: Date; started_at: Date }[]>(),
     Attempt.find({ student_id: studentId })
       .populate('question_id', 'marks profile parts rubric')
-      .select('question_id rubric_awarded correct ts')
-      .lean<{ _id: unknown; question_id?: OutcomeQuestion | null; rubric_awarded: string[]; correct: boolean; ts: Date }[]>(),
+      .select('question_id rubric_awarded rubric correct ts')
+      .lean<{ _id: unknown; question_id?: OutcomeQuestion | null; rubric_awarded: string[]; rubric?: OutcomeRow[]; correct: boolean; ts: Date }[]>(),
   ]);
   const reads = await Transcription.find({ attempt_id: { $in: attempts.map((a) => a._id) } })
     .select('attempt_id legible marker_version method_marks')

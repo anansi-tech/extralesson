@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { dbConnect, Attempt, PracticeSession, Question, SessionDraft, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { markMcq, markStructuredParts, markableSlots } from '@/lib/grade/mark';
-import { GRADER_VERSION, questionFingerprint } from '@/lib/grade/version';
+import { GRADER_VERSION, questionFingerprint, rubricHash } from '@/lib/grade/version';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
 import { forStudent, missReason, schemeLine } from '@/lib/grade/reason';
@@ -185,6 +185,8 @@ export async function submitAnswer(input: {
       duration_ms: durationMs,
       grader_version: GRADER_VERSION,
       question_fingerprint: questionFingerprint(question as never),
+      rubric_hash: rubricHash(question.rubric),
+      rubric: question.rubric?.map(({ code, profile, criterion, mark_value, slot_ref, part_label, for_format }) => ({ code, profile, criterion, mark_value, slot_ref, part_label, for_format })),
       ts: new Date(),
     });
   } catch (e) {

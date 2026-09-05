@@ -8,7 +8,7 @@ import {
   type AttemptScore,
 } from '@/lib/mastery/fold';
 import { predictModule, predictOverall, type OverallPrediction } from '@/lib/grade/predict';
-import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from './outcome';
+import { attemptOutcome, type OutcomeQuestion, type OutcomeRead, type OutcomeRow } from './outcome';
 import { computeCoverage, type Coverage } from '@/lib/targets/coverage';
 import type { MasteryBand } from '@/lib/mastery/config';
 import type { ModuleNumber } from '@/lib/types';
@@ -70,6 +70,7 @@ export async function loadAttemptRows(studentId: string, before?: Date): Promise
       {
         question_id: (OutcomeQuestion & { objective_ids: string[]; parts?: { label: string; slots?: { label: string; response_mode?: string; objective_id?: string }[] }[] }) | null;
         rubric_awarded: string[];
+        rubric?: OutcomeRow[];
         correct: boolean;
         ts: Date;
         _id: unknown;

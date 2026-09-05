@@ -16,7 +16,7 @@ import { rankByVerdict, topicsSeen, verdictFor } from '@/lib/study/diagnostic';
 import { startSession } from '@/app/study/actions';
 import { loadStudyState } from '@/lib/study/state';
 import { estimatedMinutes } from '@/lib/session/builder';
-import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from '@/lib/study/outcome';
+import { attemptOutcome, type OutcomeQuestion, type OutcomeRead, type OutcomeRow } from '@/lib/study/outcome';
 import { boxWidthChars, isMultiValue, readInputShape, showsBoxCount } from '@/lib/grade/input-shape';
 import { inputAffordance } from '@/lib/grade/input-hints';
 import { PROFILE_GLOSS, PROFILE_GLOSS_SHORT, PROFILE_MEANING } from '@/lib/study/profiles';
@@ -67,6 +67,7 @@ export default async function SessionPage({
         question_id: unknown;
         answer: string | number;
         rubric_awarded: string[];
+        rubric?: (OutcomeRow & { criterion: string; part_label?: string; for_format?: boolean })[];
       }[]
     >();
   // THE ONE FOLD (ROUND_6 Task 1): every number on this page comes from it.
@@ -776,8 +777,9 @@ export default async function SessionPage({
     })),
     optionsHtml: question.options?.map(renderMathHtml),
     marks: question.marks,
+    // Looking back renders the rubric the attempt was marked against, not the bank's today.
     rubricCodes:
-      question.rubric?.map((r) => ({
+      (reviewing ? attempts[index].rubric ?? question.rubric : question.rubric)?.map((r) => ({
         code: r.code,
         profile: r.profile,
         mark_value: r.mark_value,

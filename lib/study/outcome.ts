@@ -67,11 +67,13 @@ const rowsOf = (attempt: { correct?: boolean }, q: OutcomeQuestion): { rows: Out
 };
 
 export function attemptOutcome(
-  attempt: { rubric_awarded: string[]; correct?: boolean },
+  attempt: { rubric_awarded: string[]; correct?: boolean; rubric?: OutcomeRow[] },
   question: OutcomeQuestion,
   reads: OutcomeRead[] = [],
 ): AttemptOutcome {
-  const whole = rowsOf(attempt, question);
+  // The rubric the attempt was MARKED against, when it carries one (ROUND_6
+  // Task 8): a later edit to the bank does not re-mark anybody.
+  const whole = rowsOf(attempt, attempt.rubric?.length ? { ...question, rubric: attempt.rubric } : question);
   const graded = new Set([...attempt.rubric_awarded, ...whole.graded]);
   const answer = answerSlots(question);
   const known = knownSlots(question);

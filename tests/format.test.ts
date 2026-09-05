@@ -146,7 +146,7 @@ describe('format feedback leads with what the student got right', () => {
   }
 });
 
-// STANDING RULE (AGENTS.md): every answer_format proves that an answer written
+// STANDING RULE (CLAUDE.md): every answer_format proves that an answer written
 // CORRECTLY in that form marks CORRECT, end to end. Rejection tests alone hid
 // the fact that standard form could never be marked right at all — the value
 // comparison failed before the format check was ever consulted.

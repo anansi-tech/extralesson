@@ -14,6 +14,13 @@ export async function dbConnect(): Promise<typeof mongoose> {
     if (!uri) throw new Error('MONGODB_URI is not set');
     cached.promise = mongoose.connect(uri);
   }
-  cached.conn = await cached.promise;
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    // A warm process must not remember a failure forever: the next call
+    // connects again instead of rethrowing the first outage (ROUND_6 Task 8).
+    cached.promise = null;
+    throw e;
+  }
   return cached.conn;
 }

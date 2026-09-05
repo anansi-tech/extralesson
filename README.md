@@ -1,8 +1,11 @@
 # ExtraLesson
 
 AI-powered CSEC Mathematics tutoring for the Caribbean. Current spec:
-[ROUND_1_5_FINAL.md](./ROUND_1_5_FINAL.md) (visuals, multi-part questions,
-target matrices) on top of [ROUND_1_EXTRALESSON.md](./ROUND_1_EXTRALESSON.md).
+[ROUND_6_ONE_TRUTH.md](./ROUND_6_ONE_TRUTH.md) (one score fold, scoped
+payment, unique attempts and reads, the gate as a gate), on top of
+[ROUND_5_CLAIMS.md](./ROUND_5_CLAIMS.md), [ROUND_4_FIRST_RUN.md](./ROUND_4_FIRST_RUN.md),
+[ROUND_1_5_FINAL.md](./ROUND_1_5_FINAL.md) and [ROUND_1_EXTRALESSON.md](./ROUND_1_EXTRALESSON.md).
+`CLAUDE.md` is the standing instruction file; there is no other.
 
 Ground truth for all syllabus content is `design/syllabus-2027.pdf`
 (CXC 05/G/SYLL 16, Amended Oct 2025, effective May–June 2027).
@@ -72,11 +75,17 @@ SVG templates + `dataTable` in `lib/visuals/`; raw SVG is never accepted.
 ## Tests & verification
 
 ```bash
-pnpm test                                                       # Vitest, all green
-grep -riE 'whatsapp|twilio|investigation|sba' app lib scripts   # kill-list: zero hits
-grep -riwE 'vision|upload' app lib scripts                      # kill-list: zero hits
-grep -riE "from ['\"]stripe" app lib scripts                    # no Stripe SDK: zero hits
+pnpm test                       # Vitest, all green (the pre-commit hook runs this too)
+pnpm check:kill-list            # the CLAUDE.md greps over app/ lib/ scripts/ tests/
+pnpm eval:marker                # marking gate: 5 runs, exits 1 below the bar
+pnpm eval:reads                 # reading gate: page loss and calibration cases
+pnpm eval:pipeline              # photo -> readWorking -> markWorking, production path
+pnpm admin:provision -- --email you@example.com   # make an operator (sends a set-password link)
+pnpm golden:import <bundle>     # a field dispute into design/golden, proposed
+pnpm golden:field-prune --yes   # delete field images older than 90 days
 ```
+
+One-off repairs and backfills that have already run live in `scripts/done/`.
 
 To demonstrate the pipeline's independent-solve rejection, run generation with
 the `--poison` test hook and watch drafts get auto-rejected:

@@ -36,7 +36,7 @@ const DERIVED: Record<string, string> = {
   status: 'lifecycle, set by the pipeline',
   gen_meta: 'provenance, set by the pipeline',
   syllabus_mode: 'display-only, set by the caller',
-  template: 'derived from criterion and the slot graph by scripts/backfill-rubric-template.ts (ROUND_5 Task 1)',
+  template: 'derived from criterion and the slot graph by scripts/done/backfill-rubric-template.ts (ROUND_5 Task 1)',
 };
 
 /**

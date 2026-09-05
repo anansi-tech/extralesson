@@ -123,6 +123,7 @@ export async function readWorking(input: {
   // The drawing check runs now and is stored, so submit needs no second look.
   // Rows an earlier take already earned are settled and not re-read.
   let construction: { complete: boolean; legible: boolean; missing: { describes: string; note: string }[] } | undefined;
+  let drawing: { usage: { input_tokens?: number; output_tokens?: number }; model: string } | undefined;
   const checks = constructionChecks(question.visual);
   if (checks.length > 0 && constructionRows(question, alreadyEarnedByMethod(earlier)).length > 0) {
     try {
@@ -137,6 +138,7 @@ export async function readWorking(input: {
         legible: drawn.legible,
         missing: drawn.missing.map((m) => ({ describes: m.check.describes, note: m.note })),
       };
+      drawing = { usage: drawn.usage, model: drawn.model };
     } catch {
       // Unreadable falls back to the self-check list the student already has.
     }
@@ -151,8 +153,9 @@ export async function readWorking(input: {
         construction,
         legible: read.transcription.legible,
         notes: read.transcription.notes,
-        usage: read.usage,
+        usage: { ...read.usage, drawing_input: drawing?.usage.input_tokens, drawing_output: drawing?.usage.output_tokens },
         reader_model: read.model,
+        ...(drawing ? { drawing_model: drawing.model } : {}),
       },
       $unset: { pending: '' },
     },

@@ -204,9 +204,12 @@ export default async function CoveragePage() {
           ) : (
             <div className="mt-1 font-mono text-xs">
               {cost.reads} read{cost.reads === 1 ? '' : 's'} ·{' '}
-              {cost.inputTokens.toLocaleString()} in / {cost.outputTokens.toLocaleString()} out ·{' '}
+              reading {cost.reading.inputTokens.toLocaleString()} in / {cost.reading.outputTokens.toLocaleString()} out ·{' '}
+              drawing {cost.drawing.calls} call{cost.drawing.calls === 1 ? '' : 's'} ·{' '}
+              marking {cost.marking.inputTokens.toLocaleString()} in / {cost.marking.outputTokens.toLocaleString()} out ·{' '}
               <b>${cost.totalUsd.toFixed(4)}</b> total ·{' '}
-              <b>${cost.perReadUsd.toFixed(4)}</b> per photographed question
+              <b>${cost.perReadUsd.toFixed(4)}</b> per photographed question ·{' '}
+              recorded: {cost.present.join(', ') || 'none'}
             </div>
           )}
         </section>

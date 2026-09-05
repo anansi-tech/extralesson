@@ -1,5 +1,5 @@
-import { Question } from '@/lib/db';
-import { buildSession, type CandidateQuestion, type SessionMode } from './builder';
+import { Attempt, Question } from '@/lib/db';
+import { buildSession, RECENT_DAYS, type CandidateQuestion, type SessionMode } from './builder';
 import { loadStudyState } from '@/lib/study/state';
 import { loadMistakes } from '@/lib/study/mistakes';
 import { earnableByMethod } from '@/lib/grade/method-marks';
@@ -24,7 +24,7 @@ export interface PlanArgs {
 export async function planSession(args: PlanArgs): Promise<CandidateQuestion[]> {
   const { studentId, targetModules, mode, focusPrefixes, now } = args;
 
-  const [state, raw, mistakes] = await Promise.all([
+  const [state, raw, mistakes, recent] = await Promise.all([
     loadStudyState(studentId, targetModules),
     Question.find({ status: 'approved' })
       .select(mode === 'first' ? 'objective_ids module kind marks parts rubric' : 'objective_ids module kind marks parts')
@@ -40,6 +40,9 @@ export async function planSession(args: PlanArgs): Promise<CandidateQuestion[]> 
         }[]
       >(),
     mode === 'revisit' ? loadMistakes(studentId, now) : null,
+    Attempt.find({ student_id: studentId, ts: { $gte: new Date((now ?? new Date()).getTime() - RECENT_DAYS * 86_400_000) } })
+      .select('question_id')
+      .lean<{ question_id: unknown }[]>(),
   ]);
 
   return buildSession({
@@ -64,6 +67,7 @@ export async function planSession(args: PlanArgs): Promise<CandidateQuestion[]> 
     focusPrefixes,
     lostByObjective: mistakes?.lostByObjective,
     attemptedIds: mistakes?.attemptedIds,
+    recentIds: new Set(recent.map((a) => String(a.question_id))),
   });
 }
 
