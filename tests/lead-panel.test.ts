@@ -72,8 +72,11 @@ describe('leadPanel — the order a new student meets things in', () => {
   it('is what /study renders, with the diagnostic under the first question', () => {
     const page = readFileSync(join(process.cwd(), 'app', 'study', 'page.tsx'), 'utf8');
     expect(page).toMatch(/firstTaken: await firstQuestionTaken\(auth\.student_id\)/);
-    const first = page.slice(page.indexOf("lead === 'first' ? ("), page.indexOf("lead === 'diagnostic' ? ("));
-    expect(first).toMatch(/name="mode" value="first"[\s\S]*Mark one question now[\s\S]*name="mode" value="diagnostic"/);
-    expect(page).toContain("error === 'first-taken'");
+    const view = readFileSync(join(process.cwd(), 'app', 'study', 'dashboard.tsx'), 'utf8');
+    const first = view.slice(view.indexOf("lead === 'first' ? ("), view.indexOf("lead === 'diagnostic' ? ("));
+    expect(first).toMatch(/name="mode" value="first"[\s\S]*Mark one question free/);
+    const under = view.slice(view.lastIndexOf("lead === 'first' ? ("), view.lastIndexOf("lead === 'diagnostic' ? ("));
+    expect(under).toMatch(/name="mode" value="diagnostic"[\s\S]*Or start with the diagnostic/);
+    expect(view).toContain("error === 'first-taken'");
   });
 });

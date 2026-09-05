@@ -38,8 +38,8 @@ export function StudyChrome({ sitting, children }: { sitting: string; children: 
       </header>
       {/* The paper: rules every --rule-gap, the margin rule at the sheet's offset. */}
       <main className="ruled relative px-5 pb-8 pt-7 lg:px-6">
-        <div className="pointer-events-none absolute inset-y-0 left-[var(--rule-offset-sm)] w-[1.5px] bg-margin lg:left-[calc(50%-var(--col)/2+var(--rule-offset-lg))]" />
-        <div className="relative mx-auto max-w-[var(--col)]">{children}</div>
+        <div className="pointer-events-none absolute inset-y-0 left-[var(--rule-offset-sm)] w-[1.5px] bg-margin lg:left-[calc(50%-var(--bar-width)/2+var(--rule-offset-lg))]" />
+        <div className="relative mx-auto max-w-[var(--bar-width)]">{children}</div>
       </main>
     </div>
   );

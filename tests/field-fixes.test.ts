@@ -81,7 +81,7 @@ describe('(1)(2)(3) history, the student nav, the admin bar', () => {
     expect(page).not.toMatch(/updateOne|create\(|deleteOne/);
   });
   it('the dashboard has no look-back list and no History line: History is in the nav', () => {
-    const dash = at('app', 'study', 'page.tsx');
+    const dash = at('app', 'study', 'page.tsx') + at('app', 'study', 'dashboard.tsx');
     expect(dash).not.toContain('href="/study/history"');
     expect(dash).not.toMatch(/Look back at a question|groupReviewableByDay/);
     expect(dash).toMatch(/name="mode" value="revisit"/);
@@ -113,19 +113,21 @@ describe('(8) progress off the dashboard', () => {
     expect(progress).toMatch(/BAND_LABEL\[t\.band\]/);
     expect(progress).toMatch(/prediction\.modules\.find/);
     expect(progress).not.toMatch(/updateOne|create\(|deleteOne/);
-    const dash = at('app', 'study', 'page.tsx');
-    expect(dash).not.toMatch(/topic strength|BAND_LABEL|prediction\.modules\.find|m\.letter|coverageSummary/);
+    const dash = at('app', 'study', 'page.tsx') + at('app', 'study', 'dashboard.tsx');
+    expect(dash).not.toMatch(/topic strength|BAND_LABEL|m\.letter|coverageSummary/);
   });
   it('ends the dashboard at the streak stats', () => {
-    const dash = at('app', 'study', 'page.tsx');
-    const afterStats = dash.slice(dash.indexOf('days in a row'));
-    expect(afterStats).not.toMatch(/<section|<Link/);
+    const dash = at('app', 'study', 'dashboard.tsx');
+    expect(dash).toContain('days in a row');
+    const counters = dash.slice(dash.indexOf('function Counters'), dash.indexOf('function Choose'));
+    expect(counters).not.toMatch(/<Link/);
+    expect(dash.slice(dash.indexOf('{showsCounters && <Counters'))).toMatch(/^\{showsCounters && <Counters progress=\{p\.progress\} \/>\}\s*<\/div>\s*<\/div>\s*\);/);
   });
 });
 
 describe('the dashboard says less (ROUND_6 Task 5)', () => {
   it('has no coverage block and no trajectory line, and counts marks seen per module until a grade exists', () => {
-    const dash = at('app', 'study', 'page.tsx');
+    const dash = at('app', 'study', 'page.tsx') + at('app', 'study', 'dashboard.tsx');
     expect(dash).not.toMatch(/What we cover|coverageDetail|paperShape|projectTrajectory|trajectoryWait|sessions a week/);
     expect(dash).toMatch(/of \{MIN_MARKS_FOR_PREDICTION\} marks seen/);
     expect(at('app', 'page.tsx')).toMatch(/The same skill comes back a few days later, so the fix sticks/);
