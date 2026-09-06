@@ -7,6 +7,7 @@ import {
   Payment,
   PracticeSession,
   SessionDraft,
+  SittingChange,
   Student,
   Transcription,
 } from '@/lib/db';
@@ -25,6 +26,7 @@ export const DELETED_BY_STUDENT_ID = [
   'Transcription',
   'CapturedImage',
   'MarkDispute',
+  'SittingChange',
 ] as const;
 
 /**
@@ -40,6 +42,7 @@ export interface DeletionCounts {
   Transcription: number;
   CapturedImage: number;
   MarkDispute: number;
+  SittingChange: number;
   DisputeReview: number;
   LineRejected: number;
   SessionDraft: number;
@@ -109,6 +112,7 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
   const disputeReviews = await DisputeReview.deleteMany({ dispute_id: { $in: disputeIds } });
   const disputes = await MarkDispute.deleteMany({ student_id: studentId });
   const practiceSessions = await PracticeSession.deleteMany({ student_id: studentId });
+  const sittingChanges = await SittingChange.deleteMany({ student_id: studentId });
   const resets = await ResetToken.deleteMany({ email: address });
 
   // The transaction stays; the person is taken out of it. No audit row names
@@ -131,6 +135,7 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
       Transcription: transcriptions.deletedCount ?? 0,
       CapturedImage: images.deletedCount ?? 0,
       MarkDispute: disputes.deletedCount ?? 0,
+      SittingChange: sittingChanges.deletedCount ?? 0,
       DisputeReview: disputeReviews.deletedCount ?? 0,
       LineRejected: rejections.deletedCount ?? 0,
       SessionDraft: drafts.deletedCount ?? 0,

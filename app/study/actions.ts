@@ -1,14 +1,16 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { z } from 'zod';
 import { dbConnect, PracticeSession, Student, isDuplicateKey } from '@/lib/db';
 import { clearSessionCookie, requireSession } from '@/lib/auth/session';
 import { type SessionMode } from '@/lib/session/builder';
 import { planSession } from '@/lib/session/plan';
 import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
-import { canStartSession, hasAccess, type Access } from '@/lib/access';
-import type { ModuleNumber } from '@/lib/types';
+import { canStartSession, grantFor, hasAccess, type Access } from '@/lib/access';
+import { applySittingChange } from '@/lib/change-sitting';
+import type { ExamSitting, ModuleNumber } from '@/lib/types';
 
 const MODES: SessionMode[] = ['adaptive', 'topic', 'revisit', 'diagnostic', 'first'];
 
@@ -23,6 +25,7 @@ export async function startSession(formData?: FormData): Promise<void> {
   await dbConnect();
   const student = await Student.findById(auth.student_id).lean<{
     target_modules: ModuleNumber[];
+    exam_sitting: string;
     access?: Access | null;
   } | null>();
   if (!student) redirect('/study/login');
@@ -30,7 +33,8 @@ export async function startSession(formData?: FormData): Promise<void> {
   // THE ONE CHECK. Creating a session is where paying matters; nothing already
   // earned is hidden, and the diagnostic stays free because it is how a student
   // finds out where they are before we have shown them anything.
-  const gate = await canStartSession(auth.student_id, student.access, mode);
+  const grant = grantFor(student.access, student.exam_sitting);
+  const gate = await canStartSession(auth.student_id, grant, mode);
   if (!gate.allowed) redirect(`/study?error=${gate.reason}`);
 
   let focusPrefixes: string[] | undefined;
@@ -68,9 +72,30 @@ export async function startSession(formData?: FormData): Promise<void> {
     if (mode === 'first') redirect('/study?error=first-taken');
     // The other start took the slot. A paying student's open session is on
     // the notebook; an unpaid one has just spent the last free session.
-    redirect(hasAccess(student.access) ? '/study' : '/study?error=needs-access');
+    redirect(hasAccess(grant) ? '/study' : '/study?error=needs-access');
   }
   redirect(`/study/session/${session._id}`);
+}
+
+const SittingZ = z.enum(['jan-2027', 'may-june-2027']);
+
+/**
+ * Allowed any time. Where it lands is what the gate says of the new sitting:
+ * the notebook, or the paywall when that sitting has no grant and the free
+ * sessions are used.
+ */
+export async function changeSitting(formData: FormData): Promise<void> {
+  const auth = await requireSession();
+  const to = SittingZ.safeParse(formData.get('to'));
+  if (!to.success) redirect('/study');
+  await dbConnect();
+  await applySittingChange(auth.student_id, to.data as ExamSitting);
+  const student = await Student.findById(auth.student_id)
+    .select('exam_sitting access')
+    .lean<{ exam_sitting: string; access?: Access | null } | null>();
+  if (!student) redirect('/study/login');
+  const gate = await canStartSession(auth.student_id, grantFor(student.access, student.exam_sitting), 'adaptive');
+  redirect(gate.allowed ? '/study' : `/study?error=${gate.reason}`);
 }
 
 export async function logout(): Promise<void> {

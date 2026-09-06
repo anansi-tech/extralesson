@@ -9,9 +9,10 @@ const css = readFileSync(join(process.cwd(), 'app', 'globals.css'), 'utf8')
 
 const TAILWIND_CONFIG = `tailwind.config={theme:{extend:{colors:{ink:'#1e2430',paper:'#fbf7ee','paper-deep':'#f1eada',margin:'#e4b8b4',rule:'#c9d6e8',dim:'#5b6373',amber:'#d9a62e','red-pen':'#c1121f','green-pen':'#2e7d5b'},fontFamily:{mono:['IBM Plex Mono','monospace'],hand:['Caveat','cursive']}}}}`;
 
-export function chromeBar(sitting: string): string {
+export function chromeBar(sitting: string, open = false): string {
+  const account = `<details${open ? ' open' : ''}><summary class="inline-flex min-h-11 cursor-pointer list-none items-center text-right underline underline-offset-[3px] [&::-webkit-details-marker]:hidden">${sitting}</summary><div class="absolute right-0 z-10 mt-1 w-[min(20rem,calc(100vw-2.5rem))] border-[1.5px] border-ink bg-white p-4 text-left shadow-[var(--shadow-panel)]"><div class="break-all font-mono text-[11px] normal-case tracking-normal text-ink">kiara.a.longer.address@example.com</div><form class="mt-3"><label class="block"><span class="block">Which sitting are you entered for</span><select name="to" class="mt-1 block w-full border-[1.5px] border-ink bg-paper p-2 font-sans text-sm normal-case tracking-normal text-ink"><option value="may-june-2027">May/June 2027</option><option value="jan-2027" selected>January 2027 re-sit</option></select></label><button class="mt-3 block min-h-11 w-full border-[1.5px] border-ink p-3 text-left font-sans text-sm normal-case tracking-normal text-ink">Change sitting</button></form></div></details>`;
   const right = (extra: string) =>
-    `<div class="${extra} items-center font-mono text-[10px] uppercase tracking-[0.1em] text-dim"><span class="text-right">${sitting}</span><a class="whitespace-nowrap underline underline-offset-[3px]">Help</a><form><button class="min-h-11 whitespace-nowrap underline underline-offset-[3px]">Sign out</button></form></div>`;
+    `<div class="relative ${extra} items-center font-mono text-[10px] uppercase tracking-[0.1em] text-dim">${account}<a class="whitespace-nowrap underline underline-offset-[3px]">Help</a><form><button class="min-h-11 whitespace-nowrap underline underline-offset-[3px]">Sign out</button></form></div>`;
   return `
 <header class="border-b-[1.5px] border-ink bg-white px-5 lg:px-6">
   <div class="mx-auto flex max-w-[var(--bar-width)] flex-wrap items-center gap-x-6 gap-y-0">
@@ -36,11 +37,11 @@ export function bodyPage(inner: string): string {
 }
 
 /** A whole page: the chrome, then the paper with the given markup in its column. */
-export function chromePage(inner: string, sitting = 'May/June 2027'): string {
+export function chromePage(inner: string, sitting = 'May/June 2027', open = false): string {
   return `<!doctype html><html><head><meta name="viewport" content="width=device-width">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500;700&family=Caveat&display=swap">
 <script src="https://cdn.tailwindcss.com"></script><script>${TAILWIND_CONFIG}</script><style>${css}</style></head>
-<body class="bg-paper text-ink">${chromeBar(sitting)}
+<body class="bg-paper text-ink">${chromeBar(sitting, open)}
 <main class="ruled relative px-5 pb-8 pt-7 lg:px-6" style="min-height:100vh;container-type:inline-size">
   <div class="pointer-events-none absolute inset-y-0 left-[var(--rule-offset-sm)] w-[1.5px] bg-margin lg:left-[calc(50%-var(--bar-width)/2+var(--rule-offset-lg))]"></div>
   <div class="relative mx-auto max-w-[var(--bar-width)]">${inner}</div>

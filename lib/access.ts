@@ -23,6 +23,15 @@ export interface Access {
 }
 
 /**
+ * The grant, if it is for this sitting. Access is to a sitting, not to an
+ * account: after a change of sitting the new one has no grant until it is
+ * paid for, and the old grant keeps its own dates (ROUND_9 Task 9).
+ */
+export function grantFor(access: Access | null | undefined, sitting: string): Access | null {
+  return access?.sitting === sitting ? access : null;
+}
+
+/**
  * Access runs to the sitting it was bought for, plus grace. An expired account
  * is treated as one that never paid: the paywall returns on NEW sessions,
  * nothing earned is touched, and a sitting with no end date never expires.

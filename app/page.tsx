@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import Link from 'next/link';
 import { Lockup } from './lockup';
 import { LANDING, landingCoverage, paymentLink } from '@/lib/landing-content';
-import { hasAccess, REFUND_DAYS, type Access } from '@/lib/access';
+import { grantFor, hasAccess, REFUND_DAYS, type Access } from '@/lib/access';
 import { dbConnect, Student } from '@/lib/db';
 import { getSession } from '@/lib/auth/session';
 
@@ -48,9 +48,9 @@ export default async function LandingPage() {
   if (session) {
     await dbConnect();
     const student = await Student.findById(session.student_id)
-      .select('access')
-      .lean<{ access?: Access | null } | null>();
-    signedInWithAccess = hasAccess(student?.access);
+      .select('access exam_sitting')
+      .lean<{ access?: Access | null; exam_sitting: string } | null>();
+    signedInWithAccess = hasAccess(grantFor(student?.access, student?.exam_sitting ?? ''));
   }
   return (
     <div className="landing">

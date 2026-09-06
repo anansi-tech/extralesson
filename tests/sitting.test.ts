@@ -1,23 +1,58 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { createHmac } from 'node:crypto';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { hasAccess, type Access } from '@/lib/access';
+import { canStartSession, grantFor, hasAccess, type Access } from '@/lib/access';
 import { accessEndsAt } from '@/lib/sittings';
 
 // ROUND_9 Task 9: ACCESS IS GRANTED TO A SITTING. The grant records the
 // sitting it was for and expires on that sitting's dates, whatever the
 // account's sitting is later changed to.
 let mongod: MongoMemoryServer;
+const SECRET = 'whsec_sitting_test';
 let Student: typeof import('@/lib/db').Student;
+let SittingChange: typeof import('@/lib/db').SittingChange;
 let backfillAccessSitting: typeof import('@/lib/db/backfill-access-sitting').backfillAccessSitting;
+let applySittingChange: typeof import('@/lib/change-sitting').applySittingChange;
+let POST: (req: Request) => Promise<Response>;
 
 beforeAll(async () => {
   mongod = await MongoMemoryServer.create();
   process.env.MONGODB_URI = mongod.getUri();
+  process.env.STRIPE_WEBHOOK_SECRET = SECRET;
   await mongoose.connect(process.env.MONGODB_URI);
-  ({ Student } = await import('@/lib/db'));
+  ({ Student, SittingChange } = await import('@/lib/db'));
   ({ backfillAccessSitting } = await import('@/lib/db/backfill-access-sitting'));
+  ({ applySittingChange } = await import('@/lib/change-sitting'));
+  ({ POST } = await import('@/app/api/stripe/webhook/route'));
 }, 120000);
+
+/** A signed checkout for this address, the way Stripe delivers one. */
+function paid(id: string, email: string): Request {
+  const body = JSON.stringify({
+    id,
+    type: 'checkout.session.completed',
+    data: {
+      object: {
+        id: `cs_${id}`,
+        metadata: { product: 'extralesson' },
+        mode: 'payment',
+        payment_status: 'paid',
+        amount_total: 4900,
+        currency: 'usd',
+        custom_fields: [{ text: { value: email } }],
+        customer_details: { email },
+      },
+    },
+  });
+  const t = Math.floor(Date.now() / 1000);
+  const v1 = createHmac('sha256', SECRET).update(`${t}.${body}`).digest('hex');
+  return new Request('https://extralesson.test/api/stripe/webhook', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'stripe-signature': `t=${t},v1=${v1}` },
+    body,
+  });
+}
 
 afterAll(async () => {
   await mongoose.disconnect();
@@ -25,7 +60,8 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  await Student.deleteMany({});
+  vi.restoreAllMocks();
+  await Promise.all([Student.deleteMany({}), SittingChange.deleteMany({})]);
 });
 
 let n = 0;
@@ -69,5 +105,60 @@ describe('a grant is to a sitting', () => {
     expect((await readAccess(named._id)).sitting).toBe('jan-2027');
     expect(await readAccess(free._id)).toBeUndefined();
     expect(await backfillAccessSitting()).toEqual({ filled: 0 });
+  });
+});
+
+// ROUND_9 Task 9: CHANGE SITTING. Allowed any time; appended, never edited;
+// the grant does not move with the account.
+describe('change sitting', () => {
+  it('changing while paid does not extend access: the new sitting has no grant', async () => {
+    const s = await student('jan-2027', {});
+    await applySittingChange(String(s._id), 'may-june-2027');
+
+    const after = await Student.findById(s._id).lean<{ exam_sitting: string; syllabus_mode: string; access: Access }>();
+    expect(after!.exam_sitting).toBe('may-june-2027');
+    expect(after!.syllabus_mode).toBe('modular-2027');
+    expect(after!.access.sitting).toBe('jan-2027');
+    expect(accessEndsAt(after!.access.sitting)).toEqual(accessEndsAt('jan-2027'));
+    // For the sitting the account is now entered for, the grant is nobody's.
+    expect(grantFor(after!.access, 'may-june-2027')).toBeNull();
+    expect(await canStartSession(String(s._id), grantFor(after!.access, after!.exam_sitting), 'adaptive')).toEqual(
+      await canStartSession(String(s._id), null, 'adaptive'),
+    );
+
+    const changes = await SittingChange.find({ student_id: s._id }).lean<{ from: string; to: string; ts: Date }[]>();
+    expect(changes.map((c) => [c.from, c.to])).toEqual([['jan-2027', 'may-june-2027']]);
+    expect(changes[0].ts).toBeInstanceOf(Date);
+  });
+
+  it('changing to the sitting the account already has appends nothing', async () => {
+    const s = await student('may-june-2027');
+    await applySittingChange(String(s._id), 'may-june-2027');
+    expect(await SittingChange.countDocuments({})).toBe(0);
+  });
+
+  it('the January re-sit is the whole paper, as at registration', async () => {
+    const s = await student('may-june-2027');
+    await Student.updateOne({ _id: s._id }, { $set: { target_modules: [1] } });
+    await applySittingChange(String(s._id), 'jan-2027');
+    const after = await Student.findById(s._id).lean<{ syllabus_mode: string; target_modules: number[] }>();
+    expect(after!.syllabus_mode).toBe('legacy-jan');
+    expect(after!.target_modules).toEqual([1, 2, 3]);
+  });
+
+  it('paying after a change grants the new sitting', async () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    const s = await student('jan-2027', {});
+    await applySittingChange(String(s._id), 'may-june-2027');
+
+    const res = await POST(paid('evt_after_change', s.email));
+    expect(res.status).toBe(200);
+
+    const after = await readAccess(s._id);
+    expect(after.sitting).toBe('may-june-2027');
+    expect(grantFor(after, 'may-june-2027')).not.toBeNull();
+    expect(hasAccess(after, new Date('2027-06-15T00:00:00Z'))).toBe(true);
+    // The old grant's dates are gone with it: this one ends on the new sitting's.
+    expect(accessEndsAt(after.sitting)).toEqual(accessEndsAt('may-june-2027'));
   });
 });

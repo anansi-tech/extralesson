@@ -10,6 +10,12 @@ export default async function StudyLayout({ children }: { children: React.ReactN
   const session = await getSession();
   if (!session) return children;
   await dbConnect();
-  const student = await Student.findById(session.student_id).select('syllabus_mode').lean<{ syllabus_mode?: string } | null>();
-  return <StudyChrome sitting={sittingTag(student?.syllabus_mode ?? '')}>{children}</StudyChrome>;
+  const student = await Student.findById(session.student_id)
+    .select('syllabus_mode exam_sitting')
+    .lean<{ syllabus_mode?: string; exam_sitting: string } | null>();
+  return (
+    <StudyChrome sitting={sittingTag(student?.syllabus_mode ?? '')} current={student?.exam_sitting ?? ''} email={session.email}>
+      {children}
+    </StudyChrome>
+  );
 }
