@@ -63,8 +63,12 @@ describe('the dashboard, four states', () => {
     for (const e of ['access-expired', 'diagnostic-taken', 'first-taken', 'needs-access', 'no-questions', 'nothing-to-revisit', 'no-topic']) {
       expect(view).toContain(`error === '${e}'`);
     }
-    for (const e of ['access-expired', 'needs-access']) {
-      expect(visibleText(render({ ...STATES.returning, error: e }))).toContain('Get access');
-    }
+    expect(visibleText(render({ ...STATES.returning, error: 'needs-access' }))).toContain('Get access');
+    // A passed sitting cannot be re-bought: the account's sitting never changes and a new
+    // payment would grant the sitting that has passed. Until a sitting change exists, the
+    // one true action is to write to Help.
+    const expired = render({ ...STATES.returning, error: 'access-expired' });
+    expect(expired).toContain('href="mailto:');
+    expect(visibleText(expired)).not.toContain('Get access');
   });
 });

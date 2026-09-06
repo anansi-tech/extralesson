@@ -373,8 +373,9 @@ function Notices({ error, mode, sitting, email }: DashboardProps) {
           className={cls}
           label="Your sitting has passed"
           sentence={<>Access ran to {sitting ?? 'that sitting'}, and that paper is written.</>}
-          remains="Your notebook stays open — every question and every mark, for as long as you want to read them."
-          action={{ label: 'Get access for the next sitting', small: `${LANDING.price} · one payment · runs to your sitting`, href: paymentLink(), newTab: true }}
+          remains="Your notebook stays open — every question and every mark, for as long as you want to read them. To keep practising for the next sitting, email us with the address you paid with and we will sort it out by hand."
+          action={{ label: 'Email us', small: LANDING.contactEmail, href: `mailto:${LANDING.contactEmail}` }}
+          quiet={{ label: 'Read your marked work', href: '/study/history' }}
         />
       )}
       {error === 'diagnostic-taken' && (

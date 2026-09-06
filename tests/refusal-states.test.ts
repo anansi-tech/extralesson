@@ -26,8 +26,9 @@ describe('the refusals', () => {
   });
   it('sitting passed', () => {
     expect(text['sitting-passed']).toBe(
-      'Your sitting has passed Access ran to May/June 2027, and that paper is written. Your notebook stays open — every question and every mark, for as long as you want to read them. Get access for the next sitting $49 · one payment · runs to your sitting',
+      'Your sitting has passed Access ran to May/June 2027, and that paper is written. Your notebook stays open — every question and every mark, for as long as you want to read them. To keep practising for the next sitting, email us with the address you paid with and we will sort it out by hand. Email us extralesson@anansi.xyz Read your marked work',
     );
+    expect(html['sitting-passed']).not.toMatch(/stripe|checkout|buy\.|target="_blank"/i);
   });
   it('no retakes left, from the live take count', () => {
     expect(text['no-retakes']).toBe(
