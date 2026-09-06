@@ -1,5 +1,4 @@
 import 'katex/dist/katex.min.css';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { dbConnect, Attempt, LineRejected, MarkDispute, PracticeSession, Question, Student, Topic, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
@@ -12,16 +11,15 @@ import { SessionDraft } from '@/lib/db';
 import { DIAGNOSTIC_MINUTES, SESSION_MINUTES } from '@/lib/session/builder';
 import { diagnosticOpensAt } from '@/lib/access';
 import { rankForFinish, topicsSeen, verdictFor } from '@/lib/study/diagnostic';
-import { topicLeverage } from '@/lib/study/leverage';
+import { gradeLabel, topicLeverage } from '@/lib/study/leverage';
+import { marksByObjective, marksOnTopic, mainTopic, movedLine, trendLine, trendOnTopic } from '@/lib/study/summary';
+import { SessionSummary } from './session-summary';
 import { DiagnosticIntro } from './diagnostic-intro';
 import { DiagnosticFinish } from './diagnostic-finish';
-import { startSession } from '@/app/study/actions';
 import { loadStudyState } from '@/lib/study/state';
-import { estimatedMinutes } from '@/lib/session/builder';
 import { attemptOutcome, type OutcomeQuestion, type OutcomeRead, type OutcomeRow } from '@/lib/study/outcome';
 import { boxWidthChars, isMultiValue, readInputShape, showsBoxCount } from '@/lib/grade/input-shape';
 import { inputAffordance } from '@/lib/grade/input-hints';
-import { PROFILE_GLOSS, PROFILE_GLOSS_SHORT, PROFILE_MEANING } from '@/lib/study/profiles';
 import QuestionCard, { type CardQuestion } from './question-card';
 import { SessionBar } from './session-bar';
 import type { ReadResult } from './capture';
@@ -127,17 +125,10 @@ export default async function SessionPage({
       .select('objectives')
       .lean<{ objectives: { id: string; text: string }[] }[]>();
     const textById = new Map(touchedTopics.flatMap((t) => t.objectives.map((o) => [o.id, o.text])));
-    const touchedSkills = [...new Set(touchedObjectives.map((id) => textById.get(id)).filter(Boolean))] as string[];
     const touchedPrefixes = new Set(
       touchedObjectives.map((o) => o.slice(0, o.lastIndexOf('.') + 1)),
     );
 
-    const totals = outcomes.reduce(
-      (acc, o) => ({ CK: acc.CK + o.byProfile.CK, AK: acc.AK + o.byProfile.AK, R: acc.R + o.byProfile.R }),
-      { CK: 0, AK: 0, R: 0 },
-    );
-    const unassessedMarks = outcomes.reduce((n, o) => n + o.unassessedMarks, 0);
-    const correctCount = attempts.filter((a) => a.correct).length;
 
     const deltas = after.topics
       .filter((t) => touchedPrefixes.has(`M${t.module}.${t.order}.`))
@@ -146,83 +137,42 @@ export default async function SessionPage({
         return { code: t.code, title: t.title, from: prev?.mastery ?? 0, to: t.mastery };
       });
 
+    const tiles = outcomes.map((o) => ({ index: o.index, earned: o.earned, assessed: o.assessed, href: `/study/session/${id}?q=${o.index}#marking` }));
+    const sessionEarned = outcomes.reduce((n, o) => n + o.earned, 0);
+    const sessionAssessed = outcomes.reduce((n, o) => n + o.assessed, 0);
+    const headline = `${sessionEarned} of ${sessionAssessed} mark${sessionAssessed === 1 ? '' : 's'}`;
+    const moved = movedLine(deltas);
+    const quiet = { label: 'Back to your notebook', href: '/study' };
+
     // The first question says one thing: what the working earned, and that
     // the diagnostic is next (ROUND_4 Task 2). No ranking, no estimate.
     if (session.mode === 'first') {
-      const marked = outcomes[0];
-      const photographed = foldReads.length > 0;
       const opensAt = await diagnosticOpensAt(auth.student_id);
       const diagnosticOpen = opensAt === null || Date.now() >= opensAt.getTime();
       return (
-        <div>
-            <h1 className="text-2xl font-black">
-              Marked<span className="text-red-pen">.</span>
-            </h1>
-            <section className="mt-5 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
-              <div className="section-label">What that question earned</div>
-              <div className="mt-2 text-5xl font-black text-red-pen">
-                {marked?.earned ?? 0}
-                <span className="text-2xl text-dim">/{marked?.assessed ?? 0}</span>
-              </div>
-              <p className="mt-2 text-[12px] leading-snug text-dim">
-                {photographed
-                  ? 'Marks for the answer, and marks for the method we read off your page.'
-                  : 'Marks for the answer. Method marks need the working: photograph the page next time.'}
-                {marked && marked.unassessedMarks > 0 && (
-                  <>
-                    {' '}
-                    {marked.unassessedMarks} mark{marked.unassessedMarks === 1 ? '' : 's'}{' '}
-                    {photographed ? 'could not be assessed from this photo' : 'not assessed without the working'}.
-                  </>
-                )}
-              </p>
-              {marked && (
-                <Link
-                  href={`/study/session/${id}?q=${marked.index}`}
-                  className="mt-3 block font-mono text-[11px] uppercase tracking-widest underline"
-                >
-                  Look at the marking
-                </Link>
-              )}
-            </section>
-
-            <section className="mt-5 border-l-3 border-red-pen bg-[#FDF1F0] p-3">
+        <SessionSummary
+          eyebrow="Your first session"
+          headline={headline}
+          claim="Nothing to compare it against yet. From tomorrow this line shows which way it is going."
+          tilesLabel="What that question earned"
+          questions={tiles}
+          moved={moved}
+          before={
+            <section className="mt-5 border-l-3 border-red-pen bg-[#FDF1F0] px-3 py-2">
               <div className="section-label">Next: the diagnostic</div>
               <p className="mt-1 text-sm leading-snug">
                 Eight quick questions across the syllabus. Nothing is graded — it puts your topics in
                 order, so the sessions after it start in the right place.
               </p>
             </section>
-
-            {diagnosticOpen ? (
-              <form action={startSession} className="mt-5">
-                <input type="hidden" name="mode" value="diagnostic" />
-                <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
-                  Start the diagnostic
-                  <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
-                    ABOUT {DIAGNOSTIC_MINUTES} MINUTES · FINDS WHERE TO START
-                  </small>
-                </button>
-              </form>
-            ) : (
-              <form action={startSession} className="mt-5">
-                <input type="hidden" name="mode" value="adaptive" />
-                <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
-                  Start a session
-                  <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
-                    ABOUT {SESSION_MINUTES} MINUTES AT EXAM PACE
-                  </small>
-                </button>
-              </form>
-            )}
-
-            <Link
-              href="/study"
-              className="mt-3 block text-center font-mono text-[11px] uppercase tracking-widest text-dim underline"
-            >
-              Back to your notebook
-            </Link>
-        </div>
+          }
+          action={
+            diagnosticOpen
+              ? { label: 'Start the diagnostic', small: `About ${DIAGNOSTIC_MINUTES} minutes · finds where to start`, mode: 'diagnostic' }
+              : { label: 'Start a session', small: `About ${SESSION_MINUTES} minutes at exam pace`, mode: 'adaptive' }
+          }
+          quiet={quiet}
+        />
       );
     }
 
@@ -267,132 +217,54 @@ export default async function SessionPage({
       return <DiagnosticFinish ranked={ranked} next={nextTopic?.title ?? null} minutes={SESSION_MINUTES} />;
     }
 
+    // What the next session actually starts with: planSession is what the button runs.
+    const nextUp = await planSession({ studentId: auth.student_id, targetModules, mode: 'adaptive' });
+    const nextPrefixes = new Set(topicPrefixesOf(nextUp));
+    const nextTopic = after.topics.find((t) => nextPrefixes.has(`M${t.module}.${t.order}.`));
+    const leverage = new Map(topicLeverage(after, targetModules).map((t) => [t.code, Math.round(t.pointsAvailable)]));
+    const nextSmall = nextTopic
+      ? `${nextTopic.title} is next · +${leverage.get(nextTopic.code) ?? 0} marks`
+      : `About ${SESSION_MINUTES} minutes at exam pace`;
+    const action = { label: 'Start the next session', small: nextSmall, mode: 'adaptive' };
+    const byObjective = await marksByObjective(session._id);
+
+    // A revisit says, per objective, whether the marks came back (ROUND_9 Task 6).
+    if (session.mode === 'revisit') {
+      const objectives = [...byObjective]
+        .filter(([, m]) => m.assessed > 0)
+        .map(([objectiveId, m]) => ({ text: textById.get(objectiveId) ?? objectiveId, recovered: m.earned === m.assessed }));
+      const recovered = objectives.filter((o) => o.recovered).length;
+      return (
+        <SessionSummary
+          eyebrow={`Revisit · ${objectives.length} objective${objectives.length === 1 ? '' : 's'}`}
+          headline={headline}
+          claim="These were new questions on the objectives you had lost marks on."
+          questions={tiles}
+          objectives={objectives}
+          moved={objectives.length > 0 ? `${recovered} of ${objectives.length} recovered.` : null}
+          action={action}
+          quiet={quiet}
+        />
+      );
+    }
+
+    // An ordinary session: the trend on the same topic, only where an earlier
+    // session assessed it; the letter only when the gate allows an estimate.
+    const prefix = mainTopic(byObjective);
+    const topic = prefix ? after.topics.find((t) => `M${t.module}.${t.order}.` === prefix) : undefined;
+    const trend = prefix ? await trendOnTopic(auth.student_id, session._id, prefix, new Date(session.started_at)) : null;
+    const sessionCount = await PracticeSession.countDocuments({ student_id: auth.student_id, completed_at: { $ne: null }, mode: { $in: ['adaptive', 'topic', 'revisit'] } });
     return (
-      <div>
-          <h1 className="text-2xl font-black">
-            Session complete<span className="text-red-pen">.</span>
-          </h1>
-          <p className="mt-1 text-dim">
-            {correctCount} of {total} correct.
-            {unassessedMarks > 0 && ` ${unassessedMarks} mark${unassessedMarks === 1 ? '' : 's'} not assessed.`}
-          </p>
-
-          <section className="mt-5 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
-            <div className="section-label">
-              How you earned your marks
-            </div>
-            <div className="mt-2 flex flex-wrap gap-x-6 gap-y-3 text-center">
-              {(['CK', 'AK', 'R'] as const).map((p) => (
-                <div key={p}>
-                  <div className="text-3xl font-black">{totals[p]}</div>
-                  <div className="font-mono text-[10px] text-dim">{p}</div>
-                  <div className="text-[11px] leading-tight text-dim">{PROFILE_MEANING[p]}</div>
-                </div>
-              ))}
-            </div>
-            {/* Compressed, not hidden: the initials keep their meaning on
-                the same screen, and the explanation
-                is one tap away. */}
-            <p className="mt-3 border-t border-dashed border-paper-deep pt-2 font-mono text-[11px] leading-snug text-dim">
-              {PROFILE_GLOSS_SHORT}
-            </p>
-            <details className="mt-1">
-              <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">
-                Where these come from
-              </summary>
-              <p className="mt-1 text-[11px] leading-snug text-dim">
-                {PROFILE_GLOSS} You will see the same three letters on a real mark scheme.
-              </p>
-            </details>
-          </section>
-
-          <section className="mt-5">
-            <div className="section-label">
-              Topic strength moved
-            </div>
-            <ul className="mt-2 space-y-1">
-              {deltas.map((d) => {
-                const diff = Math.round((d.to - d.from) * 100);
-                return (
-                  <li key={d.code} className="flex justify-between text-sm">
-                    <span>{d.title}</span>
-                    <span
-                      className={`font-mono text-xs ${diff > 0 ? 'text-green-pen' : diff < 0 ? 'text-red-pen' : 'text-dim'}`}
-                    >
-                      {Math.round(d.from * 100)}% → {Math.round(d.to * 100)}%
-                      {diff !== 0 && ` (${diff > 0 ? '+' : ''}${diff})`}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-
-          {/* Read-only: the question, the mark scheme and the reasons are still there, and
-              these open the same view paging back inside a session gives. */}
-          {outcomes.length > 0 && (
-            <section className="mt-5">
-              <div className="section-label">
-                Look back at a question
-              </div>
-              <ul className="mt-1 space-y-1">
-                {outcomes.map((r) => (
-                  <li key={r.index}>
-                    <Link
-                      href={`/study/session/${id}?q=${r.index}`}
-                      className="flex min-h-11 items-baseline justify-between gap-2 border-b-[1.5px] border-rule text-[13px]"
-                    >
-                      <span className="underline">
-                        Question {r.index + 1}
-                        {foldReads.some((fr) => String(fr.attempt_id) === String(attempts[r.index]._id)) && (
-                          <span className="ml-1 font-mono text-[10px] tracking-widest text-dim">
-                            · PHOTO
-                          </span>
-                        )}
-                      </span>
-                      <span className="font-mono text-[12px] text-dim">
-                        {r.earned}/{r.assessed}
-                        {r.unassessedMarks > 0 && ` · ${r.unassessedMarks} not assessed`}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          <section className="mt-5">
-            {/* Not the syllabus codes and not the word "objectives": the codes
-                mean nothing without the syllabus open, and a student does
-                not call them objectives. */}
-            <div className="section-label">
-              What this session covered
-            </div>
-            <ul className="mt-1 space-y-0.5 text-[13px] text-dim">
-              {touchedSkills.map((t) => (
-                <li key={t}>{t}</li>
-              ))}
-            </ul>
-          </section>
-
-          {/* The next session, not the way out: without it the thing to do
-              next was a decision rather than a button. */}
-          <form action={startSession} className="mt-8">
-            <input type="hidden" name="mode" value="adaptive" />
-            <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
-              Start the next session
-              <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
-                ABOUT {SESSION_MINUTES} MINUTES AT EXAM PACE
-              </small>
-            </button>
-          </form>
-          <Link
-            href="/study"
-            className="mt-3 block text-center font-mono text-[11px] uppercase tracking-widest text-dim underline"
-          >
-            Back to your notebook
-          </Link>
-      </div>
+      <SessionSummary
+        eyebrow={`Session ${sessionCount}${topic ? ` · ${topic.title}` : ''}`}
+        headline={headline}
+        claim={prefix ? trendLine(marksOnTopic(byObjective, prefix), trend) : null}
+        questions={tiles}
+        estimate={after.prediction.estimable && after.prediction.overall_grade ? gradeLabel(after.prediction.overall_grade) : null}
+        moved={moved}
+        action={action}
+        quiet={quiet}
+      />
     );
   }
 

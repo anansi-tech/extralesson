@@ -137,6 +137,14 @@ No magic links. No reminders. No sub-band grades. No reports to payers.
 No new statistics. No admin. No copy that isn't in the repo already or in
 this document.
 
+## After the pilot
+
+- Change sitting, then pay. Today the sitting is written once at
+  registration and a payment grants the registered sitting, so after a
+  sitting has passed a new payment expires as it lands; the sitting-passed
+  refusal writes to Help until a student can change their sitting and pay
+  for the new one.
+
 ## R10
 
 Admin on the chrome: access, review, coverage, topics, disputes, the

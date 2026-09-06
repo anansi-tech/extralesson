@@ -88,7 +88,8 @@ describe("the 'first' summary", () => {
     const first = page.slice(start, page.indexOf("session.mode === 'diagnostic'", start));
     expect(first).toContain('What that question earned');
     expect(first).toContain('Next: the diagnostic');
-    expect(first).toMatch(/name="mode" value="diagnostic"/);
+    // The action is the diagnostic: the summary's one form carries that mode (ROUND_9 Task 6).
+    expect(first).toMatch(/mode: 'diagnostic'/);
     // No ranking and no estimate: one question cannot support either.
     expect(first).not.toMatch(/rankByVerdict|topicsSeen|overall_percent/);
   });
