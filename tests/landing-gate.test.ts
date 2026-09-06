@@ -68,14 +68,16 @@ export function markup(): string {
   return body
     .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
     .replace(/\{session \? \([\s\S]*?\) : \(/g, '(')
-    .replace(/\{signedInWithAccess \? \([\s\S]*?\) : \(\s*<>?/g, '(')
+    .replace(/\{signedInWithAccess \? \([\s\S]*?\) : \(\s*(?:<>)?/g, '(')
     .replace(/\{!signedInWithAccess && \(/g, '(')
+    .replace(/\{!session && \(/g, '(')
     .replace(/\{photo \? \([\s\S]*?\) : \(/g, '(')
-    .replace(/<Lockup width=\{150\} \/>/g, '<svg width="150" height="24"><rect width="150" height="24"/></svg>')
+    .replace(/<Lockup width=\{(\d+)\}(?: className="([^"]*)")? \/>/g, (_m, w, c) => `<svg class="${c ?? ''}" width="${w}" height="24"><rect width="${w}" height="24"/></svg>`)
     .replace(/<Link /g, '<a ').replace(/<\/Link>/g, '</a>')
     .replace(/className=/g, 'class=')
     .replace(/\{' '\}/g, ' ')
     .replace(/\{LANDING\.price\}/g, '$49')
+    .replace(/\{LANDING\.sittingNote\}/g, 'FOR CSEC MATHEMATICS · JANUARY 2027 RE-SIT · MAY/JUNE 2027 · WORKS ON ANY PHONE')
     .replace(/\{LANDING\.passRate\.figure\}/g, '36%')
     .replace(/\{LANDING\.passRate\.label\}/g, 'of candidates passed')
     .replace(/\{LANDING\.passRate\.sourceLabel\}/g, 'CXC Subject Report, May–June 2026')
@@ -88,7 +90,8 @@ export function markup(): string {
     .replace(/\{new Date\(\)\.getFullYear\(\)\}/g, '2026')
     .replace(/\{[^{}]*\}/g, '')
     .replace(/&rsquo;/g, '’').replace(/&mdash;/g, '—').replace(/&rarr;/g, '→').replace(/&copy;/g, '©')
-    .replace(/\)\s*\)\}?/g, '').replace(/\s+\)\s*$/g, '');
+    .replace(/\)\s*\)\}?/g, '').replace(/\s+\)\s*$/g, '')
+    .replace(/>\s*\(\s*</g, '><').replace(/>\s*\)\}?\s*</g, '><').replace(/\)\}\s*\(/g, '');
 }
 
 export const landingCss = () => at('app', 'landing.css').replace(/var\(--font-[a-z-]+\)/g, 'serif');
