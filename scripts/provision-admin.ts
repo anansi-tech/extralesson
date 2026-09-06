@@ -4,7 +4,7 @@
 import 'dotenv/config';
 import { dbConnect } from '@/lib/db';
 import { provisionAdmin } from '@/lib/auth/provision';
-import { resetEmail, sendEmail } from '@/lib/email';
+import { provisionEmail, sendEmail } from '@/lib/email';
 import { externalBaseUrl } from '@/lib/base-url';
 import { RESET_TTL_MS } from '@/lib/auth/token';
 
@@ -15,7 +15,7 @@ async function main() {
   await dbConnect();
   const { secret, created } = await provisionAdmin(email);
   const link = `${externalBaseUrl()}/study/reset?token=${secret}`;
-  const { skipped, id } = await sendEmail({ to: email.toLowerCase(), ...resetEmail(link, RESET_TTL_MS / 60000) });
+  const { skipped, id } = await sendEmail({ to: email.toLowerCase(), ...provisionEmail(link, RESET_TTL_MS / 60000) });
   console.log(`${created ? 'created' : 'existing'} account ${email.toLowerCase()}; admin on claiming the link`);
   if (id) console.log(`link sent, message ${id}`);
   // Without a provider the link has to reach a person somehow; with one it must not be printed.

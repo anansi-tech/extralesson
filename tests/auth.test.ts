@@ -137,7 +137,8 @@ describe('the reset email', () => {
     // and it was printed twice — once as the href, once as the text. Gmail
     // dropped it silently while Outlook took it.
     const { html } = resetEmail(LINK, 30);
-    const visible = html.replace(/href="[^"]*"/g, '');
+    // The lockup's src is an image, not link text: stripped with the hrefs.
+    const visible = html.replace(/(href|src)="[^"]*"/g, '');
     expect(visible).not.toContain('http');
     expect(html).toMatch(/<a [^>]*>Set a new password<\/a>/);
   });
@@ -153,7 +154,7 @@ describe('the reset email', () => {
     const { text, html } = resetEmail(LINK, 30);
     expect(text.startsWith('Hi,')).toBe(true);
     expect(text).toContain('— ExtraLesson');
-    expect(html).toContain('<p>Hi,</p>');
+    expect(html).toMatch(/>Hi,<\/p>/);
     expect(html).toContain('— ExtraLesson');
   });
 

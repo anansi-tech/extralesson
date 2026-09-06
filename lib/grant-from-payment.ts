@@ -1,6 +1,9 @@
 import { Fulfilment, Payment, Student } from '@/lib/db';
 import type { ExamSitting } from '@/lib/types';
 import type { EmailSource } from '@/lib/stripe-webhook';
+import { accessEmail, sendEmail } from '@/lib/email';
+import { externalBaseUrl } from '@/lib/base-url';
+import { sittingLabel } from '@/lib/sittings';
 
 /**
  * A PAYMENT AND AN ACCOUNT HAVE FOUND EACH OTHER, in either ordering. Written
@@ -48,6 +51,16 @@ export async function grantFromPayment(args: {
   await Payment.updateOne({ _id: payment._id }, { $set: { student_id: studentId } });
   // The fulfilment, if the webhook opened one, is now what it says it is.
   await Fulfilment.updateOne({ payment_id: payment._id }, { $set: { status: 'granted', ts: new Date() }, $unset: { reason: '' } });
+  // The student is told (ROUND_9 Task 7). A mail that does not go out must not
+  // undo a grant that did: the failure is logged and the grant stands.
+  const student = await Student.findById(studentId).select('email').lean<{ email: string } | null>();
+  if (student) {
+    try {
+      await sendEmail({ to: student.email, ...accessEmail({ sitting: sittingLabel(sitting) ?? sitting, baseUrl: externalBaseUrl() }) });
+    } catch (err) {
+      console.error('[access-email] send failed:', err);
+    }
+  }
   return 'granted';
 }
 
