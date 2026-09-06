@@ -11,7 +11,10 @@ import { slotCellNames } from '@/lib/visuals/slot-names';
 import { SessionDraft } from '@/lib/db';
 import { DIAGNOSTIC_MINUTES, SESSION_MINUTES } from '@/lib/session/builder';
 import { diagnosticOpensAt } from '@/lib/access';
-import { rankByVerdict, topicsSeen, verdictFor } from '@/lib/study/diagnostic';
+import { rankForFinish, topicsSeen, verdictFor } from '@/lib/study/diagnostic';
+import { topicLeverage } from '@/lib/study/leverage';
+import { DiagnosticIntro } from './diagnostic-intro';
+import { DiagnosticFinish } from './diagnostic-finish';
 import { startSession } from '@/app/study/actions';
 import { loadStudyState } from '@/lib/study/state';
 import { estimatedMinutes } from '@/lib/session/builder';
@@ -39,11 +42,11 @@ export default async function SessionPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; begin?: string }>;
 }) {
   const auth = await requireSession();
   const { id } = await params;
-  const { q: qParam } = await searchParams;
+  const { q: qParam, begin } = await searchParams;
   if (!/^[a-f0-9]{24}$/.test(id)) notFound();
 
   await dbConnect();
@@ -89,6 +92,11 @@ export default async function SessionPage({
   const index =
     asked !== null && Number.isInteger(asked) ? Math.min(Math.max(asked, 0), Math.min(answered, total - 1)) : answered;
   const reviewing = index < answered;
+
+  // BEFORE THE FIRST TAP of a diagnostic: the three facts and the count, once.
+  if (session.mode === 'diagnostic' && answered === 0 && !reviewing && begin !== '1') {
+    return <DiagnosticIntro total={total} minutes={DIAGNOSTIC_MINUTES} href={`/study/session/${id}?begin=1`} />;
+  }
 
   if (answered >= total && !reviewing) {
     // Session complete -> summary (§6.4).
@@ -236,10 +244,15 @@ export default async function SessionPage({
       const verdictOf = (t: { module: number; order: number }) =>
         verdictFor(seen.get(`M${t.module}.${t.order}.`));
 
-      const ranked = rankByVerdict(
+      const leverage = new Map(topicLeverage(after, targetModules).map((t) => [t.code, Math.round(t.pointsAvailable)]));
+      const ranked = rankForFinish(
         after.topics.filter((t) => touchedPrefixes.has(`M${t.module}.${t.order}.`)),
         verdictOf,
-      );
+        (t) => leverage.get(t.code) ?? 0,
+      ).map((t) => {
+        const s = seen.get(`M${t.module}.${t.order}.`);
+        return { code: t.code, title: t.title, right: s?.right ?? 0, asked: s?.asked ?? 0, marks: leverage.get(t.code) ?? 0 };
+      });
 
       // Not a guess about what comes next: planSession is what the button below
       // runs, it is pure, and nothing changes between here and the click.
@@ -249,83 +262,9 @@ export default async function SessionPage({
         mode: 'adaptive',
       });
       const nextPrefixes = new Set(topicPrefixesOf(nextUp));
-      const nextTopics = after.topics.filter((t) =>
-        nextPrefixes.has(`M${t.module}.${t.order}.`),
-      );
+      const nextTopic = after.topics.find((t) => nextPrefixes.has(`M${t.module}.${t.order}.`));
 
-      return (
-        <div>
-            <h1 className="text-2xl font-black">
-              Where you stand<span className="text-red-pen">.</span>
-            </h1>
-            <p className="mt-1 text-dim">
-              A quick read of {ranked.length} topic{ranked.length === 1 ? '' : 's'} — enough to put
-              them in order, which is all it was for.
-            </p>
-
-            <section className="mt-5 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
-              <div className="section-label">
-                Strongest to weakest
-              </div>
-              <ol className="mt-2">
-                {ranked.map((t) => (
-                  <li
-                    key={t.code}
-                    className="flex items-baseline gap-2 border-b border-dashed border-paper-deep py-1.5 last:border-0"
-                  >
-                    <span className="min-w-0 flex-1 text-sm">{t.title}</span>
-                    <span className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-dim">
-                      {verdictOf(t)}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-              <p className="mt-3 text-[11px] leading-snug text-dim">
-                One question a topic is a rough read — enough to point the next few sessions, not a
-                verdict on any of them. Topics you were not asked about are not here at all, and
-                still count as unmeasured.
-              </p>
-            </section>
-
-            {nextTopics.length > 0 && (
-              <section className="mt-4 border-l-3 border-red-pen bg-[#FDF1F0] p-3">
-                <div className="section-label">
-                  Your next session starts here
-                </div>
-                <ul className="mt-1">
-                  {nextTopics.map((t) => (
-                    <li key={t.code} className="text-sm font-semibold">
-                      {t.title}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-2 text-[11px] leading-snug text-dim">
-                  That is what the diagnostic was for. This is chosen from every topic, not only the
-                  ones above, and it weighs how much of a topic is still unmeasured against how
-                  heavily the paper examines it — so a topic you got right once can still come first
-                  when most of it is untested.
-                </p>
-              </section>
-            )}
-
-            <form action={startSession} className="mt-5">
-              <input type="hidden" name="mode" value="adaptive" />
-              <button className="w-full bg-red-pen p-4 text-center font-black text-white shadow-[4px_4px_0_var(--ink)]">
-                Start that session
-                <small className="block font-mono text-[10px] font-medium tracking-widest opacity-85">
-                  ABOUT {SESSION_MINUTES} MINUTES AT EXAM PACE
-                </small>
-              </button>
-            </form>
-
-            <Link
-              href="/study"
-              className="mt-3 block text-center font-mono text-[11px] uppercase tracking-widest text-dim underline"
-            >
-              Back to your notebook
-            </Link>
-        </div>
-      );
+      return <DiagnosticFinish ranked={ranked} next={nextTopic?.title ?? null} minutes={SESSION_MINUTES} />;
     }
 
     return (
@@ -762,6 +701,8 @@ export default async function SessionPage({
       }),
     })),
     optionsHtml: question.options?.map(renderMathHtml),
+    topicTitle: session.mode === 'diagnostic' ? await topicTitleOf(question._id) : undefined,
+    scored: session.mode !== 'diagnostic',
     marks: question.marks,
     // Looking back renders the rubric the attempt was marked against, not the bank's today.
     rubricCodes:
@@ -776,8 +717,16 @@ export default async function SessionPage({
 
   return (
     <div>
-      <SessionBar index={index} total={total} marksAnswered={marksAnswered} marksTotal={marksTotal} />
+      <SessionBar index={index} total={total} marksAnswered={marksAnswered} marksTotal={marksTotal} diagnostic={session.mode === 'diagnostic'} />
         <QuestionCard question={card} />
     </div>
   );
+}
+
+/** The topic a question sits in, by its first objective: the label above an unscored card. */
+async function topicTitleOf(questionId: unknown): Promise<string | undefined> {
+  const q = await Question.findById(questionId).select('objective_ids').lean<{ objective_ids: string[] } | null>();
+  if (!q?.objective_ids[0]) return undefined;
+  const topic = await Topic.findOne({ 'objectives.id': q.objective_ids[0] }).select('title').lean<{ title: string } | null>();
+  return topic?.title;
 }

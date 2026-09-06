@@ -41,6 +41,24 @@ export function verdictFor(seen: SeenTopic | undefined): TopicVerdict | null {
  * would stack two measurements in one list. Syllabus order inside a group,
  * since one question cannot separate two topics that both held up.
  */
+/**
+ * The finish reads the other way up: what struggled first, and within a
+ * group the topic worth the most marks first (ROUND_9 Task 5).
+ */
+export function rankForFinish<T extends { module: number; order: number }>(
+  topics: T[],
+  verdictOf: (topic: T) => TopicVerdict | null,
+  marksOf: (topic: T) => number,
+): T[] {
+  return [...topics].sort((a, b) => {
+    const ga = GROUP[verdictOf(a) ?? 'STRUGGLED'] ?? 3;
+    const gb = GROUP[verdictOf(b) ?? 'STRUGGLED'] ?? 3;
+    if (ga !== gb) return gb - ga;
+    const d = marksOf(b) - marksOf(a);
+    return d !== 0 ? d : a.module - b.module || a.order - b.order;
+  });
+}
+
 export function rankByVerdict<T extends { module: number; order: number }>(
   topics: T[],
   verdictOf: (topic: T) => TopicVerdict | null,

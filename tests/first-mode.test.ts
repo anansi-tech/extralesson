@@ -82,7 +82,10 @@ describe("the 'first' gate", () => {
 describe("the 'first' summary", () => {
   it('says what the question earned and that the diagnostic is next', () => {
     const page = readFileSync(join(process.cwd(), 'app', 'study', 'session', '[id]', 'page.tsx'), 'utf8');
-    const first = page.slice(page.indexOf("session.mode === 'first'"), page.indexOf("session.mode === 'diagnostic'"));
+    // From the first summary to the diagnostic summary that follows it; the
+    // diagnostic's intro guard sits earlier in the file (ROUND_9 Task 5).
+    const start = page.indexOf("session.mode === 'first'");
+    const first = page.slice(start, page.indexOf("session.mode === 'diagnostic'", start));
     expect(first).toContain('What that question earned');
     expect(first).toContain('Next: the diagnostic');
     expect(first).toMatch(/name="mode" value="diagnostic"/);

@@ -56,6 +56,10 @@ export interface CardQuestion {
     }[];
   }[];
   optionsHtml?: string[];
+  /** The topic the question sits in, named above an MCQ that is not scored. */
+  topicTitle?: string;
+  /** False on a diagnostic: nothing here is scored, so no marks are shown. */
+  scored?: boolean;
   marks: number;
   /** The session's own budget, in the unit it is actually spent in. */
   marksTotal: number;
@@ -564,14 +568,19 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </div>
       )}
 
-      <div id="question" className={`flex items-baseline justify-between gap-3 lg:gap-4 ${feedback ? 'mt-4' : ''}`}>
+      {question.topicTitle && (
+        <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-dim">{question.topicTitle}</div>
+      )}
+      <div id="question" className={`flex items-baseline justify-between gap-3 lg:gap-4 ${feedback ? 'mt-4' : question.topicTitle ? 'mt-2.5 lg:mt-3' : ''}`}>
         <div
-          className="question-prose text-lg lg:max-w-[62ch]"
+          className={`question-prose text-lg lg:max-w-[62ch] ${question.scored === false ? 'lg:text-[21px]' : ''}`}
           dangerouslySetInnerHTML={{ __html: question.stemHtml }}
         />
-        <span className="shrink-0 font-mono text-xs text-dim">
-          [{question.marks} mark{question.marks === 1 ? '' : 's'}]
-        </span>
+        {question.scored !== false && (
+          <span className="shrink-0 font-mono text-xs text-dim">
+            [{question.marks} mark{question.marks === 1 ? '' : 's'}]
+          </span>
+        )}
       </div>
 
       {/* ONE DOM FOR BOTH WIDTHS: a flex column ordered for the phone, a grid
@@ -613,31 +622,35 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
       <div className="contents lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:flex lg:flex-col lg:gap-5">
       {question.kind === 'mcq' && question.optionsHtml && (
-        <div className="order-4 mt-4 space-y-2 lg:mt-0">
-          {question.optionsHtml.map((o, i) => (
+        <div className="order-4 mt-[18px] lg:mt-0">
+          <div className="flex flex-col gap-2.5 lg:grid lg:grid-cols-2 lg:gap-3">
+            {question.optionsHtml.map((o, i) => (
+              <button
+                key={i}
+                disabled={!!feedback}
+                onClick={() => setSelected(i)}
+                className={`flex min-h-11 w-full items-baseline gap-3 border-[1.5px] p-3.5 text-left text-base ${
+                  selected === i ? 'border-red-pen bg-[#FDF1F0]' : 'border-ink bg-transparent'
+                } disabled:opacity-70`}
+              >
+                <span className="shrink-0 font-mono text-xs text-dim">{String.fromCharCode(65 + i)}</span>
+                <span dangerouslySetInnerHTML={{ __html: o }} />
+              </button>
+            ))}
+          </div>
+          {/* The fifth option scores wrong and shows the solution, exactly as a wrong letter does. */}
+          <div className="mt-3.5 border-t border-paper-deep pt-3.5 lg:mt-4 lg:pt-4">
             <button
-              key={i}
               disabled={!!feedback}
-              onClick={() => setSelected(i)}
-              className={`flex w-full items-baseline gap-2 border-[1.5px] p-3 text-left text-sm ${
-                selected === i ? 'border-red-pen bg-[#FDF1F0]' : 'border-paper-deep bg-white'
+              onClick={() => setSelected(DONT_KNOW)}
+              className={`min-h-11 w-full border-[1.5px] p-3.5 text-left text-base ${
+                selected === DONT_KNOW ? 'border-red-pen bg-[#FDF1F0]' : 'border-ink bg-paper-deep'
               } disabled:opacity-70`}
             >
-              <span className="font-mono text-xs text-dim">{String.fromCharCode(65 + i)}</span>
-              <span dangerouslySetInnerHTML={{ __html: o }} />
+              I don&rsquo;t know
+              <small className="mt-0.5 block font-mono text-[10px] uppercase tracking-[0.1em] text-dim">More useful than a guess</small>
             </button>
-          ))}
-          {/* The fifth option scores wrong and shows the solution, exactly as a wrong letter does. */}
-          <button
-            disabled={!!feedback}
-            onClick={() => setSelected(DONT_KNOW)}
-            className={`flex w-full items-baseline gap-2 border-[1.5px] border-dashed p-3 text-left text-sm ${
-              selected === DONT_KNOW ? 'border-red-pen bg-[#FDF1F0]' : 'border-paper-deep bg-white'
-            } disabled:opacity-70`}
-          >
-            <span className="font-mono text-xs text-dim">—</span>
-            <span>I don&rsquo;t know</span>
-          </button>
+          </div>
         </div>
       )}
 
