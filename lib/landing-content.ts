@@ -10,6 +10,9 @@ import { isProduction } from '@/lib/preflight';
 // address is stated HERE and nowhere else — tests/legal.test.ts enforces it.
 // Each external stat names its source in its label. See ROUND_3 §2.
 export const LANDING = {
+  /** The h1 as it stands; app/page.tsx prints it and the share image reads it. */
+  headline: 'Practise CSEC Maths the way you’ll sit it.',
+  domain: 'extralesson.app',
   price: '$49',
   // Derived from the same record the paywall expires against, never typed.
   sittingNote: Object.values(SITTINGS)
