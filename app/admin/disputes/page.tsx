@@ -72,7 +72,7 @@ export default async function DisputesPage() {
   const questionBy = by(questions);
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       {asked.length > 0 && (
         <section className="mb-6">
           <div className="section-label">The marker asked for a look</div>

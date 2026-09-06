@@ -31,9 +31,7 @@ export default async function TopicsPage() {
   ]);
 
   return (
-    <main className="ruled relative min-h-screen px-6 py-8">
-      <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
-      <div className="mx-auto max-w-3xl">
+    <div>
         <header className="mb-6">
           <p className="font-mono text-xs uppercase tracking-widest text-dim">
             Read only — the seeded syllabus graph and the paper allocations it is built from.
@@ -91,7 +89,6 @@ export default async function TopicsPage() {
               ))}
           </section>
         ))}
-      </div>
-    </main>
+    </div>
   );
 }

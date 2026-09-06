@@ -180,7 +180,7 @@ describe('what ships beside the app', () => {
       ['app', 'page.tsx'],
       ['app', 'door.tsx'],
       ['app', 'study', 'study-chrome.tsx'],
-      ['app', 'admin', 'layout.tsx'],
+      ['app', 'admin', 'admin-chrome.tsx'],
     ]) {
       expect(read(...page), page.join('/')).toMatch(/<Lockup[\s/>]/);
     }

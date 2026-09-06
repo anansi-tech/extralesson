@@ -24,9 +24,7 @@ export default async function CoveragePage() {
   const neverAssessed = allObjectives.filter((o) => o.approved === 0).length;
 
   return (
-    <main className="ruled relative min-h-screen px-6 py-8">
-      <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
-      <div className="mx-auto max-w-3xl">
+    <div>
         <header className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
           <div className="flex flex-wrap items-center gap-x-4 font-mono text-xs text-dim">
             <span>
@@ -213,7 +211,6 @@ export default async function CoveragePage() {
             </div>
           )}
         </section>
-      </div>
-    </main>
+    </div>
   );
 }

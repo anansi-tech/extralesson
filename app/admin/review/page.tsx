@@ -221,9 +221,7 @@ export default async function ReviewPage({
   }
 
   return (
-    <main className="ruled relative min-h-screen px-6 py-8">
-      <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
-      <div className="mx-auto max-w-3xl">
+    <div>
         <header className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
           <div className="font-mono text-xs text-dim">
             <b className="text-ink">{draftsRemaining}</b> drafts remaining ·{' '}
@@ -342,7 +340,6 @@ export default async function ReviewPage({
           </p>
         )}
 
-      </div>
-    </main>
+    </div>
   );
 }

@@ -76,7 +76,7 @@ export default async function DisputeCasePage({ params, searchParams }: { params
     : undefined;
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <div className="flex flex-wrap items-baseline justify-between gap-2 font-mono text-[11px] text-dim">
         <Link href="/admin/disputes" className="underline">← disputes</Link>
         <span>{dispute ? `queried ${dispute.ts.toLocaleString('en-GB')}` : `the marker asked for a look, ${read.created_at.toLocaleString('en-GB')}`}</span>
