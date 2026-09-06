@@ -29,6 +29,6 @@ describe('the marked question', () => {
     expect(failedIdx).toBeLessThan(photoIdx);
   });
   it('history opens at your marking', () => {
-    expect(at('app', 'study', 'history', 'page.tsx')).toMatch(/\?q=\$\{r\.index\}#marking/);
+    expect(at('app', 'study', 'history', 'history-view.tsx')).toMatch(/\?q=\$\{r\.index\}#marking/);
   });
 });

@@ -84,7 +84,7 @@ export const visibleText = (html: string): string =>
   html
     .replace(/<script[\s\S]*?<\/script>/g, ' ')
     .replace(/<svg[\s\S]*?<\/svg>/g, ' ')
-    .replace(/<input[^>]*>/g, (m) => ` ${/placeholder="([^"]*)"/.exec(m)?.[1] ?? ''} ${/value="([^"]*)"/.exec(m)?.[1] ?? ''} `)
+    .replace(/<input[^>]*>/g, (m) => (/type="hidden"/.test(m) ? ' ' : ` ${/placeholder="([^"]*)"/.exec(m)?.[1] ?? ''} ${/value="([^"]*)"/.exec(m)?.[1] ?? ''} `))
     .replace(/<[^>]+>/g, ' ')
     .replace(/&#x27;|&rsquo;|&#8217;/g, '’')
     .replace(/&amp;/g, '&')

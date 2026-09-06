@@ -76,7 +76,7 @@ describe('(6) needs_review', () => {
 describe('(1)(2)(3) history, the student nav, the admin bar', () => {
   it('has a history page of every attempt, newest first, each linking to its look back', () => {
     expect(at('lib', 'study', 'history.ts')).toMatch(/\.sort\(\{ ts: -1 \}\)/);
-    const page = at('app', 'study', 'history', 'page.tsx');
+    const page = at('app', 'study', 'history', 'page.tsx') + at('app', 'study', 'history', 'history-view.tsx');
     expect(page).toMatch(/href=\{`\/study\/session\/\$\{r\.sessionId\}\?q=\$\{r\.index\}#marking`\}/);
     expect(page).not.toMatch(/updateOne|create\(|deleteOne/);
   });
@@ -108,7 +108,7 @@ describe('(7) the camera control', () => {
 
 describe('(8) progress off the dashboard', () => {
   it('moves the module estimates and topic bars to /study/progress', () => {
-    const progress = at('app', 'study', 'progress', 'page.tsx');
+    const progress = at('app', 'study', 'progress', 'page.tsx') + at('app', 'study', 'progress', 'progress-view.tsx');
     expect(progress).toMatch(/topic strength/);
     expect(progress).toMatch(/BAND_LABEL\[t\.band\]/);
     expect(progress).toMatch(/prediction\.modules\.find/);
