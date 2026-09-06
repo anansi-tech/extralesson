@@ -1,5 +1,7 @@
 import LoginForm from './login-form';
 import { Lockup } from '../../lockup';
+import { dbConnect } from '@/lib/db';
+import { resolveWelcome } from '@/lib/welcome';
 
 export const metadata = { title: 'Sign in — ExtraLesson' };
 
@@ -12,10 +14,12 @@ export const metadata = { title: 'Sign in — ExtraLesson' };
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; new?: string }>;
+  searchParams: Promise<{ error?: string; new?: string; paid?: string }>;
 }) {
-  const { error, new: fresh } = await searchParams;
+  const { error, new: fresh, paid } = await searchParams;
   const creating = fresh === '1';
+  // Arriving from /welcome with a payment waiting: the address it is waiting on, locked (ROUND_9 Task 1).
+  const lockedEmail = paid ? await paidAddress(paid) : null;
   return (
     <main className="ruled relative min-h-screen px-6 py-12">
       <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
@@ -38,8 +42,14 @@ export default async function LoginPage({
             Your session ended. Sign in again.
           </p>
         )}
-        <LoginForm door={creating ? 'create' : 'signin'} />
+        {lockedEmail ? <LoginForm door="create" lockedEmail={lockedEmail} /> : <LoginForm door={creating ? 'create' : 'signin'} />}
       </div>
     </main>
   );
+}
+
+async function paidAddress(sessionId: string): Promise<string | null> {
+  await dbConnect();
+  const state = await resolveWelcome(sessionId, null);
+  return state.state === 'unregistered' ? state.email : null;
 }

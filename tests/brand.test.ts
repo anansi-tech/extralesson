@@ -178,7 +178,7 @@ describe('what ships beside the app', () => {
     expect(withLockup.length, 'no page draws the lockup at all').toBeGreaterThan(4);
     for (const page of [
       ['app', 'page.tsx'],
-      ['app', 'welcome', 'welcome-view.tsx'],
+      ['app', 'door.tsx'],
       ['app', 'study', 'study-chrome.tsx'],
       ['app', 'study', 'login', 'page.tsx'],
       ['app', 'study', 'reset', 'page.tsx'],

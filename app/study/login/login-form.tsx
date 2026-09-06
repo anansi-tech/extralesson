@@ -10,7 +10,7 @@ import { PASSWORD_MIN } from '@/lib/auth/password-policy';
 // whole cause — nothing about the viewport meta or the layout.
 const field = 'mt-1 w-full border-[1.5px] border-ink bg-white p-3 text-base';
 
-export default function LoginForm({ door }: { door: 'signin' | 'create' }) {
+export default function LoginForm({ door, lockedEmail }: { door: 'signin' | 'create'; lockedEmail?: string }) {
   // Two doors on one page, and the way to a new password. The page decides
   // which door is open; nothing here infers it from a failed sign-in.
   const [mode, setMode] = useState<'signin' | 'reset'>('signin');
@@ -65,8 +65,9 @@ export default function LoginForm({ door }: { door: 'signin' | 'create' }) {
           type="email"
           required
           autoComplete="email"
-          defaultValue={state.email ?? signInState.email}
-          className={field}
+          defaultValue={lockedEmail ?? state.email ?? signInState.email}
+          readOnly={!!lockedEmail}
+          className={`${field} read-only:bg-paper-deep`}
         />
       </label>
 
