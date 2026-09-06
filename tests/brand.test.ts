@@ -180,11 +180,16 @@ describe('what ships beside the app', () => {
       ['app', 'page.tsx'],
       ['app', 'door.tsx'],
       ['app', 'study', 'study-chrome.tsx'],
-      ['app', 'study', 'login', 'page.tsx'],
-      ['app', 'study', 'reset', 'page.tsx'],
       ['app', 'admin', 'layout.tsx'],
     ]) {
       expect(read(...page), page.join('/')).toMatch(/<Lockup[\s/>]/);
+    }
+    for (const page of [
+      ['app', 'study', 'login', 'page.tsx'],
+      ['app', 'study', 'reset', 'page.tsx'],
+      ['app', 'welcome', 'welcome-view.tsx'],
+    ]) {
+      expect(read(...page), page.join('/')).toMatch(/<Door[\s>]/);
     }
   });
 

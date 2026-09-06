@@ -5,6 +5,8 @@ import { Resend } from 'resend';
 // ExtraLesson sends exactly one kind of email: a password-reset link.
 
 const FROM = process.env.RESEND_FROM ?? 'ExtraLesson <onboarding@resend.dev>';
+/** The sender a reset-sent screen names, so a student knows what to look for in spam. */
+export const SENDER = FROM;
 
 export interface SendResult {
   /** True when no provider is configured, so the caller can fall back. */

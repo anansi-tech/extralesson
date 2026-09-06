@@ -1,50 +1,59 @@
 import LoginForm from './login-form';
-import { Lockup } from '../../lockup';
+import { Door } from '../../door';
 import { dbConnect } from '@/lib/db';
-import { resolveWelcome } from '@/lib/welcome';
+import { maskEmail, resolveWelcome } from '@/lib/welcome';
+import { SENDER } from '@/lib/email';
+import { RESET_TTL_MS } from '@/lib/auth/token';
 
 export const metadata = { title: 'Sign in — ExtraLesson' };
 
+const HEADING = 'mb-1.5 text-2xl font-black tracking-[-0.015em] lg:text-[34px] lg:leading-[1.04] lg:tracking-[-0.02em]';
+const LEDE = 'mb-5 text-[13px] leading-normal text-dim lg:text-sm';
+
 /**
- * TWO DOORS ON ONE PAGE (ROUND_6 Task 5): create an account, or sign in. Which
- * one is open first is decided by where the student came from, never by what
- * a failed sign-in guessed about them. ?new=1 is the landing's free-question
- * button, so that door opens with the question named above it.
+ * THREE DOORS ON ONE PAGE (ROUND_6 Task 5; ROUND_9 Task 3): sign in, create
+ * an account, ask for a reset link. Which one is open is decided by where
+ * the student came from, never by what a failed sign-in guessed about them.
+ * ?new=1 is the landing's free-question button, so that door opens with the
+ * question named above it; ?paid= is the welcome page, so it opens with the
+ * paid address locked.
  */
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; new?: string; paid?: string }>;
+  searchParams: Promise<{ error?: string; new?: string; paid?: string; reset?: string }>;
 }) {
-  const { error, new: fresh, paid } = await searchParams;
+  const { error, new: fresh, paid, reset } = await searchParams;
   const creating = fresh === '1';
-  // Arriving from /welcome with a payment waiting: the address it is waiting on, locked (ROUND_9 Task 1).
   const lockedEmail = paid ? await paidAddress(paid) : null;
+
   return (
-    <main className="ruled relative min-h-screen px-6 py-12">
-      <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
-      <div className="mx-auto max-w-sm">
-        <Lockup width={150} />
-        <h1 className="mt-8 text-3xl font-black leading-tight">{creating ? 'Create your account.' : 'Sign in.'}</h1>
-        {creating ? (
-          <p className="mt-2 text-dim">
-            Your first question is waiting: one Paper 2 question, marked the way an examiner marks it,
-            free. Make an account and it is the first thing you see.
+    <Door signedIn={false}>
+      {lockedEmail ? (
+        <>
+          <h1 className={HEADING}>Create your account<span className="text-red-pen">.</span></h1>
+          <p className={LEDE}>
+            The access is waiting on <b className="text-ink">{maskEmail(lockedEmail)}</b>. Create the account on that address and it is applied.
           </p>
-        ) : (
-          <p className="mt-2 text-dim">
-            Your email and a password. We keep you signed in for 30 days, so on your own phone this
-            is usually the last time you type it.
+          <LoginForm door="create" lockedEmail={lockedEmail} />
+        </>
+      ) : reset === '1' ? (
+        <LoginForm door="reset" sender={SENDER} resetMinutes={RESET_TTL_MS / 60000} />
+      ) : (
+        <>
+          <h1 className={HEADING}>{creating ? 'Create your account' : 'Sign in'}<span className="text-red-pen">.</span></h1>
+          <p className={LEDE}>
+            {creating
+              ? 'Your first question is waiting: one Paper 2 question, marked the way an examiner marks it, free. Make an account and it is the first thing you see.'
+              : 'Your email and a password. We keep you signed in for 30 days, so on your own phone this is usually the last time you type it.'}
           </p>
-        )}
-        {error === 'expired' && (
-          <p className="mt-4 border-l-3 border-red-pen bg-[#FDF1F0] p-3 text-sm text-red-pen">
-            Your session ended. Sign in again.
-          </p>
-        )}
-        {lockedEmail ? <LoginForm door="create" lockedEmail={lockedEmail} /> : <LoginForm door={creating ? 'create' : 'signin'} />}
-      </div>
-    </main>
+          {error === 'expired' && (
+            <p className="mb-4 border-l-3 border-amber bg-[#FDF8EC] px-3 py-2.5 text-[13px] leading-snug">Your session ended. Sign in again.</p>
+          )}
+          <LoginForm door={creating ? 'create' : 'signin'} />
+        </>
+      )}
+    </Door>
   );
 }
 

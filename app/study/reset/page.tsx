@@ -1,32 +1,24 @@
 import ResetForm from './reset-form';
-import { Lockup } from '../../lockup';
+import { Door } from '../../door';
 
 export const metadata = { title: 'Set a new password — ExtraLesson' };
 export const dynamic = 'force-dynamic';
 
-export default async function ResetPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ token?: string }>;
-}) {
+/** The end of the reset: the link from the email, and one field. */
+export default async function ResetPage({ searchParams }: { searchParams: Promise<{ token?: string }> }) {
   const { token } = await searchParams;
-
   return (
-    <main className="ruled relative min-h-screen px-5 py-10">
-      <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
-      <div className="mx-auto max-w-sm">
-        <Lockup width={150} />
-        <h1 className="mt-6 text-2xl font-black">
-          Set a new password<span className="text-red-pen">.</span>
-        </h1>
-        {token ? (
-          <ResetForm token={token} />
-        ) : (
-          <p className="mt-6 border-l-3 border-red-pen bg-white p-4 text-sm">
-            This page needs the link from your email. Ask for a new one on the sign-in page.
-          </p>
-        )}
-      </div>
-    </main>
+    <Door signedIn={false}>
+      <h1 className="mb-1.5 text-2xl font-black tracking-[-0.015em] lg:text-[34px] lg:leading-[1.04] lg:tracking-[-0.02em]">
+        Set a new password<span className="text-red-pen">.</span>
+      </h1>
+      {token ? (
+        <ResetForm token={token} />
+      ) : (
+        <p className="mt-4 border-l-3 border-amber bg-[#FDF8EC] px-3 py-2.5 text-[13px] leading-snug">
+          This page needs the link from your email. Ask for a new one on the sign-in page.
+        </p>
+      )}
+    </Door>
   );
 }

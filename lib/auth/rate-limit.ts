@@ -50,6 +50,11 @@ export async function clientIp(): Promise<string> {
 
 export const TOO_MANY = 'Too many attempts. Wait a minute and try again.';
 
+/** How long until one more call is allowed from an empty bucket, in whole minutes. */
+export function windowMinutes(scope: Scope): number {
+  return Math.ceil(1 / LIMITS[scope].refillPerSecond / 60);
+}
+
 /** True when this call is over the limit for the account or for the IP. */
 export async function limited(scope: Scope, account: string): Promise<boolean> {
   const limit = LIMITS[scope];
