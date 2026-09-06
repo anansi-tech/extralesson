@@ -27,7 +27,7 @@ export default async function StudyDashboard({
   await dbConnect();
   const student = await Student.findById(auth.student_id).lean<{
     name: string;
-    exam_sitting: string;
+    access?: { sitting: string } | null;
     target_modules: ModuleNumber[];
   } | null>();
   if (!student) return null;
@@ -74,7 +74,7 @@ export default async function StudyDashboard({
     <DashboardView
       firstName={student.name.trim().split(/\s+/)[0]}
       email={auth.email}
-      sitting={sittingLabel(student.exam_sitting)}
+      sitting={student.access ? sittingLabel(student.access.sitting) : null}
       lead={lead}
       open={open}
       diagnosticOpen={diagnosticOpen}

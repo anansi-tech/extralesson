@@ -16,7 +16,7 @@ import { Refusal } from '../refusal';
 export interface DashboardProps {
   firstName: string;
   email: string;
-  /** The sitting the student's access was for, for the expired-access note. */
+  /** The sitting the grant was for — the grant's own, never the account's current one. */
   sitting: string | null;
   lead: LeadPanel;
   open: { id: string; answered: number; questions: number; marksLeft: number } | null;

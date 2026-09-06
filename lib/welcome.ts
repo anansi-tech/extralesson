@@ -42,13 +42,13 @@ export async function resolveWelcome(sessionId: string, viewer: { student_id: st
   if (!email) return { state: 'confirming', settled: true };
 
   const student = await Student.findOne({ email })
-    .select('exam_sitting access')
-    .lean<{ _id: unknown; exam_sitting: string; access?: { sitting: string } } | null>();
+    .select('access')
+    .lean<{ _id: unknown; access?: { sitting: string } } | null>();
   if (!student) return viewer ? { state: 'other', email, sitting: null } : { state: 'unregistered', email };
   // The account exists and the grant is in flight: the next poll will see it.
   if (fulfilment.status !== 'granted') return { state: 'confirming', settled: false };
 
-  const sitting = sittingLabel(student.access?.sitting ?? student.exam_sitting);
+  const sitting = student.access ? sittingLabel(student.access.sitting) : null;
   if (viewer && viewer.student_id === String(student._id)) {
     return { state: 'payer', email, sitting, studentId: String(student._id) };
   }
