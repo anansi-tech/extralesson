@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireAdmin } from '@/lib/auth/session';
 import { launchWarnings } from '@/lib/preflight';
 import { AdminChrome } from './admin-chrome';
+import { Refusal } from '../refusal';
 
 // Every /admin/* route is allowlist-gated (ROUND_1 §2).
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -13,16 +14,20 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <AdminChrome email={session.email}>
       {warnings.length > 0 && (
-        <div className="mb-6 border-l-3 border-red-pen bg-[#FDF1F0] px-3 py-2.5">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-red-pen">Before launch</div>
-          <ul className="mt-1 space-y-1">
-            {warnings.map((w) => (
-              <li key={w} className="text-[13px] leading-snug">
-                {w}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Refusal
+          id="before-launch"
+          amber
+          bare
+          className="mb-6"
+          label="Before launch"
+          sentence={
+            <ul className="space-y-1">
+              {warnings.map((w) => (
+                <li key={w}>{w}</li>
+              ))}
+            </ul>
+          }
+        />
       )}
       {children}
       {/* The way out sits at the foot, after the content, because that is when

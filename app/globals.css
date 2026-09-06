@@ -85,6 +85,11 @@
   --color-amber: var(--amber);
   --color-withheld: var(--withheld);
   --color-blue-ink: var(--blue-ink);
+  --color-red-tint: var(--red-tint);
+  --color-green-tint: var(--green-tint);
+  --color-amber-tint: var(--amber-tint);
+  --color-blue-tint: var(--blue-tint);
+  --color-note: var(--note);
   --font-display: var(--font-fraunces);
   --font-mono: var(--font-plex-mono);
   --font-hand: var(--font-caveat);

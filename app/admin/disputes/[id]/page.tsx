@@ -9,6 +9,7 @@ import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from '@/lib/st
 import { LANDING } from '@/lib/landing-content';
 import { reviewDispute } from '../actions';
 import type { RubricItem } from '@/lib/types';
+import { CAPS, PRIMARY, QUIET } from '../../ui';
 
 export const metadata = { title: 'Dispute — ExtraLesson admin' };
 export const dynamic = 'force-dynamic';
@@ -78,16 +79,16 @@ export default async function DisputeCasePage({ params, searchParams }: { params
   return (
     <div>
       <div className="flex flex-wrap items-baseline justify-between gap-2 font-mono text-[11px] text-dim">
-        <Link href="/admin/disputes" className="underline">← disputes</Link>
+        <Link href="/admin/disputes" className={QUIET}>← disputes</Link>
         <span>{dispute ? `queried ${dispute.ts.toLocaleString('en-GB')}` : `the marker asked for a look, ${read.created_at.toLocaleString('en-GB')}`}</span>
       </div>
 
-      <h1 className="mt-3 text-xl font-black">
+      <h1 className="mt-3 text-2xl font-black tracking-[-0.015em]">
         {code} {state && <span className="ml-2 font-mono text-[11px] font-normal uppercase tracking-widest text-dim">{state}</span>}
       </h1>
       <p className="mt-1 break-all font-mono text-[12px]">{student?.email ?? 'account deleted'}{student ? ` · ${student.exam_sitting}` : ''}</p>
 
-      <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+      <section className="mt-4 border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-panel)]">
         <div className="section-label">The question</div>
         {question ? (
           <>
@@ -113,7 +114,7 @@ export default async function DisputeCasePage({ params, searchParams }: { params
         )}
       </section>
 
-      <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+      <section className="mt-4 border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-panel)]">
         <div className="section-label">The working for ({part || '?'}) — take {read.take}</div>
         <ul className="mt-1 border-l-3 border-paper-deep pl-3">
           {(working.length ? working : read.lines.map((l) => l.text)).map((t, i) => (
@@ -129,21 +130,21 @@ export default async function DisputeCasePage({ params, searchParams }: { params
         )}
       </section>
 
-      <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+      <section className="mt-4 border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-panel)]">
         <div className="section-label">The criterion</div>
         <p className="question-prose mt-1 text-[13px]">
           {row ? <><span className="font-mono text-[11px]">{row.code}</span> ({row.profile}, {row.mark_value}) — <span dangerouslySetInnerHTML={{ __html: renderMathHtml(row.criterion) }} /></> : 'row not on this question'}
         </p>
         <div className="mt-3 section-label">The decision</div>
-        <p className={`mt-1 border-l-3 px-2 py-1 text-[13px] ${decision?.awarded ? 'border-green-pen bg-[#E8F0E9]' : 'border-red-pen bg-[#FDF1F0]'}`}>
+        <p className={`mt-1 border-l-3 px-2 py-1 text-[13px] ${decision?.awarded ? 'border-green-pen bg-green-tint' : 'border-red-pen bg-red-tint'}`}>
           {decision ? `${decision.awarded ? 'awarded' : 'withheld'}${decision.needs_review ? ', sent for review' : ''} — ${decision.reason}` : 'row not on this read'}
         </p>
       </section>
 
-      <section className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+      <section className="mt-4 border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-panel)]">
         <div className="section-label">What to do</div>
         {mailto && (
-          <a href={mailto} className="mt-2 block bg-red-pen p-3 text-center font-black text-white shadow-[3px_3px_0_var(--ink)]">
+          <a href={mailto} className={`${PRIMARY} mt-2 block text-center`}>
             Reply by email
           </a>
         )}
@@ -151,14 +152,14 @@ export default async function DisputeCasePage({ params, searchParams }: { params
           <form action={reviewDispute} className="mt-3">
             <input type="hidden" name="disputeId" value={String(dispute._id)} />
             <label className="block font-mono text-[10px] uppercase tracking-widest text-dim" htmlFor="note">Note for the record</label>
-            <textarea id="note" name="note" required minLength={3} rows={3} className="mt-1 w-full border-[1.5px] border-ink bg-paper p-2 text-sm" placeholder="What you found, and what you told them." />
-            <button className="mt-2 min-h-11 w-full border-[1.5px] border-ink bg-white font-mono text-[11px] uppercase tracking-widest">Mark as reviewed</button>
+            <textarea id="note" name="note" required minLength={3} rows={3} className="mt-2 w-full border-[1.5px] border-ink bg-white p-2.5 text-sm" placeholder="What you found, and what you told them." />
+            <button className={`${CAPS} mt-2 w-full`}>Mark as reviewed</button>
           </form>
         )}
         {reviews.length > 0 && (
           <ul className="mt-3 space-y-1">
             {reviews.map((r) => (
-              <li key={String(r._id)} className="border-t border-dashed border-paper-deep pt-1 text-[12px]">
+              <li key={String(r._id)} className="border-t border-paper-deep pt-1 text-[12px]">
                 <span className="font-mono text-[10px] text-dim">{new Date(r.reviewed_at).toLocaleString('en-GB')}</span> {r.note}
               </li>
             ))}

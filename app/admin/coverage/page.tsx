@@ -8,6 +8,7 @@ import {
   STRUCTURED_ARCHETYPE_TARGETS,
 } from '@/lib/targets/matrix';
 import { OBJECTIVE_FLOOR } from '@/lib/targets/objectives';
+import { ROW } from '../ui';
 
 export const metadata = { title: 'Coverage — ExtraLesson admin' };
 export const dynamic = 'force-dynamic';
@@ -34,7 +35,7 @@ export default async function CoveragePage() {
         </header>
 
         <section className="mt-10">
-          <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
+          <h2 className="section-label">
             Objective coverage — {atFloor}/{totalObjectives} at the floor of {OBJECTIVE_FLOOR}
             {neverAssessed > 0 && (
               <span className="text-red-pen"> · {neverAssessed} never assessed</span>
@@ -47,7 +48,7 @@ export default async function CoveragePage() {
                 const done = row.objectives.filter((o) => o.approved >= OBJECTIVE_FLOOR).length;
                 return (
                   <div key={row.topic_code}>
-                    <div className="flex items-baseline justify-between gap-3 text-sm">
+                    <div className="flex items-baseline justify-between gap-3 border-b border-paper-deep py-1.5 text-sm">
                       <span>
                         <span className="font-mono text-xs text-dim">{row.topic_code}</span>{' '}
                         {row.topic_title}
@@ -65,12 +66,12 @@ export default async function CoveragePage() {
                           title={`${o.id} — ${o.text} (${o.approved} approved${o.draft ? `, ${o.draft} draft` : ''})`}
                           className={`rounded px-1 py-0.5 font-mono text-[10px] ${
                             o.approved >= OBJECTIVE_FLOOR
-                              ? 'bg-[#E8F0E9] text-green-pen'
+                              ? 'bg-green-tint text-green-pen'
                               : o.approved > 0
-                                ? 'bg-[#FDF8EC] text-[#8A6D1F]'
+                                ? 'bg-amber-tint text-ink'
                                 : o.draft > 0
                                   ? 'bg-paper-deep text-dim'
-                                  : 'bg-[#FDF1F0] text-red-pen'
+                                  : 'bg-red-tint text-red-pen'
                           }`}
                         >
                           {o.id.slice(3)}{' '}
@@ -84,7 +85,7 @@ export default async function CoveragePage() {
                 );
               })}
           </div>
-          <p className="mt-2 max-w-2xl font-mono text-[10px] leading-relaxed text-dim">
+          <p className="mt-3 max-w-2xl text-[12px] leading-snug text-dim">
             Each chip is one syllabus objective: the id, then <b className="text-ink">2a</b> for two
             APPROVED questions and <b className="text-ink">3d</b> for three still in DRAFT, so{' '}
             <b className="text-ink">1a+2d</b> means one approved and two waiting. ✗ is nothing at
@@ -95,7 +96,7 @@ export default async function CoveragePage() {
         </section>
 
         <section className="mt-10">
-          <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
+          <h2 className="section-label">
             P1 matrix — {matrix.p1_actual_total}/{P1_TOTAL} MCQs ·{' '}
             {matrix.p1_actual_total > 0
               ? Math.round((matrix.mcq_visual_actual / matrix.p1_actual_total) * 100)
@@ -104,10 +105,7 @@ export default async function CoveragePage() {
           </h2>
           <div className="mt-2 grid gap-x-8 gap-y-1 sm:grid-cols-2">
             {matrix.topics.map((t) => (
-              <div
-                key={`p1-${t.code}`}
-                className="flex items-baseline justify-between gap-3 text-sm"
-              >
+              <div key={`p1-${t.code}`} className={`flex items-baseline justify-between gap-3 text-sm ${ROW}`}>
                 <span className="min-w-0">
                   <span className="font-mono text-xs text-dim">{t.code}</span> {t.title}
                 </span>
@@ -123,16 +121,13 @@ export default async function CoveragePage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
+          <h2 className="section-label">
             P2 matrix — {matrix.p2_marks_actual_total}/{P2_MARKS_TOTAL} rubric marks ·{' '}
             {matrix.p2_actual_total} structured questions
           </h2>
           <div className="mt-2 grid gap-x-8 gap-y-1 sm:grid-cols-2">
             {matrix.topics.map((t) => (
-              <div
-                key={`p2-${t.code}`}
-                className="flex items-baseline justify-between gap-3 text-sm"
-              >
+              <div key={`p2-${t.code}`} className={`flex items-baseline justify-between gap-3 text-sm ${ROW}`}>
                 <span className="min-w-0">
                   <span className="font-mono text-xs text-dim">{t.code}</span> {t.title}
                 </span>
@@ -154,7 +149,7 @@ export default async function CoveragePage() {
 
         <section className="mt-8 grid gap-6 sm:grid-cols-2">
           <div>
-            <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
+            <h2 className="section-label">
               Profile marks by module (P2, target{' '}
               {(['CK', 'AK', 'R'] as const).map((k) => P2_PROFILE_SPLIT[k]).join('/')} per{' '}
               {(['CK', 'AK', 'R'] as const).reduce((s, k) => s + P2_PROFILE_SPLIT[k], 0)})
@@ -167,7 +162,7 @@ export default async function CoveragePage() {
             ))}
           </div>
           <div>
-            <h2 className="font-mono text-xs uppercase tracking-widest text-dim">
+            <h2 className="section-label">
               Archetypes (structured, target{' '}
               {Object.values(STRUCTURED_ARCHETYPE_TARGETS).join('/')})
             </h2>
@@ -176,7 +171,7 @@ export default async function CoveragePage() {
                 {a}: {n}
               </div>
             ))}
-            <h2 className="mt-3 font-mono text-xs uppercase tracking-widest text-dim">
+            <h2 className="section-label mt-3">
               Difficulty (target 25/50/25)
             </h2>
             <div className="mt-1 font-mono text-xs text-dim">
@@ -191,7 +186,7 @@ export default async function CoveragePage() {
         {/* R2 §7 — the real figure, from recorded token usage, not the estimate.
             A student who never photographs anything costs nothing at all, so
             this is the whole of what reading handwriting has cost. */}
-        <section className="mt-6 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+        <section className="mt-8 border-[1.5px] border-ink bg-white p-5">
           <div className="section-label">
             Reading handwriting — measured cost
           </div>

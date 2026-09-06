@@ -5,6 +5,8 @@ import { dbConnect, Attempt, DisputeReview, MarkDispute, Question, Student, Tran
 import { renderMathHtml } from '@/lib/katex';
 import { linesForSlot } from '@/lib/grade/transcribe';
 import type { RubricItem } from '@/lib/types';
+import { Refusal } from '../../refusal';
+import { QUIET } from '../ui';
 
 export const metadata = { title: 'Mark disputes — ExtraLesson admin' };
 export const dynamic = 'force-dynamic';
@@ -80,7 +82,7 @@ export default async function DisputesPage() {
             t.method_marks
               .filter((m) => m.needs_review)
               .map((m) => (
-                <div key={`${String(t._id)}-${m.code}`} className="mt-3 border-l-3 border-[#D9A62E] bg-[#FDF8EC] p-3">
+                <div key={`${String(t._id)}-${m.code}`} className="mt-3 border-l-3 border-amber bg-amber-tint p-3">
                   <div className="font-mono text-[11px] text-dim">
                     {t.created_at.toLocaleString('en-GB')} · {m.code} ·{' '}
                     <Link href={`/admin/disputes/${String(t._id)}?code=${m.code}`} className="text-red-pen underline">open the case</Link>
@@ -100,11 +102,13 @@ export default async function DisputesPage() {
           )}
         </section>
       )}
-      <p className="text-[12px] leading-snug text-dim">
-        {disputes.length === 0
-          ? 'No disputes yet.'
-          : `${disputes.length}${disputes.length === LIMIT ? '+' : ''} — newest first. Nothing here changes a mark: reply by email, and correct the marker if it was wrong.`}
-      </p>
+      {disputes.length === 0 ? (
+        <Refusal id="no-disputes" label="No disputes yet" sentence="Nothing here changes a mark: reply by email, and correct the marker if it was wrong." />
+      ) : (
+        <p className="text-[12px] leading-snug text-dim">
+          {`${disputes.length}${disputes.length === LIMIT ? '+' : ''} — newest first. Nothing here changes a mark: reply by email, and correct the marker if it was wrong.`}
+        </p>
+      )}
 
       {disputes.map((d) => {
         const attempt = attemptBy.get(String(d.attempt_id));
@@ -120,7 +124,7 @@ export default async function DisputesPage() {
         const lines = (read?.lines ?? []).map((l) => ({ ...l, part_label: l.part_label ?? null, slot_label: l.slot_label ?? null }));
         const working = read && part ? linesForSlot({ lines, answers: [], legible: read.legible }, part) : [];
         return (
-          <section key={String(d._id)} className="mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[3px_3px_0_var(--ink)]">
+          <section key={String(d._id)} className="mt-4 border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-panel)]">
             <div className="flex flex-wrap items-baseline justify-between gap-x-3 font-mono text-[11px] text-dim">
               <span>{d.ts.toLocaleString('en-GB')}</span>
               <span className="truncate">{studentBy.get(String(d.student_id))?.email ?? 'account deleted'}</span>
@@ -130,7 +134,7 @@ export default async function DisputesPage() {
                 ) : (
                   <span className="uppercase tracking-widest text-red-pen">not yet reviewed</span>
                 )}
-                <Link href={`/admin/disputes/${String(d._id)}`} className="min-h-11 inline-flex items-center uppercase tracking-widest text-red-pen underline">
+                <Link href={`/admin/disputes/${String(d._id)}`} className={`${QUIET} text-red-pen`}>
                   Open the case
                 </Link>
               </span>
@@ -159,7 +163,7 @@ export default async function DisputesPage() {
               )}
             </p>
             <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-dim">The reason it was withheld</div>
-            <p className="mt-1 border-l-3 border-red-pen bg-[#FDF1F0] px-2 py-1 text-[13px]">{row?.reason ?? 'row not on this read'}</p>
+            <p className="mt-1 border-l-3 border-red-pen bg-red-tint px-2 py-1 text-[13px]">{row?.reason ?? 'row not on this read'}</p>
 
             <div className="mt-3 font-mono text-[10px] uppercase tracking-widest text-dim">
               The read{read ? ` — take ${read.take}${part ? `, part (${part})` : ''}` : ''}

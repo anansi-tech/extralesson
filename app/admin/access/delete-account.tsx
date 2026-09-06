@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react';
 import { deleteStudentAccount, type DeleteAccountState } from './actions';
+import { FAILURE, FIELD, PRIMARY } from '../ui';
 
 // Behind two typed fields on purpose: revoking access is a click because it is
 // reversible, and this is not — attempts are append-only, so no recomputation
@@ -15,8 +16,8 @@ export function DeleteAccount() {
   );
 
   return (
-    <section className="mt-8 border-[1.5px] border-red-pen bg-white p-4">
-      <div className="section-label is-alert">Delete an account</div>
+    <section className="mt-8 border-[1.5px] border-ink bg-white p-5">
+      <div className="section-label">Delete an account</div>
       <p className="mt-1 text-[13px] leading-snug">
         Everything the student has: attempts, sessions, drafts, photographs and the readings of
         them. It cannot be undone — attempts are the record every mark is folded from, so nothing
@@ -30,40 +31,23 @@ export function DeleteAccount() {
           <span className="font-mono text-[10px] uppercase tracking-widest text-dim">
             Email address
           </span>
-          <input
-            name="email"
-            type="email"
-            required
-            autoComplete="off"
-            className="mt-1 block min-h-11 w-64 max-w-full border-[1.5px] border-ink bg-white px-2 font-mono text-base"
-          />
+          <input name="email" type="email" required autoComplete="off" className={`${FIELD} mt-1 block w-64 max-w-full`} />
         </label>
         <label className="block">
           <span className="font-mono text-[10px] uppercase tracking-widest text-dim">
             Type it again
           </span>
-          <input
-            name="confirm"
-            type="email"
-            required
-            autoComplete="off"
-            className="mt-1 block min-h-11 w-64 max-w-full border-[1.5px] border-ink bg-white px-2 font-mono text-base"
-          />
+          <input name="confirm" type="email" required autoComplete="off" className={`${FIELD} mt-1 block w-64 max-w-full`} />
         </label>
-        <button
-          disabled={pending}
-          className="min-h-11 border-[1.5px] border-ink bg-red-pen px-4 font-mono text-[11px] uppercase tracking-widest text-white disabled:opacity-60"
-        >
+        <button disabled={pending} className={PRIMARY}>
           {pending ? 'Deleting…' : 'Delete this account'}
         </button>
       </form>
 
-      {state.status === 'error' && (
-        <p className="mt-3 font-mono text-[12px] text-red-pen">{state.message}</p>
-      )}
+      {state.status === 'error' && <p className={`mt-3 ${FAILURE}`}>{state.message}</p>}
 
       {state.status === 'done' && (
-        <div className="mt-3 border-t border-dashed border-paper-deep pt-3">
+        <div className="mt-3 border-t border-paper-deep pt-3">
           <div className="font-mono text-[11px] uppercase tracking-widest text-dim">
             {state.message} {new Date(state.at).toLocaleString('en-GB')}
           </div>

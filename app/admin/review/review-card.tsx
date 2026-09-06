@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { approveQuestion, rejectQuestion, restoreQuestion, saveQuestionEdit } from './actions';
+import { FAILURE, INK, PRIMARY, SECONDARY } from '../ui';
 
 export interface ReviewQuestion {
   id: string;
@@ -60,9 +61,9 @@ export interface ReviewQuestion {
 }
 
 const chipColor: Record<string, string> = {
-  CK: 'bg-[#E8F0E9] text-green-pen',
-  AK: 'bg-[#EDF1F8] text-[#3A5A8C]',
-  R: 'bg-[#FDF1F0] text-red-pen',
+  CK: 'bg-green-tint text-green-pen',
+  AK: 'bg-blue-tint text-blue-ink',
+  R: 'bg-red-tint text-red-pen',
 };
 
 function Chip({ profile, code }: { profile: string; code?: string }) {
@@ -167,7 +168,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
     });
 
   return (
-    <article ref={cardRef} tabIndex={0} className="border-[1.5px] border-ink bg-white p-5 shadow-[4px_4px_0_var(--ink)] focus:outline-dashed focus:outline-2 focus:outline-red-pen">
+    <article ref={cardRef} tabIndex={0} className="border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-card)] focus:outline-dashed focus:outline-2 focus:outline-red-pen">
       {(question.backTo || question.pinned) && (
         <div className="mb-3 flex flex-wrap items-baseline gap-4 font-mono text-[11px] uppercase tracking-widest text-dim">
           {question.backTo && (
@@ -192,7 +193,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
             <li
               key={f.text}
               className={`border-l-3 py-1 pl-2 text-[13px] ${
-                f.level === 'warn' ? 'border-red-pen bg-[#FDF1F0]' : 'border-paper-deep bg-[#FFFDF6] text-dim'
+                f.level === 'warn' ? 'border-red-pen bg-red-tint' : 'border-paper-deep bg-note text-dim'
               }`}
             >
               {f.text}
@@ -210,10 +211,10 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
             <span
               className={`shrink-0 rounded px-1 py-0.5 font-mono text-[10px] ${
                 o.approvedOthers === 0
-                  ? 'bg-[#FDF1F0] text-red-pen'
+                  ? 'bg-red-tint text-red-pen'
                   : o.approvedOthers === 1
-                    ? 'bg-[#FDF8EC] text-[#8A6D1F]'
-                    : 'bg-[#E8F0E9] text-green-pen'
+                    ? 'bg-amber-tint text-ink'
+                    : 'bg-green-tint text-green-pen'
               }`}
             >
               {o.approvedOthers === 0
@@ -390,7 +391,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
                   </div>
                 )}
                 {hintProblems.filter((p) => p.code === r.code).map((p, i) => (
-                  <div key={i} className="ml-6 mt-0.5 border-l-3 border-red-pen bg-[#FDF1F0] px-2 py-0.5 text-[12px]">
+                  <div key={i} className={`ml-6 mt-1 ${FAILURE}`}>
                     {p.hint ? <>“{p.hint}” — </> : null}{p.problem}
                   </div>
                 ))}
@@ -423,7 +424,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
           </div>
           <ul className="mt-1 space-y-1">
             {question.misconceptions.map((m, i) => (
-              <li key={i} className="border-l-3 border-red-pen bg-[#FDF1F0] p-2 text-sm">
+              <li key={i} className="border-l-3 border-red-pen bg-red-tint p-2 text-sm">
                 <b dangerouslySetInnerHTML={{ __html: m.nameHtml }} />{' '}
                 <span className="text-xs text-dim">
                   (<span dangerouslySetInnerHTML={{ __html: m.triggerHtml }} />)
@@ -444,39 +445,24 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
             rows={16}
             className="w-full border-[1.5px] border-ink p-2 font-mono text-xs"
           />
-          {error && <p className="mt-1 text-sm text-red-pen">{error}</p>}
+          {error && <p className={`mt-2 ${FAILURE}`}>{error}</p>}
           <div className="mt-2 flex gap-2">
-            <button
-              onClick={saveEdit}
-              disabled={pending}
-              className="bg-ink px-4 py-2 font-bold text-white shadow-[3px_3px_0_var(--rule)] disabled:opacity-60"
-            >
+            <button onClick={saveEdit} disabled={pending} className={INK}>
               {pending ? 'Checking…' : 'Save'}
             </button>
-            <button
-              onClick={() => setEditing(false)}
-              className="border-[1.5px] border-ink px-4 py-2"
-            >
+            <button onClick={() => setEditing(false)} className={SECONDARY}>
               Cancel
             </button>
           </div>
         </div>
       ) : (
-        <div className="mt-5 flex items-center gap-3">
+        <div className="mt-5 flex flex-wrap items-center gap-3">
           {question.status === 'retired' ? (
-            <button
-              onClick={() => act(restoreQuestion)}
-              disabled={pending}
-              className="border-[1.5px] border-ink px-4 py-2 font-bold disabled:opacity-60"
-            >
+            <button onClick={() => act(restoreQuestion)} disabled={pending} className={SECONDARY}>
               Put back in the queue
             </button>
           ) : (
-            <button
-              onClick={approve}
-              disabled={pending || question.status !== 'draft'}
-              className="bg-green-pen px-4 py-2 font-bold text-white shadow-[3px_3px_0_var(--ink)] disabled:opacity-60"
-            >
+            <button onClick={approve} disabled={pending || question.status !== 'draft'} className={PRIMARY}>
               {question.status === 'approved' ? 'Approved' : 'Approve'}{' '}
               <kbd className="font-mono text-xs opacity-80">A</kbd>
             </button>
@@ -486,15 +472,11 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
               setEditing(true);
               setTimeout(() => editRef.current?.focus(), 0);
             }}
-            className="border-[1.5px] border-ink px-4 py-2 font-bold"
+            className={SECONDARY}
           >
             Edit <kbd className="font-mono text-xs text-dim">E</kbd>
           </button>
-          <button
-            onClick={retire}
-            disabled={pending || question.status === 'retired'}
-            className="bg-red-pen px-4 py-2 font-bold text-white shadow-[3px_3px_0_var(--ink)] disabled:opacity-60"
-          >
+          <button onClick={retire} disabled={pending || question.status === 'retired'} className={`${SECONDARY} text-red-pen`}>
             {question.status === 'approved' ? 'Retire' : 'Reject'}{' '}
             <kbd className="font-mono text-xs opacity-80">R</kbd>
           </button>

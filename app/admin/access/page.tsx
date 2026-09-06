@@ -2,6 +2,8 @@ import { dbConnect, Attempt, Fulfilment, Payment, PracticeSession, Student } fro
 import { FREE_MODES, FREE_SESSIONS, hasAccess } from '@/lib/access';
 import { grantAccess, resolvePayment, revokeAccess } from './actions';
 import { DeleteAccount } from './delete-account';
+import { Refusal } from '../../refusal';
+import { CAPS, FIELD, INK, QUIET, ROW, SELECT } from '../ui';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Access — ExtraLesson admin' };
@@ -99,25 +101,30 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
             </span>
           </div>
           <form className="flex flex-wrap items-center gap-2" action="/admin/access">
-            <input name="find" defaultValue={find} placeholder="find an email" className="min-h-11 border-[1.5px] border-ink px-2 font-mono text-base" />
+            <input name="find" defaultValue={find} placeholder="find an email" className={FIELD} />
             <label className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-widest text-dim">
               <input type="checkbox" name="attention" value="1" defaultChecked={attentionOnly} /> attention only
             </label>
-            <button className="min-h-11 border-[1.5px] border-ink px-3 font-mono text-[11px] uppercase tracking-widest">Search</button>
+            <button className={CAPS}>Search</button>
           </form>
         </header>
         {granted && (
-          <p className="mb-4 border-l-3 border-green-pen bg-[#E8F0E9] p-2 font-mono text-[12px]">
+          <p className="mb-4 border-l-3 border-green-pen bg-green-tint px-3 py-2.5 font-mono text-[12px]">
             Granted: <b className="break-all">{granted}</b> · {grantedSitting}
           </p>
         )}
 
         {needing.length > 0 && (
-          <section className="mb-6 border-[1.5px] border-red-pen bg-[#FDF1F0] p-3">
-            <div className="section-label is-alert">Payments needing attention</div>
-            <ul className="mt-2 space-y-2">
+          <Refusal
+            id="payments-attention"
+            amber
+            className="mb-6"
+            label="Payments needing attention"
+            sentence="A failed grant, or one still pending an hour on, is a payment a person must finish."
+          >
+            <ul className="mt-3 space-y-2">
               {needing.map((f) => (
-                <li key={String(f._id)} className="break-all border-t border-dashed border-red-pen pt-2 font-mono text-[12px]">
+                <li key={String(f._id)} className="break-all border-t border-paper-deep pt-2 font-mono text-[12px]">
                   {f.status === 'failed' ? 'grant FAILED' : 'still pending after an hour'} · {new Date(f.ts).toISOString().slice(0, 16).replace('T', ' ')}
                   <span className="ml-2 text-dim">{f.session_id} · {f.event_id}{f.reason ? ` · ${f.reason}` : ''}</span>
                   <div className="mt-1 text-ink">
@@ -128,7 +135,7 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
                 </li>
               ))}
             </ul>
-          </section>
+          </Refusal>
         )}
 
         <p className="mb-3 max-w-prose text-[13px] leading-snug text-dim">
@@ -157,21 +164,16 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
         </details>
 
         {unmatched.length > 0 && (
-          <section className="mb-6 border-[1.5px] border-red-pen bg-[#FDF1F0] p-3">
-            <div className="section-label is-alert">
-              {unmatched.length} payment{unmatched.length === 1 ? '' : 's'} with no matching account
-            </div>
-            <p className="mt-1 text-[12px] leading-snug">
-              Someone has paid and the email does not belong to a student. Find the account they
-              actually registered with and grant it below, or mark this resolved if it was a refund
-              or a duplicate.
-            </p>
-            <ul className="mt-2 space-y-2">
+          <Refusal
+            id="payments-unmatched"
+            className="mb-6"
+            label={`${unmatched.length} payment${unmatched.length === 1 ? '' : 's'} with no matching account`}
+            sentence="Someone has paid and the email does not belong to a student."
+            remains="Find the account they actually registered with and grant it below, or mark this resolved if it was a refund or a duplicate."
+          >
+            <ul className="mt-3">
               {unmatched.map((p) => (
-                <li
-                  key={String(p._id)}
-                  className="flex flex-wrap items-baseline justify-between gap-2 border-t border-dashed border-red-pen pt-2"
-                >
+                <li key={String(p._id)} className={`flex flex-wrap items-baseline justify-between gap-2 ${ROW}`}>
                   <span className="min-w-0 break-all font-mono text-[12px]">
                     {p.email ?? 'no email on the payment'}
                     <span className="ml-2 text-dim">
@@ -183,28 +185,27 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                   </span>
                   <form action={resolvePayment} className="flex flex-wrap items-center gap-2">
                     <input type="hidden" name="id" value={String(p._id)} />
-                    <input name="reason" required minLength={3} placeholder="why: refund · duplicate · granted to …" className="min-h-11 min-w-0 flex-1 border-[1.5px] border-ink px-2 font-mono text-base" />
-                    <button className="min-h-11 font-mono text-[11px] uppercase tracking-widest underline">
-                      Mark resolved
-                    </button>
+                    <input name="reason" required minLength={3} placeholder="why: refund · duplicate · granted to …" className={`${FIELD} min-w-0 flex-1`} />
+                    <button className={QUIET}>Mark resolved</button>
                   </form>
                 </li>
               ))}
             </ul>
-          </section>
+          </Refusal>
         )}
 
         {refused.length > 0 && (
-          <section className="mb-6 border-[1.5px] border-[#D9A62E] bg-[#FDF8EC] p-3">
-            <div className="section-label">Refused payments</div>
-            <p className="mt-1 text-[12px] leading-snug">
-              Signed checkouts the webhook did not grant. A Payment Link of ours without
-              metadata product=extralesson shows here as not-ours; a delayed payment shows as not-paid
-              until Stripe says it is paid.
-            </p>
-            <ul className="mt-2 space-y-1">
+          <Refusal
+            id="payments-refused"
+            amber
+            className="mb-6"
+            label="Refused payments"
+            sentence="Signed checkouts the webhook did not grant."
+            remains="A Payment Link of ours without metadata product=extralesson shows here as not-ours; a delayed payment shows as not-paid until Stripe says it is paid."
+          >
+            <ul className="mt-3">
               {refused.map((f) => (
-                <li key={String(f._id)} className="break-all border-t border-dashed border-[#D9A62E] pt-1 font-mono text-[12px]">
+                <li key={String(f._id)} className={`break-all font-mono text-[12px] ${ROW}`}>
                   {new Date(f.ts).toISOString().slice(0, 16).replace('T', ' ')} · {f.reason}
                   <span className="ml-2 text-dim">
                     metadata {JSON.stringify(f.metadata ?? {})} · {f.session_id}
@@ -212,7 +213,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                 </li>
               ))}
             </ul>
-          </section>
+          </Refusal>
         )}
 
         {([
@@ -222,9 +223,10 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
         ] as const).map(([title, list]) =>
           list.length === 0 ? null : (
             <div key={title}>
-              <div className="section-label mb-2 mt-6">{title} · {list.length}</div>
+              <div className="section-label mt-6">{title} · {list.length}</div>
+              <ul>
               {list.map((r) => (
-          <section key={r.id} className="mb-3 border-[1.5px] border-ink bg-white p-3">
+          <li key={r.id} className={ROW}>
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <div className="min-w-0">
                 <div className="min-w-0 break-all font-mono text-[13px]">{r.email}</div>
@@ -253,7 +255,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
             </div>
 
             {r.access ? (
-              <div className="mt-2 flex flex-wrap items-baseline justify-between gap-2 border-t border-dashed border-paper-deep pt-2">
+              <div className="mt-1 flex flex-wrap items-baseline justify-between gap-2">
                 <span className="font-mono text-[11px] text-dim">
                   granted {new Date(r.access.granted_at).toISOString().slice(0, 10)} ·{' '}
                   {r.access.source}
@@ -261,22 +263,13 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                 </span>
                 <form action={revokeAccess}>
                   <input type="hidden" name="id" value={r.id} />
-                  <button className="min-h-11 font-mono text-[11px] uppercase tracking-widest text-red-pen underline">
-                    Revoke
-                  </button>
+                  <button className={`${QUIET} text-red-pen`}>Revoke</button>
                 </form>
               </div>
             ) : (
-              <form
-                action={grantAccess}
-                className="mt-2 flex flex-wrap items-center gap-2 border-t border-dashed border-paper-deep pt-2"
-              >
+              <form action={grantAccess} className="mt-2 flex flex-wrap items-center gap-2">
                 <input type="hidden" name="id" value={r.id} />
-                <select
-                  name="sitting"
-                  defaultValue={r.exam_sitting}
-                  className="min-h-11 border-[1.5px] border-ink bg-white px-2 font-mono text-base"
-                >
+                <select name="sitting" defaultValue={r.exam_sitting} className={SELECT}>
                   {SITTINGS.map((s) => (
                     <option key={s.value} value={s.value}>
                       {s.label}
@@ -287,15 +280,14 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                   name="note"
                   required
                   placeholder="comp · teacher · school · 2026-08-26"
-                  className="min-h-11 min-w-0 flex-1 border-[1.5px] border-ink px-2 font-mono text-base"
+                  className={`${FIELD} min-w-0 flex-1`}
                 />
-                <button className="min-h-11 bg-ink px-3 font-mono text-[11px] uppercase tracking-widest text-paper">
-                  Grant access
-                </button>
+                <button className={`${INK} text-sm`}>Grant access</button>
               </form>
             )}
-          </section>
+          </li>
               ))}
+              </ul>
             </div>
           ),
         )}

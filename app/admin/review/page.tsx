@@ -14,6 +14,8 @@ import { findQuestions } from '@/lib/admin/find-questions';
 import { OBJECTIVE_FLOOR } from '@/lib/targets/objectives';
 import { reviewFlags } from '@/lib/admin/review-flags';
 import Link from 'next/link';
+import { Refusal } from '../../refusal';
+import { CAPS, FIELD, QUIET } from '../ui';
 
 export const metadata = { title: 'Review queue — ExtraLesson admin' };
 export const dynamic = 'force-dynamic';
@@ -246,28 +248,22 @@ export default async function ReviewPage({
             name="find"
             defaultValue={find ?? ''}
             placeholder="Find by id (d16f74) or by text (hire purchase, ferry, cumulative)"
-            className="w-full border-[1.5px] border-ink p-2 font-mono text-base"
+            className={`${FIELD} w-full`}
           />
 
-          <button
-            type="submit"
-            className="shrink-0 border-[1.5px] border-ink bg-white px-4 font-mono text-[11px] uppercase"
-          >
+          <button type="submit" className={`${CAPS} shrink-0`}>
             Find
           </button>
 
           {(find || askedId) && (
-            <Link
-              href="/admin/review"
-              className="shrink-0 border-[1.5px] border-ink bg-white px-4 py-2 font-mono text-[11px] uppercase"
-            >
+            <Link href="/admin/review" className={`${QUIET} shrink-0`}>
               Clear
             </Link>
           )}
         </form>
 
         {find && (
-          <div className="mb-6 border-[1.5px] border-dashed border-paper-deep bg-white p-3">
+          <div className="mb-6 border-[1.5px] border-ink bg-white p-4">
             <div className="section-label">
               {found.length === 0 ? 'nothing matched' : `${found.length} match${found.length === 1 ? '' : 'es'}`}
             </div>
@@ -302,7 +298,7 @@ export default async function ReviewPage({
         {/* DEFICITS ONLY. The full picture lives on the coverage page; under
             a review card it was a dashboard, and what is on target is worth
             exactly two words. */}
-        <section className="mb-6 border-l-3 border-paper-deep bg-white p-3 text-sm">
+        <section className="mb-6 border-l-3 border-paper-deep bg-note px-3 py-2.5 text-sm">
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <span className="font-mono text-[10px] uppercase tracking-widest text-dim">deficits</span>
             {deficits.length === 0 && shortTopics.length === 0 ? (
@@ -335,9 +331,7 @@ export default async function ReviewPage({
         {question ? (
           <ReviewCard question={question} />
         ) : (
-          <p className="border-l-3 border-green-pen bg-white p-4">
-            Queue is empty — no drafts to review. Run the generation pipeline to add more.
-          </p>
+          <Refusal id="queue-empty" label="Queue is empty" sentence="No drafts to review." remains="Run the generation pipeline to add more." />
         )}
 
     </div>
