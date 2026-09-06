@@ -6,6 +6,9 @@ import type { CaptureResult } from './mark-working';
 import { WorkingRead } from './working-read';
 import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
 import { LANDING } from '@/lib/landing-content';
+import { Refusal } from '../../../refusal';
+
+const WORDS = ['no', 'one', 'two', 'three', 'four', 'five'];
 
 /**
  * PHOTO FIRST (ROUND_4 Task 1): before submit the page is read and the boxes
@@ -177,7 +180,7 @@ export function WorkingPhoto({
           footer={
             attemptId && marked.failed
               ? 'The read is kept. Only the marking has to run again.'
-              : takesLeft > 0
+              : takesLeft > 0 || !attemptId
                 ? undefined
                 : `No retakes left for this question. Check the answer boxes below. If we misread your working, tell us: ${LANDING.contactEmail}`
           }
@@ -189,6 +192,17 @@ export function WorkingPhoto({
           <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">Your photograph</summary>
           <img src={thumb} alt="The page you photographed" className="mt-1 max-h-64 border-[1.5px] border-ink object-contain" />
         </details>
+      )}
+
+      {read && takesLeft === 0 && !attemptId && (
+        <Refusal
+          id="no-retakes"
+          className="mt-3"
+          label="No retakes left"
+          sentence={`${WORDS[MAX_TAKES] ?? MAX_TAKES} photographs of this page have been read already.`.replace(/^./, (c) => c.toUpperCase())}
+          remains="The read we have is kept, and you can correct any line of it yourself before you hand in."
+          action={{ label: 'Check what we read', small: 'Fix a line, or hand in as is', href: '#camera-box' }}
+        />
       )}
 
       {/* The way to another take sits under what this one read, with the count beside it. */}

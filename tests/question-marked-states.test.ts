@@ -15,7 +15,7 @@ const PART_A = '(a) Calculate the length of BC. [3] Answer to (a) 11.9 ✓ ';
 const PART_B = '(b) Calculate the area of triangle ABC. [2] Answer to (b) 95.2 ✗ You wrote 8 × 11.9 and stopped — the half is missing. Area of a triangle is ½ × base × height. The multiplication earned the method mark; the value did not earn the accuracy mark. ';
 const ROWS_B = '✓ Correct base and height used – Area correct to 1 d.p. — 95.2 is twice the area ';
 const PART_C = '(c) Show that the perimeter is less than 35 cm. [2] Work this one on paper — it is marked from your photograph. ';
-const LOOK_BACK = 'You have already answered this one — this is what you wrote. It cannot be answered again, and looking back does not change your marks. ';
+const LOOK_BACK = 'This question is handed in Answers close once a question is marked, the way a paper does. If a mark looks wrong, query it — a person looks before anything changes. Read your marking 6 of 7 marks · with the reasons ';
 const SOLUTION = 'Worked solution (a) tan 34° = AB / BC, so BC = 8 / tan 34° = 11.9 cm (1 d.p.). (b) Area = ½ × BC × AB = ½ × 11.9 × 8 = 47.6 cm² . (c) AC = 8 / sin 34° = 14.3 cm, so the perimeter is 8 + 11.9 + 14.3 = 34.2 cm, which is less than 35 cm. Back to where you were → ';
 const READ = 'This is what we read (a) tan 34 = 8 / BC BC = 8 / tan 34 = 11.9 (b) 8 × 11.9 = 95.2 P = 8 + 11.9 + 14.3 = 34.2 < 35 ';
 const READ_EARNED = 'What this earned ✓ Perimeter formed from all three sides ✓ Comparison with 35 cm stated These are added to what you had already earned. Nothing here can take a mark away. ';
@@ -48,7 +48,7 @@ describe('the marked question, three states', () => {
         'Marking did not finish. Your marks so far are unchanged, and what we read is kept. Try marking again No new photograph — the same page is marked again ' +
         QUESTION + PART_A +
         '(b) Calculate the area of triangle ABC. [2] Answer to (b) 95.2 ✗ Area of a triangle is ½ × base × height. The multiplication earned the method mark; the value did not earn the accuracy mark. ' +
-        PART_C + LOOK_BACK + SOLUTION + READ + 'The read is kept. Only the marking has to run again. ' + CODES + '(c) R1 — not assessed (c) R2 — not assessed ' + NAV,
+        PART_C + LOOK_BACK.replace('6 of 7', '4 of 5') + SOLUTION + READ + 'The read is kept. Only the marking has to run again. ' + CODES + '(c) R1 — not assessed (c) R2 — not assessed ' + NAV,
     );
     expect(renderMarked(MARKED.failed).match(/Try marking again/g)).toHaveLength(1);
   });

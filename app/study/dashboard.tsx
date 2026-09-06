@@ -10,7 +10,8 @@ import type { FirstQuestion } from '@/lib/study/first-question';
 import { MIN_MARKS_FOR_PREDICTION } from '@/lib/mastery/config';
 import { DIAGNOSTIC_MINUTES, SESSION_MINUTES } from '@/lib/session/builder';
 import { DIAGNOSTIC_INTERVAL_DAYS, FREE_SESSIONS } from '@/lib/access';
-import { paymentLink } from '@/lib/landing-content';
+import { LANDING, paymentLink } from '@/lib/landing-content';
+import { Refusal } from '../refusal';
 
 export interface DashboardProps {
   firstName: string;
@@ -360,72 +361,107 @@ function Choose(p: DashboardProps) {
   );
 }
 
-/** What a refused start says, beneath the action it refused. */
+/** What a refused start says, beneath the action it refused: one pattern for all seven. */
 function Notices({ error, mode, sitting, email }: DashboardProps) {
-  const panel = 'order-1 mt-4 border-[1.5px] border-ink bg-white p-4 shadow-[var(--shadow-panel)]';
-  const line = 'order-1 mt-4 border-l-3 border-red-pen bg-[#FDF1F0] p-3 text-sm';
+  const cls = 'order-1 mt-4';
+  const today = { label: 'Start today’s session', small: `${SESSION_MINUTES} minutes · weakest topics first`, form: { mode: 'adaptive' } };
   return (
     <>
       {error === 'access-expired' && (
-        <section className={panel}>
-          <div className="section-label is-alert">That sitting has finished</div>
-          <p className="mt-1 text-sm leading-snug">
-            Your access was for {sitting ?? 'that sitting'}, and it has passed. Everything you did is
-            still here to read back. To keep practising for the next sitting, get access again.
-          </p>
-          <a href={paymentLink()} target="_blank" rel="noopener" className="mt-3 block bg-red-pen p-3 text-center font-black text-white shadow-[var(--shadow-panel)]">
-            Get access for the next sitting
-          </a>
-        </section>
+        <Refusal
+          id="sitting-passed"
+          className={cls}
+          label="Your sitting has passed"
+          sentence={<>Access ran to {sitting ?? 'that sitting'}, and that paper is written.</>}
+          remains="Your notebook stays open — every question and every mark, for as long as you want to read them."
+          action={{ label: 'Get access for the next sitting', small: `${LANDING.price} · one payment · runs to your sitting`, href: paymentLink(), newTab: true }}
+        />
       )}
       {error === 'diagnostic-taken' && (
-        <section className={panel}>
-          <div className="section-label is-alert">You have already done the diagnostic</div>
-          <p className="mt-1 text-sm leading-snug">
-            It ranks your topics, and it has — your sessions start where it put you. Another one this
-            term would rank the same topics from the same answers. It opens again after{' '}
-            {DIAGNOSTIC_INTERVAL_DAYS} days, for coming back to after a term away.
-          </p>
-        </section>
+        <Refusal
+          id="diagnostic-taken"
+          className={cls}
+          label="You have already done the diagnostic"
+          sentence="It ranks your topics, and it has — your sessions start where it put you."
+          remains={<>Another one this term would rank the same topics from the same answers. It opens again after {DIAGNOSTIC_INTERVAL_DAYS} days, for coming back to after a term away.</>}
+          action={today}
+        />
       )}
       {error === 'first-taken' && (
-        <section className={panel}>
-          <div className="section-label is-alert">You have had your first question</div>
-          <p className="mt-1 text-sm leading-snug">
-            It was one question to show how marking works, and it is done. A session gives you whole
-            exam questions marked the same way.
-          </p>
-        </section>
+        <Refusal
+          id="first-taken"
+          className={cls}
+          label="You have had your first question"
+          sentence="It was one question to show how marking works, and it is done."
+          remains="A session gives you whole exam questions marked the same way."
+          action={today}
+        />
       )}
       {error === 'needs-access' && (
-        <section className={panel}>
-          <div className="section-label is-alert">That was your {FREE_SESSIONS} free sessions</div>
-          <p className="mt-1 text-sm leading-snug">
-            Everything you have done stays here — your marks, your topics, and every question you have
-            answered. To sit another session, get access for your exam sitting.
-          </p>
-          <a href={paymentLink()} target="_blank" rel="noopener" className="mt-3 block bg-red-pen p-3 text-center font-black text-white shadow-[var(--shadow-panel)]">
-            Get access
-          </a>
+        <Refusal
+          id="paywall"
+          className={cls}
+          label={`That was your ${FREE_SESSIONS} free sessions`}
+          sentence={<>The free question, the diagnostic and your {FREE_SESSIONS} free sessions are used. Daily sessions, the diagnostic and examiner-style marking need full access.</>}
+          remains="Everything you have done stays here — your marks, your topics, and every question you have answered."
+          action={{ label: `Get access — ${LANDING.price}`, small: 'SECURE CHECKOUT · CARD OR APPLE PAY', red: true, href: paymentLink(), newTab: true }}
+          quiet={{ label: 'Read your marked work', href: '/study/history' }}
+        >
+          <div className="mt-5 flex items-baseline gap-3">
+            <div className="text-[40px] font-black leading-none text-red-pen">{LANDING.price}</div>
+            <div className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.12em] text-dim">
+              One payment · no subscription
+              <br />
+              Runs to your sitting
+            </div>
+          </div>
           <p className="mt-2 text-[11px] leading-snug text-dim">
             Use <span className="font-mono">{email}</span> when you pay, so we can match it to this account.
           </p>
-        </section>
+        </Refusal>
       )}
-      {error === 'no-questions' && (
-        <p className={line}>
-          {mode === 'topic'
-            ? 'There are no questions on that topic yet. Try another one, or start the usual session.'
-            : 'No approved questions are available for your modules yet. Check back soon.'}
-        </p>
+      {error === 'no-questions' && mode === 'topic' && (
+        <Refusal
+          id="no-questions-topic"
+          className={cls}
+          label="No questions on that topic yet"
+          sentence="There are no questions on that topic yet."
+          remains="Try another one, or start the usual session."
+          action={today}
+          quiet={{ label: 'Practise a topic', href: '/study' }}
+        />
+      )}
+      {error === 'no-questions' && mode !== 'topic' && (
+        <Refusal
+          id="no-questions"
+          className={cls}
+          label="No approved questions yet"
+          sentence="No approved questions are available for your modules yet."
+          remains="Check back soon. Everything you have done stays here."
+          quiet={{ label: 'Read your marked work', href: '/study/history' }}
+        />
       )}
       {error === 'nothing-to-revisit' && (
-        <p className={line}>
-          Nothing to revisit yet — the marks you have lost are all from the last few days. Come back to
-          them once they have had time to fade.
-        </p>
+        <Refusal
+          id="nothing-to-revisit"
+          className={cls}
+          label="Nothing to revisit yet"
+          sentence="The marks you lost are still fresh — revisiting them today would only be repeating them."
+          remains="They come back on their own, on the objectives you lost them on, in a few days."
+          action={today}
+        />
       )}
-      {error === 'no-topic' && <p className={line}>That topic is not one of yours. Pick one from the list.</p>}
+      {error === 'no-topic' && (
+        <Refusal
+          id="no-topic"
+          className={cls}
+          label="That topic is not one of yours"
+          sentence="That topic is not one of yours."
+          remains="Pick one from the list."
+          action={today}
+          quiet={{ label: 'Practise a topic', href: '/study' }}
+        />
+      )}
     </>
   );
 }

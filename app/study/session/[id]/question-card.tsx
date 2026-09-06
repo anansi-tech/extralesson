@@ -13,6 +13,7 @@ import { WorkingPhoto } from './working-photo';
 import { MethodRows, WorkingRead } from './working-read';
 import { isPositionalLabel } from '@/lib/notation';
 import { PROFILE_GLOSS } from '@/lib/study/profiles';
+import { Refusal } from '../../../refusal';
 
 export interface CardQuestion {
   sessionId: string;
@@ -863,10 +864,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       {error && <p className="order-6 mt-3 text-sm text-red-pen lg:mt-0">{error}</p>}
 
       {reviewing && (
-        <p className="order-6 mt-4 border-l-3 border-paper-deep bg-[#FFFDF6] p-2 text-[13px] text-dim lg:mt-0">
-          You have already answered this one — this is what you wrote. It cannot be answered again,
-          and looking back does not change your marks.
-        </p>
+        <Refusal
+          id="handed-in"
+          className="order-6 mt-4 lg:mt-0"
+          label="This question is handed in"
+          sentence="Answers close once a question is marked, the way a paper does."
+          remains="If a mark looks wrong, query it — a person looks before anything changes."
+          action={{ label: 'Read your marking', small: `${earned} of ${outOf} marks · with the reasons`, href: '#marking' }}
+        />
       )}
 
       {!feedback ? (
