@@ -7,6 +7,7 @@ import { WorkingRead } from './working-read';
 import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
 import { LANDING } from '@/lib/landing-content';
 import { Refusal } from '../../../refusal';
+import { TOO_MANY, windowMinutes } from '@/lib/auth/rate-limit';
 
 const WORDS = ['no', 'one', 'two', 'three', 'four', 'five'];
 
@@ -153,12 +154,9 @@ export function WorkingPhoto({
         }}
       />
 
-      {error && (
-        <p className="mt-2 border-l-3 border-red-pen bg-[#FDF1F0] p-2 text-[12px] leading-snug">
-          {error}
-        </p>
-      )}
+      {error && <CaptureFailure message={error} onRetake={() => fileRef.current?.click()} />}
 
+      {read && !read.legible && !attemptId && <CaptureFailure message="illegible" onRetake={() => fileRef.current?.click()} />}
       {read && (
         <WorkingRead
           lines={read.lines}
@@ -262,5 +260,43 @@ export function CameraBox({
       {pick}
       {children}
     </div>
+  );
+}
+
+/**
+ * WHEN THE PHOTOGRAPH DID NOT WORK (ROUND_9 Task 7; Refusals.dc.html §09):
+ * the refusal pattern on the amber bar. Nothing was marked and nothing
+ * counted; the one thing to do is take it again. Exported so each case can
+ * be rendered on its own.
+ */
+export function CaptureFailure({ message, onRetake }: { message: string; onRetake: () => void }) {
+  const remains = 'Nothing has been marked and nothing has been counted. Your working on paper is still the working.';
+  if (message === TOO_MANY) {
+    const wait = windowMinutes('read');
+    return (
+      <Refusal
+        id="read-limited"
+        amber
+        className="mt-3"
+        label="Too many at once"
+        sentence={`Too many photographs at once. You can try again in ${wait} minute${wait === 1 ? '' : 's'}.`}
+        remains={remains}
+        action={{ label: 'Take it again', small: `Available in ${wait} minute${wait === 1 ? '' : 's'}`, onClick: onRetake }}
+      />
+    );
+  }
+  const unreadable = message === 'illegible' || /could not (be )?read/i.test(message);
+  return (
+    <Refusal
+      id="read-failed"
+      amber
+      className="mt-3"
+      label="Couldn’t read the page"
+      sentence={unreadable ? 'The photograph came through, but the writing on it could not be made out.' : message}
+      remains={remains}
+      action={{ label: 'Take it again', onClick: onRetake }}
+      advice="Flat page, good light, the whole answer in frame."
+      quiet={{ label: 'Or type the answers instead', href: '#question' }}
+    />
   );
 }

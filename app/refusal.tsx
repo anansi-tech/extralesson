@@ -10,6 +10,9 @@ export interface RefusalAction {
   /** A session to start instead. */
   form?: { mode: string; topic?: string };
   newTab?: boolean;
+  /** Something to do on this page, such as taking the photograph again. */
+  onClick?: () => void;
+  disabled?: boolean;
 }
 
 const QUIET = 'inline-flex min-h-11 items-center font-mono text-[11px] uppercase tracking-[0.14em] underline underline-offset-[3px]';
@@ -25,27 +28,46 @@ export function Refusal({
   sentence,
   remains,
   action,
+  advice,
   quiet,
   children,
   className,
+  amber = false,
+  bare = false,
 }: {
   id: string;
   label: string;
   sentence: React.ReactNode;
   remains?: React.ReactNode;
   action?: RefusalAction;
+  /** One mono line under the action, such as how to hold the phone. */
+  advice?: string;
   quiet?: { label: string; href: string };
+  /** A failure: the label and the sentence on the amber bar — none of these costs a mark, so never red. */
+  amber?: boolean;
+  /** Already inside a card, such as the door's: no frame of its own. */
+  bare?: boolean;
   /** Between what remains true and the action: the paywall's price. */
   children?: React.ReactNode;
   className?: string;
 }) {
   return (
-    <section data-refusal={id} className={`border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-panel)] ${className ?? ''}`}>
-      <div className="block pb-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.14em] shadow-[0_1.5px_0_var(--margin)]">{label}</div>
-      <p className="mt-3.5 text-[15px] leading-normal">{sentence}</p>
-      {remains && <p className="mt-2 text-[13px] leading-normal text-dim">{remains}</p>}
+    <section data-refusal={id} className={`${bare ? '' : 'border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-panel)]'} ${className ?? ''}`}>
+      {amber ? (
+        <div className="border-l-3 border-amber bg-[#FDF8EC] px-3 py-2.5">
+          <div className="font-mono text-[11px] font-bold uppercase tracking-[0.14em]">{label}</div>
+          <p className="mt-2 text-sm leading-normal">{sentence}</p>
+        </div>
+      ) : (
+        <>
+          <div className="block pb-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.14em] shadow-[0_1.5px_0_var(--margin)]">{label}</div>
+          <p className="mt-3.5 text-[15px] leading-normal">{sentence}</p>
+        </>
+      )}
+      {remains && <p className={`${amber ? 'mt-3' : 'mt-2'} text-[13px] leading-normal text-dim`}>{remains}</p>}
       {children}
       {action && <Action {...action} />}
+      {advice && <p className="mt-2.5 font-mono text-[11px] leading-relaxed text-dim">{advice}</p>}
       {quiet && (
         <div className="mt-[18px] border-t border-paper-deep pt-3">
           <Link href={quiet.href} className={QUIET}>{quiet.label}</Link>
@@ -55,7 +77,7 @@ export function Refusal({
   );
 }
 
-function Action({ label, small, red, href, form, newTab }: RefusalAction) {
+function Action({ label, small, red, href, form, newTab, onClick, disabled }: RefusalAction) {
   const className = red
     ? 'mt-[18px] block min-h-11 w-full bg-red-pen p-4 text-left text-[17px] font-black text-white shadow-[var(--shadow-card)]'
     : 'mt-4 block min-h-11 w-full border-[1.5px] border-ink p-3 text-left text-sm';
@@ -68,6 +90,13 @@ function Action({ label, small, red, href, form, newTab }: RefusalAction) {
       {small && <small className={smallClass}>{small}</small>}
     </>
   );
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} disabled={disabled} className={`${className} bg-white font-mono text-xs uppercase tracking-[0.1em] disabled:opacity-60`}>
+        {body}
+      </button>
+    );
+  }
   if (form) {
     return (
       <form action={startSession}>
