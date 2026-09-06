@@ -88,5 +88,7 @@ export const visibleText = (html: string): string =>
     .replace(/<[^>]+>/g, ' ')
     .replace(/&#x27;|&rsquo;|&#8217;/g, '’')
     .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
     .replace(/\s+/g, ' ')
     .trim();

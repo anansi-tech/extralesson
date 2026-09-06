@@ -21,13 +21,13 @@ export function DisputeButton({
 
   if (done) {
     return (
-      <span className="block font-mono text-[11px] text-dim">
+      <span className="mt-1 block font-mono text-[11px] text-dim">
         Queried. A person will look before anything changes.
       </span>
     );
   }
   return (
-    <span className="block">
+    <span className="mt-0.5 block">
       <button
         type="button"
         disabled={pending}
@@ -38,7 +38,7 @@ export function DisputeButton({
             else setDone(true);
           })
         }
-        className="min-h-11 font-mono text-[11px] uppercase tracking-widest text-red-pen underline disabled:opacity-60"
+        className="inline-flex min-h-11 items-center font-mono text-[11px] uppercase tracking-[0.14em] text-red-pen underline underline-offset-[3px] disabled:opacity-60"
       >
         Query this mark
       </button>

@@ -18,7 +18,7 @@ export function RejectLineButton({
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   return (
-    <span className="ml-2 inline-flex items-center">
+    <span className="block">
       <button
         type="button"
         disabled={pending}
@@ -29,9 +29,9 @@ export function RejectLineButton({
             else onToggled(!rejected);
           })
         }
-        className="min-h-11 font-mono text-[10px] uppercase tracking-widest text-dim underline disabled:opacity-60"
+        className="inline-flex min-h-11 items-center font-mono text-[11px] uppercase tracking-[0.14em] text-dim underline underline-offset-[3px] disabled:opacity-60"
       >
-        {rejected ? 'That is mine' : 'Not what I wrote'}
+        {rejected ? 'Put it back' : 'Not what I wrote'}
       </button>
       {error && <span className="ml-2 font-mono text-[10px] text-red-pen">{error}</span>}
     </span>

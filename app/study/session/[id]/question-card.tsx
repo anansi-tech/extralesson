@@ -10,7 +10,7 @@ import type { ReadResult } from './capture';
 import { TypedInput } from './typed-input';
 import { HintLines, SymbolStrip } from './affordance';
 import { WorkingPhoto } from './working-photo';
-import { WorkingRead } from './working-read';
+import { MethodRows, WorkingRead } from './working-read';
 import { isPositionalLabel } from '@/lib/notation';
 import { PROFILE_GLOSS } from '@/lib/study/profiles';
 
@@ -462,8 +462,88 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const outOf = outcome.assessed;
   const stateOf = new Map(outcome.rows.map((r) => [r.code, r.state]));
 
+  // THE ROWS SIT UNDER THEIR PARTS (ROUND_8 Task 3): the latest marked read's
+  // rows, by the part each code belongs to; a part with nothing typed keeps
+  // its rows under the read. The query control needs the read they came from.
+  const lastTake = [...(question.prior?.working ?? [])].reverse().find((w) => w.marked);
+  const rows = feedback?.working?.marked ? feedback.working.method : (lastTake?.method ?? []);
+  const partOf = new Map(question.rubricCodes.map((r) => [r.code, r.part_label]));
+  const typedParts = new Set(question.parts.filter((p) => p.slots.some((sl) => sl.mode === 'answer')).map((p) => p.label));
+  const rowsFor = (label: string) => rows.filter((m) => partOf.get(m.code) === label);
+  const partRowCodes = new Set(rows.filter((m) => typedParts.has(partOf.get(m.code) ?? '')).map((m) => m.code));
+  const rowDispute =
+    feedback?.working?.marked && !reviewing
+      ? { attemptId: feedback.attemptId, transcriptionId: feedback.working.transcriptionId, disputed: [] as string[] }
+      : question.prior && lastTake
+        ? { attemptId: question.prior.feedback.attemptId, transcriptionId: lastTake.transcriptionId, disputed: lastTake.disputed }
+        : undefined;
+  const fromPageMarks = feedback?.working?.marked ? feedback.working.marksAdded : (lastTake?.method.filter((m) => m.awarded).length ?? 0);
+  const queried = lastTake?.disputed.length ?? 0;
+  const questionsLeft = question.total - question.index - 1;
+  const marksLeft = Math.max(0, question.marksTotal - question.marksAnswered - question.marks);
+
   return (
     <article className="mt-5 border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-card)] lg:p-7">
+      {/* THE MARKED QUESTION READS TOP-DOWN (ROUND_7 Task 1; ROUND_8 Task 3): one
+          line that says what was earned, and three places to go. */}
+      {feedback && (
+        <nav id="marking" className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b-[1.5px] border-rule pb-2.5 lg:gap-x-6 lg:gap-y-2">
+          <b className="font-mono text-[15px] lg:text-[17px]">
+            {earned} of {outOf} marks
+            <span className="font-normal text-dim">
+              {fromPageMarks > 0 && <> · {fromPageMarks} from your page</>}
+              {queried > 0 && <> · {queried} queried</>}
+              {outcome.unassessedMarks > 0 && <> · {outcome.unassessedMarks} unassessed</>}
+            </span>
+          </b>
+          <span className="flex gap-x-3 font-mono text-[10px] uppercase tracking-[0.1em] lg:gap-x-4">
+            <a href="#your-marking" className="underline underline-offset-[3px]">Your marking</a>
+            <a href="#question" className="underline underline-offset-[3px]">Question</a>
+            <a href="#worked-solution" className="underline underline-offset-[3px]"><span className="lg:hidden">Solution</span><span className="hidden lg:inline">Worked solution</span></a>
+          </span>
+        </nav>
+      )}
+
+      {feedback && (
+        <>
+          {/* The fraction is the verdict. A cross only at zero: two of three is
+              not "not quite", it is two of three. */}
+          <div
+            id="your-marking"
+            className={`mt-3 flex items-baseline justify-between border-l-3 p-2.5 ${
+              earned === 0
+                ? 'border-red-pen bg-[#FDF1F0]'
+                : earned >= outOf
+                  ? 'border-green-pen bg-[#E8F0E9]'
+                  : 'border-[#D9A62E] bg-[#FDF8EC]'
+            }`}
+          >
+            <b className={`font-mono text-lg ${earned === 0 ? 'text-red-pen' : earned >= outOf ? 'text-green-pen' : 'text-ink'}`}>
+              {earned}/{outOf}
+              {earned === 0 && <span className="ml-1 font-hand">✗</span>}
+            </b>
+            {markingFailed ? (
+              <span className="text-right font-mono text-[10px] text-dim">marking did not finish — try again below</span>
+            ) : (
+              outcome.unassessedMarks > 0 && (
+                <span className="text-right font-mono text-[10px] text-dim">
+                  {outcome.unassessedMarks} mark{outcome.unassessedMarks === 1 ? '' : 's'}{' '}
+                  {readExists ? 'could not be assessed from this photo' : 'not assessed without the working'}
+                </span>
+              )
+            )}
+          </div>
+          {/* A marking that did not finish is said first, with the way to run it again; the read is kept. */}
+          {markingFailed && (
+            <RetryMarkingButton
+              attemptId={feedback.attemptId}
+              onMarked={reviewing ? undefined : (res) => setFeedback((fb) => (fb ? { ...fb, working: res } : fb))}
+            />
+          )}
+        </>
+      )}
+
+
       {question.stimulusHtml && (
         <div
           className="question-prose mb-3 border-l-3 border-paper-deep pl-3 text-[15px]"
@@ -483,7 +563,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </div>
       )}
 
-      <div id="question" className="flex items-baseline justify-between gap-3 lg:gap-4">
+      <div id="question" className={`flex items-baseline justify-between gap-3 lg:gap-4 ${feedback ? 'mt-4' : ''}`}>
         <div
           className="question-prose text-lg lg:max-w-[62ch]"
           dangerouslySetInnerHTML={{ __html: question.stemHtml }}
@@ -493,13 +573,13 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </span>
       </div>
 
-      {/* THE FIGURE BESIDE THE PARTS at 1280 (ROUND_8 Task 2): the rail holds the
-          figure and the camera; the column holds the parts and the hand-in. One
-          DOM: the phone's order, a two-column grid at lg. */}
-      <div className="lg:mt-5 lg:grid lg:grid-cols-[minmax(0,1fr)_var(--rail)] lg:items-start lg:gap-x-10">
-      <div className="lg:order-2 lg:flex lg:flex-col lg:gap-5">
+      {/* ONE DOM FOR BOTH WIDTHS: a flex column ordered for the phone, a grid
+          at lg with the figure and camera in the rail before the parts, and the
+          read and the codes in the rail after them. */}
+      <div className="flex flex-col lg:mt-5 lg:grid lg:grid-cols-[minmax(0,1fr)_var(--rail)] lg:items-start lg:gap-x-10">
+      <div className="contents lg:col-start-2 lg:row-start-1 lg:flex lg:flex-col lg:gap-5">
       {question.visualHtml && (
-        <div className="figure-frame mt-3 lg:mt-0" ref={figureRef}>
+        <div className="figure-frame order-2 mt-3 lg:mt-0" ref={figureRef}>
           <div
             className="figure-inner [&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
             style={{
@@ -525,13 +605,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             setReadFilled(Object.keys(prefill));
           }}
           onBusy={setReading}
-          className={pageRead ? 'lg:order-first' : undefined}
+          className={`order-3 ${pageRead ? 'lg:order-first' : 'lg:order-none'}`}
         />
       )}
       </div>
-      <div className="min-w-0 lg:order-1 lg:flex lg:flex-col lg:gap-5">
+
+      <div className="contents lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:flex lg:flex-col lg:gap-5">
       {question.kind === 'mcq' && question.optionsHtml && (
-        <div className="mt-4 space-y-2 lg:mt-0">
+        <div className="order-4 mt-4 space-y-2 lg:mt-0">
           {question.optionsHtml.map((o, i) => (
             <button
               key={i}
@@ -559,12 +640,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </div>
       )}
 
-
       {readFilled && !feedback && (() => {
         const unfilled = markedSlots.filter((sl) => !readFilled.includes(sl.ref));
         const filledRefs = markedSlots.filter((sl) => readFilled.includes(sl.ref)).map((sl) => sl.ref);
         return (
-          <p className="mt-2.5 border-l-3 border-margin bg-[#FFFDF6] px-3 py-1.5 text-xs leading-snug text-dim lg:mt-0">
+          <p className="order-4 mt-2.5 border-l-3 border-margin bg-[#FFFDF6] px-3 py-1.5 text-xs leading-snug text-dim lg:mt-0">
             {filledRefs.length > 0
               ? `We filled the single answers${filledRefs.length < markedSlots.length ? ` for (${filledRefs.join('), (')})` : ''}.`
               : 'We could not fill any boxes from the page.'}
@@ -585,7 +665,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       })()}
 
       {question.kind === 'structured' && (
-        <div className="mt-5 space-y-[18px] lg:mt-0 lg:space-y-5">
+        <div className="order-5 mt-5 space-y-[18px] lg:mt-0 lg:space-y-5">
           {question.parts.map((p) => {
             return (
               <div key={p.label}>
@@ -684,7 +764,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                           <div className="flex min-w-0 flex-1 items-start gap-2">
                           {slotAnswerInput(slot, {
                             describe: slotAriaLabel(p, slot),
-                            className: 'min-h-11 w-full border-[1.5px] border-ink bg-white p-2 font-mono text-base',
+                            className: 'min-h-11 w-full border-[1.5px] border-ink bg-white p-2 font-mono text-base disabled:opacity-70',
                             placeholder:
                               p.slots.length > 1
                                 ? `Answer to (${p.label})(${slot.label})`
@@ -717,12 +797,13 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                             {!feedback && readFilled?.includes(slot.ref) && (partAnswers[slot.ref] ?? '').trim() !== '' && (
                               <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.1em] text-dim">From your page — check it</div>
                             )}
+                            {/* THE SLIP COMES FIRST (ROUND_7 Task 1): the sentence, then the scheme's reason. */}
                             {partFeedback && !partFeedback.correct && slipFor(p.label) && (
-                              <p className="mt-1 font-hand text-[15px] leading-snug text-red-pen">{slipFor(p.label)}</p>
+                              <p className="mt-2 font-hand text-base leading-snug text-red-pen lg:mt-2.5 lg:text-[17px]">{slipFor(p.label)}</p>
                             )}
                             {partFeedback && !partFeedback.correct && partFeedback.reasonHtml && (
                               <p
-                                className="question-prose mt-1 border-l-3 border-red-pen bg-[#FDF1F0] px-2 py-1 text-[12px] leading-snug"
+                                className="question-prose mt-2 border-l-3 border-red-pen bg-[#FDF1F0] px-2.5 py-1.5 text-[12px] leading-snug lg:px-2.5 lg:py-2 lg:text-[13px]"
                                 dangerouslySetInnerHTML={{ __html: partFeedback.reasonHtml }}
                               />
                             )}
@@ -731,7 +812,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               disabled={!!feedback}
                               onInsert={(ch) => insertSymbol(slot.ref, !!slot.input, ch)}
                             />
-                            <HintLines hints={slot.hints ?? []} />
+                            <HintLines hints={feedback ? [] : (slot.hints ?? [])} />
                           </div>
                         </>
                       ) : (
@@ -769,35 +850,23 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                     </div>
                   );
                 })}
+                {/* The marker's rows for this part, with the query control under a withheld one. */}
+                {feedback && typedParts.has(p.label) && (
+                  <MethodRows method={rowsFor(p.label)} dispute={rowDispute} className="mt-3 lg:mt-3.5 lg:gap-2.5" />
+                )}
               </div>
             );
           })}
         </div>
       )}
 
-      {error && <p className="mt-3 text-sm text-red-pen">{error}</p>}
+      {error && <p className="order-6 mt-3 text-sm text-red-pen lg:mt-0">{error}</p>}
 
       {reviewing && (
-        <p className="mt-4 border-l-3 border-paper-deep bg-[#FFFDF6] p-2 text-[13px] text-dim">
+        <p className="order-6 mt-4 border-l-3 border-paper-deep bg-[#FFFDF6] p-2 text-[13px] text-dim lg:mt-0">
           You have already answered this one — this is what you wrote. It cannot be answered again,
           and looking back does not change your marks.
         </p>
-      )}
-
-      {/* THE MARKED QUESTION READS TOP-DOWN (ROUND_7 Task 1): one line that
-          says what was earned, and three places to go. */}
-      {feedback && (
-        <nav id="marking" className="mt-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b-[1.5px] border-rule pb-2">
-          <b className="font-mono text-sm">
-            {earned} of {outOf} marks
-            {outcome.unassessedMarks > 0 && <span className="font-normal text-dim"> · {outcome.unassessedMarks} unassessed</span>}
-          </b>
-          <span className="flex gap-x-3 font-mono text-[10px] uppercase tracking-widest">
-            <a href="#your-marking" className="underline">Your marking</a>
-            <a href="#question" className="underline">Question</a>
-            <a href="#worked-solution" className="underline">Worked solution</a>
-          </span>
-        </nav>
       )}
 
       {!feedback ? (
@@ -817,7 +886,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         />
         {/* Inline, in the place the marking will appear; never a modal. */}
         {pending && (
-          <div className="mt-5 animate-pulse lg:mt-0" aria-live="polite">
+          <div className="order-7 mt-5 animate-pulse lg:mt-0" aria-live="polite">
             <div className="font-mono text-[10px] uppercase tracking-widest text-dim">Marking…</div>
             {[3, 2, 4].map((w, i) => (
               <div key={i} className={`mt-2 h-3 rounded bg-paper-deep w-${w}/5`} />
@@ -827,44 +896,16 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         </>
         )
       ) : (
-        <div className="mt-5">
-          {/* The fraction is the verdict. A cross only at zero: two of three is
-              not "not quite", it is two of three. */}
-          <div
-            className={`flex items-baseline justify-between border-l-3 p-3 ${
-              earned === 0
-                ? 'border-red-pen bg-[#FDF1F0]'
-                : earned >= outOf
-                  ? 'border-green-pen bg-[#E8F0E9]'
-                  : 'border-[#D9A62E] bg-[#FDF8EC]'
-            }`}
-          >
-            <b className={`font-mono text-lg ${earned === 0 ? 'text-red-pen' : earned >= outOf ? 'text-green-pen' : 'text-ink'}`}>
-              {earned}/{outOf}
-              {earned === 0 && <span className="ml-1 font-hand">✗</span>}
-            </b>
-            {markingFailed ? (
-              <span className="text-right font-mono text-[10px] text-dim">marking did not finish — try again below</span>
-            ) : (
-              outcome.unassessedMarks > 0 && (
-                <span className="text-right font-mono text-[10px] text-dim">
-                  {outcome.unassessedMarks} mark{outcome.unassessedMarks === 1 ? '' : 's'}{' '}
-                  {readExists ? 'could not be assessed from this photo' : 'not assessed without the working'}
-                </span>
-              )
-            )}
-          </div>
-          <div id="your-marking" />
-
+        <>
           {feedback.formatFeedbackHtml && (
             <p
-              className="question-prose mt-2 border-l-3 border-[#D9A62E] bg-[#FDF8EC] p-2 text-sm"
+              className="question-prose order-8 mt-4 border-l-3 border-[#D9A62E] bg-[#FDF8EC] p-2 text-sm lg:mt-0"
               dangerouslySetInnerHTML={{ __html: feedback.formatFeedbackHtml }}
             />
           )}
 
           {feedback.construction && (
-            <div className="mt-3">
+            <div className="order-8 mt-4 lg:mt-0">
               <div className="section-label">
                 {feedback.construction.figureHtml
                   ? 'Your drawing should look like this'
@@ -897,8 +938,8 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             </div>
           )}
 
-          <div id="worked-solution" className="mt-3">
-            <div className="section-label">
+          <div id="worked-solution" className="order-8 mt-5 border-t-[1.5px] border-rule pt-3.5 lg:mt-0 lg:pt-4">
+            <div className="section-label pb-0.5 shadow-[0_1.5px_0_var(--margin)]">
               {feedback.isMisconception ? (
                 <span dangerouslySetInnerHTML={{ __html: feedback.feedbackTitleHtml }} />
               ) : (
@@ -906,21 +947,60 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               )}
             </div>
             <div
-              className="question-prose mt-1 text-[15px]"
+              className="question-prose mt-2.5 text-[15px] leading-relaxed lg:mt-3 lg:max-w-[62ch]"
               dangerouslySetInnerHTML={{ __html: feedback.feedbackHtml }}
             />
           </div>
 
+          {reviewing ? (
+            // No ?q= at all: the session resumes at the first unanswered
+            // question, or the summary when there is none. Pointing it at the
+            // LAST question linked to the current page whenever that was the
+            // one being reviewed, which is where a student ends up.
+            <Link
+              href={`/study/session/${question.sessionId}`}
+              className="order-10 mt-5 block bg-ink p-3.5 text-center text-base font-black text-paper shadow-[var(--shadow-on-ink)] lg:mt-0 lg:p-4"
+            >
+              Back to where you were →
+            </Link>
+          ) : (
+            <button
+              onClick={() => startTransition(() => router.refresh())}
+              disabled={pending}
+              className="order-10 mt-5 w-full bg-ink p-3.5 text-base font-black text-paper shadow-[var(--shadow-on-ink)] disabled:opacity-60 lg:mt-0 lg:p-4"
+            >
+              {questionsLeft <= 0 ? (
+                'Finish session'
+              ) : (
+                <>
+                  Next question →
+                  <small className="mt-1 block font-mono text-[10px] font-medium tracking-[0.1em] opacity-85">
+                    {questionsLeft === 1 ? 'ONE MORE' : `${questionsLeft} MORE`} · {marksLeft} MARK{marksLeft === 1 ? '' : 'S'}
+                  </small>
+                </>
+              )}
+            </button>
+          )}
+        </>
+      )}
+      </div>
+
+      {feedback && (
+        <div className="contents lg:col-start-2 lg:row-start-2 lg:flex lg:flex-col lg:gap-5">
           {/* After submit the read is marked. A student who typed instead is
               offered the camera only where the working could still earn
               something: a prompt on every question is a chore. */}
           {question.kind === 'structured' && !reviewing && (feedback.working || feedback.earnableByMethod > 0) && (
             <WorkingPhoto
+              key={String(feedback.working?.marked)}
               sessionId={question.sessionId}
               questionIndex={question.index}
               attemptId={feedback.attemptId}
               marks={feedback.earnableByMethod}
               initial={feedback.working}
+              onMarked={(res) => setFeedback((fb) => (fb ? { ...fb, working: res } : fb))}
+              hideRows={partRowCodes}
+              className="order-7"
             />
           )}
 
@@ -928,15 +1008,12 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               read is kept and shown. */}
           {reviewing &&
             question.prior?.working?.map((w) => (
-              <div key={w.take} className="mt-4 border-t-[1.5px] border-rule pt-4">
-                <div className="section-label">
-                  Your working on paper
-                </div>
+              <div key={w.take} className="order-7 mt-5 border-t-[1.5px] border-rule pt-3.5 lg:mt-0 lg:border-l-3 lg:border-t-0 lg:border-margin lg:bg-[#FFFDF6] lg:p-3">
                 <WorkingRead
                   lines={w.lines}
                   legible={w.legible}
                   notes={w.notes}
-                  method={w.method}
+                  method={w.method.filter((m) => !partRowCodes.has(m.code))}
                   dispute={{
                     attemptId: question.prior!.feedback.attemptId,
                     transcriptionId: w.transcriptionId,
@@ -949,16 +1026,16 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                       : undefined
                   }
                   earnedLabel="What this earned"
+                  footer={w.marked ? undefined : 'The read is kept. Only the marking has to run again.'}
                 />
-                {!w.marked && <RetryMarkingButton attemptId={question.prior!.feedback.attemptId} />}
               </div>
             ))}
 
           {/* CODES BELOW THE SENTENCE (ROUND_7 Task 1): after the slip or hint and the rows with reasons, never before them. */}
           {question.rubricCodes.length > 0 && (
-            <>
-              <p className="mt-2 text-[11px] leading-snug text-dim">{PROFILE_GLOSS}</p>
-            <div className="mt-2 flex flex-wrap gap-1">
+            <div className="order-9 mt-4 lg:mt-0">
+              <p className="text-[11px] leading-snug text-dim">{PROFILE_GLOSS}</p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
               {question.rubricCodes.map((r) => {
                 const state = stateOf.get(r.code) ?? 'unassessed';
                 return (
@@ -977,33 +1054,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 );
               })}
             </div>
-            </>
-          )}
-
-          {reviewing ? (
-            // No ?q= at all: the session resumes at the first unanswered
-            // question, or the summary when there is none. Pointing it at the
-            // LAST question linked to the current page whenever that was the
-            // one being reviewed, which is where a student ends up.
-            <Link
-              href={`/study/session/${question.sessionId}`}
-              className="mt-4 block bg-ink p-3 text-center font-black text-paper shadow-[3px_3px_0_var(--red)]"
-            >
-              Back to where you were →
-            </Link>
-          ) : (
-            <button
-              onClick={() => startTransition(() => router.refresh())}
-              disabled={pending}
-              className="mt-4 w-full bg-ink p-3 font-black text-paper shadow-[3px_3px_0_var(--red)] disabled:opacity-60"
-            >
-              {question.index + 1 >= question.total ? 'Finish session' : 'Next question →'}
-            </button>
+            </div>
           )}
         </div>
       )}
-
-      </div>
       </div>
 
       {question.visualHtml && figureAway && !atSubmit && !figureOpen && (
@@ -1118,7 +1172,7 @@ export function HandIn({
         ? `${(WORDS[fromPage] ?? String(fromPage)).toUpperCase()} BOX${fromPage === 1 ? '' : 'ES'} FROM YOUR PAGE · CHECKED BY YOU`
         : `${typedMarks} TYPED MARK${typedMarks === 1 ? '' : 'S'}${pageMarks > 0 ? ` · ${pageMarks} FROM YOUR PAGE` : ''}`;
   return (
-    <div id="hand-in" className="mt-[22px] lg:mt-0">
+    <div id="hand-in" className="order-7 mt-[22px] lg:mt-0">
       <button
         ref={submitRef}
         onClick={onClick}

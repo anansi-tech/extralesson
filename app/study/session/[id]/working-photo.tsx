@@ -4,7 +4,6 @@ import { useRef, useState, useTransition } from 'react';
 import { captureWorking, readWorking, type ReadResult } from './capture';
 import type { CaptureResult } from './mark-working';
 import { WorkingRead } from './working-read';
-import { RetryMarkingButton } from './retry-marking-button';
 import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
 import { LANDING } from '@/lib/landing-content';
 
@@ -39,6 +38,8 @@ export function WorkingPhoto({
   initial,
   onRead,
   onBusy,
+  onMarked,
+  hideRows,
   className,
 }: {
   sessionId: string;
@@ -53,6 +54,10 @@ export function WorkingPhoto({
   onRead?: (prefill: Record<string, string>) => void;
   /** While a page is being read the answers cannot be handed in. */
   onBusy?: (busy: boolean) => void;
+  /** After submit, the marking of a read: the card shows the rows beside the parts. */
+  onMarked?: (result: CaptureResult) => void;
+  /** Rows the card already shows under their parts, kept out of the read's own list. */
+  hideRows?: Set<string>;
   className?: string;
 }) {
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -92,7 +97,10 @@ export function WorkingPhoto({
         setRead(res.transcription);
         setReadId(res.transcriptionId);
         setTakesLeft(res.takesLeft);
-        if ('method' in res) setMarked({ method: res.method, marksAdded: res.marksAdded, transcriptionId: res.transcriptionId, rejected: res.rejected, failed: !res.marked });
+        if ('method' in res) {
+          setMarked({ method: res.method, marksAdded: res.marksAdded, transcriptionId: res.transcriptionId, rejected: res.rejected, failed: !res.marked });
+          onMarked?.(res);
+        }
         if ('prefill' in res) onRead?.(res.prefill);
       } catch {
         setError('That photo could not be prepared on this device.');
@@ -118,7 +126,7 @@ export function WorkingPhoto({
     <CameraBox
       post={!!attemptId}
       className={className}
-      heading={read && !attemptId ? undefined : 'Your working on paper'}
+      heading={read ? undefined : 'Your working on paper'}
       intro={
         read
           ? undefined
@@ -148,19 +156,12 @@ export function WorkingPhoto({
         </p>
       )}
 
-      {read && attemptId && marked.failed && (
-        <RetryMarkingButton
-          attemptId={attemptId}
-          onMarked={(res) => setMarked({ method: res.method, marksAdded: res.marksAdded, transcriptionId: res.transcriptionId, rejected: res.rejected, failed: !res.marked })}
-        />
-      )}
-
       {read && (
         <WorkingRead
           lines={read.lines}
           legible={read.legible}
           notes={read.notes}
-          method={marked.method}
+          method={marked.method.filter((m) => !hideRows?.has(m.code))}
           rejected={marked.rejected}
           reject={!attemptId && readId ? { transcriptionId: readId } : undefined}
           dispute={
@@ -174,9 +175,11 @@ export function WorkingPhoto({
               : 'What your working earned'
           }
           footer={
-            takesLeft > 0
-              ? undefined
-              : `No retakes left for this question. Check the answer boxes below. If we misread your working, tell us: ${LANDING.contactEmail}`
+            attemptId && marked.failed
+              ? 'The read is kept. Only the marking has to run again.'
+              : takesLeft > 0
+                ? undefined
+                : `No retakes left for this question. Check the answer boxes below. If we misread your working, tell us: ${LANDING.contactEmail}`
           }
         />
       )}
@@ -230,7 +233,7 @@ export function CameraBox({
   return (
     <div
       id="camera-box"
-      className={`${post ? 'mt-4 border-t-[1.5px] border-rule pt-4' : 'mt-4 border-l-3 border-margin bg-[#FFFDF6] px-3 py-2 lg:mt-0 lg:py-2.5'} ${className ?? ''}`}
+      className={`${post ? 'mt-5 border-t-[1.5px] border-rule pt-3.5 lg:mt-0 lg:border-l-3 lg:border-t-0 lg:border-margin lg:bg-[#FFFDF6] lg:p-3' : 'mt-4 border-l-3 border-margin bg-[#FFFDF6] px-3 py-2 lg:mt-0 lg:py-2.5'} ${className ?? ''}`}
     >
       {heading && <div className="section-label">{heading}</div>}
       {intro && <p className="mt-1.5 text-xs leading-snug text-dim">{intro}</p>}

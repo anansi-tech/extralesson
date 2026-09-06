@@ -62,7 +62,7 @@ export function WorkingRead({
 
   return (
     <div className="mt-3">
-      <div className="section-label">
+      <div className="section-label pb-0.5 shadow-[0_1.5px_0_var(--margin)]">
         {heading ?? 'This is what we read'}
       </div>
       {!legible && (
@@ -71,7 +71,7 @@ export function WorkingRead({
         </p>
       )}
       {byPart.map((group, gi) => (
-        <div key={`${group.part}-${gi}`} className="mt-2">
+        <div key={`${group.part}-${gi}`} className="mt-2.5">
           <div className="font-mono text-[11px] text-dim">
             {group.part === '—' ? 'Not matched to a part' : `(${group.part})`}
           </div>
@@ -112,6 +112,9 @@ export function WorkingRead({
           </ul>
         </div>
       ))}
+      {reject && struck.size > 0 && (
+        <p className="mt-2 text-[12px] leading-snug text-dim">A struck line is left out of marking. It is reversible until you hand in.</p>
+      )}
       {notes && <p className="mt-2 text-[12px] leading-snug text-dim">{notes}</p>}
 
       {/* WHY a row did not earn is what makes photographing worth it: "we could
@@ -119,32 +122,11 @@ export function WorkingRead({
           can check against their page. The marker is cautious (ROUND_2 §5), so
           the reason separates a miss from a misread. */}
       {method.length > 0 && (
-        <div className="mt-3 border-t border-dashed border-paper-deep pt-2">
-          <div className="section-label">
+        <div className="mt-2.5 border-t border-dashed border-paper-deep pt-2.5">
+          <div className="section-label pb-0.5 shadow-[0_1.5px_0_var(--margin)]">
             {earnedLabel}
           </div>
-          <ul className="mt-1 space-y-1">
-            {method.map((m) => (
-              <li key={m.code} className="flex gap-2 text-[13px] leading-snug">
-                <span
-                  className={`font-hand text-lg leading-none ${m.awarded ? 'text-green-pen' : 'text-dim'}`}
-                >
-                  {m.awarded ? '✓' : '–'}
-                </span>
-                <span className="min-w-0">
-                  <span className="font-mono text-[11px] text-dim">{m.code}</span> {m.reason}
-                  {dispute && !m.awarded && (
-                    <DisputeButton
-                      attemptId={dispute.attemptId}
-                      transcriptionId={dispute.transcriptionId}
-                      code={m.code}
-                      noted={dispute.disputed.includes(m.code)}
-                    />
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <MethodRows method={method} dispute={dispute} className="mt-2.5" />
           <p className="mt-2 text-[12px] leading-snug text-dim">
             These are added to what you had already earned. Nothing here can take a mark away.
           </p>
@@ -152,5 +134,44 @@ export function WorkingRead({
       )}
       {footer && <p className="mt-2 text-[12px] leading-snug text-dim">{footer}</p>}
     </div>
+  );
+}
+
+/**
+ * The marker's rows with their reasons, a tick or a dash in the hand font,
+ * and the query control under a withheld row. Under the part they belong to
+ * on the marked question, and under the read for a part with nothing typed.
+ */
+export function MethodRows({
+  method,
+  dispute,
+  className,
+}: {
+  method: MethodRow[];
+  dispute?: { attemptId: string; transcriptionId: string; disputed: string[] };
+  className?: string;
+}) {
+  if (method.length === 0) return null;
+  return (
+    <ul className={`flex flex-col gap-2 ${className ?? ''}`}>
+      {method.map((m) => (
+        <li key={m.code} className="flex gap-2 text-[13px] leading-snug lg:text-sm">
+          <span className={`shrink-0 font-hand text-xl leading-none ${m.awarded ? 'text-green-pen' : 'text-dim'}`}>
+            {m.awarded ? '✓' : '–'}
+          </span>
+          <span className="min-w-0">
+            {m.reason}
+            {dispute && !m.awarded && (
+              <DisputeButton
+                attemptId={dispute.attemptId}
+                transcriptionId={dispute.transcriptionId}
+                code={m.code}
+                noted={dispute.disputed.includes(m.code)}
+              />
+            )}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }

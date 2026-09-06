@@ -9,7 +9,7 @@ describe('the way out', () => {
   it('"Not what I wrote" toggles until submit, with no dialog', () => {
     const btn = at('app', 'study', 'session', '[id]', 'reject-line-button.tsx');
     expect(btn).toMatch(/rejected \? await restoreLine/);
-    expect(btn).toMatch(/\{rejected \? 'That is mine' : 'Not what I wrote'\}/);
+    expect(btn).toMatch(/\{rejected \? 'Put it back' : 'Not what I wrote'\}/);
     expect(btn).not.toMatch(/confirm\(|<dialog/);
     const action = at('app', 'study', 'session', '[id]', 'reject-line.ts');
     expect(action).toMatch(/export async function restoreLine/);
