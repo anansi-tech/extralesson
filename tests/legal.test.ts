@@ -378,7 +378,7 @@ describe('the landing lede', () => {
     expect(page).toMatch(/Mark one question free <small>No card required\.<\/small>/);
   });
   it('says CXC examiner nowhere, and in May nowhere', () => {
-    for (const f of [['app', 'page.tsx'], ['app', 'layout.tsx'], ['app', 'opengraph-image.tsx'], ['app', 'welcome', 'page.tsx']]) {
+    for (const f of [['app', 'page.tsx'], ['app', 'layout.tsx'], ['app', 'opengraph-image.tsx'], ['app', 'welcome', 'page.tsx'], ['app', 'welcome', 'welcome-view.tsx']]) {
       expect(read(...f), f.join('/')).not.toMatch(/CXC examiner/);
       expect(read(...f), f.join('/')).not.toMatch(/\bin May\b/);
     }
@@ -418,6 +418,7 @@ describe('price and cap are stated only through LANDING', () => {
   it('keeps price and cap off every other surface', () => {
     for (const f of [
       ['app', 'welcome', 'page.tsx'],
+      ['app', 'welcome', 'welcome-view.tsx'],
       ['app', 'terms', 'page.tsx'],
       ['app', 'privacy', 'page.tsx'],
       ['app', 'study', 'page.tsx'],
@@ -442,6 +443,7 @@ describe('the support address', () => {
     for (const f of [
       ['app', 'page.tsx'],
       ['app', 'welcome', 'page.tsx'],
+      ['app', 'welcome', 'welcome-view.tsx'],
       ['app', 'legal.tsx'],
       ['app', 'terms', 'page.tsx'],
       ['app', 'privacy', 'page.tsx'],
@@ -456,7 +458,7 @@ describe('the support address', () => {
   it('reaches every surface that offers help', () => {
     for (const f of [
       ['app', 'page.tsx'],
-      ['app', 'welcome', 'page.tsx'],
+      ['app', 'welcome', 'welcome-view.tsx'],
       ['app', 'legal.tsx'],
     ]) {
       expect(read(...f), f.join('/')).toContain('LANDING.contactEmail');
