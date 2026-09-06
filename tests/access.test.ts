@@ -73,8 +73,8 @@ describe('expiry', () => {
     // Only reachable if a sitting is added to the enum without a date. Of the
     // two ways to be wrong, keeping a paying student slightly too long beats
     // locking one out by an oversight.
-    expect(accessEndsAt('jan-2029')).toBeNull();
-    expect(hasAccess(grant('jan-2029'), new Date('2099-01-01T00:00:00Z'))).toBe(true);
+    expect(accessEndsAt('jan-2099')).toBeNull();
+    expect(hasAccess(grant('jan-2099'), new Date('2099-01-01T00:00:00Z'))).toBe(true);
   });
 
   it('an expired grant reads exactly like never having paid', () => {

@@ -1,6 +1,7 @@
 import { dbConnect, Fulfilment, Payment, Student, StripeEvent, isDuplicateKey } from '@/lib/db';
 import { GRANTING_EVENTS, emailFromSession, metadataOf, scopeOfSession, verifyStripeSignature } from '@/lib/stripe-webhook';
 import { grantFromPayment } from '@/lib/grant-from-payment';
+import type { ExamSitting } from '@/lib/types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -87,7 +88,7 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
   const student = email
     ? await Student.findOne({ email }).select('exam_sitting access').lean<{
         _id: unknown;
-        exam_sitting: 'jan-2027' | 'may-june-2027';
+        exam_sitting: ExamSitting;
       } | null>()
     : null;
 

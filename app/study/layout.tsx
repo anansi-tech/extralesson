@@ -1,6 +1,7 @@
 import { dbConnect, Student } from '@/lib/db';
 import { getSession } from '@/lib/auth/session';
-import { StudyChrome, sittingTag } from './study-chrome';
+import { StudyChrome } from './study-chrome';
+import { sittingLabel } from '@/lib/sittings';
 
 /**
  * Every student page inside the one chrome. A page with no session (login,
@@ -10,11 +11,9 @@ export default async function StudyLayout({ children }: { children: React.ReactN
   const session = await getSession();
   if (!session) return children;
   await dbConnect();
-  const student = await Student.findById(session.student_id)
-    .select('syllabus_mode exam_sitting')
-    .lean<{ syllabus_mode?: string; exam_sitting: string } | null>();
+  const student = await Student.findById(session.student_id).select('exam_sitting').lean<{ exam_sitting: string } | null>();
   return (
-    <StudyChrome sitting={sittingTag(student?.syllabus_mode ?? '')} current={student?.exam_sitting ?? ''} email={session.email}>
+    <StudyChrome sitting={sittingLabel(student?.exam_sitting ?? '') ?? ''} current={student?.exam_sitting ?? ''} email={session.email}>
       {children}
     </StudyChrome>
   );

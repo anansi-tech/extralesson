@@ -1,4 +1,5 @@
 import { Schema, model, models, type InferSchemaType } from 'mongoose';
+import { SITTING_IDS } from '@/lib/sittings';
 
 /**
  * A student changed the sitting they are entered for (ROUND_9 Task 9).
@@ -7,8 +8,8 @@ import { Schema, model, models, type InferSchemaType } from 'mongoose';
  */
 const SittingChangeSchema = new Schema({
   student_id: { type: Schema.Types.ObjectId, ref: 'Student', required: true },
-  from: { type: String, enum: ['jan-2027', 'may-june-2027'], required: true },
-  to: { type: String, enum: ['jan-2027', 'may-june-2027'], required: true },
+  from: { type: String, enum: SITTING_IDS, required: true },
+  to: { type: String, enum: SITTING_IDS, required: true },
   ts: { type: Date, required: true },
 });
 

@@ -10,7 +10,8 @@ import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
 import { canStartSession, grantFor, hasAccess, type Access } from '@/lib/access';
 import { applySittingChange } from '@/lib/change-sitting';
-import type { ExamSitting, ModuleNumber } from '@/lib/types';
+import { SITTING_IDS } from '@/lib/sittings';
+import type { ModuleNumber } from '@/lib/types';
 
 const MODES: SessionMode[] = ['adaptive', 'topic', 'revisit', 'diagnostic', 'first'];
 
@@ -77,7 +78,7 @@ export async function startSession(formData?: FormData): Promise<void> {
   redirect(`/study/session/${session._id}`);
 }
 
-const SittingZ = z.enum(['jan-2027', 'may-june-2027']);
+const SittingZ = z.enum(SITTING_IDS);
 
 /**
  * Allowed any time. Where it lands is what the gate says of the new sitting:
@@ -89,7 +90,7 @@ export async function changeSitting(formData: FormData): Promise<void> {
   const to = SittingZ.safeParse(formData.get('to'));
   if (!to.success) redirect('/study');
   await dbConnect();
-  await applySittingChange(auth.student_id, to.data as ExamSitting);
+  await applySittingChange(auth.student_id, to.data);
   const student = await Student.findById(auth.student_id)
     .select('exam_sitting access')
     .lean<{ exam_sitting: string; access?: Access | null } | null>();

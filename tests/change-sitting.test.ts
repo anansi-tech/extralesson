@@ -18,7 +18,7 @@ describe('the account disclosure', () => {
     expect(details).toHaveLength(2);
     expect(details[0]).toBe(details[1]);
     expect(visibleText(details[0])).toBe(
-      'Jan 2027 re-sit kiara@example.com Which sitting are you entered for May/June 2027 January 2027 re-sit Change sitting',
+      'Jan 2027 re-sit kiara@example.com Which sitting are you entered for January 2027 re-sit May/June 2027 January 2028 May/June 2028 January 2029 May/June 2029 January 2030 May/June 2030 January 2031 May/June 2031 Change sitting',
     );
   });
   it('offers the account’s own sitting as the selected one', () => {

@@ -1,9 +1,16 @@
 import { createHmac } from 'node:crypto';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} }), usePathname: () => '/study' }));
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { canStartSession, grantFor, hasAccess, type Access } from '@/lib/access';
-import { accessEndsAt, sittingsOpenAt } from '@/lib/sittings';
+import { SITTINGS, SITTING_IDS, accessEndsAt, nextSittingAt, sittingsOpenAt } from '@/lib/sittings';
+import { DashboardView } from '@/app/study/dashboard';
+import { STATES as DASH } from './helpers/dashboard-states';
+import { visibleText } from './helpers/card-states';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 // ROUND_9 Task 9: ACCESS IS GRANTED TO A SITTING. The grant records the
 // sitting it was for and expires on that sitting's dates, whatever the
@@ -167,8 +174,41 @@ describe('change sitting', () => {
 // the panel's action is Help (app/study/dashboard.tsx).
 describe('the next sitting', () => {
   it('is the soonest one whose window has not ended', () => {
-    expect(sittingsOpenAt(new Date('2026-09-06T00:00:00Z'))).toEqual(['jan-2027', 'may-june-2027']);
-    expect(sittingsOpenAt(new Date('2027-03-01T00:00:00Z'))).toEqual(['may-june-2027']);
-    expect(sittingsOpenAt(new Date('2027-08-01T00:00:00Z'))).toEqual([]);
+    expect(sittingsOpenAt(new Date('2026-09-06T00:00:00Z'))).toEqual(SITTING_IDS);
+    expect(sittingsOpenAt(new Date('2027-03-01T00:00:00Z'))[0]).toBe('may-june-2027');
+    expect(sittingsOpenAt(new Date('2031-08-01T00:00:00Z'))).toEqual([]);
+  });
+
+  it('runs January and May/June a year through 2031, in date order', () => {
+    expect(SITTING_IDS).toEqual([
+      'jan-2027', 'may-june-2027', 'jan-2028', 'may-june-2028', 'jan-2029', 'may-june-2029',
+      'jan-2030', 'may-june-2030', 'jan-2031', 'may-june-2031',
+    ]);
+    for (let i = 1; i < SITTING_IDS.length; i++) {
+      const prev = SITTINGS[SITTING_IDS[i - 1]];
+      const s = SITTINGS[SITTING_IDS[i]];
+      expect(s.paper.getTime(), SITTING_IDS[i]).toBeGreaterThan(prev.ends.getTime());
+      expect(s.ends.getTime(), SITTING_IDS[i]).toBeGreaterThan(s.paper.getTime());
+    }
+  });
+
+  it('after any sitting lapses, the door offers the next one in the table; after May/June 2031, Help', () => {
+    const door = (now: Date) => {
+      const html = renderToStaticMarkup(createElement(DashboardView, { ...DASH.returning, error: 'access-expired', nextSitting: nextSittingAt(now) }));
+      return { text: visibleText(html), to: /name="to" value="([^"]+)"/.exec(html)?.[1] ?? null };
+    };
+    SITTING_IDS.forEach((s, i) => {
+      const lapsed = new Date(accessEndsAt(s)!.getTime() + 1);
+      const next = SITTING_IDS[i + 1] ?? null;
+      expect(nextSittingAt(lapsed)?.value ?? null, `after ${s}`).toBe(next);
+      const d = door(lapsed);
+      if (next) {
+        expect(d.to, `after ${s}`).toBe(next);
+        expect(d.text).toContain(`Enter for another sitting ${SITTINGS[next].label} · $49 Email us`);
+      } else {
+        expect(d.to).toBeNull();
+        expect(d.text).toContain('Email us extralesson@anansi.xyz Read your marked work');
+      }
+    });
   });
 });

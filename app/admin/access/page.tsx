@@ -1,5 +1,6 @@
 import { dbConnect, Attempt, Fulfilment, Payment, PracticeSession, Student } from '@/lib/db';
 import { FREE_MODES, FREE_SESSIONS, hasAccess } from '@/lib/access';
+import { SITTINGS, SITTING_IDS } from '@/lib/sittings';
 import { grantAccess, resolvePayment, revokeAccess } from './actions';
 import { DeleteAccount } from './delete-account';
 import { Refusal } from '../../refusal';
@@ -8,10 +9,6 @@ import { CAPS, FIELD, INK, QUIET, ROW, SELECT } from '../ui';
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Access — ExtraLesson admin' };
 
-const SITTINGS = [
-  { value: 'may-june-2027', label: 'May/June 2027' },
-  { value: 'jan-2027', label: 'Jan 2027 re-sit' },
-] as const;
 
 /** A pending fulfilment older than this needs a person: the webhook should have finished in seconds. */
 const STALE_PENDING_MS = 60 * 60 * 1000;
@@ -270,9 +267,9 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
               <form action={grantAccess} className="mt-2 flex flex-wrap items-center gap-2">
                 <input type="hidden" name="id" value={r.id} />
                 <select name="sitting" defaultValue={r.exam_sitting} className={SELECT}>
-                  {SITTINGS.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
+                  {SITTING_IDS.map((s) => (
+                    <option key={s} value={s}>
+                      {SITTINGS[s].label}
                     </option>
                   ))}
                 </select>

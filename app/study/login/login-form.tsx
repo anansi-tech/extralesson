@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { SITTINGS, SITTING_IDS } from '@/lib/sittings';
 import { useActionState, useState } from 'react';
 import { register, requestReset, signIn, type AuthState } from './actions';
 import { PASSWORD_MIN } from '@/lib/auth/password-policy';
@@ -133,8 +134,11 @@ export default function LoginForm({
           <label className="mt-[18px] block">
             <span className={LABEL}>Which sitting are you entered for</span>
             <select name="exam_sitting" required className={`${FIELD} bg-paper font-sans`} defaultValue="may-june-2027">
-              <option value="may-june-2027">May/June 2027</option>
-              <option value="jan-2027">January 2027 re-sit</option>
+              {SITTING_IDS.map((s) => (
+                <option key={s} value={s}>
+                  {SITTINGS[s].label}
+                </option>
+              ))}
             </select>
           </label>
         </>

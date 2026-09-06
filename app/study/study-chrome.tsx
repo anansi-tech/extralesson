@@ -2,6 +2,7 @@ import { Lockup } from '../lockup';
 import { changeSitting, logout } from './actions';
 import { LANDING } from '@/lib/landing-content';
 import { StudyTabs } from './study-tabs';
+import { SITTINGS, SITTING_IDS } from '@/lib/sittings';
 
 /**
  * THE NOTEBOOK'S CHROME (ROUND_8 Task 0): the white bar above the paper —
@@ -76,8 +77,11 @@ function Account({ sitting, current, email }: { sitting: string; current: string
           <label className="block">
             <span className="block">Which sitting are you entered for</span>
             <select name="to" defaultValue={current} className={FIELD}>
-              <option value="may-june-2027">May/June 2027</option>
-              <option value="jan-2027">January 2027 re-sit</option>
+              {SITTING_IDS.map((s) => (
+                <option key={s} value={s}>
+                  {SITTINGS[s].label}
+                </option>
+              ))}
             </select>
           </label>
           <button className="mt-3 block min-h-11 w-full border-[1.5px] border-ink p-3 text-left font-sans text-sm normal-case tracking-normal text-ink">
@@ -88,5 +92,3 @@ function Account({ sitting, current, email }: { sitting: string; current: string
     </details>
   );
 }
-
-export const sittingTag = (mode: string) => (mode === 'legacy-jan' ? 'Jan 2027 re-sit' : 'May/June 2027');

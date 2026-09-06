@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import { SITTING_IDS } from '@/lib/sittings';
 import { dbConnect, Student } from '@/lib/db';
 import { ResetToken } from '@/lib/db/reset-token';
 import { newResetSecret } from '@/lib/auth/reset-token';
@@ -29,7 +30,7 @@ const RegisterZ = z.object({
   password: z.string().min(1),
   name: z.string().trim().min(1).max(120),
   island: z.string().trim().max(60).optional(),
-  exam_sitting: z.enum(['jan-2027', 'may-june-2027']),
+  exam_sitting: z.enum(SITTING_IDS),
   target_modules: z
     .array(z.coerce.number().pipe(z.union([z.literal(1), z.literal(2), z.literal(3)])))
     .optional(),

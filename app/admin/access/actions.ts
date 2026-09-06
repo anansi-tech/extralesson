@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { dbConnect, Payment, Student } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth/session';
 import { deleteStudent, type DeletionCounts } from '@/lib/delete-student';
+import { SITTING_IDS } from '@/lib/sittings';
 
 export type DeleteAccountState =
   | { status: 'idle' }
@@ -13,7 +14,7 @@ export type DeleteAccountState =
   | { status: 'done'; message: string; counts: DeletionCounts; at: string };
 
 const IdZ = z.string().regex(/^[a-f0-9]{24}$/);
-const SittingZ = z.enum(['jan-2027', 'may-june-2027']);
+const SittingZ = z.enum(SITTING_IDS);
 
 /**
  * Granting by hand, for the cases no automatic path can settle. A wrong grant

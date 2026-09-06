@@ -10,7 +10,7 @@ import { AUTH, renderAuth, visibleText } from './helpers/auth-states';
 const text = Object.fromEntries(Object.keys(AUTH).map((k) => [k, visibleText(renderAuth(k))]));
 
 const SIGN_IN = 'Sign in . Your email and a password. We keep you signed in for 30 days, so on your own phone this is usually the last time you type it. ';
-const CREATE_FIELDS = 'Choose a password At least 10 characters. Length is what makes a password hard to guess — a short phrase you will remember beats a short word with symbols in it. Your name Which sitting are you entered for May/June 2027 January 2027 re-sit Create account I already have an account — sign in By creating an account you agree to our terms and privacy page .';
+const CREATE_FIELDS = 'Choose a password At least 10 characters. Length is what makes a password hard to guess — a short phrase you will remember beats a short word with symbols in it. Your name Which sitting are you entered for January 2027 re-sit May/June 2027 January 2028 May/June 2028 January 2029 May/June 2029 January 2030 May/June 2030 January 2031 May/June 2031 Create account I already have an account — sign in By creating an account you agree to our terms and privacy page .';
 
 describe('the auth screens', () => {
   it('sign in: email and password, the two quiet routes', () => {

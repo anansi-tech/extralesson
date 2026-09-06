@@ -26,7 +26,17 @@ export type ContextCategory =
   | 'environment'
   | 'manufacturing';
 
-export type ExamSitting = 'jan-2027' | 'may-june-2027';
+export type ExamSitting =
+  | 'jan-2027'
+  | 'may-june-2027'
+  | 'jan-2028'
+  | 'may-june-2028'
+  | 'jan-2029'
+  | 'may-june-2029'
+  | 'jan-2030'
+  | 'may-june-2030'
+  | 'jan-2031'
+  | 'may-june-2031';
 
 export type QuestionKind = 'mcq' | 'structured';
 

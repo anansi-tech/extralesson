@@ -1,4 +1,5 @@
 import { Schema, model, models, type InferSchemaType } from 'mongoose';
+import { SITTING_IDS } from '@/lib/sittings';
 
 const StudentSchema = new Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
@@ -13,7 +14,7 @@ const StudentSchema = new Schema({
   // every request, so a reset signs every other device out (ROUND_6 Task 3).
   session_version: { type: Number, default: 1, required: true },
   island: { type: String },
-  exam_sitting: { type: String, enum: ['jan-2027', 'may-june-2027'], required: true },
+  exam_sitting: { type: String, enum: SITTING_IDS, required: true },
   // Derived from exam_sitting; display only — never branch logic on it (ROUND_1 §0).
   syllabus_mode: { type: String, enum: ['legacy-jan', 'modular-2027'], required: true },
   target_modules: { type: [Number], enum: [1, 2, 3], required: true },
@@ -24,7 +25,7 @@ const StudentSchema = new Schema({
   access: {
     type: new Schema(
       {
-        sitting: { type: String, enum: ['jan-2027', 'may-june-2027'], required: true },
+        sitting: { type: String, enum: SITTING_IDS, required: true },
         granted_at: { type: Date, default: Date.now, required: true },
         source: { type: String, enum: ['manual', 'stripe'], default: 'manual', required: true },
         note: { type: String },
