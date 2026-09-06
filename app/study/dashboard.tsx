@@ -18,6 +18,8 @@ export interface DashboardProps {
   email: string;
   /** The sitting the grant was for — the grant's own, never the account's current one. */
   sitting: string | null;
+  /** The soonest sitting still to be sat, or none while no later one is on the books. */
+  nextSitting: { value: string; label: string } | null;
   lead: LeadPanel;
   open: { id: string; answered: number; questions: number; marksLeft: number } | null;
   diagnosticOpen: boolean;
@@ -362,19 +364,33 @@ function Choose(p: DashboardProps) {
 }
 
 /** What a refused start says, beneath the action it refused: one pattern for all seven. */
-function Notices({ error, mode, sitting, email }: DashboardProps) {
+function Notices({ error, mode, sitting, nextSitting, email }: DashboardProps) {
   const cls = 'order-1 mt-4';
   const today = { label: 'Start today’s session', small: `${SESSION_MINUTES} minutes · weakest topics first`, form: { mode: 'adaptive' } };
+  const help = { label: 'Email us', href: `mailto:${LANDING.contactEmail}` };
   return (
     <>
-      {error === 'access-expired' && (
+      {/* The door to the next sitting: enter for it, then the paywall for it. With
+          no later sitting on the books, the one true action is still to write. */}
+      {error === 'access-expired' && nextSitting && (
+        <Refusal
+          id="sitting-passed"
+          className={cls}
+          label="Your sitting has passed"
+          sentence={<>Access ran to {sitting ?? 'that sitting'}, and that paper is written.</>}
+          remains="Your notebook stays open — every question and every mark, for as long as you want to read them."
+          action={{ label: 'Enter for another sitting', small: `${nextSitting.label} · ${LANDING.price}`, form: { to: nextSitting.value } }}
+          quiet={help}
+        />
+      )}
+      {error === 'access-expired' && !nextSitting && (
         <Refusal
           id="sitting-passed"
           className={cls}
           label="Your sitting has passed"
           sentence={<>Access ran to {sitting ?? 'that sitting'}, and that paper is written.</>}
           remains="Your notebook stays open — every question and every mark, for as long as you want to read them. To keep practising for the next sitting, email us with the address you paid with and we will sort it out by hand."
-          action={{ label: 'Email us', small: LANDING.contactEmail, href: `mailto:${LANDING.contactEmail}` }}
+          action={{ ...help, small: LANDING.contactEmail }}
           quiet={{ label: 'Read your marked work', href: '/study/history' }}
         />
       )}

@@ -139,11 +139,11 @@ this document.
 
 ## After the pilot
 
-- Change sitting, then pay. Today the sitting is written once at
-  registration and a payment grants the registered sitting, so after a
-  sitting has passed a new payment expires as it lands; the sitting-passed
-  refusal writes to Help until a student can change their sitting and pay
-  for the new one.
+- Change sitting, then pay — built in Task 9. A grant is to a sitting;
+  the account's sitting can change any time (SittingChange, append-only);
+  the paywall is the gate's answer for a sitting with no grant; the
+  sitting-passed refusal enters for the next sitting on the books, and
+  writes to Help only while there is none.
 
 ## R10
 

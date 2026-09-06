@@ -34,3 +34,10 @@ export function accessEndsAt(sitting: string): Date | null {
   if (!s) return null;
   return new Date(s.ends.getTime() + GRACE_DAYS * 24 * 60 * 60 * 1000);
 }
+
+/** The sittings still to be sat, soonest first. */
+export function sittingsOpenAt(now: Date): ExamSitting[] {
+  return (Object.keys(SITTINGS) as ExamSitting[])
+    .filter((s) => SITTINGS[s].ends.getTime() > now.getTime())
+    .sort((a, b) => SITTINGS[a].ends.getTime() - SITTINGS[b].ends.getTime());
+}

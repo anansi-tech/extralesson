@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { DashboardView } from '@/app/study/dashboard';
+import { DashboardView, type DashboardProps } from '@/app/study/dashboard';
 import QuestionCard from '@/app/study/session/[id]/question-card';
 import { WorkingPhoto } from '@/app/study/session/[id]/working-photo';
 import { STATES as DASH } from './dashboard-states';
@@ -15,11 +15,13 @@ export function panel(html: string, id: string): string {
   return m[0];
 }
 
-const dash = (error: string, mode?: string) => renderToStaticMarkup(createElement(DashboardView, { ...DASH.returning, error, mode }));
+const dash = (error: string, mode?: string, extra: Partial<DashboardProps> = {}) =>
+  renderToStaticMarkup(createElement(DashboardView, { ...DASH.returning, error, mode, ...extra }));
 
 export const REFUSALS: Record<string, () => string> = {
   paywall: () => panel(dash('needs-access'), 'paywall'),
   'sitting-passed': () => panel(dash('access-expired'), 'sitting-passed'),
+  'sitting-passed-none': () => panel(dash('access-expired', undefined, { nextSitting: null }), 'sitting-passed'),
   'no-retakes': () =>
     panel(
       renderToStaticMarkup(

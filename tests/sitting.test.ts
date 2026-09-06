@@ -3,7 +3,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { canStartSession, grantFor, hasAccess, type Access } from '@/lib/access';
-import { accessEndsAt } from '@/lib/sittings';
+import { accessEndsAt, sittingsOpenAt } from '@/lib/sittings';
 
 // ROUND_9 Task 9: ACCESS IS GRANTED TO A SITTING. The grant records the
 // sitting it was for and expires on that sitting's dates, whatever the
@@ -160,5 +160,15 @@ describe('change sitting', () => {
     expect(hasAccess(after, new Date('2027-06-15T00:00:00Z'))).toBe(true);
     // The old grant's dates are gone with it: this one ends on the new sitting's.
     expect(accessEndsAt(after.sitting)).toEqual(accessEndsAt('may-june-2027'));
+  });
+});
+
+// The door names the soonest sitting still to be sat; with none on the books,
+// the panel's action is Help (app/study/dashboard.tsx).
+describe('the next sitting', () => {
+  it('is the soonest one whose window has not ended', () => {
+    expect(sittingsOpenAt(new Date('2026-09-06T00:00:00Z'))).toEqual(['jan-2027', 'may-june-2027']);
+    expect(sittingsOpenAt(new Date('2027-03-01T00:00:00Z'))).toEqual(['may-june-2027']);
+    expect(sittingsOpenAt(new Date('2027-08-01T00:00:00Z'))).toEqual([]);
   });
 });

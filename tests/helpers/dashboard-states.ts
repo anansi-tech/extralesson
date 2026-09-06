@@ -26,6 +26,7 @@ const base: DashboardProps = {
   firstName: 'Kiara',
   email: 'kiara@example.com',
   sitting: 'May/June 2027',
+  nextSitting: { value: 'jan-2027', label: 'January 2027 re-sit' },
   lead: 'session',
   open: null,
   diagnosticOpen: true,

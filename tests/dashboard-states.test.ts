@@ -64,10 +64,10 @@ describe('the dashboard, four states', () => {
       expect(view).toContain(`error === '${e}'`);
     }
     expect(visibleText(render({ ...STATES.returning, error: 'needs-access' }))).toContain('Get access');
-    // A passed sitting cannot be re-bought: the account's sitting never changes and a new
-    // payment would grant the sitting that has passed. Until a sitting change exists, the
-    // one true action is to write to Help.
+    // A passed sitting is not re-bought: the door is to ENTER for the next sitting, and
+    // the paywall for that sitting follows. Help stays, as the quiet link.
     const expired = render({ ...STATES.returning, error: 'access-expired' });
+    expect(visibleText(expired)).toContain('Enter for another sitting');
     expect(expired).toContain('href="mailto:');
     expect(visibleText(expired)).not.toContain('Get access');
   });

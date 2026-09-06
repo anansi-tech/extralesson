@@ -24,11 +24,20 @@ describe('the refusals', () => {
     expect(html.paywall).toMatch(/<a [^>]*target="_blank"[^>]*rel="noopener"|<a [^>]*rel="noopener"[^>]*target="_blank"/);
     expect(html.paywall).toContain('href="/study/history"');
   });
-  it('sitting passed', () => {
+  it('sitting passed: the door to the next sitting, with Help as the quiet link', () => {
     expect(text['sitting-passed']).toBe(
+      'Your sitting has passed Access ran to May/June 2027, and that paper is written. Your notebook stays open — every question and every mark, for as long as you want to read them. Enter for another sitting January 2027 re-sit · $49 Email us',
+    );
+    // Entering is a change of sitting, not a checkout: the paywall for the new sitting comes next.
+    expect(html['sitting-passed']).toMatch(/<form[^>]*><input type="hidden" name="to" value="jan-2027"\/>/);
+    expect(html['sitting-passed']).toContain('href="mailto:extralesson@anansi.xyz"');
+    expect(html['sitting-passed']).not.toMatch(/stripe|checkout|buy\.|target="_blank"|bg-red-pen/i);
+  });
+  it('sitting passed with no later sitting on the books: write to Help', () => {
+    expect(text['sitting-passed-none']).toBe(
       'Your sitting has passed Access ran to May/June 2027, and that paper is written. Your notebook stays open — every question and every mark, for as long as you want to read them. To keep practising for the next sitting, email us with the address you paid with and we will sort it out by hand. Email us extralesson@anansi.xyz Read your marked work',
     );
-    expect(html['sitting-passed']).not.toMatch(/stripe|checkout|buy\.|target="_blank"/i);
+    expect(html['sitting-passed-none']).not.toMatch(/name="to"|stripe|checkout|target="_blank"/i);
   });
   it('no retakes left, from the live take count', () => {
     expect(text['no-retakes']).toBe(

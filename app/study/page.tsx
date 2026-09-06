@@ -10,7 +10,7 @@ import { loadTopicChoices } from '@/lib/study/topics';
 import { loadFirstQuestion } from '@/lib/study/first-question';
 import { leadPanel, shouldLeadWithReachable } from '@/lib/study/lead-panel';
 import { diagnosticOpensAt, firstQuestionTaken } from '@/lib/access';
-import { sittingLabel } from '@/lib/sittings';
+import { sittingLabel, sittingsOpenAt } from '@/lib/sittings';
 import type { ModuleNumber } from '@/lib/types';
 import { DashboardView } from './dashboard';
 
@@ -70,11 +70,13 @@ export default async function StudyDashboard({
     overallPercent: prediction.overall_percent,
   });
 
+  const next = sittingsOpenAt(new Date())[0];
   return (
     <DashboardView
       firstName={student.name.trim().split(/\s+/)[0]}
       email={auth.email}
       sitting={student.access ? sittingLabel(student.access.sitting) : null}
+      nextSitting={next ? { value: next, label: sittingLabel(next)! } : null}
       lead={lead}
       open={open}
       diagnosticOpen={diagnosticOpen}

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { startSession } from './study/actions';
+import { changeSitting, startSession } from './study/actions';
 
 export interface RefusalAction {
   label: string;
@@ -7,8 +7,8 @@ export interface RefusalAction {
   /** The paywall's is the only red one. */
   red?: boolean;
   href?: string;
-  /** A session to start instead. */
-  form?: { mode: string; topic?: string };
+  /** A session to start instead, or a sitting to enter for. */
+  form?: { mode: string; topic?: string } | { to: string };
   newTab?: boolean;
   /** Something to do on this page, such as taking the photograph again. */
   onClick?: () => void;
@@ -95,6 +95,14 @@ function Action({ label, small, red, href, form, newTab, onClick, disabled }: Re
       <button type="button" onClick={onClick} disabled={disabled} className={`${className} bg-white font-mono text-xs uppercase tracking-[0.1em] disabled:opacity-60`}>
         {body}
       </button>
+    );
+  }
+  if (form && 'to' in form) {
+    return (
+      <form action={changeSitting}>
+        <input type="hidden" name="to" value={form.to} />
+        <button className={className}>{body}</button>
+      </form>
     );
   }
   if (form) {

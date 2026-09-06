@@ -9,6 +9,7 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} 
 // ROUND_9 Task 4: every refusal panel fits the viewport at 320, 360, 390 and 1280 inside the chrome's column.
 const CHROME = '/usr/bin/google-chrome';
 const hasChrome = existsSync(CHROME);
+const SHOT = process.env.REFUSAL_SHOTS;
 let browser: Browser;
 beforeAll(async () => {
   if (hasChrome) browser = await chromium.launch({ executablePath: CHROME });
@@ -26,6 +27,7 @@ describe.skipIf(!hasChrome)('the refusals fit the viewport', () => {
         const p = await browser.newPage({ viewport: { width, height: 900 } });
         await p.setContent(chromePage(column(render())), { waitUntil: 'networkidle' });
         const w = await p.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth));
+        if (SHOT && width === 390 && name.startsWith('sitting-passed')) await p.screenshot({ path: `${SHOT}/refusal-${name}-390.png` });
         await p.close();
         expect(w, `${name} ${width}px`).toBe(width);
       }, 60000);
