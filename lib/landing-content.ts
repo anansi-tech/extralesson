@@ -24,7 +24,8 @@ export const LANDING = {
   // "Overall, 23 169 candidates (36.02 per cent of candidates) gained
   // acceptable grades (Grades I–III)" of 79 917 entered.
   passRate: {
-    line: 'Fewer than four in ten students who sit CSEC Maths pass it.',
+    figure: '36%',
+    label: 'of candidates passed',
     caption: '36% gained Grades I–III, CXC CSEC Mathematics Subject Report, May–June 2026',
     percent: 36,
     source: 'https://www.cxc.org/wp-content/uploads/2018/11/RPT2026CSECMayJuneMathematicsSubjectReport.pdf',
@@ -35,11 +36,12 @@ export const LANDING = {
   // gives Paper 02 as 15 CK, 20 AK, 15 R weighted marks of 50 — AK and R
   // are 35 of 50, which is 70 of every 100.
   weighting: {
-    line: '70 of every 100 marks on Paper 2 are for applying method and reasoning, not recalling facts.',
+    figure: '70%',
+    label: 'of Paper 2 marks are for method',
     caption: 'Assessment grid, CSEC Mathematics syllabus CXC 05/G/SYLL 16, effective for examinations from May–June 2027',
     percent: 70,
     source: 'https://www.cxc.org/wp-content/uploads/2018/11/CSEC-Mathematics-Amended-2026-for-Exams-2027V2.pdf',
-    sourceLabel: 'CXC 05/G/SYLL 16',
+    sourceLabel: 'CXC syllabus, from May–June 2027',
   },
   contactEmail: 'extralesson@anansi.xyz',
 } as const;

@@ -63,7 +63,7 @@ afterAll(async () => {
   await browser?.close();
 });
 
-function markup(): string {
+export function markup(): string {
   const body = page.slice(page.indexOf('<div className="landing">'), page.lastIndexOf('</div>') + 6);
   return body
     .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
@@ -76,8 +76,12 @@ function markup(): string {
     .replace(/className=/g, 'class=')
     .replace(/\{' '\}/g, ' ')
     .replace(/\{LANDING\.price\}/g, '$49')
-    .replace(/\{LANDING\.passRate\.line\}/g, 'Fewer than four in ten students who sit CSEC Maths pass it.')
-    .replace(/\{LANDING\.weighting\.line\}/g, '70 of every 100 marks on Paper 2 are for applying method and reasoning, not recalling facts.')
+    .replace(/\{LANDING\.passRate\.figure\}/g, '36%')
+    .replace(/\{LANDING\.passRate\.label\}/g, 'of candidates passed')
+    .replace(/\{LANDING\.passRate\.sourceLabel\}/g, 'CXC Subject Report, May–June 2026')
+    .replace(/\{LANDING\.weighting\.figure\}/g, '70%')
+    .replace(/\{LANDING\.weighting\.label\}/g, 'of Paper 2 marks are for method')
+    .replace(/\{LANDING\.weighting\.sourceLabel\}/g, 'CXC syllabus, from May–June 2027')
     .replace(/\{LANDING\.[a-zA-Z.]+\}/g, 'x')
     .replace(/\{coverage\.[a-zA-Z.]+\}/g, '84')
     .replace(/\{REFUND_DAYS\}/g, '14')
@@ -87,8 +91,10 @@ function markup(): string {
     .replace(/\)\s*\)\}?/g, '').replace(/\s+\)\s*$/g, '');
 }
 
+export const landingCss = () => at('app', 'landing.css').replace(/var\(--font-[a-z-]+\)/g, 'serif');
+
 describe.skipIf(!hasChrome)('document width equals the viewport', () => {
-  const css = at('app', 'landing.css').replace(/var\(--font-[a-z-]+\)/g, 'serif');
+  const css = landingCss();
   for (const width of [320, 360, 390, 1440]) {
     it(`at ${width}px`, async () => {
       const p = await browser.newPage({ viewport: { width, height: 900 } });

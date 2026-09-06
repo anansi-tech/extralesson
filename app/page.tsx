@@ -91,24 +91,19 @@ export default async function LandingPage() {
         </div>
       </header>
 
-      {/* STAKES. Two lines, each with its source under it. */}
+      {/* STAKES. Two tiles, each naming a source you can open (ROUND_8 Task 5). */}
       <div className="stats">
-        <div className="wrap">
-          <div className="grid">
-            <div>
-              <div className="n red">{LANDING.passRate.line}</div>
-              <div className="l">{LANDING.passRate.caption}</div>
-            </div>
-            <div>
-              <div className="n">{LANDING.weighting.line}</div>
-              <div className="l">{LANDING.weighting.caption}</div>
-            </div>
+        <div className="tiles">
+          <div className="tile">
+            <div className="n red">{LANDING.passRate.figure}</div>
+            <div className="l">{LANDING.passRate.label}</div>
+            <a href={LANDING.passRate.source} target="_blank" rel="noopener">{LANDING.passRate.sourceLabel}</a>
           </div>
-          <p className="sources">
-            Sources:{' '}
-            <a href={LANDING.passRate.source} target="_blank" rel="noopener">{LANDING.passRate.sourceLabel}</a> ·{' '}
+          <div className="tile">
+            <div className="n">{LANDING.weighting.figure}</div>
+            <div className="l">{LANDING.weighting.label}</div>
             <a href={LANDING.weighting.source} target="_blank" rel="noopener">{LANDING.weighting.sourceLabel}</a>
-          </p>
+          </div>
         </div>
       </div>
 

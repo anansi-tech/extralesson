@@ -334,8 +334,8 @@ describe('public claims are ones we can show', () => {
 // EVERY STATISTIC ON THE PAGE NAMES ITS SOURCE, AND THE SOURCE IS CXC'S.
 //
 // The page once carried a benchmark nobody could source and a mean mark with
-// the wrong year. The band now has two lines, each pinned here to the cxc.org
-// document it came from (ROUND_7 Task 4). Both were read on 2026-09-05.
+// the wrong year. The band is two tiles, each pinned here to the cxc.org
+// document it came from (ROUND_7 Task 4; tiles ROUND_8 Task 5). Both were read on 2026-09-05.
 describe('the landing band', () => {
   it('states the pass rate from the most recent CXC Subject Report, by year and percentage', () => {
     const { passRate } = LANDING_CONTENT;
@@ -345,7 +345,9 @@ describe('the landing band', () => {
     expect(passRate.caption).toMatch(/36%/);
     expect(passRate.caption).toMatch(/Subject Report, May–June 2026/);
     expect(passRate.source).toMatch(/^https:\/\/www\.cxc\.org\/.*RPT2026CSECMayJuneMathematicsSubjectReport\.pdf$/);
-    expect(passRate.line).toMatch(/Fewer than four in ten/);
+    expect(passRate.figure).toBe('36%');
+    expect(passRate.label).toBe('of candidates passed');
+    expect(passRate.sourceLabel).toBe('CXC Subject Report, May–June 2026');
   });
 
   it('states the Paper 2 weighting from the syllabus by its document code, with only the date the document prints', () => {
@@ -355,7 +357,9 @@ describe('the landing band', () => {
     expect(weighting.caption).toMatch(/CXC 05\/G\/SYLL 16/);
     expect(weighting.caption).toMatch(/effective for examinations from May–June 2027/i);
     expect(weighting.source).toMatch(/^https:\/\/www\.cxc\.org\//);
-    expect(weighting.line).toMatch(/70 of every 100 marks on Paper 2/);
+    expect(weighting.figure).toBe('70%');
+    expect(weighting.label).toBe('of Paper 2 marks are for method');
+    expect(weighting.sourceLabel).toBe('CXC syllabus, from May–June 2027');
   });
 
   it('has dropped the bank-measured figure and the mean mark', () => {

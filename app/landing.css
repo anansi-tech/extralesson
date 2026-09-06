@@ -55,16 +55,23 @@
 .landing .rule-top { border-top: 1.5px solid var(--ink); }
 .landing h2 { font-size: clamp(24px, 4vw, 36px); font-weight: 900; letter-spacing: -.015em; margin: 8px 0 16px; }
 
-/* stats band */
-.landing .stats { background: var(--ink); color: var(--paper); padding: 38px 0; }
-.landing .stats .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 26px; text-align: center; }
-@media (max-width: 640px) { .landing .stats .grid { grid-template-columns: 1fr; gap: 20px; } }
-.landing .stats .grid { text-align: left; }
-.landing .stats .n { font-size: clamp(20px, 3vw, 26px); font-weight: 900; line-height: 1.25; color: #f0b429; }
+/* stakes tiles: stacked on a phone, side by side from 641px */
+.landing .stats { background: var(--ink); color: var(--paper); line-height: 1.55; }
+.landing .stats .tile { padding: 24px 20px; }
+.landing .stats .tile:first-child { border-bottom: 1.5px solid #3a4152; }
+.landing .stats .n { font-size: 52px; font-weight: 900; line-height: 1; color: #f0b429; }
 .landing .stats .n.red { color: #ff6b6b; }
-.landing .stats .l { font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; color: #a8aebd; margin-top: 8px; line-height: 1.6; }
-.landing .stats .sources { font-family: var(--mono); font-size: 10.5px; color: #a8aebd; margin-top: 22px; }
-.landing .stats .sources a { color: #c8cdd8; text-decoration: underline; text-underline-offset: 3px; }
+.landing .stats .l { font-size: 17px; font-weight: 700; margin-top: 8px; }
+.landing .stats a { display: inline-flex; min-height: 44px; align-items: center; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: #a8aebd; text-decoration: underline; text-underline-offset: 3px; }
+@media (min-width: 641px) {
+  .landing .stats { padding: 40px 24px; }
+  .landing .stats .tiles { max-width: 960px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; }
+  .landing .stats .tile { padding: 0; }
+  .landing .stats .tile:first-child { padding-right: 40px; border-bottom: 0; border-right: 1.5px solid #3a4152; }
+  .landing .stats .tile:last-child { padding-left: 40px; }
+  .landing .stats .n { font-size: 72px; }
+  .landing .stats .l { font-size: 21px; margin-top: 10px; }
+}
 
 /* the phone, under the band */
 .landing .phone { background: #fff; border: 1.5px solid var(--ink); border-radius: var(--radius); padding: 12px 10px 16px; box-shadow: 6px 6px 0 var(--ink); max-width: 340px; margin: 0 auto; }
