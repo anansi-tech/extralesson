@@ -178,10 +178,3 @@
   .landing .closingrow { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 24px; }
   .landing .closingrow .btn { width: auto; display: inline-block; font-size: 19px; padding: 18px 30px; }
 }
-
-/* the old footer, replaced by the shared one in the next commit */
-.landing footer { border-top: 1.5px solid var(--ink); padding: 16px 0 20px; font-family: var(--mono); font-size: 10.5px; color: var(--dim); }
-.landing footer .foot { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 12px 24px; }
-.landing footer .foot-info { line-height: 2; }
-.landing footer .foot-action { color: var(--ink); }
-.landing footer .authlink { color: inherit; }

@@ -1,7 +1,8 @@
 import Link from 'next/link';
+import { Door } from './door';
 import { LANDING } from '@/lib/landing-content';
 
-/** Shared shell for /privacy and /terms — same page furniture, different words. */
+/** Shared shell for /refunds, /privacy and /terms — the door, one card, different words. */
 export function LegalPage({
   title,
   updated,
@@ -12,27 +13,22 @@ export function LegalPage({
   children: React.ReactNode;
 }) {
   return (
-    <main className="relative min-h-screen px-5 py-10">
-      <div className="pointer-events-none absolute inset-y-0 left-4 w-[1.5px] bg-margin" />
-      <div className="mx-auto max-w-prose">
-        <Link href="/" className="font-mono text-[11px] uppercase tracking-widest text-dim underline">
-          ← extralesson
-        </Link>
-        <h1 className="mt-4 text-2xl font-black leading-tight">{title}</h1>
-        <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-dim">
-          Last updated {updated}
-        </p>
-        {/* Line-height and every vertical gap are the rule spacing, so the
-            lines sit ON the rules rather than through them. h2 picks up its
-            heading from globals.css — one definition, every page. */}
-        <div className="on-rules mt-6 text-sm [&_ul]:list-disc [&_ul]:pl-5">{children}</div>
-        <p className="mt-8 border-t-[1.5px] border-rule pt-4 text-[12px] text-dim">
-          Questions about this page:{' '}
-          <a href={`mailto:${LANDING.contactEmail}`} className="underline">
-            {LANDING.contactEmail}
-          </a>
-        </p>
-      </div>
-    </main>
+    <Door signedIn={false}>
+      <Link href="/" className="font-mono text-[11px] uppercase tracking-[0.14em] text-dim underline underline-offset-[3px]">
+        ← extralesson
+      </Link>
+      <h1 className="mt-4 text-2xl font-black leading-tight">{title}</h1>
+      <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.1em] text-dim">
+        Last updated {updated}
+      </p>
+      {/* Inside the card there are no rules to sit on: plain prose spacing, the section heading in the notebook's mono label. */}
+      <div className="mt-6 text-sm leading-relaxed [&_h2]:mt-6 [&_h2]:font-mono [&_h2]:text-[11px] [&_h2]:font-bold [&_h2]:uppercase [&_h2]:tracking-[0.14em] [&_p]:mt-3 [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:pl-5">{children}</div>
+      <p className="mt-8 border-t-[1.5px] border-rule pt-4 text-[12px] text-dim">
+        Questions about this page:{' '}
+        <a href={`mailto:${LANDING.contactEmail}`} className="underline">
+          {LANDING.contactEmail}
+        </a>
+      </p>
+    </Door>
   );
 }

@@ -355,35 +355,6 @@ export default async function LandingPage() {
         </div>
       </div>
 
-      <footer>
-        <div className="wrap foot">
-          <div className="foot-info">
-            &copy; {new Date().getFullYear()} Anansi Technology LLC ·{' '}
-            <a className="authlink" href={`mailto:${LANDING.contactEmail}`}>
-              {LANDING.contactEmail}
-            </a>{' '}
-            ·{' '}
-            <Link className="authlink" href="/privacy">
-              Privacy
-            </Link>{' '}
-            ·{' '}
-            <Link className="authlink" href="/terms">
-              Terms
-            </Link>
-          </div>
-          <div className="foot-action">
-            {session ? (
-              <Link className="authlink" href="/study">
-                Continue studying &rarr;
-              </Link>
-            ) : (
-              <Link className="authlink" href="/study/login">
-                Sign in
-              </Link>
-            )}
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

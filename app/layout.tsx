@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, IBM_Plex_Mono, Caveat } from "next/font/google";
 import "./globals.css";
 import { externalBaseUrl } from "@/lib/base-url";
+import { SiteFooter } from "./site-footer";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -51,6 +52,7 @@ export default function RootLayout({
         className={`${fraunces.variable} ${plexMono.variable} ${caveat.variable} antialiased`}
       >
         {children}
+        <SiteFooter />
       </body>
     </html>
   );
