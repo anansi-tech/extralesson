@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #e8e6e1; }
+  a { color: #1e2430; }
+  a:hover { color: #c1121f; }
+</style>
+</helmet>
+
+<section data-screen-label="Auth" style="padding:48px 40px 64px;font-family:'IBM Plex Mono',monospace;border-bottom:2px solid #1e2430">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#c1121f;font-weight:600">03 · Sign in, create account, reset</div>
+    <div style="font-family:Fraunces,serif;font-size:28px;font-weight:900;letter-spacing:-.02em;color:#1e2430">One card, one field group, one button</div>
+    <div style="font-size:12px;color:#6e7687;max-width:760px;line-height:1.7">The card is 576px at every width — it is a form, not a page, so 1280 gives it more paper around it and nothing else. Errors sit above the field they concern, never in a toast. The alternative route is a quiet link, never a second button.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+
+    <!-- sign in -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">3A</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Sign in · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:24px 20px;box-shadow:4px 4px 0 #1e2430">
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-.015em;margin:0 0 6px">Sign in<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 20px;font-size:13px;color:#6e7687;line-height:1.5">We email you a link. There is no password to remember.</p>
+            <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Your email address</label>
+            <input value="kiara@example.com" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+            <button style="margin-top:16px;width:100%;background:#c1121f;color:#fff;border:0;padding:16px;font-family:Fraunces,serif;font-weight:900;font-size:17px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Email me a link</button>
+            <div style="margin-top:20px;border-top:1px solid #f1eada;padding-top:12px">
+              <a href="#3A" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Don’t have access yet — create an account</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- create -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">3B</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Create account · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:24px 20px;box-shadow:4px 4px 0 #1e2430">
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-.015em;margin:0 0 6px">Create your account<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 20px;font-size:13px;color:#6e7687;line-height:1.5">Use the email address the payment was made to. That is the address the access is on.</p>
+            <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Your email address</label>
+            <input value="kiara@example.com" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+            <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;margin-top:18px">Which sitting are you entered for</label>
+            <select style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fbf7ee;padding:10px;font-family:Fraunces,serif;font-size:16px;color:#1e2430"><option>May/June 2027</option><option>January 2027 re-sit</option></select>
+            <button style="margin-top:20px;width:100%;background:#c1121f;color:#fff;border:0;padding:16px;font-family:Fraunces,serif;font-weight:900;font-size:17px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Create account</button>
+            <div style="margin-top:20px;border-top:1px solid #f1eada;padding-top:12px">
+              <a href="#3B" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Already have an account — sign in</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- error -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">3C</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Error · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:24px 20px;box-shadow:4px 4px 0 #1e2430">
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-.015em;margin:0 0 6px">Sign in<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 20px;font-size:13px;color:#6e7687;line-height:1.5">We email you a link. There is no password to remember.</p>
+            <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Your email address</label>
+            <p style="margin:8px 0 0;border-left:3px solid #c1121f;background:#fdf1f0;padding:8px 10px;font-size:13px;line-height:1.375">We have no account on that address. Check the spelling, or create an account.</p>
+            <input value="kiara@exampl.com" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430;outline:2px solid #c1121f;outline-offset:2px">
+            <button style="margin-top:16px;width:100%;background:#c1121f;color:#fff;border:0;padding:16px;font-family:Fraunces,serif;font-weight:900;font-size:17px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Email me a link</button>
+            <div style="margin-top:20px;border-top:1px solid #f1eada;padding-top:12px">
+              <a href="#3C" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Create an account instead</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- rate limited -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">3D</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Rate-limited · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:24px 20px;box-shadow:4px 4px 0 #1e2430">
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-.015em;margin:0 0 6px">Sign in<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 20px;font-size:13px;color:#6e7687;line-height:1.5">We email you a link. There is no password to remember.</p>
+            <p style="margin:0 0 16px;border-left:3px solid #d9a62e;background:#fdf8ec;padding:10px 12px;font-size:13px;line-height:1.45">Three links already sent to this address. Check your inbox, including spam — the newest one still works. You can ask again in 9 minutes.</p>
+            <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Your email address</label>
+            <input value="kiara@example.com" disabled style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430;opacity:.7">
+            <button disabled style="margin-top:16px;width:100%;background:#c1121f;color:#fff;border:0;padding:16px;font-family:Fraunces,serif;font-weight:900;font-size:17px;box-shadow:4px 4px 0 #1e2430;min-height:44px;opacity:.5">Email me a link
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10px;letter-spacing:.1em;margin-top:4px">AVAILABLE IN 9 MINUTES</small>
+            </button>
+            <div style="margin-top:20px;border-top:1px solid #f1eada;padding-top:12px">
+              <a href="#3D" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Get help instead</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- reset -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">3E</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Reset · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:24px 20px;box-shadow:4px 4px 0 #1e2430">
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-.015em;margin:0 0 6px">Can’t get in<span style="color:#c1121f">?</span></h1>
+            <p style="margin:0 0 20px;font-size:13px;color:#6e7687;line-height:1.5">Tell us the address and we send a fresh link. Your work and your marks are untouched.</p>
+            <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Your email address</label>
+            <input placeholder="you@example.com" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+            <button style="margin-top:16px;width:100%;background:#c1121f;color:#fff;border:0;padding:16px;font-family:Fraunces,serif;font-weight:900;font-size:17px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Send a fresh link</button>
+            <div style="margin-top:20px;border-top:1px solid #f1eada;padding-top:12px">
+              <a href="#3E" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Back to sign in</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- reset sent -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">3F</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Reset sent · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:24px 20px;box-shadow:4px 4px 0 #1e2430">
+            <div style="font-family:Caveat,cursive;font-size:32px;color:#2e7d5b;line-height:1">✓</div>
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-.015em;margin:8px 0 6px">Check your email<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 20px;font-size:15px;color:#3a4152;line-height:1.5">We sent a link to <b style="font-weight:700">kiara@example.com</b>. It works once, and for the next hour.</p>
+            <p style="margin:0;border-left:3px solid #e4b8b4;background:#fffdf6;padding:8px 12px;font-size:13px;color:#6e7687;line-height:1.45">Nothing in your inbox after a minute or two? Look in spam. The sender is extralesson@anansi.xyz.</p>
+            <div style="margin-top:20px;border-top:1px solid #f1eada;padding-top:12px">
+              <a href="#3F" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Use a different address</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin:40px 0 20px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Sign in · 1280 — the card holds its 576px; the paper widens around it</div>
+  <div style="width:1280px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+    <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+      <div style="max-width:960px;margin:0 auto;padding:8px 0"><img src="public/brand/lockup.svg" width="140" alt="ExtraLesson"></div>
+    </div>
+    <div style="position:relative;padding:64px 24px 80px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+      <div style="max-width:960px;margin:0 auto"><div style="position:relative;max-width:576px">
+        <div style="position:absolute;top:-64px;bottom:-80px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+        <div style="border:1.5px solid #1e2430;background:#fff;padding:32px;box-shadow:4px 4px 0 #1e2430">
+          <h1 style="font-size:34px;font-weight:900;letter-spacing:-.02em;margin:0 0 8px;line-height:1.04">Sign in<span style="color:#c1121f">.</span></h1>
+          <p style="margin:0 0 24px;font-size:14px;color:#6e7687">We email you a link. There is no password to remember.</p>
+          <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Your email address</label>
+          <input value="kiara@example.com" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;padding:12px;font-family:'IBM Plex Mono',monospace;font-size:16px;background:#fff;color:#1e2430">
+          <button style="margin-top:20px;background:#c1121f;color:#fff;border:0;padding:16px 32px;font-family:Fraunces,serif;font-weight:900;font-size:18px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Email me a link</button>
+          <div style="margin-top:24px;border-top:1px solid #f1eada;padding-top:12px">
+            <a href="#3A" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Don’t have access yet — create an account</a>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="Welcome after purchase" style="padding:48px 40px 64px;font-family:'IBM Plex Mono',monospace;border-bottom:2px solid #1e2430">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#c1121f;font-weight:600">04 · Welcome, after purchase</div>
+    <div style="font-family:Fraunces,serif;font-size:28px;font-weight:900;letter-spacing:-.02em;color:#1e2430">Four ways someone lands here</div>
+    <div style="font-size:12px;color:#6e7687;max-width:760px;line-height:1.7">The same card, and the action changes with who is holding the phone. The payer is never given the student’s session to start; they are given the one thing only they can do.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+
+    <!-- confirming -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">4A</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Confirming · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:24px 20px;box-shadow:4px 4px 0 #1e2430">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">Confirming your payment</div>
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-.015em;margin:8px 0 12px">One moment<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 16px;font-size:15px;color:#3a4152;line-height:1.5">Your card has been charged. We are matching the payment to an account.</p>
+            <div style="height:8px;border:1px solid #1e2430;background:#f1eada;border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:62%;background:#d9a62e"></i></div>
+            <p style="margin:14px 0 0;border-left:3px solid #e4b8b4;background:#fffdf6;padding:8px 12px;font-size:13px;color:#6e7687;line-height:1.45">This page will move on by itself. If it is still here in a minute, your receipt is already in your email — nothing is lost.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- signed in as payer -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">4B</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Signed in as the payer · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Sign out</span>
+        </div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:24px 20px;box-shadow:4px 4px 0 #1e2430">
+            <div style="font-family:Caveat,cursive;font-size:32px;color:#2e7d5b;line-height:1">✓</div>
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-.015em;margin:8px 0 12px">You’re in<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 18px;font-size:15px;color:#3a4152;line-height:1.5">Full access on <b style="font-weight:700">kiara@example.com</b>, running to <b style="font-weight:700">May/June 2027</b>. Receipt sent.</p>
+            <button style="width:100%;background:#c1121f;color:#fff;border:0;padding:18px 16px;text-align:left;font-family:Fraunces,serif;font-weight:900;font-size:18px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Mark one question free
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10.5px;letter-spacing:.1em;opacity:.85;margin-top:5px">ONE REAL QUESTION · NOT ONE OF YOUR SESSIONS</small>
+            </button>
+            <div style="margin-top:20px;border-top:1px solid #f1eada;padding-top:12px">
+              <a href="#4B" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Or take the diagnostic first</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- not yet registered -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">4C</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Not yet registered · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:24px 20px;box-shadow:4px 4px 0 #1e2430">
+            <div style="font-family:Caveat,cursive;font-size:32px;color:#2e7d5b;line-height:1">✓</div>
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-.015em;margin:8px 0 12px">Payment received<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 18px;font-size:15px;color:#3a4152;line-height:1.5">The access is waiting on <b style="font-weight:700">kiara@example.com</b>. Create the account on that address and it is applied.</p>
+            <button style="width:100%;background:#c1121f;color:#fff;border:0;padding:16px;font-family:Fraunces,serif;font-weight:900;font-size:17px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Create the account</button>
+            <p style="margin:14px 0 0;border-left:3px solid #e4b8b4;background:#fffdf6;padding:8px 12px;font-size:13px;color:#6e7687;line-height:1.45">Nothing expires while you do this. The payment stays attached to that address.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- bought for someone else -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">4D</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Bought for someone else · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:24px 20px;box-shadow:4px 4px 0 #1e2430">
+            <div style="font-family:Caveat,cursive;font-size:32px;color:#2e7d5b;line-height:1">✓</div>
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-.015em;margin:8px 0 12px">Thank you<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 18px;font-size:15px;color:#3a4152;line-height:1.5">Access is on <b style="font-weight:700">kiara@example.com</b>, running to <b style="font-weight:700">May/June 2027</b>. We have emailed her the link to get in. Your receipt is on your own address.</p>
+            <button style="width:100%;background:#c1121f;color:#fff;border:0;padding:18px 16px;text-align:left;font-family:Fraunces,serif;font-weight:900;font-size:18px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Send her the link again
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10.5px;letter-spacing:.1em;opacity:.85;margin-top:5px">THE ONLY THING LEFT FOR YOU TO DO</small>
+            </button>
+            <p style="margin:16px 0 0;font-size:13.5px;color:#3a4152;line-height:1.55">How you will know it is working: she will show you. We do not send reports. She can open her own marked working — every question, every mark, and the reason for each one — whenever she wants to. You’ll hear how it’s going from her, not from us.</p>
+            <p style="margin:12px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687;line-height:1.7">Not satisfied? Email us within 14 days of paying and we will refund you.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin:40px 0 20px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Signed in as the payer · 1280</div>
+  <div style="width:1280px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+    <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+      <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:8px 0">
+        <img src="public/brand/lockup.svg" width="140" alt="ExtraLesson" style="flex:none">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Sign out</span>
+      </div>
+    </div>
+    <div style="position:relative;padding:64px 24px 80px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+      <div style="max-width:960px;margin:0 auto"><div style="position:relative;max-width:576px">
+        <div style="position:absolute;top:-64px;bottom:-80px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+        <div style="border:1.5px solid #1e2430;background:#fff;padding:32px;box-shadow:4px 4px 0 #1e2430">
+          <div style="font-family:Caveat,cursive;font-size:40px;color:#2e7d5b;line-height:1">✓</div>
+          <h1 style="font-size:34px;font-weight:900;letter-spacing:-.02em;margin:10px 0 12px;line-height:1.04">You’re in<span style="color:#c1121f">.</span></h1>
+          <p style="margin:0 0 24px;font-size:16px;color:#3a4152">Full access on <b style="font-weight:700">kiara@example.com</b>, running to <b style="font-weight:700">May/June 2027</b>. Receipt sent.</p>
+          <button style="width:100%;background:#c1121f;color:#fff;border:0;padding:20px;text-align:left;font-family:Fraunces,serif;font-weight:900;font-size:21px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Mark one question free
+            <small style="display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10.5px;letter-spacing:.1em;opacity:.85;margin-top:6px">ONE REAL QUESTION · NOT ONE OF YOUR SESSIONS</small>
+          </button>
+          <div style="margin-top:24px;border-top:1px solid #f1eada;padding-top:12px">
+            <a href="#4B" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Or take the diagnostic first</a>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="Email template" style="padding:48px 40px 80px;font-family:'IBM Plex Mono',monospace">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#c1121f;font-weight:600">08 · Email</div>
+    <div style="font-family:Fraunces,serif;font-size:28px;font-weight:900;letter-spacing:-.02em;color:#1e2430">One template. Lockup, one sentence, one button.</div>
+    <div style="font-size:12px;color:#6e7687;max-width:760px;line-height:1.7">600px table width, no ruled background — email clients cannot be trusted with it. The plain-text line under the button is the only fallback that always renders.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">8A</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Access granted · 600</span></div>
+      <div style="width:600px;box-sizing:border-box;flex:none;background:#e8e6e1;padding:32px 24px;border:1px dashed #c9d6e8">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-bottom:12px">Subject: Your ExtraLesson access is ready</div>
+        <div style="background:#fbf7ee;border:1.5px solid #1e2430;padding:32px;font-family:Fraunces,serif;color:#1e2430;line-height:1.55">
+          <img src="public/brand/lockup.svg" width="150" alt="ExtraLesson">
+          <p style="margin:28px 0 0;font-size:18px;line-height:1.5">Your access is ready, and it runs to your May/June 2027 sitting.</p>
+          <a href="#8A" style="display:inline-block;margin-top:24px;background:#c1121f;color:#fff;font-weight:900;font-size:17px;padding:16px 28px;text-decoration:none;box-shadow:4px 4px 0 #1e2430">Open ExtraLesson</a>
+          <p style="margin:24px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687;line-height:1.8;word-break:break-all">Or paste this into your browser:<br>extralesson.com/e/9f4c2a7b</p>
+          <div style="margin-top:28px;border-top:1px solid #e4b8b4;padding-top:14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#6e7687;line-height:1.9">An Anansi Technology product · Plantation, Florida<br>ExtraLesson is not affiliated with or endorsed by the Caribbean Examinations Council</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">8B</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Reset · 600</span></div>
+      <div style="width:600px;box-sizing:border-box;flex:none;background:#e8e6e1;padding:32px 24px;border:1px dashed #c9d6e8">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-bottom:12px">Subject: Your link to get back into ExtraLesson</div>
+        <div style="background:#fbf7ee;border:1.5px solid #1e2430;padding:32px;font-family:Fraunces,serif;color:#1e2430;line-height:1.55">
+          <img src="public/brand/lockup.svg" width="150" alt="ExtraLesson">
+          <p style="margin:28px 0 0;font-size:18px;line-height:1.5">Here is a fresh link to get back in — it works once, and for the next hour.</p>
+          <a href="#8B" style="display:inline-block;margin-top:24px;background:#c1121f;color:#fff;font-weight:900;font-size:17px;padding:16px 28px;text-decoration:none;box-shadow:4px 4px 0 #1e2430">Sign in</a>
+          <p style="margin:24px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687;line-height:1.8;word-break:break-all">Or paste this into your browser:<br>extralesson.com/e/2b81d0e5</p>
+          <div style="margin-top:28px;border-top:1px solid #e4b8b4;padding-top:14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#6e7687;line-height:1.9">An Anansi Technology product · Plantation, Florida<br>ExtraLesson is not affiliated with or endorsed by the Caribbean Examinations Council</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>

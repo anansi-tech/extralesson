@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #e8e6e1; }
+  a { color: #1e2430; }
+  a:hover { color: #c1121f; }
+</style>
+</helmet>
+
+<section data-screen-label="Diagnostic" style="padding:48px 40px 64px;font-family:'IBM Plex Mono',monospace;border-bottom:2px solid #1e2430">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#c1121f;font-weight:600">06 · Diagnostic</div>
+    <div style="font-family:Fraunces,serif;font-size:28px;font-weight:900;letter-spacing:-.02em;color:#1e2430">Nothing is scored, so nothing is hidden</div>
+    <div style="font-size:12px;color:#6e7687;max-width:760px;line-height:1.7">“I don’t know” is a first-class answer, given the same weight and the same size as the four options — a guess teaches the ranking the wrong thing. No marks, no grade, no red pen anywhere in the diagnostic.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+
+    <!-- intro -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">6A</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Intro · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#c1121f">Before your first session</div>
+            <h1 style="font-size:27px;font-weight:900;letter-spacing:-.02em;margin:8px 0 14px">A quick diagnostic<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 20px;font-size:16px;color:#3a4152;line-height:1.5">Eight multiple-choice questions across the syllabus. It puts your topics in order, so every session after it starts where it matters.</p>
+            <ul style="list-style:none;margin:0 0 24px;padding:0">
+              <li style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f1eada;font-size:14.5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687;letter-spacing:.08em;flex:none;min-width:64px">12 MIN</span><span>About a minute and a half a question</span></li>
+              <li style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f1eada;font-size:14.5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687;letter-spacing:.08em;flex:none;min-width:64px">NO MARKS</span><span>Nothing here is scored, and nothing here counts against you</span></li>
+              <li style="display:flex;gap:12px;padding:10px 0;font-size:14.5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687;letter-spacing:.08em;flex:none;min-width:64px">NO PAPER</span><span>Tap the answer — this one is not worked by hand</span></li>
+            </ul>
+            <button style="width:100%;background:#c1121f;color:#fff;border:0;padding:18px 16px;text-align:left;font-family:Fraunces,serif;font-weight:900;font-size:18px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Start the diagnostic
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10.5px;letter-spacing:.1em;opacity:.85;margin-top:5px">EIGHT QUESTIONS · STOP ANY TIME</small>
+            </button>
+            <p style="margin:14px 0 0;border-left:3px solid #e4b8b4;background:#fffdf6;padding:8px 12px;font-size:13px;color:#6e7687;line-height:1.45">Stop half way and what you answered still counts towards the ranking. It just gets sharper the further you go.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- mcq -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">6B</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">MCQ card · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700">Diagnostic · 3 of 8</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Not scored</span>
+        </div>
+        <div style="height:6px;background:#f1eada;border-bottom:1px solid #c9d6e8"><i style="display:block;height:100%;width:37.5%;background:#1e2430"></i></div>
+        <div style="position:relative;padding:24px 20px 32px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <article style="position:relative;border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:4px 4px 0 #1e2430">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Consumer arithmetic</div>
+            <div style="font-size:18px;margin-top:10px">A shirt marked $80 is sold at a 15% discount. What is the selling price?</div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:18px">
+              <button style="width:100%;border:1.5px solid #1e2430;background:none;padding:14px;text-align:left;font-family:Fraunces,serif;font-size:16px;color:#1e2430;min-height:44px;display:flex;gap:12px;align-items:baseline"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">A</span><span>$65.00</span></button>
+              <button style="width:100%;border:1.5px solid #1e2430;background:none;padding:14px;text-align:left;font-family:Fraunces,serif;font-size:16px;color:#1e2430;min-height:44px;display:flex;gap:12px;align-items:baseline"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">B</span><span>$68.00</span></button>
+              <button style="width:100%;border:1.5px solid #1e2430;background:none;padding:14px;text-align:left;font-family:Fraunces,serif;font-size:16px;color:#1e2430;min-height:44px;display:flex;gap:12px;align-items:baseline"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">C</span><span>$72.00</span></button>
+              <button style="width:100%;border:1.5px solid #1e2430;background:none;padding:14px;text-align:left;font-family:Fraunces,serif;font-size:16px;color:#1e2430;min-height:44px;display:flex;gap:12px;align-items:baseline"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">D</span><span>$92.00</span></button>
+            </div>
+            <div style="margin-top:14px;border-top:1px solid #f1eada;padding-top:14px">
+              <button style="width:100%;border:1.5px solid #1e2430;background:#f1eada;padding:14px;text-align:left;font-family:Fraunces,serif;font-size:16px;color:#1e2430;min-height:44px">I don’t know
+                <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">More useful than a guess</small>
+              </button>
+            </div>
+          </article>
+          <div style="position:relative;margin-top:14px;text-align:center">
+            <a href="#6B" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px;color:#6e7687">Stop here — keep what I’ve answered</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- finish -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">6C</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Ranked topics · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#c1121f">Diagnostic done</div>
+            <h1 style="font-size:27px;font-weight:900;letter-spacing:-.02em;margin:8px 0 12px">Here is the order<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 20px;font-size:15px;color:#3a4152;line-height:1.5">Your sessions work down this list, hardest-hitting first. It re-orders itself as you go.</p>
+
+            <ol style="list-style:none;margin:0;padding:0;counter-reset:t">
+              <li style="display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:baseline;padding:12px 0;border-top:1.5px solid #1e2430"><span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:#c1121f">01</span><span><b style="font-weight:700;font-size:15px">Algebraic manipulation</b><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:2px">2 of 3 said “I don’t know”</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#2e7d5b;flex:none">+8 marks</span></li>
+              <li style="display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:baseline;padding:12px 0;border-top:1px solid #e4b8b4"><span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:#c1121f">02</span><span><b style="font-weight:700;font-size:15px">Consumer arithmetic</b><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:2px">1 of 2 answered, 1 wrong</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#2e7d5b;flex:none">+6 marks</span></li>
+              <li style="display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:baseline;padding:12px 0;border-top:1px solid #e4b8b4"><span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:#c1121f">03</span><span><b style="font-weight:700;font-size:15px">Geometry &amp; trigonometry</b><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:2px">1 of 2 answered, 1 right</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#2e7d5b;flex:none">+5 marks</span></li>
+              <li style="display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:baseline;padding:12px 0;border-top:1px solid #e4b8b4;border-bottom:1px solid #e4b8b4"><span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:#6e7687">04</span><span><b style="font-weight:700;font-size:15px">Number theory</b><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:2px">Both right — comes back later</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#6e7687;flex:none">+2 marks</span></li>
+            </ol>
+
+            <button style="margin-top:22px;width:100%;background:#c1121f;color:#fff;border:0;padding:18px 16px;text-align:left;font-family:Fraunces,serif;font-weight:900;font-size:18px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Start with algebraic manipulation
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10.5px;letter-spacing:.1em;opacity:.85;margin-top:5px">15 MINUTES · TOP OF YOUR LIST</small>
+            </button>
+            <p style="margin:14px 0 0;border-left:3px solid #e4b8b4;background:#fffdf6;padding:8px 12px;font-size:13px;color:#6e7687;line-height:1.45">No grade yet. A grade needs marks seen across every module, and the diagnostic is not marked.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1280 mcq -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">6D</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">MCQ card · 1280</span></div>
+      <div style="width:1280px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+          <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;gap:24px;padding:10px 0">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;flex:1">Diagnostic · 3 of 8</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;flex:none">Not scored</span>
+          </div>
+        </div>
+        <div style="height:6px;background:#f1eada;border-bottom:1px solid #c9d6e8"><i style="display:block;height:100%;width:37.5%;background:#1e2430"></i></div>
+        <div style="position:relative;padding:40px 24px 56px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="max-width:960px;margin:0 auto"><div style="position:relative;max-width:576px">
+            <div style="position:absolute;top:-40px;bottom:-56px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+            <article style="border:1.5px solid #1e2430;background:#fff;padding:32px;box-shadow:4px 4px 0 #1e2430">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Consumer arithmetic</div>
+              <div style="font-size:21px;margin-top:12px">A shirt marked $80 is sold at a 15% discount. What is the selling price?</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px">
+                <button style="border:1.5px solid #1e2430;background:none;padding:14px;text-align:left;font-family:Fraunces,serif;font-size:16px;color:#1e2430;min-height:44px;display:flex;gap:12px;align-items:baseline"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">A</span><span>$65.00</span></button>
+                <button style="border:1.5px solid #1e2430;background:none;padding:14px;text-align:left;font-family:Fraunces,serif;font-size:16px;color:#1e2430;min-height:44px;display:flex;gap:12px;align-items:baseline"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">B</span><span>$68.00</span></button>
+                <button style="border:1.5px solid #1e2430;background:none;padding:14px;text-align:left;font-family:Fraunces,serif;font-size:16px;color:#1e2430;min-height:44px;display:flex;gap:12px;align-items:baseline"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">C</span><span>$72.00</span></button>
+                <button style="border:1.5px solid #1e2430;background:none;padding:14px;text-align:left;font-family:Fraunces,serif;font-size:16px;color:#1e2430;min-height:44px;display:flex;gap:12px;align-items:baseline"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687;flex:none">D</span><span>$92.00</span></button>
+              </div>
+              <div style="margin-top:16px;border-top:1px solid #f1eada;padding-top:16px">
+                <button style="width:100%;border:1.5px solid #1e2430;background:#f1eada;padding:14px;text-align:left;font-family:Fraunces,serif;font-size:16px;color:#1e2430;min-height:44px">I don’t know
+                  <small style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;margin-top:2px">More useful than a guess</small>
+                </button>
+              </div>
+            </article>
+            <div style="margin-top:16px">
+              <a href="#6D" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px;color:#6e7687">Stop here — keep what I’ve answered</a>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="Session summary" style="padding:48px 40px 80px;font-family:'IBM Plex Mono',monospace">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#c1121f;font-weight:600">07 · Session summary</div>
+    <div style="font-family:Fraunces,serif;font-size:28px;font-weight:900;letter-spacing:-.02em;color:#1e2430">Four sessions end four different ways</div>
+    <div style="font-size:12px;color:#6e7687;max-width:760px;line-height:1.7">Same skeleton — marks, the questions in a row, one line of what moved, one action. What changes is the claim each session is entitled to make: the first has no trend to show, the revisit compares against the objective, and the diagnostic has no marks at all.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+
+    <!-- first -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">7A</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">First session · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#c1121f">Your first session</div>
+            <h1 style="font-size:27px;font-weight:900;letter-spacing:-.02em;margin:8px 0 4px">14 of 21 marks<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 20px;font-size:13px;color:#6e7687;line-height:1.5">Nothing to compare it against yet. From tomorrow this line shows which way it is going.</p>
+            <div style="display:flex;gap:8px;margin-bottom:20px">
+              <div style="flex:1;border:1.5px solid #1e2430;background:#fff;padding:10px 8px;text-align:center"><div style="font-family:'IBM Plex Mono',monospace;font-size:15px">5/7</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:2px">Q1</div></div>
+              <div style="flex:1;border:1.5px solid #1e2430;background:#fff;padding:10px 8px;text-align:center"><div style="font-family:'IBM Plex Mono',monospace;font-size:15px">6/9</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:2px">Q2</div></div>
+              <div style="flex:1;border:1.5px solid #1e2430;background:#fff;padding:10px 8px;text-align:center"><div style="font-family:'IBM Plex Mono',monospace;font-size:15px">3/5</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:2px">Q3</div></div>
+            </div>
+            <p style="margin:0 0 20px;font-family:Caveat,cursive;font-size:18px;color:#c1121f;line-height:1.4">Method marks are coming through. It is the last line that keeps costing you.</p>
+            <button style="width:100%;background:#c1121f;color:#fff;border:0;padding:18px 16px;text-align:left;font-family:Fraunces,serif;font-weight:900;font-size:18px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Come back tomorrow
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10.5px;letter-spacing:.1em;opacity:.85;margin-top:5px">REMIND ME AT 7 PM</small>
+            </button>
+            <div style="margin-top:18px;border-top:1px solid #e4b8b4;padding-top:12px">
+              <a href="#7A" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Read your marking again</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- adaptive -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">7B</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Adaptive session · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#c1121f">Session 12 · algebraic manipulation</div>
+            <h1 style="font-size:27px;font-weight:900;letter-spacing:-.02em;margin:8px 0 4px">17 of 21 marks<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 20px;font-size:13px;color:#6e7687;line-height:1.5">Up from 14 of 21 on the same topic five days ago.</p>
+            <div style="display:flex;gap:8px;margin-bottom:20px">
+              <div style="flex:1;border:1.5px solid #1e2430;background:#fff;padding:10px 8px;text-align:center"><div style="font-family:'IBM Plex Mono',monospace;font-size:15px">7/7</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:2px">Q1</div></div>
+              <div style="flex:1;border:1.5px solid #1e2430;background:#fff;padding:10px 8px;text-align:center"><div style="font-family:'IBM Plex Mono',monospace;font-size:15px">7/9</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:2px">Q2</div></div>
+              <div style="flex:1;border:1.5px solid #1e2430;background:#fff;padding:10px 8px;text-align:center"><div style="font-family:'IBM Plex Mono',monospace;font-size:15px">3/5</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:2px">Q3</div></div>
+            </div>
+            <div style="border-top:1.5px solid #1e2430;padding-top:12px;margin-bottom:20px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Estimate today</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#2e7d5b">III → upper III</div>
+              </div>
+              <div style="display:flex;align-items:baseline;gap:8px;margin-top:4px"><span style="font-size:20px;font-weight:900;color:#c1121f;line-height:1.1">Grade III</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">upper III</span></div>
+            </div>
+            <p style="margin:0 0 20px;font-family:Caveat,cursive;font-size:18px;color:#c1121f;line-height:1.4">Factorising is holding now. Sign errors on the second root are what is left.</p>
+            <button style="width:100%;background:#c1121f;color:#fff;border:0;padding:18px 16px;text-align:left;font-family:Fraunces,serif;font-weight:900;font-size:18px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Come back tomorrow
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10.5px;letter-spacing:.1em;opacity:.85;margin-top:5px">CONSUMER ARITHMETIC IS NEXT · +6 MARKS</small>
+            </button>
+            <div style="margin-top:18px;border-top:1px solid #e4b8b4;padding-top:12px">
+              <a href="#7B" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Read your marking again</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- revisit -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">7C</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Revisit · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#c1121f">Revisit · 6 objectives</div>
+            <h1 style="font-size:27px;font-weight:900;letter-spacing:-.02em;margin:8px 0 4px">11 of the 14 marks<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 20px;font-size:13px;color:#6e7687;line-height:1.5">These were new questions on the objectives you had lost marks on.</p>
+            <ul style="list-style:none;margin:0 0 20px;padding:0">
+              <li style="display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid #f1eada;font-size:14px"><span style="font-family:Caveat,cursive;font-size:20px;line-height:1;color:#2e7d5b;flex:none">✓</span><span>Factorising a quadratic <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">recovered</span></span></li>
+              <li style="display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid #f1eada;font-size:14px"><span style="font-family:Caveat,cursive;font-size:20px;line-height:1;color:#2e7d5b;flex:none">✓</span><span>Area of a triangle <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">recovered</span></span></li>
+              <li style="display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid #f1eada;font-size:14px"><span style="font-family:Caveat,cursive;font-size:20px;line-height:1;color:#2e7d5b;flex:none">✓</span><span>Percentage discount <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">recovered</span></span></li>
+              <li style="display:flex;gap:10px;align-items:baseline;padding:9px 0;font-size:14px"><span style="font-family:Caveat,cursive;font-size:20px;line-height:1;color:#6e7687;flex:none">–</span><span>Bearings <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">still going</span></span></li>
+            </ul>
+            <p style="margin:0 0 20px;font-family:Caveat,cursive;font-size:18px;color:#c1121f;line-height:1.4">Three of the four are fixed. Bearings comes back again in a few days.</p>
+            <button style="width:100%;background:#c1121f;color:#fff;border:0;padding:18px 16px;text-align:left;font-family:Fraunces,serif;font-weight:900;font-size:18px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Come back tomorrow
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10.5px;letter-spacing:.1em;opacity:.85;margin-top:5px">BACK TO YOUR USUAL SESSION</small>
+            </button>
+            <div style="margin-top:18px;border-top:1px solid #e4b8b4;padding-top:12px">
+              <a href="#7C" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Read your marking again</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- diagnostic summary -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">7D</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Diagnostic session · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:8px 20px"><img src="public/brand/lockup.svg" width="130" alt="ExtraLesson"></div>
+        <div style="position:relative;padding:32px 20px 40px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#c1121f">Diagnostic · 8 of 8</div>
+            <h1 style="font-size:27px;font-weight:900;letter-spacing:-.02em;margin:8px 0 4px">Nothing scored<span style="color:#c1121f">.</span></h1>
+            <p style="margin:0 0 20px;font-size:15px;color:#3a4152;line-height:1.5">That was the point — it ranks your topics, it does not grade you.</p>
+            <div style="border-top:1.5px solid #1e2430;padding-top:12px;margin-bottom:20px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">What it changed</div>
+              <ul style="list-style:none;margin:10px 0 0;padding:0">
+                <li style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #f1eada;font-size:14px"><span>Algebraic manipulation</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c1121f;flex:none">→ 1st</span></li>
+                <li style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #f1eada;font-size:14px"><span>Consumer arithmetic</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687;flex:none">→ 2nd</span></li>
+                <li style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;font-size:14px"><span>Number theory</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687;flex:none">→ 4th</span></li>
+              </ul>
+            </div>
+            <p style="margin:0 0 20px;font-family:Caveat,cursive;font-size:18px;color:#c1121f;line-height:1.4">Three “I don’t know” answers, all in algebra. That is where we start.</p>
+            <button style="width:100%;background:#c1121f;color:#fff;border:0;padding:18px 16px;text-align:left;font-family:Fraunces,serif;font-weight:900;font-size:18px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Start your first session
+              <small style="display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10.5px;letter-spacing:.1em;opacity:.85;margin-top:5px">15 MINUTES · ALGEBRAIC MANIPULATION</small>
+            </button>
+            <p style="margin:14px 0 0;border-left:3px solid #e4b8b4;background:#fffdf6;padding:8px 12px;font-size:13px;color:#6e7687;line-height:1.45">Your grade estimate starts once marks have been seen across every module.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1280 adaptive -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">7E</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Adaptive session · 1280</span></div>
+      <div style="width:1280px;box-sizing:border-box;flex:none;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+          <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;gap:24px;padding:8px 0">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;flex:1">Session 12 · complete</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;flex:none">CSEC MATH · MAY/JUNE 2027</span>
+          </div>
+        </div>
+        <div style="position:relative;padding:40px 24px 56px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="max-width:960px;margin:0 auto"><div style="position:relative">
+            <div style="position:absolute;top:-40px;bottom:-56px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:40px;align-items:start">
+              <div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#c1121f">Session 12 · algebraic manipulation</div>
+                <h1 style="font-size:44px;font-weight:900;letter-spacing:-.025em;margin:10px 0 6px;line-height:1.02">17 of 21 marks<span style="color:#c1121f">.</span></h1>
+                <p style="margin:0 0 24px;font-size:14px;color:#6e7687">Up from 14 of 21 on the same topic five days ago.</p>
+                <div style="display:flex;gap:12px;margin-bottom:24px">
+                  <div style="flex:1;border:1.5px solid #1e2430;background:#fff;padding:14px;text-align:center"><div style="font-family:'IBM Plex Mono',monospace;font-size:19px">7/7</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:4px">Question 1</div></div>
+                  <div style="flex:1;border:1.5px solid #1e2430;background:#fff;padding:14px;text-align:center"><div style="font-family:'IBM Plex Mono',monospace;font-size:19px">7/9</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:4px">Question 2</div></div>
+                  <div style="flex:1;border:1.5px solid #1e2430;background:#fff;padding:14px;text-align:center"><div style="font-family:'IBM Plex Mono',monospace;font-size:19px">3/5</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:#6e7687;margin-top:4px">Question 3</div></div>
+                </div>
+                <p style="margin:0 0 24px;font-family:Caveat,cursive;font-size:21px;color:#c1121f;line-height:1.4;max-width:48ch">Factorising is holding now. Sign errors on the second root are what is left.</p>
+                <button style="width:100%;background:#c1121f;color:#fff;border:0;padding:20px;text-align:left;font-family:Fraunces,serif;font-weight:900;font-size:21px;box-shadow:4px 4px 0 #1e2430;min-height:44px">Come back tomorrow
+                  <small style="display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10.5px;letter-spacing:.1em;opacity:.85;margin-top:6px">CONSUMER ARITHMETIC IS NEXT · +6 MARKS</small>
+                </button>
+                <div style="margin-top:24px;border-top:1px solid #e4b8b4;padding-top:12px">
+                  <a href="#7E" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Read your marking again</a>
+                </div>
+              </div>
+              <div style="background:#fff;border:1.5px solid #1e2430;padding:20px;box-shadow:3px 3px 0 #1e2430">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;display:block;padding-bottom:2px">Estimate today</div>
+                <div style="display:flex;align-items:baseline;gap:10px;margin-top:12px"><span style="font-size:26px;font-weight:900;color:#c1121f;line-height:1">Grade III</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687">upper III</span></div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#2e7d5b;margin-top:8px">Moved up within III this session</div>
+                <div style="margin-top:16px;border-top:1px solid #f1eada;padding-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;line-height:1.7">Paper 3 assumed at neutral carry-over. Moves with every question.</div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>

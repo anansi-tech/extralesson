@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #e8e6e1; }
+  a { color: #1e2430; }
+  a:hover { color: #c1121f; }
+</style>
+</helmet>
+
+<section data-screen-label="Share and icon" style="padding:48px 40px 80px;font-family:'IBM Plex Mono',monospace">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#c1121f;font-weight:600">10 · Share image and app icon</div>
+    <div style="font-family:Fraunces,serif;font-size:28px;font-weight:900;letter-spacing:-.02em;color:#1e2430">The two places the system has to work at a glance</div>
+    <div style="font-size:12px;color:#6e7687;max-width:760px;line-height:1.7">Both are the notebook and nothing else: paper, ruled lines, the margin rule, one red. The share image carries the headline as it stands; the icon is the mark alone, because at 32px a wordmark is a smear.</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:48px">
+    <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">10A</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Share image · 1200 × 630</span></div>
+    <div style="width:1200px;height:630px;box-sizing:border-box;flex:none;position:relative;overflow:hidden;background:#fbf7ee;background-image:repeating-linear-gradient(to bottom,transparent 0 47px,#c9d6e8 47px 48px);border:1.5px solid #1e2430;font-family:Fraunces,serif;color:#1e2430">
+      <div style="position:absolute;top:0;bottom:0;left:88px;width:2px;background:#e4b8b4"></div>
+      <div style="position:absolute;top:64px;left:112px;right:64px;bottom:64px;display:flex;flex-direction:column;justify-content:space-between">
+        <img src="public/brand/lockup.svg" width="260" alt="ExtraLesson" style="flex:none">
+        <div>
+          <h1 style="font-size:92px;font-weight:900;line-height:1.0;letter-spacing:-.03em;margin:0">Your own CXC examiner.<br><span style="color:#c1121f">In red pen.</span></h1>
+          <div style="margin-top:36px;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap">
+            <span style="font-family:Caveat,cursive;font-size:44px;color:#2a3550;line-height:1">3x + 1 = 0 → x = 1/3</span>
+            <span style="font-family:Caveat,cursive;font-size:38px;color:#c1121f;line-height:1">✗ sign — that mark is gone</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;font-family:'IBM Plex Mono',monospace;font-size:16px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">
+          <span>CSEC Mathematics · Paper 2 marking</span>
+          <span style="color:#1e2430">extralesson.com</span>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:#6e7687;line-height:1.7;max-width:760px">Safe at half size in a timeline: the headline is 92px, the smallest text 16px. The marked line is the product, not decoration — it is the one thing that explains the promise without a caption.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">10B</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">App icon · 512</span></div>
+      <div style="width:512px;height:512px;box-sizing:border-box;flex:none;position:relative;overflow:hidden;background:#fbf7ee;background-image:repeating-linear-gradient(to bottom,transparent 0 63px,#c9d6e8 63px 65px);border:1.5px solid #1e2430">
+        <div style="position:absolute;top:0;bottom:0;left:72px;width:5px;background:#e4b8b4"></div>
+        <div style="position:absolute;top:0;right:0;bottom:0;left:72px;display:flex;align-items:center;justify-content:center">
+          <img src="public/brand/mark.svg" width="300" height="300" alt="ExtraLesson mark" style="display:block">
+        </div>
+      </div>
+      <div style="font-size:11px;color:#6e7687;line-height:1.7;max-width:512px">Paper, two ruled lines, the margin rule, the tick. No wordmark, no rounded corners — the platform applies its own mask.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#1e2430;color:#fbf7ee;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">10C</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Down to a home screen</span></div>
+      <div style="display:flex;align-items:flex-end;gap:24px">
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+          <div style="width:180px;height:180px;box-sizing:border-box;position:relative;overflow:hidden;background:#fbf7ee;background-image:repeating-linear-gradient(to bottom,transparent 0 22px,#c9d6e8 22px 23px);border:1.5px solid #1e2430">
+            <div style="position:absolute;top:0;bottom:0;left:25px;width:2px;background:#e4b8b4"></div>
+            <div style="position:absolute;top:0;right:0;bottom:0;left:25px;display:flex;align-items:center;justify-content:center"><img src="public/brand/mark.svg" width="106" height="106" alt="" style="display:block"></div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;letter-spacing:.08em">180</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+          <div style="width:96px;height:96px;box-sizing:border-box;position:relative;overflow:hidden;background:#fbf7ee;background-image:repeating-linear-gradient(to bottom,transparent 0 12px,#c9d6e8 12px 13px);border:1.5px solid #1e2430">
+            <div style="position:absolute;top:0;bottom:0;left:13px;width:1.5px;background:#e4b8b4"></div>
+            <div style="position:absolute;top:0;right:0;bottom:0;left:13px;display:flex;align-items:center;justify-content:center"><img src="public/brand/mark.svg" width="56" height="56" alt="" style="display:block"></div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;letter-spacing:.08em">96</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+          <div style="width:60px;height:60px;box-sizing:border-box;position:relative;overflow:hidden;background:#fbf7ee;border:1.5px solid #1e2430">
+            <div style="position:absolute;top:0;bottom:0;left:9px;width:1.5px;background:#e4b8b4"></div>
+            <div style="position:absolute;top:0;right:0;bottom:0;left:9px;display:flex;align-items:center;justify-content:center"><img src="public/brand/mark.svg" width="36" height="36" alt="" style="display:block"></div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;letter-spacing:.08em">60</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+          <div style="width:32px;height:32px;box-sizing:border-box;position:relative;overflow:hidden;background:#fbf7ee;border:1px solid #1e2430">
+            <div style="position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center"><img src="public/brand/mark.svg" width="22" height="22" alt="" style="display:block"></div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687;letter-spacing:.08em">32</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:#6e7687;line-height:1.7;max-width:420px">The ruled lines drop out below 96 and the margin rule below 60 — at that size they read as noise. The tick and the paper ground are what survive, and they are enough.</div>
+    </div>
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>
