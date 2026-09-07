@@ -856,7 +856,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                             ? 'Marked from your photograph — nothing to type.'
                             : readExists
                               ? 'Work this one on paper — it is marked from your photograph.'
-                              : `Work this one on paper. ${feedback ? 'Mark it yourself against the solution below' : 'Photograph the page and it is marked from there'} — until then these marks are left out of your estimate.`}
+                              : 'Work this on paper — it’s marked from your photograph.'}
                         </p>
                           )}
                         </>

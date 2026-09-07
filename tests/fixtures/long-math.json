@@ -1,0 +1,524 @@
+[
+ {
+  "id": "6a8538a6ed771942b6d0dd9b",
+  "why": "longest solution",
+  "stem": "Answer the following questions.",
+  "stimulus": "A sports-day coordinator marks four cones $P$, $Q$, $R$ and $S$ for a relay lane. The position vectors of $P$ and $R$, in that order, are recorded as columns of the data matrix $M$. A check of the record gives\n\\[\nM=\\begin{pmatrix}x+3&11\\\\2y-1&7\\end{pmatrix}=\\begin{pmatrix}5&11\\\\3&7\\end{pmatrix}.\n\\]\nThe displacement from $P$ to $Q$ is $\\overrightarrow{PQ}=\\begin{pmatrix}4\\\\-1\\end{pmatrix}$. The cones $P$, $Q$, $R$ and $S$, in that order, form a parallelogram.",
+  "worked_solution": "(a) Equality of the upper-left entries gives $x+3=5$, so $x=2$. Equality of the lower-left entries gives $2y-1=3$, so $2y=4$ and $y=2$.\n\n(b) The position vector of $P$ is $\\overrightarrow{OP}=\\begin{pmatrix}5\\\\3\\end{pmatrix}$. Therefore,\n\\[\n\\overrightarrow{OQ}=\\overrightarrow{OP}+\\overrightarrow{PQ}\n=\\begin{pmatrix}5\\\\3\\end{pmatrix}+\\begin{pmatrix}4\\\\-1\\end{pmatrix}\n=\\begin{pmatrix}9\\\\2\\end{pmatrix}.\n\\]\n\n(c) The position vector of $R$ is $\\overrightarrow{OR}=\\begin{pmatrix}11\\\\7\\end{pmatrix}$. Thus,\n\\[\n\\overrightarrow{QR}=\\overrightarrow{OR}-\\overrightarrow{OQ}\n=\\begin{pmatrix}11\\\\7\\end{pmatrix}-\\begin{pmatrix}9\\\\2\\end{pmatrix}\n=\\begin{pmatrix}2\\\\5\\end{pmatrix}.\n\\]\nOpposite sides of the parallelogram are equal and parallel, so $\\overrightarrow{PS}=\\overrightarrow{QR}=\\begin{pmatrix}2\\\\5\\end{pmatrix}$. Therefore,\n\\[\n\\overrightarrow{OS}=\\overrightarrow{OP}+\\overrightarrow{PS}\n=\\begin{pmatrix}5\\\\3\\end{pmatrix}+\\begin{pmatrix}2\\\\5\\end{pmatrix}\n=\\begin{pmatrix}7\\\\8\\end{pmatrix}.\n\\]\n\n(d) The vector in the direction from $P$ to $S$ is $\\overrightarrow{PS}=\\begin{pmatrix}2\\\\5\\end{pmatrix}$. Its magnitude is\n\\[\n\\left|\\overrightarrow{PS}\\right|=\\sqrt{2^2+5^2}=\\sqrt{29}.\n\\]\nTherefore, a unit vector in this direction is\n\\[\n\\frac{1}{\\sqrt{29}}\\begin{pmatrix}2\\\\5\\end{pmatrix}\n=\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}.\n\\]",
+  "remediations": [
+   "For equal matrices, entries in corresponding positions are equal. Use $x+3=5$ and $2y-1=3$ before solving.",
+   "First find $\\overrightarrow{QR}=\\overrightarrow{OR}-\\overrightarrow{OQ}$. In the parallelogram, this is equal to $\\overrightarrow{PS}$, which is then added to $\\overrightarrow{OP}$.",
+   "A unit vector is found by dividing by the vector magnitude, not by the sum of its components. Here the magnitude is $\\sqrt{2^2+5^2}=\\sqrt{29}$."
+  ]
+ },
+ {
+  "id": "6a83b57311edd390f46a5256",
+  "why": "longest solution",
+  "stem": "The canteen trolley travels between these locations.",
+  "stimulus": "A school canteen uses $O$ as a reference point for deliveries. The storeroom is at $A(2,-1)$ and the serving area is at $B(8,5)$.",
+  "worked_solution": "(a) Since the coordinates of a point give the components of its position vector,\n\n$\\overrightarrow{OA}=\\begin{pmatrix}2\\\\-1\\end{pmatrix}$ and $\\overrightarrow{OB}=\\begin{pmatrix}8\\\\5\\end{pmatrix}$.\n\nThe displacement from $A$ to $B$ is\n\n$\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}=\\begin{pmatrix}8\\\\5\\end{pmatrix}-\\begin{pmatrix}2\\\\-1\\end{pmatrix}=\\begin{pmatrix}6\\\\6\\end{pmatrix}$.\n\n(b) The displacement from $A$ to $C$ is\n\n$\\dfrac{3}{2}\\overrightarrow{AB}=\\dfrac{3}{2}\\begin{pmatrix}6\\\\6\\end{pmatrix}=\\begin{pmatrix}9\\\\9\\end{pmatrix}$.\n\nTherefore,\n\n$\\overrightarrow{OC}=\\overrightarrow{OA}+\\overrightarrow{AC}=\\begin{pmatrix}2\\\\-1\\end{pmatrix}+\\begin{pmatrix}9\\\\9\\end{pmatrix}=\\begin{pmatrix}11\\\\8\\end{pmatrix}$.\n\n(c) The displacement vectors are\n\n$\\overrightarrow{AD}=\\overrightarrow{OD}-\\overrightarrow{OA}=\\begin{pmatrix}5\\\\2\\end{pmatrix}-\\begin{pmatrix}2\\\\-1\\end{pmatrix}=\\begin{pmatrix}3\\\\3\\end{pmatrix}$\n\nand\n\n$\\overrightarrow{DC}=\\overrightarrow{OC}-\\overrightarrow{OD}=\\begin{pmatrix}11\\\\8\\end{pmatrix}-\\begin{pmatrix}5\\\\2\\end{pmatrix}=\\begin{pmatrix}6\\\\6\\end{pmatrix}$.\n\nSince $\\begin{pmatrix}6\\\\6\\end{pmatrix}=2\\begin{pmatrix}3\\\\3\\end{pmatrix}$, the ratio is $AD:DC=1:2$.\n\n(d) No. A midpoint divides a line segment into two equal parts, so the ratio would have to be $1:1$. Here, $AD:DC=1:2$.",
+  "remediations": [
+   "A displacement from $A$ to $B$ is found by subtracting the position vector of the starting point from that of the ending point: $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$.",
+   "$\\begin{pmatrix}9\\\\9\\end{pmatrix}$ is $\\overrightarrow{AC}$. Add this displacement to $\\overrightarrow{OA}$ to obtain the position vector $\\overrightarrow{OC}$.",
+   "Compare $AD$ with $DC$ in the stated order. Since $\\overrightarrow{DC}$ is twice $\\overrightarrow{AD}$, $AD:DC=1:2$."
+  ]
+ },
+ {
+  "id": "6a83ccb2c24c2d59f4d9c388",
+  "why": "longest solution",
+  "stem": "For the patrol route represented on the grid, answer the parts below.",
+  "stimulus": "An environmental officer uses the coordinate grid shown to record two points on a boundary patrol. The coordinates, in units, are $A(-4,1)$ and $B(2,5)$. A warning beacon is to be placed 15 units from $A$ in the direction from $A$ to $B$.",
+  "worked_solution": "(a) The displacement from $A$ to $B$ is\n\\[\\overrightarrow{AB}=\\begin{pmatrix}2-(-4)\\\\5-1\\end{pmatrix}=\\begin{pmatrix}6\\\\4\\end{pmatrix}.\\]\n\n(b) The magnitude is\n\\[\\left|\\overrightarrow{AB}\\right|=\\sqrt{6^2+4^2}=\\sqrt{52}=2\\sqrt{13}.\\]\n\n(c) The magnitude of the stated vector is\n\\[\\sqrt{\\left(\\frac{3}{\\sqrt{13}}\\right)^2+\\left(\\frac{2}{\\sqrt{13}}\\right)^2}=\\sqrt{\\frac{9}{13}+\\frac{4}{13}}=1.\\]\nAlso,\n\\[\\frac{1}{\\sqrt{13}}\\begin{pmatrix}3\\\\2\\end{pmatrix}=\\frac{1}{2\\sqrt{13}}\\begin{pmatrix}6\\\\4\\end{pmatrix}=\\frac{1}{2\\sqrt{13}}\\overrightarrow{AB}.\\]\nThe scalar is positive, so the vector has the direction of $\\overrightarrow{AB}$ and has magnitude $1$.\n\n(d) The beacon displacement from $A$ is\n\\[15\\left[\\frac{1}{\\sqrt{13}}\\begin{pmatrix}3\\\\2\\end{pmatrix}\\right]=\\begin{pmatrix}\\frac{45}{\\sqrt{13}}\\\\\\frac{30}{\\sqrt{13}}\\end{pmatrix}.\\]\nIts position vector is therefore\n\\[\\begin{pmatrix}-4\\\\1\\end{pmatrix}+\\begin{pmatrix}\\frac{45}{\\sqrt{13}}\\\\\\frac{30}{\\sqrt{13}}\\end{pmatrix}=\\begin{pmatrix}-4+\\frac{45}{\\sqrt{13}}\\\\1+\\frac{30}{\\sqrt{13}}\\end{pmatrix}.\\]\nAlso,\n\\[\\overrightarrow{A\\text{beacon}}=15\\left(\\frac{1}{2\\sqrt{13}}\\overrightarrow{AB}\\right)=\\frac{15}{2\\sqrt{13}}\\overrightarrow{AB}.\\]\nSince $\\dfrac{15}{2\\sqrt{13}}$ is positive, the beacon lies on ray $AB$.",
+  "remediations": [
+   "A vector from $A$ to $B$ is found by subtracting the coordinates of $A$ from the coordinates of $B$: terminal point minus initial point.",
+   "The components of $\\overrightarrow{AB}$ are $6$ and $4$, so its magnitude is $\\sqrt{6^2+4^2}$, not the square root of $6+4$.",
+   "This vector gives the movement from $A$ to the beacon. Add the position vector of $A$, $\\begin{pmatrix}-4\\\\1\\end{pmatrix}$, to obtain the beacon's position vector."
+  ]
+ },
+ {
+  "id": "6a854012e7fc40f429797be2",
+  "why": "longest solution",
+  "stem": "Use the histogram to answer the questions below.",
+  "stimulus": "A building contractor recorded the masses of 40 bags of cement in a delivery. The histogram shows the results. A bag is accepted if its mass lies within one estimated semi-interquartile range of the estimated median mass.",
+  "worked_solution": "(a) The class width is $50-40=10$ kg.\n\n(b) The class midpoints are $25,35,45,55,65$. The weighted total is\n\\[\n(25\\times4)+(35\\times7)+(45\\times12)+(55\\times9)+(65\\times8)=1900.\n\\]\nThe total frequency is $40$, giving an estimated mean of $1900\\div40=47.5$ kg.\n\n(c) The median position is $\\frac{40}{2}=20$. The cumulative frequencies are $4,11,23,32,40$, so the median class is $40\\le m<50$. The estimated median is\n\\[\n40+\\left(\\frac{20-11}{12}\\right)\\times10=47.5\\text{ kg}.\n\\]\nThe estimated mean and estimated median are both $47.5$ kg, so the distribution is approximately symmetrical.\n\n(d) The lower-quartile position is $\\frac{40}{4}=10$ and the upper-quartile position is $\\frac{3\\times40}{4}=30$. The estimated lower quartile is\n\\[\n30+\\left(\\frac{10-4}{7}\\right)\\times10=38.6\\text{ kg} \\text{ approximately}.\n\\]\nThe estimated upper quartile is\n\\[\n50+\\left(\\frac{30-23}{9}\\right)\\times10=57.8\\text{ kg} \\text{ approximately}.\n\\]\nTherefore, the estimated interquartile range is $57.8-38.6=19.2$ kg and the estimated semi-interquartile range is $19.2\\div2=9.6$ kg. The acceptable interval is approximately $47.5\\pm9.6$, or from $37.9$ kg to $57.1$ kg. Since $58$ kg is outside this interval, the bag is not acceptable.",
+  "remediations": [
+   "The value 12 is the greatest frequency, not a mass estimate. For grouped data, multiply each class midpoint by its frequency and divide the total by 40.",
+   "The interquartile range is one number. Subtract the lower quartile from the upper quartile: $57.8-38.6=19.2$ kg."
+  ]
+ },
+ {
+  "id": "6a85513cc99a188733a9f52a",
+  "why": "longest solution",
+  "stem": "The grouped frequency table shows the bakery's records. Use the table to answer the questions below.",
+  "stimulus": "A bakery recorded the number of coconut rolls sold on each of 40 days.",
+  "worked_solution": "(a) The lower class boundary for $20-29$ is $19.5$. The class midpoint is $\\frac{20+29}{2}=24.5$.\n\n(b) The greatest frequency is $12$, occurring in both $30-39$ and $40-49$, so these are the modal classes. The cumulative frequencies are $4$, $11$, $23$, $35$ and $40$. The median position is the 20th value, which lies in the class $30-39$.\n\n(c) The class midpoints are $14.5$, $24.5$, $34.5$, $44.5$ and $54.5$. The sum of the frequency-midpoint products is\n\\[\n(4\\times14.5)+(7\\times24.5)+(12\\times34.5)+(12\\times44.5)+(5\\times54.5)=1450.\n\\]\nTherefore, the estimated mean is $\\frac{1450}{40}=36.25$ coconut rolls.\n\n(d) The lower quartile is the 10th value. It lies in the class $20-29$, so\n\\[\nQ_1=19.5+\\left(\\frac{10-4}{7}\\right)\\times10=28.0714\\ldots\n\\]\nThe upper quartile is the 30th value. It lies in the class $40-49$, so\n\\[\nQ_3=39.5+\\left(\\frac{30-23}{12}\\right)\\times10=45.3333\\ldots\n\\]\nThus, the semi-interquartile range is\n\\[\n\\frac{45.3333\\ldots-28.0714\\ldots}{2}=8.6309\\ldots=8.63.\n\\]\nThe midpoint of the median class is $34.5$. One semi-interquartile range from this midpoint gives limits of $34.5-8.63=25.87$ and $34.5+8.63=43.13$. Since $36.25$ lies between these limits, the target will be used.",
+  "remediations": [
+   "The frequency $12$ shows how often values occur. The modal class is the class interval or intervals with that frequency: $30-39$ and $40-49$.",
+   "First find $Q_3-Q_1$ to obtain the interquartile range. Divide this result by $2$ to obtain the semi-interquartile range.",
+   "The condition says that the mean must lie within one semi-interquartile range of the midpoint, not that it must equal the midpoint."
+  ]
+ },
+ {
+  "id": "6a8419395222177bc0d16f89",
+  "why": "longest solution",
+  "stem": "The positions of the boat and the markers are described above.",
+  "stimulus": "A fisherman uses a harbour chart on which the dock is the origin $O$. The position vectors of the boat at $A$ and $B$ are $\\overrightarrow{OA}=\\begin{pmatrix}-3\\\\2\\end{pmatrix}$ and $\\overrightarrow{OB}=\\begin{pmatrix}1\\\\5\\end{pmatrix}$, respectively. A floating marker $C$ is placed so that $\\overrightarrow{BC}$ has the same direction as $\\overrightarrow{AB}$ and twice its magnitude.",
+  "worked_solution": "(a) The displacement from $A$ to $B$ is $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$. Therefore, $\\overrightarrow{AB}=\\begin{pmatrix}1\\\\5\\end{pmatrix}-\\begin{pmatrix}-3\\\\2\\end{pmatrix}=\\begin{pmatrix}4\\\\3\\end{pmatrix}$.\n\n(b) Since $\\overrightarrow{BC}$ has twice the magnitude of $\\overrightarrow{AB}$ in the same direction, $\\overrightarrow{BC}=2\\begin{pmatrix}4\\\\3\\end{pmatrix}=\\begin{pmatrix}8\\\\6\\end{pmatrix}$. Therefore, $\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{BC}=\\begin{pmatrix}1\\\\5\\end{pmatrix}+\\begin{pmatrix}8\\\\6\\end{pmatrix}=\\begin{pmatrix}9\\\\11\\end{pmatrix}$.\n\n(c) Since $B$ is the midpoint of $CD$, $\\overrightarrow{OD}=2\\overrightarrow{OB}-\\overrightarrow{OC}$. Thus, $\\overrightarrow{OD}=2\\begin{pmatrix}1\\\\5\\end{pmatrix}-\\begin{pmatrix}9\\\\11\\end{pmatrix}=\\begin{pmatrix}-7\\\\-1\\end{pmatrix}$. Also, $\\overrightarrow{DA}=\\overrightarrow{OA}-\\overrightarrow{OD}=\\begin{pmatrix}-3\\\\2\\end{pmatrix}-\\begin{pmatrix}-7\\\\-1\\end{pmatrix}=\\begin{pmatrix}4\\\\3\\end{pmatrix}$. Since $\\overrightarrow{DA}=\\overrightarrow{AB}$ and $\\overrightarrow{BC}=2\\overrightarrow{AB}$, all three vectors have the same direction. Therefore, Devon's statement is correct.",
+  "remediations": [
+   "The movement from $B$ to $C$ is twice the displacement from $A$ to $B$. Calculate $2\\overrightarrow{AB}$ before adding it to $\\overrightarrow{OB}$.",
+   "When $B$ is the midpoint of $CD$, the position vectors satisfy $2\\overrightarrow{OB}=\\overrightarrow{OC}+\\overrightarrow{OD}$. Rearrange this to find $\\overrightarrow{OD}$.",
+   "Vectors with one equal to a positive scalar multiple of another have the same direction. Here, $\\overrightarrow{DA}=\\overrightarrow{AB}$ and $\\overrightarrow{BC}=2\\overrightarrow{AB}$."
+  ]
+ },
+ {
+  "id": "6a9013acc82b6d3fb145e806",
+  "why": "longest solution",
+  "stem": "Use the table above to answer the questions below.",
+  "stimulus": "A sales clerk recorded the number of exercise books sold on each day over a period of time. One frequency in the table was smudged and is represented by $x$. The estimated mean number of exercise books sold per day was $24.25$.",
+  "worked_solution": "(a) The lower class boundary of $20-29$ is $19.5$. The class midpoint is $\\dfrac{20+29}{2}=24.5$.\n\n(b) The known total of frequency multiplied by class midpoint is\n\\[\n(3\\times4.5)+(7\\times14.5)+(8\\times34.5)+(2\\times44.5)=480.\n\\]\nThe total frequency apart from the unknown class is $3+7+8+2=20$. Therefore,\n\\[\n\\frac{480+24.5x}{20+x}=24.25.\n\\]\nMultiplying through gives\n\\[\n480+24.5x=24.25(20+x)=485+24.25x.\n\\]\nThus $0.25x=5$, so $x=20$.\n\n(c) The completed frequencies are $3,7,20,8,2$. The largest frequency is $20$, so the modal class is $20-29$. The total frequency is $40$, so the median position is the $20$th value. The cumulative frequencies are $3,10,30,38,40$, so the median class is $20-29$.\n\n(d) The lower-quartile position is $\\dfrac{40}{4}=10$. This is at the upper boundary of the class $10-19$, giving $Q_1=19.5$.\n\nThe upper-quartile position is $\\dfrac{3(40)}{4}=30$. This is at the upper boundary of the class $20-29$, giving $Q_3=29.5$.\n\nThe estimated interquartile range is\n\\[\n29.5-19.5=10.\n\\]\nThe supervisor's statement is not supported because the estimated spread of the middle half is $10$ exercise books, and this is not less than $10$ exercise books.",
+  "remediations": [
+   "Class boundaries remove the gap between adjacent integer classes. The lower boundary of $20-29$ is halfway between $19$ and $20$, so it is $19.5$.",
+   "The modal frequency is $20$, but the modal class is the interval containing that frequency: $20-29$.",
+   "The interquartile range is one number. Subtract the lower quartile from the upper quartile: $29.5-19.5=10$."
+  ]
+ },
+ {
+  "id": "6a83ff9b0676ebb26b9e8793",
+  "why": "longest solution",
+  "stem": "Answer the questions below.",
+  "stimulus": "A warehouse trolley moves from packing station $A$ to station $B$. It then moves to station $C$, such that $\\overrightarrow{BC}=2\\overrightarrow{AB}$. The grid shows the positions of $A$ and $B$ relative to the origin $O$.",
+  "worked_solution": "(a) From the graph, $\\overrightarrow{OA}=\\begin{pmatrix}-4\\\\-2\\end{pmatrix}$ and $\\overrightarrow{OB}=\\begin{pmatrix}1\\\\0\\end{pmatrix}$. Therefore,\n\\[\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}=\\begin{pmatrix}1\\\\0\\end{pmatrix}-\\begin{pmatrix}-4\\\\-2\\end{pmatrix}=\\begin{pmatrix}5\\\\2\\end{pmatrix}.\\]\n\n(b) Since $\\overrightarrow{BC}=2\\overrightarrow{AB}$,\n\\[\\overrightarrow{BC}=2\\begin{pmatrix}5\\\\2\\end{pmatrix}=\\begin{pmatrix}10\\\\4\\end{pmatrix}.\\]\nTherefore,\n\\[\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{BC}=\\begin{pmatrix}1\\\\0\\end{pmatrix}+\\begin{pmatrix}10\\\\4\\end{pmatrix}=\\begin{pmatrix}11\\\\4\\end{pmatrix}.\\]\n\n(c) The displacement from $A$ to $C$ is\n\\[\\overrightarrow{AC}=\\overrightarrow{OC}-\\overrightarrow{OA}=\\begin{pmatrix}11\\\\4\\end{pmatrix}-\\begin{pmatrix}-4\\\\-2\\end{pmatrix}=\\begin{pmatrix}15\\\\6\\end{pmatrix}.\\]\n\n(d) Since\n\\[\\overrightarrow{AC}=\\begin{pmatrix}15\\\\6\\end{pmatrix}=3\\begin{pmatrix}5\\\\2\\end{pmatrix}=3\\overrightarrow{AB},\\]\n$\\overrightarrow{AC}$ is a positive scalar multiple of $\\overrightarrow{AB}$. Thus, $A$, $B$ and $C$ are collinear, with $C$ beyond $B$, so the trolley travelled in a straight line.",
+  "remediations": [
+   "A displacement vector is terminal position vector minus initial position vector. Calculate $\\overrightarrow{OB}-\\overrightarrow{OA}$ for movement from $A$ to $B$.",
+   "The trolley's second displacement is twice the first displacement. Double both components of $\\overrightarrow{AB}$ before adding it to $\\overrightarrow{OB}$.",
+   "$\\overrightarrow{OC}$ starts at the origin, while $\\overrightarrow{AC}$ starts at $A$. Subtract $\\overrightarrow{OA}$ from $\\overrightarrow{OC}$ to find $\\overrightarrow{AC}$."
+  ]
+ },
+ {
+  "id": "6a85508bc99a188733a9f51d",
+  "why": "longest solution",
+  "stem": "Answer the questions about the growing bed.",
+  "stimulus": "A farmer prepares a scale plan of a growing bed. The labelled sketch shows a rectangle measuring $12$ cm by $8$ cm, with a semicircle of diameter $12$ cm attached. The scale of the plan is $1:500$. Both plan measurements were made correct to the nearest $0.1$ cm. The sketch is not drawn to scale.",
+  "worked_solution": "(a) At a scale of $1:500$, $1$ cm represents $500$ cm, which is $5$ m.\n\n(b) The actual width is $12 \\times 5 = 60$ m and the actual height is $8 \\times 5 = 40$ m. The rectangle has area $60 \\times 40 = 2400\\text{ m}^2$. The semicircle has radius $30$ m, so its area is $\\frac{1}{2}\\pi(30)^2 = 450\\pi\\text{ m}^2$. Therefore, the area of the bed is $2400 + 450\\pi\\text{ m}^2$.\n\n(c) The minimum plan dimensions are $11.95$ cm and $7.95$ cm, giving actual dimensions of $59.75$ m and $39.75$ m. The minimum area is $59.75(39.75) + \\frac{1}{2}\\pi(29.875)^2 \\approx 3777\\text{ m}^2$.\n\nThe maximum plan dimensions are $12.05$ cm and $8.05$ cm, giving actual dimensions of $60.25$ m and $40.25$ m. The maximum area is $60.25(40.25) + \\frac{1}{2}\\pi(30.125)^2 \\approx 3851\\text{ m}^2$.\n\nThe area from part (b) is approximately $3814\\text{ m}^2$. The greatest difference is $3851 - 3814 = 37\\text{ m}^2$, so the maximum possible error is $37\\text{ m}^2$.\n\n(d) The reported area is $3760\\text{ m}^2$, which is less than the minimum possible area of $3777\\text{ m}^2$. Therefore, no, the reported value cannot be due only to the stated measurement error.",
+  "remediations": [
+   "The curved end is a semicircle, so use one half of $\\pi r^2$. Its area is $\\frac{1}{2}\\pi(30)^2 = 450\\pi\\text{ m}^2$.",
+   "A measurement correct to the nearest $0.1$ cm may differ by $0.05$ cm. Calculate areas using both the lower and upper plan dimensions.",
+   "The smallest possible area is about $3777\\text{ m}^2$. Since $3760\\text{ m}^2$ is below this value, it is outside the possible range."
+  ]
+ },
+ {
+  "id": "6a83e0d1f8a49010ad804a74",
+  "why": "longest solution",
+  "stem": "The points $A$ and $B$ are shown on the grid.",
+  "stimulus": "A market vendor is arranging a straight aisle between two display points. The diagram shows the positions of $A(1,1)$ and $B(7,9)$. Each grid unit represents $0.5$ m.",
+  "worked_solution": "(a) The displacement from $A$ to $B$ is found by subtracting the position vector of $A$ from the position vector of $B$:\n\n$\\overrightarrow{AB}=\\begin{pmatrix}7\\\\9\\end{pmatrix}-\\begin{pmatrix}1\\\\1\\end{pmatrix}=\\begin{pmatrix}6\\\\8\\end{pmatrix}$.\n\n(b) The magnitude is $\\sqrt{6^2+8^2}=\\sqrt{36+64}=\\sqrt{100}=10$ grid units.\n\n(c) The magnitude of the proposed vector is $\\sqrt{\\left(\\frac{3}{5}\\right)^2+\\left(\\frac{4}{5}\\right)^2}=\\sqrt{\\frac{9}{25}+\\frac{16}{25}}=1$. Also, $\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}=\\frac{1}{10}\\begin{pmatrix}6\\\\8\\end{pmatrix}$, so it has the same direction as $\\overrightarrow{AB}$. Therefore, it is a unit vector in the direction from $A$ to $B$.\n\n(d) Since one grid unit represents $0.5$ m, $3$ m represents $\\frac{3}{0.5}=6$ grid units. The displacement from $A$ to the stand is $6\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}=\\begin{pmatrix}\\frac{18}{5}\\\\\\frac{24}{5}\\end{pmatrix}$. Adding this to the position vector of $A$ gives $\\begin{pmatrix}1\\\\1\\end{pmatrix}+\\begin{pmatrix}\\frac{18}{5}\\\\\\frac{24}{5}\\end{pmatrix}=\\begin{pmatrix}\\frac{23}{5}\\\\\\frac{29}{5}\\end{pmatrix}$.",
+  "remediations": [
+   "The value $10$ is the length in grid units. Each grid unit is $0.5$ m, so the direct distance is $5$ m.",
+   "A unit vector must have magnitude $1$. The vector is also a positive scalar multiple of $\\overrightarrow{AB}$, so it points in the required direction.",
+   "The vector $\\begin{pmatrix}\\frac{18}{5}\\\\\\frac{24}{5}\\end{pmatrix}$ describes the movement from $A$. Add the position vector of $A$ to obtain the stand's position vector."
+  ]
+ },
+ {
+  "id": "6a867198b944c6fb77c0c009",
+  "why": "longest solution",
+  "stem": "Answer the parts below.",
+  "stimulus": "A fisherman is designing a triangular marking on a net. On the coordinate diagram, the original marking has vertices $P(1,2)$, $Q(3,1)$ and $R(2,4)$. The marking is reflected in the line $y=x$ and then enlarged with centre at the origin and scale factor $2$.",
+  "worked_solution": "(a) Reflection in $y=x$ maps $(x,y)$ to $(y,x)$. Therefore,\n\\[\nP(1,2)\\to(2,1)\\to P'(4,2),\n\\]\n\\[\nQ(3,1)\\to(1,3)\\to Q'(2,6),\n\\]\nand\n\\[\nR(2,4)\\to(4,2)\\to R'(8,4).\n\\]\nThe image is the triangle with vertices $P'(4,2)$, $Q'(2,6)$ and $R'(8,4)$.\n\n(b) The reflection matrix is\n\\[\n\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}\n\\]\nand the enlargement matrix is\n\\[\n\\begin{pmatrix}2&0\\\\0&2\\end{pmatrix}.\n\\]\nSince the reflection is carried out first,\n\\[\nC=\\begin{pmatrix}2&0\\\\0&2\\end{pmatrix}\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}\n=\\begin{pmatrix}0&2\\\\2&0\\end{pmatrix}.\n\\]\n\n(c) For $C=\\begin{pmatrix}0&2\\\\2&0\\end{pmatrix}$,\n\\[\n\\det C=(0)(0)-(2)(2)=-4.\n\\]\nThe adjugate is\n\\[\n\\begin{pmatrix}0&-2\\\\-2&0\\end{pmatrix}.\n\\]\nTherefore,\n\\[\nC^{-1}=\\frac{1}{-4}\\begin{pmatrix}0&-2\\\\-2&0\\end{pmatrix}\n=\\begin{pmatrix}0&\\frac{1}{2}\\\\\\frac{1}{2}&0\\end{pmatrix}.\n\\]\n\n(d) The original position vector is found by reversing the transformation:\n\\[\n\\begin{pmatrix}0&\\frac{1}{2}\\\\\\frac{1}{2}&0\\end{pmatrix}\n\\begin{pmatrix}10\\\\6\\end{pmatrix}\n=\\begin{pmatrix}3\\\\5\\end{pmatrix}.\n\\]\nThus, the position vector before the transformations was $\\begin{pmatrix}3\\\\5\\end{pmatrix}$.",
+  "remediations": [
+   "The inverse transformation must undo both operations. It first reduces each final coordinate by the enlargement factor and then reverses the reflection.",
+   "The determinant is $-4$ and the adjugate entries are also negative. Dividing the negative adjugate by the negative determinant gives positive one-half entries.",
+   "The final position is given, so the unknown original position must be found using $C^{-1}$, not by applying $C$ again."
+  ]
+ },
+ {
+  "id": "6a852949ed771942b6d0dc7f",
+  "why": "longest solution",
+  "stem": "Use the diagram and the information above to answer the parts below.",
+  "stimulus": "For a school sports day, triangular ground markers are placed on a coordinate plan. The diagram shows marker $ABC$, where $A(-3,2)$, $B(-1,5)$ and $C(2,4)$. Marker $A$ is moved to $A'(1,0)$ by the same movement that will be used for every point on the marker.",
+  "worked_solution": "(a) The translation vector is found by subtracting the coordinates of $A$ from those of $A'$. This gives\n\\[\n\\overrightarrow{AA'}=\\binom{1-(-3)}{0-2}=\\binom{4}{-2}.\n\\]\n\n(b) Applying $\\binom{4}{-2}$ to $B(-1,5)$ gives\n\\[\nB'=(-1+4,5-2)=(3,3).\n\\]\nApplying the same vector to $C(2,4)$ gives\n\\[\nC'=(2+4,4-2)=(6,2).\n\\]\n\n(c) The corresponding side vectors are\n\\[\n\\overrightarrow{AB}=\\binom{-1-(-3)}{5-2}=\\binom{2}{3}\n\\]\nand\n\\[\n\\overrightarrow{A'B'}=\\binom{3-1}{3-0}=\\binom{2}{3}.\n\\]\nAlso,\n\\[\n\\overrightarrow{AC}=\\binom{2-(-3)}{4-2}=\\binom{5}{2}\n\\]\nand\n\\[\n\\overrightarrow{A'C'}=\\binom{6-1}{2-0}=\\binom{5}{2}.\n\\]\nCorresponding sides have equal vectors. Therefore, the triangles are congruent, and the translation keeps their orientation unchanged.\n\n(d) Reversing the translation gives\n\\[\nP=(8-4,3-(-2))=(4,5).\n\\]\nThe vectors from $A$ are\n\\[\n\\overrightarrow{AP}=\\binom{4-(-3)}{5-2}=\\binom{7}{3}\n\\]\nand\n\\[\n\\overrightarrow{AC}=\\binom{5}{2}.\n\\]\nSince $\\binom{7}{3}$ is not a scalar multiple of $\\binom{5}{2}$, points $A$, $P$ and $C$ are not collinear. Therefore, $P$ could not have been on $AC$.",
+  "remediations": [
+   "A vector mapping $A$ onto $A'$ is calculated as $A'-A$. Subtract each coordinate of the starting point from the corresponding coordinate of the image point.",
+   "To find an object from its image, reverse the translation. Subtract $\\binom{4}{-2}$ from $P'$ rather than adding it.",
+   "After finding $P$, test whether $A$, $P$ and $C$ are collinear. Vectors along the same line must be scalar multiples of each other."
+  ]
+ },
+ {
+  "id": "6a866afdb944c6fb77c0bf51",
+  "why": "longest solution",
+  "stem": "Answer the parts below.",
+  "stimulus": "At a fish-processing plant, a technician calibrates a weighing device. The displayed reading $y$ is related to the test input $x$ by $f: x \\to 2x+1$. The inverse calibration is $f^{-1}: x \\to \\frac{x-1}{2}$. A reference test is made at input $x=-3$.",
+  "worked_solution": "For (a), the inverse calibration graph is $y=\\frac{x-1}{2}$. Plot suitable points for both rules over $-4\\le x\\le4$ and draw straight lines through the points.\n\nFor (b), the two lines intersect at $(-1,-1)$. Therefore, the graphical solution is $(x,y)=(-1,-1)$.\n\nFor (c)(i), the reference test point is found from $f(-3)=2(-3)+1=-5$, so its coordinates are $(-3,-5)$. The horizontal and vertical changes to $(-1,-1)$ are $2$ and $4$, respectively. Therefore, the length is $\\sqrt{2^2+4^2}=\\sqrt{20}=2\\sqrt{5}$.\n\nFor (c)(ii), the midpoint is $\\left(\\frac{-3+(-1)}{2},\\frac{-5+(-1)}{2}\\right)=(-2,-3)$.\n\nFor (d)(i), the gradient of the original segment is $\\frac{-1-(-5)}{-1-(-3)}=\\frac{4}{2}=2$. A perpendicular line has gradient $-\\frac{1}{2}$. Using midpoint $(-2,-3)$ gives $-3=-\\frac{1}{2}(-2)+c$, so $c=-4$. The equation is $y=-\\frac{1}{2}x-4$.\n\nFor (d)(ii), half of $2\\sqrt{5}$ is $\\sqrt{5}$. A direction vector of length $\\sqrt{5}$ on a line of gradient $-\\frac{1}{2}$ is $(2,-1)$. Starting from $(-2,-3)$ gives $(-2,-3)-(2,-1)=(-4,-2)$ and $(-2,-3)+(2,-1)=(0,-4)$.",
+  "remediations": [
+   "Check where both line equations give the same value of $y$. At $x=-1$, both give $y=-1$.",
+   "The midpoint is a coordinate pair. For the length, use the horizontal and vertical changes between the two points.",
+   "A line perpendicular to one with gradient $2$ has gradient $-\\frac{1}{2}$, the negative reciprocal of $2$."
+  ]
+ },
+ {
+  "id": "6a878efec9e9c423972ee799",
+  "why": "longest solution",
+  "stem": "Use the information above to answer the parts below.",
+  "stimulus": "At a bus depot, a digital display represents the position of a bus marker by a column vector relative to the origin $O$. The display first rotates every marker $90°$ anticlockwise about $O$ and then reflects the image in the $y$-axis.",
+  "worked_solution": "(a) A rotation of $90°$ anticlockwise maps $(x,y)$ to $(-y,x)$. Therefore,\n\\[\nR=\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}.\n\\]\n\n(b) Reflection in the $y$-axis has matrix $\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}$. Since the rotation is performed first,\n\\[\nT=\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}\n=\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}.\n\\]\nThus $T\\begin{pmatrix}x\\\\y\\end{pmatrix}=\\begin{pmatrix}y\\\\x\\end{pmatrix}$, which interchanges the coordinates. This is reflection in the line $y=x$.\n\n(c) A matrix $B$ is the multiplicative inverse of $A$ when $AB=BA=I$. Also,\n\\[\nT^2=\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}\n=\\begin{pmatrix}1&0\\\\0&1\\end{pmatrix}.\n\\]\nTherefore,\n\\[\nT^{-1}=\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}.\n\\]\n\n(d) The original position vector is found by reversing the transformation:\n\\[\n\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}\\begin{pmatrix}6\\\\-2\\end{pmatrix}\n=\\begin{pmatrix}-2\\\\6\\end{pmatrix}.\n\\]\nTherefore, the position vector before the display transformation was $\\begin{pmatrix}-2\\\\6\\end{pmatrix}$.",
+  "remediations": [
+   "A $90°$ anticlockwise rotation maps $(x,y)$ to $(-y,x)$. The matrix shown maps $(x,y)$ to $(y,-x)$, which is a clockwise rotation.",
+   "The rotation occurs first, so its matrix must be on the right. The composite matrix is the reflection matrix multiplied by the rotation matrix.",
+   "The given vector is the displayed image. Apply $T^{-1}$ to it to recover the position before the transformations."
+  ]
+ },
+ {
+  "id": "6a852fcaed771942b6d0dd1a",
+  "why": "longest solution",
+  "stem": "Use the table to answer the questions below.",
+  "stimulus": "A health clinic recorded the waiting times of patients on one morning. The table shows the grouped data. The frequency for patients waiting from 20 to 29 minutes was obscured and is represented by $x$. The estimated mean waiting time was $23.5$ minutes. The clinic manager claims that the middle 50% of waiting times lies entirely within the modal class.",
+  "worked_solution": "(a) The midpoint of the class is $\\frac{20+29}{2}=24.5$.\n\n(b) The known total frequency is $4+9+6+3=22$. The known total of frequency multiplied by midpoint is $(4\\times4.5)+(9\\times14.5)+(6\\times34.5)+(3\\times44.5)=489$. Therefore,\n\\[\n\\frac{489+24.5x}{22+x}=23.5.\n\\]\nMultiplying through gives $489+24.5x=517+23.5x$, so $x=28$.\n\n(c) The largest frequency is $28$, so the modal class is 20-29 min. The total frequency is $50$, and the median position is the $25$th value. The cumulative frequency reaches $41$ in the class 20-29 min, so this is also the median class.\n\n(d) The lower-quartile position is $\\frac{50}{4}=12.5$. This lies in the class 10-19 min, giving $Q_1=9.5+\\frac{12.5-4}{9}\\times10=18.94\\ldots$, or $18.9$ min.\n\nThe upper-quartile position is $\\frac{3(50)}{4}=37.5$. This lies in the class 20-29 min, giving $Q_3=19.5+\\frac{37.5-13}{28}\\times10=28.25$, or $28.3$ min.\n\nThe interquartile range is $28.25-18.94\\ldots=9.30\\ldots$, or $9.3$ min. The claim is false because $Q_1=18.9$ min is below $19.5$ min, the lower class boundary of the modal class.",
+  "remediations": [
+   "The interquartile range is one number, found by subtracting the lower quartile from the upper quartile. It is not the pair of quartile values or a class interval.",
+   "The frequency 28 identifies the most common class. The modal class is the waiting-time interval 20-29 min.",
+   "For grouped-data interpolation, use class boundaries. The relevant lower boundaries are 9.5 and 19.5, not 10 and 20."
+  ]
+ },
+ {
+  "id": "6a854d31c99a188733a9f4c8",
+  "why": "longest solution",
+  "stem": "Answer the following questions.",
+  "stimulus": "A health worker uses a clinic at $O$ as the origin during an outreach visit. The position data for vaccination points $A$ and $B$, in kilometres, are checked using the matrix equality\n\\[\n\\begin{pmatrix}x&y\\\\x+6&y+8\\end{pmatrix}=\n\\begin{pmatrix}4&3\\\\10&11\\end{pmatrix}.\n\\]\nThe first row refers to $A$ and the second row refers to $B$.\n\nAfter visiting $B$, the worker travels 15 km in the same direction as from $A$ to $B$, arriving at $C$. The worker has 30 km of fuel remaining for a direct return to the clinic.",
+  "worked_solution": "(a) Equality of matrices gives corresponding entries equal. Thus, $x=4$ and $y=3$.\n\n(b) The position vectors are $\\vec{OA}=\\begin{pmatrix}4\\\\3\\end{pmatrix}$ and $\\vec{OB}=\\begin{pmatrix}10\\\\11\\end{pmatrix}$. Therefore,\n\\[\n\\vec{AB}=\\vec{OB}-\\vec{OA}=\\begin{pmatrix}10\\\\11\\end{pmatrix}-\\begin{pmatrix}4\\\\3\\end{pmatrix}=\\begin{pmatrix}6\\\\8\\end{pmatrix}.\n\\]\nIts magnitude is $|\\vec{AB}|=\\sqrt{6^2+8^2}=\\sqrt{100}=10$.\n\n(c) A unit vector in the direction of $\\vec{AB}$ is\n\\[\n\\frac{1}{10}\\begin{pmatrix}6\\\\8\\end{pmatrix}=\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}.\n\\]\nThe 15 km displacement is therefore\n\\[\n\\vec{BC}=15\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}=\\begin{pmatrix}9\\\\12\\end{pmatrix}.\n\\]\n\n(d) The position vector of $C$ is\n\\[\n\\vec{OC}=\\vec{OB}+\\vec{BC}=\\begin{pmatrix}10\\\\11\\end{pmatrix}+\\begin{pmatrix}9\\\\12\\end{pmatrix}=\\begin{pmatrix}19\\\\23\\end{pmatrix}.\n\\]\nThe direct return distance is $|\\vec{OC}|=\\sqrt{19^2+23^2}=\\sqrt{890}\\approx29.8$ km, correct to 3 significant figures. Since $29.8<30$, the worker can return directly.",
+  "remediations": [
+   "For travel from $A$ to $B$, subtract the position vector of $A$ from that of $B$: $\\vec{AB}=\\vec{OB}-\\vec{OA}$.",
+   "A unit vector has magnitude 1. Divide $\\vec{AB}$ by its magnitude, 10, before multiplying by the 15 km distance.",
+   "The direct return distance is the magnitude of $\\vec{OC}$, not the sum of its components. Here, $\\sqrt{890}\\approx29.8$ km, which is less than 30 km."
+  ]
+ },
+ {
+  "id": "6a84156f5222177bc0d16f25",
+  "why": "longest solution",
+  "stem": "Use the labelled grid and the information given to answer the parts below.",
+  "stimulus": "For a delivery route at the school canteen, the labelled grid shows storage point $A$ and serving point $B$. Point $C$ is chosen so that $\\overrightarrow{BC}=\\overrightarrow{AB}$. Point $O$ is the origin.",
+  "worked_solution": "(a) From the grid, $\\overrightarrow{OA}=\\begin{pmatrix}-3\\\\2\\end{pmatrix}$ and $\\overrightarrow{OB}=\\begin{pmatrix}1\\\\5\\end{pmatrix}$. Therefore, $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}=\\begin{pmatrix}1\\\\5\\end{pmatrix}-\\begin{pmatrix}-3\\\\2\\end{pmatrix}=\\begin{pmatrix}4\\\\3\\end{pmatrix}$.\n\n(b) Since $\\overrightarrow{BC}=\\overrightarrow{AB}$, $\\overrightarrow{BC}=\\begin{pmatrix}4\\\\3\\end{pmatrix}$. Therefore, $\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{BC}=\\begin{pmatrix}1\\\\5\\end{pmatrix}+\\begin{pmatrix}4\\\\3\\end{pmatrix}=\\begin{pmatrix}5\\\\8\\end{pmatrix}$.\n\n(c) $\\overrightarrow{AC}=\\overrightarrow{OC}-\\overrightarrow{OA}=\\begin{pmatrix}5\\\\8\\end{pmatrix}-\\begin{pmatrix}-3\\\\2\\end{pmatrix}=\\begin{pmatrix}8\\\\6\\end{pmatrix}$. Also, $2\\overrightarrow{AB}=2\\begin{pmatrix}4\\\\3\\end{pmatrix}=\\begin{pmatrix}8\\\\6\\end{pmatrix}$. Thus, $\\overrightarrow{AC}=2\\overrightarrow{AB}$. Since $\\overrightarrow{AC}$ is a scalar multiple of $\\overrightarrow{AB}$, the points $A$, $B$ and $C$ are collinear.",
+  "remediations": [
+   "For $\\overrightarrow{AB}$, subtract the coordinates of $A$ from those of $B$. The direction is from $A$ to $B$, not from $B$ to $A$.",
+   "$\\overrightarrow{AB}$ describes a movement. To find $\\overrightarrow{OC}$, add this movement to the position vector $\\overrightarrow{OB}$.",
+   "Compare $\\overrightarrow{AC}$ with $\\overrightarrow{AB}$. Since $\\overrightarrow{AC}=2\\overrightarrow{AB}$, both vectors have the same direction, so the three points lie on one straight line."
+  ]
+ },
+ {
+  "id": "6a840d160676ebb26b9e88d6",
+  "why": "longest solution",
+  "stem": "Use the site plan to answer the questions which follow.",
+  "stimulus": "A builder marks points $A$ and $B$ on the site plan shown on the grid. The planned point $C$ is such that $\\overrightarrow{BC}=2\\overrightarrow{AB}$. The storage area consists of points whose coordinates satisfy $-2\\leq x\\leq4$ and $0\\leq y\\leq2$.",
+  "worked_solution": "(a) From the grid, $\\overrightarrow{OA}=\\begin{pmatrix}-4\\\\-3\\end{pmatrix}$ and $\\overrightarrow{OB}=\\begin{pmatrix}-1\\\\-1\\end{pmatrix}$. Therefore, $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}=\\begin{pmatrix}-1-(-4)\\\\-1-(-3)\\end{pmatrix}=\\begin{pmatrix}3\\\\2\\end{pmatrix}$.\n\n(b) Since $\\overrightarrow{BC}=2\\overrightarrow{AB}$, $\\overrightarrow{BC}=2\\begin{pmatrix}3\\\\2\\end{pmatrix}=\\begin{pmatrix}6\\\\4\\end{pmatrix}$. Therefore, $\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{BC}=\\begin{pmatrix}3\\\\2\\end{pmatrix}+\\begin{pmatrix}6\\\\4\\end{pmatrix}=\\begin{pmatrix}9\\\\6\\end{pmatrix}$.\n\n(c) The position vector of $C$ is $\\overrightarrow{OC}=\\overrightarrow{OA}+\\overrightarrow{AC}$. Thus, $\\overrightarrow{OC}=\\begin{pmatrix}-4\\\\-3\\end{pmatrix}+\\begin{pmatrix}9\\\\6\\end{pmatrix}=\\begin{pmatrix}5\\\\3\\end{pmatrix}$.\n\n(d) Point $C$ has coordinates $(5,3)$. Although $x=5$ is greater than $4$ and $y=3$ is greater than $2$. Therefore, $C$ is not in the storage area.",
+  "remediations": [
+   "For $\\overrightarrow{AB}$, subtract the coordinates of $A$ from the coordinates of $B$. The direction is from $A$ to $B$.",
+   "The condition states $\\overrightarrow{BC}=2\\overrightarrow{AB}$, so both components of $\\overrightarrow{AB}$ must be doubled.",
+   "A point in the storage area must satisfy every stated inequality. Compare both coordinates with the upper as well as the lower limits."
+  ]
+ },
+ {
+  "id": "6a8528caed771942b6d0dc72",
+  "why": "longest solution",
+  "stem": "Use the table to answer the questions below.",
+  "stimulus": "A farmer recorded the masses of 35 crates of plantains. The grouped data are shown in the table.",
+  "worked_solution": "(a) The class width is $39.5-29.5=10$ kg. The class midpoint is $\\frac{30+39}{2}=34.5$ kg.\n\n(b) The class midpoints are $14.5$, $24.5$, $34.5$, $44.5$ and $54.5$. Thus, $\\sum fx=(4\\times14.5)+(7\\times24.5)+(12\\times34.5)+(9\\times44.5)+(3\\times54.5)=1207.5$. The estimated mean mass is $\\frac{1207.5}{35}=34.5$ kg.\n\n(c) The lower-quartile position is $\\frac{35}{4}=8.75$, which is in the $20–29$ kg class. Thus, $Q_1=19.5+\\frac{8.75-4}{7}\\times10=26.2857\\ldots$ kg. The upper-quartile position is $\\frac{3(35)}{4}=26.25$, which is in the $40–49$ kg class. Thus, $Q_3=39.5+\\frac{26.25-23}{9}\\times10=43.1111\\ldots$ kg. Therefore, the interquartile range is $43.1111\\ldots-26.2857\\ldots=16.8254\\ldots$, giving $16.8$ kg. The semi-interquartile range is $\\frac{16.8254\\ldots}{2}=8.4127\\ldots$, giving $8.4$ kg.\n\n(d) The estimated mean is $34.5$ kg, so it is at least $34$ kg. The semi-interquartile range is $8.4$ kg, so it is less than $9$ kg. Therefore, the shipment is accepted.",
+  "remediations": [
+   "The interquartile range is found from $Q_3-Q_1$, not from the highest and lowest class boundaries. The semi-interquartile range is half of the interquartile range.",
+   "Both conditions must be checked. The estimated mean is at least $34$ kg and the semi-interquartile range is less than $9$ kg."
+  ]
+ },
+ {
+  "id": "6a8556dec99a188733a9f59f",
+  "why": "longest solution",
+  "stem": "Use the coordinate-grid diagram and the information above to answer the parts below.",
+  "stimulus": "A community sports club has a triangular pennant with vertices $A(-3,2)$, $B(-1,5)$ and $C(1,2)$, as shown on the coordinate grid. The pennant is moved so that $A$ maps onto $A'(2,0)$.",
+  "worked_solution": "(a) The horizontal change from $A$ to $A'$ is $2-(-3)=5$ and the vertical change is $0-2=-2$. Therefore, the translation vector is $\\begin{pmatrix}5\\\\-2\\end{pmatrix}$.\n\n(b) Applying this vector to $B$ gives $B'=(-1+5,5-2)=(4,3)$. Applying it to $C$ gives $C'=(1+5,2-2)=(6,0)$.\n\n(c) The centre of enlargement remains fixed, so $A''=(2,0)$. From $A'$ to $B'$ the displacement is $\\begin{pmatrix}2\\\\3\\end{pmatrix}$. Doubling it gives $\\begin{pmatrix}4\\\\6\\end{pmatrix}$, so $B''=(2+4,0+6)=(6,6)$. From $A'$ to $C'$ the displacement is $\\begin{pmatrix}4\\\\0\\end{pmatrix}$. Doubling it gives $\\begin{pmatrix}8\\\\0\\end{pmatrix}$, so $C''=(2+8,0+0)=(10,0)$.\n\n(d) The triangles are similar because the enlargement preserves corresponding angles and doubles every corresponding side length. They are not congruent because their corresponding side lengths are not equal. Their orientations are the same because both a translation and a positive enlargement preserve orientation.",
+  "remediations": [
+   "A vector mapping $A$ onto $A'$ is found by calculating image minus object. Move 5 units right and 2 units down from $A$ to reach $A'$.",
+   "After finding $B'$, measure its displacement from the centre $A'$, double that displacement, then add it to $A'$.",
+   "The scale factor is 2, so all corresponding lengths are doubled. The triangles have the same shape but not the same size, so they are similar rather than congruent."
+  ]
+ },
+ {
+  "id": "6a83ea0f32d0997db14a008d",
+  "why": "longest inline math",
+  "stem": "Given $A=\\begin{pmatrix}1 & 2\\\\3 & 0\\end{pmatrix}$ and $B=\\begin{pmatrix}2 & -1\\\\1 & 4\\end{pmatrix}$, which matrix is $BA$?",
+  "worked_solution": "For $BA$, multiply each row of $B$ by each column of $A$:\n\n$BA=\\begin{pmatrix}2 & -1\\\\1 & 4\\end{pmatrix}\\begin{pmatrix}1 & 2\\\\3 & 0\\end{pmatrix}=\\begin{pmatrix}2(1)+(-1)(3) & 2(2)+(-1)(0)\\\\1(1)+4(3) & 1(2)+4(0)\\end{pmatrix}=\\begin{pmatrix}-1 & 4\\\\13 & 2\\end{pmatrix}$.\n\nTherefore, the correct option is $\\begin{pmatrix}-1 & 4\\\\13 & 2\\end{pmatrix}$.",
+  "remediations": [
+   "This is $AB$, not $BA$. Matrix multiplication is generally non-commutative, so the stated order must be followed.",
+   "Matrix multiplication uses row-by-column products and then adds those products; corresponding entries are not simply multiplied.",
+   "For the top-left entry, $2(1)+(-1)(3)=2-3=-1$, not $2+3=5$."
+  ]
+ },
+ {
+  "id": "6a83e0f5f8a49010ad804a7c",
+  "why": "longest inline math",
+  "stem": "Use the information above to answer the parts below.",
+  "stimulus": "A market vendor records orders for boxes of plantain chips and coconut drops from two shops. The matrices $A$ and $B$ represent the first and additional orders respectively. Rows represent Shop 1 and Shop 2, in that order, and columns represent plantain chips and coconut drops, in that order.\n\n$A=\\begin{pmatrix}12&15\\\\10&18\\end{pmatrix},\\quad B=\\begin{pmatrix}8&5\\\\6&12\\end{pmatrix}$\n\nThe prices per box are given by $P=\\begin{pmatrix}8\\\\5\\end{pmatrix}$, where the entries are in dollars.",
+  "worked_solution": "(a) Add corresponding entries: \n\n$A+B=\\begin{pmatrix}12+8&15+5\\\\10+6&18+12\\end{pmatrix}=\\begin{pmatrix}20&20\\\\16&30\\end{pmatrix}$.\n\n(b) Multiply the total-order matrix by the price vector:\n\n$\\begin{pmatrix}20&20\\\\16&30\\end{pmatrix}\\begin{pmatrix}8\\\\5\\end{pmatrix}=\\begin{pmatrix}20(8)+20(5)\\\\16(8)+30(5)\\end{pmatrix}=\\begin{pmatrix}260\\\\278\\end{pmatrix}$.\n\n(c) The total charge is $260+278=538$. Since $550-538=12$, the budget is sufficient and the amount remaining is \\$12.",
+  "remediations": [
+   "Part (a) requires matrix addition, so add each pair of corresponding entries, for example $12+8=20$.",
+   "Each row gives numbers of boxes. Multiply each quantity by its matching price, then add the two products for each shop.",
+   "The budget covers both shops. Add both charges before subtracting from \\$550."
+  ]
+ },
+ {
+  "id": "6a83bcae2977095c51fe84a7",
+  "why": "longest inline math",
+  "stem": "Use the information above to answer the parts below.",
+  "stimulus": "During a volleyball training session, $O$ is a fixed reference point on the court. The positions of two training stations are $A(-3,2)$ and $B(2,5)$.",
+  "worked_solution": "(a) The displacement from $A$ to $B$ is\n$\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}=\\begin{pmatrix}2\\\\5\\end{pmatrix}-\\begin{pmatrix}-3\\\\2\\end{pmatrix}=\\begin{pmatrix}5\\\\3\\end{pmatrix}$.\n\n(b) Since $\\overrightarrow{BC}=2\\overrightarrow{AB}$,\n$\\overrightarrow{BC}=2\\begin{pmatrix}5\\\\3\\end{pmatrix}=\\begin{pmatrix}10\\\\6\\end{pmatrix}$.\nTherefore, $\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{BC}=\\begin{pmatrix}2\\\\5\\end{pmatrix}+\\begin{pmatrix}10\\\\6\\end{pmatrix}=\\begin{pmatrix}12\\\\11\\end{pmatrix}$.\n\n(c) Point $C$ has coordinates $(12,11)$. Its $y$-coordinate is permitted, but its $x$-coordinate must be reduced to $10$. The nearest permitted point is $(10,11)$.\nThe required displacement is $\\begin{pmatrix}10\\\\11\\end{pmatrix}-\\begin{pmatrix}12\\\\11\\end{pmatrix}=\\begin{pmatrix}-2\\\\0\\end{pmatrix}$.",
+  "remediations": [
+   "A displacement from $A$ to $B$ is found by subtracting the position vector of $A$ from that of $B$: $\\overrightarrow{OB}-\\overrightarrow{OA}$.",
+   "The condition is $\\overrightarrow{BC}=2\\overrightarrow{AB}$. Double both components of $\\overrightarrow{AB}$ before adding the result to $\\overrightarrow{OB}$.",
+   "The vector must move $C$ from $(12,11)$ to $(10,11)$, so the horizontal component is $10-12=-2$."
+  ]
+ },
+ {
+  "id": "6a8269b3dbbb9b8df926b3ba",
+  "why": "longest inline math",
+  "stem": "At a construction site, $O$ is a reference point. The position vectors of a concrete mixer $A$ and a stack of blocks $B$ are $\\overrightarrow{OA}=\\begin{pmatrix}2\\\\-4\\end{pmatrix}$ and $\\overrightarrow{OB}=\\begin{pmatrix}11\\\\5\\end{pmatrix}$, respectively. A marker $P$ is placed on the line segment $AB$ so that $AP=2PB$. What is the position vector $\\overrightarrow{OP}$?",
+  "worked_solution": "The displacement from $A$ to $B$ is $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}=\\begin{pmatrix}11\\\\5\\end{pmatrix}-\\begin{pmatrix}2\\\\-4\\end{pmatrix}=\\begin{pmatrix}9\\\\9\\end{pmatrix}$.\n\nSince $AP:PB=2:1$, the vector $\\overrightarrow{AP}$ is $\\frac{2}{3}\\overrightarrow{AB}=\\frac{2}{3}\\begin{pmatrix}9\\\\9\\end{pmatrix}=\\begin{pmatrix}6\\\\6\\end{pmatrix}$.\n\nTherefore, $\\overrightarrow{OP}=\\overrightarrow{OA}+\\overrightarrow{AP}=\\begin{pmatrix}2\\\\-4\\end{pmatrix}+\\begin{pmatrix}6\\\\6\\end{pmatrix}=\\begin{pmatrix}8\\\\2\\end{pmatrix}$.",
+  "remediations": [
+   "The condition $AP=2PB$ means that $AP$ is two of the three equal parts of $AB$, not one of the three parts.",
+   "A midpoint is used only when the two segments are equal. Here, $AP:PB=2:1$, so $P$ is closer to $B$ than to $A$.",
+   "First find the displacement $\\overrightarrow{AB}$ by subtracting $\\overrightarrow{OA}$ from $\\overrightarrow{OB}$. Then use the ratio to locate $P$."
+  ]
+ },
+ {
+  "id": "6a8269eedbbb9b8df926b3d8",
+  "why": "set",
+  "stem": "Given $U=\\{1,2,3,4,5,6,7\\}$ and $A=\\{1,3,6\\}$, what is $n(A')$?",
+  "worked_solution": "The elements of $A'$ are those in $U$ which are not in $A$: $A'=\\{2,4,5,7\\}$. Therefore, $n(A')=4$.",
+  "remediations": [
+   "The set $A$ has 3 elements, but $A'$ contains the elements of $U$ which are not in $A$.",
+   "The value $7$ is $n(U)$. Remove the 3 elements in $A$ from $U$ before counting the complement.",
+   "A complement is found by excluding elements of $A$ from $U$, so subtract $n(A)$ from $n(U)$ rather than adding."
+  ]
+ },
+ {
+  "id": "6a826a32dbbb9b8df926b3ec",
+  "why": "set",
+  "stem": "The set $A$ is defined by $A=\\left\\{\\frac{\\sqrt{81}}{3},-\\frac{\\sqrt{16}}{2},\\sqrt{12},\\frac{14}{4}\\right\\}$. How many members of $A$ are rational numbers but not whole numbers?",
+  "worked_solution": "Simplifying the members gives $\\frac{\\sqrt{81}}{3}=3$, $-\\frac{\\sqrt{16}}{2}=-2$, $\\sqrt{12}$ is irrational, and $\\frac{14}{4}=\\frac{7}{2}$. The numbers $-2$ and $\\frac{7}{2}$ are rational but are not whole numbers. Therefore, there are $2$ such members.",
+  "remediations": [
+   "Whole numbers are $0,1,2,\\ldots$ and do not include negative integers. Therefore, $-2$ is rational but not whole.",
+   "Since $12$ is not a perfect square, $\\sqrt{12}$ is irrational and cannot be counted as rational.",
+   "Although $3$ is rational, it is a whole number, so it must not be included."
+  ]
+ },
+ {
+  "id": "6a83c99ec24c2d59f4d9c337",
+  "why": "set",
+  "stem": "Use the information above to answer the parts below.",
+  "stimulus": "A farmer labels breadfruit crates with the natural numbers from 1 to 36. Set $A$ contains the numbers of crates whose labels are divisible by 3. Set $B$ contains the numbers of crates whose labels are divisible by 4.",
+  "worked_solution": "(a) The multiples of 3 from 1 to 36 are $3,6,9,12,15,18,21,24,27,30,33,36$. Therefore, $A=\\{3,6,9,12,15,18,21,24,27,30,33,36\\}$.\n\n(b)(i) The multiples of 4 from 1 to 36 are $4,8,12,16,20,24,28,32,36$. Therefore, $B=\\{4,8,12,16,20,24,28,32,36\\}$.\n\n(b)(ii) The members in both $A$ and $B$ are $12,24,36$. Therefore, $A\\cap B=\\{12,24,36\\}$.\n\n(c)(i) Removing $12,24,36$ from $B$ leaves $4,8,16,20,28,32$. Therefore, $D=\\{4,8,16,20,28,32\\}$.\n\n(c)(ii) Set $D$ contains crate numbers divisible by 4 but not divisible by 3.\n\n(c)(iii) Since the labels are natural numbers from 1 to 36, $D=\\{x \\in \\mathbb{N}: 1 \\le x \\le 36,\\ 4\\mid x,\\ 3\\nmid x\\}$.",
+  "remediations": [
+   "Set $D$ contains members of $B$ excluding those in $A\\cap B$. Remove $12$, $24$ and $36$ from set $B$.",
+   "Numbers divisible by 12 form $A\\cap B$. Set $D$ contains multiples of 4 which are not also multiples of 3."
+  ]
+ },
+ {
+  "id": "6a83d452a8308949bfd2fed4",
+  "why": "set",
+  "stem": "The school canteen has a set $F = \\{\\text{mango}, \\text{guava}, \\text{pineapple}, \\text{soursop}\\}$ of fruit juice flavours. How many subsets does $F$ have?",
+  "worked_solution": "Set $F$ has $4$ elements. A set with $n$ elements has $2^n$ subsets, so the number of subsets is $2^4 = 16$.",
+  "remediations": [
+   "The set has $4$ elements, but the question asks for the number of subsets. Use $2^n$ for a set with $n$ elements.",
+   "The empty set is a subset of every set. Therefore, all $2^4 = 16$ subsets must be included.",
+   "Both the empty set and $F$ itself are subsets of $F$. Include them when counting all subsets."
+  ]
+ },
+ {
+  "id": "6a83ed8af00dd4498b590822",
+  "why": "set",
+  "stem": "Let $P=\\left\\{-\\frac{\\sqrt{36}}{3},\\frac{\\sqrt{50}}{5},0.\\overline{18},\\frac{14}{7}\\right\\}$. Which is the smallest set that contains every member of $P$?",
+  "worked_solution": "(a) First, $-\\frac{\\sqrt{36}}{3}=-2$ and $\\frac{14}{7}=2$, which are rational. Also, $0.\\overline{18}$ is a recurring decimal, so it is rational. However, $\\frac{\\sqrt{50}}{5}=\\frac{5\\sqrt{2}}{5}=\\sqrt{2}$, which is irrational. Since $P$ contains an irrational number, it is not a subset of $Q$. Every rational and irrational number is real, so the smallest set containing every member is $R$.",
+  "remediations": [
+   "Simplify $\\frac{\\sqrt{50}}{5}$ first: it equals $\\sqrt{2}$, which is irrational. Therefore, not every member belongs to $Q$.",
+   "Although $-2$ and $2$ are integers, $0.\\overline{18}$ and $\\sqrt{2}$ are not integers. The set must contain every member of $P$."
+  ]
+ },
+ {
+  "id": "6a853d31e7fc40f429797ba6",
+  "why": "set",
+  "stem": "Use the Venn diagram to answer the parts below.",
+  "stimulus": "At a ferry terminal, a survey of 35 commuters recorded the routes used during one week. In the Venn diagram, set $A$ represents commuters who used Route A and set $B$ represents commuters who used Route B. The diagram is not drawn to scale.",
+  "worked_solution": "(a) The regions in the universal set total 35, so $14+10+x+5=35$. Therefore, $x=35-29=6$.\n\n(b) The positive factors of $6$ are $1$, $2$, $3$ and $6$. Therefore, $S=\\{1,2,3,6\\}$.\n\n(c) The two-element subsets are $\\{1,2\\}$, $\\{1,3\\}$, $\\{1,6\\}$, $\\{2,3\\}$, $\\{2,6\\}$ and $\\{3,6\\}$.\n\n(d) The products for $\\{1,6\\}$, $\\{2,3\\}$, $\\{2,6\\}$ and $\\{3,6\\}$ are $6$, $6$, $12$ and $18$, respectively. Each is divisible by $6$, so there are $4$ accepted inspection pairs.",
+  "remediations": [
+   "The 5 commuters outside both circles are still part of the survey total of 35, so they must be included when forming the equation.",
+   "A factor divides 6 exactly. Since $6\\div6=1$, 6 is also a positive factor of 6.",
+   "Test every two-element subset. Both $2\\times6=12$ and $3\\times6=18$ are divisible by 6, so these pairs are accepted."
+  ]
+ },
+ {
+  "id": "6a854b85e7fc40f429797cd7",
+  "why": "set",
+  "stem": "Answer the parts below.",
+  "stimulus": "An environmental club is selecting native plant types for a community garden. The available types are labelled by the elements of $U = \\{1,2,3,4,5,6\\}$. A type may be planted along a fence if its label is a factor of 12. The set of these types is $A = \\{x : x \\in U,\\ x \\text{ is a factor of } 12\\}$. Drought-tolerant types are in $D = \\{1,3,4\\}$ and butterfly-attracting types are in $B = \\{2,6\\}$.",
+  "worked_solution": "(a) The factors of 12 in $U$ are 1, 2, 3, 4 and 6. Therefore, $A = \\{1,2,3,4,6\\}$.\n\n(b) Type 3 is paired with each of the other elements of $A$. The subsets are $\\{1,3\\}$, $\\{2,3\\}$, $\\{3,4\\}$ and $\\{3,6\\}$.\n\n(c) Type 3 is in $D$, so every subset in part (b) already has a drought-tolerant type. A butterfly-attracting type must be either 2 or 6. Therefore, the selections are $\\{2,3\\}$ and $\\{3,6\\}$.\n\n(d) Starting with $\\{2,3\\}$, adding 1 or 4 gives two drought-tolerant types but only one butterfly-attracting type. Adding 6 gives two butterfly-attracting types but only one drought-tolerant type. Starting with $\\{3,6\\}$ gives the same result. Therefore, no such three-type bed is possible.",
+  "remediations": [
+   "Each selection must also contain a butterfly-attracting type. The butterfly-attracting types are 2 and 6, so the valid selections are $\\{2,3\\}$ and $\\{3,6\\}$.",
+   "Type 3 is in $D$ but not in $B$. Adding a third type to either valid pair causes one of the two required category counts to remain at one."
+  ]
+ },
+ {
+  "id": "6a8554abc99a188733a9f570",
+  "why": "set",
+  "stem": "The diagram is not drawn to scale. Answer the questions below.",
+  "stimulus": "At a community sports club, nine players, identified by initials, take part in netball, cricket or neither. The Venn diagram shows the players in each set.",
+  "worked_solution": "(a) The players in at least one sport are in the netball-only, cricket-only and common regions. Therefore, $L=\\{A,D,K,R,S,M,J,N\\}$.\n\n(b) The players in both sports are $R$ and $S$. Removing these from $L$ gives $P=\\{A,D,K,M,J,N\\}$.\n\n(c) The netball-only members of $P$ are $A$, $D$ and $K$. Their two-member subsets are $\\{A,D\\}$, $\\{A,K\\}$ and $\\{D,K\\}$.\n\n(d) There are $3$ possible choices for the two netball-only players, from part (c). There are $2$ choices, $R$ or $S$, for the player who plays both sports. Therefore, $3 \\times 2=6$, so the claim is correct.",
+  "remediations": [
+   "Player $T$ is outside both circles, so does not play at least one of the two sports.",
+   "Three netball-only players produce three different pairs: $\\{A,D\\}$, $\\{A,K\\}$ and $\\{D,K\\}$.",
+   "Each netball-only pair can be combined with either $R$ or $S$, so multiply the three pairs by two choices."
+  ]
+ },
+ {
+  "id": "6a82598b79ca6c35515de18b",
+  "why": "set",
+  "stem": "Let $A = \\{-3, -1, 2, 5\\}$ and $B = \\{0, 1, 4, 6\\}$. The relation $R$ from $A$ to $B$ is given by $R = \\{(-3, 1), (-1, 4), (2, 4), (5, 0)\\}$. Which statement correctly describes $R$?",
+  "worked_solution": "Each element of $A$ is paired with exactly one element of $B$, so $R$ is a function. Since both $-1$ and $2$ have image $4$, different elements have the same image. Therefore, $R$ is a many-to-one function.",
+  "remediations": [
+   "A one-to-one function cannot assign the same image to two different elements. Here, both $-1$ and $2$ map to $4$.",
+   "A one-to-many relation has one input paired with more than one output. Each input in $R$ has only one output.",
+   "Repeated outputs are allowed in a function. A relation is not a function only when at least one input has more than one output."
+  ]
+ },
+ {
+  "id": "6a825af379ca6c35515de228",
+  "why": "set",
+  "stem": "The graph represents $R$. Which ordered pair should be removed so that the remaining relation has domain $A$, range $B$ and is a function?",
+  "stimulus": "A school athletics organiser records possible lane allocations as a relation $R$ from groups $A = \\{1,2,3,4\\}$ to lanes $B = \\{1,2,3\\}$.",
+  "worked_solution": "(a) Group $2$ is related to both lanes $2$ and $3$, so $R$ is not a function. Removing $(2,3)$ leaves one lane for each group. Lane $3$ remains in the range because $(3,3)$ is still present, so the domain is $A$, the range is $B$, and the remaining relation is a function.",
+  "remediations": [
+   "Removing $(2,2)$ gives each group only one lane, but lane $2$ no longer occurs. The range would not be $B$.",
+   "Removing $(3,3)$ removes group $3$ from the domain. Group $2$ would also still be related to two lanes.",
+   "Removing $(4,1)$ removes group $4$ from the domain, and group $2$ still has two images. A function must assign exactly one image to each domain value."
+  ]
+ },
+ {
+  "id": "6a826b29dbbb9b8df926b440",
+  "why": "set",
+  "stem": "The graph shows a relation $R$ from route code $x$ to depot code $y$. A function $F$ is contained in $R$, has domain $\\{1,2,4,5\\}$ and range $\\{1,3,4,5\\}$. What is the image of $1$ under $F$?",
+  "stimulus": "A recycling depot uses route codes and depot codes to record its collections.",
+  "worked_solution": "From the graph, route code $2$ has image $3$, route code $4$ has image $1$, and route code $5$ has image $4$. These three images already give $1$, $3$ and $4$ in the range of $F$.\n\nSince the range must also contain $5$, route code $1$ must have image $5$. Therefore, the image of $1$ under $F$ is $5$.",
+  "remediations": [
+   "Although $(1,2)$ belongs to $R$, choosing it would not give $5$ in the required range of $F$.",
+   "The value $3$ is the image of route code $2$, not route code $1$.",
+   "The value $4$ is already the image of route code $5$; the graph shows that route code $1$ must be paired with $5$."
+  ]
+ },
+ {
+  "id": "6a83c4edc24c2d59f4d9c2aa",
+  "why": "set",
+  "stem": "Use the table to answer the parts below. A coupon winner receives a bonus prize if the selected card is a spade.",
+  "stimulus": "A shopkeeper runs a promotion by selecting one card at random from a standard pack. The pack has four suits with 13 cards in each suit. The ace has value 1. A coupon is awarded when the selected card is black and has a value greater than $p$, where $p$ is a whole number. The shopkeeper states that the probability of receiving a coupon is $\\frac{3}{26}$. The table shows the number of black cards at each value.",
+  "worked_solution": "(a) There are four suits with 13 cards in each suit, so the number of possible outcomes is $4\\times13=52$.\n\n(b) Let the number of coupon cards be $x$. Since $\\frac{x}{52}=\\frac{3}{26}$, then $x=52\\times\\frac{3}{26}=6$.\n\n(c) There are two black cards at each value. Therefore, six coupon cards represent three card values. The three values greater than $10$ are $J$, $Q$ and $K$, so $p=10$.\n\n(d) The coupon cards are $\\{J\\clubsuit,\\ Q\\clubsuit,\\ K\\clubsuit,\\ J\\spadesuit,\\ Q\\spadesuit,\\ K\\spadesuit\\}$. There are three spades among these six equally likely coupon cards, giving $\\frac{3}{6}=\\frac{1}{2}$.",
+  "remediations": [
+   "Each value in the table represents two black cards, one club and one spade. Six coupon cards therefore correspond to three values, not six values.",
+   "Part (d) considers only customers who already received a coupon. The sample space is therefore the six coupon cards, of which three are spades."
+  ]
+ },
+ {
+  "id": "6a83ca11c24c2d59f4d9c347",
+  "why": "set",
+  "stem": "Use the pie chart to answer the parts below.",
+  "stimulus": "At a school sports day, each player spins the prize wheel shown in the pie chart and then tosses a fair coin.",
+  "worked_solution": "(a) The possible results of one spin are $\\{\\text{Mango},\\text{ Coconut},\\text{ Breadfruit},\\text{ Plantain}\\}$.\n\n(b) Each wheel result can occur with either Heads or Tails. The sample space is $\\{(\\text{Mango},H),(\\text{Mango},T),(\\text{Coconut},H),(\\text{Coconut},T),(\\text{Breadfruit},H),(\\text{Breadfruit},T),(\\text{Plantain},H),(\\text{Plantain},T)\\}$.\n\n(c) The favourable outcomes are $(\\text{Mango},H)$ and $(\\text{Coconut},H)$. There are $2$ favourable outcomes out of $8$ equally likely outcomes, giving $\\frac{2}{8}=\\frac{1}{4}$.\n\n(d) No, since $\\frac{1}{4}<\\frac{1}{2}$.",
+  "remediations": [
+   "For every result of the wheel, the fair coin can land on either Heads or Tails. Both coin outcomes must be included.",
+   "The complete experiment includes both the wheel spin and the coin toss. The winning outcomes are Mango with Heads and Coconut with Heads, giving 2 outcomes out of 8."
+  ]
+ },
+ {
+  "id": "6a83cfaec24c2d59f4d9c3db",
+  "why": "set",
+  "stem": "Use the table to answer the parts below.",
+  "stimulus": "A farmer has four crop cards, shown in the table. One card is selected at random and a fair coin is tossed. An outcome is recorded as $(\\text{card number},\\text{coin result})$, where $H$ represents heads and $T$ represents tails.",
+  "worked_solution": "(a) Each of the four card numbers can occur with either $H$ or $T$, giving\n$\\{(1,H),(1,T),(2,H),(2,T),(3,H),(3,T),(4,H),(4,T)\\}$.\n\n(b) The cocoa cards are cards 1 and 2. Combining each with heads gives $\\{(1,H),(2,H)\\}$.\n\n(c) There are 2 favourable outcomes from 8 equally likely outcomes, so the probability is $\\frac{2}{8}=\\frac{1}{4}$.\n\n(d) Since $\\frac{1}{4}<\\frac{1}{3}$, the farmer will use the moisture test.",
+  "remediations": [
+   "Two of the four cards are cocoa, but the coin must also show heads. Count outcomes satisfying both conditions: $(1,H)$ and $(2,H)$ out of eight outcomes.",
+   "The experiment includes both selecting a card and tossing a coin, so the sample space has eight equally likely outcomes, not four.",
+   "Compare the fractions using a common denominator or decimals: $\\frac{1}{4}=0.25$ and $\\frac{1}{3}=0.\\overline{3}$, so $\\frac{1}{4}$ is smaller."
+  ]
+ },
+ {
+  "id": "6a83d375a8308949bfd2fe73",
+  "why": "set",
+  "stem": "A coin is tossed twice and a card labelled $A$ or $B$ is selected. Each outcome is written as (first toss, second toss, card). Which set is the sample space?",
+  "worked_solution": "The two tosses have outcomes $HH$, $HT$, $TH$ and $TT$. Each of these can be paired with card $A$ or card $B$, giving $\\{HHA, HHB, HTA, HTB, THA, THB, TTA, TTB\\}$.",
+  "remediations": [
+   "Each possible pair of coin tosses must be combined with both card labels. In particular, $HTB$ and $THB$ must also be included.",
+   "One outcome must include the results of both tosses and the selected card, not merely list the possible results at each stage.",
+   "The first and second tosses are recorded separately, so $HT$ and $TH$ are different outcomes."
+  ]
+ },
+ {
+  "id": "6a83d53aa8308949bfd2ff2b",
+  "why": "set",
+  "stem": "At a community event, a player rolls a die. If the number is $1$, $2$ or $3$, the player selects one card labelled $H$ or $D$. If the number is $4$, $5$ or $6$, the player selects one card labelled $C$ or $S$. The result is recorded as $(\\text{die number},\\text{card label})$. Which set is the sample space?",
+  "worked_solution": "For die results $1$, $2$ and $3$, each result can be paired only with $H$ or $D$. For die results $4$, $5$ and $6$, each result can be paired only with $C$ or $S$.\n\nTherefore, the sample space is $\\{(1,H),(1,D),(2,H),(2,D),(3,H),(3,D),(4,C),(4,S),(5,C),(5,S),(6,C),(6,S)\\}$, which is the first option.",
+  "remediations": [
+   "A result from $1$ to $3$ can only be paired with $H$ or $D$, while a result from $4$ to $6$ can only be paired with $C$ or $S$.",
+   "After rolling $4$, $5$ or $6$, the available cards change to $C$ and $S$.",
+   "Match the first group of die numbers, $1$ to $3$, with $H$ and $D$, then match $4$ to $6$ with $C$ and $S$."
+  ]
+ },
+ {
+  "id": "6a83db98f8a49010ad8049da",
+  "why": "set",
+  "stem": "Use the table to answer the parts below.",
+  "stimulus": "During an environmental awareness drive, each household spins a fair spinner with three equal sectors labelled $P$, $G$ and $M$. The household then draws one card at random from two identical cards labelled $1$ and $2$. Each result is recorded as $(\\text{spinner result},\\text{card})$. The table is used to record the sample space.",
+  "worked_solution": "(a) For spinner result $P$, the possible outcomes are $(P,1)$ and $(P,2)$. For spinner result $G$, the possible outcomes are $(G,1)$ and $(G,2)$. For spinner result $M$, the possible outcomes are $(M,1)$ and $(M,2)$.\n\n(b) The spinner result is $P$ for $(P,1)$ and $(P,2)$. Card $2$ occurs for $(P,2)$, $(G,2)$ and $(M,2)$. Therefore, the reward outcomes are $\\{(P,1),(P,2),(G,2),(M,2)\\}$. There are 4 reward outcomes from 6 equally likely outcomes, giving $\\frac{4}{6}=\\frac{2}{3}$.\n\n(c) The outcome $(P,2)$ satisfies both conditions, so it is excluded by the words “but not both”. The reward outcomes are $(P,1)$, $(G,2)$ and $(M,2)$. Therefore, the probability is $\\frac{3}{6}=\\frac{1}{2}$.\n\n(d) Among the three reward outcomes, card $2$ occurs in $(G,2)$ and $(M,2)$, which is 2 outcomes. Spinner result $P$ occurs only in $(P,1)$, which is 1 outcome. Therefore, card $2$ is twice as likely as spinner result $P$ among reward recipients, so Anisa is correct.",
+  "remediations": [
+   "Under the changed rule, $(P,2)$ cannot receive a reward because it has both spinner result $P$ and card $2$. Remove this outcome before calculating the probability.",
+   "The statement is about a reward recipient. Restrict the comparison to the three outcomes which receive a reward under the changed rule."
+  ]
+ },
+ {
+  "id": "6a83e2b4f8a49010ad804ab6",
+  "why": "set",
+  "stem": "Use the bar chart to answer the parts below.",
+  "stimulus": "At a shopkeeper's promotion, a customer selects one token at random from a box. The bar chart shows the tokens in the box. The customer then tosses a fair coin. A customer receives a voucher only when a red token is selected and the coin lands heads.",
+  "worked_solution": "(a) The possible colours are red, blue and green. Therefore, the sample space is $\\{R,B,G\\}$.\n\n(b) There are $3+1+2=6$ tokens altogether. Therefore, $P(\\text{red})=\\frac{3}{6}=\\frac{1}{2}$.\n\n(c) A voucher requires a red token and a head. Thus, $P(\\text{voucher})=\\frac{1}{2}\\times\\frac{1}{2}=\\frac{1}{4}$.\n\n(d) The required new probability is $\\frac{1}{4}-\\frac{1}{12}=\\frac{1}{6}$. Let $x$ be the number of blue tokens added. There will still be 3 red tokens and there will be $6+x$ tokens altogether. Thus, $\\frac{3}{6+x}\\times\\frac{1}{2}=\\frac{1}{6}$. This gives $\\frac{3}{2(6+x)}=\\frac{1}{6}$, so $18=12+2x$. Therefore, $x=3$, so 3 blue tokens must be added.",
+  "remediations": [
+   "Receiving a voucher requires two events: selecting red and tossing a head. Multiply the probability of selecting red by $\\frac{1}{2}$ for a head.",
+   "Adding blue tokens does not change the 3 red tokens, but it increases the total number of tokens from 6 to $6+x$."
+  ]
+ },
+ {
+  "id": "6a8419865222177bc0d16f91",
+  "why": "set",
+  "stem": "Use the information and the grid to answer the parts below.",
+  "stimulus": "Anisa grows seedling trays. For a non-negative whole number $x$ of trays, the function $f:x \\to 2x+1$ gives the number of seedling groups to be watered. The function $g:t \\to kt+2$ gives the number of litres of water needed for $t$ seedling groups.\n\nA trial using $3$ trays requires $16$ litres of water. Anisa's tank can hold at most $16$ litres. The grid shows the water requirement and the tank capacity; the shaded region represents possible amounts of water.",
+  "worked_solution": "(a) Substituting $x=3$ gives $f(3)=2(3)+1=7$.\n\n(b) The trial condition is $g(f(3))=16$. Since $f(3)=7$, $g(7)=16$, so $7k+2=16$. Solving gives $7k=14$ and $k=2$.\n\n(c) The composite function is $gf(x)=g(f(x))=2(2x+1)+2=4x+4$. Since the tank holds at most $16$ litres, the condition is $4x+4\\le16$.\n\n(d) The shaded region reaches the tank-capacity line when $x=3$. Since $x$ is a non-negative whole number, the possible values are $\\{0,1,2,3\\}$.",
+  "remediations": [
+   "Use the trial water amount as $g(f(3))=16$, not as $f(3)=16$. First find $f(3)=7$, then solve $7k+2=16$.",
+   "For $gf(x)$, put the output of $f$ into $g$. Thus calculate $g(2x+1)$, rather than adding or combining the two rules directly.",
+   "The phrase \"at most\" includes the tank-capacity boundary. At $x=3$, the water needed is exactly $16$ litres, so $3$ is included."
+  ]
+ },
+ {
+  "id": "6a867523274ccc2bbe037e11",
+  "why": "set",
+  "stem": "Answer the parts below.",
+  "stimulus": "A shopkeeper is comparing two promotional price plans. For a whole-number discount of $x\\%$, where $0 \\le x \\le 6$, the projected weekly net gains, in hundreds of dollars, are given by $f:x\\to x^2-6x+5$ and $g:x\\to x-1$.",
+  "worked_solution": "(a) Using the stated scale, calculate values for each graph:\n\\[\n\\begin{array}{c|rrrrrrr}\nx&0&1&2&3&4&5&6\\\\ \\hline\nf(x)&5&0&-3&-4&-3&0&5\\\\\ng(x)&-1&0&1&2&3&4&5\n\\end{array}\n\\]\nPlot these points and draw the smooth parabola for $f$ and the straight line for $g$.\n\n(b) The graphs intersect at $(1,0)$ and $(6,5)$. Therefore, the solutions of $f(x)=g(x)$ are $x=1$ and $x=6$.\n\n(c) The graph of $f$ is on or above the graph of $g$ from $x=0$ to $x=1$, and again at $x=6$. Since $x$ is a whole-number percentage, the possible discounts are $\\{0,1,6\\}\\%$.",
+  "remediations": [
+   "The graphs meet at two points. Check the whole domain from $0$ to $6$ and state both $x$-coordinates of intersection.",
+   "At $x=0$, the graph of $f$ lies above the graph of $g$, so a $0\\%$ discount also satisfies $f(x)\\ge g(x)$.",
+   "A plan $f$ discount is acceptable only where its graph is on or above the graph of $g$, not merely where $f(x)$ is positive."
+  ]
+ },
+ {
+  "id": "6a867525b944c6fb77c0c065",
+  "why": "set",
+  "stem": "Answer the parts below.",
+  "stimulus": "A shopkeeper compares two arrangements for selling crates of coconuts. For $x$ crates, where $x$ is a whole number from $0$ to $8$, the daily net returns, in hundreds of dollars, are modelled by $f:x\\to x^2-4x-5$ and $g:x\\to x+1$. A negative net return represents a loss.",
+  "worked_solution": "(a) Using the stated scale, plot points for $f$, including $(-1,0)$, $(0,-5)$, $(2,-9)$ and $(5,0)$, and draw a smooth curve. Plot the straight line $g$ through points such as $(0,1)$ and $(1,2)$.\n\n(b) The roots are the $x$-coordinates where the graph of $f$ crosses the $x$-axis. These are $-1$ and $5$.\n\n(c) The graph of $f$ is below the $x$-axis for $-1<x<5$. Since $x$ counts crates and must be a whole number from $0$ to $8$, $x\\in\\{0,1,2,3,4\\}$.\n\n(d) Equal net returns occur at the intersections of the two graphs. The intersection values of $x$ are $-1$ and $6$. Since the number of crates cannot be negative, the shopkeeper can sell $6$ crates.",
+  "remediations": [
+   "A quadratic graph may cross the $x$-axis twice. Read and state both $x$-intercepts when roots are requested.",
+   "A loss means the net-return graph is below the $x$-axis. At $x=5$, the return is zero, not negative.",
+   "Although $x=-1$ is an intersection on the extended graph, $x$ represents a number of crates and must be between $0$ and $8$."
+  ]
+ }
+]

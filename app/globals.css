@@ -189,6 +189,17 @@ summary {
   overflow-y: hidden;
 }
 
+/* Long inline math, which KaTeX will not wrap, scrolls in its own box rather
+   than pushing the page sideways; a set broken at its commas needs nothing
+   more than the spaces between its items. lib/katex.ts decides which is which. */
+.math-scroll {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  vertical-align: middle;
+}
+
 .katex .mord,
 .katex .mbin {
   -webkit-text-stroke: 0.018em currentColor;

@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { chromium, type Browser } from 'playwright-core';
 import { chromePage } from './helpers/chrome-page';
 import { STATES, readingPieces, renderBar, renderCard } from './helpers/card-states';
@@ -12,6 +13,9 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} 
 // while a page is read, as the live components render them.
 const CHROME = '/usr/bin/google-chrome';
 const hasChrome = existsSync(CHROME);
+// The pinned figure control, with the classes the card gives it, so a page
+// that is exactly viewport width keeps it at the edge and it stays put on scroll.
+const FIG = /aria-label="Show figure"\s+className="([^"]+)"/.exec(readFileSync(join(process.cwd(), 'app', 'study', 'session', '[id]', 'question-card.tsx'), 'utf8'))![1];
 
 let browser: Browser;
 beforeAll(async () => {
@@ -24,7 +28,7 @@ afterAll(async () => {
 export async function openState(b: Browser, name: keyof typeof STATES, width: number) {
   const q = STATES[name];
   const p = await b.newPage({ viewport: { width, height: 900 } });
-  await p.setContent(chromePage(renderBar(q) + renderCard(q)), { waitUntil: 'networkidle' });
+  await p.setContent(chromePage(renderBar(q) + renderCard(q) + `<button type="button" aria-label="Show figure" class="${FIG}">fig</button>`), { waitUntil: 'networkidle' });
   if (name === 'reading') {
     const pieces = readingPieces();
     await p.evaluate((pieces) => {
@@ -50,10 +54,19 @@ describe.skipIf(!hasChrome)('the question card fits the viewport', () => {
           const bar = document.querySelector('main > div > div')!.getBoundingClientRect();
           return { left: Math.round(bar.left), right: Math.round(bar.right) };
         });
+        const fig = await p.evaluate(async () => {
+          const el = document.querySelector('[aria-label="Show figure"]')!;
+          const before = el.getBoundingClientRect();
+          window.scrollTo(0, 400);
+          await new Promise((r) => requestAnimationFrame(r));
+          const after = el.getBoundingClientRect();
+          return { right: Math.round(before.right), bottom: Math.round(before.bottom), moved: before.top !== after.top || before.right !== after.right };
+        });
         await p.close();
         expect(w, `${name} ${width}px`).toBe(width);
         expect(beside, `${name} ${width}px figure`).toBe(width >= 1024 ? 'beside' : 'above');
         expect(bar, `${name} ${width}px bar`).toEqual({ left: 0, right: width });
+        expect(fig, `${name} ${width}px pinned control`).toEqual({ right: width, bottom: 900 - 12, moved: false });
       }, 60000);
     }
   }

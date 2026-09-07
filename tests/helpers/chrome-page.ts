@@ -3,9 +3,13 @@ import { join } from 'node:path';
 
 // The chrome as study-chrome.tsx renders it, as static markup, so a page's
 // markup can be measured in Chrome with the site's own stylesheet.
-const css = readFileSync(join(process.cwd(), 'app', 'globals.css'), 'utf8')
-  .replace(/@import[^;]+;/g, '')
-  .replace(/@theme inline \{[\s\S]*?\n\}/, '');
+const css =
+  // KaTeX clips its stretchy glyphs with its own stylesheet; without it an
+  // arrow is a 400em SVG and the page is thousands of pixels wide.
+  readFileSync(join(process.cwd(), 'node_modules', 'katex', 'dist', 'katex.min.css'), 'utf8') +
+  readFileSync(join(process.cwd(), 'app', 'globals.css'), 'utf8')
+    .replace(/@import[^;]+;/g, '')
+    .replace(/@theme inline \{[\s\S]*?\n\}/, '');
 
 const TAILWIND_CONFIG = `tailwind.config={theme:{extend:{colors:{ink:'#1e2430',paper:'#fbf7ee','paper-deep':'#f1eada',margin:'#e4b8b4',rule:'#c9d6e8',dim:'#5b6373',amber:'#d9a62e','red-pen':'#c1121f','green-pen':'#2e7d5b'},fontFamily:{mono:['IBM Plex Mono','monospace'],hand:['Caveat','cursive']}}}}`;
 

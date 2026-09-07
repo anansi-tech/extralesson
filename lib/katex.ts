@@ -121,10 +121,7 @@ function renderInline(text: string): string {
     .map((seg) => {
       if (seg.startsWith('$') && seg.endsWith('$') && seg.length > 2) {
         try {
-          return katex.renderToString(restoreMoneyForMath(seg.slice(1, -1)), {
-            throwOnError: false,
-            macros: { ...KATEX_MACROS },
-          });
+          return renderMath(seg.slice(1, -1));
         } catch {
           return escapeHtml(restoreMoney(seg));
         }
@@ -135,4 +132,64 @@ function renderInline(text: string): string {
       return escapeHtml(restoreMoney(seg));
     })
     .join('');
+}
+
+function typeset(body: string): string {
+  return katex.renderToString(restoreMoneyForMath(body), { throwOnError: false, macros: { ...KATEX_MACROS } });
+}
+
+/**
+ * KaTeX never wraps, so at 320px a chain of column vectors ran off the page.
+ * A set or a list of tuples breaks at its commas, each item typeset on its
+ * own; anything else long scrolls inside its own box, never the page.
+ */
+function renderMath(body: string): string {
+  const items = setItems(body);
+  if (items) return items;
+  const html = typeset(body);
+  return glyphs(body) >= LONG_GLYPHS ? `<span class="math-scroll">${html}</span>` : html;
+}
+
+/** Roughly the characters that reach the page: commands and braces take no room of their own. */
+const LONG_GLYPHS = 20;
+function glyphs(body: string): number {
+  return body
+    .replace(/\\(?:begin|end)\{[a-zA-Z*]+\}/g, 'MM')
+    .replace(/\\(?:left|right|,|;|!| )/g, '')
+    .replace(/\\[a-zA-Z]+/g, 'c')
+    .replace(/[{}\\&\s]/g, '').length;
+}
+
+/** A set with three or more items, split at its top-level commas; null for anything else. */
+function setItems(body: string): string | null {
+  const open = body.indexOf('\\{');
+  const close = body.lastIndexOf('\\}');
+  if (open < 0 || close <= open) return null;
+  const prefix = body.slice(0, open).replace(/\\left\s*$/, '');
+  const suffix = body.slice(close + 2).replace(/^\s*\\right/, '');
+  const items = splitTopLevel(body.slice(open + 2, close));
+  if (items.length < 3) return null;
+  const parts = items.map((it, i) => typeset(it.replace(/^(?:\\[ ,;!]|\s)+/, '')) + (i < items.length - 1 ? ', ' : ''));
+  return `<span class="math-items">${typeset(`${prefix}\\{`)}${parts.join('')}${typeset(`\\}${suffix}`)}</span>`;
+}
+
+function splitTopLevel(inner: string): string[] {
+  const items: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < inner.length; i++) {
+    const c = inner[i];
+    if (c === '\\') {
+      i++;
+      continue;
+    }
+    if (c === '(' || c === '{' || c === '[') depth++;
+    else if (c === ')' || c === '}' || c === ']') depth--;
+    else if (c === ',' && depth === 0) {
+      items.push(inner.slice(start, i));
+      start = i + 1;
+    }
+  }
+  items.push(inner.slice(start));
+  return items.map((s) => s.trim()).filter((s) => s.length > 0);
 }
