@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { DisputeButton } from './dispute-button';
 import { RejectLineButton } from './reject-line-button';
+import { Html } from './html';
 
 export interface ReadLine {
   text: string;
@@ -151,7 +152,7 @@ export function MethodRows({
             {m.awarded ? '✓' : '–'}
           </span>
           <span className="min-w-0">
-            <span dangerouslySetInnerHTML={{ __html: m.reasonHtml }} />
+            <Html as="span" html={m.reasonHtml} />
             {dispute && !m.awarded && (
               <DisputeButton
                 attemptId={dispute.attemptId}

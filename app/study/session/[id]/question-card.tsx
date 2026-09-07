@@ -13,6 +13,7 @@ import { WorkingPhoto, takesOf } from './working-photo';
 import { captureState, type CaptureState } from './capture-state';
 import { MAX_TAKES } from '@/lib/grade/transcribe';
 import { MethodRows, WorkingRead } from './working-read';
+import { Html } from './html';
 import { isPositionalLabel } from '@/lib/notation';
 import { PROFILE_GLOSS } from '@/lib/study/profiles';
 import { Refusal } from '../../../refusal';
@@ -544,9 +545,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
 
       {question.stimulusHtml && (
-        <div
+        <Html
           className="question-prose mb-3 border-l-3 border-paper-deep pl-3 text-[15px]"
-          dangerouslySetInnerHTML={{ __html: question.stimulusHtml }}
+          html={question.stimulusHtml}
         />
       )}
 
@@ -555,9 +556,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         // table reflows to the sheet it is on, which is why it lives here
         // rather than in the prose as an array that cannot.
         <div className="figure-frame mt-3">
-          <div
+          <Html
             className="figure-inner [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
-            dangerouslySetInnerHTML={{ __html: question.stimulusTableHtml }}
+            html={question.stimulusTableHtml}
           />
         </div>
       )}
@@ -566,9 +567,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-dim">{question.topicTitle}</div>
       )}
       <div id="question" className={`flex items-baseline justify-between gap-3 lg:gap-4 ${feedback ? 'mt-4' : question.topicTitle ? 'mt-2.5 lg:mt-3' : ''}`}>
-        <div
+        <Html
           className={`question-prose text-lg lg:max-w-[62ch] ${question.scored === false ? 'lg:text-[21px]' : ''}`}
-          dangerouslySetInnerHTML={{ __html: question.stemHtml }}
+          html={question.stemHtml}
         />
         {question.scored !== false && (
           <span className="shrink-0 font-mono text-xs text-dim">
@@ -584,13 +585,13 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       <div className="contents lg:col-start-2 lg:row-start-1 lg:flex lg:flex-col lg:gap-5">
       {question.visualHtml && (
         <div className="figure-frame order-2 mt-3 lg:mt-0" ref={figureRef}>
-          <div
+          <Html
             className="figure-inner [&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
             style={{
               minWidth: question.figureMinWidth,
               maxWidth: question.figureMaxWidth,
             }}
-            dangerouslySetInnerHTML={{ __html: question.visualHtml }}
+            html={question.visualHtml}
           />
         </div>
       )}
@@ -628,7 +629,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 } disabled:opacity-70`}
               >
                 <span className="shrink-0 font-mono text-xs text-dim">{String.fromCharCode(65 + i)}</span>
-                <span dangerouslySetInnerHTML={{ __html: o }} />
+                <Html as="span" html={o} />
               </button>
             ))}
           </div>
@@ -687,9 +688,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               <div key={p.label}>
                 <div className="flex items-baseline gap-2 text-sm lg:text-[15px]">
                   <span className="font-mono text-xs font-semibold">({p.label})</span>
-                  <span
+                  <Html as="span"
                     className="question-prose"
-                    dangerouslySetInnerHTML={{ __html: p.promptHtml }}
+                    html={p.promptHtml}
                   />
                   <span className="ml-auto shrink-0 font-mono text-[10px] text-dim">
                     [{p.marks}]
@@ -702,9 +703,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                   <div className="mt-2 flex flex-wrap items-baseline gap-x-1 gap-y-2 pl-4 text-sm">
                     {p.statementHtml.map((piece, i) => (
                       <Fragment key={i}>
-                        <span
+                        <Html as="span"
                           className="question-prose"
-                          dangerouslySetInnerHTML={{ __html: piece }}
+                          html={piece}
                         />
                         {i < p.slots.length && (
                           slotAnswerInput(p.slots[i], {
@@ -759,16 +760,16 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                             >
                               <span className="font-mono text-[11px] text-dim">({slot.label})</span>
                               {slot.promptHtml ? (
-                                <span
+                                <Html as="span"
                                   className="question-prose"
-                                  dangerouslySetInnerHTML={{ __html: slot.promptHtml }}
+                                  html={slot.promptHtml}
                                 />
                               ) : slot.cellName || !isPositionalLabel(slot.label) ? (
                                 <span className="text-dim">{describeSlot(p, slot)}</span>
                               ) : (
-                                <span
+                                <Html as="span"
                                   className="question-prose text-dim"
-                                  dangerouslySetInnerHTML={{ __html: p.promptHtml }}
+                                  html={p.promptHtml}
                                 />
                               )}
                             </label>
@@ -818,9 +819,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               <p className="mt-2 font-hand text-base leading-snug text-red-pen lg:mt-2.5 lg:text-[17px]">{slipFor(p.label)}</p>
                             )}
                             {partFeedback && !partFeedback.correct && partFeedback.reasonHtml && (
-                              <p
+                              <Html as="p"
                                 className="question-prose mt-2 border-l-3 border-red-pen bg-[#FDF1F0] px-2.5 py-1.5 text-[12px] leading-snug lg:px-2.5 lg:py-2 lg:text-[13px]"
-                                dangerouslySetInnerHTML={{ __html: partFeedback.reasonHtml }}
+                                html={partFeedback.reasonHtml}
                               />
                             )}
                             <SymbolStrip
@@ -837,9 +838,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                             <div className="flex items-baseline gap-2 text-sm">
                               <span className="font-mono text-[11px] text-dim">({slot.label})</span>
                               {slot.promptHtml && (
-                                <span
+                                <Html as="span"
                                   className="question-prose"
-                                  dangerouslySetInnerHTML={{ __html: slot.promptHtml }}
+                                  html={slot.promptHtml}
                                 />
                               )}
                             </div>
@@ -918,9 +919,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       ) : (
         <>
           {feedback.formatFeedbackHtml && (
-            <p
+            <Html as="p"
               className="question-prose order-8 mt-4 border-l-3 border-[#D9A62E] bg-[#FDF8EC] p-2 text-sm lg:mt-0"
-              dangerouslySetInnerHTML={{ __html: feedback.formatFeedbackHtml }}
+              html={feedback.formatFeedbackHtml}
             />
           )}
 
@@ -935,15 +936,15 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                   figure is the premise — so it says what the drawing should
                   show instead of showing the wrong thing. */}
               {feedback.construction.figureHtml ? (
-                <div
+                <Html
                   className="mt-1 border border-paper-deep bg-white p-2 [&_svg]:h-auto [&_svg]:w-full"
-                  dangerouslySetInnerHTML={{ __html: feedback.construction.figureHtml }}
+                  html={feedback.construction.figureHtml}
                 />
               ) : (
                 feedback.construction.describes && (
-                  <div
+                  <Html
                     className="question-prose mt-1 border-l-3 border-paper-deep pl-3 text-[15px]"
-                    dangerouslySetInnerHTML={{ __html: feedback.construction.describes }}
+                    html={feedback.construction.describes}
                   />
                 )
               )}
@@ -961,14 +962,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           <div id="worked-solution" className="order-8 mt-5 border-t-[1.5px] border-rule pt-3.5 lg:mt-0 lg:pt-4">
             <div className="section-label pb-0.5 shadow-[0_1.5px_0_var(--margin)]">
               {feedback.isMisconception ? (
-                <span dangerouslySetInnerHTML={{ __html: feedback.feedbackTitleHtml }} />
+                <Html as="span" html={feedback.feedbackTitleHtml} />
               ) : (
                 'Worked solution'
               )}
             </div>
-            <div
+            <Html
               className="question-prose mt-2.5 text-[15px] leading-relaxed lg:mt-3 lg:max-w-[62ch]"
-              dangerouslySetInnerHTML={{ __html: feedback.feedbackHtml }}
+              html={feedback.feedbackHtml}
             />
           </div>
 
@@ -1107,10 +1108,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               </button>
             </div>
             <div className="min-h-0 flex-1 overflow-auto p-2">
-              <div
+              <Html
                 className="[&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
                 style={{ minWidth: question.figureMinWidth }}
-                dangerouslySetInnerHTML={{ __html: question.visualHtml }}
+                html={question.visualHtml}
               />
             </div>
           </div>

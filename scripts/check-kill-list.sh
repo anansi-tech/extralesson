@@ -51,6 +51,16 @@ if [ -n "$refreshes" ]; then
   fail=1
 fi
 
+# RAW HTML NEVER RE-COMMITS: under the session card, dangerouslySetInnerHTML
+# lives in html.tsx alone, memoised on the string. Anywhere else it is set
+# again on every render, and Safari — with no scroll anchoring — jumps.
+raw=$(printf '%s\n' "${FILES[@]}" | grep -E '^app/study/session/\[id\]/.*\.tsx$' | grep -v '/html\.tsx$' | xargs -r grep -Hn 'dangerouslySetInnerHTML' 2>/dev/null || true)
+if [ -n "$raw" ]; then
+  echo "raw HTML outside html.tsx under the session card (use <Html html={…} />):"
+  echo "$raw" | sed 's/^/  /'
+  fail=1
+fi
+
 # ONE STATE FOR THE PHOTOGRAPH: the camera box, the card and the look-back
 # read captureState() and derive nothing of their own. A comparison on a
 # take's legibility or on the takes left, anywhere but capture-state.ts, is
