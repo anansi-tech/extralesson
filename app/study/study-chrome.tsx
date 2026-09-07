@@ -4,6 +4,7 @@ import { changeSitting, logout } from './actions';
 import { LANDING } from '@/lib/landing-content';
 import { StudyTabs } from './study-tabs';
 import { SITTINGS, SITTING_IDS } from '@/lib/sittings';
+import { AccountDisclosure } from './account-disclosure';
 
 /**
  * THE NOTEBOOK'S CHROME (ROUND_8 Task 0): the white bar above the paper —
@@ -25,7 +26,7 @@ export function StudyChrome({
   isAdmin?: boolean;
   children: React.ReactNode;
 }) {
-  const account = <Account sitting={sitting} current={current} email={email} />;
+  const account = <Account sitting={sitting} current={current} email={email} isAdmin={isAdmin} />;
   return (
     <div className="flex min-h-screen flex-col bg-paper text-ink">
       <header className="border-b-[1.5px] border-ink bg-white px-5 lg:px-6">
@@ -40,7 +41,7 @@ export function StudyChrome({
           <div className="flex w-full min-w-0 flex-wrap items-center gap-x-3 lg:w-auto lg:flex-1">
             <StudyTabs />
             {isAdmin && (
-              <Link href="/admin/access" className="ml-auto inline-flex min-h-11 shrink-0 items-center font-mono text-[10px] uppercase tracking-[0.1em] text-red-pen underline underline-offset-[3px] lg:ml-4">
+              <Link href="/admin/access" className="ml-4 hidden min-h-11 shrink-0 items-center font-mono text-[10px] uppercase tracking-[0.1em] text-red-pen underline underline-offset-[3px] lg:inline-flex">
                 Admin
               </Link>
             )}
@@ -67,9 +68,9 @@ const FIELD = 'mt-1 block w-full border-[1.5px] border-ink bg-paper p-2 font-san
  * the one thing about the account a student can change. A change is allowed
  * any time; the grant stays with the sitting it was for (ROUND_9 Task 9).
  */
-function Account({ sitting, current, email }: { sitting: string; current: string; email: string }) {
+function Account({ sitting, current, email, isAdmin }: { sitting: string; current: string; email: string; isAdmin: boolean }) {
   return (
-    <details>
+    <AccountDisclosure>
       <summary className="account-toggle inline-flex min-h-11 cursor-pointer list-none items-center gap-1 rounded-[var(--radius)] border border-transparent px-2 hover:border-rule [&::-webkit-details-marker]:hidden">
         Account<span aria-hidden="true" className="account-chevron inline-block tracking-normal">▾</span>
       </summary>
@@ -77,6 +78,11 @@ function Account({ sitting, current, email }: { sitting: string; current: string
         <div className="mb-3 font-semibold text-ink">Your account</div>
         <div className="break-all font-mono text-[11px] normal-case tracking-normal text-ink">{email}</div>
         <div className="mt-1">{sitting}</div>
+        {isAdmin && (
+          <Link href="/admin/access" className="mt-2 flex min-h-11 items-center text-red-pen underline underline-offset-[3px] lg:hidden">
+            Admin
+          </Link>
+        )}
         <form action={changeSitting} className="mt-3">
           <label className="block">
             <span className="block">Which sitting are you entered for</span>
@@ -96,6 +102,6 @@ function Account({ sitting, current, email }: { sitting: string; current: string
           <button className="min-h-11 w-full text-left underline underline-offset-[3px]">Sign out</button>
         </form>
       </div>
-    </details>
+    </AccountDisclosure>
   );
 }

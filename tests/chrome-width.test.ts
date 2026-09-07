@@ -37,7 +37,10 @@ describe.skipIf(!hasChrome)('the chrome', () => {
     it(`admin navigation fits and short paper reaches the footer at ${width}px`, async () => {
       const p = await browser.newPage({ viewport: { width, height: 900 } });
       await p.setContent(page('January 2027', false, true), { waitUntil: 'networkidle' });
-      expect(await p.locator('a[href="/admin/access"]').isVisible()).toBe(true);
+      expect(await p.getByRole('link', { name: 'Admin', exact: true }).count()).toBe(width >= 1024 ? 1 : 0);
+      for (const name of ['Notebook', 'History', 'Progress']) {
+        expect(await p.getByRole('link', { name, exact: true }).isVisible()).toBe(true);
+      }
       const layout = await p.evaluate(() => ({
         width: document.documentElement.scrollWidth,
         paper: document.querySelector('main')!.getBoundingClientRect().bottom,
@@ -50,6 +53,9 @@ describe.skipIf(!hasChrome)('the chrome', () => {
       const arrow = p.locator('summary:visible .account-chevron');
       expect(await arrow.evaluate((el) => getComputedStyle(el).transform)).toBe('none');
       await p.locator('summary:visible').click();
+      const adminLink = p.getByRole('link', { name: 'Admin', exact: true });
+      expect(await adminLink.count()).toBe(1);
+      expect(await adminLink.evaluate((el) => Boolean(el.closest('details')))).toBe(width < 1024);
       expect(await arrow.evaluate((el) => getComputedStyle(el).transform)).toBe('matrix(-1, 0, 0, -1, 0, 0)');
       expect(await p.getByText('kiara.a.longer.address@example.com', { exact: true }).filter({ visible: true }).count()).toBe(1);
       expect(await p.getByRole('button', { name: 'Sign out' }).isVisible()).toBe(true);
