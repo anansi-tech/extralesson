@@ -153,3 +153,32 @@ describe.skipIf(!hasChrome)('the question card fits the viewport', () => {
     expect(during).toBe('hidden');
   }, 60000);
 });
+
+// The per-line control is quiet to the eye and 44px to the thumb: the glyphs
+// stay small, the button's own box is the hit area, and a tap near its edge
+// lands on it, not on the line beside it.
+describe.skipIf(!hasChrome)('the per-line control has a 44px hit box', () => {
+  it('at 390px', async () => {
+    const q = STATES.read;
+    const p = await browser.newPage({ viewport: { width: 390, height: 900 } });
+    await p.setContent(chromePage(renderBar(q) + renderCard(q)), { waitUntil: 'networkidle' });
+    const r = await p.evaluate(() => {
+      const buttons = [...document.querySelectorAll('button')].filter((b) => /Not what I wrote/.test(b.textContent ?? ''));
+      return buttons.map((b) => {
+        const box = b.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(b);
+        const glyphs = range.getBoundingClientRect();
+        const hit = document.elementFromPoint(box.left + box.width / 2, box.top + 3) === b && document.elementFromPoint(box.left + box.width / 2, box.bottom - 3) === b;
+        return { height: box.height, glyphs: glyphs.height, hit };
+      });
+    });
+    await p.close();
+    expect(r.length).toBe(3);
+    for (const b of r) {
+      expect(b.height).toBeGreaterThanOrEqual(44);
+      expect(b.glyphs).toBeLessThan(20);
+      expect(b.hit).toBe(true);
+    }
+  }, 60000);
+});

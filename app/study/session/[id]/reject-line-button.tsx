@@ -29,7 +29,8 @@ export function RejectLineButton({
             else onToggled(!rejected);
           })
         }
-        className="-my-1.5 ml-2 inline-block px-1 py-1.5 align-baseline font-mono text-[10px] text-dim underline underline-offset-2 disabled:opacity-60"
+        // Quiet to the eye, 44px to the thumb: the padding is the hit box and the negative margin keeps the line where it was.
+        className="relative z-[1] -my-4 ml-2 inline-block px-1 py-4 align-baseline font-mono text-[10px] text-dim underline underline-offset-2 disabled:opacity-60"
       >
         {rejected ? 'Put it back' : 'Not what I wrote'} — line {lineIndex + 1}
       </button>
