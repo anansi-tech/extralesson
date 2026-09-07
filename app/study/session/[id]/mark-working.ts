@@ -163,7 +163,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
               awarded: false,
               reason: drawn.legible
                 ? `we could not see that ${first ?? 'the graph matches'}`
-                : 'we could not read the graph in this photograph — mark it yourself against the drawing below',
+                : 'we could not read the graph in this photo — mark it yourself against the drawing below',
               confidence: 0,
             },
       );

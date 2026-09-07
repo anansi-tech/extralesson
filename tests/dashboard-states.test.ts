@@ -14,7 +14,7 @@ describe('the dashboard, four states', () => {
       'Kiara\u2019s notebook . Nothing in it yet ' +
         'Mark one question free ONE REAL QUESTION · NOT ONE OF YOUR SESSIONS ' +
         'Or start with the diagnostic About 12 minutes · finds where to start ' +
-        'What happens next 1 Work it on paper, the way the exam is. 2 Photograph the page. 3 Every method mark, and the reason for each.',
+        'What happens next 1 Work it on paper, the way the exam is. 2 Take a photo of the page. 3 Every method mark, and the reason for each.',
     );
   });
 

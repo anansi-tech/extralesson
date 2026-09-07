@@ -9,18 +9,18 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} 
 // bar — what did not happen, what is still safe, the one thing to do next.
 // Never a code the student cannot use; the Next defaults render nowhere.
 const text = Object.fromEntries(Object.entries(FAILURES).map(([k, f]) => [k, visibleText(f())]));
-const NOTHING = 'Nothing has been marked and nothing has been counted. Your working on paper is still the working. ';
+const NOTHING = 'Nothing was marked or counted. Your page still counts — take the photo again. ';
 
 describe('when something breaks', () => {
   it('could not read the page: nothing counted, take it again, the photo advice', () => {
     expect(text['read-failed']).toBe(
-      'Couldn’t read the page The photograph came through, but the writing on it could not be made out. ' + NOTHING + 'Take it again Flat page, good light, the whole answer in frame. Or type the answers instead',
+      'Couldn’t read the page The photo came through, but the writing on it could not be made out. ' + NOTHING + 'Take it again Flat page, good light, the whole answer in frame. Or type the answers instead',
     );
     expect(text['read-too-large']).toBe('Couldn’t read the page That photo is too large. Try again in better light. ' + NOTHING + 'Take it again Flat page, good light, the whole answer in frame. Or type the answers instead');
     expect(FAILURES['read-failed']()).toContain('href="#question"');
   });
   it('rate-limited, with the real window', () => {
-    expect(text['read-limited']).toBe('Too many at once Too many photographs at once. You can try again in 1 minute. ' + NOTHING + 'Take it again Available in 1 minute');
+    expect(text['read-limited']).toBe('Too many at once Too many photos at once. You can try again in 1 minute. ' + NOTHING + 'Take it again Available in 1 minute');
   });
   it('not found and the error boundary, on the door', () => {
     expect(text['not-found']).toBe('This page doesn’t exist The link may be old, or a character may be missing from it. Your notebook is where it always is, with everything in it. Go to your notebook Get help');

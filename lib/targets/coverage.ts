@@ -166,7 +166,7 @@ export function coverageSummary(coverage: Coverage): string {
   const photo = coverage.photographed;
   return (
     `ExtraLesson practises about ${coverage.displayPercent}% of a CSEC Mathematics paper's marks, ` +
-    `and marks your graphs when you photograph them — ${photo.marksEarnedByPhoto} marks you earn no other way. ` +
+    `and marks your graphs from a photo — ${photo.marksEarnedByPhoto} marks you earn no other way. ` +
     `Construction with ruler and compasses, roughly ${photo.uncoveredMarks} marks, needs past papers. ` +
     `We do not prepare private candidates for Paper 032, the school-based assessment alternative.`
   );
@@ -179,7 +179,7 @@ export function coverageDetail(coverage: Coverage): string[] {
   ];
   if (coverage.partialCount > 0) {
     lines.push(
-      'On graph questions we set the drawing itself: you do it on graph paper. Photograph what you drew and we check it — the intercept, the points you plotted, the shape of the curve — and those marks count. Without a photograph we show you the finished graph and the list of things an examiner credits, and you check it yourself, so they stay out of your estimate.',
+      'On graph questions we set the drawing itself: you do it on graph paper. Take a photo of what you drew and we check it — the intercept, the points you plotted, the shape of the curve — and those marks count. Without a photograph we show you the finished graph and the list of things an examiner credits, and you check it yourself, so they stay out of your estimate.',
       'On a few solid-geometry questions we cover reading and interpreting only.',
     );
   }

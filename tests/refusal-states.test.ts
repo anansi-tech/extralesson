@@ -41,7 +41,7 @@ describe('the refusals', () => {
   });
   it('no retakes left, from the live take count', () => {
     expect(text['no-retakes']).toBe(
-      'No retakes left Two photographs of this page have been read already. The read we have is kept, and you can correct any line of it yourself before you hand in. Check what we read Fix a line, or hand in as is',
+      'No retakes left Two photos of this page have been read already. The read we have is kept, and you can correct any line of it yourself before you hand in. Check what we read Fix a line, or hand in as is',
     );
     expect(readFileSync(join(process.cwd(), 'app', 'study', 'session', '[id]', 'working-photo.tsx'), 'utf8')).toMatch(/WORDS\[limit\]/);
   });

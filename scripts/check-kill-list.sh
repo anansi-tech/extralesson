@@ -41,6 +41,16 @@ BANNED_R2='tesseract|\bocr\b|per-stroke|inkml|handwriting-model'
 
 fail=0
 
+# TYPING NEVER MOVES THE PAGE: nothing under the session card re-renders the
+# page a student is typing on. A draft save is a plain call; moving on is a
+# navigation.
+refreshes=$(printf '%s\n' "${FILES[@]}" | grep -E '^app/study/session/\[id\]/' | xargs -r grep -HnE 'revalidatePath|router\.refresh' 2>/dev/null || true)
+if [ -n "$refreshes" ]; then
+  echo "the session card must not refresh or revalidate the page under the student:"
+  echo "$refreshes" | sed 's/^/  /'
+  fail=1
+fi
+
 # ONE STATE FOR THE PHOTOGRAPH: the camera box, the card and the look-back
 # read captureState() and derive nothing of their own. A comparison on a
 # take's legibility or on the takes left, anywhere but capture-state.ts, is

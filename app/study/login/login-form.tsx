@@ -170,7 +170,7 @@ export default function LoginForm({
       </div>
 
       {/* Shown where an account is actually being made, rather than on every
-          sign-in. Photographs of a student's handwriting are held for seven
+          sign-in. Photos of a student's handwriting are held for seven
           days and the privacy page says so; this is the moment to read it. */}
       {door === 'create' && (
         <p className="mt-4 text-xs leading-snug text-dim">

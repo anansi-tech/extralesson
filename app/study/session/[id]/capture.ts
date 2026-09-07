@@ -81,7 +81,7 @@ export async function readWorking(input: {
     .select('method_marks')
     .lean<{ method_marks?: { code: string; awarded: boolean }[] }[]>();
   if (earlier.length >= MAX_TAKES) {
-    return { error: 'Two photographs is the limit for one question.' };
+    return { error: 'Two photos is the limit for one question.' };
   }
   const take = earlier.length + 1;
 

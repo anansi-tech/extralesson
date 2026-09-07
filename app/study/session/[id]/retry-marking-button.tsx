@@ -26,7 +26,7 @@ export function RetryMarkingButton({ attemptId, onMarked }: { attemptId: string;
         className="mt-2.5 block min-h-11 w-full border-[1.5px] border-ink bg-white p-2.5 font-mono text-xs uppercase tracking-[0.1em] disabled:opacity-60 lg:mt-3 lg:w-auto lg:px-4"
       >
         {pending ? 'Marking…' : 'Try marking again'}
-        <small className="mt-0.5 block font-mono text-[10px] normal-case tracking-[0.08em] text-dim">No new photograph — the same page is marked again</small>
+        <small className="mt-0.5 block font-mono text-[10px] normal-case tracking-[0.08em] text-dim">No new photo — the same page is marked again</small>
       </button>
       {error && <p className="mt-1 text-red-pen">{error}</p>}
     </div>

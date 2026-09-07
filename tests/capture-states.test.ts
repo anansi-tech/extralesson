@@ -25,7 +25,7 @@ const surface = (state: CaptureState, retakes = state === 'exhausted' ? 0 : 1) =
     createElement(CaptureSurface, {
       state,
       post: false,
-      intro: 'Work it on paper, then photograph the page.',
+      intro: 'Work it on paper, then take a photo of the page.',
       preview: state === 'reading' ? 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==' : null,
       error: state === 'failed' ? 'That photo is too large. Try again in better light.' : null,
       retakes,
@@ -50,8 +50,8 @@ describe('the capture surface', () => {
     });
   }
   it('read at the limit keeps the read and offers checking it; exhausted offers typing', () => {
-    expect(visibleText(surface('read', 0))).toContain('No retakes left Two photographs of this page have been read already. The read we have is kept, and you can correct any line of it yourself before you hand in. Check what we read');
-    expect(visibleText(surface('exhausted'))).toBe('No retakes left Two photographs of this page have been read already. Nothing has been marked and nothing has been counted. Your working on paper is still the working. Type the answers');
+    expect(visibleText(surface('read', 0))).toContain('No retakes left Two photos of this page have been read already. The read we have is kept, and you can correct any line of it yourself before you hand in. Check what we read');
+    expect(visibleText(surface('exhausted'))).toBe('No retakes left Two photos of this page have been read already. Nothing was marked or counted. Your page still counts. Type the answers');
   });
 });
 

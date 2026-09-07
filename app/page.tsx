@@ -15,11 +15,11 @@ import { getSession } from '@/lib/auth/session';
 export const metadata: Metadata = {
   title: 'ExtraLesson — Practise CSEC Maths the way you’ll sit it',
   description:
-    `Work original, past-paper-style questions on paper. Photograph your page. See where your working earns marks — and where it loses them — so you know what to improve before exam day. ${LANDING.price} through your chosen exam sitting.`,
+    `Work original, past-paper-style questions on paper. Take a photo of your page. See where your working earns marks — and where it loses them — so you know what to improve before exam day. ${LANDING.price} through your chosen exam sitting.`,
   openGraph: {
     title: 'ExtraLesson — Practise CSEC Maths the way you’ll sit it',
     description:
-      `Photograph your working. See where it earns marks — and where it loses them — before exam day. ${LANDING.price}.`,
+      `Take a photo of your page. See where it earns marks — and where it loses them — before exam day. ${LANDING.price}.`,
     type: 'website',
     // A page's openGraph REPLACES the layout's rather than merging into it, so
     // the url declared there does not reach the one page anybody shares. It is
@@ -80,7 +80,7 @@ export default async function LandingPage() {
           <div className="herotext">
             <h1>Practise CSEC Maths the way you&rsquo;ll sit it.</h1>
             <p className="lede">
-              Work original, past-paper-style questions on paper. Photograph your page. See where your
+              Work original, past-paper-style questions on paper. Take a photo of your page. See where your
               working earns marks &mdash; and where it loses them &mdash; so you know what to improve
               before exam day.
             </p>
@@ -167,7 +167,7 @@ export default async function LandingPage() {
             <li className="step">
               <div className="sn">STEP 2</div>
               <div>
-                <h3>Photograph your page</h3>
+                <h3>Take a photo of your page</h3>
                 <p>
                   Marked the way a Paper 2 examiner marks. <span className="pen">In red pen.</span> Every
                   method mark, awarded or withheld, with the reason.
@@ -295,7 +295,7 @@ export default async function LandingPage() {
               <dt>Is it the whole paper?</dt>
               <dd>
                 Not quite, and we say so: ExtraLesson practises about {coverage.displayPercent}% of the
-                marks in a CSEC Mathematics paper. Graphs you draw on paper count &mdash; photograph them
+                marks in a CSEC Mathematics paper. Graphs you draw on paper count &mdash; take a photo of them
                 and we mark the drawing, worth about {coverage.photographed.marksEarnedByPhoto} marks a
                 paper that you earn no other way. Construction with ruler and compasses &mdash; roughly{' '}
                 {coverage.photographed.uncoveredMarks} marks &mdash; we do not cover at all, so that stays

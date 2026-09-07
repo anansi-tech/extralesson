@@ -196,7 +196,7 @@ const SECONDARY = 'w-full min-h-11 border-[1.5px] border-ink p-3 text-left text-
 const SECONDARY_SMALL = 'mt-0.5 block font-mono text-[10px] uppercase tracking-[0.1em] text-dim';
 const LINK = 'inline-flex min-h-11 items-center font-mono text-[11px] uppercase tracking-[0.14em] underline underline-offset-[3px]';
 
-const STEPS = ['Work it on paper, the way the exam is.', 'Photograph the page.', 'Every method mark, and the reason for each.'];
+const STEPS = ['Work it on paper, the way the exam is.', 'Take a photo of the page.', 'Every method mark, and the reason for each.'];
 
 function Label({ children }: { children: React.ReactNode }) {
   return <div className="font-mono text-[11px] font-bold uppercase tracking-[0.14em]">{children}</div>;

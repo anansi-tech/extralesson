@@ -150,7 +150,7 @@ describe('coverage statement (R1.7)', () => {
     const s = coverageDetail(coverage).join(' ');
     // R1.9 set the drawing and self-checked it; R2 §8 marks it when the student
     // photographs it. The caveat is now conditional, and says which condition.
-    expect(s).toMatch(/[Pp]hotograph what you drew and we check it/);
+    expect(s).toMatch(/[Tt]ake a photo of what you drew and we check it/);
     expect(s).toContain('you check it yourself');
     expect(s).toContain('reading and interpreting only');
     expect(s).toContain('not covered at all'); // the instrument work
@@ -246,7 +246,7 @@ describe('photographed coverage', () => {
 
   it('tells the student photographing is what earns those marks', () => {
     const said = [coverageSummary(coverage), ...coverageDetail(coverage)].join(' ');
-    expect(said).toMatch(/photograph/i);
+    expect(said).toMatch(/photo/i);
     expect(said).toContain(String(coverage.photographed.marksEarnedByPhoto));
   });
 });

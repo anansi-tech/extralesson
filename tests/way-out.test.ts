@@ -18,7 +18,7 @@ describe('the way out', () => {
   });
   it('keeps the photograph, collapsible, while the page is open', () => {
     const photo = at('app', 'study', 'session', '[id]', 'working-photo.tsx');
-    expect(photo).toMatch(/<details className="mt-2">[\s\S]*Your photograph[\s\S]*<img src=\{thumb\}/);
+    expect(photo).toMatch(/<details className="mt-2">[\s\S]*Your photo[\s\S]*<img src=\{thumb\}/);
   });
   it('after the last take, says where to go, with the one help address', () => {
     const photo = at('app', 'study', 'session', '[id]', 'working-photo.tsx');

@@ -133,8 +133,8 @@ export function WorkingPhoto({
       className={className}
       intro={
         attemptId
-          ? `There ${marks === 1 ? 'is 1 mark' : `are ${marks} marks`} here for the method, and we cannot see your working. Photograph what you wrote and we will type it up beside the mark scheme. Nothing you have already earned can change.`
-          : 'Work it on paper, then photograph the page. We type up what we read and fill in the single-answer boxes; you check them, fill in the rest, and hand in.'
+          ? `There ${marks === 1 ? 'is 1 mark' : `are ${marks} marks`} here for the method, and we cannot see your working. Take a photo of what you wrote and we will type it up beside the mark scheme. Nothing you have already earned can change.`
+          : 'Work it on paper, then take a photo of the page. We type up what we read and fill in the single-answer boxes; you check them, fill in the rest, and hand in.'
       }
       preview={preview}
       error={error}
@@ -224,7 +224,7 @@ export function CaptureSurface({
       id="no-retakes"
       className="mt-3"
       label="No retakes left"
-      sentence={`${WORDS[limit] ?? limit} photographs of this page have been read already.`.replace(/^./, (c) => c.toUpperCase())}
+      sentence={`${WORDS[limit] ?? limit} photos of this page have been read already.`.replace(/^./, (c) => c.toUpperCase())}
       remains={remains}
       action={action}
     />
@@ -241,7 +241,7 @@ export function CaptureSurface({
       pick={
         state === 'none' ? (
           <button type="button" onClick={onPick} className={`${PICK} mt-2.5 w-full p-3 text-xs`}>
-            Photograph your working
+            Take a photo of your page
           </button>
         ) : undefined
       }
@@ -254,8 +254,8 @@ export function CaptureSurface({
 
       {thumb && state !== 'reading' && (
         <details className="mt-2">
-          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">Your photograph</summary>
-          <img src={thumb} alt="The page you photographed" className="mt-1 max-h-64 border-[1.5px] border-ink object-contain" />
+          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">Your photo</summary>
+          <img src={thumb} alt="Your photo of the page" className="mt-1 max-h-64 border-[1.5px] border-ink object-contain" />
         </details>
       )}
 
@@ -278,7 +278,7 @@ export function CaptureSurface({
         </div>
       )}
       {state === 'exhausted' &&
-        noRetakes('Nothing has been marked and nothing has been counted. Your working on paper is still the working.', {
+        noRetakes('Nothing was marked or counted. Your page still counts.', {
           label: 'Type the answers',
           href: '#question',
         })}
@@ -344,7 +344,7 @@ export function CameraBox({
  * be rendered on its own.
  */
 export function CaptureFailure({ message, onRetake }: { message: string; onRetake: () => void }) {
-  const remains = 'Nothing has been marked and nothing has been counted. Your working on paper is still the working.';
+  const remains = 'Nothing was marked or counted. Your page still counts — take the photo again.';
   if (message === TOO_MANY) {
     const wait = windowMinutes('read');
     return (
@@ -353,7 +353,7 @@ export function CaptureFailure({ message, onRetake }: { message: string; onRetak
         amber
         className="mt-3"
         label="Too many at once"
-        sentence={`Too many photographs at once. You can try again in ${wait} minute${wait === 1 ? '' : 's'}.`}
+        sentence={`Too many photos at once. You can try again in ${wait} minute${wait === 1 ? '' : 's'}.`}
         remains={remains}
         action={{ label: 'Take it again', small: `Available in ${wait} minute${wait === 1 ? '' : 's'}`, onClick: onRetake }}
       />
@@ -366,7 +366,7 @@ export function CaptureFailure({ message, onRetake }: { message: string; onRetak
       amber
       className="mt-3"
       label="Couldn’t read the page"
-      sentence={unreadable ? 'The photograph came through, but the writing on it could not be made out.' : message}
+      sentence={unreadable ? 'The photo came through, but the writing on it could not be made out.' : message}
       remains={remains}
       action={{ label: 'Take it again', onClick: onRetake }}
       advice="Flat page, good light, the whole answer in frame."

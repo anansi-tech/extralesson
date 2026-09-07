@@ -380,23 +380,15 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     const onHidden = () => {
       if (document.visibilityState === 'hidden') flush();
     };
-    // A page restored from the back/forward cache carries the DOM as it was
-    // when the student left it, which is older than the draft they went on to
-    // save. Re-render from the server instead of trusting it.
-    const onShow = (e: PageTransitionEvent) => {
-      if (e.persisted) router.refresh();
-    };
     window.addEventListener('blur', flush);
     document.addEventListener('visibilitychange', onHidden);
     window.addEventListener('pagehide', flush);
-    window.addEventListener('pageshow', onShow);
     return () => {
       window.removeEventListener('blur', flush);
       document.removeEventListener('visibilitychange', onHidden);
       window.removeEventListener('pagehide', flush);
-      window.removeEventListener('pageshow', onShow);
     };
-  }, [feedback, question.prior, saveNow, router]);
+  }, [feedback, question.prior, saveNow]);
 
   // blur, visibilitychange and pagehide all mean "the tab is going away", and
   // none fires on navigation INSIDE the app, which is how a student moves.
@@ -411,12 +403,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     return () => {
       if (wasReview) return; // revisiting writes nothing
       if (draftTimer.current) clearTimeout(draftTimer.current);
-      // The page being left is already in the client router cache WITHOUT
-      // this draft, so browser back would restore that payload and show an
-      // empty box. refresh() drops the cache so the return trip re-fetches.
-      void saveDraftFor(sessionId, index)?.then(() => router.refresh());
+      // A plain save. The page is dynamic, so a return trip re-fetches it
+      // with this draft in it; nothing here re-renders the page being typed on.
+      void saveDraftFor(sessionId, index);
     };
-  }, [question.sessionId, question.index, question.prior, saveDraftFor, router]);
+  }, [question.sessionId, question.index, question.prior, saveDraftFor]);
 
   const submit = () => {
     if (!canSubmit) return;
@@ -864,10 +855,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                       ) : (
                         <p className="mt-2 border-l-3 border-paper-deep bg-[#FFFDF6] px-3 py-1.5 text-[13px] leading-snug text-dim">
                           {pageRead && !feedback
-                            ? 'Marked from your photograph — nothing to type.'
+                            ? 'Marked from your photo — nothing to type.'
                             : readExists
-                              ? 'Work this one on paper — it is marked from your photograph.'
-                              : 'Work this on paper — it’s marked from your photograph.'}
+                              ? 'Work this one on paper — it is marked from your photo.'
+                              : 'Work this on paper — it’s marked from your photo.'}
                         </p>
                           )}
                         </>
@@ -993,8 +984,15 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
               Back to where you were →
             </Link>
           ) : (
+            // Moving on is a navigation, never a refresh of the page under the
+            // student: the next question by its index, or the session's own
+            // URL, which resumes at the first unanswered question or the summary.
             <button
-              onClick={() => startTransition(() => router.refresh())}
+              onClick={() =>
+                startTransition(() =>
+                  router.push(questionsLeft <= 0 ? `/study/session/${question.sessionId}` : `/study/session/${question.sessionId}?q=${question.index + 1}`),
+                )
+              }
               disabled={pending}
               className="order-10 mt-5 w-full bg-ink p-3.5 text-base font-black text-paper shadow-[var(--shadow-on-ink)] disabled:opacity-60 lg:mt-0 lg:p-4"
             >
@@ -1050,7 +1048,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                   rejected={w.rejected}
                   heading={
                     w.of > 1
-                      ? `${w.take === 1 ? 'First' : 'Second'} photograph — what we read`
+                      ? `${w.take === 1 ? 'First' : 'Second'} photo — what we read`
                       : undefined
                   }
                   earnedLabel="What this earned"

@@ -374,7 +374,7 @@ describe('the landing lede', () => {
   const page = read('app', 'page.tsx').replace(/\s+/g, ' ');
   it('is the agreed sentence, under the agreed h1, with one free button and its label', () => {
     expect(page).toContain('<h1>Practise CSEC Maths the way you&rsquo;ll sit it.</h1>');
-    expect(page).toMatch(/Work original, past-paper-style questions on paper\. Photograph your page\. See where your working earns marks &mdash; and where it loses them &mdash; so you know what to improve before exam day\./);
+    expect(page).toMatch(/Work original, past-paper-style questions on paper\. Take a photo of your page\. See where your working earns marks &mdash; and where it loses them &mdash; so you know what to improve before exam day\./);
     expect(page).toMatch(/Mark one question free <small>No card required\.<\/small>/);
   });
   it('says CXC examiner nowhere, and in May nowhere', () => {
