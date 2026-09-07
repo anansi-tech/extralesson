@@ -103,6 +103,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* iOS zooms the page when a focused field is set under 16px. Under 640px
+   every field is at least the input size, whatever utility it wears. Each
+   selector carries an attribute so that it outranks a utility class on its
+   own, layers or no layers. */
+@media (max-width: 639px) {
+  input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  select:not([hidden]),
+  textarea:not([hidden]) {
+    font-size: max(var(--text-input), 1em);
+  }
+}
+
 /* A control that does something says so under the cursor. The reset leaves
    buttons on the default arrow, which on a desktop reads as decoration —
    which is how a strip of symbol buttons went unnoticed for two sessions. */

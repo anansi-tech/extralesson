@@ -58,7 +58,7 @@ export function StudyChrome({
   );
 }
 
-const FIELD = 'mt-1 block w-full border-[1.5px] border-ink bg-paper p-2 font-sans text-sm normal-case tracking-normal text-ink';
+const FIELD = 'mt-1 block w-full border-[1.5px] border-ink bg-paper p-2 font-sans text-base normal-case tracking-normal text-ink';
 
 /**
  * THE ACCOUNT DISCLOSURE: the sitting in the bar opens to who is signed in and

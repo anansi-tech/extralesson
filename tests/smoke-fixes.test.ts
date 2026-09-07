@@ -76,9 +76,10 @@ describe('(g) loading is inline, never a modal', () => {
 });
 
 describe('(e) the figure recall covers no text', () => {
-  it('is a pill in a band above the safe area, shown only while the figure is off-screen', () => {
+  it('is a pill in a band inside the card, above the safe area, hidden while a field has focus, shown only while the figure is off-screen', () => {
     expect(CARD).toMatch(/shown=\{figureAway && !atSubmit && !figureOpen\}/);
-    expect(CARD).toMatch(/fixed inset-x-0 bottom-0 z-40 flex justify-end[^"]*pb-\[calc\(6px\+env\(safe-area-inset-bottom\)\)\]/);
+    expect(CARD).toMatch(/sticky bottom-0 z-40[^"]*h-\[calc\(58px\+env\(safe-area-inset-bottom\)\)\][^"]*group-has-\[input:focus\]:invisible/);
+    expect(CARD).not.toMatch(/fixed inset-x-0 bottom-0/);
     expect(CARD).toMatch(/rounded-full[^>]*>\s*Figure\s*</);
   });
 });

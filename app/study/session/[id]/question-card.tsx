@@ -482,7 +482,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const marksLeft = Math.max(0, question.marksTotal - question.marksAnswered - question.marks);
 
   return (
-    <article className="mt-5 border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-card)] lg:p-7">
+    <article className="group mt-5 border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-card)] lg:p-7">
       {/* THE MARKED QUESTION READS TOP-DOWN (ROUND_7 Task 1; ROUND_8 Task 3): one
           line that says what was earned, and three places to go. */}
       {feedback && (
@@ -1246,13 +1246,16 @@ function splitPriorValues(
  * home bar. The pill is the one full radius in the system, asked for by name.
  */
 export function FigureRecall({ shown, onClick, recallRef }: { shown: boolean; onClick: () => void; recallRef?: React.Ref<HTMLButtonElement> }) {
-  // The band's space is reserved whether or not the pill shows, so the page
-  // never changes height under the reader; only the pill comes and goes.
+  // In the card's own flow, stuck to the foot of the viewport while the card
+  // runs past it — never fixed, so a keyboard that resizes the layout keeps it
+  // above the keys — and hidden while any field in the card has focus, so it
+  // never sits over the box being typed in. Its height is reserved whether or
+  // not the pill shows, so the page never changes height under the reader.
   return (
-    <>
-      <div aria-hidden="true" className="h-[calc(58px+env(safe-area-inset-bottom))]" />
+    <div
+      className={`sticky bottom-0 z-40 -mx-5 flex h-[calc(58px+env(safe-area-inset-bottom))] items-start justify-end px-3 pt-1.5 group-has-[input:focus]:invisible group-has-[select:focus]:invisible group-has-[textarea:focus]:invisible lg:-mx-7 ${shown ? 'border-t border-paper-deep bg-paper' : 'pointer-events-none'}`}
+    >
       {shown && (
-      <div className="fixed inset-x-0 bottom-0 z-40 flex justify-end border-t border-paper-deep bg-paper px-3 pt-1.5 pb-[calc(6px+env(safe-area-inset-bottom))]">
         <button
           ref={recallRef}
           type="button"
@@ -1262,8 +1265,7 @@ export function FigureRecall({ shown, onClick, recallRef }: { shown: boolean; on
         >
           Figure
         </button>
-      </div>
       )}
-    </>
+    </div>
   );
 }

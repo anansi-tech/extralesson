@@ -2,7 +2,6 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { existsSync } from 'node:fs';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { FigureRecall } from '@/app/study/session/[id]/question-card';
 import { chromium, type Browser } from 'playwright-core';
 import { chromePage } from './helpers/chrome-page';
 import { STATES, readingPieces, renderBar, renderCard } from './helpers/card-states';
@@ -24,11 +23,20 @@ afterAll(async () => {
   await browser?.close();
 });
 
+/** The band, in the browser, as the card draws it while the figure is off-screen. */
+const showPill = () => {
+  const band = document.querySelector('article > div.sticky') as HTMLElement;
+  band.classList.remove('pointer-events-none');
+  band.classList.add('border-t', 'border-paper-deep', 'bg-paper');
+  band.innerHTML = '<button type="button" aria-label="Show figure" class="min-h-11 rounded-full border-[1.5px] border-ink bg-white px-4 font-mono text-[11px] uppercase tracking-[0.1em] shadow-[var(--shadow-key)]">Figure</button>';
+};
+
 export async function openState(b: Browser, name: keyof typeof STATES, width: number) {
   const q = STATES[name];
   const p = await b.newPage({ viewport: { width, height: 900 } });
-  // The way back to the figure, as the card draws it while the figure is off-screen.
-  await p.setContent(chromePage(renderBar(q) + renderCard(q) + renderToStaticMarkup(createElement(FigureRecall, { shown: true, onClick: () => {} }))), { waitUntil: 'networkidle' });
+  await p.setContent(chromePage(renderBar(q) + renderCard(q)), { waitUntil: 'networkidle' });
+  // The way back to the figure, as the card shows it while the figure is off-screen.
+  await p.evaluate(showPill);
   if (name === 'reading') {
     const pieces = readingPieces();
     await p.evaluate((pieces) => {
@@ -57,25 +65,36 @@ describe.skipIf(!hasChrome)('the question card fits the viewport', () => {
         const fig = await p.evaluate(async () => {
           const el = document.querySelector('[aria-label="Show figure"]')!;
           const band = el.parentElement!;
-          const before = el.getBoundingClientRect();
+          const article = document.querySelector('article')!;
+          window.scrollTo(0, 0);
+          await new Promise((r) => requestAnimationFrame(r));
+          const stuck = band.getBoundingClientRect();
+          const pill = el.getBoundingClientRect();
+          const card = article.getBoundingClientRect();
+          // Stuck to the viewport's foot only while its own row is below the fold;
+          // otherwise at rest on the row above it.
+          const rowAbove = band.previousElementSibling!.getBoundingClientRect().bottom;
+          const stuckToFoot = rowAbove + stuck.height > window.innerHeight ? Math.abs(stuck.bottom - window.innerHeight) <= 1 : Math.abs(stuck.top - rowAbove) <= 1;
           window.scrollTo(0, document.body.scrollHeight);
           await new Promise((r) => requestAnimationFrame(r));
-          const after = el.getBoundingClientRect();
-          // At the foot of the page the card's last line sits above the band: the pill covers no text.
-          const article = document.querySelector('article')!.getBoundingClientRect();
+          const rest = band.getBoundingClientRect();
+          const above = band.previousElementSibling!.getBoundingClientRect();
+          const below = band.nextElementSibling?.getBoundingClientRect();
+          // While the card runs past the viewport the band is stuck to its foot; at the
+          // end of the page it rests in its own row of the card, over nothing.
           return {
             text: el.textContent,
-            inside: before.right <= window.innerWidth && before.right >= window.innerWidth - 40,
-            aboveBottom: Math.round(before.bottom) <= window.innerHeight - 6,
-            moved: before.top !== after.top || before.right !== after.right,
-            clear: article.bottom <= band.getBoundingClientRect().top,
+            position: getComputedStyle(band).position,
+            inside: pill.right <= window.innerWidth && pill.right >= card.right - 40,
+            stuckToFoot,
+            restsInCard: rest.top >= above.bottom - 1 && (!below || rest.bottom <= below.top + 1) && rest.bottom <= article.getBoundingClientRect().bottom,
           };
         });
         await p.close();
         expect(w, `${name} ${width}px`).toBe(width);
         expect(beside, `${name} ${width}px figure`).toBe(width >= 1024 ? 'beside' : 'above');
         expect(bar, `${name} ${width}px bar`).toEqual({ left: 0, right: width });
-        expect(fig, `${name} ${width}px figure pill`).toEqual({ text: 'Figure', inside: true, aboveBottom: true, moved: false, clear: true });
+        expect(fig, `${name} ${width}px figure pill`).toEqual({ text: 'Figure', position: 'sticky', inside: true, stuckToFoot: true, restsInCard: true });
       }, 60000);
     }
   }
@@ -87,7 +106,8 @@ describe.skipIf(!hasChrome)('the question card fits the viewport', () => {
     const heights: Record<string, { height: number; visible: boolean }> = {};
     for (const shown of [true, false]) {
       const p = await browser.newPage({ viewport: { width: 390, height: 900 } });
-      await p.setContent(chromePage(renderBar(q) + renderCard(q) + renderToStaticMarkup(createElement(FigureRecall, { shown, onClick: () => {} }))), { waitUntil: 'networkidle' });
+      await p.setContent(chromePage(renderBar(q) + renderCard(q)), { waitUntil: 'networkidle' });
+      if (shown) await p.evaluate(showPill);
       heights[String(shown)] = await p.evaluate(async () => {
         window.scrollTo(0, 400);
         await new Promise((r) => requestAnimationFrame(r));
@@ -99,5 +119,20 @@ describe.skipIf(!hasChrome)('the question card fits the viewport', () => {
     expect(heights.true.height).toBe(heights.false.height);
     expect(heights.true.visible).toBe(true);
     expect(heights.false.visible).toBe(false);
+  }, 60000);
+
+  // While any field in the card has focus the band is out of the way: never
+  // over the box being typed in, never above the keyboard.
+  it('hides the pill while a field has focus, at 390px', async () => {
+    const q = STATES.unanswered;
+    const p = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    await p.setContent(chromePage(renderBar(q) + renderCard(q)), { waitUntil: 'networkidle' });
+    await p.evaluate(showPill);
+    const before = await p.evaluate(() => getComputedStyle(document.querySelector('[aria-label="Show figure"]')!.parentElement!).visibility);
+    await p.locator('input[type="text"], input:not([type])').last().focus();
+    const during = await p.evaluate(() => getComputedStyle(document.querySelector('[aria-label="Show figure"]')!.parentElement!).visibility);
+    await p.close();
+    expect(before).toBe('visible');
+    expect(during).toBe('hidden');
   }, 60000);
 });

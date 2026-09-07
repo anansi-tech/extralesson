@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, IBM_Plex_Mono, Caveat } from "next/font/google";
 import "./globals.css";
 import { externalBaseUrl } from "@/lib/base-url";
@@ -21,6 +21,17 @@ const caveat = Caveat({
   subsets: ["latin"],
   weight: ["500", "600"],
 });
+
+/**
+ * The on-screen keyboard resizes the LAYOUT: a fixed or sticky element then
+ * sits above the keyboard rather than under it, and the page does not jump
+ * behind a visual viewport the keyboard has shrunk.
+ */
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  interactiveWidget: 'resizes-content',
+};
 
 export const metadata: Metadata = {
   /**
