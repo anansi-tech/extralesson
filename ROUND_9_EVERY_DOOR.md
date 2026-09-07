@@ -54,7 +54,7 @@ not exist and are not built. The stakes are the R8 tiles. Signed-out nav:
 lockup, Sign in.
 
 Footer, §02, on every page including the app: mark, Help (mailto),
-Refunds, Privacy, Terms, "An Anansi Technology product · Plantation,
+Refunds, Privacy, Terms, "An Anansi Technology product · Miami,
 Florida", and "ExtraLesson is not affiliated with or endorsed by the
 Caribbean Examinations Council." Refunds, Privacy and Terms are real
 pages in the notebook system if they exist; if any doesn't, it is written
