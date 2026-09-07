@@ -42,18 +42,17 @@ export function verdictFor(seen: SeenTopic | undefined): TopicVerdict | null {
  * since one question cannot separate two topics that both held up.
  */
 /**
- * The finish reads the other way up: what struggled first, and within a
- * group the topic worth the most marks first (ROUND_9 Task 5).
+ * The finish lists every topic in the student's modules: the ones the
+ * diagnostic measured first, then the ones it never asked about, each group
+ * worth the most marks first. The button starts row 1.
  */
-export function rankForFinish<T extends { module: number; order: number }>(
+export function finishOrder<T extends { module: number; order: number }>(
   topics: T[],
-  verdictOf: (topic: T) => TopicVerdict | null,
+  measured: (topic: T) => boolean,
   marksOf: (topic: T) => number,
 ): T[] {
   return [...topics].sort((a, b) => {
-    const ga = GROUP[verdictOf(a) ?? 'STRUGGLED'] ?? 3;
-    const gb = GROUP[verdictOf(b) ?? 'STRUGGLED'] ?? 3;
-    if (ga !== gb) return gb - ga;
+    if (measured(a) !== measured(b)) return measured(a) ? -1 : 1;
     const d = marksOf(b) - marksOf(a);
     return d !== 0 ? d : a.module - b.module || a.order - b.order;
   });

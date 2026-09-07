@@ -47,6 +47,22 @@ afterAll(async () => {
   await browser?.close();
 });
 
+describe.skipIf(!hasChrome)('the footer is one row from the desk', () => {
+  it('at 1280px: lockup and links left, the two lines right, nothing wrapped', async () => {
+    const p = await browser.newPage({ viewport: { width: 1280, height: 400 } });
+    await p.setContent(bodyPage(footer), { waitUntil: 'networkidle' });
+    const box = async (sel: string) => (await p.locator(sel).first().boundingBox())!;
+    const lockup = await box('footer svg');
+    const nav = await box('footer nav');
+    const lines = await box('footer > div > div:last-child');
+    await p.close();
+    expect(nav.x).toBeGreaterThan(lockup.x + lockup.width);
+    expect(lines.x).toBeGreaterThan(nav.x + nav.width);
+    expect(Math.abs(nav.y + nav.height / 2 - (lockup.y + lockup.height / 2))).toBeLessThan(2);
+    expect(lines.y).toBeLessThan(nav.y + nav.height);
+  }, 60000);
+});
+
 describe.skipIf(!hasChrome)('the footer and the refunds page fit the viewport', () => {
   for (const width of [320, 360, 390, 1440]) {
     for (const [name, html] of [['footer', footer], ['refunds', refunds]] as const) {

@@ -10,7 +10,7 @@ import { slotCellNames } from '@/lib/visuals/slot-names';
 import { SessionDraft } from '@/lib/db';
 import { DIAGNOSTIC_MINUTES, SESSION_MINUTES } from '@/lib/session/builder';
 import { diagnosticOpensAt } from '@/lib/access';
-import { rankForFinish, topicsSeen, verdictFor } from '@/lib/study/diagnostic';
+import { finishOrder, topicsSeen } from '@/lib/study/diagnostic';
 import { gradeLabel, topicLeverage } from '@/lib/study/leverage';
 import { marksByObjective, marksOnTopic, mainTopic, movedLine, trendLine, trendOnTopic } from '@/lib/study/summary';
 import { SessionSummary } from './session-summary';
@@ -191,30 +191,19 @@ export default async function SessionPage({
         ]),
       );
       const seen = topicsSeen(attempts, topicOfQuestion);
-      const verdictOf = (t: { module: number; order: number }) =>
-        verdictFor(seen.get(`M${t.module}.${t.order}.`));
-
       const leverage = new Map(topicLeverage(after, targetModules).map((t) => [t.code, Math.round(t.pointsAvailable)]));
-      const ranked = rankForFinish(
-        after.topics.filter((t) => touchedPrefixes.has(`M${t.module}.${t.order}.`)),
-        verdictOf,
+      // Every topic in the student's modules, the measured ones first; the
+      // button starts a session on row 1, so what it names is what it runs.
+      const ranked = finishOrder(
+        after.topics.filter((t) => targetModules.includes(t.module)),
+        (t) => touchedPrefixes.has(`M${t.module}.${t.order}.`),
         (t) => leverage.get(t.code) ?? 0,
       ).map((t) => {
         const s = seen.get(`M${t.module}.${t.order}.`);
         return { code: t.code, title: t.title, right: s?.right ?? 0, asked: s?.asked ?? 0, marks: leverage.get(t.code) ?? 0 };
       });
 
-      // Not a guess about what comes next: planSession is what the button below
-      // runs, it is pure, and nothing changes between here and the click.
-      const nextUp = await planSession({
-        studentId: auth.student_id,
-        targetModules,
-        mode: 'adaptive',
-      });
-      const nextPrefixes = new Set(topicPrefixesOf(nextUp));
-      const nextTopic = after.topics.find((t) => nextPrefixes.has(`M${t.module}.${t.order}.`));
-
-      return <DiagnosticFinish ranked={ranked} next={nextTopic?.title ?? null} minutes={SESSION_MINUTES} />;
+      return <DiagnosticFinish ranked={ranked} minutes={SESSION_MINUTES} />;
     }
 
     // What the next session actually starts with: planSession is what the button runs.

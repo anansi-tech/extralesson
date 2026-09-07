@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { DIAGNOSTIC, visibleText } from './helpers/diagnostic-states';
-import { rankForFinish } from '@/lib/study/diagnostic';
+import { finishOrder } from '@/lib/study/diagnostic';
 
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} }), usePathname: () => '/study' }));
 
@@ -26,24 +26,35 @@ describe('the diagnostic', () => {
     expect(DIAGNOSTIC.mcq()).toMatch(/style="width:37\.5%"/);
     expect(text.mcq).not.toMatch(/Stop here|\[1 mark\]/);
   });
-  it('finish: the order with the marks, the real next session, no grade', () => {
+  it('finish: the header, every topic with what it could gain, the rule before the unasked, no grade', () => {
     expect(text.finish).toBe(
-      'Diagnostic done Here is the order . A quick read of 4 topics — enough to put them in order, which is all it was for. ' +
-        '01 Algebraic manipulation 0 of 1 right +8 marks 02 Consumer arithmetic 0 of 1 right +6 marks 03 Geometry & trigonometry 1 of 2 right +5 marks 04 Number theory 1 of 1 right +2 marks ' +
-        'One question a topic is a rough read — enough to point the next few sessions, not a verdict on any of them. Topics you were not asked about are not here at all, and still count as unmeasured. ' +
+      'Diagnostic done Here is the order . A quick read of 4 topics — enough to put them in order, which is all it was for. To gain ' +
+        '01 Algebraic manipulation 0 of 1 right up to +8 marks 02 Consumer arithmetic 0 of 1 right up to +6 marks 03 Geometry & trigonometry 1 of 2 right up to +5 marks 04 Number theory 1 of 1 right up to +2 marks ' +
+        '05 Sets not asked yet up to +7 marks 06 Statistics not asked yet up to +4 marks ' +
+        'One question a topic is a rough read — enough to point the next few sessions, not a verdict on any of them. Topics below the rule were not asked about, and count as unmeasured. ' +
         'Start with algebraic manipulation 15 minutes · your next session starts here No grade yet. A grade needs enough marks seen in every module it covers, and the diagnostic is not marked. Back to your notebook',
     );
     expect(text.finish).not.toMatch(/Grade [IV]+|upper|lower/);
+    // The rule: row 1 and the first unasked row carry the ink border; no other row does.
+    expect(DIAGNOSTIC.finish().match(/border-t-\[1\.5px\] border-ink/g)).toHaveLength(2);
   });
-  it('the finish orders what struggled first, then by the marks on offer, then the syllabus', () => {
+  it('the button names row 1 and starts a session on it', () => {
+    const html = DIAGNOSTIC.finish();
+    const first = /<b class="[^"]*">([^<]+)<\/b>/.exec(html)![1];
+    expect(text.finish).toContain(`Start with ${first.charAt(0).toLowerCase()}${first.slice(1)}`);
+    expect(html).toContain('name="mode" value="topic"');
+    expect(html).toContain('name="topic" value="M1-ALG1"');
+  });
+  it('the finish lists the measured topics first, then the unasked, each by the marks on offer, then the syllabus', () => {
     const topics = [
       { code: 'a', module: 1, order: 1 },
       { code: 'b', module: 1, order: 2 },
       { code: 'c', module: 2, order: 1 },
       { code: 'd', module: 2, order: 2 },
+      { code: 'e', module: 3, order: 1 },
     ];
-    const verdict = { a: 'HELD UP', b: 'STRUGGLED', c: 'MIXED', d: 'STRUGGLED' } as const;
-    const marks = { a: 9, b: 3, c: 5, d: 8 };
-    expect(rankForFinish(topics, (t) => verdict[t.code as keyof typeof verdict], (t) => marks[t.code as keyof typeof marks]).map((t) => t.code)).toEqual(['d', 'b', 'c', 'a']);
+    const measured = new Set(['b', 'c', 'e']);
+    const marks = { a: 9, b: 3, c: 5, d: 8, e: 5 };
+    expect(finishOrder(topics, (t) => measured.has(t.code), (t) => marks[t.code as keyof typeof marks]).map((t) => t.code)).toEqual(['c', 'e', 'b', 'a', 'd']);
   });
 });
