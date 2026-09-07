@@ -194,7 +194,7 @@ describe('the next sitting', () => {
 
   it('after any sitting lapses, the door offers the next one in the table; after May/June 2031, Help', () => {
     const door = (now: Date) => {
-      const html = renderToStaticMarkup(createElement(DashboardView, { ...DASH.returning, error: 'access-expired', nextSitting: nextSittingAt(now) }));
+      const html = renderToStaticMarkup(createElement(DashboardView, { ...DASH.returning, lead: 'sitting-passed', nextSitting: nextSittingAt(now) }));
       return { text: visibleText(html), to: /name="to" value="([^"]+)"/.exec(html)?.[1] ?? null };
     };
     SITTING_IDS.forEach((s, i) => {

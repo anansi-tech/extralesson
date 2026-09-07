@@ -29,7 +29,7 @@ export function Broken({ reset }: { reset: () => void }) {
       label="Something went wrong on our side"
       sentence="Not your phone and not your connection."
       remains="Every mark you have earned is saved. Nothing you did is affected."
-      action={{ label: 'Try again', onClick: reset }}
+      action={{ label: 'Try again', red: true, onClick: reset }}
       quiet={{ label: 'Go to your notebook', href: '/study' }}
     />
   );

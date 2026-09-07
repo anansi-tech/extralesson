@@ -44,27 +44,39 @@ describe('shouldLeadWithReachable', () => {
 // ROUND_4 Task 2, one test per transition: open session, first question until
 // taken, diagnostic until one exists, then the dashboard — and a diagnostic
 // that reopens after the interval does not take the lead back.
+const able = { questions: true, access: 'ok' as const };
+
 describe('leadPanel — the order a new student meets things in', () => {
+  // A start that every lead would refuse is the lead: never a panel beneath a
+  // lead offering the refused thing. Only an open session comes before it.
+  it('leads with the refusal the start would meet: no questions, the paywall, a sitting that has passed', () => {
+    expect(leadPanel({ ...able, questions: false, open: false, firstTaken: false, diagnosticTaken: false })).toBe('no-questions');
+    expect(leadPanel({ ...able, access: 'needs-access', open: false, firstTaken: true, diagnosticTaken: true })).toBe('paywall');
+    expect(leadPanel({ ...able, access: 'access-expired', open: false, firstTaken: true, diagnosticTaken: true })).toBe('sitting-passed');
+    expect(leadPanel({ ...able, access: 'needs-access', open: true, firstTaken: true, diagnosticTaken: true })).toBe('resume');
+    expect(leadPanel({ ...able, questions: false, access: 'needs-access', open: false, firstTaken: true, diagnosticTaken: true })).toBe('no-questions');
+  });
+
   it('resumes an open session before anything else', () => {
-    expect(leadPanel({ open: true, firstTaken: false, diagnosticTaken: false })).toBe('resume');
+    expect(leadPanel({ ...able, open: true, firstTaken: false, diagnosticTaken: false })).toBe('resume');
   });
 
   it('leads with the first question until one exists', () => {
-    expect(leadPanel({ open: false, firstTaken: false, diagnosticTaken: false })).toBe('first');
-    expect(leadPanel({ open: false, firstTaken: false, diagnosticTaken: true })).toBe('first');
+    expect(leadPanel({ ...able, open: false, firstTaken: false, diagnosticTaken: false })).toBe('first');
+    expect(leadPanel({ ...able, open: false, firstTaken: false, diagnosticTaken: true })).toBe('first');
   });
 
   it('then the diagnostic, until one exists', () => {
-    expect(leadPanel({ open: false, firstTaken: true, diagnosticTaken: false })).toBe('diagnostic');
+    expect(leadPanel({ ...able, open: false, firstTaken: true, diagnosticTaken: false })).toBe('diagnostic');
   });
 
   it('then the dashboard', () => {
-    expect(leadPanel({ open: false, firstTaken: true, diagnosticTaken: true })).toBe('session');
+    expect(leadPanel({ ...able, open: false, firstTaken: true, diagnosticTaken: true })).toBe('session');
   });
 
   it('stays the dashboard when the 90-day rule reopens the diagnostic', () => {
     // Reopened means taken and open again; the lead reads "taken".
-    expect(leadPanel({ open: false, firstTaken: true, diagnosticTaken: true })).toBe('session');
+    expect(leadPanel({ ...able, open: false, firstTaken: true, diagnosticTaken: true })).toBe('session');
     const page = readFileSync(join(process.cwd(), 'app', 'study', 'page.tsx'), 'utf8');
     expect(page).toMatch(/diagnosticTaken: diagnosticOpensAtDate !== null/);
   });

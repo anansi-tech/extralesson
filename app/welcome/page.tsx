@@ -31,6 +31,9 @@ export default async function WelcomePage({ searchParams }: { searchParams: Prom
     diagnosticOpen = opensAt === null || Date.now() >= opensAt.getTime();
     lead = leadPanel({
       open: Boolean(await openSession(state.studentId)),
+      // A payer has access; the notebook says so itself if the bank is empty.
+      questions: true,
+      access: 'ok',
       firstTaken: await firstQuestionTaken(state.studentId),
       diagnosticTaken: opensAt !== null,
     });

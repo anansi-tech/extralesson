@@ -33,6 +33,10 @@ export function WelcomeView({ state, sessionId, signedIn, lead, diagnosticOpen }
             <i className="block h-full w-[62%] bg-amber" />
           </div>
           <ConfirmingNote sessionId={sessionId} settled={state.settled} />
+          <Link href={signedIn ? '/study' : '/study/login'} className={`${PRIMARY} mt-[18px] block`}>
+            {signedIn ? 'Go to your notebook' : 'Sign in'}
+            <small className={PRIMARY_SMALL}>THE ACCESS IS APPLIED TO THE ACCOUNT IT WAS PAID FOR</small>
+          </Link>
         </>
       )}
 
@@ -78,8 +82,11 @@ export function WelcomeView({ state, sessionId, signedIn, lead, diagnosticOpen }
             Access is on <b>{maskEmail(state.email)}</b>
             {state.sitting && <>, running to <b>{state.sitting}</b></>}. Whoever sits the exam creates their account with that address, or signs in if they have one.
           </p>
-          <div className="flex flex-wrap gap-x-5">
-            <Link href={`/study/login?new=1&paid=${encodeURIComponent(sessionId ?? '')}`} className={QUIET}>Create an account</Link>
+          <Link href={`/study/login?new=1&paid=${encodeURIComponent(sessionId ?? '')}`} className={`${PRIMARY} block`}>
+            Create an account
+            <small className={PRIMARY_SMALL}>ON THE ADDRESS THE ACCESS IS ON</small>
+          </Link>
+          <div className="mt-3">
             <Link href="/study/login" className={QUIET}>Sign in</Link>
           </div>
           <p className="mt-4 text-[13.5px] leading-relaxed">

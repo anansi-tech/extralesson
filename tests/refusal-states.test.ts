@@ -7,10 +7,10 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} 
 
 // ROUND_9 Task 4: every refusal on one pattern — label · one sentence · what
 // remains true · one action · optional quiet link — in ink, never red but
-// the paywall's action, never a cross, never "sorry".
+// the action that is the page's one primary, never a cross, never "sorry".
+// A refusal beneath the lead never offers today's session again: the lead does.
 const html = Object.fromEntries(Object.entries(REFUSALS).map(([k, f]) => [k, f()]));
 const text = Object.fromEntries(Object.entries(html).map(([k, h]) => [k, visibleText(h)]));
-const TODAY = 'Start today’s session 15 minutes · weakest topics first';
 
 describe('the refusals', () => {
   it('paywall: the real boundary, the price, the only red action, the marked work as the quiet link', () => {
@@ -31,7 +31,8 @@ describe('the refusals', () => {
     // Entering is a change of sitting, not a checkout: the paywall for the new sitting comes next.
     expect(html['sitting-passed']).toMatch(/<form[^>]*><input type="hidden" name="to" value="jan-2027"\/>/);
     expect(html['sitting-passed']).toContain('href="mailto:extralesson@anansi.xyz"');
-    expect(html['sitting-passed']).not.toMatch(/stripe|checkout|buy\.|target="_blank"|bg-red-pen/i);
+    expect(html['sitting-passed']).not.toMatch(/stripe|checkout|buy\.|target="_blank"/i);
+    expect(html['sitting-passed']).toMatch(/<button [^>]*bg-red-pen/);
   });
   it('sitting passed with no later sitting on the books: write to Help', () => {
     expect(text['sitting-passed-none']).toBe(
@@ -47,7 +48,7 @@ describe('the refusals', () => {
   });
   it('nothing to revisit', () => {
     expect(text['nothing-to-revisit']).toBe(
-      'Nothing to revisit yet The marks you lost are still fresh — revisiting them today would only be repeating them. They come back on their own, on the objectives you lost them on, in a few days. ' + TODAY,
+      'Nothing to revisit yet The marks you lost are still fresh — revisiting them today would only be repeating them. They come back on their own, on the objectives you lost them on, in a few days.',
     );
   });
   it('question handed in, with the marks from the fold', () => {
@@ -58,20 +59,22 @@ describe('the refusals', () => {
   });
   it('the diagnostic and the first question, already taken', () => {
     expect(text['diagnostic-taken']).toBe(
-      'You have already done the diagnostic It ranks your topics, and it has — your sessions start where it put you. Another one this term would rank the same topics from the same answers. It opens again after 90 days, for coming back to after a term away. ' + TODAY,
+      'You have already done the diagnostic It ranks your topics, and it has — your sessions start where it put you. Another one this term would rank the same topics from the same answers. It opens again after 90 days, for coming back to after a term away.',
     );
-    expect(text['first-taken']).toBe('You have had your first question It was one question to show how marking works, and it is done. A session gives you whole exam questions marked the same way. ' + TODAY);
+    expect(text['first-taken']).toBe('You have had your first question It was one question to show how marking works, and it is done. A session gives you whole exam questions marked the same way.');
   });
   it('no questions, and a topic that is not yours', () => {
-    expect(text['no-questions']).toBe('No approved questions yet No approved questions are available for your modules yet. Check back soon. Everything you have done stays here. Read your marked work');
-    expect(text['no-questions-topic']).toBe('No questions on that topic yet There are no questions on that topic yet. Try another one, or start the usual session. ' + TODAY + ' Practise a topic');
-    expect(text['no-topic']).toBe('That topic is not one of yours That topic is not one of yours. Pick one from the list. ' + TODAY + ' Practise a topic');
+    expect(text['no-questions']).toBe('No approved questions yet No approved questions are available for your modules yet. Check back soon. Everything you have done stays here. Read your marked work EVERY QUESTION, AS IT WAS MARKED');
+    expect(text['no-questions-topic']).toBe('No questions on that topic yet There are no questions on that topic yet. Try another one, or start the usual session. Practise a topic');
+    expect(text['no-topic']).toBe('That topic is not one of yours That topic is not one of yours. Pick one from the list. Practise a topic');
   });
-  it('one pattern: ink, never red but the paywall, never a cross, never sorry', () => {
+  it('one pattern: ink, never red but the lead refusals’ one action, never a cross, never sorry', () => {
+    const leads = ['paywall', 'sitting-passed', 'sitting-passed-none', 'no-questions'];
     for (const [k, h] of Object.entries(html)) {
       expect(h, k).toMatch(/^<section data-refusal="[^"]+" class="border-\[1\.5px\] border-ink bg-white/);
       expect(h, k).not.toMatch(/✗|sorry|is-alert|border-red-pen/i);
-      if (k !== 'paywall') expect(h, k).not.toMatch(/bg-red-pen|text-red-pen/);
+      if (!leads.includes(k)) expect(h, k).not.toMatch(/bg-red-pen|text-red-pen/);
+      else expect((h.match(/bg-red-pen/g) ?? []).length, `${k} red`).toBe(1);
       expect((h.match(/<(button|a href)/g) ?? []).length, `${k} actions`).toBeLessThanOrEqual(2);
     }
   });

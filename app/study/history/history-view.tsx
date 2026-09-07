@@ -17,7 +17,12 @@ export function HistoryView({ rows, lostMarks }: { rows: HistoryRow[]; lostMarks
         Newest first. Each opens at your marking, as it was; nothing here is re-marked.
       </p>
       {rows.length === 0 ? (
-        <p className="mt-6 text-sm text-dim">Nothing yet. Your first question is on your notebook.</p>
+        <>
+          <p className="mt-6 text-sm text-dim">Nothing yet. Your first question is on your notebook.</p>
+          <Link href="/study" className="mt-4 block min-h-11 w-full bg-red-pen p-4 text-left text-[17px] font-black text-white shadow-[var(--shadow-card)]">
+            Go to your notebook
+          </Link>
+        </>
       ) : (
         <ul className="mt-[18px]">
           {rows.map((r) => (

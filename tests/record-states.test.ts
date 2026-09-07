@@ -19,9 +19,9 @@ describe('history', () => {
     expect(html.match(/href="\/study\/session\/s\d\?q=0#marking"/g)).toHaveLength(6);
     expect(html).toMatch(/<input type="hidden" name="mode" value="revisit"\/>/);
   });
-  it('with nothing answered: no list, no foot', () => {
+  it('with nothing answered: no list, the notebook as the one action', () => {
     expect(visibleText(renderHistory({ rows: [], lostMarks: 0 }))).toBe(
-      'Every question you have answered . Newest first. Each opens at your marking, as it was; nothing here is re-marked. Nothing yet. Your first question is on your notebook.',
+      'Every question you have answered . Newest first. Each opens at your marking, as it was; nothing here is re-marked. Nothing yet. Your first question is on your notebook. Go to your notebook',
     );
     expect(renderHistory({ rows: HISTORY.rows, lostMarks: 0 })).not.toContain('Revisit the');
   });
@@ -39,11 +39,11 @@ describe('progress', () => {
     expect(html).toMatch(/<input type="hidden" name="mode" value="topic"\/><input type="hidden" name="topic" value="M1-ALG1"\/>/);
     expect(html.match(/style="width:(86|54|30|50|20)%"/g)).toHaveLength(5);
   });
-  it('cold: no letters, the other lede, no foot', () => {
+  it('cold: no letters, the other lede, the notebook as the one action', () => {
     expect(visibleText(renderProgress({ ...PROGRESS, estimable: false, weakest: null, modules: PROGRESS.modules.map((m) => ({ ...m, letter: null })) }))).toBe(
       'Where you stand, topic by topic . Finish one session and your estimates appear here. Until then the bars show only what you have tried. ' +
         'Module 1 68% topic strength Number theory Strong Consumer arithmetic Building Algebraic manipulation Weak ' +
-        'Module 2 41% topic strength Geometry & trigonometry Building Vectors & matrices Weak',
+        'Module 2 41% topic strength Geometry & trigonometry Building Vectors & matrices Weak Go to your notebook',
     );
   });
 });

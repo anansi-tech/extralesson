@@ -71,6 +71,7 @@ export function WorkingRead({
           <ul className="mt-0.5 border-l-3 border-paper-deep pl-3">
             {group.lines.map((line) => (
               <li key={line.index} className="font-mono text-[13px] leading-snug">
+                <span className="mr-2 text-[10px] text-dim">{line.index + 1}</span>
                 {struck.has(line.index) ? (
                   <>
                     <s className="text-dim">{line.text}</s>

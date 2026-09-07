@@ -15,7 +15,7 @@ export default function NotFound() {
         label="This page doesn’t exist"
         sentence="The link may be old, or a character may be missing from it."
         remains="Your notebook is where it always is, with everything in it."
-        action={{ label: 'Go to your notebook', href: '/study' }}
+        action={{ label: 'Go to your notebook', red: true, href: '/study' }}
         quiet={{ label: 'Get help', href: `mailto:${LANDING.contactEmail}` }}
       />
     </Door>

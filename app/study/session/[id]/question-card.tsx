@@ -988,7 +988,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             // one being reviewed, which is where a student ends up.
             <Link
               href={`/study/session/${question.sessionId}`}
-              className="order-10 mt-5 block bg-ink p-3.5 text-center text-base font-black text-paper shadow-[var(--shadow-on-ink)] lg:mt-0 lg:p-4"
+              className="order-10 mt-5 block bg-red-pen p-3.5 text-center text-base font-black text-white shadow-[var(--shadow-card)] lg:mt-0 lg:p-4"
             >
               Back to where you were →
             </Link>
@@ -1003,7 +1003,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 )
               }
               disabled={pending}
-              className="order-10 mt-5 w-full bg-ink p-3.5 text-base font-black text-paper shadow-[var(--shadow-on-ink)] disabled:opacity-60 lg:mt-0 lg:p-4"
+              className="order-10 mt-5 w-full bg-red-pen p-3.5 text-base font-black text-white shadow-[var(--shadow-card)] disabled:opacity-60 lg:mt-0 lg:p-4"
             >
               {questionsLeft <= 0 ? (
                 'Finish session'

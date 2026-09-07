@@ -48,7 +48,8 @@ export interface DashboardProps {
  */
 export function DashboardView(p: DashboardProps) {
   const { lead, prediction } = p;
-  const showsEstimate = lead === 'session' || lead === 'resume';
+  const refused = lead === 'paywall' || lead === 'sitting-passed' || lead === 'no-questions';
+  const showsEstimate = lead === 'session' || lead === 'resume' || refused;
   const showsCounters = showsEstimate && p.progress.sessionsCompleted > 0;
   const shortModule = prediction.modules.find((m) => m.marks_seen < MIN_MARKS_FOR_PREDICTION);
 
@@ -66,7 +67,9 @@ export function DashboardView(p: DashboardProps) {
           </div>
         )}
 
-        {lead === 'resume' && p.open ? (
+        {refused ? (
+          <RefusedLead {...p} />
+        ) : lead === 'resume' && p.open ? (
           <Link href={`/study/session/${p.open.id}`} className={`${PRIMARY} order-1 block`}>
             Carry on with your session
             <small className={PRIMARY_SMALL}>
@@ -150,7 +153,7 @@ export function DashboardView(p: DashboardProps) {
               </button>
             </form>
           </div>
-        ) : (
+        ) : refused ? null : (
           <Choose {...p} />
         )}
       </div>
@@ -363,37 +366,84 @@ function Choose(p: DashboardProps) {
   );
 }
 
-/** What a refused start says, beneath the action it refused: one pattern for all seven. */
-function Notices({ error, mode, sitting, nextSitting, email }: DashboardProps) {
-  const cls = 'order-1 mt-4';
-  const today = { label: 'Start today’s session', small: `${SESSION_MINUTES} minutes · weakest topics first`, form: { mode: 'adaptive' } };
+/**
+ * A start that every lead would refuse is the lead itself: the paywall, the
+ * sitting that has passed, the empty bank. Its one action is the page's one
+ * red action, and nothing beneath it offers what it refuses.
+ */
+function RefusedLead({ lead, sitting, nextSitting, email }: DashboardProps) {
+  const cls = 'order-1';
   const help = { label: 'Email us', href: `mailto:${LANDING.contactEmail}` };
+  if (lead === 'no-questions') {
+    return (
+      <Refusal
+        id="no-questions"
+        className={cls}
+        label="No approved questions yet"
+        sentence="No approved questions are available for your modules yet."
+        remains="Check back soon. Everything you have done stays here."
+        action={{ label: 'Read your marked work', small: 'EVERY QUESTION, AS IT WAS MARKED', red: true, href: '/study/history' }}
+      />
+    );
+  }
+  if (lead === 'sitting-passed') {
+    // The door to the next sitting: enter for it, then the paywall for it. With
+    // no later sitting on the books, the one true action is still to write.
+    return nextSitting ? (
+      <Refusal
+        id="sitting-passed"
+        className={cls}
+        label="Your sitting has passed"
+        sentence={<>Access ran to {sitting ?? 'that sitting'}, and that paper is written.</>}
+        remains="Your notebook stays open — every question and every mark, for as long as you want to read them."
+        action={{ label: 'Enter for another sitting', small: `${nextSitting.label} · ${LANDING.price}`, red: true, form: { to: nextSitting.value } }}
+        quiet={help}
+      />
+    ) : (
+      <Refusal
+        id="sitting-passed"
+        className={cls}
+        label="Your sitting has passed"
+        sentence={<>Access ran to {sitting ?? 'that sitting'}, and that paper is written.</>}
+        remains="Your notebook stays open — every question and every mark, for as long as you want to read them. To keep practising for the next sitting, email us with the address you paid with and we will sort it out by hand."
+        action={{ ...help, small: LANDING.contactEmail, red: true }}
+        quiet={{ label: 'Read your marked work', href: '/study/history' }}
+      />
+    );
+  }
+  return (
+    <Refusal
+      id="paywall"
+      className={cls}
+      label={`That was your ${FREE_SESSIONS} free sessions`}
+      sentence={<>The free question, the diagnostic and your {FREE_SESSIONS} free sessions are used. Daily sessions, the diagnostic and examiner-style marking need full access.</>}
+      remains="Everything you have done stays here — your marks, your topics, and every question you have answered."
+      action={{ label: `Get access — ${LANDING.price}`, small: 'SECURE CHECKOUT · CARD OR APPLE PAY', red: true, href: paymentLink(), newTab: true }}
+      quiet={{ label: 'Read your marked work', href: '/study/history' }}
+    >
+      <div className="mt-5 flex items-baseline gap-3">
+        <div className="text-[40px] font-black leading-none text-red-pen">{LANDING.price}</div>
+        <div className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.12em] text-dim">
+          One payment · no subscription
+          <br />
+          Runs to your sitting
+        </div>
+      </div>
+      <p className="mt-2 text-[11px] leading-snug text-dim">
+        Use <span className="font-mono">{email}</span> when you pay, so we can match it to this account.
+      </p>
+    </Refusal>
+  );
+}
+
+/**
+ * What a refused start says, beneath the lead: one pattern for all five. The
+ * lead above already offers today's session, so none of these offers it again.
+ */
+function Notices({ error, mode }: DashboardProps) {
+  const cls = 'order-1 mt-4';
   return (
     <>
-      {/* The door to the next sitting: enter for it, then the paywall for it. With
-          no later sitting on the books, the one true action is still to write. */}
-      {error === 'access-expired' && nextSitting && (
-        <Refusal
-          id="sitting-passed"
-          className={cls}
-          label="Your sitting has passed"
-          sentence={<>Access ran to {sitting ?? 'that sitting'}, and that paper is written.</>}
-          remains="Your notebook stays open — every question and every mark, for as long as you want to read them."
-          action={{ label: 'Enter for another sitting', small: `${nextSitting.label} · ${LANDING.price}`, form: { to: nextSitting.value } }}
-          quiet={help}
-        />
-      )}
-      {error === 'access-expired' && !nextSitting && (
-        <Refusal
-          id="sitting-passed"
-          className={cls}
-          label="Your sitting has passed"
-          sentence={<>Access ran to {sitting ?? 'that sitting'}, and that paper is written.</>}
-          remains="Your notebook stays open — every question and every mark, for as long as you want to read them. To keep practising for the next sitting, email us with the address you paid with and we will sort it out by hand."
-          action={{ ...help, small: LANDING.contactEmail }}
-          quiet={{ label: 'Read your marked work', href: '/study/history' }}
-        />
-      )}
       {error === 'diagnostic-taken' && (
         <Refusal
           id="diagnostic-taken"
@@ -401,7 +451,6 @@ function Notices({ error, mode, sitting, nextSitting, email }: DashboardProps) {
           label="You have already done the diagnostic"
           sentence="It ranks your topics, and it has — your sessions start where it put you."
           remains={<>Another one this term would rank the same topics from the same answers. It opens again after {DIAGNOSTIC_INTERVAL_DAYS} days, for coming back to after a term away.</>}
-          action={today}
         />
       )}
       {error === 'first-taken' && (
@@ -411,31 +460,7 @@ function Notices({ error, mode, sitting, nextSitting, email }: DashboardProps) {
           label="You have had your first question"
           sentence="It was one question to show how marking works, and it is done."
           remains="A session gives you whole exam questions marked the same way."
-          action={today}
         />
-      )}
-      {error === 'needs-access' && (
-        <Refusal
-          id="paywall"
-          className={cls}
-          label={`That was your ${FREE_SESSIONS} free sessions`}
-          sentence={<>The free question, the diagnostic and your {FREE_SESSIONS} free sessions are used. Daily sessions, the diagnostic and examiner-style marking need full access.</>}
-          remains="Everything you have done stays here — your marks, your topics, and every question you have answered."
-          action={{ label: `Get access — ${LANDING.price}`, small: 'SECURE CHECKOUT · CARD OR APPLE PAY', red: true, href: paymentLink(), newTab: true }}
-          quiet={{ label: 'Read your marked work', href: '/study/history' }}
-        >
-          <div className="mt-5 flex items-baseline gap-3">
-            <div className="text-[40px] font-black leading-none text-red-pen">{LANDING.price}</div>
-            <div className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.12em] text-dim">
-              One payment · no subscription
-              <br />
-              Runs to your sitting
-            </div>
-          </div>
-          <p className="mt-2 text-[11px] leading-snug text-dim">
-            Use <span className="font-mono">{email}</span> when you pay, so we can match it to this account.
-          </p>
-        </Refusal>
       )}
       {error === 'no-questions' && mode === 'topic' && (
         <Refusal
@@ -444,18 +469,7 @@ function Notices({ error, mode, sitting, nextSitting, email }: DashboardProps) {
           label="No questions on that topic yet"
           sentence="There are no questions on that topic yet."
           remains="Try another one, or start the usual session."
-          action={today}
           quiet={{ label: 'Practise a topic', href: '/study' }}
-        />
-      )}
-      {error === 'no-questions' && mode !== 'topic' && (
-        <Refusal
-          id="no-questions"
-          className={cls}
-          label="No approved questions yet"
-          sentence="No approved questions are available for your modules yet."
-          remains="Check back soon. Everything you have done stays here."
-          quiet={{ label: 'Read your marked work', href: '/study/history' }}
         />
       )}
       {error === 'nothing-to-revisit' && (
@@ -465,7 +479,6 @@ function Notices({ error, mode, sitting, nextSitting, email }: DashboardProps) {
           label="Nothing to revisit yet"
           sentence="The marks you lost are still fresh — revisiting them today would only be repeating them."
           remains="They come back on their own, on the objectives you lost them on, in a few days."
-          action={today}
         />
       )}
       {error === 'no-topic' && (
@@ -475,7 +488,6 @@ function Notices({ error, mode, sitting, nextSitting, email }: DashboardProps) {
           label="That topic is not one of yours"
           sentence="That topic is not one of yours."
           remains="Pick one from the list."
-          action={today}
           quiet={{ label: 'Practise a topic', href: '/study' }}
         />
       )}

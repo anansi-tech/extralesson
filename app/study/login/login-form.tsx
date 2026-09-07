@@ -69,9 +69,7 @@ export default function LoginForm({
         <p className="border-l-3 border-margin bg-[#FFFDF6] px-3 py-2 text-[13px] leading-snug text-dim">
           Nothing in your inbox after a minute or two? Look in spam. The sender is {sender}.
         </p>
-        <div className="mt-5 border-t border-paper-deep pt-3">
-          <Link href="/study/login" className={QUIET}>Back to sign in</Link>
-        </div>
+        <Link href="/study/login" className={`${PRIMARY} block text-left`}>Back to sign in</Link>
       </>
     );
   }

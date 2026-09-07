@@ -12,10 +12,10 @@ const HELP = 'Access usually appears within a minute. If it has not after a few 
 describe('welcome, four states', () => {
   it('A · confirming, then settled after the minute', () => {
     expect(text.confirming).toBe(
-      'Confirming your payment One moment . Your card has been charged. We are matching the payment to an account. This page will move on by itself. If it is still here in a minute, your receipt is already in your email — nothing is lost. ' + HELP,
+      'Confirming your payment One moment . Your card has been charged. We are matching the payment to an account. This page will move on by itself. If it is still here in a minute, your receipt is already in your email — nothing is lost. Sign in THE ACCESS IS APPLIED TO THE ACCOUNT IT WAS PAID FOR ' + HELP,
     );
     expect(text.settled).toBe(
-      'Confirming your payment One moment . Your card has been charged. We are matching the payment to an account. Your receipt is already in your email — nothing is lost. ' + HELP,
+      'Confirming your payment One moment . Your card has been charged. We are matching the payment to an account. Your receipt is already in your email — nothing is lost. Sign in THE ACCESS IS APPLIED TO THE ACCOUNT IT WAS PAID FOR ' + HELP,
     );
     expect(renderWelcome(WELCOME.confirming)).not.toMatch(/animate|spinner/);
   });
@@ -40,7 +40,7 @@ describe('welcome, four states', () => {
 
   it('D · bought for someone else: masked, no claim of an email sent, no pronouns for the student', () => {
     expect(text.other).toBe(
-      'Sign out ✓ Thank you . Access is on k···@example.com , running to May/June 2027 . Whoever sits the exam creates their account with that address, or signs in if they have one. Create an account Sign in ' +
+      'Sign out ✓ Thank you . Access is on k···@example.com , running to May/June 2027 . Whoever sits the exam creates their account with that address, or signs in if they have one. Create an account ON THE ADDRESS THE ACCESS IS ON Sign in ' +
         'How you will know it is working: the student will show you. We do not send reports. The student can open their own marked working — every question, every mark, and the reason for each one — at any time. You will hear how it is going from the student, not from us. ' +
         'Not satisfied? Email extralesson@anansi.xyz within 14 days of paying and we will refund you.',
     );

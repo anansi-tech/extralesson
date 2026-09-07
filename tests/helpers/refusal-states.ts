@@ -19,9 +19,10 @@ const dash = (error: string, mode?: string, extra: Partial<DashboardProps> = {})
   renderToStaticMarkup(createElement(DashboardView, { ...DASH.returning, error, mode, ...extra }));
 
 export const REFUSALS: Record<string, () => string> = {
-  paywall: () => panel(dash('needs-access'), 'paywall'),
-  'sitting-passed': () => panel(dash('access-expired'), 'sitting-passed'),
-  'sitting-passed-none': () => panel(dash('access-expired', undefined, { nextSitting: null }), 'sitting-passed'),
+  // Three refusals are the lead itself, never a panel beneath one (lib/study/lead-panel.ts).
+  paywall: () => panel(dash('', undefined, { lead: 'paywall' }), 'paywall'),
+  'sitting-passed': () => panel(dash('', undefined, { lead: 'sitting-passed' }), 'sitting-passed'),
+  'sitting-passed-none': () => panel(dash('', undefined, { lead: 'sitting-passed', nextSitting: null }), 'sitting-passed'),
   'no-retakes': () =>
     panel(
       renderToStaticMarkup(
@@ -33,7 +34,7 @@ export const REFUSALS: Record<string, () => string> = {
   'handed-in': () => panel(renderToStaticMarkup(createElement(QuestionCard, { question: MARKED.marked })), 'handed-in'),
   'diagnostic-taken': () => panel(dash('diagnostic-taken'), 'diagnostic-taken'),
   'first-taken': () => panel(dash('first-taken'), 'first-taken'),
-  'no-questions': () => panel(dash('no-questions'), 'no-questions'),
+  'no-questions': () => panel(dash('', undefined, { lead: 'no-questions' }), 'no-questions'),
   'no-questions-topic': () => panel(dash('no-questions', 'topic'), 'no-questions-topic'),
   'no-topic': () => panel(dash('no-topic'), 'no-topic'),
 };

@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "seed:topics": "tsx scripts/seed-topics.ts",
+    "gallery": "tsx --tsconfig scripts/gallery/tsconfig.json scripts/gallery.ts",
     "seed:blueprints": "tsx scripts/seed-blueprints.ts",
     "generate": "tsx scripts/generate.ts",
     "golden:import": "tsx scripts/golden-import.ts",

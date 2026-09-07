@@ -50,3 +50,5 @@ design/reference/
 design/golden/field/*
 !design/golden/field/README.md
 calibration/results/
+# The gallery is a rendering of the code, remade by `pnpm gallery`; never committed.
+calibration/gallery/

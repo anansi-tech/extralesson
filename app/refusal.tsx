@@ -4,7 +4,7 @@ import { changeSitting, startSession } from './study/actions';
 export interface RefusalAction {
   label: string;
   small?: string;
-  /** The paywall's is the only red one. */
+  /** The page's one primary: the paywall's, the next sitting's, and a whole page's only action. */
   red?: boolean;
   href?: string;
   /** A session to start instead, or a sitting to enter for. */
@@ -20,7 +20,8 @@ const QUIET = 'inline-flex min-h-11 items-center font-mono text-[11px] uppercase
 /**
  * ONE PATTERN FOR EVERY REFUSAL (ROUND_9 Task 4; Refusals.dc.html §05): the
  * label, one sentence, what remains true, one action, an optional quiet
- * link. Ink, never red — except the paywall's action — and never a cross.
+ * link. Ink, never red — except where the action is the page's one primary
+ * — and never a cross.
  */
 export function Refusal({
   id,
@@ -92,7 +93,7 @@ function Action({ label, small, red, href, form, newTab, onClick, disabled }: Re
   );
   if (onClick) {
     return (
-      <button type="button" onClick={onClick} disabled={disabled} className={`${className} bg-white font-mono text-xs uppercase tracking-[0.1em] disabled:opacity-60`}>
+      <button type="button" onClick={onClick} disabled={disabled} className={red ? `${className} disabled:opacity-60` : `${className} bg-white font-mono text-xs uppercase tracking-[0.1em] disabled:opacity-60`}>
         {body}
       </button>
     );

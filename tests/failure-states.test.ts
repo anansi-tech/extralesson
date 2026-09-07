@@ -28,11 +28,15 @@ describe('when something breaks', () => {
     expect(text.broken).toBe('Something went wrong on our side Not your phone and not your connection. Every mark you have earned is saved. Nothing you did is affected. Try again Go to your notebook');
     expect(FAILURES.broken()).not.toMatch(/boom|abc123|digest/);
   });
-  it('amber, never red, never a cross, never sorry, never a code', () => {
+  it('amber, never red but a whole page’s one action, never a cross, never sorry, never a code', () => {
     for (const [k, h] of Object.entries(FAILURES)) {
       const html = h();
       expect(html, k).toContain('border-amber');
-      expect(html, k).not.toMatch(/bg-red-pen|border-red-pen|✗|sorry/i);
+      expect(html, k).not.toMatch(/border-red-pen|✗|sorry/i);
+      // The bar is never red. Not-found and broken are whole pages, and their only action is the primary.
+      const red = html.match(/bg-red-pen/g) ?? [];
+      expect(red.length, k).toBe(k === 'not-found' || k === 'broken' ? 1 : 0);
+      if (red.length) expect(html, k).toMatch(/<(a|button)[^>]*bg-red-pen/);
     }
     for (const f of ['not-found.tsx', 'error.tsx', 'global-error.tsx']) expect(existsSync(join(process.cwd(), 'app', f)), f).toBe(true);
     const src = readFileSync(join(process.cwd(), 'app', 'error.tsx'), 'utf8');

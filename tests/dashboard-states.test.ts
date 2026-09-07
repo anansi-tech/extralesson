@@ -60,13 +60,15 @@ describe('the dashboard, four states', () => {
 
   it('keeps every refusal the page could show', () => {
     const view = readFileSync(join(process.cwd(), 'app', 'study', 'dashboard.tsx'), 'utf8');
-    for (const e of ['access-expired', 'diagnostic-taken', 'first-taken', 'needs-access', 'no-questions', 'nothing-to-revisit', 'no-topic']) {
+    for (const e of ['diagnostic-taken', 'first-taken', 'no-questions', 'nothing-to-revisit', 'no-topic']) {
       expect(view).toContain(`error === '${e}'`);
     }
-    expect(visibleText(render({ ...STATES.returning, error: 'needs-access' }))).toContain('Get access');
+    // Three are the lead itself: a start every lead would refuse is never a panel beneath one.
+    for (const l of ['paywall', 'sitting-passed', 'no-questions']) expect(view).toContain(`lead === '${l}'`);
+    expect(visibleText(render({ ...STATES.returning, lead: 'paywall' }))).toContain('Get access');
     // A passed sitting is not re-bought: the door is to ENTER for the next sitting, and
     // the paywall for that sitting follows. Help stays, as the quiet link.
-    const expired = render({ ...STATES.returning, error: 'access-expired' });
+    const expired = render({ ...STATES.returning, lead: 'sitting-passed' });
     expect(visibleText(expired)).toContain('Enter for another sitting');
     expect(expired).toContain('href="mailto:');
     expect(visibleText(expired)).not.toContain('Get access');

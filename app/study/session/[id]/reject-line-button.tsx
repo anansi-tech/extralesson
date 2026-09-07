@@ -31,7 +31,7 @@ export function RejectLineButton({
         }
         className="inline-flex min-h-11 items-center font-mono text-[11px] uppercase tracking-[0.14em] text-dim underline underline-offset-[3px] disabled:opacity-60"
       >
-        {rejected ? 'Put it back' : 'Not what I wrote'}
+        {rejected ? 'Put it back' : 'Not what I wrote'} — line {lineIndex + 1}
       </button>
       {error && <span className="ml-2 font-mono text-[10px] text-red-pen">{error}</span>}
     </span>

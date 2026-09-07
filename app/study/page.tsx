@@ -1,4 +1,4 @@
-import { dbConnect, Student } from '@/lib/db';
+import { dbConnect, Question, Student } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { loadStudyState } from '@/lib/study/state';
 import { openSession } from '@/lib/study/open-session';
@@ -9,7 +9,7 @@ import { loadMistakes } from '@/lib/study/mistakes';
 import { loadTopicChoices } from '@/lib/study/topics';
 import { loadFirstQuestion } from '@/lib/study/first-question';
 import { leadPanel, shouldLeadWithReachable } from '@/lib/study/lead-panel';
-import { diagnosticOpensAt, firstQuestionTaken } from '@/lib/access';
+import { canStartSession, diagnosticOpensAt, firstQuestionTaken, type Access } from '@/lib/access';
 import { nextSittingAt, sittingLabel } from '@/lib/sittings';
 import type { ModuleNumber } from '@/lib/types';
 import { DashboardView } from './dashboard';
@@ -27,7 +27,7 @@ export default async function StudyDashboard({
   await dbConnect();
   const student = await Student.findById(auth.student_id).lean<{
     name: string;
-    access?: { sitting: string } | null;
+    access?: Access | null;
     target_modules: ModuleNumber[];
   } | null>();
   if (!student) return null;
@@ -49,8 +49,11 @@ export default async function StudyDashboard({
   const diagnosticOpensAtDate = await diagnosticOpensAt(auth.student_id);
   const diagnosticOpen =
     diagnosticOpensAtDate === null || Date.now() >= diagnosticOpensAtDate.getTime();
+  const gate = await canStartSession(auth.student_id, student.access, 'adaptive');
   const lead = leadPanel({
     open: Boolean(open),
+    questions: Boolean(await Question.exists({ status: 'approved', module: { $in: student.target_modules } })),
+    access: !gate.allowed && (gate.reason === 'needs-access' || gate.reason === 'access-expired') ? gate.reason : 'ok',
     firstTaken: await firstQuestionTaken(auth.student_id),
     diagnosticTaken: diagnosticOpensAtDate !== null,
   });

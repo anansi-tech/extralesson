@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { startSession } from '../actions';
 import { BAND_LABEL } from '@/lib/study/profiles';
 import type { MasteryBand } from '@/lib/mastery/config';
@@ -69,6 +70,11 @@ export function ProgressView({ estimable, modules, weakest }: { estimable: boole
         </section>
       ))}
 
+      {!weakest && (
+        <Link href="/study" className="mt-[26px] block min-h-11 w-full bg-red-pen p-4 text-left text-[17px] font-black text-white shadow-[var(--shadow-card)]">
+          Go to your notebook
+        </Link>
+      )}
       {weakest && (
         <form action={startSession} className="mt-[26px] border-t border-margin pt-3.5">
           <input type="hidden" name="mode" value="topic" />
