@@ -343,7 +343,8 @@ function Choose(p: DashboardProps) {
             </button>
           </form>
         )}
-        <form action={startSession} className="flex gap-2 lg:col-span-2">
+        {/* The picker has the whole row on a phone: beside the button, a native select clips the longer titles. */}
+        <form action={startSession} className="flex flex-col gap-2 sm:flex-row lg:col-span-2">
           <input type="hidden" name="mode" value="topic" />
           <select
             id="topic"
@@ -352,13 +353,22 @@ function Choose(p: DashboardProps) {
             defaultValue={p.topicChoices[0]?.code}
             className="min-w-0 flex-1 border-[1.5px] border-ink bg-paper p-2.5 text-base"
           >
-            {p.topicChoices.map((t) => (
-              <option key={t.code} value={t.code}>
-                M{t.module} · {t.title}
-              </option>
-            ))}
+            {/* The module is the group, not a prefix: the longest titles fit a phone only on their own. */}
+            {([1, 2, 3] as const)
+              .filter((m) => p.topicChoices.some((t) => t.module === m))
+              .map((m) => (
+                <optgroup key={m} label={`Module ${m}`}>
+                  {p.topicChoices
+                    .filter((t) => t.module === m)
+                    .map((t) => (
+                      <option key={t.code} value={t.code}>
+                        {t.title}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
           </select>
-          <button className="min-h-11 border-[1.5px] border-ink px-3.5 font-mono text-xs uppercase tracking-[0.1em]">
+          <button className="min-h-11 border-[1.5px] border-ink px-3.5 py-2.5 font-mono text-xs uppercase tracking-[0.1em] sm:py-0">
             Practise
           </button>
         </form>

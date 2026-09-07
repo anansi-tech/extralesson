@@ -19,7 +19,8 @@ afterAll(async () => {
 });
 
 describe.skipIf(!hasChrome)('the dashboard fits the viewport', () => {
-  for (const width of [1024, 1280]) {
+  // 360 is the floor (CLAUDE.md): at 320 the two longest titles clip by about 16px at the 16px a phone's field must keep.
+  for (const width of [360, 390, 1024, 1280]) {
     it(`shows the longest selected topic in full at ${width}px`, async () => {
       const p = await browser.newPage({ viewport: { width, height: 900 } });
       const props = { ...STATES.returning, topicChoices: [{ code: 'M2-GRA', module: 2 as const, title: 'Relations, Functions and Graphs 1', prefixes: ['M2.3.'] }] };
