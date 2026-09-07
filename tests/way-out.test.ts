@@ -26,6 +26,8 @@ describe('the way out', () => {
   });
   it('the chrome carries the sitting, Help and a 44px Sign out', () => {
     const chrome = at('app', 'study', 'study-chrome.tsx');
-    expect(chrome).toMatch(/\{sitting\}[\s\S]*LANDING\.contactEmail[\s\S]*<button className="min-h-11[^"]*">Sign out<\/button>/);
+    expect(chrome).toContain('{sitting}');
+    expect(chrome).toContain('LANDING.contactEmail');
+    expect(chrome).toMatch(/<form action=\{logout\}[^>]*>\s*<button className="min-h-11[^"]*">Sign out<\/button>/);
   });
 });

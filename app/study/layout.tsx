@@ -13,7 +13,7 @@ export default async function StudyLayout({ children }: { children: React.ReactN
   await dbConnect();
   const student = await Student.findById(session.student_id).select('exam_sitting').lean<{ exam_sitting: string } | null>();
   return (
-    <StudyChrome sitting={sittingLabel(student?.exam_sitting ?? '') ?? ''} current={student?.exam_sitting ?? ''} email={session.email}>
+    <StudyChrome sitting={sittingLabel(student?.exam_sitting ?? '') ?? ''} current={student?.exam_sitting ?? ''} email={session.email} isAdmin={session.role === 'admin'}>
       {children}
     </StudyChrome>
   );

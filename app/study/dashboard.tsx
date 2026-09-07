@@ -338,7 +338,7 @@ function Choose(p: DashboardProps) {
             </button>
           </form>
         )}
-        <form action={startSession} className="flex gap-2">
+        <form action={startSession} className="flex gap-2 lg:col-span-2">
           <input type="hidden" name="mode" value="topic" />
           <select
             id="topic"

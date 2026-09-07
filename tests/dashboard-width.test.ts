@@ -19,6 +19,23 @@ afterAll(async () => {
 });
 
 describe.skipIf(!hasChrome)('the dashboard fits the viewport', () => {
+  for (const width of [1024, 1280]) {
+    it(`shows the longest selected topic in full at ${width}px`, async () => {
+      const p = await browser.newPage({ viewport: { width, height: 900 } });
+      const props = { ...STATES.returning, topicChoices: [{ code: 'M2-GRA', module: 2 as const, title: 'Relations, Functions and Graphs 1', prefixes: ['M2.3.'] }] };
+      await p.setContent(chromePage(render(props)), { waitUntil: 'networkidle' });
+      await p.evaluate(() => document.fonts.ready);
+      const fits = await p.locator('#topic').evaluate((el) => {
+        const select = el as HTMLSelectElement;
+        const style = getComputedStyle(select);
+        const context = document.createElement('canvas').getContext('2d')!;
+        context.font = style.font;
+        return context.measureText(select.selectedOptions[0].text).width + parseFloat(style.paddingLeft) + parseFloat(style.paddingRight) + 24 <= select.clientWidth;
+      });
+      expect(fits).toBe(true);
+      await p.close();
+    }, 60000);
+  }
   for (const width of [320, 360, 390, 1280]) {
     for (const [name, props] of [...Object.entries(STATES), ['longest', longest] as const]) {
       it(`${name} at ${width}px`, async () => {

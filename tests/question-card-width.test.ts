@@ -1,7 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { existsSync } from 'node:fs';
-import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { chromium, type Browser } from 'playwright-core';
 import { chromePage } from './helpers/chrome-page';
 import { STATES, readingPieces, renderBar, renderCard } from './helpers/card-states';
@@ -48,6 +46,25 @@ export async function openState(b: Browser, name: keyof typeof STATES, width: nu
 }
 
 describe.skipIf(!hasChrome)('the question card fits the viewport', () => {
+  for (const width of [390, 1024, 1280]) {
+    it(`gives a large figure the full width above the parts at ${width}px`, async () => {
+      const q = { ...STATES.unanswered, figureMinWidth: 640, figureMaxWidth: 760 };
+      const p = await browser.newPage({ viewport: { width, height: 900 } });
+      await p.setContent(chromePage(renderBar(q) + renderCard(q)), { waitUntil: 'networkidle' });
+      const layout = await p.evaluate(() => {
+        const figure = document.querySelector('.figure-frame')!;
+        const parts = document.getElementById('slot-a.i')!;
+        return {
+          width: document.documentElement.scrollWidth,
+          above: figure.getBoundingClientRect().bottom <= parts.getBoundingClientRect().top,
+          scrolls: figure.scrollWidth > figure.clientWidth,
+          count: document.querySelectorAll('.figure-frame').length,
+        };
+      });
+      expect(layout).toEqual({ width, above: true, scrolls: width < 1024, count: 1 });
+      await p.close();
+    }, 60000);
+  }
   for (const width of [320, 360, 390, 1280]) {
     for (const name of Object.keys(STATES) as (keyof typeof STATES)[]) {
       it(`${name} at ${width}px`, async () => {

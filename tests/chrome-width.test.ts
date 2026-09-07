@@ -1,13 +1,27 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { StudyChrome } from '@/app/study/study-chrome';
 import { existsSync } from 'node:fs';
-import { chromePage } from './helpers/chrome-page';
+import { bodyPage } from './helpers/chrome-page';
 import { chromium, type Browser } from 'playwright-core';
 
 // ROUND_8 Task 0: the chrome is two rows at 390, one at 1280, and the
 // document is never wider than the viewport, with a long sitting label.
 const CHROME = '/usr/bin/google-chrome';
 const hasChrome = existsSync(CHROME);
-const page = (sitting: string, open = false) => chromePage('<h1 class="text-2xl font-black">Kiara’s notebook.</h1><p>Some paper content that is long enough to wrap across several lines on a phone screen.</p>', sitting, open);
+vi.mock('next/navigation', () => ({ usePathname: () => '/study' }));
+
+// Render the real shell: a hand-copied helper previously gave main a
+// minimum height that production did not have, concealing the blank paper.
+const page = (sitting: string, open = false, isAdmin = false) => {
+  const props = {
+    sitting, current: 'jan-2027', email: 'kiara.a.longer.address@example.com', isAdmin,
+    children: createElement('p', null, 'Some paper content that wraps on a phone screen.'),
+  };
+  const html = renderToStaticMarkup(createElement(StudyChrome, props));
+  return bodyPage((open ? html.replaceAll('<details>', '<details open>') : html) + '<footer>Footer</footer>');
+};
 const SHOT = process.env.CHROME_SHOTS;
 
 let browser: Browser;
@@ -19,6 +33,36 @@ afterAll(async () => {
 });
 
 describe.skipIf(!hasChrome)('the chrome', () => {
+  for (const width of [320, 390, 1024, 1280]) {
+    it(`admin navigation fits and short paper reaches the footer at ${width}px`, async () => {
+      const p = await browser.newPage({ viewport: { width, height: 900 } });
+      await p.setContent(page('January 2027', false, true), { waitUntil: 'networkidle' });
+      expect(await p.locator('a[href="/admin/access"]').isVisible()).toBe(true);
+      const layout = await p.evaluate(() => ({
+        width: document.documentElement.scrollWidth,
+        paper: document.querySelector('main')!.getBoundingClientRect().bottom,
+        footer: document.querySelector('footer')!.getBoundingClientRect().top,
+      }));
+      expect(layout.width).toBe(width);
+      expect(layout.paper).toBeGreaterThanOrEqual(900);
+      expect(layout.paper).toBeCloseTo(layout.footer, 0);
+      const content = await p.locator('main').innerHTML();
+      const arrow = p.locator('summary:visible .account-chevron');
+      expect(await arrow.evaluate((el) => getComputedStyle(el).transform)).toBe('none');
+      await p.locator('summary:visible').click();
+      expect(await arrow.evaluate((el) => getComputedStyle(el).transform)).toBe('matrix(-1, 0, 0, -1, 0, 0)');
+      expect(await p.getByText('kiara.a.longer.address@example.com', { exact: true }).filter({ visible: true }).count()).toBe(1);
+      expect(await p.getByRole('button', { name: 'Sign out' }).isVisible()).toBe(true);
+      expect(await p.getByText('Your account', { exact: true }).filter({ visible: true }).count()).toBe(1);
+      // The arrow is part of the same toggle, not a navigation link. Opening
+      // and closing the menu must not replace any notebook/progress content.
+      await arrow.click();
+      expect(await arrow.evaluate((el) => getComputedStyle(el).transform)).toBe('none');
+      expect(await p.getByRole('button', { name: 'Sign out' }).count()).toBe(0);
+      expect(await p.locator('main').innerHTML()).toBe(content);
+      await p.close();
+    }, 60000);
+  }
   for (const width of [320, 360, 390, 1280]) {
     it(`fits the viewport at ${width}px, ${width >= 1024 ? 'one row' : 'two rows'}`, async () => {
       const p = await browser.newPage({ viewport: { width, height: 800 } });

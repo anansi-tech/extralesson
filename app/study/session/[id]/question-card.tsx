@@ -485,6 +485,20 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const questionsLeft = question.total - question.index - 1;
   const marksLeft = Math.max(0, question.marksTotal - question.marksAnswered - question.marks);
 
+  // The desktop rail is 320px (--rail). Include the frame's border and
+  // padding: a figure that cannot fit legibly gets the full sheet above it.
+  // This depends on the figure, not viewport state, so resizing never remounts it.
+  const wideFigure = (question.figureMinWidth ?? 0) + 18 > 320;
+  const figure = question.visualHtml ? (
+    <div className={`figure-frame order-2 mt-3 ${wideFigure ? 'lg:mt-5' : 'lg:mt-0'}`} ref={figureRef}>
+      <Html
+        className="figure-inner [&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
+        style={{ minWidth: question.figureMinWidth, maxWidth: question.figureMaxWidth }}
+        html={question.visualHtml}
+      />
+    </div>
+  ) : null;
+
   return (
     <article className="group mt-5 border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-card)] lg:p-7">
       {/* THE MARKED QUESTION READS TOP-DOWN (ROUND_7 Task 1; ROUND_8 Task 3): one
@@ -581,23 +595,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         )}
       </div>
 
+      {wideFigure && figure}
+
       {/* ONE DOM FOR BOTH WIDTHS: a flex column ordered for the phone, a grid
-          at lg with the figure and camera in the rail before the parts, and the
+          at lg with a small figure and camera in the rail before the parts, and the
           read and the codes in the rail after them. */}
       <div className="flex flex-col lg:mt-5 lg:grid lg:grid-cols-[minmax(0,1fr)_var(--rail)] lg:items-start lg:gap-x-10">
       <div className="contents lg:col-start-2 lg:row-start-1 lg:flex lg:flex-col lg:gap-5">
-      {question.visualHtml && (
-        <div className="figure-frame order-2 mt-3 lg:mt-0" ref={figureRef}>
-          <Html
-            className="figure-inner [&_svg]:h-auto [&_svg]:w-full [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-paper-deep [&_td]:p-1 [&_th]:border [&_th]:border-paper-deep [&_th]:bg-paper-deep [&_th]:p-1"
-            style={{
-              minWidth: question.figureMinWidth,
-              maxWidth: question.figureMaxWidth,
-            }}
-            html={question.visualHtml}
-          />
-        </div>
-      )}
+      {!wideFigure && figure}
 
       {/* PHOTO FIRST (ROUND_4 Task 1): the camera sits above the boxes from the
           start. A read fills the single-box slots; the student checks them and

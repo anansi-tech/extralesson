@@ -126,6 +126,16 @@ summary {
   cursor: pointer;
 }
 
+/* One account control; the native disclosure owns both the menu and arrow. */
+details[open] > .account-toggle {
+  background: var(--paper-deep);
+  border-color: var(--ink);
+}
+
+details[open] > .account-toggle .account-chevron {
+  transform: rotate(180deg);
+}
+
 /* A FIGURE ESCAPES THE COLUMN AND KEEPS ITS SCALE.
    The card sits inside main px-5 and article p-5, so a figure was drawn in
    260px of a 360px screen — 100px of the phone was padding, and coordinateGrid
