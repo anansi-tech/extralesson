@@ -107,4 +107,22 @@ describe.skipIf(!hasChrome)('document width equals the viewport', () => {
       expect(w, `${width}px`).toBe(width);
     }, 60000);
   }
+
+  // The price and its line: stacked on a phone, side by side on the desk;
+  // and one space between the founder and the offer, not two.
+  for (const [width, stacked] of [[390, true], [1440, false]] as const) {
+    it(`the mono line sits ${stacked ? 'below' : 'beside'} the figure at ${width}px`, async () => {
+      const p = await browser.newPage({ viewport: { width, height: 900 } });
+      await p.setContent(`<!doctype html><html><head><meta name="viewport" content="width=device-width"><style>body{margin:0}${css}</style></head><body>${markup()}</body></html>`);
+      const box = async (sel: string) => (await p.locator(sel).first().boundingBox())!;
+      const price = await box('.offer .price');
+      const per = await box('.offer .per');
+      const founder = await box('.founder');
+      const offer = await box('.offer');
+      await p.close();
+      if (stacked) expect(per.y).toBeGreaterThanOrEqual(price.y + price.height);
+      else expect(per.y).toBeLessThan(price.y + price.height);
+      expect(offer.y - (founder.y + founder.height)).toBe(width < 1024 ? 32 : 40);
+    }, 60000);
+  }
 });

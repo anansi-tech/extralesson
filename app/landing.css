@@ -98,11 +98,11 @@
 .landing .founder .cred { font-family: var(--mono); font-size: 10px; color: var(--dim); letter-spacing: .06em; line-height: 1.8; }
 
 /* offer: the dark block */
-.landing #offer { padding: 32px 0; }
+.landing #offer { padding: 0 0 32px; }
 .landing .offer { background: var(--ink); color: var(--paper); padding: 30px 22px; }
 .landing .offer .eyebrow { color: #f0b429; }
 .landing .offer h2 { color: #fff; font-size: 25px; margin: 8px 0 16px; }
-.landing .pricerow { display: flex; align-items: baseline; gap: 12px; margin-top: 8px; }
+.landing .pricerow { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 8px; }
 .landing .offer .price { font-size: 56px; font-weight: 900; color: #f0b429; line-height: 1; flex: none; }
 .landing .offer .per { font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #a8aebd; line-height: 1.6; }
 .landing .offer ul { list-style: none; margin: 18px 0 20px; padding: 0; }
@@ -133,6 +133,7 @@
   .landing .stats .tile:last-child { padding-left: 40px; }
   .landing .stats .n { font-size: 72px; }
   .landing .stats .l { font-size: 21px; margin-top: 10px; }
+  .landing .pricerow { flex-direction: row; align-items: baseline; gap: 12px; }
 }
 @media (min-width: 1024px) {
   .landing .wrap { padding: 0 24px; }
@@ -159,7 +160,7 @@
   .landing section.rule-top { padding: 40px 0; }
   .landing .founder p { font-size: 16px; }
   .landing .founder .sig { font-size: 30px; }
-  .landing #offer { padding: 40px 0; }
+  .landing #offer { padding: 0 0 40px; }
   .landing .offer { padding: 40px; }
   .landing .offergrid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 48px; align-items: start; }
   .landing .offer h2 { font-size: 32px; margin: 8px 0 20px; }
