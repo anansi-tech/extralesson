@@ -4,6 +4,7 @@ import { module2Topics } from '@/lib/seed/module2-topics';
 import { module3Topics } from '@/lib/seed/module3-topics';
 import { seedBlueprints } from '@/lib/seed/blueprints';
 import { SITTINGS, sittingsOpenAt } from '@/lib/sittings';
+import { HELP_EMAIL } from '@/lib/help-email';
 import { isProduction } from '@/lib/preflight';
 
 // Landing-page content constants (ROUND_1 §7). Every price, cap, stat and
@@ -41,7 +42,7 @@ export const LANDING = {
     source: 'https://www.cxc.org/wp-content/uploads/2018/11/CSEC-Mathematics-Amended-2026-for-Exams-2027V2.pdf',
     sourceLabel: 'CXC syllabus, from May–June 2027',
   },
-  contactEmail: 'extralesson@anansi.xyz',
+  contactEmail: HELP_EMAIL,
 } as const;
 
 // Coverage computed from the same seeds the mastery map uses, so marketing

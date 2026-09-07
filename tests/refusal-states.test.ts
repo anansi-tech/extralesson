@@ -2,6 +2,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { REFUSALS, visibleText } from './helpers/refusal-states';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import QuestionCard from '@/app/study/session/[id]/question-card';
+import { MARKED } from './helpers/marked-states';
 
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} }), usePathname: () => '/study' }));
 
@@ -15,10 +19,10 @@ const text = Object.fromEntries(Object.entries(html).map(([k, h]) => [k, visible
 describe('the refusals', () => {
   it('paywall: the real boundary, the price, the only red action, the marked work as the quiet link', () => {
     expect(text.paywall).toBe(
-      'That was your 2 free sessions The free question, the diagnostic and your 2 free sessions are used. Daily sessions, the diagnostic and examiner-style marking need full access. ' +
+      'Your free sessions are used The free question, the diagnostic and your 2 free sessions are used. Daily sessions, the diagnostic and examiner-style marking need full access. ' +
         'Everything you have done stays here — your marks, your topics, and every question you have answered. ' +
-        '$49 One payment · no subscription Runs to your sitting Use kiara@example.com when you pay, so we can match it to this account. ' +
-        'Get access — $49 SECURE CHECKOUT · CARD OR APPLE PAY Read your marked work',
+        '$49 One payment · access through the sitting you choose Use kiara@example.com when you pay, so we can match it to this account. ' +
+        'Get access SECURE CHECKOUT · CARD OR APPLE PAY Read your marked work',
     );
     expect(html.paywall).toMatch(/<a [^>]*bg-red-pen/);
     expect(html.paywall).toMatch(/<a [^>]*target="_blank"[^>]*rel="noopener"|<a [^>]*rel="noopener"[^>]*target="_blank"/);
@@ -51,11 +55,10 @@ describe('the refusals', () => {
       'Nothing to revisit yet The marks you lost are still fresh — revisiting them today would only be repeating them. They come back on their own, on the objectives you lost them on, in a few days.',
     );
   });
-  it('question handed in, with the marks from the fold', () => {
-    expect(text['handed-in']).toBe(
-      'This question is handed in Answers close once a question is marked, the way a paper does. If a mark looks wrong, ask for a re-mark — a person looks before anything changes. Read your marking 6 of 7 marks · with the reasons',
-    );
-    expect(html['handed-in']).toContain('href="#marking"');
+  it('question handed in: one line on the card, never a panel whose action is the page it is on', () => {
+    const card = renderToStaticMarkup(createElement(QuestionCard, { question: MARKED.marked }));
+    expect(card).not.toContain('data-refusal="handed-in"');
+    expect(visibleText(card)).toContain('Handed in — answers are closed. If a mark looks wrong, ask for a re-mark.');
   });
   it('the diagnostic and the first question, already taken', () => {
     expect(text['diagnostic-taken']).toBe(

@@ -87,7 +87,7 @@ export async function readWorking(input: {
 
   const bytes = Buffer.from(data, 'base64');
   if (bytes.length === 0 || bytes.length > MAX_BYTES) {
-    return { error: 'That photo is too large. Try again in better light.' };
+    return { error: 'That photo couldn’t be sent. Take it again.' };
   }
 
   const question = await Question.findById(questionId).lean<{

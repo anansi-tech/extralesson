@@ -134,7 +134,7 @@ export function WorkingPhoto({
       intro={
         attemptId
           ? `There ${marks === 1 ? 'is 1 mark' : `are ${marks} marks`} here for the method, and we cannot see your working. Take a photo of what you wrote and we will type it up beside the mark scheme. Nothing you have already earned can change.`
-          : 'Work it on paper, then take a photo of the page. We type up what we read and fill in the single-answer boxes; you check them, fill in the rest, and hand in.'
+          : 'Work it on paper, then take a photo. We read it and fill in what we can; you check, then hand in.'
       }
       preview={preview}
       error={error}
@@ -219,7 +219,7 @@ export function CaptureSurface({
   read: React.ReactNode;
 }) {
   const fresh = state === 'none' || (state === 'reading' && !thumb);
-  const noRetakes = (remains: string, action: { label: string; small?: string; href: string }) => (
+  const noRetakes = (remains: string, action?: { label: string; small?: string; href: string }) => (
     <Refusal
       id="no-retakes"
       className="mt-3"
@@ -248,8 +248,8 @@ export function CaptureSurface({
     >
       {state !== 'exhausted' && input}
 
-      {state === 'failed' && <CaptureFailure message={error ?? 'That photo could not be read.'} onRetake={onPick} />}
-      {state === 'illegible' && <CaptureFailure message="illegible" onRetake={onPick} />}
+      {state === 'failed' && <CaptureFailure message={error ?? 'That photo could not be read.'} onRetake={onPick} post={post} retakes={retakes} />}
+      {state === 'illegible' && <CaptureFailure message="illegible" onRetake={onPick} post={post} retakes={retakes} />}
       {state === 'read' && read}
 
       {thumb && state !== 'reading' && (
@@ -278,10 +278,12 @@ export function CaptureSurface({
         </div>
       )}
       {state === 'exhausted' &&
-        noRetakes('Nothing was marked or counted. Your page still counts.', {
-          label: 'Type the answers',
-          href: '#question',
-        })}
+        (post
+          ? noRetakes('The method marks stay unassessed. Everything typed is marked as it was.')
+          : noRetakes('Nothing was marked or counted. Your page still counts.', {
+              label: 'Type the answers',
+              href: '#question',
+            }))}
     </CameraBox>
   );
 }
@@ -343,8 +345,12 @@ export function CameraBox({
  * counted; the one thing to do is take it again. Exported so each case can
  * be rendered on its own.
  */
-export function CaptureFailure({ message, onRetake }: { message: string; onRetake: () => void }) {
-  const remains = 'Nothing was marked or counted. Your page still counts — take the photo again.';
+export function CaptureFailure({ message, onRetake, post = false, retakes }: { message: string; onRetake: () => void; post?: boolean; retakes?: number }) {
+  // After hand-in the answers are closed: the method marks wait for a page, or stay unassessed.
+  const remains = post
+    ? 'The method marks stay unassessed until a page is read. Take it again, or leave it.'
+    : 'Nothing was marked or counted. Your page still counts — take the photo again.';
+  const left = retakes === undefined ? undefined : `${retakes} retake${retakes === 1 ? '' : 's'} left`;
   if (message === TOO_MANY) {
     const wait = windowMinutes('read');
     return (
@@ -368,9 +374,9 @@ export function CaptureFailure({ message, onRetake }: { message: string; onRetak
       label="Couldn’t read the page"
       sentence={unreadable ? 'The photo came through, but the writing on it could not be made out.' : message}
       remains={remains}
-      action={{ label: 'Take it again', onClick: onRetake }}
+      action={{ label: 'Take it again', small: post ? left : undefined, onClick: onRetake }}
       advice="Flat page, good light, the whole answer in frame."
-      quiet={{ label: 'Or type the answers instead', href: '#question' }}
+      quiet={post ? undefined : { label: 'Or type the answers instead', href: '#question' }}
     />
   );
 }

@@ -15,7 +15,7 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} 
 const text = Object.fromEntries(Object.entries(STATES).map(([k, q]) => [k, visibleText(renderBar(q) + renderCard(q))])) as Record<keyof typeof STATES, string>;
 
 const STEM = 'Question 2 of 3 7 of 21 marks done The diagram shows triangle ABC, right-angled at B, with AB = 8 cm and angle ACB = 34°. [7 marks] Not drawn to scale ';
-const CAMERA = 'Your working on paper Work it on paper, then take a photo of the page. We type up what we read and fill in the single-answer boxes; you check them, fill in the rest, and hand in. Take a photo of your page ';
+const CAMERA = 'Your working on paper Work it on paper, then take a photo. We read it and fill in what we can; you check, then hand in. Take a photo of your page ';
 const PARTS_AB = '(a) Calculate the length of BC. [3] Answer to (a) Give the length in cm to 1 decimal place. (b) Calculate the area of triangle ABC. [2] Answer to (b) Insert √ ° ² ';
 const PART_C_PAPER = '(c) Show that the perimeter is less than 35 cm. [2] Work this on paper — it’s marked from your photo. ';
 const NAV = ' ← previous 2 / 3';

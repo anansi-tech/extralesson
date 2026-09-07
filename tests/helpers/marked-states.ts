@@ -69,7 +69,8 @@ const marked = (working: Take): CardQuestion => ({
 
 export const MARKED: Record<'marked' | 'queried' | 'failed', CardQuestion> = {
   marked: marked(take({})),
-  queried: marked(take({ disputed: ['AK4'], rejected: [3] })),
+  // The struck line is one the marker did not credit: BC, which the typed answer to (a) carried.
+  queried: marked(take({ disputed: ['AK4'], rejected: [1] })),
   failed: marked(take({ marked: false, method: [], slips: [] })),
 };
 

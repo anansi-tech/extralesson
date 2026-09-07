@@ -29,14 +29,15 @@ export function WelcomeView({ state, sessionId, signedIn, lead, diagnosticOpen }
           <div className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-dim">Confirming your payment</div>
           <Heading>One moment</Heading>
           <p className="mb-4 text-[15px] leading-normal">Your card has been charged. We are matching the payment to an account.</p>
-          <div className="h-2 overflow-hidden rounded border border-ink bg-paper-deep">
+          <div role="progressbar" aria-label="Matching the payment" className="h-2 overflow-hidden rounded border border-ink bg-paper-deep">
             <i className="block h-full w-[62%] bg-amber" />
           </div>
           <ConfirmingNote sessionId={sessionId} settled={state.settled} />
-          <Link href={signedIn ? '/study' : '/study/login'} className={`${PRIMARY} mt-[18px] block`}>
-            {signedIn ? 'Go to your notebook' : 'Sign in'}
-            <small className={PRIMARY_SMALL}>THE ACCESS IS APPLIED TO THE ACCOUNT IT WAS PAID FOR</small>
-          </Link>
+          <div className="mt-3">
+            <Link href={signedIn ? '/study' : '/study/login'} className={QUIET}>
+              {signedIn ? 'Go to your notebook' : 'Sign in'}
+            </Link>
+          </div>
         </>
       )}
 

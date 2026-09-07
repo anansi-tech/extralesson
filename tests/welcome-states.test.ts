@@ -12,10 +12,10 @@ const HELP = 'Access usually appears within a minute. If it has not after a few 
 describe('welcome, four states', () => {
   it('A · confirming, then settled after the minute', () => {
     expect(text.confirming).toBe(
-      'Confirming your payment One moment . Your card has been charged. We are matching the payment to an account. This page will move on by itself. If it is still here in a minute, your receipt is already in your email — nothing is lost. Sign in THE ACCESS IS APPLIED TO THE ACCOUNT IT WAS PAID FOR ' + HELP,
+      'Confirming your payment One moment . Your card has been charged. We are matching the payment to an account. This page will move on by itself. If it is still here in a minute, your receipt is already in your email — nothing is lost. Sign in ' + HELP,
     );
     expect(text.settled).toBe(
-      'Confirming your payment One moment . Your card has been charged. We are matching the payment to an account. Your receipt is already in your email — nothing is lost. Sign in THE ACCESS IS APPLIED TO THE ACCOUNT IT WAS PAID FOR ' + HELP,
+      'Confirming your payment One moment . Your card has been charged. We are matching the payment to an account. Your receipt is already in your email — nothing is lost. Sign in ' + HELP,
     );
     expect(renderWelcome(WELCOME.confirming)).not.toMatch(/animate|spinner/);
   });

@@ -18,7 +18,7 @@ export const REQUIRED_ENV = [
  */
 export const OPTIONAL_ENV: Record<string, string> = {
   RESEND_API_KEY: 'unset falls back to logging the reset link',
-  RESEND_FROM: 'defaults to the Resend sandbox sender',
+  RESEND_FROM: 'defaults to ExtraLesson at the help address',
   NEXT_PUBLIC_BASE_URL: 'inferred from VERCEL_URL when unset',
   BASE_URL: 'audit scripts only, never the app',
   RUN_AS_STUDENT: 'the composition eval only; ignored in production',

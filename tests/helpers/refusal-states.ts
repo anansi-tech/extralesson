@@ -1,10 +1,8 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { DashboardView, type DashboardProps } from '@/app/study/dashboard';
-import QuestionCard from '@/app/study/session/[id]/question-card';
 import { WorkingPhoto } from '@/app/study/session/[id]/working-photo';
 import { STATES as DASH } from './dashboard-states';
-import { MARKED } from './marked-states';
 import { STATES as CARD } from './card-states';
 export { visibleText } from './card-states';
 
@@ -31,7 +29,6 @@ export const REFUSALS: Record<string, () => string> = {
       'no-retakes',
     ),
   'nothing-to-revisit': () => panel(dash('nothing-to-revisit'), 'nothing-to-revisit'),
-  'handed-in': () => panel(renderToStaticMarkup(createElement(QuestionCard, { question: MARKED.marked })), 'handed-in'),
   'diagnostic-taken': () => panel(dash('diagnostic-taken'), 'diagnostic-taken'),
   'first-taken': () => panel(dash('first-taken'), 'first-taken'),
   'no-questions': () => panel(dash('', undefined, { lead: 'no-questions' }), 'no-questions'),

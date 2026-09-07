@@ -1,10 +1,11 @@
 import { Resend } from 'resend';
+import { HELP_EMAIL } from '@/lib/help-email';
 
 // Same shape and environment variable names as cognicare's lib/email.js, so
 // moving between the two repos does not mean learning two conventions.
 // ExtraLesson sends exactly one kind of email: a password-reset link.
 
-const FROM = process.env.RESEND_FROM ?? 'ExtraLesson <onboarding@resend.dev>';
+const FROM = process.env.RESEND_FROM ?? `ExtraLesson <${HELP_EMAIL}>`;
 /** The sender a reset-sent screen names, so a student knows what to look for in spam. */
 export const SENDER = FROM;
 

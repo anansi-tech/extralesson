@@ -30,7 +30,7 @@ export interface Shot {
 
 const GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
 
-const surface = (state: CaptureState, post: boolean, error = 'That photo is too large. Try again in better light.'): string =>
+const surface = (state: CaptureState, post: boolean, error = 'That photo couldn’t be sent. Take it again.'): string =>
   renderToStaticMarkup(
     createElement(CaptureSurface, {
       state,
@@ -47,26 +47,33 @@ const surface = (state: CaptureState, post: boolean, error = 'That photo is too 
     }),
   );
 
+const SESSION = '/study/session/s1';
 const dashboard = (state: string, props: DashboardProps): Shot => ({ screen: 'dashboard', state, page: chromePage(renderDashboard(props)) });
 const returning = DASH.returning;
 
 const card = (state: string, q: CardQuestion, swap?: CaptureState): Shot => ({
   screen: 'question-card',
   state,
-  page: chromePage(renderBar(q) + renderCard(q)),
+  page: chromePage(renderBar(q) + renderCard(q), undefined, false, SESSION),
   surface: swap && surface(swap, false),
 });
 
 const exhausted: CardQuestion = { ...CARD.unanswered, draft: { answers: {}, values: {}, read: { ...CARD.illegible.draft!.read!, takesLeft: 0 } } };
 
-// The handed-in card is the look-back: its capture states are the takes it carries.
+// The handed-in card as it stands the moment after hand-in, with method marks
+// still on offer: the camera is offered until a page is read or the takes run out.
 const handed = MARKED.marked;
-const prior = handed.prior!;
+const prior = { ...handed.prior!, justMarked: true, feedback: { ...handed.prior!.feedback, earnableByMethod: 3 } };
 const take = prior.working![0];
 const illegibleTake = { ...take, legible: false, lines: [], marked: false, method: [], slips: [] };
 const illegibleWorking = (takesLeft: number) =>
   ({ ...prior.feedback.working!, transcription: { lines: [], answers: [], legible: false }, marked: false, method: [], slips: [], marksAdded: 0, takesLeft }) as typeof prior.feedback.working;
-const handedIn = (state: string, q: CardQuestion): Shot => ({ screen: 'question-card', state: `handed-in-${state}`, page: chromePage(renderMarked(q)) });
+const handedIn = (state: string, q: CardQuestion, swap?: CaptureState): Shot => ({
+  screen: 'question-card',
+  state: `handed-in-${state}`,
+  page: chromePage(renderMarked(q), undefined, false, SESSION),
+  surface: swap && surface(swap, true),
+});
 
 export const GALLERY: Shot[] = [
   dashboard('lead-first', DASH.new),
@@ -90,25 +97,26 @@ export const GALLERY: Shot[] = [
   card('unanswered-illegible', CARD.illegible),
   card('unanswered-failed', CARD.unanswered, 'failed'),
   card('unanswered-exhausted', exhausted),
-  handedIn('none', { ...handed, prior: { ...prior, feedback: { ...prior.feedback, working: undefined, earnableByMethod: 3 }, working: [] } }),
-  handedIn('read', handed),
+  handedIn('none', { ...handed, prior: { ...prior, feedback: { ...prior.feedback, working: undefined }, working: [] } }),
+  handedIn('reading', { ...handed, prior: { ...prior, feedback: { ...prior.feedback, working: undefined }, working: [] } }, 'reading'),
+  handedIn('read', { ...handed, prior }),
   handedIn('illegible', { ...handed, prior: { ...prior, feedback: { ...prior.feedback, working: illegibleWorking(1) }, working: [illegibleTake] } }),
-  handedIn('failed', MARKED.failed),
+  handedIn('failed', { ...handed, prior: { ...prior, feedback: { ...prior.feedback, working: undefined }, working: [] } }, 'failed'),
   handedIn('exhausted', { ...handed, prior: { ...prior, feedback: { ...prior.feedback, working: illegibleWorking(0) }, working: [illegibleTake] } }),
 
-  ...(Object.keys(MARKED) as (keyof typeof MARKED)[]).map((state) => ({ screen: 'marked-question', state, page: chromePage(renderMarked(MARKED[state])) })),
-  ...(Object.keys(DIAGNOSTIC) as (keyof typeof DIAGNOSTIC)[]).map((state) => ({ screen: 'diagnostic', state, page: chromePage(DIAGNOSTIC[state]()) })),
-  ...Object.keys(SUMMARIES).map((state) => ({ screen: 'summary', state, page: chromePage(SUMMARIES[state]()) })),
+  ...(Object.keys(MARKED) as (keyof typeof MARKED)[]).map((state) => ({ screen: 'marked-question', state, page: chromePage(renderMarked(MARKED[state]), undefined, false, SESSION) })),
+  ...(Object.keys(DIAGNOSTIC) as (keyof typeof DIAGNOSTIC)[]).map((state) => ({ screen: 'diagnostic', state, page: chromePage(DIAGNOSTIC[state](), undefined, false, SESSION) })),
+  ...Object.keys(SUMMARIES).map((state) => ({ screen: 'summary', state, page: chromePage(SUMMARIES[state](), undefined, false, SESSION) })),
   ...(Object.keys(WELCOME) as (keyof typeof WELCOME)[]).map((state) => ({ screen: 'welcome', state, page: bodyPage(renderWelcome(WELCOME[state])) })),
   ...Object.keys(AUTH).map((state) => ({ screen: 'auth', state, page: bodyPage(renderAuth(state)) })),
   // A read failure is a state of the card, so it is photographed there.
   ...Object.entries({ 'read-failed': 'We could not read that photo. Nothing has changed.', 'read-too-large': 'That photo is too large. Try again in better light.', 'read-limited': TOO_MANY }).map(
-    ([state, message]) => ({ screen: 'failure', state, page: chromePage(renderBar(CARD.unanswered) + renderCard(CARD.unanswered)), surface: surface('failed', false, message) }),
+    ([state, message]) => ({ screen: 'failure', state, page: chromePage(renderBar(CARD.unanswered) + renderCard(CARD.unanswered), undefined, false, SESSION), surface: surface('failed', false, message) }),
   ),
   ...['not-found', 'broken'].map((state) => ({ screen: 'failure', state, page: bodyPage(FAILURES[state]()) })),
-  { screen: 'history', state: 'populated', page: chromePage(renderHistory()) },
-  { screen: 'history', state: 'empty', page: chromePage(renderHistory({ rows: [], lostMarks: 0 })) },
-  { screen: 'progress', state: 'populated', page: chromePage(renderProgress()) },
+  { screen: 'history', state: 'populated', page: chromePage(renderHistory(), undefined, false, '/study/history') },
+  { screen: 'history', state: 'empty', page: chromePage(renderHistory({ rows: [], lostMarks: 0 }), undefined, false, '/study/history') },
+  { screen: 'progress', state: 'populated', page: chromePage(renderProgress(), undefined, false, '/study/progress') },
   {
     screen: 'progress',
     state: 'empty',
@@ -118,6 +126,9 @@ export const GALLERY: Shot[] = [
         modules: PROGRESS.modules.map((m) => ({ ...m, letter: null, strength: 0, topics: m.topics.map((t) => ({ ...t, band: 'NOT_STARTED' as const, mastery: 0 })) })),
         weakest: null,
       }),
+      undefined,
+      false,
+      '/study/progress',
     ),
   },
 ];

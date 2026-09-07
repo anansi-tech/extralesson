@@ -34,21 +34,21 @@ describe('the auth screens', () => {
     expect(html.indexOf('That email and password do not match.')).toBeLessThan(html.indexOf('name="email"'));
   });
   it('rate-limited: the real window from the limit table, the button waiting', () => {
-    expect(text['rate-limited']).toBe(SIGN_IN + 'Too many attempts. You can ask again in 1 minute. Your email address kiara@example.com Your password Sign in Available in 1 minute New here? Create an account Forgot your password?');
-    expect(text['reset-limited']).toBe('Forgot your password ? Too many attempts. You can ask again in 3 minutes. Your email address kiara@example.com Send me a link Available in 3 minutes Back to sign in');
+    expect(text['rate-limited']).toBe(SIGN_IN + 'Too many attempts. You can try again in 1 minute. Your email address kiara@example.com Your password Sign in Available in 1 minute New here? Create an account Forgot your password?');
+    expect(text['reset-limited']).toBe('Forgot your password ? Too many attempts. You can try again in 3 minutes. Your email address kiara@example.com Send me a link Available in 3 minutes Back to sign in');
     expect(renderAuth('rate-limited')).toMatch(/<button type="submit" disabled=""/);
   });
   it('reset: email, then check your email with the sender named', () => {
     expect(text.reset).toBe('Forgot your password ? Your email address Send me a link Back to sign in');
     expect(text['reset-sent']).toBe(
-      '✓ Check your email . If there is an account for that email, a link to set a new password is on its way. It works once and expires in 30 minutes. Nothing in your inbox after a minute or two? Look in spam. The sender is ExtraLesson <hello@extralesson.app>. Back to sign in',
+      '✓ Check your email . If there is an account for that email, a link to set a new password is on its way. It works once and expires in 30 minutes. Nothing in your inbox after a minute or two? Look in spam. The sender is ExtraLesson <extralesson@anansi.xyz>. Back to sign in',
     );
     const page = readFileSync(join(process.cwd(), 'app', 'study', 'login', 'page.tsx'), 'utf8');
     expect(page).toMatch(/sender=\{SENDER\} resetMinutes=\{RESET_TTL_MS \/ 60000\}/);
   });
   it('new password: one field, the error above it', () => {
     expect(text['new-password']).toBe('Set a new password . New password At least 10 characters. Save and sign in');
-    expect(text['new-password-error']).toBe('Set a new password . New password That link has expired. Ask for a new one. At least 10 characters. Save and sign in');
+    expect(text['new-password-error']).toBe('Set a new password . That link has expired. Ask for a new one. Ask for a new link');
   });
   it('builds no magic link', () => {
     for (const k of Object.keys(AUTH)) expect(text[k]).not.toMatch(/Email me a link|no password to remember/);

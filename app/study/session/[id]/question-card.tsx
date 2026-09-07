@@ -16,7 +16,6 @@ import { MethodRows, WorkingRead } from './working-read';
 import { Html } from './html';
 import { isPositionalLabel } from '@/lib/notation';
 import { PROFILE_GLOSS } from '@/lib/study/profiles';
-import { Refusal } from '../../../refusal';
 
 export interface CardQuestion {
   sessionId: string;
@@ -79,6 +78,8 @@ export interface CardQuestion {
     answers: Record<string, string>;
     selected?: number;
     feedback: Feedback;
+    /** The card as it stands the moment after hand-in, rather than a later look back. */
+    justMarked?: boolean;
     /** What the photograph read and earned, one entry per take. Review only. */
     working?: {
       take: number;
@@ -180,7 +181,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question.sessionId, question.index, question.prior]);
 
-  const reviewing = !!question.prior;
+  const reviewing = !!question.prior && !question.prior.justMarked;
   const href = (i: number) => `/study/session/${question.sessionId}?q=${i}`;
 
   // R1.8: the student answers SLOTS. "Show that" and "explain" slots are worked
@@ -443,8 +444,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   ];
   const readExists = reads.length > 0;
   // A marking that did not finish is not the photograph's fault, and says so.
+  // A marking that did not finish is a READ take left unmarked; a page that could not be made out is a read failure.
   const markingFailed =
-    (!!feedback?.working && !feedback.working.marked) || (question.prior?.working ?? []).some((w) => !w.marked);
+    (!!feedback?.working && captureState(takesOf(feedback.working), MAX_TAKES, false) === 'read' && !feedback.working.marked) ||
+    (question.prior?.working ?? []).some((w) => captureState([w], MAX_TAKES, false) === 'read' && !w.marked);
   // THE SLIP COMES FIRST (ROUND_7 Task 1): one sentence naming the line where
   // the working went wrong, before any reason or code.
   const slipFor = (part: string) =>
@@ -514,7 +517,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             </span>
           </b>
           <span className="flex gap-x-3 font-mono text-[10px] uppercase tracking-[0.1em] lg:gap-x-4">
-            <a href="#your-marking" className="underline underline-offset-[3px]">Your marking</a>
+            <a href="#parts" className="underline underline-offset-[3px]">Your marking</a>
             <a href="#question" className="underline underline-offset-[3px]">Question</a>
             <a href="#worked-solution" className="underline underline-offset-[3px]"><span className="lg:hidden">Solution</span><span className="hidden lg:inline">Worked solution</span></a>
           </span>
@@ -523,33 +526,6 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
       {feedback && (
         <>
-          {/* The fraction is the verdict. A cross only at zero: two of three is
-              not "not quite", it is two of three. */}
-          <div
-            id="your-marking"
-            className={`mt-3 flex items-baseline justify-between border-l-3 p-2.5 ${
-              earned === 0
-                ? 'border-red-pen bg-[#FDF1F0]'
-                : earned >= outOf
-                  ? 'border-green-pen bg-[#E8F0E9]'
-                  : 'border-[#D9A62E] bg-[#FDF8EC]'
-            }`}
-          >
-            <b className={`font-mono text-lg ${earned === 0 ? 'text-red-pen' : earned >= outOf ? 'text-green-pen' : 'text-ink'}`}>
-              {earned}/{outOf}
-              {earned === 0 && <span className="ml-1 font-hand">✗</span>}
-            </b>
-            {markingFailed ? (
-              <span className="text-right font-mono text-[10px] text-dim">marking did not finish — try again below</span>
-            ) : (
-              outcome.unassessedMarks > 0 && (
-                <span className="text-right font-mono text-[10px] text-dim">
-                  {outcome.unassessedMarks} mark{outcome.unassessedMarks === 1 ? '' : 's'}{' '}
-                  {readExists ? 'could not be assessed from this photo' : 'not assessed without the working'}
-                </span>
-              )
-            )}
-          </div>
           {/* A marking that did not finish is said first, with the way to run it again; the read is kept. */}
           {markingFailed && (
             <RetryMarkingButton
@@ -690,7 +666,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       })()}
 
       {question.kind === 'structured' && (
-        <div className="order-5 mt-5 space-y-[18px] lg:mt-0 lg:space-y-5">
+        <div id="parts" className="order-5 mt-5 space-y-[18px] lg:mt-0 lg:space-y-5">
           {question.parts.map((p) => {
             return (
               <div key={p.label}>
@@ -888,20 +864,16 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       {error && <p className="order-6 mt-3 text-sm text-red-pen lg:mt-0">{error}</p>}
 
       {reviewing && (
-        <Refusal
-          id="handed-in"
-          className="order-6 mt-4 lg:mt-0"
-          label="This question is handed in"
-          sentence="Answers close once a question is marked, the way a paper does."
-          remains="If a mark looks wrong, ask for a re-mark — a person looks before anything changes."
-          action={{ label: 'Read your marking', small: `${earned} of ${outOf} marks · with the reasons`, href: '#marking' }}
-        />
+        <p className="order-6 mt-4 text-[13px] leading-normal text-dim lg:mt-0">
+          Handed in — answers are closed. If a mark looks wrong, ask for a re-mark.
+        </p>
       )}
 
       {!feedback ? (
         reviewing ? null : (
         <>
         <HandIn
+          next={question.scored === false}
           submitRef={submitRef}
           onClick={submit}
           disabled={pending || reading || !canSubmit}
@@ -1174,6 +1146,7 @@ export function HandIn({
   pageMarks,
   fromPage,
   saveState,
+  next = false,
 }: {
   submitRef?: React.Ref<HTMLButtonElement>;
   onClick?: () => void;
@@ -1186,9 +1159,11 @@ export function HandIn({
   /** Boxes a read filled and the student has left standing. */
   fromPage: number;
   saveState?: 'saved' | 'failed' | null;
+  /** A diagnostic: nothing is scored, so the button only moves on. */
+  next?: boolean;
 }) {
   const asIs = phase === 'ready' && blanks > 0 && kind === 'structured';
-  const label = phase === 'marking' ? 'Marking…' : phase === 'reading' ? 'Reading your page…' : asIs ? 'Hand in as is' : 'Hand in';
+  const label = phase === 'marking' ? 'Marking…' : phase === 'reading' ? 'Reading your page…' : asIs ? 'Hand in as is' : next ? 'Next' : 'Hand in';
   const line =
     kind !== 'structured' || asIs || phase !== 'ready'
       ? null

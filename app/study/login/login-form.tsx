@@ -83,7 +83,7 @@ export default function LoginForm({
       )}
       {limitedNow && (
         <p className="mb-4 border-l-3 border-amber bg-[#FDF8EC] px-3 py-2.5 text-[13px] leading-snug">
-          Too many attempts. You can ask again in {minutes(wait)}.
+          Too many attempts. You can try again in {minutes(wait)}.
         </p>
       )}
 

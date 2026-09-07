@@ -1,7 +1,7 @@
 import LoginForm from './login-form';
 import { Door } from '../../door';
 import { dbConnect } from '@/lib/db';
-import { maskEmail, resolveWelcome } from '@/lib/welcome';
+import { resolveWelcome } from '@/lib/welcome';
 import { SENDER } from '@/lib/email';
 import { RESET_TTL_MS } from '@/lib/auth/token';
 
@@ -33,7 +33,7 @@ export default async function LoginPage({
         <>
           <h1 className={HEADING}>Create your account<span className="text-red-pen">.</span></h1>
           <p className={LEDE}>
-            The access is waiting on <b className="text-ink">{maskEmail(lockedEmail)}</b>. Create the account on that address and it is applied.
+            The access is waiting on this address. Create the account on it and the access is applied.
           </p>
           <LoginForm door="create" lockedEmail={lockedEmail} />
         </>

@@ -5,6 +5,9 @@ import LoginForm, { type Door as FormDoor } from '@/app/study/login/login-form';
 import ResetForm from '@/app/study/reset/reset-form';
 import type { AuthState } from '@/app/study/login/actions';
 import { TOO_MANY } from '@/lib/auth/rate-limit';
+import { HELP_EMAIL } from '@/lib/help-email';
+
+const SENDER = `ExtraLesson <${HELP_EMAIL}>`;
 export { visibleText } from './card-states';
 
 // The states of Auth and Welcome.dc.html §03 with the repo's words: the page's
@@ -29,9 +32,9 @@ export const AUTH: Record<string, () => ReactNode[]> = {
   ],
   error: () => [h1('Sign in'), lede(SIGN_IN_LEDE), form('signin', { initial: { error: 'That email and password do not match.', email: 'kiara@exampl.com' } })],
   'rate-limited': () => [h1('Sign in'), lede(SIGN_IN_LEDE), form('signin', { initial: { error: TOO_MANY, email: 'kiara@example.com' } })],
-  reset: () => [form('reset', { sender: 'ExtraLesson <hello@extralesson.app>', resetMinutes: 30 })],
-  'reset-limited': () => [form('reset', { sender: 'ExtraLesson <hello@extralesson.app>', resetMinutes: 30, initial: { error: TOO_MANY, email: 'kiara@example.com' } })],
-  'reset-sent': () => [form('reset', { sender: 'ExtraLesson <hello@extralesson.app>', resetMinutes: 30, initial: { resetRequested: true, email: 'kiara@example.com' } })],
+  reset: () => [form('reset', { sender: SENDER, resetMinutes: 30 })],
+  'reset-limited': () => [form('reset', { sender: SENDER, resetMinutes: 30, initial: { error: TOO_MANY, email: 'kiara@example.com' } })],
+  'reset-sent': () => [form('reset', { sender: SENDER, resetMinutes: 30, initial: { resetRequested: true, email: 'kiara@example.com' } })],
   'new-password': () => [h1('Set a new password'), createElement(ResetForm, { token: 't' })],
   'new-password-error': () => [h1('Set a new password'), createElement(ResetForm, { token: 't', initial: { error: 'That link has expired. Ask for a new one.' } })],
 };

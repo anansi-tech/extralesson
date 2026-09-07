@@ -14,7 +14,7 @@ describe('honest prefill', () => {
   });
   it('promises no universal prefill on the camera card or the landing', () => {
     expect(at('app', 'study', 'session', '[id]', 'working-photo.tsx')).not.toMatch(/We fill in the boxes/);
-    expect(at('app', 'study', 'session', '[id]', 'working-photo.tsx')).toMatch(/single-answer boxes/);
+    expect(at('app', 'study', 'session', '[id]', 'working-photo.tsx')).toMatch(/fill in what we can/);
     expect(at('app', 'page.tsx')).not.toMatch(/fill(s|ed)? in the boxes/i);
   });
   it('stacks the nav below 400px and wraps admin identifiers', () => {

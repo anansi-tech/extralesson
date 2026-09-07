@@ -60,7 +60,7 @@ describe('the re-mark', () => {
   it('is what the student is offered, and what they are told after asking', () => {
     const marked = visibleText(renderMarked(MARKED.marked));
     expect(marked).toContain('Ask for a re-mark');
-    expect(marked).toContain('If a mark looks wrong, ask for a re-mark — a person looks before anything changes.');
+    expect(marked).toContain('Handed in — answers are closed. If a mark looks wrong, ask for a re-mark.');
     const queried = visibleText(renderMarked(MARKED.queried));
     expect(queried).toContain('1 re-mark requested');
     expect(queried).toContain('Re-mark requested. A person will look before anything changes.');

@@ -21,7 +21,7 @@ describe('the diagnostic', () => {
   });
   it('MCQ card: the bar says diagnostic and not scored, the topic above the stem, no marks, I don’t know at full weight', () => {
     expect(text.mcq).toBe(
-      'Diagnostic · 3 of 8 Not scored Consumer arithmetic A shirt marked $80 is sold at a 15% discount. What is the selling price? A $65.00 B $68.00 C $72.00 D $92.00 I don’t know More useful than a guess Hand in ← previous 3 / 8',
+      'Diagnostic · 3 of 8 Not scored Consumer arithmetic A shirt marked $80 is sold at a 15% discount. What is the selling price? A $65.00 B $68.00 C $72.00 D $92.00 I don’t know More useful than a guess Next ← previous 3 / 8',
     );
     expect(DIAGNOSTIC.mcq()).toMatch(/style="width:37\.5%"/);
     expect(text.mcq).not.toMatch(/Stop here|\[1 mark\]/);

@@ -9,18 +9,21 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} 
 // each width, is held to the same seven rules; a screen that needs an
 // exception is a screen that is wrong.
 
-/** What each refusal refuses: a lead offering it must not stand above the refusal. */
+/**
+ * What each refusal refuses: no enabled action anywhere else on the page —
+ * the lead or a secondary card — may offer it. A refusal of one topic leaves
+ * the picker, which is how another topic is chosen.
+ */
 const REFUSES: Record<string, RegExp> = {
-  paywall: /Start today|Mark one question|Start with a quick diagnostic|Carry on/,
-  'sitting-passed': /Start today|Mark one question|Start with a quick diagnostic|Carry on/,
-  'no-questions': /Start today|Mark one question|Start with a quick diagnostic|Carry on/,
-  'no-questions-topic': /Practise/,
-  'no-topic': /Practise/,
+  paywall: /Start today|Mark one question|diagnostic|Carry on|Practise|Revisit/i,
+  'sitting-passed': /Start today|Mark one question|diagnostic|Carry on|Practise|Revisit/i,
+  'no-questions': /Start today|Mark one question|diagnostic|Carry on|Practise|Revisit/i,
+  'no-questions-topic': /(?!)/,
+  'no-topic': /(?!)/,
   'diagnostic-taken': /diagnostic/i,
   'first-taken': /Mark one question/,
   'nothing-to-revisit': /Revisit/,
   'no-retakes': /Take a photo|Take it again/,
-  'handed-in': /Hand in/,
   'read-failed': /Take a photo/,
   'read-limited': /Take a photo/,
   illegible: /Take a photo/,
@@ -39,7 +42,6 @@ const BLOCKS: Record<string, RegExp> = {
   'first-taken': /^first$/,
   'nothing-to-revisit': /^revisit$/,
   'no-retakes': /./,
-  'handed-in': /./,
   'read-failed': /./,
   'read-limited': /./,
   illegible: /./,
@@ -49,9 +51,11 @@ const BLOCKS: Record<string, RegExp> = {
 
 interface Report {
   width: number;
+  /** A process is running on the page (a progress bar): nothing is primary while it does. */
+  process: boolean;
   primaries: string[];
   labels: string[];
-  refusals: { id: string; above: string[]; mode: string | null }[];
+  refusals: { id: string; offered: string[]; mode: string | null }[];
   text: string;
 }
 
@@ -64,13 +68,15 @@ const inspect = (): Report => {
   };
   const actions = [...document.querySelectorAll('a[href], button')].filter(visible);
   const primaries = actions.filter((el) => /\bbg-red-pen\b/.test(el.className));
+  const enabled = actions.filter((el) => !(el as HTMLButtonElement).disabled);
   return {
     width: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth),
+    process: !!document.querySelector('[role="progressbar"]'),
     primaries: primaries.map(label),
     labels: actions.map(label).filter(Boolean),
     refusals: [...document.querySelectorAll('[data-refusal]')].filter(visible).map((panel) => ({
       id: panel.getAttribute('data-refusal')!,
-      above: primaries.filter((p) => !panel.contains(p) && p.compareDocumentPosition(panel) & Node.DOCUMENT_POSITION_FOLLOWING).map(label),
+      offered: enabled.filter((a) => !panel.contains(a)).map(label),
       mode: panel.querySelector<HTMLInputElement>('input[name="mode"]')?.value ?? null,
     })),
     text: document.body.innerText.replace(/\s+/g, ' '),
@@ -102,12 +108,12 @@ describe.skipIf(!hasChrome)('every screen, every state, one set of rules', () =>
       const name = shotName(shot, width);
       it(name, async () => {
         const r = await report(shot, width);
-        // 1. One primary action.
-        expect(r.primaries, `${name}: primary actions`).toHaveLength(1);
-        // 2. No refusal beneath a lead that offers the refused thing.
+        // 1. One primary action — none while a process runs on the page.
+        expect(r.primaries, `${name}: primary actions`).toHaveLength(r.process ? 0 : 1);
+        // 2. No refusal on a page whose lead or secondary cards offer the refused thing.
         for (const ref of r.refusals) {
           expect(REFUSES[ref.id], `${name}: refusal ${ref.id} is not in the table`).toBeDefined();
-          expect(ref.above.filter((l) => REFUSES[ref.id].test(l)), `${name}: ${ref.id} beneath a lead offering it`).toEqual([]);
+          expect(ref.offered.filter((l) => REFUSES[ref.id].test(l)), `${name}: ${ref.id} on a page offering it`).toEqual([]);
           // 7. The refusal's action leads somewhere the refusal does not block.
           if (ref.mode) expect(ref.mode, `${name}: ${ref.id} offers what it refuses`).not.toMatch(BLOCKS[ref.id]);
         }

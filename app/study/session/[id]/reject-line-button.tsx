@@ -18,7 +18,7 @@ export function RejectLineButton({
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   return (
-    <span className="block">
+    <span className="inline">
       <button
         type="button"
         disabled={pending}
@@ -29,7 +29,7 @@ export function RejectLineButton({
             else onToggled(!rejected);
           })
         }
-        className="inline-flex min-h-11 items-center font-mono text-[11px] uppercase tracking-[0.14em] text-dim underline underline-offset-[3px] disabled:opacity-60"
+        className="-my-1.5 ml-2 inline-block px-1 py-1.5 align-baseline font-mono text-[10px] text-dim underline underline-offset-2 disabled:opacity-60"
       >
         {rejected ? 'Put it back' : 'Not what I wrote'} — line {lineIndex + 1}
       </button>

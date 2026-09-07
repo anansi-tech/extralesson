@@ -31,10 +31,10 @@ describe('the dashboard, four states', () => {
   it('C · returning', () => {
     expect(text.returning).toBe(
       'Start today\u2019s session 15 MINUTES · WEAKEST TOPICS FIRST ' +
-        'Where your marks are Algebraic manipulation +8 marks Consumer arithmetic +6 marks Geometry & trigonometry +5 marks ' +
-        'Marks your estimate could gain from that topic. Module 1 comes first, so later modules wait — you can still practise any topic by name. ' +
-        'Or choose for yourself Revisit mistakes 14 marks lost across 6 objectives Take a diagnostic 12 minutes · re-ranks your topics M1 · Algebraic manipulation Go Practise it ' +
-        'Estimate today Grade III third of the six Paper 3 assumed at neutral carry-over. Moves with every question. Progress Topic by topic ' +
+        'Where your marks are To gain Algebraic manipulation up to +8 marks Consumer arithmetic up to +6 marks Geometry & trigonometry up to +5 marks ' +
+        'Marks your estimate could gain. Module 1 first — you can practise any topic by name. ' +
+        'Or choose for yourself Revisit mistakes 14 marks lost across 6 objectives Take a diagnostic 12 minutes · re-ranks your topics M1 · Algebraic manipulation Practise ' +
+        'Estimate today Grade III third of the six Assumes an average school-based mark. Moves with every question. Progress Topic by topic ' +
         'Since you started 12 sessions 31 questions 248 marks assessed 5 days in a row',
     );
   });
@@ -42,10 +42,10 @@ describe('the dashboard, four states', () => {
   it('D · no estimate yet', () => {
     expect(text['no-estimate']).toBe(
       'Start today\u2019s session 15 MINUTES · 23 MORE MARKS AND MODULE 1 CAN BE ESTIMATED ' +
-        'Or choose for yourself Revisit mistakes Nothing far enough back yet — these are still fresh Take a diagnostic 12 minutes · re-ranks your topics M1 · Algebraic manipulation Go Practise it ' +
+        'Or choose for yourself Revisit mistakes Nothing far enough back yet — these are still fresh Take a diagnostic 12 minutes · re-ranks your topics M1 · Algebraic manipulation Practise ' +
         'Not yet estimated A grade needs enough marks seen in every module it covers. This is how close each one is. ' +
         'Module 1 12 of 35 marks seen Module 2 0 of 35 marks seen Module 3 4 of 35 marks seen ' +
-        'No letter is shown until then. A cold account\u2019s arithmetic reads as a verdict, and it is not one. ' +
+        'No letter is shown until then. ' +
         'Since you started 3 sessions 5 questions 16 marks assessed 2 days in a row',
     );
   });

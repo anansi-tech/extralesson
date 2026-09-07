@@ -54,8 +54,9 @@ describe('(a) a slot with no prompt is named by its part, never counted out', ()
 });
 
 describe('(f) the verdict header is the fraction', () => {
-  it('shows a cross only at zero, and no verdict words', () => {
-    expect(CARD).toMatch(/\{earned\}\/\{outOf\}\s*\{earned === 0 && <span[^>]*>✗<\/span>\}/);
+  it('says the score once, in the outcome line, and no verdict words', () => {
+    expect(CARD).toMatch(/\{earned\} of \{outOf\} marks/);
+    expect(CARD).not.toMatch(/\{earned\}\/\{outOf\}/);
     expect(CARD).not.toMatch(/'Correct ✓'|'Not quite ✗'/);
   });
 });

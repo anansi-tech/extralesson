@@ -1,11 +1,24 @@
 'use client';
 
 import { useActionState } from 'react';
+import Link from 'next/link';
 import { setPassword, type ResetState } from './actions';
 import { PASSWORD_MIN } from '@/lib/auth/password-policy';
 
 export default function ResetForm({ token, initial = {} }: { token: string; initial?: ResetState }) {
   const [state, action, pending] = useActionState<ResetState, FormData>(setPassword, initial);
+
+  // A dead link cannot be saved against: the one action is a new link.
+  if (state.error && /expired|used|invalid/i.test(state.error)) {
+    return (
+      <div className="mt-5">
+        <p className="border-l-3 border-amber bg-[#FDF8EC] px-3 py-2.5 text-[13px] leading-snug">{state.error}</p>
+        <Link href="/study/login?reset=1" className="mt-4 block min-h-11 w-full bg-red-pen p-4 text-[17px] font-black text-white shadow-[var(--shadow-card)] lg:mt-5 lg:w-auto lg:px-8">
+          Ask for a new link
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <form action={action} className="mt-5">

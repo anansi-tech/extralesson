@@ -52,17 +52,20 @@ export function ProgressView({ estimable, modules, weakest }: { estimable: boole
               {m.letter && <span className="ml-1.5 text-red-pen">{m.letter}</span>}
               {m.letter && <span className="ml-1 font-mono text-[10px] font-normal uppercase tracking-[0.1em] text-dim">est.</span>}
             </h2>
-            <span className="font-mono text-xs text-dim">{Math.round(m.strength * 100)}% topic strength</span>
+            <span className="font-mono text-xs text-dim">
+              {m.topics.every((t) => t.band === 'NOT_STARTED') ? 'not yet measured' : `${Math.round(m.strength * 100)}% topic strength`}
+            </span>
           </div>
           <div className="mt-2.5 flex flex-col gap-3">
             {m.topics.map((t) => (
               <div key={t.code}>
                 <div className="flex justify-between gap-3 text-sm">
                   <b>{t.title}</b>
-                  <span className="shrink-0 font-mono text-[10px] text-dim">{sentenceCase(BAND_LABEL[t.band])}</span>
+                  <span className="shrink-0 font-mono text-[10px] text-dim">{t.band === 'NOT_STARTED' ? 'not yet measured' : sentenceCase(BAND_LABEL[t.band])}</span>
                 </div>
+                {/* Unseen is unknown, not weak: an empty track, never a sliver. */}
                 <div className="mt-1 h-2 overflow-hidden rounded border border-ink bg-paper-deep">
-                  <i className={`block h-full ${barColor(t.band)}`} style={{ width: `${Math.max(2, Math.round(t.mastery * 100))}%` }} />
+                  {t.band !== 'NOT_STARTED' && <i className={`block h-full ${barColor(t.band)}`} style={{ width: `${Math.max(2, Math.round(t.mastery * 100))}%` }} />}
                 </div>
               </div>
             ))}

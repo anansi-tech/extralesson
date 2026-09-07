@@ -115,5 +115,7 @@ export function movedLine(deltas: { title: string; from: number; to: number }[])
     .filter((d) => d.diff !== 0)
     .sort((x, y) => Math.abs(y.diff) - Math.abs(x.diff))[0];
   if (!moved) return null;
+  // Unseen is unknown, not 0%: the first measurement has nothing before it.
+  if (moved.from === 0) return `${moved.title}: now ${Math.round(moved.to * 100)}% topic strength.`;
   return `${moved.title}: ${Math.round(moved.from * 100)}% → ${Math.round(moved.to * 100)}% topic strength.`;
 }

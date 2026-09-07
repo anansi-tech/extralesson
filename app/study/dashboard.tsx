@@ -111,22 +111,25 @@ export function DashboardView(p: DashboardProps) {
 
         <Notices {...p} />
 
-        {p.leadWithReachable && (
+        {p.leadWithReachable && !refused && (
           <section className="order-2 mt-[26px] border-t-[1.5px] border-ink pt-3.5 lg:mt-7 lg:pt-4">
-            <Label>Where your marks are</Label>
+            <div className="flex items-baseline justify-between gap-3">
+              <Label>Where your marks are</Label>
+              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-dim">To gain</span>
+            </div>
             <ul className="mt-2.5">
               {p.reachable.map((t) => (
                 <li key={t.code} className="flex items-baseline justify-between gap-3 border-b border-paper-deep py-2.5 last:border-b-0">
                   <span className="text-[15px]">
                     <b>{t.title}</b>
                   </span>
-                  <span className="shrink-0 font-mono text-sm text-green-pen">+{Math.round(t.pointsAvailable)} marks</span>
+                  <span className="shrink-0 font-mono text-sm text-green-pen">up to +{Math.round(t.pointsAvailable)} marks</span>
                 </li>
               ))}
             </ul>
             <p className="mt-0.5 text-xs leading-normal text-dim">
-              Marks your estimate could gain from that topic.
-              {p.gatedCount > 0 && ' Module 1 comes first, so later modules wait — you can still practise any topic by name.'}
+              Marks your estimate could gain.
+              {p.gatedCount > 0 && ' Module 1 first — you can practise any topic by name.'}
             </p>
           </section>
         )}
@@ -249,9 +252,7 @@ function Estimate({ prediction }: { prediction: OverallPrediction }) {
             );
           })}
         </ul>
-        <p className="mt-2.5 text-xs leading-normal text-dim">
-          No letter is shown until then. A cold account&rsquo;s arithmetic reads as a verdict, and it is not one.
-        </p>
+        <p className="mt-2.5 text-xs leading-normal text-dim">No letter is shown until then.</p>
       </section>
     );
   }
@@ -268,7 +269,7 @@ function Estimate({ prediction }: { prediction: OverallPrediction }) {
           )}
         </div>
         <div className="hidden font-mono text-[10px] leading-relaxed text-dim lg:mt-2 lg:block">
-          Paper 3 assumed at neutral carry-over. Moves with every question.
+          Assumes an average school-based mark. Moves with every question.
         </div>
       </div>
       <Link href="/study/progress" className={`${LINK} shrink-0 lg:mt-1`}>
@@ -305,8 +306,9 @@ function Counters({ progress }: { progress: Progress }) {
   );
 }
 
-/** The things a student knows about their own week that the app cannot. */
+/** The things a student knows about their own week that the app cannot. A refused start is not offered again beneath its refusal. */
 function Choose(p: DashboardProps) {
+  const revisitable = p.revisitMarks > 0 && p.error !== 'nothing-to-revisit';
   return (
     <section className="order-4 mt-[22px] border-t border-margin pt-3.5 lg:mt-7 lg:pt-4">
       <Label>Or choose for yourself</Label>
@@ -319,18 +321,18 @@ function Choose(p: DashboardProps) {
       <div className="mt-3 flex flex-col gap-2.5 lg:grid lg:grid-cols-2 lg:gap-3">
         <form action={startSession}>
           <input type="hidden" name="mode" value="revisit" />
-          <button disabled={p.revisitMarks === 0} className={SECONDARY}>
+          <button disabled={!revisitable} className={SECONDARY}>
             Revisit mistakes
             <small className={SECONDARY_SMALL}>
-              {p.revisitMarks > 0
+              {revisitable
                 ? `${p.revisitMarks} mark${p.revisitMarks === 1 ? '' : 's'} lost across ${p.revisitObjectives} objective${p.revisitObjectives === 1 ? '' : 's'}`
-                : p.waiting > 0
+                : p.waiting > 0 || p.error === 'nothing-to-revisit'
                   ? 'Nothing far enough back yet — these are still fresh'
                   : 'Nothing to revisit yet'}
             </small>
           </button>
         </form>
-        {!p.isNewStudent && p.diagnosticOpen && (
+        {!p.isNewStudent && p.diagnosticOpen && p.error !== 'diagnostic-taken' && (
           <form action={startSession}>
             <input type="hidden" name="mode" value="diagnostic" />
             <button className={SECONDARY}>
@@ -357,8 +359,7 @@ function Choose(p: DashboardProps) {
             ))}
           </select>
           <button className="min-h-11 border-[1.5px] border-ink px-3.5 font-mono text-xs uppercase tracking-[0.1em]">
-            <span className="lg:hidden">Go</span>
-            <span className="hidden lg:inline">Practise it</span>
+            Practise
           </button>
         </form>
       </div>
@@ -415,19 +416,15 @@ function RefusedLead({ lead, sitting, nextSitting, email }: DashboardProps) {
     <Refusal
       id="paywall"
       className={cls}
-      label={`That was your ${FREE_SESSIONS} free sessions`}
+      label="Your free sessions are used"
       sentence={<>The free question, the diagnostic and your {FREE_SESSIONS} free sessions are used. Daily sessions, the diagnostic and examiner-style marking need full access.</>}
       remains="Everything you have done stays here — your marks, your topics, and every question you have answered."
-      action={{ label: `Get access — ${LANDING.price}`, small: 'SECURE CHECKOUT · CARD OR APPLE PAY', red: true, href: paymentLink(), newTab: true }}
+      action={{ label: 'Get access', small: 'SECURE CHECKOUT · CARD OR APPLE PAY', red: true, href: paymentLink(), newTab: true }}
       quiet={{ label: 'Read your marked work', href: '/study/history' }}
     >
       <div className="mt-5 flex items-baseline gap-3">
         <div className="text-[40px] font-black leading-none text-red-pen">{LANDING.price}</div>
-        <div className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.12em] text-dim">
-          One payment · no subscription
-          <br />
-          Runs to your sitting
-        </div>
+        <div className="font-mono text-[10px] uppercase leading-relaxed tracking-[0.12em] text-dim">One payment · access through the sitting you choose</div>
       </div>
       <p className="mt-2 text-[11px] leading-snug text-dim">
         Use <span className="font-mono">{email}</span> when you pay, so we can match it to this account.
