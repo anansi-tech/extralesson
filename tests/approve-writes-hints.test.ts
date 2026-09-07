@@ -7,6 +7,9 @@ vi.mock('@/lib/auth/session', () => ({
   requireAdmin: async () => ({ student_id: 'x', email: 'admin@extralesson.invalid', role: 'admin' }),
 }));
 vi.mock('next/cache', () => ({ revalidatePath: () => {} }));
+// The width fixture is a snapshot of the REAL bank: this test's bank must never be written over it.
+const snapshotLongMath = vi.fn(async () => []);
+vi.mock('@/lib/admin/long-math-fixture', () => ({ snapshotLongMath: () => snapshotLongMath() }));
 
 let hintsByCode: Record<string, string> = {};
 vi.mock('ai', () => ({
@@ -59,8 +62,11 @@ describe('approving a question writes its hints', () => {
   it('generates a hint for every method row, checks it, and writes it with the approval', async () => {
     hintsByCode = { AK1: 'Divide both sides of the equation by $3$.', R1: 'State the value you found for $x$.' };
     const id = await draft();
+    snapshotLongMath.mockClear();
     const res = await approveQuestion(id);
     expect(res.ok).toBe(true);
+    // The bank grew: the width fixture is taken again in the same action.
+    expect(snapshotLongMath).toHaveBeenCalledTimes(1);
     const q = await rows(id);
     expect(q.status).toBe('approved');
     expect(q.rubric.map((r) => [r.code, r.hint])).toEqual([

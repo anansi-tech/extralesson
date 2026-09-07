@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { dbConnect, Question } from '@/lib/db';
+import { snapshotLongMath } from '@/lib/admin/long-math-fixture';
 import { requireAdmin } from '@/lib/auth/session';
 import { QuestionDraftZ } from '@/lib/validation/question';
 import { approvalGate } from '@/lib/generation/approve-gate';
@@ -40,6 +41,8 @@ export async function approveQuestion(id: string): Promise<ApproveResult> {
     if (hints[r.code]) set[`rubric.${i}.hint`] = hints[r.code];
   });
   await Question.updateOne({ _id: id, status: 'draft' }, { $set: set });
+  // The bank grew, so the width fixture is taken again; an approval never fails on it.
+  await snapshotLongMath().catch((e) => console.error('[long-math] snapshot failed:', e));
   revalidatePath('/admin/review');
   return { ok: true, hints };
 }
