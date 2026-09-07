@@ -1,4 +1,7 @@
 import { headers } from 'next/headers';
+import { LIMITS, type Limit, type Scope } from './limits';
+
+export { LIMITS, TOO_MANY, windowMinutes, type Limit, type Scope } from './limits';
 
 /**
  * A SMALL IN-PROCESS TOKEN BUCKET (ROUND_6 Task 3): per account and per IP,
@@ -7,22 +10,6 @@ import { headers } from 'next/headers';
  * to keep a ledger. Every scope is keyed by both, and either one refusing
  * refuses the call.
  */
-export interface Limit {
-  /** Calls allowed from a full bucket. */
-  capacity: number;
-  /** Tokens returned per second. */
-  refillPerSecond: number;
-}
-
-export const LIMITS = {
-  login: { capacity: 10, refillPerSecond: 10 / 600 },
-  'reset-request': { capacity: 5, refillPerSecond: 5 / 900 },
-  'reset-confirm': { capacity: 10, refillPerSecond: 10 / 900 },
-  read: { capacity: 30, refillPerSecond: 30 / 600 },
-} as const satisfies Record<string, Limit>;
-
-export type Scope = keyof typeof LIMITS;
-
 const buckets = new Map<string, { tokens: number; at: number }>();
 
 export function take(key: string, limit: Limit, now: number = Date.now()): boolean {
@@ -46,13 +33,6 @@ export async function clientIp(): Promise<string> {
   } catch {
     return 'unknown';
   }
-}
-
-export const TOO_MANY = 'Too many attempts. Wait a minute and try again.';
-
-/** How long until one more call is allowed from an empty bucket, in whole minutes. */
-export function windowMinutes(scope: Scope): number {
-  return Math.ceil(1 / LIMITS[scope].refillPerSecond / 60);
 }
 
 /** True when this call is over the limit for the account or for the IP. */

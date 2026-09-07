@@ -159,7 +159,7 @@ describe('photo first — ROUND_4 Task 1', () => {
     const fb = await submitAnswer({ sessionId, questionIndex: 0, answers: wrongAnswers });
     expect('error' in fb).toBe(false);
     if ('error' in fb) return;
-    expect(fb.working?.method).toEqual([{ code: 'R1', awarded: true, reason: 'divides by 3', mark_value: 1 }]);
+    expect(fb.working?.method).toEqual([{ code: 'R1', awarded: true, reasonHtml: 'divides by 3', mark_value: 1 }]);
     expect(fb.working?.marksAdded).toBe(1);
     expect(fb.rubric_awarded).not.toContain('R1'); // the attempt is untouched: the mark lives on the read
     expect(fb.earnableByMethod).toBe(0); // R1 is now earned, so nothing is left for a second photo to add

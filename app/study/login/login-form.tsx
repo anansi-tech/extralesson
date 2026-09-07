@@ -5,7 +5,7 @@ import { SITTINGS, SITTING_IDS } from '@/lib/sittings';
 import { useActionState, useState } from 'react';
 import { register, requestReset, signIn, type AuthState } from './actions';
 import { PASSWORD_MIN } from '@/lib/auth/password-policy';
-import { LIMITS, TOO_MANY } from '@/lib/auth/rate-limit';
+import { LIMITS, TOO_MANY } from '@/lib/auth/limits';
 
 export type Door = 'signin' | 'create' | 'reset';
 

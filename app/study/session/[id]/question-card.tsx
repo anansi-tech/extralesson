@@ -90,7 +90,7 @@ export interface CardQuestion {
       /** The marker finished on this take; a failed marking decides nothing. */
       marked: boolean;
       notes?: string;
-      method: { code: string; awarded: boolean; reason: string }[];
+      method: { code: string; awarded: boolean; reasonHtml: string }[];
       /** Where the working slipped, per part; the first line under that part. */
       slips?: { part: string; quote: string; sentence: string }[];
     }[];

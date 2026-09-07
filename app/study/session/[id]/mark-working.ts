@@ -1,3 +1,4 @@
+import { renderMathHtml } from '@/lib/katex';
 import { Attempt, CapturedImage, LineRejected, PracticeSession, Question, Transcription } from '@/lib/db';
 import { markableSlots } from '@/lib/grade/mark';
 import { MAX_TAKES, linesForSlot, type TranscriptionResult } from '@/lib/grade/transcribe';
@@ -16,7 +17,7 @@ export interface CaptureResult {
   rejected: number[];
   take: number;
   takesLeft: number;
-  method: { code: string; awarded: boolean; reason: string; mark_value: number }[];
+  method: { code: string; awarded: boolean; reasonHtml: string; mark_value: number }[];
   marksAdded: number;
   /** Where the working slipped, per part, quote-verified; empty when nothing was found. */
   slips: Slip[];
@@ -202,7 +203,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
     rejected,
     take: read.take,
     takesLeft: MAX_TAKES - reads.length,
-    method: methodMarks.map(({ code, awarded, reason, mark_value }) => ({ code, awarded, reason, mark_value })),
+    method: methodMarks.map(({ code, awarded, reason, mark_value }) => ({ code, awarded, reasonHtml: renderMathHtml(reason), mark_value })),
     marksAdded: methodMarks.filter((m) => m.awarded).reduce((n, m) => n + m.mark_value, 0),
     slips,
     marked: true,

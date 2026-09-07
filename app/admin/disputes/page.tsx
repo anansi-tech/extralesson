@@ -91,7 +91,7 @@ export default async function DisputesPage() {
                     className="question-prose mt-1 text-[13px]"
                     dangerouslySetInnerHTML={{ __html: renderMathHtml(askedStemBy.get(String(t.question_id)) ?? '') }}
                   />
-                  <p className="mt-1 text-[13px]">{m.reason}</p>
+                  <p className="mt-1 text-[13px]" dangerouslySetInnerHTML={{ __html: renderMathHtml(m.reason) }} />
                   <ul className="mt-1 border-l-3 border-paper-deep pl-3">
                     {t.lines.map((l, i) => (
                       <li key={i} className="font-mono text-[12px] leading-snug">{l.text}</li>
@@ -163,7 +163,7 @@ export default async function DisputesPage() {
               )}
             </p>
             <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-dim">The reason it was withheld</div>
-            <p className="mt-1 border-l-3 border-red-pen bg-red-tint px-2 py-1 text-[13px]">{row?.reason ?? 'row not on this read'}</p>
+            <p className="mt-1 border-l-3 border-red-pen bg-red-tint px-2 py-1 text-[13px]" dangerouslySetInnerHTML={{ __html: row ? renderMathHtml(row.reason) : 'row not on this read' }} />
 
             <div className="mt-3 font-mono text-[10px] uppercase tracking-widest text-dim">
               The read{read ? ` — take ${read.take}${part ? `, part (${part})` : ''}` : ''}

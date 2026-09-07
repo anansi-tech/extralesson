@@ -406,7 +406,7 @@ export default async function SessionPage({
         method: (t.method_marks ?? []).map((m) => ({
           code: m.code,
           awarded: m.awarded,
-          reason: m.reason,
+          reasonHtml: renderMathHtml(m.reason),
         })),
         slips: t.slips ?? [],
       })),

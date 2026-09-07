@@ -16,10 +16,10 @@ const lines = [
   { text: 'P = 8 + 11.9 + 14.3 = 34.2 < 35', part_label: null, confidence: 0.9 },
 ];
 const method = [
-  { code: 'AK3', awarded: true, reason: 'Correct base and height used' },
-  { code: 'AK4', awarded: false, reason: 'Area correct to 1 d.p. — 95.2 is twice the area' },
-  { code: 'R1', awarded: true, reason: 'Perimeter formed from all three sides' },
-  { code: 'R2', awarded: true, reason: 'Comparison with 35 cm stated' },
+  { code: 'AK3', awarded: true, reasonHtml: 'Correct base and height used' },
+  { code: 'AK4', awarded: false, reasonHtml: 'Area correct to 1 d.p. — 95.2 is twice the area' },
+  { code: 'R1', awarded: true, reasonHtml: 'Perimeter formed from all three sides' },
+  { code: 'R2', awarded: true, reasonHtml: 'Comparison with 35 cm stated' },
 ];
 const take = (over: Partial<Take>): Take => ({
   take: 1,

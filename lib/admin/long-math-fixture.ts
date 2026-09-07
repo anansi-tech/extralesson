@@ -12,12 +12,23 @@ import { Question } from '@/lib/db';
  */
 export const LONG_MATH_FIXTURE = join(process.cwd(), 'tests', 'fixtures', 'long-math.json');
 
-type Row = { _id: unknown; stem: string; stimulus?: string; worked_solution: string; misconceptions: { remediation: string }[] };
-export type LongMathRow = { id: string; why: string; stem: string; stimulus?: string; worked_solution: string; remediations: string[] };
+type Part = { label: string; prompt: string; marks: number; slots?: { label: string; prompt?: string; answer: string }[] };
+type Rubric = { code: string; profile: string; mark_value: number; part_label?: string; slot_ref: string; criterion: string };
+type Row = { _id: unknown; stem: string; stimulus?: string; worked_solution: string; misconceptions: { remediation: string }[]; parts?: Part[]; rubric?: Rubric[] };
+export type LongMathRow = {
+  id: string;
+  why: string;
+  stem: string;
+  stimulus?: string;
+  worked_solution: string;
+  remediations: string[];
+  parts: Part[];
+  rubric: Rubric[];
+};
 
 export async function snapshotLongMath(path = LONG_MATH_FIXTURE): Promise<LongMathRow[] | null> {
   if (!existsSync(dirname(path))) return null;
-  const rows = await Question.find({ status: 'approved' }).select('stem stimulus worked_solution misconceptions').lean<Row[]>();
+  const rows = await Question.find({ status: 'approved' }).select('stem stimulus worked_solution misconceptions parts rubric').lean<Row[]>();
   const text = (q: Row) => `${q.stimulus ?? ''} ${q.stem} ${q.worked_solution}`;
   const longestRun = (q: Row) => Math.max(0, ...[...q.worked_solution.matchAll(/\$([^$]+)\$/g)].map((m) => m[1].length));
   const hasSet = (q: Row) => [...text(q).matchAll(/\$[^$]*\\\{([^$]*)\\\}[^$]*\$/g)].some((m) => (m[1].match(/,/g) ?? []).length >= 2);
@@ -33,6 +44,8 @@ export async function snapshotLongMath(path = LONG_MATH_FIXTURE): Promise<LongMa
     stimulus: q.stimulus,
     worked_solution: q.worked_solution,
     remediations: (q.misconceptions ?? []).map((m) => m.remediation),
+    parts: (q.parts ?? []).map((p) => ({ label: p.label, prompt: p.prompt, marks: p.marks, slots: (p.slots ?? []).map((sl) => ({ label: sl.label, prompt: sl.prompt, answer: sl.answer })) })),
+    rubric: (q.rubric ?? []).map((r) => ({ code: r.code, profile: r.profile, mark_value: r.mark_value, part_label: r.part_label, slot_ref: r.slot_ref, criterion: r.criterion })),
   }));
   writeFileSync(path, JSON.stringify(out, null, 1));
   return out;

@@ -51,10 +51,7 @@ function renderOneAnswer(raw: string): string {
   try {
     // A bare % opens a comment in KaTeX's input syntax and would swallow the
     // rest of the line, so "12.5%" must be escaped before it is parsed.
-    return katex.renderToString(value.replace(/(^|[^\\])%/g, '$1\\%'), {
-      throwOnError: true,
-      macros: { ...KATEX_MACROS },
-    });
+    return renderMath(value.replace(/(^|[^\\])%/g, '$1\\%'), true);
   } catch {
     return escapeHtml(value); // not valid math after all — show it verbatim
   }
@@ -134,8 +131,9 @@ function renderInline(text: string): string {
     .join('');
 }
 
-function typeset(body: string): string {
-  return katex.renderToString(restoreMoneyForMath(body), { throwOnError: false, macros: { ...KATEX_MACROS } });
+/** The ONE call into KaTeX for inline math; every surface's math comes through here. */
+function typeset(body: string, throwOnError = false): string {
+  return katex.renderToString(restoreMoneyForMath(body), { throwOnError, macros: { ...KATEX_MACROS } });
 }
 
 /**
@@ -143,10 +141,10 @@ function typeset(body: string): string {
  * A set or a list of tuples breaks at its commas, each item typeset on its
  * own; anything else long scrolls inside its own box, never the page.
  */
-function renderMath(body: string): string {
-  const items = setItems(body);
+function renderMath(body: string, throwOnError = false): string {
+  const items = setItems(body, throwOnError);
   if (items) return items;
-  const html = typeset(body);
+  const html = typeset(body, throwOnError);
   return glyphs(body) >= LONG_GLYPHS ? `<span class="math-scroll">${html}</span>` : html;
 }
 
@@ -161,7 +159,7 @@ function glyphs(body: string): number {
 }
 
 /** A set with three or more items, split at its top-level commas; null for anything else. */
-function setItems(body: string): string | null {
+function setItems(body: string, throwOnError = false): string | null {
   const open = body.indexOf('\\{');
   const close = body.lastIndexOf('\\}');
   if (open < 0 || close <= open) return null;
@@ -169,8 +167,8 @@ function setItems(body: string): string | null {
   const suffix = body.slice(close + 2).replace(/^\s*\\right/, '');
   const items = splitTopLevel(body.slice(open + 2, close));
   if (items.length < 3) return null;
-  const parts = items.map((it, i) => typeset(it.replace(/^(?:\\[ ,;!]|\s)+/, '')) + (i < items.length - 1 ? ', ' : ''));
-  return `<span class="math-items">${typeset(`${prefix}\\{`)}${parts.join('')}${typeset(`\\}${suffix}`)}</span>`;
+  const parts = items.map((it, i) => typeset(it.replace(/^(?:\\[ ,;!]|\s)+/, ''), throwOnError) + (i < items.length - 1 ? ', ' : ''));
+  return `<span class="math-items">${typeset(`${prefix}\\{`, throwOnError)}${parts.join('')}${typeset(`\\}${suffix}`, throwOnError)}</span>`;
 }
 
 function splitTopLevel(inner: string): string[] {

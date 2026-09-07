@@ -7,7 +7,7 @@ import { WorkingRead } from './working-read';
 import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
 import { LANDING } from '@/lib/landing-content';
 import { Refusal } from '../../../refusal';
-import { TOO_MANY, windowMinutes } from '@/lib/auth/rate-limit';
+import { TOO_MANY, windowMinutes } from '@/lib/auth/limits';
 
 const WORDS = ['no', 'one', 'two', 'three', 'four', 'five'];
 

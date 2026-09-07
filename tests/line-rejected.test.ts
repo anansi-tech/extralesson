@@ -104,7 +104,7 @@ describe('not what I wrote', () => {
     expect(prompts[0]).not.toContain(B1);
     // The line under the rejected one keeps its part, so it still goes.
     expect(prompts[0]).toContain('1056000/1200000');
-    for (const m of fb.working?.method ?? []) expect(m.reason).not.toContain(B1);
+    for (const m of fb.working?.method ?? []) expect(m.reasonHtml).not.toContain(B1);
     expect(fb.working?.rejected).toEqual([1]);
 
     // The read itself is untouched: the record is what was read.

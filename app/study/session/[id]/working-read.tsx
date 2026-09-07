@@ -16,7 +16,8 @@ export interface ReadLine {
 export interface MethodRow {
   code: string;
   awarded: boolean;
-  reason: string;
+  /** The marker's reason, typeset: it quotes the criterion, TeX and all. */
+  reasonHtml: string;
 }
 
 export function WorkingRead({
@@ -160,7 +161,7 @@ export function MethodRows({
             {m.awarded ? '✓' : '–'}
           </span>
           <span className="min-w-0">
-            {m.reason}
+            <span dangerouslySetInnerHTML={{ __html: m.reasonHtml }} />
             {dispute && !m.awarded && (
               <DisputeButton
                 attemptId={dispute.attemptId}

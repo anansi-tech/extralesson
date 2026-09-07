@@ -9,6 +9,154 @@
    "For equal matrices, entries in corresponding positions are equal. Use $x+3=5$ and $2y-1=3$ before solving.",
    "First find $\\overrightarrow{QR}=\\overrightarrow{OR}-\\overrightarrow{OQ}$. In the parallelogram, this is equal to $\\overrightarrow{PS}$, which is then added to $\\overrightarrow{OP}$.",
    "A unit vector is found by dividing by the vector magnitude, not by the sum of its components. Here the magnitude is $\\sqrt{2^2+5^2}=\\sqrt{29}$."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Find the values of $x$ and $y$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "x",
+      "answer": "2"
+     },
+     {
+      "label": "y",
+      "answer": "2"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Determine $\\overrightarrow{OQ}$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}9\\\\2\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Determine $\\overrightarrow{OS}$.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}7\\\\8\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Determine a unit vector in the direction from $P$ to $S$. Give your answer in exact form.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.x",
+    "criterion": "Equates corresponding upper entries and obtains $x=2$"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.y",
+    "criterion": "Solves $2y-1=3$, CAO $y=2$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Forms $\\overrightarrow{OQ}=\\overrightarrow{OP}+\\overrightarrow{PQ}$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Substitutes \"their\" $\\overrightarrow{OP}$ and the given $\\overrightarrow{PQ}$"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Adds corresponding components, CAO $\\begin{pmatrix}9\\\\2\\end{pmatrix}$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Forms $\\overrightarrow{QR}=\\overrightarrow{OR}-\\overrightarrow{OQ}$ using \"their\" $\\overrightarrow{OQ}$"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Determines $\\overrightarrow{QR}=\\begin{pmatrix}2\\\\5\\end{pmatrix}$ from \"their\" vectors"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Uses $\\overrightarrow{PS}=\\overrightarrow{QR}$ for the parallelogram"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Forms $\\overrightarrow{OS}=\\overrightarrow{OP}+\\overrightarrow{PS}$ using \"their\" $\\overrightarrow{PS}$, CAO $\\begin{pmatrix}7\\\\8\\end{pmatrix}$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Recognises that the direction vector must be divided by its magnitude to give a unit vector"
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Uses \"their\" $\\overrightarrow{PS}$ to obtain magnitude $\\sqrt{29}$ and divides both components by it"
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Expresses \"their\" unit vector in exact form"
+   }
   ]
  },
  {
@@ -21,6 +169,158 @@
    "A displacement from $A$ to $B$ is found by subtracting the position vector of the starting point from that of the ending point: $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$.",
    "$\\begin{pmatrix}9\\\\9\\end{pmatrix}$ is $\\overrightarrow{AC}$. Add this displacement to $\\overrightarrow{OA}$ to obtain the position vector $\\overrightarrow{OC}$.",
    "Compare $AD$ with $DC$ in the stated order. Since $\\overrightarrow{DC}$ is twice $\\overrightarrow{AD}$, $AD:DC=1:2$."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Complete the statement below.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}2\\\\-1\\end{pmatrix}"
+     },
+     {
+      "label": "ii",
+      "answer": "\\begin{pmatrix}8\\\\5\\end{pmatrix}"
+     },
+     {
+      "label": "iii",
+      "answer": "\\begin{pmatrix}6\\\\6\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "The displacement from $A$ to $C$ is $1\\dfrac{1}{2}\\overrightarrow{AB}$. Determine $\\overrightarrow{OC}$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}11\\\\8\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "A rest point $D$, where $\\overrightarrow{OD}=\\begin{pmatrix}5\\\\2\\end{pmatrix}$, lies on $AC$. Determine the ratio $AD:DC$.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "1:2"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "The canteen manager says that $D$ is the midpoint of $AC$. Give a reason for your answer.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "No; $AD:DC=1:2$, not $1:1$."
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Writes $\\overrightarrow{OA}$ as the column vector $\\begin{pmatrix}2\\\\-1\\end{pmatrix}$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.ii",
+    "criterion": "Writes $\\overrightarrow{OB}$ as the column vector $\\begin{pmatrix}8\\\\5\\end{pmatrix}$"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.iii",
+    "criterion": "Subtracts position vectors to obtain $\\overrightarrow{AB}=\\begin{pmatrix}8-2\\\\5-(-1)\\end{pmatrix}$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Forms $\\overrightarrow{OC}=\\overrightarrow{OA}+\\dfrac{3}{2}\\overrightarrow{AB}$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Finds $\\dfrac{3}{2}$ of “their” $\\overrightarrow{AB}$"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Adds “their” displacement to $\\overrightarrow{OA}$ to obtain $\\begin{pmatrix}11\\\\8\\end{pmatrix}$ CAO"
+   },
+   {
+    "code": "CK4",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Identifies $\\overrightarrow{AD}=\\overrightarrow{OD}-\\overrightarrow{OA}$ and $\\overrightarrow{DC}=\\overrightarrow{OC}-\\overrightarrow{OD}$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Obtains $\\overrightarrow{AD}=\\begin{pmatrix}3\\\\3\\end{pmatrix}$"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Obtains $\\overrightarrow{DC}=\\begin{pmatrix}6\\\\6\\end{pmatrix}$ using “their” $\\overrightarrow{OC}$"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Compares corresponding components to derive $AD:DC=1:2$"
+   },
+   {
+    "code": "CK5",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "States that a midpoint divides a line segment in the ratio $1:1$"
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Concludes that $D$ is not the midpoint because “their” ratio is not $1:1$"
+   }
   ]
  },
  {
@@ -33,6 +333,154 @@
    "A vector from $A$ to $B$ is found by subtracting the coordinates of $A$ from the coordinates of $B$: terminal point minus initial point.",
    "The components of $\\overrightarrow{AB}$ are $6$ and $4$, so its magnitude is $\\sqrt{6^2+4^2}$, not the square root of $6+4$.",
    "This vector gives the movement from $A$ to the beacon. Add the position vector of $A$, $\\begin{pmatrix}-4\\\\1\\end{pmatrix}$, to obtain the beacon's position vector."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Determine $\\overrightarrow{AB}$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}6\\\\4\\end{pmatrix}$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Calculate the magnitude of $\\overrightarrow{AB}$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$2\\sqrt{13}$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Show that $\\dfrac{1}{\\sqrt{13}}\\begin{pmatrix}3\\\\2\\end{pmatrix}$ is a unit vector in the direction of $\\overrightarrow{AB}$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$1$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Determine whether the warning beacon lies on the ray $AB$. Support your answer by giving its position vector and a reason.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "position",
+      "answer": "$\\begin{pmatrix}-4+\\dfrac{45}{\\sqrt{13}}\\\\1+\\dfrac{30}{\\sqrt{13}}\\end{pmatrix}$"
+     },
+     {
+      "label": "reason",
+      "answer": "Yes; $\\overrightarrow{A\\text{beacon}}=\\dfrac{15}{2\\sqrt{13}}\\overrightarrow{AB}$, which is a positive scalar multiple of $\\overrightarrow{AB}$."
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Recognises that $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Subtracts the coordinates to obtain $\\begin{pmatrix}6\\\\4\\end{pmatrix}$."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Selects $\\sqrt{x^2+y^2}$ for the magnitude of a vector."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Substitutes “their” vector components to obtain $\\sqrt{6^2+4^2}=\\sqrt{52}$."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Simplifies $\\sqrt{52}$ to $2\\sqrt{13}$."
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Uses the criterion that a unit vector has magnitude $1$."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Calculates $\\sqrt{\\left(\\frac{3}{\\sqrt{13}}\\right)^2+\\left(\\frac{2}{\\sqrt{13}}\\right)^2}=1$."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Relates the stated vector to “their” $\\overrightarrow{AB}$ as $\\dfrac{1}{2\\sqrt{13}}\\overrightarrow{AB}$."
+   },
+   {
+    "code": "CK4",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.position",
+    "criterion": "Forms $\\overrightarrow{O\\text{beacon}}=\\overrightarrow{OA}+15\\mathbf{u}$."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.position",
+    "criterion": "Uses “their” unit vector to find the beacon displacement as $\\begin{pmatrix}\\frac{45}{\\sqrt{13}}\\\\\\frac{30}{\\sqrt{13}}\\end{pmatrix}$."
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.position",
+    "criterion": "Adds the displacement to $\\overrightarrow{OA}$ to obtain “their” beacon position vector."
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.reason",
+    "criterion": "Justifies that the beacon lies on ray $AB$ because its displacement from $A$ is a positive scalar multiple of $\\overrightarrow{AB}$."
+   }
   ]
  },
  {
@@ -44,6 +492,166 @@
   "remediations": [
    "The value 12 is the greatest frequency, not a mass estimate. For grouped data, multiply each class midpoint by its frequency and divide the total by 40.",
    "The interquartile range is one number. Subtract the lower quartile from the upper quartile: $57.8-38.6=19.2$ kg."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "State the class width for the interval $40 \\le m < 50$.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$10$ kg"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Estimate the mean mass of a bag of cement.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$47.5$ kg"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Complete the statement below.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$40 \\le m < 50$"
+     },
+     {
+      "label": "ii",
+      "answer": "$47.5$"
+     },
+     {
+      "label": "iii",
+      "answer": "approximately symmetrical"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Complete the statement below. Give numerical estimates correct to 1 decimal place.",
+    "marks": 5,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$19.2$"
+     },
+     {
+      "label": "ii",
+      "answer": "$9.6$"
+     },
+     {
+      "label": "iii",
+      "answer": "not acceptable"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "States class width $50 - 40 = 10$ kg."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Selects appropriate class midpoints."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Obtains weighted total $\\sum fx = 1900$."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Divides by total frequency to obtain $1900 \\div 40 = 47.5$."
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Identifies the 20th value and the median class $40 \\le m < 50$."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.ii",
+    "criterion": "Interpolates to obtain estimated median $40 + \\frac{20-11}{12}\\times10 = 47.5$."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.iii",
+    "criterion": "Compares their estimated mean and median to conclude that the distribution is approximately symmetrical."
+   },
+   {
+    "code": "CK4",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Identifies quartile positions as the 10th and 30th values."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Interpolates to obtain $Q_1 \\approx 38.6$ and $Q_3 \\approx 57.8$."
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Uses their quartiles to calculate interquartile range and semi-interquartile range."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Expresses the estimated semi-interquartile range correct to 1 decimal place."
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.iii",
+    "criterion": "Uses their estimated median plus or minus their semi-interquartile range to decide that $58$ kg is not acceptable."
+   }
   ]
  },
  {
@@ -56,6 +664,168 @@
    "The frequency $12$ shows how often values occur. The modal class is the class interval or intervals with that frequency: $30-39$ and $40-49$.",
    "First find $Q_3-Q_1$ to obtain the interquartile range. Divide this result by $2$ to obtain the semi-interquartile range.",
    "The condition says that the mean must lie within one semi-interquartile range of the midpoint, not that it must equal the midpoint."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "For the class interval $20-29$, determine the lower class boundary and the class midpoint.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "prompt": "Lower class boundary",
+      "answer": "$19.5$"
+     },
+     {
+      "label": "ii",
+      "prompt": "Class midpoint",
+      "answer": "$24.5$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "State the modal class and the median class.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "prompt": "Modal class",
+      "answer": "$30-39$ and $40-49$"
+     },
+     {
+      "label": "ii",
+      "prompt": "Median class",
+      "answer": "$30-39$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Calculate the estimated mean number of coconut rolls sold per day.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$36.25$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Estimate the semi-interquartile range, correct to 2 decimal places. The supervisor will use the estimated mean as a daily target only if it lies within one semi-interquartile range of the midpoint of the median class. Decide, giving a reason, whether the target will be used.",
+    "marks": 5,
+    "slots": [
+     {
+      "label": "i",
+      "prompt": "Semi-interquartile range",
+      "answer": "$8.63$"
+     },
+     {
+      "label": "ii",
+      "prompt": "Decision and reason",
+      "answer": "Yes, because $25.87 < 36.25 < 43.13$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "States the lower class boundary as $19.5$."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.ii",
+    "criterion": "Finds the class midpoint as $24.5$."
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Identifies both classes with greatest frequency as $30-39$ and $40-49$."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.ii",
+    "criterion": "Uses cumulative frequencies to locate the class containing the 20th value, giving $30-39$."
+   },
+   {
+    "code": "CK4",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Uses class midpoints with their corresponding frequencies."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Calculates the sum of frequency-midpoint products as $1450$."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Divides $1450$ by $40$ to obtain $36.25$."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Estimates the lower quartile using the appropriate class, obtaining $28.07$ or equivalent."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Estimates the upper quartile using the appropriate class, obtaining $45.33$ or equivalent."
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Finds their semi-interquartile range from their quartile estimates."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Expresses their semi-interquartile range to 2 decimal places."
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Compares 'their' mean with the midpoint of 'their' median class plus or minus 'their' semi-interquartile range, and gives a valid decision."
+   }
   ]
  },
  {
@@ -68,6 +838,131 @@
    "The movement from $B$ to $C$ is twice the displacement from $A$ to $B$. Calculate $2\\overrightarrow{AB}$ before adding it to $\\overrightarrow{OB}$.",
    "When $B$ is the midpoint of $CD$, the position vectors satisfy $2\\overrightarrow{OB}=\\overrightarrow{OC}+\\overrightarrow{OD}$. Rearrange this to find $\\overrightarrow{OD}$.",
    "Vectors with one equal to a positive scalar multiple of another have the same direction. Here, $\\overrightarrow{DA}=\\overrightarrow{AB}$ and $\\overrightarrow{BC}=2\\overrightarrow{AB}$."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Calculate $\\overrightarrow{AB}$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}4\\\\3\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Determine the position vector $\\overrightarrow{OC}$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}9\\\\11\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "The marker $D$ is placed so that $B$ is the midpoint of $CD$. Complete the statement below.",
+    "marks": 5,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}-7\\\\-1\\end{pmatrix}"
+     },
+     {
+      "label": "ii",
+      "answer": "Yes"
+     },
+     {
+      "label": "iii",
+      "answer": "$\\overrightarrow{DA}=\\begin{pmatrix}4\\\\3\\end{pmatrix}=\\overrightarrow{AB}$ and $\\overrightarrow{BC}=2\\overrightarrow{AB}$, so the vectors are in the same direction."
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "States $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Subtracts the vector components to obtain $\\begin{pmatrix}4\\\\3\\end{pmatrix}$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Interprets the condition as $\\overrightarrow{BC}=2\\overrightarrow{AB}$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Calculates $2\\times$ “their” $\\overrightarrow{AB}$"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Adds “their” $\\overrightarrow{BC}$ to $\\overrightarrow{OB}$ to obtain $\\begin{pmatrix}9\\\\11\\end{pmatrix}$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Uses midpoint relationship $\\overrightarrow{OD}=2\\overrightarrow{OB}-\\overrightarrow{OC}$"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Substitutes $\\overrightarrow{OB}$ and “their” $\\overrightarrow{OC}$ to obtain $\\begin{pmatrix}-7\\\\-1\\end{pmatrix}$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.ii",
+    "criterion": "CAO Yes"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.iii",
+    "criterion": "Finds $\\overrightarrow{DA}$ using “their” $\\overrightarrow{OD}$ and $\\overrightarrow{OA}$"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.iii",
+    "criterion": "Identifies $\\overrightarrow{DA}$, “their” $\\overrightarrow{AB}$ and “their” $\\overrightarrow{BC}$ as scalar multiples in the same direction"
+   }
   ]
  },
  {
@@ -80,6 +975,174 @@
    "Class boundaries remove the gap between adjacent integer classes. The lower boundary of $20-29$ is halfway between $19$ and $20$, so it is $19.5$.",
    "The modal frequency is $20$, but the modal class is the interval containing that frequency: $20-29$.",
    "The interquartile range is one number. Subtract the lower quartile from the upper quartile: $29.5-19.5=10$."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "For the class $20-29$, determine the lower class boundary and the class midpoint.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "lower_class_boundary",
+      "answer": "$19.5$"
+     },
+     {
+      "label": "class_midpoint",
+      "answer": "$24.5$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Determine the value of $x$.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$20$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "State the modal class and the median class.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "modal_class",
+      "answer": "$20-29$"
+     },
+     {
+      "label": "median_class",
+      "answer": "$20-29$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Calculate the estimated lower quartile, upper quartile and interquartile range. A shop supervisor states that the middle half of the daily sales has a spread of less than $10$ exercise books. State whether this statement is supported, giving a reason.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "lower_quartile",
+      "prompt": "the estimated lower quartile",
+      "answer": "$19.5$"
+     },
+     {
+      "label": "upper_quartile",
+      "prompt": "the estimated upper quartile",
+      "answer": "$29.5$"
+     },
+     {
+      "label": "interquartile_range",
+      "prompt": "the estimated interquartile range",
+      "answer": "$10$"
+     },
+     {
+      "label": "decision",
+      "prompt": "whether the supervisor's statement is supported, giving a reason",
+      "answer": "No, because the estimated interquartile range is $10$ exercise books, not less than $10$ exercise books."
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.lower_class_boundary",
+    "criterion": "CAO lower class boundary $19.5$"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.class_midpoint",
+    "criterion": "Finds class midpoint: $(20 + 29) \\div 2 = 24.5$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Forms the equation $\\dfrac{480 + 24.5x}{20 + x} = 24.25$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Rearranges to $480 + 24.5x = 485 + 24.25x$"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Solves the equation to obtain $x = 20$"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Accepts $20$ as a feasible whole-number frequency"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.modal_class",
+    "criterion": "CAO modal class $20-29$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.median_class",
+    "criterion": "CAO median class $20-29$"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.lower_quartile",
+    "criterion": "Uses the lower-quartile position and interpolates to obtain $19.5$"
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.upper_quartile",
+    "criterion": "Uses the upper-quartile position and interpolates to obtain $29.5$"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.interquartile_range",
+    "criterion": "Finds the interquartile range from 'their' quartiles: $29.5 - 19.5 = 10$"
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.decision",
+    "criterion": "States that the claim is not supported because 'their' interquartile range is not less than $10$"
+   }
   ]
  },
  {
@@ -92,6 +1155,134 @@
    "A displacement vector is terminal position vector minus initial position vector. Calculate $\\overrightarrow{OB}-\\overrightarrow{OA}$ for movement from $A$ to $B$.",
    "The trolley's second displacement is twice the first displacement. Double both components of $\\overrightarrow{AB}$ before adding it to $\\overrightarrow{OB}$.",
    "$\\overrightarrow{OC}$ starts at the origin, while $\\overrightarrow{AC}$ starts at $A$. Subtract $\\overrightarrow{OA}$ from $\\overrightarrow{OC}$ to find $\\overrightarrow{AC}$."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Determine $\\overrightarrow{AB}$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}5\\\\2\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Calculate the position vector $\\overrightarrow{OC}$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}11\\\\4\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Calculate $\\overrightarrow{AC}$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}15\\\\6\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "State whether the trolley travelled in a straight line from $A$, through $B$, to $C$. Give a reason for your answer.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "Yes; $\\overrightarrow{AC}=3\\overrightarrow{AB}$, so $A$, $B$ and $C$ are collinear and $C$ lies beyond $B$."
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Uses $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "CAO $\\begin{pmatrix}5\\\\2\\end{pmatrix}$."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Forms $\\overrightarrow{OC}=\\overrightarrow{OB}+2\\overrightarrow{AB}$."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Finds $2\\times$ \"their\" $\\overrightarrow{AB}$."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Adds $\\overrightarrow{OB}$ to obtain $\\begin{pmatrix}11\\\\4\\end{pmatrix}$, following through from \"their\" vector."
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Uses $\\overrightarrow{AC}=\\overrightarrow{OC}-\\overrightarrow{OA}$."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "CAO $\\begin{pmatrix}15\\\\6\\end{pmatrix}$, following through from \"their\" $\\overrightarrow{OC}$."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Establishes that \"their\" $\\overrightarrow{AC}$ is $3\\times$ \"their\" $\\overrightarrow{AB}$."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Concludes that $A$, $B$ and $C$ are collinear."
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "States that the trolley travelled in a straight line, with $C$ beyond $B$."
+   }
   ]
  },
  {
@@ -104,6 +1295,154 @@
    "The curved end is a semicircle, so use one half of $\\pi r^2$. Its area is $\\frac{1}{2}\\pi(30)^2 = 450\\pi\\text{ m}^2$.",
    "A measurement correct to the nearest $0.1$ cm may differ by $0.05$ cm. Calculate areas using both the lower and upper plan dimensions.",
    "The smallest possible area is about $3777\\text{ m}^2$. Since $3760\\text{ m}^2$ is below this value, it is outside the possible range."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "State the actual distance represented by $1$ cm on the plan.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$5\\text{ m}$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Calculate, in exact form, the actual area of the growing bed.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$2400 + 450\\pi\\text{ m}^2$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Determine the minimum possible area, the maximum possible area and the maximum possible error in the area. Give all answers to the nearest square metre.",
+    "marks": 5,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$3777\\text{ m}^2, 3851\\text{ m}^2, 37\\text{ m}^2$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "A report states that the actual area of the growing bed is $3760\\text{ m}^2$. Decide whether this value could be due only to the stated measurement error. Give a reason for your answer.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "No"
+     },
+     {
+      "label": "ii",
+      "answer": "$3760\\text{ m}^2$ is less than the minimum possible area of $3777\\text{ m}^2$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Recognises that a scale of $1:500$ gives $5$ m for $1$ cm"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Recognises the bed as a rectangle and a semicircle"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Calculates the rectangle area as $60 \\times 40 = 2400\\text{ m}^2$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Calculates the semicircle area and combines it with the rectangle area"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Expresses the area exactly as $2400 + 450\\pi\\text{ m}^2$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Uses plan limits of $11.95$ cm to $12.05$ cm and $7.95$ cm to $8.05$ cm"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Calculates the minimum area using the lower limits"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Calculates the maximum area using the upper limits"
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Finds the greatest difference between \"their\" area in part (b) and either limiting area"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Gives all three estimates as whole square metres"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Compares $3760\\text{ m}^2$ with \"their\" minimum possible area"
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Concludes that the reported value cannot be due only to the stated measurement error"
+   }
   ]
  },
  {
@@ -116,6 +1455,138 @@
    "The value $10$ is the length in grid units. Each grid unit is $0.5$ m, so the direct distance is $5$ m.",
    "A unit vector must have magnitude $1$. The vector is also a positive scalar multiple of $\\overrightarrow{AB}$, so it points in the required direction.",
    "The vector $\\begin{pmatrix}\\frac{18}{5}\\\\\\frac{24}{5}\\end{pmatrix}$ describes the movement from $A$. Add the position vector of $A$ to obtain the stand's position vector."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Determine $\\overrightarrow{AB}$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}6\\\\8\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Calculate the magnitude of $\\overrightarrow{AB}$ in grid units.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "10\\text{ grid units}"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Determine whether $\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}$ is a unit vector in the direction from $A$ to $B$. Give a reason for your answer.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "verdict",
+      "answer": "Yes"
+     },
+     {
+      "label": "reason",
+      "answer": "\\left|\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}\\right|=1\\text{ and }\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}=\\frac{1}{10}\\overrightarrow{AB}"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "A promotional stand is to be placed $3$ m from $A$ in the direction from $A$ to $B$. Determine the position vector of the stand in grid units.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}\\frac{23}{5}\\\\\\frac{29}{5}\\end{pmatrix}"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Forms $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Subtracts corresponding components to obtain $\\begin{pmatrix}6\\\\8\\end{pmatrix}$."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Uses $\\left|\\begin{pmatrix}x\\\\y\\end{pmatrix}\\right|=\\sqrt{x^2+y^2}$."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Calculates $\\sqrt{6^2+8^2}=10$."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.verdict",
+    "criterion": "Concludes Yes because $\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}$ is a positive scalar multiple of “their” $\\overrightarrow{AB}$."
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.reason",
+    "criterion": "Recognises that a unit vector has magnitude $1$."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.reason",
+    "criterion": "Shows $\\sqrt{\\left(\\frac{3}{5}\\right)^2+\\left(\\frac{4}{5}\\right)^2}=1$."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Converts $3$ m to $6$ grid units."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Uses “their” unit vector to obtain the displacement $6\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}=\\begin{pmatrix}\\frac{18}{5}\\\\\\frac{24}{5}\\end{pmatrix}$."
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Adds the displacement to $\\overrightarrow{OA}$ to obtain $\\begin{pmatrix}\\frac{23}{5}\\\\\\frac{29}{5}\\end{pmatrix}$."
+   }
   ]
  },
  {
@@ -128,6 +1599,150 @@
    "The inverse transformation must undo both operations. It first reduces each final coordinate by the enlargement factor and then reverses the reflection.",
    "The determinant is $-4$ and the adjugate entries are also negative. Dividing the negative adjugate by the negative determinant gives positive one-half entries.",
    "The final position is given, so the unknown original position must be found using $C^{-1}$, not by applying $C$ again."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "On graph paper, using a scale of 2 cm to represent 1 unit on both axes, draw triangle $PQR$ and its image, $P'Q'R'$, after the two transformations.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$P'(4,2), Q'(2,6), R'(8,4)$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Using the vertices drawn in (a), determine the matrix $C$ which represents the combined transformation.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}0&2\\\\2&0\\end{pmatrix}$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Find $C^{-1}$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}0&\\frac{1}{2}\\\\\\frac{1}{2}&0\\end{pmatrix}$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "A replacement corner of the marking has final position vector $\\begin{pmatrix}10\\\\6\\end{pmatrix}$. Determine its position vector before the two transformations.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}3\\\\5\\end{pmatrix}$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Uses the stated scale correctly on both axes."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Interchanges the coordinates for reflection in $y=x$ and doubles the reflected coordinates."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Plots $P'(4,2)$, $Q'(2,6)$ and $R'(8,4)$ and joins the vertices correctly."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Identifies the matrix for reflection in $y=x$ as $\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Forms the product $\\begin{pmatrix}2&0\\\\0&2\\end{pmatrix}\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Uses the transformations in the correct order to obtain $C=\\begin{pmatrix}0&2\\\\2&0\\end{pmatrix}$."
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Finds the determinant of 'their' matrix $C$."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Forms the adjugate of 'their' matrix $C$."
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Divides the adjugate by 'their' determinant to obtain $C^{-1}$."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Selects 'their' inverse matrix to reverse the combined transformation."
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Multiplies 'their' inverse matrix by $\\begin{pmatrix}10\\\\6\\end{pmatrix}$."
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Concludes that the original position vector is $\\begin{pmatrix}3\\\\5\\end{pmatrix}$."
+   }
   ]
  },
  {
@@ -140,6 +1755,156 @@
    "A vector mapping $A$ onto $A'$ is calculated as $A'-A$. Subtract each coordinate of the starting point from the corresponding coordinate of the image point.",
    "To find an object from its image, reverse the translation. Subtract $\\binom{4}{-2}$ from $P'$ rather than adding it.",
    "After finding $P$, test whether $A$, $P$ and $C$ are collinear. Vectors along the same line must be scalar multiples of each other."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Calculate the translation vector which maps $A$ onto $A'$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\binom{4}{-2}$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Determine the coordinates of the images of $B$ and $C$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "prompt": "$B'$",
+      "answer": "$(3,3)$"
+     },
+     {
+      "label": "ii",
+      "prompt": "$C'$",
+      "answer": "$(6,2)$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "The organiser says that triangle $A'B'C'$ is congruent to triangle $ABC$ and has the same orientation. Explain, using the coordinates found in (b), why the organiser is correct.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "A translation preserves lengths and orientation. $\\overrightarrow{A'B'}=\\overrightarrow{AB}$ and $\\overrightarrow{A'C'}=\\overrightarrow{AC}$, so corresponding sides are equal and parallel in the same direction."
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "A point $P'$ has coordinates $(8,3)$ after the same movement. Decide, with a reason, whether its original point $P$ could have been on $AC$.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "No. $P=(4,5)$, and $\\overrightarrow{AP}=\\binom{7}{3}$ is not a scalar multiple of $\\overrightarrow{AC}=\\binom{5}{2}$."
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Forms the displacement as position of $A'$ minus position of $A$"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Calculates $\\binom{1-(-3)}{0-2}=\\binom{4}{-2}$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Uses the same translation vector for the image of $B$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Adds \"their\" translation vector to $B$ to obtain $B'(3,3)$"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.ii",
+    "criterion": "Adds \"their\" translation vector to $C$ to obtain $C'(6,2)$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "States that a translation preserves length and orientation"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Uses \"their\" image coordinates to show $\\overrightarrow{A'B'}=\\overrightarrow{AB}$"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Uses equal corresponding side vectors to justify congruency and unchanged orientation"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Subtracts the horizontal component of \"their\" translation vector from the x-coordinate of $P'$"
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Subtracts the vertical component of \"their\" translation vector from the y-coordinate of $P'$ to obtain $P=(4,5)$"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Shows that $\\overrightarrow{AP}=\\binom{7}{3}$ is not a scalar multiple of $\\overrightarrow{AC}=\\binom{5}{2}$"
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Concludes that $P$ cannot lie on $AC$"
+   }
   ]
  },
  {
@@ -152,6 +1917,162 @@
    "Check where both line equations give the same value of $y$. At $x=-1$, both give $y=-1$.",
    "The midpoint is a coordinate pair. For the length, use the horizontal and vertical changes between the two points.",
    "A line perpendicular to one with gradient $2$ has gradient $-\\frac{1}{2}$, the negative reciprocal of $2$."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Using a scale of 2 cm to represent 1 unit on both axes, draw the graphs of $y=2x+1$ and $y=f^{-1}(x)$ for $-4 \\le x \\le 4$.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "Lines $y=2x+1$ and $y=\\frac{x-1}{2}$ drawn for $-4\\le x\\le4$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Use your graph to solve the pair of equations $y=2x+1$ and $y=\\frac{x-1}{2}$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$(-1,-1)$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Calculate the following for the line segment joining the reference test point and the point found in (b).",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "prompt": "the length of the line segment",
+      "answer": "$2\\sqrt{5}$"
+     },
+     {
+      "label": "ii",
+      "prompt": "the coordinates of the midpoint of the line segment",
+      "answer": "$(-2,-3)$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "A second check line passes through the midpoint found in (c) and is perpendicular to the line segment in (c). Its length is equal to the length found in (c), and its endpoints are grid points. Determine the following.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "prompt": "the equation of the second check line",
+      "answer": "$y=-\\frac{1}{2}x-4$"
+     },
+     {
+      "label": "ii",
+      "prompt": "the coordinates of the endpoints of the second check line",
+      "answer": "$(-4,-2)$ and $(0,-4)$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Selects suitable input values within the stated domain"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Uses the stated scale correctly on both axes"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Plots points for $y=2x+1$ accurately"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Plots points for $y=\\frac{x-1}{2}$ accurately and draws both straight lines"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Reads the intersection of the two graphs as $(-1,-1)$"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "States the graphical solution as an ordered pair, CAO $(-1,-1)$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Identifies the reference test point as $(-3,-5)$ and uses \"their\" intersection point"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Calculates the length using coordinate differences, CAO $2\\sqrt{5}$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.ii",
+    "criterion": "Uses the averages of the two $x$-coordinates and the two $y$-coordinates, CAO $(-2,-3)$"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Determines the perpendicular gradient as the negative reciprocal of the gradient of the original segment"
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Forms an equation through \"their\" midpoint with perpendicular gradient, CAO $y=-\\frac{1}{2}x-4$"
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Uses \"their\" midpoint and \"their\" length on the perpendicular line to obtain the two grid-point endpoints"
+   }
   ]
  },
  {
@@ -164,6 +2085,154 @@
    "A $90°$ anticlockwise rotation maps $(x,y)$ to $(-y,x)$. The matrix shown maps $(x,y)$ to $(y,-x)$, which is a clockwise rotation.",
    "The rotation occurs first, so its matrix must be on the right. The composite matrix is the reflection matrix multiplied by the rotation matrix.",
    "The given vector is the displayed image. Apply $T^{-1}$ to it to recover the position before the transformations."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Determine the matrix $R$ associated with the rotation.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Show that the combined transformation is equivalent to a reflection in the line $y=x$. Denote its matrix by $T$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}=\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$, so $\\begin{pmatrix}x\\\\y\\end{pmatrix}\\mapsto\\begin{pmatrix}y\\\\x\\end{pmatrix}$, which is reflection in $y=x$."
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Complete the statement below.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$AB=BA=I$"
+     },
+     {
+      "label": "ii",
+      "answer": "$\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "After the display has completed both transformations, a bus marker has position vector $\\begin{pmatrix}6\\\\-2\\end{pmatrix}$. Determine the position vector of the marker before the display transformation.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}-2\\\\6\\end{pmatrix}$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Recognises the standard matrix for a $90°$ anticlockwise rotation about the origin."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Writes $R=\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Forms the composite matrix in the correct order, $T=\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}R$."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Multiplies the matrices to obtain $\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Relates $(x,y)$ mapping to $(y,x)$ and concludes that the transformation is reflection in $y=x$."
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "States that a multiplicative inverse satisfies $AB=BA=I$."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.ii",
+    "criterion": "Gives $T^{-1}=\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.ii",
+    "criterion": "Establishes that $T^2=I$, using their matrix $T$."
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Uses the inverse transformation to reverse the display, $\\mathbf{p}=T^{-1}\\mathbf{p'}$."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Substitutes their inverse matrix and the displayed position vector correctly."
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Multiplies to obtain $\\begin{pmatrix}-2\\\\6\\end{pmatrix}$ from their values."
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "States $\\begin{pmatrix}-2\\\\6\\end{pmatrix}$ as the position before the display transformation."
+   }
   ]
  },
  {
@@ -176,6 +2245,166 @@
    "The interquartile range is one number, found by subtracting the lower quartile from the upper quartile. It is not the pair of quartile values or a class interval.",
    "The frequency 28 identifies the most common class. The modal class is the waiting-time interval 20-29 min.",
    "For grouped-data interpolation, use class boundaries. The relevant lower boundaries are 9.5 and 19.5, not 10 and 20."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Determine the class midpoint for the waiting-time class 20-29 minutes.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "24.5"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Determine the value of $x$.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "28"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "State the modal class and the median class.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "modal_class",
+      "answer": "20-29 min"
+     },
+     {
+      "label": "median_class",
+      "answer": "20-29 min"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Complete the statement below. Give the estimates correct to 1 decimal place.",
+    "marks": 5,
+    "slots": [
+     {
+      "label": "lower_quartile",
+      "answer": "18.9"
+     },
+     {
+      "label": "upper_quartile",
+      "answer": "28.3"
+     },
+     {
+      "label": "interquartile_range",
+      "answer": "9.3"
+     },
+     {
+      "label": "claim",
+      "answer": "false"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "CAO $24.5$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Uses the grouped-data mean with the class midpoints"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Forms $\\frac{489 + 24.5x}{22 + x} = 23.5$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Solves the equation to obtain $x = 28$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Interprets the solution as a valid whole-number frequency"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.modal_class",
+    "criterion": "CAO modal class $20-29$ min"
+   },
+   {
+    "code": "CK4",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.median_class",
+    "criterion": "CAO median class $20-29$ min"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.lower_quartile",
+    "criterion": "Calculates lower quartile as $9.5 + \\frac{12.5-4}{9}\\times10 = 18.9$ to 1 d.p., using \"their\" frequency"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.upper_quartile",
+    "criterion": "Calculates upper quartile as $19.5 + \\frac{37.5-13}{28}\\times10 = 28.3$ to 1 d.p., using \"their\" frequency"
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.interquartile_range",
+    "criterion": "Finds $28.25 - 18.94\\ldots = 9.3$ to 1 d.p."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.claim",
+    "criterion": "Concludes that the claim is false since \"their\" lower quartile is below the lower boundary $19.5$ of the modal class"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.interquartile_range",
+    "criterion": "Expresses the quartile estimates and interquartile range to 1 decimal place"
+   }
   ]
  },
  {
@@ -188,6 +2417,174 @@
    "For travel from $A$ to $B$, subtract the position vector of $A$ from that of $B$: $\\vec{AB}=\\vec{OB}-\\vec{OA}$.",
    "A unit vector has magnitude 1. Divide $\\vec{AB}$ by its magnitude, 10, before multiplying by the 15 km distance.",
    "The direct return distance is the magnitude of $\\vec{OC}$, not the sum of its components. Here, $\\sqrt{890}\\approx29.8$ km, which is less than 30 km."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Determine the values of $x$ and $y$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "x",
+      "answer": "4"
+     },
+     {
+      "label": "y",
+      "answer": "3"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Calculate EACH of the following.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "prompt": "$\\vec{AB}$",
+      "answer": "\\begin{pmatrix}6\\\\8\\end{pmatrix}"
+     },
+     {
+      "label": "ii",
+      "prompt": "The magnitude of $\\vec{AB}$",
+      "answer": "10"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Calculate EACH of the following.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "prompt": "A unit vector in the direction of $\\vec{AB}$",
+      "answer": "\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}"
+     },
+     {
+      "label": "ii",
+      "prompt": "$\\vec{BC}$",
+      "answer": "\\begin{pmatrix}9\\\\12\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Complete the statement below. Give the distance correct to 3 significant figures. Your final decision must be justified by the distance shown.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}19\\\\23\\end{pmatrix}"
+     },
+     {
+      "label": "ii",
+      "answer": "29.8"
+     },
+     {
+      "label": "iii",
+      "answer": "can"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.x",
+    "criterion": "Equates corresponding entries to obtain $x=4$"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.y",
+    "criterion": "Obtains $y=3$ from corresponding entries"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Forms $\\vec{AB}=\\vec{OB}-\\vec{OA}$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Subtracts position vectors, CAO $\\begin{pmatrix}6\\\\8\\end{pmatrix}$"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.ii",
+    "criterion": "Calculates $|\\vec{AB}|=10$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Divides $\\vec{AB}$ by its magnitude to form a unit vector"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Obtains $\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}$"
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.ii",
+    "criterion": "Multiplies the unit vector by 15, CAO $\\begin{pmatrix}9\\\\12\\end{pmatrix}$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Adds $\\vec{OB}$ to \"their\" $\\vec{BC}$, CAO $\\begin{pmatrix}19\\\\23\\end{pmatrix}$"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Uses the magnitude of \"their\" $\\vec{OC}$ to obtain $\\sqrt{890}$"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Expresses \"their\" distance correct to 3 significant figures"
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.iii",
+    "criterion": "Compares \"their\" direct distance with 30 km and concludes that the worker can return"
+   }
   ]
  },
  {
@@ -200,6 +2597,115 @@
    "For $\\overrightarrow{AB}$, subtract the coordinates of $A$ from those of $B$. The direction is from $A$ to $B$, not from $B$ to $A$.",
    "$\\overrightarrow{AB}$ describes a movement. To find $\\overrightarrow{OC}$, add this movement to the position vector $\\overrightarrow{OB}$.",
    "Compare $\\overrightarrow{AC}$ with $\\overrightarrow{AB}$. Since $\\overrightarrow{AC}=2\\overrightarrow{AB}$, both vectors have the same direction, so the three points lie on one straight line."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Determine $\\overrightarrow{AB}$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}4\\\\3\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Determine the position vector $\\overrightarrow{OC}$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}5\\\\8\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Show that $A$, $B$ and $C$ lie on a straight line.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "collinear"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Uses $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Subtracts the coordinates to obtain $\\begin{pmatrix}4\\\\3\\end{pmatrix}$ CAO."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Forms $\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{BC}$."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Substitutes $\\overrightarrow{BC}$ as \"their\" $\\overrightarrow{AB}$."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Adds $\\overrightarrow{OB}$ to \"their\" vector to obtain $\\begin{pmatrix}5\\\\8\\end{pmatrix}$ CAO."
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Uses $\\overrightarrow{AC}=\\overrightarrow{OC}-\\overrightarrow{OA}$."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Finds $\\overrightarrow{AC}=\\begin{pmatrix}8\\\\6\\end{pmatrix}$ using \"their\" $\\overrightarrow{OC}$."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Shows that $\\overrightarrow{AC}=2\\overrightarrow{AB}$ using \"their\" $\\overrightarrow{AB}$."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Concludes that $A$, $B$ and $C$ are collinear because $\\overrightarrow{AC}$ is a scalar multiple of $\\overrightarrow{AB}$."
+   }
   ]
  },
  {
@@ -212,6 +2718,150 @@
    "For $\\overrightarrow{AB}$, subtract the coordinates of $A$ from the coordinates of $B$. The direction is from $A$ to $B$.",
    "The condition states $\\overrightarrow{BC}=2\\overrightarrow{AB}$, so both components of $\\overrightarrow{AB}$ must be doubled.",
    "A point in the storage area must satisfy every stated inequality. Compare both coordinates with the upper as well as the lower limits."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Calculate $\\overrightarrow{AB}$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}3\\\\2\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Calculate $\\overrightarrow{AC}$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}9\\\\6\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Determine the position vector $\\overrightarrow{OC}$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}5\\\\3\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Determine whether $C$ is in the storage area. Give a reason for your answer.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "No; $(5,3)$ does not satisfy $x\\leq4$ or $y\\leq2$."
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Recognises $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Subtracts coordinates to obtain $\\begin{pmatrix}3\\\\2\\end{pmatrix}$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Recognises $\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{BC}$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Finds $\\overrightarrow{BC}=2\\begin{pmatrix}3\\\\2\\end{pmatrix}=\\begin{pmatrix}6\\\\4\\end{pmatrix}$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Adds $\\overrightarrow{AB}$ to $2\\overrightarrow{AB}$ to obtain $\\begin{pmatrix}9\\\\6\\end{pmatrix}$; follow-through using \"their\" $\\overrightarrow{AB}$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Recognises $\\overrightarrow{OC}=\\overrightarrow{OA}+\\overrightarrow{AC}$"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Adds $\\begin{pmatrix}-4\\\\-3\\end{pmatrix}$ to \"their\" $\\overrightarrow{AC}$"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "States the resulting position vector $\\begin{pmatrix}5\\\\3\\end{pmatrix}$; follow-through from \"their\" $\\overrightarrow{AC}$"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Compares $x=5$ with the upper boundary $x=4$"
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Compares $y=3$ with the upper boundary $y=2$"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Uses \"their\" coordinates of $C$ to test the storage-area conditions"
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Concludes that $C$ is not in the storage area, with a valid reason"
+   }
   ]
  },
  {
@@ -223,6 +2873,158 @@
   "remediations": [
    "The interquartile range is found from $Q_3-Q_1$, not from the highest and lowest class boundaries. The semi-interquartile range is half of the interquartile range.",
    "Both conditions must be checked. The estimated mean is at least $34$ kg and the semi-interquartile range is less than $9$ kg."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "State the class width and the class midpoint for the class $30–39$ kg.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "width",
+      "answer": "$10$ kg"
+     },
+     {
+      "label": "midpoint",
+      "answer": "$34.5$ kg"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Calculate the estimated mean mass of a crate.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$34.5$ kg"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Determine, in this order, the estimated interquartile range and the semi-interquartile range, correct to 1 decimal place.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$16.8$ kg, $8.4$ kg"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "A buyer accepts a shipment only when its estimated mean mass is at least $34$ kg and its semi-interquartile range is less than $9$ kg. Decide whether this shipment is accepted. Give a reason for your answer.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "decision",
+      "answer": "Yes"
+     },
+     {
+      "label": "reason",
+      "answer": "$34.5 \\geq 34$ and $8.4 < 9$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.width",
+    "criterion": "States class width $10$ kg."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.midpoint",
+    "criterion": "Identifies the midpoint of the class as $34.5$ kg."
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Uses class midpoints and frequencies, including “their” midpoint for the class $30–39$."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Calculates $\\sum fx = 1207.5$."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Divides $1207.5$ by $35$ to obtain $34.5$ kg."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Calculates the lower quartile as approximately $26.3$ kg using the grouped data."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Calculates the upper quartile as approximately $43.1$ kg using the grouped data."
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Finds the interquartile range and halves “their” interquartile range."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Expresses both estimates correct to 1 decimal place."
+   },
+   {
+    "code": "CK4",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.reason",
+    "criterion": "Uses both stated acceptance conditions."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.reason",
+    "criterion": "Compares “their” estimated mean and semi-interquartile range with the required limits."
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.decision",
+    "criterion": "Concludes that the shipment is accepted, based on both conditions."
+   }
   ]
  },
  {
@@ -235,6 +3037,183 @@
    "A vector mapping $A$ onto $A'$ is found by calculating image minus object. Move 5 units right and 2 units down from $A$ to reach $A'$.",
    "After finding $B'$, measure its displacement from the centre $A'$, double that displacement, then add it to $A'$.",
    "The scale factor is 2, so all corresponding lengths are doubled. The triangles have the same shape but not the same size, so they are similar rather than congruent."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Write, in column matrix form, the vector which maps $A$ onto $A'$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}5\\\\-2\\end{pmatrix}$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Determine the coordinates of the other two vertices of the moved pennant.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "prompt": "$B'$",
+      "answer": "$(4,3)$"
+     },
+     {
+      "label": "ii",
+      "prompt": "$C'$",
+      "answer": "$(6,0)$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "The moved pennant is enlarged about $A'$ with scale factor $2$. Determine the coordinates of the vertices of the enlarged pennant.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "prompt": "$A''$",
+      "answer": "$(2,0)$"
+     },
+     {
+      "label": "ii",
+      "prompt": "$B''$",
+      "answer": "$(6,6)$"
+     },
+     {
+      "label": "iii",
+      "prompt": "$C''$",
+      "answer": "$(10,0)$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Complete the statement below. Give reasons for the first two conclusions.",
+    "marks": 5,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "similar"
+     },
+     {
+      "label": "ii",
+      "answer": "corresponding angles are equal and corresponding sides are in the ratio $2:1$"
+     },
+     {
+      "label": "iii",
+      "answer": "congruent"
+     },
+     {
+      "label": "iv",
+      "answer": "corresponding sides are not equal in length"
+     },
+     {
+      "label": "v",
+      "answer": "the same"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Identifies the displacement as 5 units right and 2 units down."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Writes $\\begin{pmatrix}5\\\\-2\\end{pmatrix}$ CAO."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Adds the translation vector to $B$ to obtain $(4,3)$, or follows through using \"their\" vector."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.ii",
+    "criterion": "Adds the translation vector to $C$ to obtain $(6,0)$, or follows through using \"their\" vector."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Recognises that the centre of enlargement is unchanged, giving $A''=(2,0)$."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.ii",
+    "criterion": "Doubles the displacement from $A'$ to \"their\" $B'$ to obtain $(6,6)$."
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.iii",
+    "criterion": "Doubles the displacement from $A'$ to \"their\" $C'$ to obtain $(10,0)$."
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "States similar."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Justifies similarity using equal corresponding angles and corresponding side lengths in ratio $2:1$, following through from \"their\" image coordinates."
+   },
+   {
+    "code": "CK4",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.iii",
+    "criterion": "States congruent in the completion \"not congruent\"."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.iv",
+    "criterion": "Justifies non-congruency because corresponding side lengths are not equal, following through from \"their\" enlargement."
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.v",
+    "criterion": "Concludes that orientation is unchanged under the translation followed by the positive enlargement."
+   }
   ]
  },
  {
@@ -246,7 +3225,21 @@
    "This is $AB$, not $BA$. Matrix multiplication is generally non-commutative, so the stated order must be followed.",
    "Matrix multiplication uses row-by-column products and then adds those products; corresponding entries are not simply multiplied.",
    "For the top-left entry, $2(1)+(-1)(3)=2-3=-1$, not $2+3=5$."
-  ]
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Select the matrix $BA$.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}-1 & 4\\\\13 & 2\\end{pmatrix}$"
+     }
+    ]
+   }
+  ],
+  "rubric": []
  },
  {
   "id": "6a83e0f5f8a49010ad804a7c",
@@ -258,6 +3251,127 @@
    "Part (a) requires matrix addition, so add each pair of corresponding entries, for example $12+8=20$.",
    "Each row gives numbers of boxes. Multiply each quantity by its matching price, then add the two products for each shop.",
    "The budget covers both shops. Add both charges before subtracting from \\$550."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Calculate $A+B$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}20&20\\\\16&30\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Calculate the total charge, in dollars, for each shop.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\begin{pmatrix}260\\\\278\\end{pmatrix}"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Complete the statement below.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "sufficient"
+     },
+     {
+      "label": "ii",
+      "answer": "12"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Recognises that corresponding entries of matrices of the same order are added"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Adds the entries in the first row correctly"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Adds the entries in the second row correctly, CAO $\\begin{pmatrix}20&20\\\\16&30\\end{pmatrix}$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Recognises that \"their\" order matrix can be multiplied by the price column vector"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Uses the price vector on the right of \"their\" order matrix"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Calculates the first component using \"their\" first row"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Calculates the second component using \"their\" second row, CAO $\\begin{pmatrix}260\\\\278\\end{pmatrix}$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Identifies that both shop charges must be included in the budget comparison"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.ii",
+    "criterion": "Finds the amount remaining by subtracting the sum of \"their\" charges from \\$550"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Compares \"their\" total charge with \\$550 and states that the budget is sufficient"
+   }
   ]
  },
  {
@@ -270,6 +3384,123 @@
    "A displacement from $A$ to $B$ is found by subtracting the position vector of $A$ from that of $B$: $\\overrightarrow{OB}-\\overrightarrow{OA}$.",
    "The condition is $\\overrightarrow{BC}=2\\overrightarrow{AB}$. Double both components of $\\overrightarrow{AB}$ before adding the result to $\\overrightarrow{OB}$.",
    "The vector must move $C$ from $(12,11)$ to $(10,11)$, so the horizontal component is $10-12=-2$."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Determine $\\overrightarrow{AB}$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}5\\\\3\\end{pmatrix}$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Point $C$ is on the line through $A$ and $B$, beyond $B$, such that $\\overrightarrow{BC}=2\\overrightarrow{AB}$. Determine $\\overrightarrow{OC}$.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}12\\\\11\\end{pmatrix}$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "The permitted training area is given by $0\\leq x\\leq10$ and $0\\leq y\\leq12$. Determine the displacement vector required to move $C$ to the nearest point in the permitted area.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}-2\\\\0\\end{pmatrix}$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Uses $\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Subtracts components to obtain $\\begin{pmatrix}5\\\\3\\end{pmatrix}$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Uses $\\overrightarrow{BC}=2\\times$ \"their\" $\\overrightarrow{AB}$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Calculates $\\overrightarrow{BC}=\\begin{pmatrix}10\\\\6\\end{pmatrix}$, or equivalent follow-through value"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Uses $\\overrightarrow{OC}=\\overrightarrow{OB}+\\overrightarrow{BC}$"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Adds vectors to obtain $\\begin{pmatrix}12\\\\11\\end{pmatrix}$, or correct follow-through from \"their\" $\\overrightarrow{BC}$"
+   },
+   {
+    "code": "CK4",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Recognises that the boundary point with ordinate $11$ has abscissa $10$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Identifies that \"their\" point $C$ is outside the permitted area because its abscissa exceeds $10$"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Selects $(10,11)$, or the corresponding nearest point from \"their\" position vector, as the target point"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Finds target position minus \"their\" $\\overrightarrow{OC}$ to obtain $\\begin{pmatrix}-2\\\\0\\end{pmatrix}$"
+   }
   ]
  },
  {
@@ -281,7 +3512,21 @@
    "The condition $AP=2PB$ means that $AP$ is two of the three equal parts of $AB$, not one of the three parts.",
    "A midpoint is used only when the two segments are equal. Here, $AP:PB=2:1$, so $P$ is closer to $B$ than to $A$.",
    "First find the displacement $\\overrightarrow{AB}$ by subtracting $\\overrightarrow{OA}$ from $\\overrightarrow{OB}$. Then use the ratio to locate $P$."
-  ]
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Select the position vector $\\overrightarrow{OP}$.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\begin{pmatrix}8\\\\2\\end{pmatrix}$"
+     }
+    ]
+   }
+  ],
+  "rubric": []
  },
  {
   "id": "6a8269eedbbb9b8df926b3d8",
@@ -292,7 +3537,21 @@
    "The set $A$ has 3 elements, but $A'$ contains the elements of $U$ which are not in $A$.",
    "The value $7$ is $n(U)$. Remove the 3 elements in $A$ from $U$ before counting the complement.",
    "A complement is found by excluding elements of $A$ from $U$, so subtract $n(A)$ from $n(U)$ rather than adding."
-  ]
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Select the value of $n(A')$.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$4$"
+     }
+    ]
+   }
+  ],
+  "rubric": []
  },
  {
   "id": "6a826a32dbbb9b8df926b3ec",
@@ -303,7 +3562,21 @@
    "Whole numbers are $0,1,2,\\ldots$ and do not include negative integers. Therefore, $-2$ is rational but not whole.",
    "Since $12$ is not a perfect square, $\\sqrt{12}$ is irrational and cannot be counted as rational.",
    "Although $3$ is rational, it is a whole number, so it must not be included."
-  ]
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Select the number of members which are rational but not whole numbers.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$2$"
+     }
+    ]
+   }
+  ],
+  "rubric": []
  },
  {
   "id": "6a83c99ec24c2d59f4d9c337",
@@ -314,6 +3587,140 @@
   "remediations": [
    "Set $D$ contains members of $B$ excluding those in $A\\cap B$. Remove $12$, $24$ and $36$ from set $B$.",
    "Numbers divisible by 12 form $A\\cap B$. Set $D$ contains multiples of 4 which are not also multiples of 3."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Write set $A$ in listing form.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{3,6,9,12,15,18,21,24,27,30,33,36\\}$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Write EACH of the following in listing form.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "prompt": "$B$",
+      "answer": "$\\{4,8,12,16,20,24,28,32,36\\}$"
+     },
+     {
+      "label": "ii",
+      "prompt": "$A \\cap B$",
+      "answer": "$\\{12,24,36\\}$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "The farmer packs separately the crates in set $D$, where $D=B\\setminus(A\\cap B)$. Give EACH of the following.",
+    "marks": 5,
+    "slots": [
+     {
+      "label": "i",
+      "prompt": "$D$, in listing form",
+      "answer": "$\\{4,8,16,20,28,32\\}$"
+     },
+     {
+      "label": "ii",
+      "prompt": "a description of $D$ in words",
+      "answer": "Crate numbers divisible by 4 but not divisible by 3"
+     },
+     {
+      "label": "iii",
+      "prompt": "$D$, in set-builder notation",
+      "answer": "$\\{x \\in \\mathbb{N}: 1 \\le x \\le 36,\\ 4\\mid x,\\ 3\\nmid x\\}$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Identifies the label numbers divisible by 3 in the stated range"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Lists all members of $A$ correctly"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Lists all members of $B$ correctly"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.ii",
+    "criterion": "Recognises $A \\cap B$ as the members common to both sets"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.ii",
+    "criterion": "Selects the common members from \"their\" sets $A$ and $B$"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Removes the members of \"their\" $A \\cap B$ from \"their\" set $B$"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Lists the remaining members of \"their\" set $D$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.ii",
+    "criterion": "Describes $D$ as multiples of 4 which are not multiples of 3"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.iii",
+    "criterion": "Translates the description into conditions in set-builder notation"
+   },
+   {
+    "code": "CK4",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.iii",
+    "criterion": "States the natural-number domain and the range from 1 to 36"
+   }
   ]
  },
  {
@@ -325,7 +3732,21 @@
    "The set has $4$ elements, but the question asks for the number of subsets. Use $2^n$ for a set with $n$ elements.",
    "The empty set is a subset of every set. Therefore, all $2^4 = 16$ subsets must be included.",
    "Both the empty set and $F$ itself are subsets of $F$. Include them when counting all subsets."
-  ]
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Select the number of subsets of $F$.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "16"
+     }
+    ]
+   }
+  ],
+  "rubric": []
  },
  {
   "id": "6a83ed8af00dd4498b590822",
@@ -335,7 +3756,21 @@
   "remediations": [
    "Simplify $\\frac{\\sqrt{50}}{5}$ first: it equals $\\sqrt{2}$, which is irrational. Therefore, not every member belongs to $Q$.",
    "Although $-2$ and $2$ are integers, $0.\\overline{18}$ and $\\sqrt{2}$ are not integers. The set must contain every member of $P$."
-  ]
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Select the smallest set.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$R$"
+     }
+    ]
+   }
+  ],
+  "rubric": []
  },
  {
   "id": "6a853d31e7fc40f429797ba6",
@@ -347,6 +3782,154 @@
    "The 5 commuters outside both circles are still part of the survey total of 35, so they must be included when forming the equation.",
    "A factor divides 6 exactly. Since $6\\div6=1$, 6 is also a positive factor of 6.",
    "Test every two-element subset. Both $2\\times6=12$ and $3\\times6=18$ are divisible by 6, so these pairs are accepted."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Determine the value of $x$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$6$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "The supervisor places the positive factors of the number of commuters who used both routes in a set $S$. Write $S$ in roster form.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{1,2,3,6\\}$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "List all the subsets of $S$ which have exactly two elements.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{\\{1,2\\},\\{1,3\\},\\{1,6\\},\\{2,3\\},\\{2,6\\},\\{3,6\\}\\}$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "The supervisor forms inspection pairs from $S$. An inspection pair is accepted when the product of its two codes is divisible by the number of commuters who used both routes. Determine, giving a reason, the number of accepted inspection pairs.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$4$"
+     },
+     {
+      "label": "ii",
+      "answer": "$1\\times6$, $2\\times3$, $2\\times6$ and $3\\times6$ are divisible by $6$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Recognises that the four disjoint regions total 35 commuters"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Forms $14 + 10 + x + 5 = 35$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Solves the equation to obtain $x = 6$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Identifies the positive factors of \"their\" value of $x$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Writes the factors in roster form"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Recognises that each required subset contains two distinct elements"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Lists $\\{1,2\\}$, $\\{1,3\\}$ and $\\{1,6\\}$"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Lists $\\{2,3\\}$ and $\\{2,6\\}$"
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Lists $\\{3,6\\}$"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Tests \"their\" two-element subsets using divisibility by \"their\" value of $x$"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "CAO 4 accepted inspection pairs"
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Justifies the accepted pairs using products divisible by \"their\" value of $x$"
+   }
   ]
  },
  {
@@ -358,6 +3941,150 @@
   "remediations": [
    "Each selection must also contain a butterfly-attracting type. The butterfly-attracting types are 2 and 6, so the valid selections are $\\{2,3\\}$ and $\\{3,6\\}$.",
    "Type 3 is in $D$ but not in $B$. Adding a third type to either valid pair causes one of the two required category counts to remain at one."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Write set $A$ in listing form.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{1,2,3,4,6\\}$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "List all the two-element subsets of $A$ which contain type 3.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{1,3\\}, \\{2,3\\}, \\{3,4\\}, \\{3,6\\}$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "A bed must contain at least one drought-tolerant type and at least one butterfly-attracting type. From your list in (b), determine the selections which can be used.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{2,3\\}, \\{3,6\\}$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "A three-type bed must be made by adding one further type from $A$ to one of your selections in (c). It must contain exactly two drought-tolerant types and exactly two butterfly-attracting types. Decide, with a reason, whether this is possible.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "No"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Identifies 1, 2, 3, 4 and 6 as the elements of $U$ which are factors of 12"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Writes the identified elements correctly in listing form"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Recognises that each required subset contains type 3 and one other element of \"their\" set $A$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Lists $\\{1,3\\}$ and $\\{2,3\\}$"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Lists $\\{3,4\\}$ and $\\{3,6\\}$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Recognises that type 3 is drought-tolerant"
+   },
+   {
+    "code": "CK4",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Identifies 2 and 6 as the butterfly-attracting elements of \"their\" set $A$"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Selects $\\{2,3\\}$ from \"their\" list"
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Selects $\\{3,6\\}$ from \"their\" list"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Tests all possible additions to \"their\" selection $\\{2,3\\}$ against both conditions"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Tests all possible additions to \"their\" selection $\\{3,6\\}$ against both conditions"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Concludes that no permitted three-type selection has exactly two elements in each of $D$ and $B$"
+   }
   ]
  },
  {
@@ -370,6 +4097,154 @@
    "Player $T$ is outside both circles, so does not play at least one of the two sports.",
    "Three netball-only players produce three different pairs: $\\{A,D\\}$, $\\{A,K\\}$ and $\\{D,K\\}$.",
    "Each netball-only pair can be combined with either $R$ or $S$, so multiply the three pairs by two choices."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Write, in listing form, the set $L$ of players who play at least one of the two sports.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{A,D,K,R,S,M,J,N\\}$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "The set $P$ contains the members of $L$ who play exactly one sport. Write $P$ in listing form.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{A,D,K,M,J,N\\}$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "List all the two-member subsets of $P$ whose members both play netball.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{\\{A,D\\},\\{A,K\\},\\{D,K\\}\\}$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "A three-player relay team must contain two players who play netball only and one player who plays both sports. A coach claims that six different teams can be formed. State whether the claim is correct. Give a reason for your answer.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "Yes"
+     },
+     {
+      "label": "ii",
+      "answer": "$3 \\times 2 = 6$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Recognises that players in at least one sport occupy the three inner regions."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Lists all eight players in $L$."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Identifies $R$ and $S$ as the players in both sets."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Removes $R$ and $S$ from \"their\" set $L$."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "CAO $P=\\{A,D,K,M,J,N\\}$."
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Identifies $A$, $D$ and $K$ as the netball-only members of \"their\" set $P$."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Lists $\\{A,D\\}$ and $\\{A,K\\}$ as two-member subsets."
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Lists $\\{D,K\\}$ as the remaining two-member subset."
+   },
+   {
+    "code": "CK4",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "CAO Yes."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Uses one of \"their\" two-member subsets as the pair of netball-only players."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Identifies $R$ and $S$ as two possible choices for the player who plays both sports."
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Combines \"their\" number of pairs with two choices and concludes that six teams can be formed."
+   }
   ]
  },
  {
@@ -381,7 +4256,21 @@
    "A one-to-one function cannot assign the same image to two different elements. Here, both $-1$ and $2$ map to $4$.",
    "A one-to-many relation has one input paired with more than one output. Each input in $R$ has only one output.",
    "Repeated outputs are allowed in a function. A relation is not a function only when at least one input has more than one output."
-  ]
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Select the correct description of $R$.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$R$ is a many-to-one function."
+     }
+    ]
+   }
+  ],
+  "rubric": []
  },
  {
   "id": "6a825af379ca6c35515de228",
@@ -393,7 +4282,21 @@
    "Removing $(2,2)$ gives each group only one lane, but lane $2$ no longer occurs. The range would not be $B$.",
    "Removing $(3,3)$ removes group $3$ from the domain. Group $2$ would also still be related to two lanes.",
    "Removing $(4,1)$ removes group $4$ from the domain, and group $2$ still has two images. A function must assign exactly one image to each domain value."
-  ]
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Select the ordered pair.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$(2, 3)$"
+     }
+    ]
+   }
+  ],
+  "rubric": []
  },
  {
   "id": "6a826b29dbbb9b8df926b440",
@@ -405,7 +4308,21 @@
    "Although $(1,2)$ belongs to $R$, choosing it would not give $5$ in the required range of $F$.",
    "The value $3$ is the image of route code $2$, not route code $1$.",
    "The value $4$ is already the image of route code $5$; the graph shows that route code $1$ must be paired with $5$."
-  ]
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Select the image of $1$ under $F$.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$5$"
+     }
+    ]
+   }
+  ],
+  "rubric": []
  },
  {
   "id": "6a83c4edc24c2d59f4d9c2aa",
@@ -416,6 +4333,138 @@
   "remediations": [
    "Each value in the table represents two black cards, one club and one spade. Six coupon cards therefore correspond to three values, not six values.",
    "Part (d) considers only customers who already received a coupon. The sample space is therefore the six coupon cards, of which three are spades."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Determine the number of possible outcomes when one card is selected.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "52"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Calculate the number of cards which award a coupon.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "6"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Determine the value of $p$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "10"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Complete the statement below.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{J\\clubsuit,\\ Q\\clubsuit,\\ K\\clubsuit,\\ J\\spadesuit,\\ Q\\spadesuit,\\ K\\spadesuit\\}$"
+     },
+     {
+      "label": "ii",
+      "answer": "$\\frac{1}{2}$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "CAO $52$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "States coupon probability as number of coupon cards divided by \"their\" total number of cards"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Calculates $\\frac{3}{26}\\times$ \"their\" total cards, CAO $6$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Matches \"their\" six coupon cards to three values with two black cards at each value"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Identifies $J$, $Q$ and $K$ as the only three values above the cutoff"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "CAO $p=10$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "States the six-card coupon sample space"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Uses \"their\" coupon-card sample space as the outcomes for a coupon winner"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Counts three spades in \"their\" coupon-card sample space"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Calculates $\\frac{3}{6}$, CAO $\\frac{1}{2}$"
+   }
   ]
  },
  {
@@ -427,6 +4476,126 @@
   "remediations": [
    "For every result of the wheel, the fair coin can land on either Heads or Tails. Both coin outcomes must be included.",
    "The complete experiment includes both the wheel spin and the coin toss. The winning outcomes are Mango with Heads and Coconut with Heads, giving 2 outcomes out of 8."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Write down the sample space for one spin of the prize wheel.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{\\text{Mango},\\text{ Coconut},\\text{ Breadfruit},\\text{ Plantain}\\}$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Write down the sample space for the complete experiment.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{(\\text{Mango},H),(\\text{Mango},T),(\\text{Coconut},H),(\\text{Coconut},T),(\\text{Breadfruit},H),(\\text{Breadfruit},T),(\\text{Plantain},H),(\\text{Plantain},T)\\}$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "A prize is awarded when the wheel lands on Mango or Coconut and the coin shows Heads. Calculate the probability that a prize is awarded. Give your answer as a fraction in lowest terms.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\frac{1}{4}$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Is a prize awarded more often than not? Give a reason for your answer.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "No; $\\frac{1}{4}<\\frac{1}{2}$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Lists the four possible wheel outcomes, CAO"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Recognises Heads and Tails as the two coin outcomes"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Pairs each of \"their\" wheel outcomes with Heads and Tails"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Gives a complete sample space of eight distinct outcomes"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Selects favourable outcomes over total outcomes for the probability"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Counts 2 favourable outcomes and \"their\" 8 total outcomes"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Forms the fraction $\\frac{2}{8}$"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Expresses \"their\" probability as a fraction in lowest terms"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "States that $\\frac{1}{4}$ is less than $\\frac{1}{2}$"
+   }
   ]
  },
  {
@@ -439,6 +4608,138 @@
    "Two of the four cards are cocoa, but the coin must also show heads. Count outcomes satisfying both conditions: $(1,H)$ and $(2,H)$ out of eight outcomes.",
    "The experiment includes both selecting a card and tossing a coin, so the sample space has eight equally likely outcomes, not four.",
    "Compare the fractions using a common denominator or decimals: $\\frac{1}{4}=0.25$ and $\\frac{1}{3}=0.\\overline{3}$, so $\\frac{1}{4}$ is smaller."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Write the sample space for this experiment.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\{(1,H),(1,T),(2,H),(2,T),(3,H),(3,T),(4,H),(4,T)\\}"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "List the outcomes for which a cocoa card is selected and the coin shows heads.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\{(1,H),(2,H)\\}"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Determine the probability that a cocoa card is selected and the coin shows heads. Give your answer in lowest terms.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\frac{1}{4}"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "The farmer will use a moisture test only if the probability in (c) is less than $\\frac{1}{3}$. State whether the farmer will use the moisture test. Give a reason for your answer.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "decision",
+      "answer": "Yes"
+     },
+     {
+      "label": "reason",
+      "answer": "\\frac{1}{4}<\\frac{1}{3}"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Recognises that each outcome consists of a card number and a coin result"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Lists the four outcomes with heads"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Lists the four outcomes with tails"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Identifies cards 1 and 2 as the cocoa cards"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Selects $(1,H)$ and $(2,H)$ from \"their\" sample space"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Recognises that the probability is favourable outcomes over total equally likely outcomes"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Forms $\\frac{2}{8}$ using \"their\" favourable outcomes and \"their\" sample space"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Expresses \"their\" probability in lowest terms"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.decision",
+    "criterion": "Compares \"their\" probability with $\\frac{1}{3}$"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.reason",
+    "criterion": "Concludes that the farmer will use the moisture test, with a valid reason"
+   }
   ]
  },
  {
@@ -450,7 +4751,21 @@
    "Each possible pair of coin tosses must be combined with both card labels. In particular, $HTB$ and $THB$ must also be included.",
    "One outcome must include the results of both tosses and the selected card, not merely list the possible results at each stage.",
    "The first and second tosses are recorded separately, so $HT$ and $TH$ are different outcomes."
-  ]
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Select the sample space.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{HHA, HHB, HTA, HTB, THA, THB, TTA, TTB\\}$"
+     }
+    ]
+   }
+  ],
+  "rubric": []
  },
  {
   "id": "6a83d53aa8308949bfd2ff2b",
@@ -461,7 +4776,21 @@
    "A result from $1$ to $3$ can only be paired with $H$ or $D$, while a result from $4$ to $6$ can only be paired with $C$ or $S$.",
    "After rolling $4$, $5$ or $6$, the available cards change to $C$ and $S$.",
    "Match the first group of die numbers, $1$ to $3$, with $H$ and $D$, then match $4$ to $6$ with $C$ and $S$."
-  ]
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Select the sample space.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{(1,H),(1,D),(2,H),(2,D),(3,H),(3,D),(4,C),(4,S),(5,C),(5,S),(6,C),(6,S)\\}$"
+     }
+    ]
+   }
+  ],
+  "rubric": []
  },
  {
   "id": "6a83db98f8a49010ad8049da",
@@ -472,6 +4801,166 @@
   "remediations": [
    "Under the changed rule, $(P,2)$ cannot receive a reward because it has both spinner result $P$ and card $2$. Remove this outcome before calculating the probability.",
    "The statement is about a reward recipient. Restrict the comparison to the three outcomes which receive a reward under the changed rule."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Complete the table to show the sample space.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$(P,1), (P,2)$"
+     },
+     {
+      "label": "ii",
+      "answer": "$(G,1), (G,2)$"
+     },
+     {
+      "label": "iii",
+      "answer": "$(M,1), (M,2)$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Complete the statement below.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{(P,1),(P,2),(G,2),(M,2)\\}$"
+     },
+     {
+      "label": "ii",
+      "answer": "$\\frac{2}{3}$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "The rule is changed. A reward is now given when the spinner lands on $P$ or the card is $2$, but not both. Calculate the probability of receiving a reward.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\frac{1}{2}$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Complete the statement below.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "Yes"
+     },
+     {
+      "label": "ii",
+      "answer": "the reward outcomes are $(P,1)$, $(G,2)$ and $(M,2)$; card $2$ occurs in two outcomes while $P$ occurs in one outcome"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Represents the outcomes for spinner result $P$ as ordered pairs"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.ii",
+    "criterion": "Completes the row for spinner result $G$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.iii",
+    "criterion": "Completes the row for spinner result $M$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Identifies the outcomes satisfying the inclusive condition $P$ or card $2$"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.ii",
+    "criterion": "Counts 4 favourable outcomes from \"their\" sample space"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.ii",
+    "criterion": "Divides \"their\" favourable outcomes by 6, CAO $\\frac{2}{3}$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Identifies $(P,2)$ as the outcome which satisfies both conditions"
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Obtains \"their\" $3 \\div 6$, CAO $\\frac{1}{2}$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Uses \"their\" reward outcomes from (b) and excludes the shared outcome"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Uses \"their\" changed-rule outcomes to identify two outcomes containing card $2$"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Uses \"their\" changed-rule outcomes to identify one outcome containing spinner result $P$"
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Concludes that Anisa is correct from the comparison $2:1$"
+   }
   ]
  },
  {
@@ -483,6 +4972,150 @@
   "remediations": [
    "Receiving a voucher requires two events: selecting red and tossing a head. Multiply the probability of selecting red by $\\frac{1}{2}$ for a head.",
    "Adding blue tokens does not change the 3 red tokens, but it increases the total number of tokens from 6 to $6+x$."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "List the sample space for the colour of the token selected.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{R, B, G\\}$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Calculate the probability that the customer selects a red token.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\frac{1}{2}"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Calculate the probability that a customer receives a voucher.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\frac{1}{4}"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "The shopkeeper will add only blue tokens to the box. Determine how many blue tokens must be added to reduce the probability obtained in (c) by $\\frac{1}{12}$.",
+    "marks": 5,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "3"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Identifies red, blue and green as the possible token colours"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "States a valid sample space, $\\{R, B, G\\}$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Counts 6 tokens from the bar chart"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Calculates $\\frac{3}{6}$, giving $\\frac{1}{2}$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Recognises that both a red token and a head are required"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Multiplies \"their\" probability of red by $\\frac{1}{2}$"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "CAO $\\frac{1}{4}$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Finds the required new probability as \"their\" probability from (c) minus $\\frac{1}{12}$"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Uses 3 red tokens and a total of $6+x$ tokens after adding $x$ blue tokens"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Forms $\\frac{3}{2(6+x)} =$ \"their\" required new probability"
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Solves the equation to obtain $x=3$"
+   },
+   {
+    "code": "R4",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Interprets $x=3$ as 3 blue tokens to be added"
+   }
   ]
  },
  {
@@ -495,6 +5128,138 @@
    "Use the trial water amount as $g(f(3))=16$, not as $f(3)=16$. First find $f(3)=7$, then solve $7k+2=16$.",
    "For $gf(x)$, put the output of $f$ into $g$. Thus calculate $g(2x+1)$, rather than adding or combining the two rules directly.",
    "The phrase \"at most\" includes the tank-capacity boundary. At $x=3$, the water needed is exactly $16$ litres, so $3$ is included."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "Calculate $f(3)$.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "7"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Determine the value of $k$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "2"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Complete the statement below.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "4x+4"
+     },
+     {
+      "label": "ii",
+      "answer": "4x+4 \\le 16"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Use the shaded region on the grid to state all possible values of $x$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "\\{0,1,2,3\\}"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Substitutes $3$ in $f(x)=2x+1$, giving $7$"
+   },
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Recognises that the trial condition is $g(f(3))=16$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Substitutes \"their\" value of $f(3)$ into $g$, giving $7k+2=16$"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Solves for $k=2$"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Recognises that $gf(x)=g(f(x))$"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Evaluates $g(f(x))=2(2x+1)+2=4x+4$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.ii",
+    "criterion": "Forms the tank inequality using \"their\" composite function: $4x+4\\le16$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Recognises that $x$ is restricted to non-negative whole-number values"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Reads the boundary intersection as $x=3$"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "States the allowable discrete values as $\\{0,1,2,3\\}$"
+   }
   ]
  },
  {
@@ -507,6 +5272,123 @@
    "The graphs meet at two points. Check the whole domain from $0$ to $6$ and state both $x$-coordinates of intersection.",
    "At $x=0$, the graph of $f$ lies above the graph of $g$, so a $0\\%$ discount also satisfies $f(x)\\ge g(x)$.",
    "A plan $f$ discount is acceptable only where its graph is on or above the graph of $g$, not merely where $f(x)$ is positive."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "On graph paper, using a scale of 2 cm to represent 1 unit on both axes, draw the graphs of $f$ and $g$ for $0 \\le x \\le 6$.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "Graphs of $y=x^2-6x+5$ and $y=x-1$ for $0\\le x\\le6$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "State the solutions of $f(x)=g(x)$.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$x=1, 6$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "The shopkeeper will choose plan $f$ only when its projected net gain is at least that of plan $g$. State the possible discount rates.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$\\{0,1,6\\}\\%$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Uses the stated scale on both axes."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Plots correct points for $y=x^2-6x+5$."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Draws a smooth parabola through the plotted points."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Draws the straight line $y=x-1$ correctly."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Recognises that the solutions are given by the $x$-coordinates of the intersections."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Reads one solution as $x=1$."
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Reads the other solution as $x=6$."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Uses 'their' intersection values as boundary values for comparing the two plans."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Identifies the values for which $f(x)\\ge g(x)$ on the stated domain."
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Restricts the result to whole-number discount rates: $\\{0,1,6\\}\\%$."
+   }
   ]
  },
  {
@@ -519,6 +5401,134 @@
    "A quadratic graph may cross the $x$-axis twice. Read and state both $x$-intercepts when roots are requested.",
    "A loss means the net-return graph is below the $x$-axis. At $x=5$, the return is zero, not negative.",
    "Although $x=-1$ is an intersection on the extended graph, $x$ represents a number of crates and must be between $0$ and $8$."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "On graph paper, using a scale of 2 cm to represent 1 unit on each axis, draw the graphs of $f$ and $g$ for $-2\\leq x\\leq8$.",
+    "marks": 4,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$y=x^2-4x-5$ and $y=x+1$, for $-2\\leq x\\leq8$"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "State the roots of $f$.",
+    "marks": 2,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$-1, 5$"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "State the values of $x$ for which the shopkeeper makes a loss under arrangement $f$.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$x\\in\\{0,1,2,3,4\\}$"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Determine the number of crates for which the two arrangements give the same net return.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$6$"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Uses the stated scale and labels both axes appropriately"
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Plots correct points for $y=x^2-4x-5$"
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Draws a smooth parabola through the plotted points"
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "Draws the straight line $y=x+1$ correctly"
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Identifies the roots as the $x$-intercepts of $f$"
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Reads both roots as $-1$ and $5$"
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Uses 'their' roots to select the non-negative whole-number values for which $f(x)<0$"
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Recognises that equal net returns occur where the two graphs intersect"
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Reads the intersection abscissae as $-1$ and $6$"
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Selects $6$ using the stated domain for the number of crates"
+   }
   ]
  }
 ]

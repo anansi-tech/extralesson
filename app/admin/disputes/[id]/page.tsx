@@ -137,7 +137,7 @@ export default async function DisputeCasePage({ params, searchParams }: { params
         </p>
         <div className="mt-3 section-label">The decision</div>
         <p className={`mt-1 border-l-3 px-2 py-1 text-[13px] ${decision?.awarded ? 'border-green-pen bg-green-tint' : 'border-red-pen bg-red-tint'}`}>
-          {decision ? `${decision.awarded ? 'awarded' : 'withheld'}${decision.needs_review ? ', sent for review' : ''} — ${decision.reason}` : 'row not on this read'}
+          {decision ? <>{decision.awarded ? 'awarded' : 'withheld'}{decision.needs_review ? ', sent for review' : ''} — <span dangerouslySetInnerHTML={{ __html: renderMathHtml(decision.reason) }} /></> : 'row not on this read'}
         </p>
       </section>
 

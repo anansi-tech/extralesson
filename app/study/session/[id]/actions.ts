@@ -322,7 +322,7 @@ async function feedbackFor(attempt: StoredAttempt, sessionId: string, questionIn
         rejected: [],
         take: read.take,
         takesLeft: MAX_TAKES - (await Transcription.countDocuments({ session_id: sessionId, question_index: questionIndex })),
-        method: (read.method_marks ?? []).map(({ code, awarded, reason, mark_value }) => ({ code, awarded, reason, mark_value })),
+        method: (read.method_marks ?? []).map(({ code, awarded, reason, mark_value }) => ({ code, awarded, reasonHtml: renderMathHtml(reason), mark_value })),
         marksAdded: (read.method_marks ?? []).filter((m) => m.awarded).reduce((n, m) => n + m.mark_value, 0),
         slips: read.slips ?? [],
         marked: true,

@@ -116,7 +116,7 @@ describe('one score fold — ROUND_6 Task 1', () => {
     await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
     const fb = await submitAnswer({ sessionId, questionIndex: 0, answers: right });
     if ('error' in fb) throw new Error(fb.error);
-    expect(fb.working?.method).toEqual([{ code: 'R5', awarded: false, reason: 'nothing could be read', mark_value: 1 }]);
+    expect(fb.working?.method).toEqual([{ code: 'R5', awarded: false, reasonHtml: 'nothing could be read', mark_value: 1 }]);
 
     const id = String(STUDENT);
     expect(await loaders.loadHistory(id)).toMatchObject([{ earned: 3, marks: 3, unassessed: 1 }]);
