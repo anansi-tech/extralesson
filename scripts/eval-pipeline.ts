@@ -51,7 +51,7 @@ async function main() {
   const { readWorking } = await import('@/app/study/session/[id]/capture');
   const { markWorking } = await import('@/app/study/session/[id]/mark-working');
 
-  interface RowVerdict { code: string; cao: boolean; truth: boolean; got: boolean | null }
+  interface RowVerdict { code: string; cao: boolean; truth: boolean; got: boolean | null; reason?: string }
   interface SlipReport { part: string; quote: string; sentence: string; supported: boolean }
   const rows: { id: string; read: boolean; lines: number; rows: number; agree: number; cao_false: number; method_false: number; verdicts: RowVerdict[]; slips: SlipReport[]; earned: number; assessed: number; unassessed: number; note?: string }[] = [];
   try {
@@ -94,8 +94,8 @@ async function main() {
       // the hard failure; on a method row it is tracked.
       const verdicts: RowVerdict[] = truth.map((t) => {
         const criterion = (q.rubric ?? []).find((r: any) => r.code === t.code)?.criterion ?? '';
-        const got = marked?.method.find((m) => m.code === t.code)?.awarded ?? null;
-        return { code: t.code, cao: /\bCAO\b/.test(criterion), truth: t.awarded, got };
+        const row = marked?.method.find((m) => m.code === t.code);
+        return { code: t.code, cao: /\bCAO\b/.test(criterion), truth: t.awarded, got: row?.awarded ?? null, reason: row?.reasonHtml };
       });
       const agree = verdicts.filter((v) => v.got === v.truth).length;
       const cao_false = verdicts.filter((v) => v.cao && v.got === true && !v.truth).length;
@@ -129,7 +129,7 @@ async function main() {
   console.log('PIPELINE — photo -> readWorking -> markWorking, per page (reported apart from the isolated marker score)');
   for (const r of rows) {
     console.log(`   ${r.id.padEnd(10)} ${r.read ? `read ${r.lines} lines` : 'NOT READ'} · marker agreed ${r.agree}/${r.rows} rows · false awards CAO ${r.cao_false} / method ${r.method_false} · fold ${r.earned}/${r.assessed}, ${r.unassessed} unassessed${r.note ? ` · ${r.note}` : ''}`);
-    for (const v of r.verdicts.filter((v) => v.got === true && !v.truth)) console.log(`      false award on ${v.cao ? 'CAO' : 'method'} row ${r.id}/${v.code}`);
+    for (const v of r.verdicts.filter((v) => v.got === true && !v.truth)) console.log(`      false award on ${v.cao ? 'CAO' : 'method'} row ${r.id}/${v.code}: ${v.reason ?? ''}`);
     for (const s of r.slips) console.log(`      slip (${s.part})${s.supported ? '' : ' UNSUPPORTED QUOTE'}: ${s.sentence}`);
   }
   const unsupported = rows.reduce((n, r) => n + r.slips.filter((s) => !s.supported).length, 0);

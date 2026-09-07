@@ -160,10 +160,47 @@ const isMethodConstant = (n: string): boolean => {
   return Number.isInteger(v) && (v <= 12 || /^10*$/.test(n));
 };
 
+/** One-step conversions: per cent, metric prefixes, minutes in an hour. */
+const CONVERSIONS = [10, 100, 1000, 60];
+const same = (a: number, b: number) => Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a), Math.abs(b));
+
+/**
+ * THE CLOSURE, decided by code and never by the marker: a number is grounded
+ * when it is grounded already, or the exact result of one operation (+ − × ÷)
+ * on two grounded numbers, or a one-step conversion of one. Says how, and how
+ * many candidates it tried, so a refusal can be read.
+ */
+export function groundingOf(n: string, grounded: Set<string>): { grounded: boolean; via: string | null; checked: number } {
+  const v = Number(n);
+  if (grounded.has(n)) return { grounded: true, via: 'given', checked: 0 };
+  const g = [...grounded].map(Number);
+  let checked = 0;
+  for (const a of g) {
+    for (const k of CONVERSIONS) {
+      checked += 2;
+      if (same(a * k, v)) return { grounded: true, via: `${a} × ${k}`, checked };
+      if (same(a / k, v)) return { grounded: true, via: `${a} ÷ ${k}`, checked };
+    }
+  }
+  for (const a of g) {
+    for (const b of g) {
+      checked += 4;
+      if (same(a + b, v)) return { grounded: true, via: `${a} + ${b}`, checked };
+      if (same(a - b, v)) return { grounded: true, via: `${a} − ${b}`, checked };
+      if (same(a * b, v)) return { grounded: true, via: `${a} × ${b}`, checked };
+      if (b !== 0 && same(a / b, v)) return { grounded: true, via: `${a} ÷ ${b}`, checked };
+    }
+  }
+  return { grounded: false, via: null, checked };
+}
+
+const isGrounded = (n: string, grounded: Set<string>): boolean => isMethodConstant(n) || groundingOf(n, grounded).grounded;
+
 /**
  * THE NUMBERS A PAGE HAS EARNED, line by line. A line's result counts only
  * when the line's own inputs were already grounded — the question, an answer,
- * or a line above it that earned its numbers the same way. A line that works
+ * a line above it that earned its numbers the same way, or the closure
+ * (groundingOf) over those. A line that works
  * on a value from nowhere grounds nothing, so a page that opens on another
  * question's numbers never grounds its own: the cocoa page's first line
  * introduces 1 200 000, and every line built on it stays ungrounded.
@@ -173,7 +210,9 @@ export function groundedNumbers(lines: string[], known: Set<string>): Set<string
   for (const line of lines) {
     const segments = line.split('=');
     const inputs = segments.length > 1 ? [...numbersIn(segments.slice(0, -1).join('='))] : [...numbersIn(line)];
-    if (inputs.every((n) => isMethodConstant(n) || grounded.has(n))) for (const n of numbersIn(line)) grounded.add(n);
+    // A line with no input is a value from nowhere — "Total = 1 200 000" —
+    // and grounds nothing; a value the question gave is grounded already.
+    if (inputs.length > 0 && inputs.every((n) => isGrounded(n, grounded))) for (const n of numbersIn(line)) grounded.add(n);
   }
   return grounded;
 }
@@ -193,18 +232,25 @@ export function requireGrounding<D extends { awarded: boolean; reason: string; q
   const known = new Set<string>([...numbersIn(ground.question), ...ground.answers.flatMap((a) => [...numbersIn(a)])]);
   const flatLines = ground.lines.map(flatLine);
   return decisions.map((d) => {
-    if (!d.awarded || !d.quantities?.length) return d;
+    if (!d.awarded) return d;
     // The earlier lines are the ones above the line the award is about: the
     // line the reason quotes, or, unquoted, the first line where the named
     // numbers appear together. A line never grounds itself: a page that
     // introduces its numbers on its first line has grounded none of them.
-    const named = d.quantities.flatMap((q) => [...numbersIn(q)]);
+    const named = (d.quantities ?? []).flatMap((q) => [...numbersIn(q)]);
     const quotes = [...d.reason.matchAll(/[“"]([^“”"]{2,})[”"]/g)].map((m) => flatLine(m[1]));
     const lineNumbers = ground.lines.map((l) => numbersIn(l));
     const quoted = quotes.length ? flatLines.findIndex((l) => quotes.some((q) => l.includes(q) || q.includes(l))) : -1;
-    const at = quoted >= 0 ? quoted : lineNumbers.findIndex((ns) => named.every((n) => isMethodConstant(n) || ns.has(n)));
+    const at = quoted >= 0 ? quoted : named.length ? lineNumbers.findIndex((ns) => named.every((n) => isMethodConstant(n) || ns.has(n))) : -1;
+    // What is checked does not wait on the marker naming it: the quoted line's
+    // own inputs — everything before its last "=" — are checked whether or not
+    // the marker listed them, and whatever it did list is checked as well.
+    const line = at >= 0 ? ground.lines[at] : '';
+    const inputs = line.includes('=') ? [...numbersIn(line.split('=').slice(0, -1).join('='))] : [...numbersIn(line)];
+    const checked = [...new Set([...named, ...inputs])];
+    if (checked.length === 0) return d;
     const earned = groundedNumbers(at >= 0 ? ground.lines.slice(0, at) : [], known);
-    const grounded = named.every((n) => isMethodConstant(n) || earned.has(n));
+    const grounded = checked.every((n) => isGrounded(n, earned));
     return grounded ? d : { ...d, awarded: false, reason: UNGROUNDED };
   });
 }
