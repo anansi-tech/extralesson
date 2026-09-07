@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The pre-push hook builds into its own directory, beside a dev server's.
+  distDir: process.env.NEXT_DIST_DIR ?? '.next',
   experimental: {
     /**
      * A photographed working reaches the server as base64 inside a server

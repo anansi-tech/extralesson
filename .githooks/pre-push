@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Gate the push on the production build.
+#
+# The pre-commit hook runs the tests, and the tests cannot see a build that
+# will not compile: a client component that imported next/headers passed nine
+# commits, every push failed on Vercel, and the site served the build before
+# them for a day while "still broken" reports came in about fixes that were
+# never live. A push is what deploys, so the build is the push's gate.
+#
+# The build runs in the production env SHAPE: NODE_ENV=production from `next
+# build` itself, every variable the preflight requires present, and the
+# deployed origin. Real values from .env are used where they exist; where
+# they do not, a value of the right shape stands in — the build connects to
+# nothing and needs no secret, only the shape.
+#
+# Bypass with --no-verify only when you mean to.
+set -uo pipefail
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+# A push that only deletes refs builds nothing.
+deleting=1
+while read -r _local_ref local_sha _remote_ref _remote_sha; do
+  [ "$local_sha" != "0000000000000000000000000000000000000000" ] && deleting=0
+done
+[ "$deleting" -eq 1 ] && exit 0
+
+export MONGODB_URI="${MONGODB_URI:-mongodb://127.0.0.1:1/pre-push}"
+export SESSION_SECRET="${SESSION_SECRET:-pre-push-shape-only-secret-0123456789abcdef}"
+export AI_API_KEY="${AI_API_KEY:-pre-push-shape-only}"
+export NEXT_PUBLIC_STRIPE_PAYMENT_LINK="${NEXT_PUBLIC_STRIPE_PAYMENT_LINK:-https://buy.stripe.com/live_pre_push_shape_only}"
+export ADMIN_EMAILS="${ADMIN_EMAILS:-ops@extralesson.app}"
+export STRIPE_WEBHOOK_SECRET="${STRIPE_WEBHOOK_SECRET:-whsec_pre_push_shape_only}"
+export NEXT_PUBLIC_BASE_URL="${NEXT_PUBLIC_BASE_URL:-https://www.extralesson.app}"
+# Its own output directory, so a dev server's .next is not pulled from under it.
+export NEXT_DIST_DIR=.next-push
+
+echo "building for production…"
+if ! pnpm next build >/tmp/el-pre-push.log 2>&1; then
+  echo "BUILD FAILED — push refused. Full output:"
+  grep -vE '^\s*$' /tmp/el-pre-push.log | tail -40
+  echo "(bypass with --no-verify if you know why)"
+  exit 1
+fi
+echo "build passes"

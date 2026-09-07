@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+/.next-push/
 /out/
 
 # production
