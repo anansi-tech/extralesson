@@ -82,4 +82,17 @@ describe('the question card, four states', () => {
     // The one clause that stays is the construction's, which nothing assesses.
     expect(src.match(/left out of your estimate/g)).toHaveLength(1);
   });
+
+  // One surface for an illegible read: the failure panel and its one "Take it
+  // again" — no read section, no second retake, no prefill line, none of the
+  // reader's prose, and no slot id a student would not recognise.
+  it('5 · illegible read', () => {
+    const html = renderCard(STATES.illegible);
+    const t = visibleText(html);
+    expect(t).toContain('Couldn’t read the page The photograph came through, but the writing on it could not be made out.');
+    expect(t.match(/Take it again/g)).toHaveLength(1);
+    expect(html.match(/<button[^>]*>[^<]*Take it again/g)).toHaveLength(1);
+    expect(t).not.toMatch(/This is what we read|retake left|retakes left|We filled|could not fill|blurred|pencil/);
+    expect(t).not.toMatch(/\b[a-d]\.(i|ii|iii)\b/);
+  });
 });

@@ -35,4 +35,11 @@ describe('the dispute case', () => {
   it('erasure takes the reviews with the disputes', () => {
     expect(at('lib', 'delete-student.ts')).toMatch(/DisputeReview\.deleteMany\(\{ dispute_id: \{ \$in: disputeIds \} \}\)/);
   });
+
+  it('shows the reader’s note to the operator, and to nobody else', () => {
+    expect(page).toMatch(/The reader&rsquo;s note[\s\S]*\{read\.notes\}/);
+    for (const f of [['app', 'study', 'session', '[id]', 'question-card.tsx'], ['app', 'study', 'session', '[id]', 'working-read.tsx'], ['app', 'study', 'session', '[id]', 'working-photo.tsx']]) {
+      expect(at(...f), f.join('/')).not.toMatch(/\bnotes\b/);
+    }
+  });
 });

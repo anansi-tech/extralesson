@@ -360,13 +360,12 @@ export default async function SessionPage({
     // can be marked again from here (ROUND_6 Task 1).
     const takes = await Transcription.find({ attempt_id: attempt._id, $or: [{ marker_version: { $exists: true } }, { 'marking.status': 'failed' }] })
       .sort({ take: 1 })
-      .select('lines legible notes method_marks slips marker_version take')
+      .select('lines legible method_marks slips marker_version take')
       .lean<
         {
           _id: unknown;
           take: number;
           legible: boolean;
-          notes?: string;
           marker_version?: string;
           lines: { text: string; part_label?: string | null; confidence: number }[];
           method_marks?: { code: string; awarded: boolean; reason: string; mark_value: number }[];
@@ -402,7 +401,6 @@ export default async function SessionPage({
         })),
         legible: t.legible,
         marked: !!t.marker_version,
-        notes: t.notes,
         method: (t.method_marks ?? []).map((m) => ({
           code: m.code,
           awarded: m.awarded,
@@ -482,15 +480,15 @@ export default async function SessionPage({
     ? []
     : await Transcription.find({ session_id: id, question_index: index, pending: { $ne: true } })
         .sort({ take: 1 })
-        .select('lines answers legible notes take')
-        .lean<{ _id: unknown; take: number; lines: ReadResult['transcription']['lines']; answers?: ReadResult['transcription']['answers']; legible: boolean; notes?: string }[]>();
+        .select('lines answers legible take')
+        .lean<{ _id: unknown; take: number; lines: ReadResult['transcription']['lines']; answers?: ReadResult['transcription']['answers']; legible: boolean }[]>();
   const latest = reads.at(-1);
   const rejectedLines = latest
     ? (await LineRejected.find({ transcription_id: latest._id }).select('line_index').lean<{ line_index: number }[]>()).map((r) => r.line_index)
     : [];
   const read: (ReadResult & { rejected: number[] }) | undefined = latest
     ? {
-        transcription: { lines: latest.lines, answers: latest.answers ?? [], legible: latest.legible, notes: latest.notes },
+        transcription: { lines: latest.lines, answers: latest.answers ?? [], legible: latest.legible },
         transcriptionId: String(latest._id),
         take: latest.take,
         takesLeft: MAX_TAKES - reads.length,

@@ -23,7 +23,6 @@ export interface MethodRow {
 export function WorkingRead({
   lines,
   legible,
-  notes,
   method,
   heading,
   earnedLabel,
@@ -34,7 +33,6 @@ export function WorkingRead({
 }: {
   lines: ReadLine[];
   legible: boolean;
-  notes?: string;
   method: MethodRow[];
   /** Names the take when there is more than one to tell apart. */
   heading?: string;
@@ -116,7 +114,6 @@ export function WorkingRead({
       {reject && struck.size > 0 && (
         <p className="mt-2 text-[12px] leading-snug text-dim">A struck line is left out of marking. It is reversible until you hand in.</p>
       )}
-      {notes && <p className="mt-2 text-[12px] leading-snug text-dim">{notes}</p>}
 
       {/* WHY a row did not earn is what makes photographing worth it: "we could
           not see where you divided by the scale factor" is something a student

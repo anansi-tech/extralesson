@@ -89,7 +89,6 @@ export interface CardQuestion {
       legible: boolean;
       /** The marker finished on this take; a failed marking decides nothing. */
       marked: boolean;
-      notes?: string;
       method: { code: string; awarded: boolean; reasonHtml: string }[];
       /** Where the working slipped, per part; the first line under that part. */
       slips?: { part: string; quote: string; sentence: string }[];
@@ -655,23 +654,31 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       )}
 
       {readFilled && !feedback && (() => {
-        const unfilled = markedSlots.filter((sl) => !readFilled.includes(sl.ref));
-        const filledRefs = markedSlots.filter((sl) => readFilled.includes(sl.ref)).map((sl) => sl.ref);
+        // Parts, not slots: a student knows (b), not b.i. A part is named once,
+        // and its link goes to the first box of it the read did not fill.
+        const part = (ref: string) => ref.split('.')[0];
+        const filledParts = [...new Set(markedSlots.filter((sl) => readFilled.includes(sl.ref)).map((sl) => part(sl.ref)))];
+        const unfilled = markedSlots.filter((sl) => !readFilled.includes(sl.ref)).filter((sl, i, all) => all.findIndex((o) => part(o.ref) === part(sl.ref)) === i);
+        const allFilled = unfilled.length === 0;
         return (
           <p className="order-4 mt-2.5 border-l-3 border-margin bg-[#FFFDF6] px-3 py-1.5 text-xs leading-snug text-dim lg:mt-0">
-            {filledRefs.length > 0
-              ? `We filled the single answers${filledRefs.length < markedSlots.length ? ` for (${filledRefs.join('), (')})` : ''}.`
-              : 'We could not fill any boxes from the page.'}
-            {unfilled.length > 0 && (
+            {filledParts.length === 0 ? (
+              'We could not fill any boxes from the page. Enter them yourself.'
+            ) : (
               <>
-                {' '}Enter the rest yourself:{' '}
-                {unfilled.map((sl, k) => (
-                  <span key={sl.ref}>
-                    {k > 0 && ', '}
-                    <a href={`#slot-${sl.ref}${sl.input ? '-0' : ''}`} className="text-ink underline underline-offset-2">({sl.ref})</a>
-                  </span>
-                ))}
-                .
+                {`We filled the single answers${allFilled ? '' : ` for (${filledParts.join('), (')})`}.`}
+                {!allFilled && (
+                  <>
+                    {' '}Enter the rest yourself:{' '}
+                    {unfilled.map((sl, k) => (
+                      <span key={sl.ref}>
+                        {k > 0 && ', '}
+                        <a href={`#slot-${sl.ref}${sl.input ? '-0' : ''}`} className="text-ink underline underline-offset-2">({part(sl.ref)})</a>
+                      </span>
+                    ))}
+                    .
+                  </>
+                )}
               </>
             )}
           </p>
@@ -1030,7 +1037,6 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 <WorkingRead
                   lines={w.lines}
                   legible={w.legible}
-                  notes={w.notes}
                   method={w.method.filter((m) => !partRowCodes.has(m.code))}
                   dispute={{
                     attemptId: question.prior!.feedback.attemptId,

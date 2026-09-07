@@ -105,7 +105,8 @@ export function WorkingPhoto({
           setMarked({ method: res.method, marksAdded: res.marksAdded, transcriptionId: res.transcriptionId, rejected: res.rejected, failed: !res.marked });
           onMarked?.(res);
         }
-        if ('prefill' in res) onRead?.(res.prefill);
+        // An unreadable page filled nothing and says so once, on the failure panel.
+        if ('prefill' in res && res.transcription.legible) onRead?.(res.prefill);
       } catch {
         setError('That photo could not be prepared on this device.');
       } finally {
@@ -156,12 +157,13 @@ export function WorkingPhoto({
 
       {error && <CaptureFailure message={error} onRetake={() => fileRef.current?.click()} />}
 
+      {/* ONE SURFACE FOR AN ILLEGIBLE READ: the failure panel, with its one
+          "Take it again" — no read section, no second retake, no prefill line. */}
       {read && !read.legible && !attemptId && <CaptureFailure message="illegible" onRetake={() => fileRef.current?.click()} />}
-      {read && (
+      {read && read.legible && (
         <WorkingRead
           lines={read.lines}
           legible={read.legible}
-          notes={read.notes}
           method={marked.method.filter((m) => !hideRows?.has(m.code))}
           rejected={marked.rejected}
           reject={!attemptId && readId ? { transcriptionId: readId } : undefined}
@@ -192,7 +194,7 @@ export function WorkingPhoto({
         </details>
       )}
 
-      {read && takesLeft === 0 && !attemptId && (
+      {read && read.legible && takesLeft === 0 && !attemptId && (
         <Refusal
           id="no-retakes"
           className="mt-3"
@@ -204,7 +206,7 @@ export function WorkingPhoto({
       )}
 
       {/* The way to another take sits under what this one read, with the count beside it. */}
-      {read && takesLeft > 0 && (
+      {read && read.legible && takesLeft > 0 && (
         <div className="mt-2.5 flex items-center gap-2.5">
           {pick('flex-1 p-2.5 text-[11px]')}
           <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-dim">

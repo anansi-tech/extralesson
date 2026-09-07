@@ -53,11 +53,20 @@ const read = {
   rejected: [],
 } as NonNullable<CardQuestion['draft']>['read'];
 
-export const STATES: Record<'unanswered' | 'reading' | 'read' | 'blanks', CardQuestion> = {
+/** An unreadable page: the reader's note is model prose and must never reach the student. */
+const illegible = {
+  ...read,
+  transcription: { lines: [], answers: [], legible: false, notes: 'The page is blurred and the ink is faint; the student may have written in pencil.' },
+  prefill: {},
+  transcriptionId: 't2',
+} as NonNullable<CardQuestion['draft']>['read'];
+
+export const STATES: Record<'unanswered' | 'reading' | 'read' | 'blanks' | 'illegible', CardQuestion> = {
   unanswered: base,
   reading: base,
   read: { ...base, draft: { answers: { 'a.i': '11.9', 'b.i': '47.6' }, values: {}, read } },
   blanks: { ...base, draft: { answers: { 'a.i': '11.9' }, values: {} } },
+  illegible: { ...base, draft: { answers: {}, values: {}, read: illegible } },
 };
 
 export const renderCard = (q: CardQuestion): string => renderToStaticMarkup(createElement(QuestionCard, { question: q }));

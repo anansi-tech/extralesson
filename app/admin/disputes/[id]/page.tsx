@@ -28,7 +28,7 @@ export default async function DisputeCasePage({ params, searchParams }: { params
   const dispute = await MarkDispute.findById(id).lean<{ _id: unknown; student_id: unknown; attempt_id: unknown; transcription_id: unknown; code: string; ts: Date } | null>();
   const readId = dispute?.transcription_id ?? id;
   const read = await Transcription.findById(readId).lean<{
-    _id: unknown; student_id: unknown; attempt_id?: unknown; question_id: unknown; session_id: unknown; question_index: number; take: number; legible: boolean; created_at: Date;
+    _id: unknown; student_id: unknown; attempt_id?: unknown; question_id: unknown; session_id: unknown; question_index: number; take: number; legible: boolean; created_at: Date; notes?: string;
     lines: { part_label?: string | null; slot_label?: string | null; text: string; confidence: number }[];
     method_marks?: { code: string; awarded: boolean; reason: string; mark_value: number; needs_review?: boolean }[];
   } | null>();
@@ -122,6 +122,13 @@ export default async function DisputeCasePage({ params, searchParams }: { params
           ))}
         </ul>
         {attempt && <p className="mt-2 font-mono text-[12px]">typed: {String(attempt.answer)}</p>}
+        {/* The reader's free-text note is for the person judging the read, never for the student. */}
+        {read.notes && (
+          <>
+            <div className="mt-3 section-label">The reader&rsquo;s note</div>
+            <p className="mt-1 text-[13px] text-dim">{read.notes}</p>
+          </>
+        )}
         <div className="mt-3 section-label">The photo</div>
         {photo ? (
           <img src={`/admin/disputes/${id}/photo`} alt="The page as photographed" className="mt-1 max-h-96 border-[1.5px] border-ink object-contain" />
