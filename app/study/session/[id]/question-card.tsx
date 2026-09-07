@@ -495,7 +495,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             {earned} of {outOf} marks
             <span className="font-normal text-dim">
               {fromPageMarks > 0 && <> · {fromPageMarks} from your page</>}
-              {queried > 0 && <> · {queried} queried</>}
+              {queried > 0 && <> · {queried} re-mark{queried === 1 ? '' : 's'} requested</>}
               {outcome.unassessedMarks > 0 && <> · {outcome.unassessedMarks} unassessed</>}
             </span>
           </b>
@@ -888,7 +888,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           className="order-6 mt-4 lg:mt-0"
           label="This question is handed in"
           sentence="Answers close once a question is marked, the way a paper does."
-          remains="If a mark looks wrong, query it — a person looks before anything changes."
+          remains="If a mark looks wrong, ask for a re-mark — a person looks before anything changes."
           action={{ label: 'Read your marking', small: `${earned} of ${outOf} marks · with the reasons`, href: '#marking' }}
         />
       )}

@@ -170,6 +170,7 @@
   .landing .offer .btn { display: inline-block; font-size: 19px; padding: 18px 30px; }
   .landing .offernote { border-left: 1.5px solid #3a4152; padding-left: 32px; }
   .landing .offernote p { margin: 0; font-size: 14.5px; }
+  .landing .offernote p + p { margin-top: 12px; }
   .landing .faqsection { padding: 0 0 40px; }
   .landing .faq dl { display: grid; grid-template-columns: 1fr 1fr; gap: 0 56px; }
   .landing .faq dt { font-size: 17px; margin-top: 20px; }

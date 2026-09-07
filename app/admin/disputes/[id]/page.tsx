@@ -73,7 +73,7 @@ export default async function DisputeCasePage({ params, searchParams }: { params
     decision ? `Decision: ${decision.awarded ? 'awarded' : 'withheld'} — ${decision.reason}` : '',
   ].filter(Boolean).join('\n\n');
   const mailto = student
-    ? `mailto:${encodeURIComponent(student.email)}?subject=${encodeURIComponent(`Your query on ${code}`)}&body=${encodeURIComponent(`Hi,\n\nThanks for querying this mark. Here is what we looked at:\n\n${summary}\n\n`)}`
+    ? `mailto:${encodeURIComponent(student.email)}?subject=${encodeURIComponent(`Your re-mark request on ${code}`)}&body=${encodeURIComponent(`Hi,\n\nThanks for asking for a re-mark. Here is what we looked at:\n\n${summary}\n\n`)}`
     : undefined;
 
   return (

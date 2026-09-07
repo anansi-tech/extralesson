@@ -77,7 +77,7 @@ export function markup(): string {
     .replace(/className=/g, 'class=')
     .replace(/\{' '\}/g, ' ')
     .replace(/\{LANDING\.price\}/g, '$49')
-    .replace(/\{LANDING\.sittingNote\}/g, 'FOR CSEC MATHEMATICS · JANUARY 2027 RE-SIT · MAY/JUNE 2027 · WORKS ON ANY PHONE')
+    .replace(/\{sittingNoteAt\(new Date\(\)\)\}/g, 'For January 2027 and May/June 2027 candidates.')
     .replace(/\{LANDING\.passRate\.figure\}/g, '36%')
     .replace(/\{LANDING\.passRate\.label\}/g, 'of candidates passed')
     .replace(/\{LANDING\.passRate\.sourceLabel\}/g, 'CXC Subject Report, May–June 2026')

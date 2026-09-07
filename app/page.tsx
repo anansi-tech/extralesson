@@ -4,7 +4,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import Link from 'next/link';
 import { Lockup } from './lockup';
-import { LANDING, landingCoverage, paymentLink } from '@/lib/landing-content';
+import { LANDING, landingCoverage, paymentLink, sittingNoteAt } from '@/lib/landing-content';
 import { grantFor, hasAccess, REFUND_DAYS, type Access } from '@/lib/access';
 import { dbConnect, Student } from '@/lib/db';
 import { getSession } from '@/lib/auth/session';
@@ -95,7 +95,7 @@ export default async function LandingPage() {
                 <small>No card required.</small>
               </Link>
             )}
-            <div className="heronote">{LANDING.sittingNote}</div>
+            <div className="heronote">{sittingNoteAt(new Date())}</div>
           </div>
         </div>
       </header>
@@ -258,28 +258,27 @@ export default async function LandingPage() {
                 <div className="eyebrow">CSEC Mathematics</div>
                 <div className="pricerow">
                   <div className="price">{LANDING.price}</div>
-                  <div className="per">{LANDING.price} through your chosen exam sitting · ONE PAYMENT · NO SUBSCRIPTION · USD</div>
+                  <div className="per">ONE PAYMENT · ACCESS THROUGH THE SITTING YOU CHOOSE</div>
                 </div>
                 <ul>
                   <li>The whole programme: diagnostic, daily sessions, marked working</li>
                   <li>One student, with access running to the sitting they are entered for</li>
-                  <li>A grade estimate once we have seen enough of their work</li>
-                  <li>A direct line to me</li>
+                  <li>Every re-mark request is reviewed by a person</li>
                 </ul>
                 <a className="btn" href={paymentLink()} target="_blank" rel="noopener">
-                  Get access &mdash; {LANDING.price}
+                  Get access
                   <small>SECURE CHECKOUT · CARD OR APPLE PAY</small>
                 </a>
               </div>
               <div className="offernote">
                 <p>
                   Checkout asks for the student&rsquo;s email address, which need not be yours: that is the
-                  address they sign up with, and how the payment reaches their account. Not satisfied?
-                  Email{' '}
+                  address they sign up with, and how the payment reaches their account.
+                </p>
+                <p>
+                  Not satisfied? Email{' '}
                   <a href={`mailto:${LANDING.contactEmail}`}>us</a>{' '}
-                  within {REFUND_DAYS} days of paying and we will refund you. We do not send
-                  reports: they can open their own marked working whenever they want to, and you will hear
-                  how it is going from them, not from us.
+                  within {REFUND_DAYS} days of paying and we will refund you.
                 </p>
               </div>
             </div>
@@ -322,6 +321,11 @@ export default async function LandingPage() {
               <dd>
                 A grade estimate once we&rsquo;ve seen enough of their work &mdash; 35 marks in every
                 module. Until then the notebook shows how far each module has got.
+              </dd>
+              <dt>How will I know it&rsquo;s working?</dt>
+              <dd>
+                We do not send reports: they can open their own marked working whenever they want to,
+                and you will hear how it is going from them, not from us.
               </dd>
               <dt>What if it doesn&rsquo;t help?</dt>
               <dd>

@@ -24,7 +24,7 @@ export async function rejectLine(input: { transcriptionId: string; lineIndex: nu
     .select('lines marker_version')
     .lean<{ lines: unknown[]; marker_version?: string } | null>();
   if (!read || lineIndex >= read.lines.length) return { error: 'That line could not be found.' };
-  if (read.marker_version) return { error: 'This page has been marked; query the mark instead.' };
+  if (read.marker_version) return { error: 'This page has been marked; ask for a re-mark instead.' };
 
   try {
     await LineRejected.create({ transcription_id: transcriptionId, line_index: lineIndex });
@@ -49,7 +49,7 @@ export async function restoreLine(input: { transcriptionId: string; lineIndex: n
     .select('marker_version')
     .lean<{ marker_version?: string } | null>();
   if (!read) return { error: 'That line could not be found.' };
-  if (read.marker_version) return { error: 'This page has been marked; query the mark instead.' };
+  if (read.marker_version) return { error: 'This page has been marked; ask for a re-mark instead.' };
 
   await LineRejected.deleteOne({ transcription_id: transcriptionId, line_index: lineIndex });
   return { ok: true };

@@ -15,7 +15,7 @@ const PART_A = '(a) Calculate the length of BC. [3] Answer to (a) 11.9 ✓ ';
 const PART_B = '(b) Calculate the area of triangle ABC. [2] Answer to (b) 95.2 ✗ You wrote 8 × 11.9 and stopped — the half is missing. Area of a triangle is ½ × base × height. The multiplication earned the method mark; the value did not earn the accuracy mark. ';
 const ROWS_B = '✓ Correct base and height used – Area correct to 1 d.p. — 95.2 is twice the area ';
 const PART_C = '(c) Show that the perimeter is less than 35 cm. [2] Work this one on paper — it is marked from your photo. ';
-const LOOK_BACK = 'This question is handed in Answers close once a question is marked, the way a paper does. If a mark looks wrong, query it — a person looks before anything changes. Read your marking 6 of 7 marks · with the reasons ';
+const LOOK_BACK = 'This question is handed in Answers close once a question is marked, the way a paper does. If a mark looks wrong, ask for a re-mark — a person looks before anything changes. Read your marking 6 of 7 marks · with the reasons ';
 const SOLUTION = 'Worked solution (a) tan 34° = AB / BC, so BC = 8 / tan 34° = 11.9 cm (1 d.p.). (b) Area = ½ × BC × AB = ½ × 11.9 × 8 = 47.6 cm² . (c) AC = 8 / sin 34° = 14.3 cm, so the perimeter is 8 + 11.9 + 14.3 = 34.2 cm, which is less than 35 cm. Back to where you were → ';
 const READ = 'This is what we read (a) tan 34 = 8 / BC BC = 8 / tan 34 = 11.9 (b) 8 × 11.9 = 95.2 P = 8 + 11.9 + 14.3 = 34.2 < 35 ';
 const READ_EARNED = 'What this earned ✓ Perimeter formed from all three sides ✓ Comparison with 35 cm stated These are added to what you had already earned. Nothing here can take a mark away. ';
@@ -26,20 +26,20 @@ describe('the marked question, three states', () => {
   it('A · marked', () => {
     expect(text.marked).toBe(
       'Question 2 of 3 12 of 21 marks done 6 of 7 marks · 3 from your page Your marking Question Solution Worked solution 6/7 ' +
-        QUESTION + PART_A + PART_B + ROWS_B + 'Query this mark ' + PART_C + LOOK_BACK + SOLUTION + READ + READ_EARNED + CODES + '(c) R1 ✓ (c) R2 ✓ ' + NAV,
+        QUESTION + PART_A + PART_B + ROWS_B + 'Ask for a re-mark ' + PART_C + LOOK_BACK + SOLUTION + READ + READ_EARNED + CODES + '(c) R1 ✓ (c) R2 ✓ ' + NAV,
     );
   });
 
   it('B · queried, line struck: the queried line where the link was, the struck line with no toggle', () => {
     expect(text.queried).toBe(
-      'Question 2 of 3 12 of 21 marks done 6 of 7 marks · 3 from your page · 1 queried Your marking Question Solution Worked solution 6/7 ' +
-        QUESTION + PART_A + PART_B + ROWS_B + 'Queried. A person will look before anything changes. ' + PART_C + LOOK_BACK + SOLUTION +
+      'Question 2 of 3 12 of 21 marks done 6 of 7 marks · 3 from your page · 1 re-mark requested Your marking Question Solution Worked solution 6/7 ' +
+        QUESTION + PART_A + PART_B + ROWS_B + 'Re-mark requested. A person will look before anything changes. ' + PART_C + LOOK_BACK + SOLUTION +
         'This is what we read (a) tan 34 = 8 / BC BC = 8 / tan 34 = 11.9 (b) 8 × 11.9 = 95.2 P = 8 + 11.9 + 14.3 = 34.2 < 35 you said this wasn’t yours ' +
         READ_EARNED + CODES + '(c) R1 ✓ (c) R2 ✓ ' + NAV,
     );
     const html = renderMarked(MARKED.queried);
     expect(html).toMatch(/<s class="text-dim">P = 8 \+ 11\.9 \+ 14\.3 = 34\.2 &lt; 35<\/s>/);
-    expect(html).not.toMatch(/Put it back|Not what I wrote|Query this mark/);
+    expect(html).not.toMatch(/Put it back|Not what I wrote|Ask for a re-mark/);
   });
 
   it('C · marking failed: the panel under the outcome line, the read kept', () => {

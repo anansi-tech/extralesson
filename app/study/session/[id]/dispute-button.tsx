@@ -22,7 +22,7 @@ export function DisputeButton({
   if (done) {
     return (
       <span className="mt-1 block font-mono text-[11px] text-dim">
-        Queried. A person will look before anything changes.
+        Re-mark requested. A person will look before anything changes.
       </span>
     );
   }
@@ -40,7 +40,7 @@ export function DisputeButton({
         }
         className="inline-flex min-h-11 items-center font-mono text-[11px] uppercase tracking-[0.14em] text-red-pen underline underline-offset-[3px] disabled:opacity-60"
       >
-        Query this mark
+        Ask for a re-mark
       </button>
       {error && <span className="ml-2 font-mono text-[11px] text-red-pen">{error}</span>}
     </span>

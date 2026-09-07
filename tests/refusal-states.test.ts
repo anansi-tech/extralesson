@@ -52,7 +52,7 @@ describe('the refusals', () => {
   });
   it('question handed in, with the marks from the fold', () => {
     expect(text['handed-in']).toBe(
-      'This question is handed in Answers close once a question is marked, the way a paper does. If a mark looks wrong, query it — a person looks before anything changes. Read your marking 6 of 7 marks · with the reasons',
+      'This question is handed in Answers close once a question is marked, the way a paper does. If a mark looks wrong, ask for a re-mark — a person looks before anything changes. Read your marking 6 of 7 marks · with the reasons',
     );
     expect(html['handed-in']).toContain('href="#marking"');
   });

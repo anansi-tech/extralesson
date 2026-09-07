@@ -3,8 +3,8 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { IMAGE_TTL_DAYS } from '@/lib/db/transcription';
 import { REFUND_DAYS } from '@/lib/access';
-import { SITTINGS } from '@/lib/sittings';
-import { LANDING as LANDING_CONTENT } from '@/lib/landing-content';
+import { SITTINGS, sittingsOpenAt } from '@/lib/sittings';
+import { LANDING as LANDING_CONTENT, sittingNoteAt } from '@/lib/landing-content';
 
 const read = (...p: string[]) => readFileSync(join(process.cwd(), ...p), 'utf8');
 const PRIVACY = read('app', 'privacy', 'page.tsx');
@@ -229,16 +229,15 @@ describe('sittings are derived, not named', () => {
 
   it('promises the sitting the buyer chooses, not a hardcoded one', () => {
     expect(LANDING).not.toMatch(/through the January sitting/i);
-    expect(LANDING).toMatch(/through your chosen exam sitting/i);
+    expect(LANDING).toMatch(/through the sitting you choose/i);
   });
 
   it('builds the sitting note from the same record the paywall reads', () => {
     expect(CONTENT).toContain('SITTINGS');
     expect(CONTENT).not.toMatch(/'JANUARY[^']*MAY\/JUNE/);
-    expect(LANDING_CONTENT.sittingNote).toContain('MAY/JUNE 2027');
-    for (const s of Object.values(SITTINGS)) {
-      expect(LANDING_CONTENT.sittingNote).toContain(s.label.toUpperCase());
-    }
+    expect(CONTENT).toContain('sittingsOpenAt(now)');
+    const [a, b] = sittingsOpenAt(new Date()).map((s) => SITTINGS[s].label);
+    expect(sittingNoteAt(new Date())).toBe(`For ${a} and ${b} candidates.`);
   });
 
   it('keeps January only where it names a real audience, not a duration', () => {

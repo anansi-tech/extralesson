@@ -3,7 +3,7 @@ import { module1Topics } from '@/lib/seed/module1-topics';
 import { module2Topics } from '@/lib/seed/module2-topics';
 import { module3Topics } from '@/lib/seed/module3-topics';
 import { seedBlueprints } from '@/lib/seed/blueprints';
-import { SITTINGS } from '@/lib/sittings';
+import { SITTINGS, sittingsOpenAt } from '@/lib/sittings';
 import { isProduction } from '@/lib/preflight';
 
 // Landing-page content constants (ROUND_1 §7). Every price, cap, stat and
@@ -14,11 +14,6 @@ export const LANDING = {
   headline: 'Practise CSEC Maths the way you’ll sit it.',
   domain: 'extralesson.app',
   price: '$49',
-  // Derived from the same record the paywall expires against, never typed.
-  sittingNote: Object.values(SITTINGS)
-    .map((s) => s.label)
-    .join(' & ')
-    .toUpperCase(),
   // THE BAND (ROUND_7 Task 4): two lines, each with its caption and its
   // source, checked on cxc.org on 2026-09-05. No effective date is stated
   // unless the document prints one.
@@ -73,4 +68,14 @@ export function paymentLink(): string {
     );
   }
   return '#offer';
+}
+
+/**
+ * The hero's sitting note: the next two sittings still to be sat, from the
+ * same table the paywall expires against — never the whole list, which the
+ * table now carries through 2031.
+ */
+export function sittingNoteAt(now: Date): string {
+  const [a, b] = sittingsOpenAt(now).slice(0, 2).map((s) => SITTINGS[s].label);
+  return b ? `For ${a} and ${b} candidates.` : a ? `For ${a} candidates.` : '';
 }
