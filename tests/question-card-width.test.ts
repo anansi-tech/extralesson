@@ -1,6 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync } from 'node:fs';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { FigureRecall } from '@/app/study/session/[id]/question-card';
 import { chromium, type Browser } from 'playwright-core';
 import { chromePage } from './helpers/chrome-page';
 import { STATES, readingPieces, renderBar, renderCard } from './helpers/card-states';
@@ -13,9 +15,6 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} 
 // while a page is read, as the live components render them.
 const CHROME = '/usr/bin/google-chrome';
 const hasChrome = existsSync(CHROME);
-// The pinned figure control, with the classes the card gives it, so a page
-// that is exactly viewport width keeps it at the edge and it stays put on scroll.
-const FIG = /aria-label="Show figure"\s+className="([^"]+)"/.exec(readFileSync(join(process.cwd(), 'app', 'study', 'session', '[id]', 'question-card.tsx'), 'utf8'))![1];
 
 let browser: Browser;
 beforeAll(async () => {
@@ -28,7 +27,8 @@ afterAll(async () => {
 export async function openState(b: Browser, name: keyof typeof STATES, width: number) {
   const q = STATES[name];
   const p = await b.newPage({ viewport: { width, height: 900 } });
-  await p.setContent(chromePage(renderBar(q) + renderCard(q) + `<button type="button" aria-label="Show figure" class="${FIG}">fig</button>`), { waitUntil: 'networkidle' });
+  // The way back to the figure, as the card draws it while the figure is off-screen.
+  await p.setContent(chromePage(renderBar(q) + renderCard(q) + renderToStaticMarkup(createElement(FigureRecall, { onClick: () => {} }))), { waitUntil: 'networkidle' });
   if (name === 'reading') {
     const pieces = readingPieces();
     await p.evaluate((pieces) => {
@@ -56,17 +56,26 @@ describe.skipIf(!hasChrome)('the question card fits the viewport', () => {
         });
         const fig = await p.evaluate(async () => {
           const el = document.querySelector('[aria-label="Show figure"]')!;
+          const band = el.parentElement!;
           const before = el.getBoundingClientRect();
-          window.scrollTo(0, 400);
+          window.scrollTo(0, document.body.scrollHeight);
           await new Promise((r) => requestAnimationFrame(r));
           const after = el.getBoundingClientRect();
-          return { right: Math.round(before.right), bottom: Math.round(before.bottom), moved: before.top !== after.top || before.right !== after.right };
+          // At the foot of the page the card's last line sits above the band: the pill covers no text.
+          const article = document.querySelector('article')!.getBoundingClientRect();
+          return {
+            text: el.textContent,
+            inside: before.right <= window.innerWidth && before.right >= window.innerWidth - 40,
+            aboveBottom: Math.round(before.bottom) <= window.innerHeight - 6,
+            moved: before.top !== after.top || before.right !== after.right,
+            clear: article.bottom <= band.getBoundingClientRect().top,
+          };
         });
         await p.close();
         expect(w, `${name} ${width}px`).toBe(width);
         expect(beside, `${name} ${width}px figure`).toBe(width >= 1024 ? 'beside' : 'above');
         expect(bar, `${name} ${width}px bar`).toEqual({ left: 0, right: width });
-        expect(fig, `${name} ${width}px pinned control`).toEqual({ right: width, bottom: 900 - 12, moved: false });
+        expect(fig, `${name} ${width}px figure pill`).toEqual({ text: 'Figure', inside: true, aboveBottom: true, moved: false, clear: true });
       }, 60000);
     }
   }

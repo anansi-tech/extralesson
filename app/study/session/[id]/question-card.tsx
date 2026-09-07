@@ -1079,18 +1079,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       </div>
 
       {question.visualHtml && figureAway && !atSubmit && !figureOpen && (
-        // In the gutter, not over the text: the page's 20px and the card's 20px
-        // of padding put the first character 40px from the edge, so a 40px
-        // button at the edge covers padding only.
-        <button
-          ref={recallRef}
-          type="button"
-          onClick={() => setFigureOpen(true)}
-          aria-label="Show figure"
-          className="fixed bottom-3 right-0 z-40 flex h-11 w-10 items-center justify-center border-y-[1.5px] border-l-[1.5px] border-ink bg-paper font-mono text-[10px] uppercase tracking-widest shadow-[-2px_2px_0_var(--ink)]"
-        >
-          fig
-        </button>
+        <FigureRecall recallRef={recallRef} onClick={() => setFigureOpen(true)} />
       )}
 
       {figureOpen && question.visualHtml && (
@@ -1240,4 +1229,29 @@ function splitPriorValues(
     }
   }
   return out;
+}
+
+/**
+ * THE WAY BACK TO THE FIGURE while it is off-screen: a pill reading "Figure",
+ * bottom-right, in a band of paper at the foot of the viewport so it covers
+ * no text, with the page padded to match; the band sits above the iPhone's
+ * home bar. The pill is the one full radius in the system, asked for by name.
+ */
+export function FigureRecall({ onClick, recallRef }: { onClick: () => void; recallRef?: React.Ref<HTMLButtonElement> }) {
+  return (
+    <>
+      <div aria-hidden="true" className="h-[calc(58px+env(safe-area-inset-bottom))]" />
+      <div className="fixed inset-x-0 bottom-0 z-40 flex justify-end border-t border-paper-deep bg-paper px-3 pt-1.5 pb-[calc(6px+env(safe-area-inset-bottom))]">
+        <button
+          ref={recallRef}
+          type="button"
+          onClick={onClick}
+          aria-label="Show figure"
+          className="min-h-11 rounded-full border-[1.5px] border-ink bg-white px-4 font-mono text-[11px] uppercase tracking-[0.1em] shadow-[var(--shadow-key)]"
+        >
+          Figure
+        </button>
+      </div>
+    </>
+  );
 }
