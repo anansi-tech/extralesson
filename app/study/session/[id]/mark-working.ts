@@ -2,7 +2,7 @@ import { renderMathHtml } from '@/lib/katex';
 import { Attempt, CapturedImage, LineRejected, PracticeSession, Question, Transcription } from '@/lib/db';
 import { markableSlots } from '@/lib/grade/mark';
 import { MAX_TAKES, linesForSlot, type TranscriptionResult } from '@/lib/grade/transcribe';
-import { earnableByMethod, constructionRows, alreadyEarnedByMethod, applyFormatDependency, requireEvidence, oneDecisionPerRow, supportedSlips } from '@/lib/grade/method-marks';
+import { earnableByMethod, constructionRows, alreadyEarnedByMethod, applyFormatDependency, requireEvidence, requireGrounding, oneDecisionPerRow, supportedSlips } from '@/lib/grade/method-marks';
 import { markMethod, type MethodDecision, type Slip } from '@/lib/grade/mark-method';
 import { MARKER_VERSION } from '@/lib/grade/version';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
@@ -77,7 +77,7 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
   if (!read) return null;
 
   const question = await Question.findById(attempt.question_id).lean<{
-    parts?: { label: string; marks: number; slots: { label: string; answer?: string; response_mode?: string }[] }[];
+    parts?: { label: string; prompt: string; marks: number; slots: { label: string; prompt?: string; answer?: string; response_mode?: string }[] }[];
     rubric?: RubricItem[];
     stem: string;
     stimulus?: string;
@@ -108,9 +108,10 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
       if (lines.length > 0) workingByPart[part.label] = lines;
     }
     const confirmed = splitStoredAnswer(String(attempt.answer), markableSlots(question.parts ?? []));
-    // A slip is asked for where the typed value was wrong and the part has lines.
+    // A slip is asked for where a TYPED value was wrong and the part has lines: a
+    // blank has no line the working went wrong on.
     const slipParts = (question.parts ?? [])
-      .filter((p) => workingByPart[p.label] && p.slots.some((s) => (s.response_mode ?? 'answer') === 'answer' && !attempt.rubric_awarded.some((c) => question.rubric?.find((r) => r.code === c)?.slot_ref === `${p.label}.${s.label}`)))
+      .filter((p) => workingByPart[p.label] && p.slots.some((s) => (s.response_mode ?? 'answer') === 'answer' && (confirmed[`${p.label}.${s.label}`] ?? '').trim() !== '' && !attempt.rubric_awarded.some((c) => question.rubric?.find((r) => r.code === c)?.slot_ref === `${p.label}.${s.label}`)))
       .map((p) => p.label);
     const canonical = Object.fromEntries(
       (question.parts ?? []).flatMap((p) => p.slots.map((s) => [`${p.label}.${s.label}`, s.answer ?? ''])),
@@ -125,8 +126,13 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
         slipParts,
       });
       slips = supportedSlips(result.slips, transcription.lines.map((l) => l.text)).filter((s) => slipParts.includes(s.part));
+      const pageLines = transcription.lines.map((l) => l.text);
       decisions = applyFormatDependency(
-        requireEvidence(oneDecisionPerRow(result.decisions, unearned.map((r) => r.code)), transcription.lines.map((l) => l.text)),
+        requireGrounding(requireEvidence(oneDecisionPerRow(result.decisions, unearned.map((r) => r.code)), pageLines), {
+          question: questionText(question),
+          answers: Object.values(confirmed),
+          lines: pageLines,
+        }),
         question.rubric ?? [],
         settled,
       );
@@ -208,4 +214,27 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
     slips,
     marked: true,
   };
+}
+
+/**
+ * Everything the question itself says, with numbers in it: the ground a line's
+ * values may stand on. The figure's labels and a given table's cells are the
+ * question too, and live outside the stem.
+ */
+export function questionText(q: {
+  stimulus?: string;
+  stem: string;
+  parts?: { prompt: string; slots?: { prompt?: string }[] }[];
+  rubric?: { criterion: string }[];
+  visual?: unknown;
+  stimulus_table?: unknown;
+}): string {
+  return [
+    q.stimulus ?? '',
+    q.stem,
+    ...(q.parts ?? []).flatMap((p) => [p.prompt, ...(p.slots ?? []).map((sl) => sl.prompt ?? '')]),
+    ...(q.rubric ?? []).map((r) => r.criterion),
+    q.visual ? JSON.stringify(q.visual) : '',
+    q.stimulus_table ? JSON.stringify(q.stimulus_table) : '',
+  ].join('\n');
 }

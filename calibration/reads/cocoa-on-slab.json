@@ -1,0 +1,11 @@
+{
+  "id": "cocoa-on-slab",
+  "question_id": "6a852887ed771942b6d0dc6a",
+  "image": "cocoa-b1.jpg",
+  "truth": [
+    { "code": "CK2", "awarded": false },
+    { "code": "AK3", "awarded": false },
+    { "code": "R1", "awarded": false }
+  ],
+  "pins": "The cocoa page marked against the concrete-slab question. Its lines subtract 144 000 from 1 200 000 — numbers the slab question never gave — and (b)'s rows must be withheld: an award here is a page marked on another page's values. Grounding (requireGrounding) is what withholds it."
+}

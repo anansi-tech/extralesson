@@ -17,6 +17,8 @@ export const MethodDecisionZ = z.object({
   confidence: z.number(),
   /** The read is too uncertain to decide this row either way; a person looks. */
   needs_review: z.boolean().optional(),
+  /** For an awarded row: every number the quoted line uses, as written. Checked against the question, the answers and the earlier lines. */
+  quantities: z.array(z.string()).optional(),
 });
 
 /** Where the working went wrong, for one part: the line, quoted, and one sentence to the student (ROUND_7 Task 1). */
@@ -126,6 +128,17 @@ no reason is indistinguishable from a marker that is simply wrong.
 
 Where you DID award, the reason quotes the line that earned it — for a row
 that names a result, the line where that result appears.
+
+WHERE YOU AWARD, NAME THE NUMBERS. In quantities, list every number the
+quoted line USES — a length, a price, a count, a value carried down from an
+earlier line — each written as it appears on the line. Not the result the
+line produces, and not the constants of a method: the 100 of a percentage,
+the 2 of halving, the 360 of a full turn. Each named number is checked
+against the question, the answers the student confirmed, and the lines above
+the quoted one; a number found in none of them withholds the row, because a
+page that works on values the question never gave is another page, or a
+guess. Name them all: a number you leave out is not checked, and a row that
+earned its mark on an unchecked number is a row we cannot stand behind.
 
 confidence is your confidence in the DECISION.
 

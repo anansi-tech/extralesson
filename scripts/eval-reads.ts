@@ -15,7 +15,7 @@ const CASES = join(process.cwd(), 'calibration', 'reads');
 interface ReadCase {
   id: string;
   question_id: string;
-  required: { part_label: string; text: string }[];
+  required?: { part_label: string; text: string }[];
   forbidden?: string[];
   /** A known limit of the reader: the case is expected to FAIL, and passing fails the gate — the note is stale. */
   expected_fail?: boolean;
@@ -41,7 +41,7 @@ async function read(imagePath: string, questionId: string): Promise<Transcriptio
 }
 
 function passes(t: TranscriptionResult, c: ReadCase): { ok: boolean; why: string } {
-  for (const line of c.required) {
+  for (const line of c.required ?? []) {
     const got = linesForSlot(t, line.part_label).map(normalise);
     if (!got.includes(normalise(line.text))) return { ok: false, why: `missing for (${line.part_label}): ${line.text} — read: ${got.join(' | ') || 'nothing'}` };
   }
@@ -63,6 +63,8 @@ async function main() {
   if (fieldMissing.length) console.log(`field page(s) whose image is not on this machine, skipped: ${fieldMissing.join(', ')}`);
   const cases: ReadCase[] = readdirSync(CASES)
     .filter((f) => f.endsWith('.json'))
+    // A pipeline case (verdicts, no required lines) belongs to eval-pipeline.
+    .filter((f) => Array.isArray(JSON.parse(readFileSync(join(CASES, f), 'utf8')).required))
     .map((f) => JSON.parse(readFileSync(join(CASES, f), 'utf8')) as ReadCase);
 
   const results: { run: number; lost: number; of: number; verdicts: string[] }[] = [];

@@ -5,7 +5,7 @@
 // actually produced. Writes only to a throwaway student it creates and
 // deletes. Run: pnpm tsx scripts/eval-pipeline.ts [pages]
 import 'dotenv/config';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import mongoose from 'mongoose';
 import { goldenSetExists, loadGoldenSet } from './golden-set';
@@ -26,11 +26,15 @@ async function main() {
   }
   await dbConnect();
   const golden = loadGoldenSet();
-  // The committed calibration case first, then committed golden photographs
-  // with approved verdicts, up to PAGES.
-  const cases = existsSync(join(CASES, 'cocoa-b1.json')) ? [JSON.parse(readFileSync(join(CASES, 'cocoa-b1.json'), 'utf8')) as { id: string; question_id: string }] : [];
+  // The committed calibration cases first — a case with `truth` is judged on
+  // those rows, a case without is read and marked for the path alone — then
+  // committed golden photographs with approved verdicts, up to PAGES.
+  type Case = { id: string; question_id: string; image?: string; truth?: { code: string; awarded: boolean }[] };
+  const cases: Case[] = existsSync(CASES)
+    ? readdirSync(CASES).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(readFileSync(join(CASES, f), 'utf8')) as Case)
+    : [];
   const pages = [
-    ...cases.map((c) => ({ id: c.id, question_id: c.question_id, image: join(CASES, `${c.id}.jpg`), truth: null as null | { code: string; awarded: boolean }[] })),
+    ...cases.map((c) => ({ id: c.id, question_id: c.question_id, image: join(CASES, c.image ?? `${c.id}.jpg`), truth: c.truth ?? null })),
     ...golden.inputs
       .filter((e) => e.mode === 'photo' && e.image && !e.image.startsWith('field/') && existsSync(join(GOLDEN, e.image)))
       .map((e) => ({ id: e.id, question_id: e.question_id, image: join(GOLDEN, e.image!), truth: golden.verdicts.get(e.id) ?? [] })),

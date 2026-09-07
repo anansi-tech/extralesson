@@ -1,8 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import QuestionCard from '@/app/study/session/[id]/question-card';
+import { MARKED } from './helpers/marked-states';
+import { visibleText } from './helpers/card-states';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { supportedSlips } from '@/lib/grade/method-marks';
 import { MethodResultZ } from '@/lib/grade/mark-method';
+
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} }), usePathname: () => '/study/session/s1' }));
 
 const at = (...p: string[]) => readFileSync(join(process.cwd(), ...p), 'utf8');
 const page = ['1200000 - 144000 = 156000', '156000 / 1200000 = 13%'];
@@ -39,5 +46,19 @@ describe('the slip', () => {
     const e = at('scripts', 'eval-pipeline.ts');
     expect(e).toMatch(/unsupported === 0/);
     expect(e).toMatch(/UNSUPPORTED QUOTE/);
+  });
+
+  // A slip names the line a TYPED value went wrong on: never on a blank.
+  it('renders only on a part with a typed, withheld value — never on a blank', () => {
+    const mw = at('app', 'study', 'session', '[id]', 'mark-working.ts');
+    expect(mw).toMatch(/\(confirmed\[`\$\{p\.label\}\.\$\{s\.label\}`\] \?\? ''\)\.trim\(\) !== ''/);
+    const card = at('app', 'study', 'session', '[id]', 'question-card.tsx');
+    expect(card).toMatch(/partFeedback && !partFeedback\.correct && typedFor\(p\.label\) && slipFor\(p\.label\) && \(/);
+    // The fixture's slip is on (b), whose typed value 95.2 was withheld: it shows.
+    expect(visibleText(renderToStaticMarkup(createElement(QuestionCard, { question: MARKED.marked })))).toContain('You wrote 8 × 11.9 and stopped');
+    // The same slip on a part left blank does not.
+    const prior = MARKED.marked.prior!;
+    const blank = { ...MARKED.marked, prior: { ...prior, answers: { ...prior.answers, 'b.i': '' } } };
+    expect(visibleText(renderToStaticMarkup(createElement(QuestionCard, { question: blank })))).not.toContain('You wrote 8 × 11.9 and stopped');
   });
 });

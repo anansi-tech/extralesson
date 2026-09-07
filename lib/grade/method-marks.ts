@@ -139,3 +139,72 @@ export function requireEvidence<D extends { awarded: boolean; reason: string }>(
     return supported ? d : { ...d, awarded: false, reason: 'no line on the page supports this' };
   });
 }
+
+export const UNGROUNDED = 'the working uses a value we can’t find on the page or in the question.';
+
+/**
+ * The numbers a text holds, each as one canonical string: "1 056 000",
+ * "1,056,000" and "1056000" are one number; "0.050" and "0.05" are one.
+ */
+export function numbersIn(text: string): Set<string> {
+  const out = new Set<string>();
+  for (const m of text.replace(/(\d)[ ,](?=\d{3}\b)/g, '$1').matchAll(/\d+(?:\.\d+)?/g)) {
+    out.add(String(Number(m[0])));
+  }
+  return out;
+}
+
+/** The constants of a method, never a quantity of the problem: small scalars and powers of ten. */
+const isMethodConstant = (n: string): boolean => {
+  const v = Number(n);
+  return Number.isInteger(v) && (v <= 12 || /^10*$/.test(n));
+};
+
+/**
+ * THE NUMBERS A PAGE HAS EARNED, line by line. A line's result counts only
+ * when the line's own inputs were already grounded — the question, an answer,
+ * or a line above it that earned its numbers the same way. A line that works
+ * on a value from nowhere grounds nothing, so a page that opens on another
+ * question's numbers never grounds its own: the cocoa page's first line
+ * introduces 1 200 000, and every line built on it stays ungrounded.
+ */
+export function groundedNumbers(lines: string[], known: Set<string>): Set<string> {
+  const grounded = new Set(known);
+  for (const line of lines) {
+    const segments = line.split('=');
+    const inputs = segments.length > 1 ? [...numbersIn(segments.slice(0, -1).join('='))] : [...numbersIn(line)];
+    if (inputs.every((n) => isMethodConstant(n) || grounded.has(n))) for (const n of numbersIn(line)) grounded.add(n);
+  }
+  return grounded;
+}
+
+/**
+ * A NUMBER IN AN AWARD IS GROUNDED OR THE ROW IS WITHHELD. The marker names
+ * every number the quoted line uses; each must be in the question, in a
+ * confirmed answer, or earned by an earlier line of the page. A number found
+ * nowhere is another page's, or a guess — the cocoa page marked against the
+ * slab question earned (b) on 1 200 000 and 144 000, which the slab question
+ * never gave. Rows the marker did not name numbers for are left as decided.
+ */
+export function requireGrounding<D extends { awarded: boolean; reason: string; quantities?: string[] }>(
+  decisions: D[],
+  ground: { question: string; answers: string[]; lines: string[] },
+): D[] {
+  const known = new Set<string>([...numbersIn(ground.question), ...ground.answers.flatMap((a) => [...numbersIn(a)])]);
+  const flatLines = ground.lines.map(flatLine);
+  return decisions.map((d) => {
+    if (!d.awarded || !d.quantities?.length) return d;
+    // The earlier lines are the ones above the line the award is about: the
+    // line the reason quotes, or, unquoted, the first line where the named
+    // numbers appear together. A line never grounds itself: a page that
+    // introduces its numbers on its first line has grounded none of them.
+    const named = d.quantities.flatMap((q) => [...numbersIn(q)]);
+    const quotes = [...d.reason.matchAll(/[“"]([^“”"]{2,})[”"]/g)].map((m) => flatLine(m[1]));
+    const lineNumbers = ground.lines.map((l) => numbersIn(l));
+    const quoted = quotes.length ? flatLines.findIndex((l) => quotes.some((q) => l.includes(q) || q.includes(l))) : -1;
+    const at = quoted >= 0 ? quoted : lineNumbers.findIndex((ns) => named.every((n) => isMethodConstant(n) || ns.has(n)));
+    const earned = groundedNumbers(at >= 0 ? ground.lines.slice(0, at) : [], known);
+    const grounded = named.every((n) => isMethodConstant(n) || earned.has(n));
+    return grounded ? d : { ...d, awarded: false, reason: UNGROUNDED };
+  });
+}

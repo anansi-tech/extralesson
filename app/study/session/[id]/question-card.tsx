@@ -449,6 +449,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // the working went wrong, before any reason or code.
   const slipFor = (part: string) =>
     [...(feedback?.working?.slips ?? []), ...(question.prior?.working ?? []).flatMap((w) => w.slips ?? [])].find((s) => s.part === part)?.sentence;
+  // A slip names the line a TYPED value went wrong on; a blank has no such line.
+  const typedFor = (part: string) =>
+    question.parts.some((p) => p.label === part && p.slots.some((s) => (partAnswers[s.ref] ?? '').trim() !== ''));
   const outcome = attemptOutcome(
     { rubric_awarded: feedback?.rubric_awarded ?? [], correct: feedback?.correct },
     {
@@ -815,7 +818,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.1em] text-dim">From your page — check it</div>
                             )}
                             {/* THE SLIP COMES FIRST (ROUND_7 Task 1): the sentence, then the scheme's reason. */}
-                            {partFeedback && !partFeedback.correct && slipFor(p.label) && (
+                            {partFeedback && !partFeedback.correct && typedFor(p.label) && slipFor(p.label) && (
                               <p className="mt-2 font-hand text-base leading-snug text-red-pen lg:mt-2.5 lg:text-[17px]">{slipFor(p.label)}</p>
                             )}
                             {partFeedback && !partFeedback.correct && partFeedback.reasonHtml && (

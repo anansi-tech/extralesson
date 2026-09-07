@@ -29,7 +29,8 @@ import { MARKER_VERSION } from '@/lib/grade/version';
 
 import { isFollowThrough } from '@/lib/prompts/mark-scheme';
 import { claimsFor } from '@/lib/grade/claim-template';
-import { applyFormatDependency, requireEvidence } from '@/lib/grade/method-marks';
+import { applyFormatDependency, requireEvidence, requireGrounding } from '@/lib/grade/method-marks';
+import { questionText } from '@/app/study/session/[id]/mark-working';
 import { provenance, writeResults } from './eval-provenance';
 
 const DIR = join(process.cwd(), 'design', 'golden');
@@ -277,14 +278,18 @@ async function main() {
           const canonical = Object.fromEntries(
             (q.parts ?? []).flatMap((p: any) => (p.slots ?? []).map((s: any) => [`${p.label}.${s.label}`, s.answer ?? ''])),
           );
+          const pageLines = e.transcript.map((l) => l.text);
           decisions = applyFormatDependency(
-            requireEvidence((await markMethod({
-              rows: claimsFor(rows, e.studentAnswers, canonical),
-              workingByPart,
-              typedAnswers: e.studentAnswers,
-              workedSolution: q.worked_solution,
-              questionStem: `${q.stimulus ?? ''} ${q.stem}`.trim(),
-            })).decisions, e.transcript.map((l) => l.text)),
+            requireGrounding(
+              requireEvidence((await markMethod({
+                rows: claimsFor(rows, e.studentAnswers, canonical),
+                workingByPart,
+                typedAnswers: e.studentAnswers,
+                workedSolution: q.worked_solution,
+                questionStem: `${q.stimulus ?? ''} ${q.stem}`.trim(),
+              })).decisions, pageLines),
+              { question: questionText(q), answers: Object.values(e.studentAnswers), lines: pageLines },
+            ),
             q.rubric ?? [],
             [],
           );
