@@ -65,7 +65,8 @@ describe('(g) loading is inline, never a modal', () => {
   it('shows the page while it is read, and blocks submit meanwhile', () => {
     expect(PHOTO).toMatch(/<img src=\{preview\}/);
     expect(PHOTO).toContain('Reading your page…');
-    expect(PHOTO).toMatch(/onBusy\?\.\(true\)/);
+    expect(PHOTO).toMatch(/captureState\(takes, MAX_TAKES, pending\)/);
+    expect(PHOTO).toMatch(/onState\?\.\(state\)/);
     expect(CARD).toMatch(/disabled=\{pending \|\| reading \|\| !canSubmit\}/);
   });
   it('shows skeleton rows while marking', () => {
@@ -76,7 +77,7 @@ describe('(g) loading is inline, never a modal', () => {
 
 describe('(e) the figure recall covers no text', () => {
   it('is a pill in a band above the safe area, shown only while the figure is off-screen', () => {
-    expect(CARD).toMatch(/figureAway && !atSubmit && !figureOpen && \(/);
+    expect(CARD).toMatch(/shown=\{figureAway && !atSubmit && !figureOpen\}/);
     expect(CARD).toMatch(/fixed inset-x-0 bottom-0 z-40 flex justify-end[^"]*pb-\[calc\(6px\+env\(safe-area-inset-bottom\)\)\]/);
     expect(CARD).toMatch(/rounded-full[^>]*>\s*Figure\s*</);
   });

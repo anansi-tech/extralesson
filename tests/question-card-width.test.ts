@@ -28,7 +28,7 @@ export async function openState(b: Browser, name: keyof typeof STATES, width: nu
   const q = STATES[name];
   const p = await b.newPage({ viewport: { width, height: 900 } });
   // The way back to the figure, as the card draws it while the figure is off-screen.
-  await p.setContent(chromePage(renderBar(q) + renderCard(q) + renderToStaticMarkup(createElement(FigureRecall, { onClick: () => {} }))), { waitUntil: 'networkidle' });
+  await p.setContent(chromePage(renderBar(q) + renderCard(q) + renderToStaticMarkup(createElement(FigureRecall, { shown: true, onClick: () => {} }))), { waitUntil: 'networkidle' });
   if (name === 'reading') {
     const pieces = readingPieces();
     await p.evaluate((pieces) => {
@@ -79,4 +79,25 @@ describe.skipIf(!hasChrome)('the question card fits the viewport', () => {
       }, 60000);
     }
   }
+
+  // The band's space is reserved at all times: showing or hiding the pill
+  // never changes the page's height under a reader who has scrolled.
+  it('keeps the document height constant across the pill showing and hiding, 400px down at 390px', async () => {
+    const q = STATES.unanswered;
+    const heights: Record<string, { height: number; visible: boolean }> = {};
+    for (const shown of [true, false]) {
+      const p = await browser.newPage({ viewport: { width: 390, height: 900 } });
+      await p.setContent(chromePage(renderBar(q) + renderCard(q) + renderToStaticMarkup(createElement(FigureRecall, { shown, onClick: () => {} }))), { waitUntil: 'networkidle' });
+      heights[String(shown)] = await p.evaluate(async () => {
+        window.scrollTo(0, 400);
+        await new Promise((r) => requestAnimationFrame(r));
+        const el = document.querySelector('[aria-label="Show figure"]');
+        return { height: document.documentElement.scrollHeight, visible: !!el && getComputedStyle(el).visibility === 'visible' };
+      });
+      await p.close();
+    }
+    expect(heights.true.height).toBe(heights.false.height);
+    expect(heights.true.visible).toBe(true);
+    expect(heights.false.visible).toBe(false);
+  }, 60000);
 });

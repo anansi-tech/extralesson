@@ -1,13 +1,14 @@
 'use client';
 
-import { useRef, useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { captureWorking, readWorking, type ReadResult } from './capture';
 import type { CaptureResult } from './mark-working';
 import { WorkingRead } from './working-read';
+import { captureState, retakesLeft, type CaptureState, type Take } from './capture-state';
 import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
-import { LANDING } from '@/lib/landing-content';
 import { Refusal } from '../../../refusal';
 import { TOO_MANY, windowMinutes } from '@/lib/auth/limits';
+import { LANDING } from '@/lib/landing-content';
 
 const WORDS = ['no', 'one', 'two', 'three', 'four', 'five'];
 
@@ -34,6 +35,13 @@ async function scaleDown(file: File): Promise<{ data: string; contentType: strin
 
 type Marked = Pick<CaptureResult, 'method' | 'marksAdded'> & { transcriptionId?: string; rejected?: number[]; failed?: boolean };
 
+/** The takes a stored read stands for: the server's count, the last one's legibility known. */
+export function takesOf(initial: { takesLeft: number; transcription: { legible: boolean } } | null | undefined, limit = MAX_TAKES): Take[] {
+  if (!initial) return [];
+  const before = Math.max(0, limit - initial.takesLeft - 1);
+  return [...Array.from({ length: before }, () => ({ legible: true })), { legible: initial.transcription.legible }];
+}
+
 export function WorkingPhoto({
   sessionId,
   questionIndex,
@@ -41,7 +49,7 @@ export function WorkingPhoto({
   marks,
   initial,
   onRead,
-  onBusy,
+  onState,
   onMarked,
   hideRows,
   className,
@@ -56,8 +64,8 @@ export function WorkingPhoto({
   initial?: (ReadResult | CaptureResult) | null;
   /** The boxes to fill from a read; only ever called before submit. */
   onRead?: (prefill: Record<string, string>) => void;
-  /** While a page is being read the answers cannot be handed in. */
-  onBusy?: (busy: boolean) => void;
+  /** The one state of the photograph, as it changes: the card orders and words itself by it. */
+  onState?: (state: CaptureState) => void;
   /** After submit, the marking of a read: the card shows the rows beside the parts. */
   onMarked?: (result: CaptureResult) => void;
   /** Rows the card already shows under their parts, kept out of the read's own list. */
@@ -67,7 +75,7 @@ export function WorkingPhoto({
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [read, setRead] = useState<TranscriptionResult | null>(initial?.transcription ?? null);
   const [readId, setReadId] = useState<string | null>(initial?.transcriptionId ?? null);
-  const [takesLeft, setTakesLeft] = useState(initial?.takesLeft ?? MAX_TAKES);
+  const [takes, setTakes] = useState<Take[]>(() => takesOf(initial));
   const [marked, setMarked] = useState<Marked>(
     initial && 'method' in initial
       ? { method: initial.method, marksAdded: initial.marksAdded, transcriptionId: initial.transcriptionId, rejected: initial.rejected, failed: !initial.marked }
@@ -78,6 +86,8 @@ export function WorkingPhoto({
   /** The page as photographed, kept while this page is open so the read can be checked against it. */
   const [thumb, setThumb] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  const state = captureState(takes, MAX_TAKES, pending);
+  useEffect(() => onState?.(state), [state, onState]);
 
   const send = (file: File) => {
     setError(null);
@@ -87,7 +97,6 @@ export function WorkingPhoto({
       if (old) URL.revokeObjectURL(old);
       return url;
     });
-    onBusy?.(true);
     start(async () => {
       try {
         const image = await scaleDown(file);
@@ -96,11 +105,12 @@ export function WorkingPhoto({
           : await readWorking({ sessionId, questionIndex, ...image });
         if ('error' in res) {
           setError(res.error);
+          setTakes((t) => [...t, { legible: false, failed: true }]);
           return;
         }
         setRead(res.transcription);
         setReadId(res.transcriptionId);
-        setTakesLeft(res.takesLeft);
+        setTakes((t) => [...t, { legible: res.transcription.legible }]);
         if ('method' in res) {
           setMarked({ method: res.method, marksAdded: res.marksAdded, transcriptionId: res.transcriptionId, rejected: res.rejected, failed: !res.marked });
           onMarked?.(res);
@@ -109,111 +119,169 @@ export function WorkingPhoto({
         if ('prefill' in res && res.transcription.legible) onRead?.(res.prefill);
       } catch {
         setError('That photo could not be prepared on this device.');
+        setTakes((t) => [...t, { legible: false, failed: true }]);
       } finally {
         setPreview(null);
-        onBusy?.(false);
       }
     });
   };
 
-  const pick = (className: string) => (
-    <button
-      type="button"
-      onClick={() => fileRef.current?.click()}
-      disabled={pending}
-      className={`${className} min-h-11 border-[1.5px] border-ink bg-white font-mono uppercase tracking-[0.1em] disabled:opacity-60`}
-    >
-      {pending ? 'Reading…' : read ? 'Take it again' : 'Photograph your working'}
-    </button>
-  );
-
   return (
-    <CameraBox
+    <CaptureSurface
+      state={state}
       post={!!attemptId}
       className={className}
-      heading={read ? undefined : 'Your working on paper'}
       intro={
-        read
-          ? undefined
-          : attemptId
-            ? `There ${marks === 1 ? 'is 1 mark' : `are ${marks} marks`} here for the method, and we cannot see your working. Photograph what you wrote and we will type it up beside the mark scheme. Nothing you have already earned can change.`
-            : 'Work it on paper, then photograph the page. We type up what we read and fill in the single-answer boxes; you check them, fill in the rest, and hand in.'
+        attemptId
+          ? `There ${marks === 1 ? 'is 1 mark' : `are ${marks} marks`} here for the method, and we cannot see your working. Photograph what you wrote and we will type it up beside the mark scheme. Nothing you have already earned can change.`
+          : 'Work it on paper, then photograph the page. We type up what we read and fill in the single-answer boxes; you check them, fill in the rest, and hand in.'
       }
       preview={preview}
-      pending={pending}
-      pick={!read && takesLeft > 0 ? pick('mt-2.5 w-full p-3 text-xs') : undefined}
-    >
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) send(file);
-          e.target.value = '';
-        }}
-      />
-
-      {error && <CaptureFailure message={error} onRetake={() => fileRef.current?.click()} />}
-
-      {/* ONE SURFACE FOR AN ILLEGIBLE READ: the failure panel, with its one
-          "Take it again" — no read section, no second retake, no prefill line. */}
-      {read && !read.legible && !attemptId && <CaptureFailure message="illegible" onRetake={() => fileRef.current?.click()} />}
-      {read && read.legible && (
-        <WorkingRead
-          lines={read.lines}
-          legible={read.legible}
-          method={marked.method.filter((m) => !hideRows?.has(m.code))}
-          rejected={marked.rejected}
-          reject={!attemptId && readId ? { transcriptionId: readId } : undefined}
-          dispute={
-            attemptId && marked.transcriptionId
-              ? { attemptId, transcriptionId: marked.transcriptionId, disputed: [] }
-              : undefined
-          }
-          earnedLabel={
-            marked.marksAdded > 0
-              ? `Your working earned ${marked.marksAdded} more mark${marked.marksAdded === 1 ? '' : 's'}`
-              : 'What your working earned'
-          }
-          footer={
-            attemptId && marked.failed
-              ? 'The read is kept. Only the marking has to run again.'
-              : takesLeft > 0 || !attemptId
-                ? undefined
-                : `No retakes left for this question. Check the answer boxes below. If we misread your working, tell us: ${LANDING.contactEmail}`
-          }
+      error={error}
+      retakes={retakesLeft(takes, MAX_TAKES)}
+      limit={MAX_TAKES}
+      thumb={thumb}
+      onPick={() => fileRef.current?.click()}
+      input={
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) send(file);
+            e.target.value = '';
+          }}
         />
-      )}
+      }
+      read={
+        read && (
+          <WorkingRead
+            lines={read.lines}
+            method={marked.method.filter((m) => !hideRows?.has(m.code))}
+            rejected={marked.rejected}
+            reject={!attemptId && readId ? { transcriptionId: readId } : undefined}
+            dispute={
+              attemptId && marked.transcriptionId
+                ? { attemptId, transcriptionId: marked.transcriptionId, disputed: [] }
+                : undefined
+            }
+            earnedLabel={
+              marked.marksAdded > 0
+                ? `Your working earned ${marked.marksAdded} more mark${marked.marksAdded === 1 ? '' : 's'}`
+                : 'What your working earned'
+            }
+            footer={attemptId && marked.failed ? 'The read is kept. Only the marking has to run again.' : undefined}
+          />
+        )
+      }
+    />
+  );
+}
 
-      {thumb && !pending && (
+const PICK = 'min-h-11 border-[1.5px] border-ink bg-white font-mono uppercase tracking-[0.1em] disabled:opacity-60';
+
+/**
+ * ONE SURFACE FOR THE PHOTOGRAPH, drawn from the one state. `none` offers
+ * the camera; `reading` shows the page while it is read; `read` shows what
+ * was read with a retake while one remains, or the no-retakes refusal;
+ * `illegible` and `failed` show the failure panel with its one "Take it
+ * again"; `exhausted` is the refusal alone, with no way to another take.
+ */
+export function CaptureSurface({
+  state,
+  post,
+  className,
+  intro,
+  preview,
+  error,
+  retakes,
+  limit,
+  thumb,
+  onPick,
+  input,
+  read,
+}: {
+  state: CaptureState;
+  post: boolean;
+  className?: string;
+  intro: string;
+  preview: string | null;
+  error: string | null;
+  retakes: number;
+  limit: number;
+  thumb: string | null;
+  onPick: () => void;
+  /** The hidden file input; drawn wherever another take is possible. */
+  input: React.ReactNode;
+  /** The read section, drawn only in `read`. */
+  read: React.ReactNode;
+}) {
+  const fresh = state === 'none' || (state === 'reading' && !thumb);
+  const noRetakes = (remains: string, action: { label: string; small?: string; href: string }) => (
+    <Refusal
+      id="no-retakes"
+      className="mt-3"
+      label="No retakes left"
+      sentence={`${WORDS[limit] ?? limit} photographs of this page have been read already.`.replace(/^./, (c) => c.toUpperCase())}
+      remains={remains}
+      action={action}
+    />
+  );
+  return (
+    <CameraBox
+      post={post}
+      state={state}
+      className={className}
+      heading={fresh ? 'Your working on paper' : undefined}
+      intro={state === 'none' ? intro : undefined}
+      preview={preview}
+      pending={state === 'reading'}
+      pick={
+        state === 'none' ? (
+          <button type="button" onClick={onPick} className={`${PICK} mt-2.5 w-full p-3 text-xs`}>
+            Photograph your working
+          </button>
+        ) : undefined
+      }
+    >
+      {state !== 'exhausted' && input}
+
+      {state === 'failed' && <CaptureFailure message={error ?? 'That photo could not be read.'} onRetake={onPick} />}
+      {state === 'illegible' && <CaptureFailure message="illegible" onRetake={onPick} />}
+      {state === 'read' && read}
+
+      {thumb && state !== 'reading' && (
         <details className="mt-2">
           <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest text-dim">Your photograph</summary>
           <img src={thumb} alt="The page you photographed" className="mt-1 max-h-64 border-[1.5px] border-ink object-contain" />
         </details>
       )}
 
-      {read && read.legible && takesLeft === 0 && !attemptId && (
-        <Refusal
-          id="no-retakes"
-          className="mt-3"
-          label="No retakes left"
-          sentence={`${WORDS[MAX_TAKES] ?? MAX_TAKES} photographs of this page have been read already.`.replace(/^./, (c) => c.toUpperCase())}
-          remains="The read we have is kept, and you can correct any line of it yourself before you hand in."
-          action={{ label: 'Check what we read', small: 'Fix a line, or hand in as is', href: '#camera-box' }}
-        />
-      )}
-
+      {state === 'read' && retakes === 0 &&
+        noRetakes(
+          post
+            ? `Check the answer boxes below. If we misread your working, tell us: ${LANDING.contactEmail}`
+            : 'The read we have is kept, and you can correct any line of it yourself before you hand in.',
+          { label: 'Check what we read', small: 'Fix a line, or hand in as is', href: '#camera-box' },
+        )}
       {/* The way to another take sits under what this one read, with the count beside it. */}
-      {read && read.legible && takesLeft > 0 && (
+      {state === 'read' && retakes > 0 && (
         <div className="mt-2.5 flex items-center gap-2.5">
-          {pick('flex-1 p-2.5 text-[11px]')}
+          <button type="button" onClick={onPick} className={`${PICK} flex-1 p-2.5 text-[11px]`}>
+            Take it again
+          </button>
           <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-dim">
-            {takesLeft} retake{takesLeft === 1 ? '' : 's'} left
+            {retakes} retake{retakes === 1 ? '' : 's'} left
           </span>
         </div>
       )}
+      {state === 'exhausted' &&
+        noRetakes('Nothing has been marked and nothing has been counted. Your working on paper is still the working.', {
+          label: 'Type the answers',
+          href: '#question',
+        })}
     </CameraBox>
   );
 }
@@ -224,6 +292,7 @@ export function WorkingPhoto({
  */
 export function CameraBox({
   post,
+  state,
   className,
   heading,
   intro,
@@ -234,6 +303,8 @@ export function CameraBox({
 }: {
   /** After submit the box is a section under the marking, not the panel above the boxes. */
   post: boolean;
+  /** The one state, stamped on the box so a test can read it. */
+  state?: CaptureState;
   className?: string;
   /** Once a page is read, what was read is the heading. */
   heading?: string;
@@ -247,6 +318,7 @@ export function CameraBox({
   return (
     <div
       id="camera-box"
+      data-capture-state={state}
       className={`${post ? 'mt-5 border-t-[1.5px] border-rule pt-3.5 lg:mt-0 lg:border-l-3 lg:border-t-0 lg:border-margin lg:bg-[#FFFDF6] lg:p-3' : 'mt-4 border-l-3 border-margin bg-[#FFFDF6] px-3 py-2 lg:mt-0 lg:py-2.5'} ${className ?? ''}`}
     >
       {heading && <div className="section-label">{heading}</div>}

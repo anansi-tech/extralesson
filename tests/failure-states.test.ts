@@ -39,7 +39,7 @@ describe('when something breaks', () => {
     expect(src).not.toMatch(/\{error\.(message|digest)\}/);
     const photo = readFileSync(join(process.cwd(), 'app', 'study', 'session', '[id]', 'working-photo.tsx'), 'utf8');
     expect(photo).not.toMatch(/border-red-pen/);
-    expect(photo).toMatch(/\{error && <CaptureFailure message=\{error\}/);
-    expect(photo).toMatch(/read && !read\.legible && !attemptId && <CaptureFailure/);
+    expect(photo).toMatch(/state === 'failed' && <CaptureFailure message=\{error/);
+    expect(photo).toMatch(/state === 'illegible' && <CaptureFailure message="illegible"/);
   });
 });

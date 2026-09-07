@@ -40,6 +40,18 @@ BANNED='whatsapp|twilio|investigation|\bsba\b|tikz|jsxgraph|minhash|latex'
 BANNED_R2='tesseract|\bocr\b|per-stroke|inkml|handwriting-model'
 
 fail=0
+
+# ONE STATE FOR THE PHOTOGRAPH: the camera box, the card and the look-back
+# read captureState() and derive nothing of their own. A comparison on a
+# take's legibility or on the takes left, anywhere but capture-state.ts, is
+# a second path — the thing that put two "Take it again"s on one page.
+DERIVES='takesLeft[[:space:]]*(===|!==|<=|>=|<|>)|\.legible[[:space:]]*(&&|\|\||\?|===|!==)|![A-Za-z_.?]*\.legible\b'
+derived=$(printf '%s\n' "${FILES[@]}" | grep -E '^app/study/session/\[id\]/.*\.tsx$' | grep -v 'capture-state' | xargs -r grep -HnE "$DERIVES" 2>/dev/null || true)
+if [ -n "$derived" ]; then
+  echo "capture state derived outside capture-state.ts (import captureState instead):"
+  echo "$derived" | sed 's/^/  /'
+  fail=1
+fi
 hits=$(grep -HniE "$BANNED" "${FILES[@]}" 2>/dev/null || true)
 if [ -n "$hits" ]; then
   echo "kill-list violation (CLAUDE.md forbids these in app/ lib/ scripts/ tests/):"

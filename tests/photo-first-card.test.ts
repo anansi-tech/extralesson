@@ -30,7 +30,7 @@ describe('the photo-first card', () => {
     expect(photo).toMatch(/:\s*await readWorking/);
     expect(photo).toMatch(/if \('prefill' in res && res\.transcription\.legible\) onRead\?\.\(res\.prefill\)/);
     expect(photo).toContain("'Take it again'");
-    expect(photo).toContain('No retakes left for this question. Check the answer boxes below. If we misread your working, tell us:');
+    expect(photo).toContain('Check the answer boxes below. If we misread your working, tell us:');
   });
 
   it('shows the marked read after submit, even when nothing is left to earn', () => {

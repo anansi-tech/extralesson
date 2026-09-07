@@ -9,7 +9,9 @@ import { RetryMarkingButton } from './retry-marking-button';
 import type { ReadResult } from './capture';
 import { TypedInput } from './typed-input';
 import { HintLines, SymbolStrip } from './affordance';
-import { WorkingPhoto } from './working-photo';
+import { WorkingPhoto, takesOf } from './working-photo';
+import { captureState, type CaptureState } from './capture-state';
+import { MAX_TAKES } from '@/lib/grade/transcribe';
 import { MethodRows, WorkingRead } from './working-read';
 import { isPositionalLabel } from '@/lib/notation';
 import { PROFILE_GLOSS } from '@/lib/study/profiles';
@@ -147,7 +149,8 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       : (question.draft?.values ?? {}),
   );
   const [feedback, setFeedback] = useState<Feedback | null>(question.prior?.feedback ?? null);
-  const [reading, setReading] = useState(false);
+  // THE ONE STATE OF THE PHOTOGRAPH, reported by the camera box; the card derives none of its own.
+  const [capture, setCapture] = useState<CaptureState>(() => captureState(takesOf(question.draft?.read), MAX_TAKES, false));
   // HONEST PREFILL (ROUND_7 Task 2): a read fills single boxes only. Which
   // boxes it filled and which it did not is said, with a way to each.
   const [readFilled, setReadFilled] = useState<string[] | null>(() => {
@@ -184,7 +187,8 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // and a part may hold both kinds at once.
   const markedSlots = question.parts.flatMap((p) => p.slots.filter((s) => s.mode === 'answer'));
   /** A page has been read for this question and not yet handed in. */
-  const pageRead = readFilled !== null || !!question.draft?.read;
+  const pageRead = capture === 'read';
+  const reading = capture === 'reading';
   // The figure has to stay reachable while a later part is answered: at 360px
   // the last input of a 12-mark question sits 909px below it, more than a
   // screen. A control brings the figure back OVER the page, so dismissing it
@@ -613,7 +617,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             setPartAnswers((prev) => ({ ...prev, ...prefill }));
             setReadFilled(Object.keys(prefill));
           }}
-          onBusy={setReading}
+          onState={setCapture}
           className={`order-3 ${pageRead ? 'lg:order-first' : 'lg:order-none'}`}
         />
       )}
@@ -1031,12 +1035,12 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
 
           {/* The CAPTURE control is what a finished question does not get; what it
               read is kept and shown. */}
+          {/* A take that could not be read shows nothing here: its state is the same function's. */}
           {reviewing &&
-            question.prior?.working?.map((w) => (
+            question.prior?.working?.map((w) => captureState([w], MAX_TAKES, false) === 'read' && (
               <div key={w.take} className="order-7 mt-5 border-t-[1.5px] border-rule pt-3.5 lg:mt-0 lg:border-l-3 lg:border-t-0 lg:border-margin lg:bg-[#FFFDF6] lg:p-3">
                 <WorkingRead
                   lines={w.lines}
-                  legible={w.legible}
                   method={w.method.filter((m) => !partRowCodes.has(m.code))}
                   dispute={{
                     attemptId: question.prior!.feedback.attemptId,
@@ -1084,8 +1088,8 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       )}
       </div>
 
-      {question.visualHtml && figureAway && !atSubmit && !figureOpen && (
-        <FigureRecall recallRef={recallRef} onClick={() => setFigureOpen(true)} />
+      {question.visualHtml && (
+        <FigureRecall shown={figureAway && !atSubmit && !figureOpen} recallRef={recallRef} onClick={() => setFigureOpen(true)} />
       )}
 
       {figureOpen && question.visualHtml && (
@@ -1243,10 +1247,13 @@ function splitPriorValues(
  * no text, with the page padded to match; the band sits above the iPhone's
  * home bar. The pill is the one full radius in the system, asked for by name.
  */
-export function FigureRecall({ onClick, recallRef }: { onClick: () => void; recallRef?: React.Ref<HTMLButtonElement> }) {
+export function FigureRecall({ shown, onClick, recallRef }: { shown: boolean; onClick: () => void; recallRef?: React.Ref<HTMLButtonElement> }) {
+  // The band's space is reserved whether or not the pill shows, so the page
+  // never changes height under the reader; only the pill comes and goes.
   return (
     <>
       <div aria-hidden="true" className="h-[calc(58px+env(safe-area-inset-bottom))]" />
+      {shown && (
       <div className="fixed inset-x-0 bottom-0 z-40 flex justify-end border-t border-paper-deep bg-paper px-3 pt-1.5 pb-[calc(6px+env(safe-area-inset-bottom))]">
         <button
           ref={recallRef}
@@ -1258,6 +1265,7 @@ export function FigureRecall({ onClick, recallRef }: { onClick: () => void; reca
           Figure
         </button>
       </div>
+      )}
     </>
   );
 }

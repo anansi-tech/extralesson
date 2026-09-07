@@ -22,7 +22,7 @@ describe('the way out', () => {
   });
   it('after the last take, says where to go, with the one help address', () => {
     const photo = at('app', 'study', 'session', '[id]', 'working-photo.tsx');
-    expect(photo).toMatch(/No retakes left for this question\. Check the answer boxes below\. If we misread your working, tell us: \$\{LANDING\.contactEmail\}/);
+    expect(photo).toMatch(/Check the answer boxes below\. If we misread your working, tell us: \$\{LANDING\.contactEmail\}/);
   });
   it('the chrome carries the sitting, Help and a 44px Sign out', () => {
     const chrome = at('app', 'study', 'study-chrome.tsx');

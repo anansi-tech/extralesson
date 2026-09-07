@@ -22,7 +22,6 @@ export interface MethodRow {
 
 export function WorkingRead({
   lines,
-  legible,
   method,
   heading,
   earnedLabel,
@@ -32,7 +31,6 @@ export function WorkingRead({
   reject,
 }: {
   lines: ReadLine[];
-  legible: boolean;
   method: MethodRow[];
   /** Names the take when there is more than one to tell apart. */
   heading?: string;
@@ -64,11 +62,6 @@ export function WorkingRead({
       <div className="section-label pb-0.5 shadow-[0_1.5px_0_var(--margin)]">
         {heading ?? 'This is what we read'}
       </div>
-      {!legible && (
-        <p className="mt-1 text-[12px] leading-snug text-dim">
-          We could not read this photograph. Nothing has changed.
-        </p>
-      )}
       {byPart.map((group, gi) => (
         <div key={`${group.part}-${gi}`} className="mt-2.5">
           <div className="font-mono text-[11px] text-dim">
