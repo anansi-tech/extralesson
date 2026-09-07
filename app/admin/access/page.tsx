@@ -264,9 +264,10 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                 </form>
               </div>
             ) : (
-              <form action={grantAccess} className="mt-2 flex flex-wrap items-center gap-2">
+              // Stacked on a phone: three controls in one row left the note two letters wide.
+              <form action={grantAccess} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                 <input type="hidden" name="id" value={r.id} />
-                <select name="sitting" defaultValue={r.exam_sitting} className={SELECT}>
+                <select name="sitting" defaultValue={r.exam_sitting} className={`${SELECT} w-full sm:w-auto`}>
                   {SITTING_IDS.map((s) => (
                     <option key={s} value={s}>
                       {SITTINGS[s].label}
@@ -277,9 +278,9 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                   name="note"
                   required
                   placeholder="comp · teacher · school · 2026-08-26"
-                  className={`${FIELD} min-w-0 flex-1`}
+                  className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`}
                 />
-                <button className={`${INK} text-sm`}>Grant access</button>
+                <button className={`${INK} w-full text-sm sm:w-auto`}>Grant access</button>
               </form>
             )}
           </li>

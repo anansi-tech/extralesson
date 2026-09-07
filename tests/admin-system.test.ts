@@ -35,6 +35,10 @@ describe('the admin surfaces use the system', () => {
   });
   it('shows a boundary on the refusal pattern and a failure on the amber one', () => {
     const access = at('app', 'admin', 'access', 'page.tsx');
+    // The grant form stacks on a phone and shares a row from the small breakpoint.
+    expect(access).toMatch(/<form action=\{grantAccess\} className="mt-2 flex flex-col gap-2 sm:flex-row/);
+    // The grant form stacks on a phone and shares a row from the small breakpoint.
+    expect(access).toMatch(/<form action=\{grantAccess\} className="mt-2 flex flex-col gap-2 sm:flex-row/);
     expect(access).toMatch(/<Refusal\s+id="payments-attention"\s+amber/);
     expect(access).toMatch(/<Refusal\s+id="payments-unmatched"\s+className/);
     expect(access).toMatch(/<Refusal\s+id="payments-refused"\s+amber/);
