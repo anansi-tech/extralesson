@@ -26,7 +26,7 @@ describe('the refusals', () => {
   });
   it('sitting passed: the door to the next sitting, with Help as the quiet link', () => {
     expect(text['sitting-passed']).toBe(
-      'Your sitting has passed Access ran to May/June 2027, and that paper is written. Your notebook stays open — every question and every mark, for as long as you want to read them. Enter for another sitting January 2027 re-sit · $49 Email us',
+      'Your sitting has passed Access ran to May/June 2027, and that paper is written. Your notebook stays open — every question and every mark, for as long as you want to read them. Enter for another sitting January 2027 · $49 Email us',
     );
     // Entering is a change of sitting, not a checkout: the paywall for the new sitting comes next.
     expect(html['sitting-passed']).toMatch(/<form[^>]*><input type="hidden" name="to" value="jan-2027"\/>/);

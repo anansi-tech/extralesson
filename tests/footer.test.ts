@@ -19,7 +19,7 @@ const refunds = renderToStaticMarkup(createElement(RefundsPage));
 describe('the footer', () => {
   it('says the four links, who makes it and who does not', () => {
     expect(visibleText(footer)).toBe(
-      'Help Refunds Privacy Terms An Anansi Technology product · Plantation, Florida ExtraLesson is not affiliated with or endorsed by the Caribbean Examinations Council',
+      'Help Refunds Privacy Terms An Anansi Technology product · Miami, Florida ExtraLesson is not affiliated with or endorsed by the Caribbean Examinations Council',
     );
     expect(footer).toMatch(/href="mailto:[^"]+@anansi\.xyz"[^>]*>Help/);
     for (const href of ['/refunds', '/privacy', '/terms']) expect(footer).toContain(`href="${href}"`);

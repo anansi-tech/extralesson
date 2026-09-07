@@ -50,7 +50,7 @@ export interface Email {
   text: string;
 }
 
-const FOOTER_LINES = ['An Anansi Technology product · Plantation, Florida', 'ExtraLesson is not affiliated with or endorsed by the Caribbean Examinations Council'];
+const FOOTER_LINES = ['An Anansi Technology product · Miami, Florida', 'ExtraLesson is not affiliated with or endorsed by the Caribbean Examinations Council'];
 
 /**
  * ONE LAYOUT FOR EVERY EMAIL (ROUND_9 Task 7; Auth and Welcome.dc.html §08):

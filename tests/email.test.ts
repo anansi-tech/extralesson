@@ -41,7 +41,7 @@ describe('the one email layout', () => {
       expect(e.html, k).toContain('>Hi,</p>');
       expect(e.html, k).toContain('— ExtraLesson');
       expect(e.text.startsWith('Hi,'), k).toBe(true);
-      expect(e.text, k).toContain('An Anansi Technology product · Plantation, Florida');
+      expect(e.text, k).toContain('An Anansi Technology product · Miami, Florida');
       expect(e.text, k).toContain('not affiliated with or endorsed by the Caribbean Examinations Council');
     }
   });

@@ -22,7 +22,7 @@ describe.skipIf(!hasChrome)('the chrome', () => {
   for (const width of [320, 360, 390, 1280]) {
     it(`fits the viewport at ${width}px, ${width >= 1024 ? 'one row' : 'two rows'}`, async () => {
       const p = await browser.newPage({ viewport: { width, height: 800 } });
-      await p.setContent(page('Jan 2027 re-sit'), { waitUntil: 'networkidle' });
+      await p.setContent(page('January 2027'), { waitUntil: 'networkidle' });
       const w = await p.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth));
       const rows = await p.evaluate(() => {
         const lock = document.querySelector('header svg')!.getBoundingClientRect();
@@ -40,7 +40,7 @@ describe.skipIf(!hasChrome)('the chrome', () => {
   for (const width of [320, 360, 390, 1280]) {
     it(`keeps the open account disclosure inside the viewport at ${width}px`, async () => {
       const p = await browser.newPage({ viewport: { width, height: 800 } });
-      await p.setContent(page('Jan 2027 re-sit', true), { waitUntil: 'networkidle' });
+      await p.setContent(page('January 2027', true), { waitUntil: 'networkidle' });
       const w = await p.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth));
       const panel = await p.evaluate(() => {
         const open = [...document.querySelectorAll('details[open]')].find((d) => d.getBoundingClientRect().width > 0)!;

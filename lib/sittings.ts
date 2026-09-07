@@ -13,7 +13,7 @@ import type { ExamSitting } from '@/lib/types';
  */
 export const SITTINGS: Record<ExamSitting, { label: string; paper: Date; ends: Date }> = {
   'jan-2027': {
-    label: 'January 2027 re-sit',
+    label: 'January 2027',
     paper: new Date('2027-01-11T00:00:00Z'),
     ends: new Date('2027-01-31T23:59:59Z'),
   },

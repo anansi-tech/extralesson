@@ -19,7 +19,7 @@ export function SiteFooter() {
           </nav>
         </div>
         <div className="mt-1.5 border-t border-paper-deep pt-3 leading-[1.9] tracking-[0.04em] lg:mt-0 lg:border-0 lg:pt-0 lg:text-right">
-          <div>An Anansi Technology product · Plantation, Florida</div>
+          <div>An Anansi Technology product · Miami, Florida</div>
           <div className="max-w-[44ch] lg:max-w-none">ExtraLesson is not affiliated with or endorsed by the Caribbean Examinations Council</div>
         </div>
       </div>
