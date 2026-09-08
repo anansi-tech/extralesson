@@ -87,10 +87,8 @@ ${FOOTER_LINES.join('\n')}`;
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e8e6e1;padding:32px 16px;font-family:Fraunces,Georgia,serif;color:#1e2430;line-height:1.55">
 <tr><td align="center">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#fbf7ee;border:1.5px solid #1e2430">
-<tr><td bgcolor="#fbf7ee" style="padding:32px 32px 0;background:#fbf7ee">
-<img src="${baseUrl}/brand/lockup-2x.png" width="150" height="39" alt="ExtraLesson" style="display:block;width:150px;height:auto">
-</td></tr>
-<tr><td style="padding:0 32px 32px">
+<tr><td style="padding:32px">
+<img src="${baseUrl}/brand/lockup-2x.png" width="182" height="58" alt="ExtraLesson" style="display:block;width:182px;height:auto;margin:-16px">
 <p style="margin:28px 0 0;font-size:16px">Hi,</p>
 <p style="margin:12px 0 0;font-size:18px;line-height:1.5">${sentence}</p>
 <p style="margin:24px 0 0"><a href="${button.url}" style="display:inline-block;background:#c1121f;color:#ffffff;font-weight:900;font-size:17px;padding:16px 28px;text-decoration:none">${button.label}</a></p>

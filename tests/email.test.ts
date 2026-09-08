@@ -36,9 +36,8 @@ describe('the one email layout', () => {
   it('every one: lockup, one sentence, one button, greeting and sign-off, the footer lines, the URL only in the text', () => {
     for (const [k, e] of Object.entries(EMAILS)) {
       expect(e.html, k).toContain(`<img src="${BASE}/brand/lockup-2x.png"`);
-      // The PNG, never the SVG, on a paper-coloured cell, in a light-only document.
-      expect(e.html, k).not.toMatch(/\.svg|<svg/);
-      expect(e.html, k).toMatch(/<td bgcolor="#fbf7ee"[^>]*>\s*<img src="[^"]*lockup-2x\.png"/);
+      // The PNG, never the SVG, in a light-only document; the paper is inside the image, so no cell colour.
+      expect(e.html, k).not.toMatch(/\.svg|<svg|bgcolor/);
       expect(e.html, k).toMatch(/<head>[\s\S]*color-scheme:light only[\s\S]*<\/head>/);
       expect(e.html, k).toMatch(/<\/body><\/html>\s*$/);
       expect((e.html.match(/<a /g) ?? []).length, `${k} buttons`).toBe(1);
