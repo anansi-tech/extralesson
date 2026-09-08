@@ -243,7 +243,8 @@ export default async function ReviewPage({
           </div>
         </header>
 
-        <form method="get" className="mb-4 flex gap-2">
+        {/* Stacked on a phone; a row from the small breakpoint. */}
+        <form method="get" className="mb-4 flex flex-col gap-2 sm:flex-row">
           <input
             name="find"
             defaultValue={find ?? ''}
@@ -251,7 +252,7 @@ export default async function ReviewPage({
             className={`${FIELD} w-full`}
           />
 
-          <button type="submit" className={`${CAPS} shrink-0`}>
+          <button type="submit" className={`${CAPS} w-full shrink-0 sm:w-auto`}>
             Find
           </button>
 
