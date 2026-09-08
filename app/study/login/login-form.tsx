@@ -116,8 +116,7 @@ export default function LoginForm({
           />
           {door === 'create' && (
             <span className="mt-1.5 block text-[11px] leading-snug text-dim">
-              At least {PASSWORD_MIN} characters. Length is what makes a password hard to guess — a
-              short phrase you will remember beats a short word with symbols in it.
+              At least {PASSWORD_MIN} characters.
             </span>
           )}
         </label>
