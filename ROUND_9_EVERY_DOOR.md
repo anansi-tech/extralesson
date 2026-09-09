@@ -145,6 +145,20 @@ this document.
   sitting-passed refusal enters for the next sitting on the books, and
   writes to Help only while there is none.
 
+  **A student holds ONE grant.** The account has one access record, so
+  entering for another sitting and paying REPLACES the grant rather than
+  adding one; the previous grant's sitting, source and note are carried
+  into the new note (`lib/grant-note.ts`), because a grant is the only
+  evidence of how access was given. Paying in advance for two future
+  sittings is therefore not supported. What such a payment does today is
+  worth knowing, since it is not what it looks like: the registered
+  sitting always wins, so a second payment while that sitting is still
+  covered grants nothing and is flagged on /admin/access as a duplicate
+  to refund, and a payment made after changing sitting replaces the
+  earlier sitting's access. Holding two live grants at once would be a
+  schema change — access as a list — and every reader of `access`
+  follows it.
+
 ## R10
 
 Admin on the chrome: access, review, coverage, topics, disputes, the

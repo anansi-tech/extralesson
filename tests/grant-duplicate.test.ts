@@ -99,6 +99,31 @@ describe('a payment for a sitting the account already has', () => {
     expect(sent).toHaveLength(1);
   }, 60000);
 
+  // The branch keys on THIS PAYMENT'S sitting having no live grant, never on
+  // the account's grant being the most recent or expired: a student who enters
+  // for another sitting can hold a live grant for one and pay for another.
+  it('grants when the live grant they have is for another sitting, keeping what it said', async () => {
+    const { grantFromPayment } = await import('@/lib/grant-from-payment');
+    const { Student } = await import('@/lib/db');
+    const { hasAccess } = await import('@/lib/access');
+    const live = { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'comp · pilot · 3 of 8' };
+    expect(hasAccess(live), 'the grant they hold is live').toBe(true);
+    const { student, payment } = await setup(live, 'evt_other');
+
+    const outcome = await grantFromPayment({
+      studentId: student._id,
+      registeredSitting: 'jan-2028',
+      payment: { _id: payment._id, event_id: 'evt_other' },
+    });
+
+    expect(outcome).toBe('granted');
+    const after = await Student.findById(student._id).lean<{ access: { sitting: string; note: string } }>();
+    expect(after!.access.sitting).toBe('jan-2028');
+    // One grant per account: the live one it replaced is readable only in the note.
+    expect(after!.access.note).toContain('was may-june-2027 manual: comp · pilot · 3 of 8');
+    expect(sent).toHaveLength(1);
+  }, 60000);
+
   it('grants when the grant they have is for a sitting that has passed, keeping what it said', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2028-06-01T00:00:00Z'));
