@@ -120,8 +120,10 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
       } | null>()
     : null;
 
-  // The payment as evidence, once per event; /admin/access reads these.
-  let payment = await Payment.findOne({ event_id: eventId }).lean<{ _id: unknown } | null>();
+  // THE SESSION IS THE KEY, not the event: Stripe redelivers under a new
+  // event id, and a delayed payment succeeds on the same session it completed
+  // unpaid. Both must find the row that exists rather than write a second one.
+  let payment = await Payment.findOne({ session_id: sessionId }).lean<{ _id: unknown; state?: string } | null>();
   if (!payment) {
     try {
       payment = await Payment.create({
@@ -136,16 +138,27 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
         student_id: student?._id,
       });
     } catch (e) {
+      // Another delivery for this session got there first; it is the same payment.
       if (!isDuplicateKey(e)) throw e;
-      payment = await Payment.findOne({ event_id: eventId }).lean<{ _id: unknown }>();
+      payment = await Payment.findOne({ session_id: sessionId }).lean<{ _id: unknown; state?: string }>();
     }
+  }
+  if (!payment) throw new Error(`no payment for session ${sessionId}`);
+
+  // The money has arrived on a session that completed without it. Conditional,
+  // so a delivery never regresses a state something else has already settled.
+  if (payment.state === 'pending') {
+    await Payment.updateOne(
+      { _id: payment._id, state: 'pending' },
+      { $set: transition('waiting', { reason: email ? undefined : NO_STUDENT_EMAIL }) },
+    );
   }
 
   const open = await Fulfilment.findOne({ session_id: sessionId }).lean<{ _id: unknown; status: string } | null>();
   let fulfilmentId: unknown = open?._id;
   if (!open) {
     try {
-      fulfilmentId = (await Fulfilment.create({ session_id: sessionId, event_id: eventId, payment_id: payment!._id, status: 'pending', ts: new Date() }))._id;
+      fulfilmentId = (await Fulfilment.create({ session_id: sessionId, event_id: eventId, payment_id: payment._id, status: 'pending', ts: new Date() }))._id;
     } catch (e) {
       // A concurrent delivery holds the session: it is doing this.
       if (!isDuplicateKey(e)) throw e;
@@ -166,8 +179,10 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
     // The payment stays waiting: paid, with no account holding it. Which of
     // the two reasons it is matters to whoever picks it up — an address with
     // no account is a typo to chase; no address at all is a Payment Link to fix.
+    // CONDITIONAL ON WAITING: a delivery never regresses a state something
+    // else has settled, so a redelivery cannot resurrect a closed payment.
     await Payment.updateOne(
-      { _id: payment!._id },
+      { _id: payment._id, state: 'waiting' },
       { $set: transition('waiting', { reason: email ? 'no account for the paying address' : NO_STUDENT_EMAIL }) },
     );
     return Response.json({ matched: false }, { status: 200 });
@@ -177,7 +192,7 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
     await grantFromPayment({
       studentId: student._id,
       registeredSitting: student.exam_sitting,
-      payment: { _id: payment!._id, event_id: eventId },
+      payment: { _id: payment._id, event_id: eventId },
     });
   } catch (e) {
     const reason = e instanceof Error ? e.message : String(e);
