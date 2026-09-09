@@ -6,13 +6,14 @@ import { Schema, model, models, type InferSchemaType } from 'mongoose';
  * redelivery retries the grant rather than reading the event as done. The
  * person is on the Payment it points at, which erasure already anonymises.
  * A refused session has no Payment: it was never ours to record as one, and
- * the row says why so /admin/access can show it.
+ * the row says why so /admin/access can show it. Duplicate is a payment for a
+ * sitting the account already had: nothing was granted and someone must refund.
  */
 const FulfilmentSchema = new Schema({
   session_id: { type: String, required: true, unique: true },
   event_id: { type: String, required: true },
   payment_id: { type: Schema.Types.ObjectId, ref: 'Payment' },
-  status: { type: String, enum: ['pending', 'granted', 'failed', 'refused'], required: true },
+  status: { type: String, enum: ['pending', 'granted', 'failed', 'refused', 'duplicate'], required: true },
   reason: { type: String },
   /** What a refused session said about itself, so a Payment Link missing its metadata is seen. */
   metadata: { type: Schema.Types.Mixed },

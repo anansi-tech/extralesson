@@ -1,4 +1,6 @@
 import { Fulfilment, Payment, Student } from '@/lib/db';
+import { hasAccess, type Access } from '@/lib/access';
+import { noteWithPrior } from '@/lib/grant-note';
 import type { ExamSitting } from '@/lib/types';
 import type { EmailSource } from '@/lib/stripe-webhook';
 import { accessEmail, sendEmail } from '@/lib/email';
@@ -19,7 +21,7 @@ export async function grantFromPayment(args: {
     event_id: string;
     email_source?: EmailSource | null;
   };
-}): Promise<'granted'> {
+}): Promise<'granted' | 'duplicate'> {
   const { studentId, registeredSitting, payment } = args;
 
   // THE REGISTERED SITTING WINS, ALWAYS. A payment link sells access, not a
@@ -33,6 +35,26 @@ export async function grantFromPayment(args: {
     notes.push('payer address, no student field');
   }
 
+  const before = await Student.findById(studentId).select('email access').lean<{ email: string; access?: Access | null } | null>();
+  const prior = before?.access ?? null;
+
+  // A SECOND PAYMENT FOR A SITTING ALREADY COVERED buys nothing, so it grants
+  // nothing: overwriting would move granted_at and lose the note that says how
+  // the access was given. The money is real, so it is flagged for a refund
+  // rather than swallowed. A grant for another sitting, or an expired one, is
+  // replaced as before — that payment did buy something.
+  if (prior && prior.sitting === sitting && hasAccess(prior)) {
+    await Payment.updateOne(
+      { _id: payment._id },
+      { $set: { student_id: studentId, note: noteWithPrior(`duplicate · already had access for ${sitting}`, prior) } },
+    );
+    await Fulfilment.updateOne(
+      { payment_id: payment._id },
+      { $set: { status: 'duplicate', reason: `already had access for ${sitting}`, ts: new Date() } },
+    );
+    return 'duplicate';
+  }
+
   await Student.updateOne(
     { _id: studentId },
     {
@@ -41,7 +63,7 @@ export async function grantFromPayment(args: {
           sitting,
           granted_at: new Date(),
           source: 'stripe',
-          note: notes.join(' · '),
+          note: noteWithPrior(notes.join(' · '), prior),
         },
       },
     },
@@ -53,7 +75,7 @@ export async function grantFromPayment(args: {
   await Fulfilment.updateOne({ payment_id: payment._id }, { $set: { status: 'granted', ts: new Date() }, $unset: { reason: '' } });
   // The student is told (ROUND_9 Task 7). A mail that does not go out must not
   // undo a grant that did: the failure is logged and the grant stands.
-  const student = await Student.findById(studentId).select('email').lean<{ email: string } | null>();
+  const student = before;
   if (student) {
     try {
       await sendEmail({ to: student.email, ...accessEmail({ sitting: sittingLabel(sitting) ?? sitting, baseUrl: externalBaseUrl() }) });

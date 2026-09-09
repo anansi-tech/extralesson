@@ -50,9 +50,10 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
     .sort({ ts: -1 })
     .limit(50)
     .lean<{ _id: unknown; session_id: string; event_id: string; reason?: string; metadata?: Record<string, string>; ts: Date }[]>();
-  // A failed grant, or one still pending an hour on, is a payment a person must finish.
+  // A failed grant, one still pending an hour on, or a payment for a sitting
+  // the account already had: each is a payment a person must finish.
   const needing = await Fulfilment.find({
-    $or: [{ status: 'failed' }, { status: 'pending', ts: { $lt: new Date(Date.now() - STALE_PENDING_MS) } }],
+    $or: [{ status: 'failed' }, { status: 'duplicate' }, { status: 'pending', ts: { $lt: new Date(Date.now() - STALE_PENDING_MS) } }],
   })
     .sort({ ts: -1 })
     .limit(50)
@@ -123,17 +124,19 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
             amber
             className="mb-6"
             label="Payments needing attention"
-            sentence="A failed grant, or one still pending an hour on, is a payment a person must finish."
+            sentence="A failed grant, a payment for a sitting the account already had, or one still pending an hour on — each is a payment a person must finish."
           >
             <ul className="mt-3 space-y-2">
               {needing.map((f) => (
                 <li key={String(f._id)} className="break-all border-t border-paper-deep pt-2 font-mono text-[12px]">
-                  {f.status === 'failed' ? 'grant FAILED' : 'still pending after an hour'} · {new Date(f.ts).toISOString().slice(0, 16).replace('T', ' ')}
+                  {f.status === 'failed' ? 'grant FAILED' : f.status === 'duplicate' ? 'ALREADY HAD ACCESS' : 'still pending after an hour'} · {new Date(f.ts).toISOString().slice(0, 16).replace('T', ' ')}
                   <span className="ml-2 text-dim">{f.session_id} · {f.event_id}{f.reason ? ` · ${f.reason}` : ''}</span>
                   <div className="mt-1 text-ink">
                     {f.status === 'failed'
                       ? 'Next: resend the event from Stripe once; if it fails again, grant the account by hand below with the event id as the note.'
-                      : 'Next: find the session in Stripe; if it is paid, grant the account by hand below with the event id as the note, then resend the event so the record closes.'}
+                      : f.status === 'duplicate'
+                        ? 'already had access for this sitting — refund in Stripe. Nothing was granted and the grant they had is untouched.'
+                        : 'Next: find the session in Stripe; if it is paid, grant the account by hand below with the event id as the note, then resend the event so the record closes.'}
                   </div>
                 </li>
               ))}

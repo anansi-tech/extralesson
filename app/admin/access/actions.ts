@@ -7,6 +7,8 @@ import { dbConnect, Payment, Student } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth/session';
 import { deleteStudent, type DeletionCounts } from '@/lib/delete-student';
 import { SITTING_IDS } from '@/lib/sittings';
+import { noteWithPrior } from '@/lib/grant-note';
+import type { Access } from '@/lib/access';
 
 export type DeleteAccountState =
   | { status: 'idle' }
@@ -30,14 +32,14 @@ export async function grantAccess(formData: FormData): Promise<void> {
   const note = String(formData.get('note') ?? '').slice(0, 200);
   await dbConnect();
   const student = rowId
-    ? await Student.findById(IdZ.parse(rowId)).select('email').lean<{ _id: unknown; email: string } | null>()
-    : await Student.findOne({ email }).select('email').lean<{ _id: unknown; email: string } | null>();
+    ? await Student.findById(IdZ.parse(rowId)).select('email access').lean<{ _id: unknown; email: string; access?: Access | null } | null>()
+    : await Student.findOne({ email }).select('email access').lean<{ _id: unknown; email: string; access?: Access | null } | null>();
   // An address with no account is worth naming: the payer registered with another one.
   if (!student) redirect(`/admin/access?ungranted=${encodeURIComponent(email)}`);
   const id = String(student._id);
   await Student.updateOne(
     { _id: id },
-    { $set: { access: { sitting, granted_at: new Date(), source: 'manual', note } } },
+    { $set: { access: { sitting, granted_at: new Date(), source: 'manual', note: noteWithPrior(note, student.access) } } },
   );
   revalidatePath('/admin/access');
   // Success names the account and the sitting, so a slip is seen at once (ROUND_7 Task 3).
