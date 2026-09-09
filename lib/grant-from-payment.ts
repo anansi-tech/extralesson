@@ -1,6 +1,7 @@
 import { Fulfilment, Payment, Student } from '@/lib/db';
 import { hasAccess, type Access } from '@/lib/access';
 import { noteWithPrior } from '@/lib/grant-note';
+import { transition } from '@/lib/payment-state';
 import type { ExamSitting } from '@/lib/types';
 import type { EmailSource } from '@/lib/stripe-webhook';
 import { accessEmail, sendEmail } from '@/lib/email';
@@ -46,7 +47,13 @@ export async function grantFromPayment(args: {
   if (prior && prior.sitting === sitting && hasAccess(prior)) {
     await Payment.updateOne(
       { _id: payment._id },
-      { $set: { student_id: studentId, note: noteWithPrior(`duplicate · already had access for ${sitting}`, prior) } },
+      {
+        $set: {
+          student_id: studentId,
+          note: noteWithPrior(`duplicate · already had access for ${sitting}`, prior),
+          ...transition('duplicate', { reason: `already had access for ${sitting}` }),
+        },
+      },
     );
     await Fulfilment.updateOne(
       { payment_id: payment._id },
@@ -70,7 +77,7 @@ export async function grantFromPayment(args: {
   );
   // Attaching the student is what takes it off the unmatched list, so it
   // happens here rather than being left to the caller to remember.
-  await Payment.updateOne({ _id: payment._id }, { $set: { student_id: studentId } });
+  await Payment.updateOne({ _id: payment._id }, { $set: { student_id: studentId, ...transition('granted') } });
   // The fulfilment, if the webhook opened one, is now what it says it is.
   await Fulfilment.updateOne({ payment_id: payment._id }, { $set: { status: 'granted', ts: new Date() }, $unset: { reason: '' } });
   // The student is told (ROUND_9 Task 7). A mail that does not go out must not

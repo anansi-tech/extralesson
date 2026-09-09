@@ -1,4 +1,5 @@
 import { dbConnect, Fulfilment, Payment, Student, StripeEvent, isDuplicateKey } from '@/lib/db';
+import { transition } from '@/lib/payment-state';
 import { GRANTING_EVENTS, emailFromSession, metadataOf, scopeOfSession, verifyStripeSignature } from '@/lib/stripe-webhook';
 import { grantFromPayment } from '@/lib/grant-from-payment';
 import type { ExamSitting } from '@/lib/types';
@@ -98,6 +99,10 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
     try {
       payment = await Payment.create({
         event_id: eventId,
+        session_id: sessionId,
+        // Paid and ours: a session that is neither never reaches here. No
+        // account holds it yet, which is what waiting means (ROUND_11).
+        ...transition('waiting'),
         email,
         amount_total: typeof session.amount_total === 'number' ? session.amount_total : undefined,
         currency: typeof session.currency === 'string' ? session.currency : undefined,
@@ -131,6 +136,11 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
     await Fulfilment.updateOne(
       { _id: fulfilmentId },
       { $set: { status: 'unmatched', reason: 'no account for the paying address', ts: new Date() } },
+    );
+    // The payment stays waiting — paid, with no account holding it.
+    await Payment.updateOne(
+      { _id: payment!._id },
+      { $set: transition('waiting', { reason: 'no account for the paying address' }) },
     );
     return Response.json({ matched: false }, { status: 200 });
   }

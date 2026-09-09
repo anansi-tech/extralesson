@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { dbConnect, Fulfilment, Payment, Student } from '@/lib/db';
 import { grantFromPayment } from '@/lib/grant-from-payment';
+import { transition } from '@/lib/payment-state';
 import { requireAdmin } from '@/lib/auth/session';
 import { deleteStudent, type DeletionCounts } from '@/lib/delete-student';
 import { SITTING_IDS } from '@/lib/sittings';
@@ -63,13 +64,16 @@ export async function revokeAccess(formData: FormData): Promise<void> {
  * would hide that.
  */
 export async function resolvePayment(formData: FormData): Promise<void> {
-  await requireAdmin();
+  const operator = await requireAdmin();
   const id = IdZ.parse(String(formData.get('id')));
   // A reason is the record: a payment resolved with none is a payment nobody can explain later.
   const reason = String(formData.get('reason') ?? '').trim().slice(0, 200);
   if (reason.length < 3) return;
   await dbConnect();
-  await Payment.updateOne({ _id: id }, { $set: { resolved_at: new Date(), note: `resolved: ${reason}` } });
+  await Payment.updateOne(
+    { _id: id },
+    { $set: { resolved_at: new Date(), note: `resolved: ${reason}`, ...transition('closed', { reason, by: operator.email }) } },
+  );
   // The record it opened closes with it: the attention list reads the
   // fulfilment, so a payment resolved without this stayed on the list forever.
   await Fulfilment.updateOne({ payment_id: id }, { $set: { status: 'resolved', reason, ts: new Date() } });
