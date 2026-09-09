@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createHmac } from 'node:crypto';
+import { STUDENT_EMAIL_FIELD } from '@/lib/stripe-webhook';
 
 // ROUND_11 Task 1, ADDITIVE: the payment carries what happened to the money,
 // written beside the old fields. Nothing reads it yet, and every writer that
@@ -37,7 +38,7 @@ const delivery = (eventId: string, sessionId: string, email: string) => {
   const body = JSON.stringify({
     id: eventId,
     type: 'checkout.session.completed',
-    data: { object: { id: sessionId, mode: 'payment', payment_status: 'paid', amount_total: 4900, currency: 'usd', customer_details: { email }, metadata: { product: 'extralesson' } } },
+    data: { object: { id: sessionId, mode: 'payment', payment_status: 'paid', amount_total: 4900, currency: 'usd', custom_fields: [{ key: STUDENT_EMAIL_FIELD, type: 'text', text: { value: email } }], metadata: { product: 'extralesson' } } },
   });
   const t = Math.floor(Date.now() / 1000);
   const v1 = createHmac('sha256', SECRET).update(`${t}.${body}`).digest('hex');

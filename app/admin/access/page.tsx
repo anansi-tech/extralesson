@@ -38,7 +38,9 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
 
   // Payments the webhook could not attach to an account. Recorded rather than
   // dropped: someone has paid, and this is the only place that says so.
-  const unmatched = await Payment.find({ student_id: null, resolved_at: null })
+  // A pending payment is a session whose money has not arrived: it is not a
+  // payment with no matching account, and listing it would invent one.
+  const unmatched = await Payment.find({ student_id: null, resolved_at: null, state: { $ne: 'pending' } })
     .sort({ received_at: -1 })
     .lean<
       { _id: unknown; event_id: string; email?: string; amount_total?: number; currency?: string; received_at: Date }[]

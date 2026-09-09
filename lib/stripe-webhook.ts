@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { z } from 'zod';
 
 /**
  * No Stripe package: the kill list bans it as a DEPENDENCY and exempts a
@@ -61,24 +62,26 @@ export function verifyStripeSignature(
   }
 }
 
-/**
- * THE RECEIPT-ADDRESS FALLBACK IS TOLERATED, NOT DESIRED, so it reports its
- * source: with the custom field Required it fires only on a misconfiguration,
- * the ROUND_2 §8e defect arriving silently. The caller notes it on the grant.
- */
-export type EmailSource = 'custom_field' | 'payer';
+/** A paid session with no address we can trust: recorded, and it waits for a person. */
+export const NO_STUDENT_EMAIL = 'no valid student email on the session';
 
-export function emailFromSession(
-  session: Record<string, unknown>,
-): { email: string; source: EmailSource } | null {
-  const fields = (session.custom_fields as { text?: { value?: string } }[] | undefined) ?? [];
-  for (const f of fields) {
-    const v = f?.text?.value?.trim();
-    if (v && v.includes('@')) return { email: v.toLowerCase(), source: 'custom_field' };
-  }
-  const details = session.customer_details as { email?: string } | undefined;
-  const fallback = details?.email?.trim();
-  return fallback ? { email: fallback.toLowerCase(), source: 'payer' } : null;
+/** The key of the student-email field on the ExtraLesson Payment Link. */
+export const STUDENT_EMAIL_FIELD = 'studentsemailaddress';
+
+/**
+ * THE STUDENT'S ADDRESS COMES FROM THE FIELD THAT ASKS FOR IT, by its key —
+ * never from "any custom text containing @", and never from the payer's
+ * receipt address (ROUND_11 Task 3). The payer is often not the student, so
+ * falling back to their address created the account under the wrong person
+ * and looked like success. A session without a valid one is a session we
+ * cannot place: it waits for an operator, with the money already recorded.
+ */
+export function emailFromSession(session: Record<string, unknown>): string | null {
+  const fields = (session.custom_fields as { key?: string; text?: { value?: string } }[] | undefined) ?? [];
+  const field = fields.find((f) => f?.key === STUDENT_EMAIL_FIELD);
+  const value = field?.text?.value?.trim().toLowerCase();
+  if (!value) return null;
+  return z.string().email().safeParse(value).success ? value : null;
 }
 
 /**

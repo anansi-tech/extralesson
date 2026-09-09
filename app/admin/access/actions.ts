@@ -93,12 +93,12 @@ export async function matchPayment(formData: FormData): Promise<void> {
   await dbConnect();
   const student = await Student.findOne({ email }).select('exam_sitting').lean<{ _id: unknown; exam_sitting: ExamSitting } | null>();
   if (!student) redirect(`/admin/access?ungranted=${encodeURIComponent(email)}`);
-  const payment = await Payment.findById(id).select('event_id email_source').lean<{ _id: unknown; event_id: string; email_source?: 'custom_field' | 'payer' | null } | null>();
+  const payment = await Payment.findById(id).select('event_id').lean<{ _id: unknown; event_id: string } | null>();
   if (!payment) redirect('/admin/access');
   const outcome = await grantFromPayment({
     studentId: student._id,
     registeredSitting: student.exam_sitting,
-    payment: { _id: payment._id, event_id: payment.event_id, email_source: payment.email_source },
+    payment: { _id: payment._id, event_id: payment.event_id },
   });
   revalidatePath('/admin/access');
   if (outcome === 'duplicate') redirect(`/admin/access?ungranted=${encodeURIComponent(email)}&duplicate=1`);

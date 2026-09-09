@@ -4,6 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} }), usePathname: () => '/study' }));
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { STUDENT_EMAIL_FIELD } from '@/lib/stripe-webhook';
 import { canStartSession, grantFor, hasAccess, type Access } from '@/lib/access';
 import { SITTINGS, SITTING_IDS, accessEndsAt, nextSittingAt, sittingsOpenAt } from '@/lib/sittings';
 import { DashboardView } from '@/app/study/dashboard';
@@ -47,7 +48,7 @@ function paid(id: string, email: string): Request {
         payment_status: 'paid',
         amount_total: 4900,
         currency: 'usd',
-        custom_fields: [{ text: { value: email } }],
+        custom_fields: [{ key: STUDENT_EMAIL_FIELD, type: 'text', text: { value: email } }],
         customer_details: { email },
       },
     },

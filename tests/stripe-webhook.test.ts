@@ -2,7 +2,7 @@ import { createHmac } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import {
   REPLAY_TOLERANCE_S,
-  emailFromSession,
+  emailFromSession, STUDENT_EMAIL_FIELD,
   metadataOf,
   scopeOfSession,
   verifyStripeSignature,
@@ -84,23 +84,19 @@ describe('verifyStripeSignature', () => {
 });
 
 describe('emailFromSession', () => {
-  it('prefers the payment link custom field, and says that is where it came from', () => {
+  it('takes the named field, by its key, over the payer address beside it', () => {
     expect(
       emailFromSession({
-        custom_fields: [{ text: { value: 'Student@Example.com ' } }],
+        custom_fields: [{ key: STUDENT_EMAIL_FIELD, text: { value: 'Student@Example.com ' } }],
         customer_details: { email: 'payer@example.com' },
       }),
-    ).toEqual({ email: 'student@example.com', source: 'custom_field' });
+    ).toBe('student@example.com');
   });
 
-  it('falls back to the receipt email, and REPORTS the fallback', () => {
-    // Tolerated, not desired. With the Stripe field Required this can only fire
-    // on a misconfiguration, which is the §8e defect arriving quietly — so the
-    // source is carried into the grant note.
-    expect(emailFromSession({ customer_details: { email: 'Payer@Example.com' } })).toEqual({
-      email: 'payer@example.com',
-      source: 'payer',
-    });
+  it('never falls back to the receipt email: the payer is often not the student', () => {
+    expect(emailFromSession({ customer_details: { email: 'Payer@Example.com' } })).toBeNull();
+    // Nor any other field that happens to hold an address.
+    expect(emailFromSession({ custom_fields: [{ key: 'referredby', text: { value: 'teacher@example.com' } }] })).toBeNull();
   });
 
   it('ignores a custom field that is not an email', () => {

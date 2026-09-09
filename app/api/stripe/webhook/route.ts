@@ -1,6 +1,6 @@
 import { dbConnect, Fulfilment, Payment, Student, StripeEvent, isDuplicateKey } from '@/lib/db';
 import { transition } from '@/lib/payment-state';
-import { GRANTING_EVENTS, emailFromSession, metadataOf, scopeOfSession, verifyStripeSignature } from '@/lib/stripe-webhook';
+import { GRANTING_EVENTS, NO_STUDENT_EMAIL, emailFromSession, metadataOf, scopeOfSession, verifyStripeSignature } from '@/lib/stripe-webhook';
 import { grantFromPayment } from '@/lib/grant-from-payment';
 import type { ExamSitting } from '@/lib/types';
 
@@ -39,6 +39,10 @@ export async function POST(req: Request): Promise<Response> {
   if (!scope.ok) {
     console.warn(`[stripe] ${event.id} refused: ${scope.reason} (metadata ${JSON.stringify(metadataOf(session))})`);
     await recordRefusal(event.id, session, scope.reason);
+    // Ours, in payment mode, and not yet paid: the money is not here, so the
+    // payment is pending and nothing about an address can move it (ROUND_11
+    // Task 3). A delayed payment method arrives later on the same session.
+    if (scope.reason === 'not-paid') await recordPending(event.id, session);
     return Response.json({ refused: scope.reason }, { status: 200 });
   }
 
@@ -50,6 +54,29 @@ export async function POST(req: Request): Promise<Response> {
     const reason = e instanceof Error ? e.message : String(e);
     console.error(`[stripe] ${event.id} failed: ${reason}`);
     return Response.json({ error: reason }, { status: 500 });
+  }
+}
+
+/**
+ * An unpaid session, recorded as pending. The money has not arrived, so no
+ * address and no account can move it: payment confirmation comes first,
+ * always. Fulfilment still says refused/not-paid, which is what today's
+ * readers read.
+ */
+async function recordPending(eventId: string, session: Record<string, unknown>): Promise<void> {
+  await dbConnect();
+  const sessionId = typeof session.id === 'string' ? session.id : eventId;
+  try {
+    await Payment.create({
+      event_id: eventId,
+      session_id: sessionId,
+      ...transition('pending', { reason: 'awaiting payment confirmation' }),
+      email: emailFromSession(session),
+      amount_total: typeof session.amount_total === 'number' ? session.amount_total : undefined,
+      currency: typeof session.currency === 'string' ? session.currency : undefined,
+    });
+  } catch (e) {
+    if (!isDuplicateKey(e)) throw e;
   }
 }
 
@@ -84,8 +111,8 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
     if (!isDuplicateKey(e)) throw e;
   }
 
-  const read = emailFromSession(session);
-  const email = read?.email ?? null;
+  // The named field, validated. No fallback to the payer's receipt address.
+  const email = emailFromSession(session);
   const student = email
     ? await Student.findOne({ email }).select('exam_sitting access').lean<{
         _id: unknown;
@@ -102,11 +129,10 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
         session_id: sessionId,
         // Paid and ours: a session that is neither never reaches here. No
         // account holds it yet, which is what waiting means (ROUND_11).
-        ...transition('waiting'),
+        ...transition('waiting', { reason: email ? undefined : NO_STUDENT_EMAIL }),
         email,
         amount_total: typeof session.amount_total === 'number' ? session.amount_total : undefined,
         currency: typeof session.currency === 'string' ? session.currency : undefined,
-        email_source: read?.source,
         student_id: student?._id,
       });
     } catch (e) {
@@ -137,10 +163,12 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
       { _id: fulfilmentId },
       { $set: { status: 'unmatched', reason: 'no account for the paying address', ts: new Date() } },
     );
-    // The payment stays waiting — paid, with no account holding it.
+    // The payment stays waiting: paid, with no account holding it. Which of
+    // the two reasons it is matters to whoever picks it up — an address with
+    // no account is a typo to chase; no address at all is a Payment Link to fix.
     await Payment.updateOne(
       { _id: payment!._id },
-      { $set: transition('waiting', { reason: 'no account for the paying address' }) },
+      { $set: transition('waiting', { reason: email ? 'no account for the paying address' : NO_STUDENT_EMAIL }) },
     );
     return Response.json({ matched: false }, { status: 200 });
   }
@@ -149,7 +177,7 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
     await grantFromPayment({
       studentId: student._id,
       registeredSitting: student.exam_sitting,
-      payment: { _id: payment!._id, event_id: eventId, email_source: read?.source },
+      payment: { _id: payment!._id, event_id: eventId },
     });
   } catch (e) {
     const reason = e instanceof Error ? e.message : String(e);

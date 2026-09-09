@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { STUDENT_EMAIL_FIELD } from '@/lib/stripe-webhook';
 
 // Set before the modules under test are imported: the route reads
 // STRIPE_WEBHOOK_SECRET at call time, but dbConnect caches on MONGODB_URI.
@@ -34,7 +35,7 @@ function checkoutBody(args: {
   mode?: string;
   payment_status?: string;
 }) {
-  const custom_fields = args.studentField ? [{ text: { value: args.studentField } }] : [];
+  const custom_fields = args.studentField ? [{ key: STUDENT_EMAIL_FIELD, type: 'text', text: { value: args.studentField } }] : [];
   return JSON.stringify({
     id: args.id,
     type: args.type ?? 'checkout.session.completed',
@@ -167,33 +168,37 @@ describe('3. the custom field beats the payer address', () => {
   });
 });
 
-describe('4. no custom field falls back to the payer address', () => {
-  it('grants on the receipt address — correct, and why the Stripe field must be Required', async () => {
+// ROUND_11 Task 3 deleted the fallback. It was tolerated because the Stripe
+// field is Required, so it could only fire on a misconfiguration — but what it
+// did then was grant the account to whoever held the card, silently, and look
+// like success. A session we cannot place now waits for a person instead.
+describe('4. no student field grants nobody', () => {
+  it('never grants on the receipt address, however plainly it names an account', async () => {
     const payer = 'payer-only@test.invalid';
     await makeStudent(payer);
 
     await POST(signed(checkoutBody({ id: 'evt_4', payerEmail: payer })));
 
-    expect((await accessOf(payer))?.sitting).toBe(REGISTERED);
+    expect(await accessOf(payer)).toBeUndefined();
   });
 
-  it('says in the note that it used the payer address', async () => {
-    // Tolerated, not desired. With the field Required this can only fire on a
-    // misconfiguration, so it has to be visible on /admin/access after the
-    // FIRST sale rather than the twentieth.
+  it('records the money as waiting, with the reason a person can act on', async () => {
     const payer = 'payer-noted@test.invalid';
     await makeStudent(payer);
 
     await POST(signed(checkoutBody({ id: 'evt_4b', payerEmail: payer })));
 
-    expect((await accessOf(payer))?.note).toContain('payer address, no student field');
+    const payment = await Payment.findOne({ event_id: 'evt_4b' }).lean<{ state: string; state_reason: string; email?: string }>();
+    expect(payment).toMatchObject({ state: 'waiting', state_reason: 'no valid student email on the session' });
+    expect(payment!.email ?? null).toBeNull();
   });
 
-  it('says nothing of the sort when the student field was used', async () => {
+  it('grants the account named by the student field, with no mention of a payer', async () => {
     const email = 'clean-match@test.invalid';
     await makeStudent(email);
     await POST(signed(checkoutBody({ id: 'evt_4c', studentField: email, payerEmail: 'other@test.invalid' })));
-    expect((await accessOf(email))?.note).not.toContain('payer address');
+    expect((await accessOf(email))?.note).not.toContain('payer');
+    expect(await accessOf('other@test.invalid')).toBeUndefined();
   });
 });
 

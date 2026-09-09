@@ -3,7 +3,6 @@ import { hasAccess, type Access } from '@/lib/access';
 import { noteWithPrior } from '@/lib/grant-note';
 import { transition } from '@/lib/payment-state';
 import type { ExamSitting } from '@/lib/types';
-import type { EmailSource } from '@/lib/stripe-webhook';
 import { accessEmail, sendEmail } from '@/lib/email';
 import { externalBaseUrl } from '@/lib/base-url';
 import { sittingLabel } from '@/lib/sittings';
@@ -20,7 +19,6 @@ export async function grantFromPayment(args: {
   payment: {
     _id: unknown;
     event_id: string;
-    email_source?: EmailSource | null;
   };
 }): Promise<'granted' | 'duplicate'> {
   const { studentId, registeredSitting, payment } = args;
@@ -32,9 +30,6 @@ export async function grantFromPayment(args: {
   const sitting = registeredSitting;
 
   const notes = [`stripe ${payment.event_id}`];
-  if (payment.email_source === 'payer') {
-    notes.push('payer address, no student field');
-  }
 
   const before = await Student.findById(studentId).select('email access').lean<{ email: string; access?: Access | null } | null>();
   const prior = before?.access ?? null;
@@ -104,6 +99,5 @@ export async function pendingPaymentFor(email: string) {
     .lean<{
       _id: unknown;
       event_id: string;
-      email_source?: EmailSource | null;
     } | null>();
 }

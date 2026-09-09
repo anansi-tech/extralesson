@@ -61,7 +61,7 @@ describe('a payment for a sitting the account already has', () => {
     const outcome = await grantFromPayment({
       studentId: student._id,
       registeredSitting: SITTING,
-      payment: { _id: payment._id, event_id: 'evt_dup', email_source: 'custom_field' },
+      payment: { _id: payment._id, event_id: 'evt_dup' },
     });
 
     expect(outcome).toBe('duplicate');

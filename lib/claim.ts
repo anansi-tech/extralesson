@@ -6,7 +6,6 @@ import { transition } from '@/lib/payment-state';
 import { accessEmail, sendEmail } from '@/lib/email';
 import { externalBaseUrl } from '@/lib/base-url';
 import { sittingLabel } from '@/lib/sittings';
-import type { EmailSource } from '@/lib/stripe-webhook';
 import type { ExamSitting } from '@/lib/types';
 
 export type ClaimOutcome = 'granted' | 'duplicate' | 'not-claimable';
@@ -15,7 +14,6 @@ interface PaymentRow {
   _id: unknown;
   event_id: string;
   state?: string;
-  email_source?: EmailSource | null;
 }
 interface StudentRow {
   _id: unknown;
@@ -76,8 +74,7 @@ export async function claim(sessionId: string, student: { id: unknown }): Promis
           return;
         }
 
-        const notes = [`stripe ${payment.event_id}`];
-        if (payment.email_source === 'payer') notes.push('payer address, no student field');
+        const note = noteWithPrior(`stripe ${payment.event_id}`, prior);
         await Payment.updateOne(
           { _id: payment._id, state: 'waiting' },
           { $set: { student_id: fresh._id, ...transition('granted') } },
@@ -86,7 +83,7 @@ export async function claim(sessionId: string, student: { id: unknown }): Promis
         await Fulfilment.updateOne({ payment_id: payment._id }, { $set: { status: 'granted', ts: new Date() }, $unset: { reason: '' } }, { session });
         await Student.updateOne(
           { _id: fresh._id },
-          { $set: { access: { sitting, granted_at: new Date(), source: 'stripe', note: noteWithPrior(notes.join(' · '), prior) } } },
+          { $set: { access: { sitting, granted_at: new Date(), source: 'stripe', note } } },
           { session },
         );
         outcome = 'granted';
