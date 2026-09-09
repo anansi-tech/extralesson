@@ -53,7 +53,7 @@ describe('the admin surfaces use the system', () => {
     expect(card).toMatch(/\(e\.key === 'a' \|\| e\.key === 'A'\) && question\.status === 'draft'\) approve\(\)/);
     expect(card).toMatch(/\(e\.key === 'r' \|\| e\.key === 'R'\) && question\.status !== 'retired'\) retire\(\)/);
     expect(card).toMatch(/e\.key === 'e' \|\| e\.key === 'E'/);
-    expect(at('app', 'admin', 'access', 'page.tsx')).toMatch(/\{ status: 'failed' \}, \{ status: 'duplicate' \}, \{ status: 'pending', ts: \{ \$lt: new Date\(Date\.now\(\) - STALE_PENDING_MS\) \} \}/);
+    expect(at('app', 'admin', 'access', 'page.tsx')).toMatch(/\{ status: 'failed' \},\s*\{ status: 'duplicate' \},\s*\{ status: 'unmatched' \},\s*\{ status: 'pending', ts: \{ \$lt: new Date\(Date\.now\(\) - STALE_PENDING_MS\) \} \}/);
   });
 });
 

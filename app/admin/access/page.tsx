@@ -1,7 +1,7 @@
 import { dbConnect, Attempt, Fulfilment, Payment, PracticeSession, Student } from '@/lib/db';
 import { FREE_MODES, FREE_SESSIONS, hasAccess } from '@/lib/access';
 import { SITTINGS, SITTING_IDS, sittingsOpenAt } from '@/lib/sittings';
-import { grantAccess, resolvePayment, revokeAccess } from './actions';
+import { grantAccess, matchPayment, resolvePayment, revokeAccess } from './actions';
 import { DeleteAccount } from './delete-account';
 import { Refusal } from '../../refusal';
 import { CAPS, FIELD, INK, QUIET, ROW, SELECT } from '../ui';
@@ -11,7 +11,7 @@ export const metadata = { title: 'Access — ExtraLesson admin' };
 
 
 /** A pending fulfilment older than this needs a person: the webhook should have finished in seconds. */
-const STALE_PENDING_MS = 60 * 60 * 1000;
+import { STALE_PENDING_MS } from '@/lib/db/backfill-unmatched-fulfilments';
 
 /**
  * Who has paid, and who the webhook could not settle. Every grant is visible and
@@ -53,11 +53,16 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
   // A failed grant, one still pending an hour on, or a payment for a sitting
   // the account already had: each is a payment a person must finish.
   const needing = await Fulfilment.find({
-    $or: [{ status: 'failed' }, { status: 'duplicate' }, { status: 'pending', ts: { $lt: new Date(Date.now() - STALE_PENDING_MS) } }],
+    $or: [
+      { status: 'failed' },
+      { status: 'duplicate' },
+      { status: 'unmatched' },
+      { status: 'pending', ts: { $lt: new Date(Date.now() - STALE_PENDING_MS) } },
+    ],
   })
     .sort({ ts: -1 })
     .limit(50)
-    .lean<{ _id: unknown; session_id: string; event_id: string; status: string; reason?: string; ts: Date }[]>();
+    .lean<{ _id: unknown; session_id: string; event_id: string; status: string; reason?: string; payment_id?: unknown; ts: Date }[]>();
 
   const ids = students.map((s) => s._id);
   const [sessionCounts, attemptCounts] = await Promise.all([
@@ -124,18 +129,34 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
             amber
             className="mb-6"
             label="Payments needing attention"
-            sentence="A failed grant, a payment for a sitting the account already had, or one still pending an hour on — each is a payment a person must finish."
+            sentence="A failed grant, a payment whose address has no account, a payment for a sitting the account already had, or one still pending an hour on — each is a payment a person must finish."
           >
             <ul className="mt-3 space-y-2">
               {needing.map((f) => (
                 <li key={String(f._id)} className="break-all border-t border-paper-deep pt-2 font-mono text-[12px]">
-                  {f.status === 'failed' ? 'grant FAILED' : f.status === 'duplicate' ? 'ALREADY HAD ACCESS' : 'still pending after an hour'} · {new Date(f.ts).toISOString().slice(0, 16).replace('T', ' ')}
+                  {f.status === 'failed'
+                    ? 'grant FAILED'
+                    : f.status === 'duplicate'
+                      ? 'ALREADY HAD ACCESS'
+                      : f.status === 'unmatched'
+                        ? 'no account for the paying address'
+                        : 'still pending after an hour'} · {new Date(f.ts).toISOString().slice(0, 16).replace('T', ' ')}
                   <span className="ml-2 text-dim">{f.session_id} · {f.event_id}{f.reason ? ` · ${f.reason}` : ''}</span>
                   <div className="mt-1 text-ink">
                     {f.status === 'failed'
                       ? 'Next: resend the event from Stripe once; if it fails again, grant the account by hand below with the event id as the note.'
                       : f.status === 'duplicate'
                         ? 'already had access for this sitting — refund in Stripe. Nothing was granted and the grant they had is untouched.'
+                        : f.status === 'unmatched' ? (
+                            <>
+                              Next: the payment is in the unmatched list below — give it the account it belongs to, or resolve it.{' '}
+                              {f.payment_id && (
+                                <a href={`#payment-${String(f.payment_id)}`} className="underline underline-offset-[3px]">
+                                  Go to the payment
+                                </a>
+                              )}
+                            </>
+                          )
                         : 'Next: find the session in Stripe; if it is paid, grant the account by hand below with the event id as the note, then resend the event so the record closes.'}
                   </div>
                 </li>
@@ -175,12 +196,12 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
             className="mb-6"
             label={`${unmatched.length} payment${unmatched.length === 1 ? '' : 's'} with no matching account`}
             sentence="Someone has paid and the email does not belong to a student."
-            remains="Find the account they actually registered with and grant it below, or mark this resolved if it was a refund or a duplicate."
+            remains="Give it the account they actually registered with — the sitting and the note come from the account, as they would have from the webhook — or mark it resolved if it was a refund or a duplicate."
           >
             <ul className="mt-3">
               {unmatched.map((p) => (
-                <li key={String(p._id)} className={`flex flex-wrap items-baseline justify-between gap-2 ${ROW}`}>
-                  <span className="min-w-0 break-all font-mono text-[12px]">
+                <li key={String(p._id)} id={`payment-${String(p._id)}`} className={`${ROW}`}>
+                  <span className="block min-w-0 break-all font-mono text-[12px]">
                     {p.email ?? 'no email on the payment'}
                     <span className="ml-2 text-dim">
                       {typeof p.amount_total === 'number'
@@ -189,10 +210,17 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                       · {new Date(p.received_at).toISOString().slice(0, 10)} · {p.event_id}
                     </span>
                   </span>
-                  <form action={resolvePayment} className="flex flex-wrap items-center gap-2">
+                  {/* The account it belongs to, or the reason nobody gets it. Either
+                      closes the payment and the record it opened. */}
+                  <form action={matchPayment} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                     <input type="hidden" name="id" value={String(p._id)} />
-                    <input name="reason" required minLength={3} placeholder="why: refund · duplicate · granted to …" className={`${FIELD} min-w-0 flex-1`} />
-                    <button className={QUIET}>Mark resolved</button>
+                    <input name="email" type="email" required placeholder="the account that should have it" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
+                    <button className={`${INK} w-full text-sm sm:w-auto`}>Give it this account</button>
+                  </form>
+                  <form action={resolvePayment} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                    <input type="hidden" name="id" value={String(p._id)} />
+                    <input name="reason" required minLength={3} placeholder="why: refund · duplicate · granted to …" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
+                    <button className={`${QUIET} w-full text-left sm:w-auto`}>Mark resolved</button>
                   </form>
                 </li>
               ))}

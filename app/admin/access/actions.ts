@@ -3,10 +3,12 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { dbConnect, Payment, Student } from '@/lib/db';
+import { dbConnect, Fulfilment, Payment, Student } from '@/lib/db';
+import { grantFromPayment } from '@/lib/grant-from-payment';
 import { requireAdmin } from '@/lib/auth/session';
 import { deleteStudent, type DeletionCounts } from '@/lib/delete-student';
 import { SITTING_IDS } from '@/lib/sittings';
+import type { ExamSitting } from '@/lib/types';
 import { noteWithPrior } from '@/lib/grant-note';
 import type { Access } from '@/lib/access';
 
@@ -68,7 +70,35 @@ export async function resolvePayment(formData: FormData): Promise<void> {
   if (reason.length < 3) return;
   await dbConnect();
   await Payment.updateOne({ _id: id }, { $set: { resolved_at: new Date(), note: `resolved: ${reason}` } });
+  // The record it opened closes with it: the attention list reads the
+  // fulfilment, so a payment resolved without this stayed on the list forever.
+  await Fulfilment.updateOne({ payment_id: id }, { $set: { status: 'resolved', reason, ts: new Date() } });
   revalidatePath('/admin/access');
+}
+
+/**
+ * An unmatched payment, given the account it belongs to. The grant runs
+ * through the same path the webhook uses, so the sitting is the account's
+ * registered one, a sitting already covered is flagged rather than
+ * overwritten, and the payment and its fulfilment close either way.
+ */
+export async function matchPayment(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = IdZ.parse(String(formData.get('id')));
+  const email = String(formData.get('email') ?? '').trim().toLowerCase();
+  await dbConnect();
+  const student = await Student.findOne({ email }).select('exam_sitting').lean<{ _id: unknown; exam_sitting: ExamSitting } | null>();
+  if (!student) redirect(`/admin/access?ungranted=${encodeURIComponent(email)}`);
+  const payment = await Payment.findById(id).select('event_id email_source').lean<{ _id: unknown; event_id: string; email_source?: 'custom_field' | 'payer' | null } | null>();
+  if (!payment) redirect('/admin/access');
+  const outcome = await grantFromPayment({
+    studentId: student._id,
+    registeredSitting: student.exam_sitting,
+    payment: { _id: payment._id, event_id: payment.event_id, email_source: payment.email_source },
+  });
+  revalidatePath('/admin/access');
+  if (outcome === 'duplicate') redirect(`/admin/access?ungranted=${encodeURIComponent(email)}&duplicate=1`);
+  redirect(`/admin/access?granted=${encodeURIComponent(email)}&sitting=${student.exam_sitting}`);
 }
 
 /**

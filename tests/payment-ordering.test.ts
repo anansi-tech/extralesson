@@ -387,7 +387,8 @@ describe('12. fulfilment is its own record (ROUND_6 Task 2)', () => {
   it('marks the fulfilment granted when the account arrives after the payment', async () => {
     const email = 'pay-then-register-fulfilled@test.invalid';
     await POST(signed(checkoutBody({ id: 'evt_12d', studentField: email })));
-    expect(await fulfilmentOf('evt_12d')).toMatchObject({ status: 'pending' });
+    // Unmatched, not pending: the webhook finished and found no account for the address.
+    expect(await fulfilmentOf('evt_12d')).toMatchObject({ status: 'unmatched' });
     await registerAndClaim(email);
     expect(await fulfilmentOf('evt_12d')).toMatchObject({ status: 'granted' });
   });

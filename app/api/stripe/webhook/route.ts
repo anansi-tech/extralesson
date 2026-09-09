@@ -125,6 +125,13 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
   if (!student) {
     // Recorded, not dropped. It shows on /admin/access as unmatched — and if
     // this address registers later, register() finds it and grants there.
+    // The fulfilment says so: left pending it read as a webhook that had not
+    // finished, and the screen told an operator to check Stripe for nothing.
+    // The address is on the Payment alone, which erasure anonymises.
+    await Fulfilment.updateOne(
+      { _id: fulfilmentId },
+      { $set: { status: 'unmatched', reason: 'no account for the paying address', ts: new Date() } },
+    );
     return Response.json({ matched: false }, { status: 200 });
   }
 
