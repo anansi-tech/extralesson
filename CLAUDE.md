@@ -198,13 +198,14 @@ before anyone reads the output — main went red for a commit that way. Reading
 order is not a control; a gate is. A commit touching no `.ts`/`.tsx` under
 `app/ lib/ scripts/ tests/` skips both checks, so docs-only commits stay quick.
 
-**`.githooks/pre-push` runs `next build` in the production env shape and
-refuses the push on a failed build.** The tests cannot see a build that
-will not compile: a client component importing `next/headers` passed nine
-commits and every push failed on Vercel, which kept serving the build
-before them for a day. A push is what deploys, so the build gates it;
-values of the right shape stand in for any env var that is unset, and the
-build writes to `.next-push`, beside a running dev server's `.next`.
+**`.githooks/pre-push` runs `tsc --noEmit` and refuses the push on a type
+error.** The tests cannot see code that will not compile: a client
+component importing `next/headers` passed nine commits and every push
+failed on Vercel, which kept serving the build before them for a day. A
+push is what deploys, so compilation gates it. It ran `next build` until
+that grew too slow to sit through; the exchange is real and worth knowing
+— a Next-specific build error, that `next/headers` import among them, is
+caught by Vercel rather than by the hook.
 
 Verification greps must return zero hits in `app/ lib/ scripts/`:
 `whatsapp`, `twilio`, `stripe` (imports), `investigation`, `sba`,
