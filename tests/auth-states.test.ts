@@ -22,9 +22,9 @@ describe('the auth screens', () => {
       'Create your account . Your first question is waiting: one Paper 2 question, marked the way an examiner marks it, free. Make an account and it is the first thing you see. Your email address ' + CREATE_FIELDS,
     );
   });
-  it('create account from the welcome page: the paid address masked above, locked in the field', () => {
+  it('create account from the welcome page: the paid address in full above, locked in the field', () => {
     expect(text['create-locked']).toBe(
-      'Create your account . The access is waiting on k···@example.com . Create the account on that address and it is applied. Your email address kiara@example.com ' + CREATE_FIELDS,
+      'Create your account . The access is waiting on kiara@example.com . Create the account on that address and it is applied. Your email address kiara@example.com ' + CREATE_FIELDS,
     );
     expect(renderAuth('create-locked')).toMatch(/<input[^>]*readOnly=""[^>]*name="email" value="kiara@example.com"\/>/);
   });

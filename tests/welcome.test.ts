@@ -86,9 +86,4 @@ describe('the poll and the mask', () => {
     expect(welcome.pollDue(0, 60_000)).toBe(false);
     expect(welcome.pollDue(1_000, 61_000)).toBe(false);
   });
-  it('masks everything but the first letter and the domain', () => {
-    expect(welcome.maskEmail('kiara@example.com')).toBe('k···@example.com');
-    expect(welcome.maskEmail('a@b.gd')).toBe('a···@b.gd');
-    expect(welcome.maskEmail('nonsense')).toBe('···');
-  });
 });

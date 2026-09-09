@@ -27,7 +27,7 @@ export const AUTH: Record<string, () => ReactNode[]> = {
   create: () => [h1('Create your account'), lede(CREATE_LEDE), form('create')],
   'create-locked': () => [
     h1('Create your account'),
-    lede(['The access is waiting on ', createElement('b', { key: 'e', className: 'text-ink' }, 'k···@example.com'), '. Create the account on that address and it is applied.']),
+    lede(['The access is waiting on ', createElement('b', { key: 'e', className: 'text-ink' }, 'kiara@example.com'), '. Create the account on that address and it is applied.']),
     form('create', { lockedEmail: 'kiara@example.com' }),
   ],
   error: () => [h1('Sign in'), lede(SIGN_IN_LEDE), form('signin', { initial: { error: 'That email and password do not match.', email: 'kiara@exampl.com' } })],

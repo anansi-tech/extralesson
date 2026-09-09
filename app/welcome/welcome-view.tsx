@@ -4,7 +4,7 @@ import { startSession } from '../study/actions';
 import { LANDING } from '@/lib/landing-content';
 import { REFUND_DAYS } from '@/lib/access';
 import { DIAGNOSTIC_MINUTES, SESSION_MINUTES } from '@/lib/session/builder';
-import { maskEmail, type WelcomeState } from '@/lib/welcome';
+import type { WelcomeState } from '@/lib/welcome';
 import type { LeadPanel } from '@/lib/study/lead-panel';
 import { ConfirmingNote } from './confirming';
 
@@ -66,7 +66,7 @@ export function WelcomeView({ state, sessionId, signedIn, lead, diagnosticOpen }
           <Tick />
           <Heading>Payment received</Heading>
           <p className="mb-[18px] text-[15px] leading-normal">
-            The access is waiting on <b>{maskEmail(state.email)}</b>. Create the account on that address and it is applied.
+            The access is waiting on <b>{state.email}</b>. Create the account on that address and it is applied.
           </p>
           <Link href={`/study/login?new=1&paid=${encodeURIComponent(sessionId ?? '')}`} className="block min-h-11 w-full bg-red-pen p-4 text-center text-[17px] font-black text-white shadow-[var(--shadow-card)]">
             Create the account
@@ -80,7 +80,7 @@ export function WelcomeView({ state, sessionId, signedIn, lead, diagnosticOpen }
           <Tick />
           <Heading>Thank you</Heading>
           <p className="mb-[18px] text-[15px] leading-normal">
-            Access is on <b>{maskEmail(state.email)}</b>
+            Access is on <b>{state.email}</b>
             {state.sitting && <>, running to <b>{state.sitting}</b></>}. Whoever sits the exam creates their account with that address, or signs in if they have one.
           </p>
           <Link href={`/study/login?new=1&paid=${encodeURIComponent(sessionId ?? '')}`} className={`${PRIMARY} block`}>

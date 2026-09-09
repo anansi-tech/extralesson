@@ -9,13 +9,6 @@ export function pollDue(startedAt: number, now: number): boolean {
   return now - startedAt < POLL_FOR_MS;
 }
 
-/** Everyone but the signed-in owner sees the address as k···@example.com. */
-export function maskEmail(email: string): string {
-  const at = email.indexOf('@');
-  if (at <= 0) return '···';
-  return `${email[0]}···${email.slice(at)}`;
-}
-
 /**
  * WHO IS HOLDING THE PHONE after checkout (ROUND_9 Task 1). The webhook wrote
  * a Fulfilment for the checkout session; this reads it and the account on the
