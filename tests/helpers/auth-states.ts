@@ -5,6 +5,7 @@ import LoginForm, { type Door as FormDoor } from '@/app/study/login/login-form';
 import ResetForm from '@/app/study/reset/reset-form';
 import type { AuthState } from '@/app/study/login/actions';
 import { TOO_MANY } from '@/lib/auth/rate-limit';
+import { SIGN_IN_FAILED } from '@/lib/auth/sign-in-error';
 import { HELP_EMAIL } from '@/lib/help-email';
 
 const SENDER = `ExtraLesson <${HELP_EMAIL}>`;
@@ -30,7 +31,7 @@ export const AUTH: Record<string, () => ReactNode[]> = {
     lede(['The access is waiting on ', createElement('b', { key: 'e', className: 'text-ink' }, 'kiara@example.com'), '. Create the account on that address and it is applied.']),
     form('create', { lockedEmail: 'kiara@example.com' }),
   ],
-  error: () => [h1('Sign in'), lede(SIGN_IN_LEDE), form('signin', { initial: { error: 'That email and password do not match.', email: 'kiara@exampl.com' } })],
+  error: () => [h1('Sign in'), lede(SIGN_IN_LEDE), form('signin', { initial: { error: SIGN_IN_FAILED, email: 'kiara@exampl.com' } })],
   'rate-limited': () => [h1('Sign in'), lede(SIGN_IN_LEDE), form('signin', { initial: { error: TOO_MANY, email: 'kiara@example.com' } })],
   reset: () => [form('reset', { sender: SENDER, resetMinutes: 30 })],
   'reset-limited': () => [form('reset', { sender: SENDER, resetMinutes: 30, initial: { error: TOO_MANY, email: 'kiara@example.com' } })],

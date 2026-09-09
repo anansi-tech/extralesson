@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { SITTING_IDS } from '@/lib/sittings';
+import { SIGN_IN_FAILED } from '@/lib/auth/sign-in-error';
 import { dbConnect, Student } from '@/lib/db';
 import { ResetToken } from '@/lib/db/reset-token';
 import { newResetSecret } from '@/lib/auth/reset-token';
@@ -22,8 +23,6 @@ import { limited, TOO_MANY } from '@/lib/auth/rate-limit';
 const EmailZ = z.string().email().transform((e) => e.toLowerCase().trim());
 
 const SignInZ = z.object({ email: EmailZ, password: z.string().min(1) });
-
-const SIGN_IN_FAILED = 'That email and password do not match.';
 
 const RegisterZ = z.object({
   email: EmailZ,
@@ -61,8 +60,6 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
     session_version?: number;
   } | null>();
 
-  // ONE ANSWER for unknown, legacy and wrong (ROUND_6 Task 3): three answers
-  // made the form a way to ask which addresses have an account here.
   const ok = !!student?.password_hash && (await verifyPassword(password, student.password_hash));
   if (!student || !ok) return { error: SIGN_IN_FAILED, email };
 

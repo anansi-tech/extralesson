@@ -6,6 +6,7 @@ import { useActionState, useState } from 'react';
 import { register, requestReset, signIn, type AuthState } from './actions';
 import { PASSWORD_MIN } from '@/lib/auth/password-policy';
 import { LIMITS, TOO_MANY } from '@/lib/auth/limits';
+import { SIGN_IN_FAILED } from '@/lib/auth/sign-in-error';
 
 export type Door = 'signin' | 'create' | 'reset';
 
@@ -89,7 +90,21 @@ export default function LoginForm({
 
       <label className="block">
         <span className={LABEL}>Your email address</span>
-        {state.error && !limitedNow && <p className={ERROR}>{state.error}</p>}
+        {state.error && !limitedNow && (
+          <p className={ERROR}>
+            {state.error}
+            {state.error === SIGN_IN_FAILED && (
+              <>
+                {' '}
+                If you have not made an account yet,{' '}
+                <Link href={`/study/login?new=1&email=${encodeURIComponent(state.email ?? '')}`} className="underline underline-offset-[3px]">
+                  create one
+                </Link>
+                .
+              </>
+            )}
+          </p>
+        )}
         <input
           name="email"
           type="email"

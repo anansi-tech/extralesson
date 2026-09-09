@@ -21,9 +21,9 @@ const LEDE = 'mb-5 text-[13px] leading-normal text-dim lg:text-sm';
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; new?: string; paid?: string; reset?: string }>;
+  searchParams: Promise<{ error?: string; new?: string; paid?: string; reset?: string; email?: string }>;
 }) {
-  const { error, new: fresh, paid, reset } = await searchParams;
+  const { error, new: fresh, paid, reset, email } = await searchParams;
   const creating = fresh === '1';
   const lockedEmail = paid ? await paidAddress(paid) : null;
 
@@ -50,7 +50,7 @@ export default async function LoginPage({
           {error === 'expired' && (
             <p className="mb-4 border-l-3 border-amber bg-[#FDF8EC] px-3 py-2.5 text-[13px] leading-snug">Your session ended. Sign in again.</p>
           )}
-          <LoginForm door={creating ? 'create' : 'signin'} />
+          <LoginForm door={creating ? 'create' : 'signin'} initial={email ? { email: email.slice(0, 254) } : undefined} />
         </>
       )}
     </Door>

@@ -28,10 +28,15 @@ describe('the auth screens', () => {
     );
     expect(renderAuth('create-locked')).toMatch(/<input[^>]*readOnly=""[^>]*name="email" value="kiara@example.com"\/>/);
   });
-  it('error: one plain sentence above the field it concerns', () => {
-    expect(text.error).toBe(SIGN_IN + 'Your email address That email and password do not match. kiara@exampl.com Your password Sign in New here? Create an account Forgot your password?');
+  it('error: one sentence for every failure, above the field it concerns, offering the create door', () => {
+    expect(text.error).toBe(
+      SIGN_IN +
+        'Your email address That email and password do not match. If you have not made an account yet, create one . kiara@exampl.com Your password Sign in New here? Create an account Forgot your password?',
+    );
     const html = renderAuth('error');
     expect(html.indexOf('That email and password do not match.')).toBeLessThan(html.indexOf('name="email"'));
+    // The create door, carrying what they typed; the sentence never says whether the address exists.
+    expect(html).toContain('href="/study/login?new=1&amp;email=kiara%40exampl.com"');
   });
   it('rate-limited: the real window from the limit table, the button waiting', () => {
     expect(text['rate-limited']).toBe(SIGN_IN + 'Too many attempts. You can try again in 1 minute. Your email address kiara@example.com Your password Sign in Available in 1 minute New here? Create an account Forgot your password?');
