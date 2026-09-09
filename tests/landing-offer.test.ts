@@ -35,7 +35,7 @@ describe('the offer card', () => {
   const html = markup();
   const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
   it('says $49 once as the figure, one mono line, three checks, the button and its caption', () => {
-    const offer = html.slice(html.indexOf('class="offer"'), html.indexOf('class="offernote"'));
+    const offer = html.slice(html.indexOf(`class="offer offergrid"`), html.indexOf('class="offernote"'));
     expect((offer.match(/\$49/g) ?? []).length).toBe(1);
     expect(offer).toContain('<div class="per">ONE PAYMENT · ACCESS THROUGH THE SITTING YOU CHOOSE</div>');
     expect([...offer.matchAll(/<li>([^<]+)<\/li>/g)].map((m) => m[1])).toEqual([
@@ -53,6 +53,23 @@ describe('the offer card', () => {
     expect(paragraphs[1]).toBe('Not satisfied? Email us within 14 days of paying and we will refund you.');
     expect(note).not.toContain('reports');
     expect(text).toMatch(/How will I know it’s working\? We do not send reports: they can open their own marked working whenever they want to, and you will hear how it is going from them, not from us\./);
+  });
+});
+
+// The offer is the one entry to checkout, so it renders for everyone: a paid
+// signed-in visitor sees the same card, and only the hero's own button changes.
+describe('the offer for a signed-in visitor with access', () => {
+  const page = at('app', 'page.tsx');
+  it('renders unconditionally: no access branch around the offer or the FAQ', () => {
+    const offer = page.slice(page.indexOf('<section id="offer">'), page.indexOf('</section>', page.indexOf('className="faqsection"')));
+    expect(offer).toContain('paymentLink()');
+    expect(offer).toContain('faqsection');
+    expect(offer).not.toContain('signedInWithAccess');
+    expect(page).not.toContain('You already have access');
+    expect((page.match(/<section id="offer">/g) ?? []).length).toBe(1);
+  });
+  it('leaves the access branch on the hero button alone', () => {
+    expect(page.slice(0, page.indexOf('<section id="offer">'))).toContain('{signedInWithAccess ? (');
   });
 });
 

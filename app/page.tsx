@@ -75,82 +75,82 @@ export default async function LandingPage() {
           hero; the marked page after the stakes on a phone and beside the hero
           on a desk (Landing.dc.html §01). */}
       <div className="top">
-      <header className="hero">
-        <div className="wrap">
-          <div className="herotext">
-            <h1>Practise CSEC Maths the way you&rsquo;ll sit it.</h1>
-            <p className="lede">
-              Work original, past-paper-style questions on paper. Take a photo of your page. See where your
-              working earns marks &mdash; and where it loses them &mdash; so you know what to improve
-              before exam day.
-            </p>
-            {signedInWithAccess ? (
-              <Link className="btn" href="/study">
-                Continue studying
-                <small>YOUR ACCESS IS ACTIVE · PICK UP WHERE YOU LEFT OFF</small>
-              </Link>
-            ) : (
-              <Link className="btn" href="/study/login?new=1">
-                Mark one question free
-                <small>No card required.</small>
-              </Link>
-            )}
-            <div className="heronote">{sittingNoteAt(new Date())}</div>
+        <header className="hero">
+          <div className="wrap">
+            <div className="herotext">
+              <h1>Practise CSEC Maths the way you&rsquo;ll sit it.</h1>
+              <p className="lede">
+                Work original, past-paper-style questions on paper. Take a photo of your page. See where your
+                working earns marks &mdash; and where it loses them &mdash; so you know what to improve
+                before exam day.
+              </p>
+              {signedInWithAccess ? (
+                <Link className="btn" href="/study">
+                  Continue studying
+                  <small>YOUR ACCESS IS ACTIVE · PICK UP WHERE YOU LEFT OFF</small>
+                </Link>
+              ) : (
+                <Link className="btn" href="/study/login?new=1">
+                  Mark one question free
+                  <small>No card required.</small>
+                </Link>
+              )}
+              <div className="heronote">{sittingNoteAt(new Date())}</div>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* STAKES. Two tiles, each naming a source you can open (ROUND_8 Task 5). */}
-      <div className="stats">
-        <div className="tiles">
-          <div className="tile">
-            <div className="n red">{LANDING.passRate.figure}</div>
-            <div className="l">{LANDING.passRate.label}</div>
-            <a href={LANDING.passRate.source} target="_blank" rel="noopener">{LANDING.passRate.sourceLabel}</a>
-          </div>
-          <div className="tile">
-            <div className="n">{LANDING.weighting.figure}</div>
-            <div className="l">{LANDING.weighting.label}</div>
-            <a href={LANDING.weighting.source} target="_blank" rel="noopener">{LANDING.weighting.sourceLabel}</a>
-          </div>
-        </div>
-      </div>
-      <div className="phone heromock">
-        <div className="page">
-          <div className="q">
-            <b>4.</b> Solve for x: 3x² − 5x − 2 = 0 <span className="qm">[3 marks]</span>
-          </div>
-          <div className="work">
-            <span className="score-pill">2 / 3</span>
-            <div className="cap">Your working</div>
-            <div className="hand">
-              (3x + 1)(x − 2) = 0 <span className="tick">✓</span>
-              <br />
-              3x + 1 = 0 → x = 1/3{' '}
-              <span className="tick slip">✗ sign</span>
-              <br />x − 2 = 0 → x = 2 <span className="tick">✓</span>
+        {/* STAKES. Two tiles, each naming a source you can open (ROUND_8 Task 5). */}
+        <div className="stats">
+          <div className="tiles">
+            <div className="tile">
+              <div className="n red">{LANDING.passRate.figure}</div>
+              <div className="l">{LANDING.passRate.label}</div>
+              <a href={LANDING.passRate.source} target="_blank" rel="noopener">{LANDING.passRate.sourceLabel}</a>
             </div>
-          </div>
-          <div className="markrow">
-            <span>Method — correct factorisation</span>
-            <span className="aw y">✓ AWARDED</span>
-          </div>
-          <div className="markrow">
-            <span>Method — both roots attempted</span>
-            <span className="aw y">✓ AWARDED</span>
-          </div>
-          <div className="markrow">
-            <span>Accuracy — both roots correct</span>
-            <span className="aw n">✗ LOST</span>
-          </div>
-          <div className="verdict">
-            <div className="vt">Sign slip — a classic.</div>
-            <div className="vm">
-              3x + 1 = 0 gives x = <b>−1/3</b>. You&rsquo;d lose this exact mark on Paper 2.
+            <div className="tile">
+              <div className="n">{LANDING.weighting.figure}</div>
+              <div className="l">{LANDING.weighting.label}</div>
+              <a href={LANDING.weighting.source} target="_blank" rel="noopener">{LANDING.weighting.sourceLabel}</a>
             </div>
           </div>
         </div>
-      </div>
+        <div className="phone heromock">
+          <div className="page">
+            <div className="q">
+              <b>4.</b> Solve for x: 3x² − 5x − 2 = 0 <span className="qm">[3 marks]</span>
+            </div>
+            <div className="work">
+              <span className="score-pill">2 / 3</span>
+              <div className="cap">Your working</div>
+              <div className="hand">
+                (3x + 1)(x − 2) = 0 <span className="tick">✓</span>
+                <br />
+                3x + 1 = 0 → x = 1/3{' '}
+                <span className="tick slip">✗ sign</span>
+                <br />x − 2 = 0 → x = 2 <span className="tick">✓</span>
+              </div>
+            </div>
+            <div className="markrow">
+              <span>Method — correct factorisation</span>
+              <span className="aw y">✓ AWARDED</span>
+            </div>
+            <div className="markrow">
+              <span>Method — both roots attempted</span>
+              <span className="aw y">✓ AWARDED</span>
+            </div>
+            <div className="markrow">
+              <span>Accuracy — both roots correct</span>
+              <span className="aw n">✗ LOST</span>
+            </div>
+            <div className="verdict">
+              <div className="vt">Sign slip — a classic.</div>
+              <div className="vm">
+                3x + 1 = 0 gives x = <b>−1/3</b>. You&rsquo;d lose this exact mark on Paper 2.
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* MECHANISM. The three steps, the daily line, one action. */}
@@ -233,24 +233,6 @@ export default async function LandingPage() {
 
       {/* PROOF is the marked question above; the coverage limit lives in the
           FAQ. THE OFFER is addressed to whoever is paying (ROUND_2 §8e). */}
-      {signedInWithAccess ? (
-        <section id="offer">
-          <div className="wrap">
-            <div className="offer">
-              <div className="eyebrow">You already have access</div>
-              <h2>Everything is where you left it.</h2>
-              <p>
-                Your marks, your topics and every question you have answered are all still there.
-                Nothing here is for sale to you &mdash; this page is for people deciding.
-              </p>
-              <Link className="btn" href="/study">
-                Continue studying
-                <small>YOUR SESSIONS, YOUR NOTEBOOK, YOUR GRADE ESTIMATE</small>
-              </Link>
-            </div>
-          </div>
-        </section>
-      ) : (
         <section id="offer">
           <div className="wrap">
             <div className="offer offergrid">
@@ -284,7 +266,6 @@ export default async function LandingPage() {
             </div>
           </div>
         </section>
-      )}
 
       <section className="faqsection">
         <div className="wrap faq">

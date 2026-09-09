@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Lockup } from '../lockup';
 import { changeSitting, logout } from './actions';
-import { LANDING, paymentLink } from '@/lib/landing-content';
+import { LANDING } from '@/lib/landing-content';
 import { StudyTabs } from './study-tabs';
 import { SITTINGS, SITTING_IDS } from '@/lib/sittings';
 import { AccountDisclosure } from './account-disclosure';
@@ -17,7 +17,6 @@ export function StudyChrome({
   current,
   email,
   isAdmin = false,
-  paid = true,
   children,
 }: {
   sitting: string;
@@ -25,11 +24,9 @@ export function StudyChrome({
   current: string;
   email: string;
   isAdmin?: boolean;
-  /** Whether the current sitting has a grant; without one the disclosure carries the way to pay. */
-  paid?: boolean;
   children: React.ReactNode;
 }) {
-  const account = <Account sitting={sitting} current={current} email={email} isAdmin={isAdmin} paid={paid} />;
+  const account = <Account sitting={sitting} current={current} email={email} isAdmin={isAdmin} />;
   return (
     <div className="flex min-h-screen flex-col bg-paper text-ink">
       <header className="border-b-[1.5px] border-ink bg-white px-5 lg:px-6">
@@ -71,7 +68,7 @@ const FIELD = 'mt-1 block w-full border-[1.5px] border-ink bg-paper p-2 font-san
  * the one thing about the account a student can change. A change is allowed
  * any time; the grant stays with the sitting it was for (ROUND_9 Task 9).
  */
-function Account({ sitting, current, email, isAdmin, paid }: { sitting: string; current: string; email: string; isAdmin: boolean; paid: boolean }) {
+function Account({ sitting, current, email, isAdmin }: { sitting: string; current: string; email: string; isAdmin: boolean }) {
   return (
     <AccountDisclosure>
       <summary className="account-toggle inline-flex min-h-11 cursor-pointer list-none items-center gap-1 rounded-[var(--radius)] border border-transparent px-2 hover:border-rule [&::-webkit-details-marker]:hidden">
@@ -81,12 +78,6 @@ function Account({ sitting, current, email, isAdmin, paid }: { sitting: string; 
         <div className="mb-3 font-semibold text-ink">Your account</div>
         <div className="break-all font-mono text-[11px] normal-case tracking-normal text-ink">{email}</div>
         <div className="mt-1">{sitting}</div>
-        {/* One quiet entry, never a banner: the same checkout as the paywall, gone once the sitting is granted. */}
-        {!paid && (
-          <a href={paymentLink()} target="_blank" rel="noopener" className="mt-2 flex min-h-11 items-center underline underline-offset-[3px]">
-            Get access · {LANDING.price}
-          </a>
-        )}
         {isAdmin && (
           <Link href="/admin/access" className="mt-2 flex min-h-11 items-center text-red-pen underline underline-offset-[3px] lg:hidden">
             Admin
