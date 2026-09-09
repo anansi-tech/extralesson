@@ -21,20 +21,27 @@ const SittingZ = z.enum(SITTING_IDS);
  * is undone in one click and an unmatched payment surfaces here instead of
  * vanishing; the note carries the evidence. See ROUND_2 §8c.
  */
+/** By the row's account, or by the address typed into the standalone form. */
 export async function grantAccess(formData: FormData): Promise<void> {
   await requireAdmin();
-  const id = IdZ.parse(String(formData.get('id')));
+  const rowId = String(formData.get('id') ?? '');
+  const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const sitting = SittingZ.parse(String(formData.get('sitting')));
   const note = String(formData.get('note') ?? '').slice(0, 200);
   await dbConnect();
-  const student = await Student.findById(id).select('email').lean<{ email: string } | null>();
+  const student = rowId
+    ? await Student.findById(IdZ.parse(rowId)).select('email').lean<{ _id: unknown; email: string } | null>()
+    : await Student.findOne({ email }).select('email').lean<{ _id: unknown; email: string } | null>();
+  // An address with no account is worth naming: the payer registered with another one.
+  if (!student) redirect(`/admin/access?ungranted=${encodeURIComponent(email)}`);
+  const id = String(student._id);
   await Student.updateOne(
     { _id: id },
     { $set: { access: { sitting, granted_at: new Date(), source: 'manual', note } } },
   );
   revalidatePath('/admin/access');
   // Success names the account and the sitting, so a slip is seen at once (ROUND_7 Task 3).
-  redirect(`/admin/access?granted=${encodeURIComponent(student?.email ?? id)}&sitting=${sitting}`);
+  redirect(`/admin/access?granted=${encodeURIComponent(student.email)}&sitting=${sitting}`);
 }
 
 /** Refunds, chargebacks, and grants made against the wrong account. */

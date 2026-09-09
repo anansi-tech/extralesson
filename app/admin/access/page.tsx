@@ -1,6 +1,6 @@
 import { dbConnect, Attempt, Fulfilment, Payment, PracticeSession, Student } from '@/lib/db';
 import { FREE_MODES, FREE_SESSIONS, hasAccess } from '@/lib/access';
-import { SITTINGS, SITTING_IDS } from '@/lib/sittings';
+import { SITTINGS, SITTING_IDS, sittingsOpenAt } from '@/lib/sittings';
 import { grantAccess, resolvePayment, revokeAccess } from './actions';
 import { DeleteAccount } from './delete-account';
 import { Refusal } from '../../refusal';
@@ -19,8 +19,8 @@ const STALE_PENDING_MS = 60 * 60 * 1000;
  * is what makes the automatic path safe (ROUND_2 §8c). What needs a person
  * comes first (ROUND_7 Task 3), then paid access, then the free allowance used.
  */
-export default async function AccessPage({ searchParams }: { searchParams: Promise<{ find?: string; attention?: string; granted?: string; sitting?: string }> }) {
-  const { find = '', attention, granted, sitting: grantedSitting } = await searchParams;
+export default async function AccessPage({ searchParams }: { searchParams: Promise<{ find?: string; attention?: string; granted?: string; sitting?: string; ungranted?: string }> }) {
+  const { find = '', attention, granted, sitting: grantedSitting, ungranted } = await searchParams;
   await dbConnect();
   const students = await Student.find()
     .sort({ created_at: -1 })
@@ -85,6 +85,7 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
   const usedRows = all.filter((r) => !hasAccess(r.access) && r.sessions >= FREE_SESSIONS).sort((a, b) => b.sessions - a.sessions);
   const freeRows = all.filter((r) => !hasAccess(r.access) && r.sessions < FREE_SESSIONS).sort((a, b) => b.sessions - a.sessions);
   const attentionOnly = attention === '1';
+  const defaultSitting = sittingsOpenAt(new Date())[0] ?? SITTING_IDS[SITTING_IDS.length - 1];
   const paid = paidRows.length;
 
   return (
@@ -105,6 +106,11 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
             <button className={CAPS}>Search</button>
           </form>
         </header>
+        {ungranted && (
+          <p className="mb-4 border-l-3 border-red-pen bg-red-tint px-3 py-2.5 font-mono text-[12px]">
+            No account on <b className="break-all">{ungranted}</b> · nothing was granted. Search for the address they registered with.
+          </p>
+        )}
         {granted && (
           <p className="mb-4 border-l-3 border-green-pen bg-green-tint px-3 py-2.5 font-mono text-[12px]">
             Granted: <b className="break-all">{granted}</b> · {grantedSitting}
@@ -190,6 +196,27 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
             </ul>
           </Refusal>
         )}
+
+        {/* Always here, whatever the lists hold: an account is granted by its address,
+            so a payment with no matching account has somewhere to go. */}
+        <section className="mb-6 border-[1.5px] border-ink bg-white p-4">
+          <div className="section-label">Grant access</div>
+          <p className="mt-1 font-mono text-[11px] leading-relaxed text-dim">
+            By the address the student registered with, which need not be the address that paid.
+          </p>
+          <form action={grantAccess} className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            <input name="email" type="email" required placeholder="the account's email" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
+            <select name="sitting" defaultValue={defaultSitting} className={`${SELECT} w-full sm:w-auto`}>
+              {SITTING_IDS.map((s) => (
+                <option key={s} value={s}>
+                  {SITTINGS[s].label}
+                </option>
+              ))}
+            </select>
+            <input name="note" required placeholder="comp · teacher · school · 2026-08-26" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
+            <button className={`${INK} w-full text-sm sm:w-auto`}>Grant access</button>
+          </form>
+        </section>
 
         {refused.length > 0 && (
           <Refusal

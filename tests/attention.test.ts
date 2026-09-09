@@ -23,7 +23,9 @@ describe('/admin/access', () => {
     expect(page).toMatch(/r\.email\.toLowerCase\(\)\.includes\(needle\)/);
     expect(page).toMatch(/name="attention"/);
     expect(page).toMatch(/Granted: <b className="break-all">\{granted\}<\/b> · \{grantedSitting\}/);
-    expect(actions).toMatch(/redirect\(`\/admin\/access\?granted=\$\{encodeURIComponent\(student\?\.email \?\? id\)\}&sitting=\$\{sitting\}`\)/);
+    // A grant always has an account by now: without one the action redirects unGRANTED instead.
+    expect(actions).toMatch(/redirect\(`\/admin\/access\?granted=\$\{encodeURIComponent\(student\.email\)\}&sitting=\$\{sitting\}`\)/);
+    expect(actions).toMatch(/if \(!student\) redirect\(`\/admin\/access\?ungranted=/);
   });
   it('resolving an unmatched payment requires a reason, written into the record', () => {
     expect(page).toMatch(/name="reason" required minLength=\{3\}/);
