@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { transition } from '@/lib/payment-state';
 
 // ROUND_9 Task 1: /welcome reads the fulfilment the webhook wrote and
 // resolves who is holding the phone; the confirming page asks every three
@@ -33,47 +34,54 @@ beforeEach(async () => {
 const EMAIL = 'kiara@example.com';
 const student = (email = EMAIL, access?: { sitting: 'jan-2027' | 'may-june-2027' }) =>
   Student.create({ email, name: 'Kiara', exam_sitting: 'may-june-2027', syllabus_mode: 'modular-2027', target_modules: [1, 2, 3], password_hash: 'x', ...(access ? { access: { ...access, source: 'stripe' } } : {}) });
-const paid = async (status: 'pending' | 'granted' | 'failed' | 'refused', email: string | null = EMAIL) => {
-  const payment = status === 'refused' ? null : await Payment.create({ event_id: `evt_${status}`, email: email ?? undefined });
-  await Fulfilment.create({ session_id: 'cs_1', event_id: `evt_${status}`, payment_id: payment?._id, status, ts: new Date() });
-};
+/** The payment for the session, which is what /welcome reads (ROUND_11 Task 4). */
+const paid = async (state: 'waiting' | 'granted' | 'closed' | 'refused', email: string | null = EMAIL, studentId?: unknown) =>
+  Payment.create({
+    event_id: `evt_${state}`,
+    session_id: 'cs_1',
+    email: email ?? undefined,
+    received_at: new Date(),
+    ...transition(state),
+    ...(studentId ? { student_id: studentId } : {}),
+  });
 
 describe('resolveWelcome', () => {
   it('confirming while the webhook has written nothing yet', async () => {
     expect(await resolveWelcome('cs_1', null)).toEqual({ state: 'confirming', settled: false });
   });
-  it('settled, never an error, for a refused or failed fulfilment or one with no address', async () => {
+  it('settled, never an error, for a payment closed, not ours, or with no address to name', async () => {
+    await paid('closed');
+    expect(await resolveWelcome('cs_1', null)).toEqual({ state: 'confirming', settled: true });
+    await Payment.deleteMany({});
     await paid('refused');
     expect(await resolveWelcome('cs_1', null)).toEqual({ state: 'confirming', settled: true });
-    await Fulfilment.deleteMany({});
-    await paid('failed');
-    expect(await resolveWelcome('cs_1', null)).toEqual({ state: 'confirming', settled: true });
-    await Fulfilment.deleteMany({});
-    await paid('pending', null);
+    await Payment.deleteMany({});
+    await paid('waiting', null);
     expect(await resolveWelcome('cs_1', null)).toEqual({ state: 'confirming', settled: true });
   });
   it('not yet registered: no account on the address and nobody signed in', async () => {
-    await paid('pending');
+    await paid('waiting');
     expect(await resolveWelcome('cs_1', null)).toEqual({ state: 'unregistered', email: EMAIL });
   });
   it('signed in as the payer once the grant has landed', async () => {
     const s = await student(EMAIL, { sitting: 'may-june-2027' });
-    await paid('granted');
+    await paid('granted', EMAIL, s._id);
     expect(await resolveWelcome('cs_1', { student_id: String(s._id) })).toEqual({ state: 'payer', email: EMAIL, sitting: 'May/June 2027', studentId: String(s._id) });
   });
-  it('keeps confirming while the account exists and the grant is in flight', async () => {
+  it('keeps confirming while the account exists and the claim is in flight', async () => {
     await student();
-    await paid('pending');
+    await paid('waiting');
     expect(await resolveWelcome('cs_1', null)).toEqual({ state: 'confirming', settled: false });
   });
   it('bought for someone else: signed in as another account, or not signed in and the address has an account', async () => {
     const other = await student('parent@example.com');
-    await student(EMAIL, { sitting: 'may-june-2027' });
-    await paid('granted');
+    const holder = await student(EMAIL, { sitting: 'may-june-2027' });
+    await paid('granted', EMAIL, holder._id);
     expect(await resolveWelcome('cs_1', { student_id: String(other._id) })).toEqual({ state: 'other', email: EMAIL, sitting: 'May/June 2027' });
     expect(await resolveWelcome('cs_1', null)).toEqual({ state: 'other', email: EMAIL, sitting: 'May/June 2027' });
+    // The account is gone and the payment is waiting again: the address is all there is to say.
     await Student.deleteOne({ email: EMAIL });
-    await Fulfilment.updateOne({ session_id: 'cs_1' }, { $set: { status: 'pending' } });
+    await Payment.updateOne({ session_id: 'cs_1' }, { $set: { ...transition('waiting') }, $unset: { student_id: '' } });
     expect(await resolveWelcome('cs_1', { student_id: String(other._id) })).toEqual({ state: 'other', email: EMAIL, sitting: null });
   });
 });

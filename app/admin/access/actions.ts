@@ -5,7 +5,8 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { dbConnect, Fulfilment, Payment, Student } from '@/lib/db';
 import { grantFromPayment } from '@/lib/grant-from-payment';
-import { transition } from '@/lib/payment-state';
+import { QUEUE_STATES, transition } from '@/lib/payment-state';
+import { claim } from '@/lib/claim';
 import { requireAdmin } from '@/lib/auth/session';
 import { deleteStudent, type DeletionCounts } from '@/lib/delete-student';
 import { SITTING_IDS } from '@/lib/sittings';
@@ -78,6 +79,54 @@ export async function resolvePayment(formData: FormData): Promise<void> {
   // fulfilment, so a payment resolved without this stayed on the list forever.
   await Fulfilment.updateOne({ payment_id: id }, { $set: { status: 'resolved', reason, ts: new Date() } });
   revalidatePath('/admin/access');
+}
+
+/**
+ * CLOSING A PAYMENT (ROUND_11 Task 4): settled by a person, without granting.
+ * Conditional on the states that carry an obligation, so a form left open
+ * while the payment was granted elsewhere closes nothing and says so. The
+ * reason, the operator and the time are the record of who decided.
+ */
+export async function closePayment(formData: FormData): Promise<void> {
+  const operator = await requireAdmin();
+  const id = IdZ.parse(String(formData.get('id')));
+  const reason = String(formData.get('reason') ?? '').trim().slice(0, 200);
+  if (reason.length < 3) redirect('/admin/access?noreason=1');
+  await dbConnect();
+  const closed = await Payment.updateOne(
+    { _id: id, state: { $in: QUEUE_STATES } },
+    { $set: { ...transition('closed', { reason, by: operator.email }), resolved_at: new Date(), note: `resolved: ${reason}` } },
+  );
+  if (closed.matchedCount === 0) {
+    revalidatePath('/admin/access');
+    redirect('/admin/access?stale=1');
+  }
+  // Both representations, while both exist (ROUND_11 rollout order).
+  await Fulfilment.updateOne({ payment_id: id }, { $set: { status: 'resolved', reason, ts: new Date() } });
+  revalidatePath('/admin/access');
+  redirect('/admin/access?closed=1');
+}
+
+/**
+ * GRANTING A QUEUED PAYMENT TO AN ACCOUNT (ROUND_11 Task 4). The claim is the
+ * one operation that assigns access, so a sitting already covered moves the
+ * row to duplicate rather than overwriting the grant, and a payment that is
+ * no longer waiting grants nothing.
+ */
+export async function grantQueued(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = IdZ.parse(String(formData.get('id')));
+  const email = String(formData.get('email') ?? '').trim().toLowerCase();
+  await dbConnect();
+  const student = await Student.findOne({ email }).select('_id').lean<{ _id: unknown } | null>();
+  if (!student) redirect(`/admin/access?ungranted=${encodeURIComponent(email)}`);
+  const payment = await Payment.findById(id).select('session_id').lean<{ session_id?: string } | null>();
+  if (!payment?.session_id) redirect('/admin/access?nosession=1');
+  const outcome = await claim(payment.session_id, { id: student._id });
+  revalidatePath('/admin/access');
+  if (outcome === 'granted') redirect(`/admin/access?granted=${encodeURIComponent(email)}`);
+  if (outcome === 'duplicate') redirect(`/admin/access?duplicate=${encodeURIComponent(email)}`);
+  redirect('/admin/access?stale=1');
 }
 
 /**

@@ -2,6 +2,9 @@ import { dbConnect, Attempt, Fulfilment, Payment, PracticeSession, Student } fro
 import { FREE_MODES, FREE_SESSIONS, hasAccess } from '@/lib/access';
 import { SITTINGS, SITTING_IDS, sittingsOpenAt } from '@/lib/sittings';
 import { grantAccess, matchPayment, resolvePayment, revokeAccess } from './actions';
+import { PaymentQueue } from './payment-queue';
+import { loadQueue } from '@/lib/payment-queue';
+import { PAYMENT_STATE_CUTOVER } from '@/lib/cutover';
 import { DeleteAccount } from './delete-account';
 import { Refusal } from '../../refusal';
 import { CAPS, FIELD, INK, QUIET, ROW, SELECT } from '../ui';
@@ -21,6 +24,9 @@ import { STALE_PENDING_MS } from '@/lib/db/backfill-unmatched-fulfilments';
  */
 export default async function AccessPage({ searchParams }: { searchParams: Promise<{ find?: string; attention?: string; granted?: string; sitting?: string; ungranted?: string }> }) {
   const { find = '', attention, granted, sitting: grantedSitting, ungranted } = await searchParams;
+  // One list from one record, once the cutover is verified; until then the
+  // three legacy lists stand exactly as they were (ROUND_11 rollout order).
+  const queue = PAYMENT_STATE_CUTOVER ? await loadQueue() : [];
   await dbConnect();
   const students = await Student.find()
     .sort({ created_at: -1 })
@@ -125,7 +131,9 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
           </p>
         )}
 
-        {needing.length > 0 && (
+        {PAYMENT_STATE_CUTOVER && <PaymentQueue rows={queue} />}
+
+        {!PAYMENT_STATE_CUTOVER && needing.length > 0 && (
           <Refusal
             id="payments-attention"
             amber
@@ -192,7 +200,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
           </p>
         </details>
 
-        {unmatched.length > 0 && (
+        {!PAYMENT_STATE_CUTOVER && unmatched.length > 0 && (
           <Refusal
             id="payments-unmatched"
             className="mb-6"
@@ -251,7 +259,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
           </form>
         </section>
 
-        {refused.length > 0 && (
+        {!PAYMENT_STATE_CUTOVER && refused.length > 0 && (
           <Refusal
             id="payments-refused"
             amber
