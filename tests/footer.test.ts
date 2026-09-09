@@ -24,6 +24,7 @@ describe('the footer', () => {
     expect(footer).toMatch(/href="mailto:[^"]+@anansi\.xyz"[^>]*>Help/);
     for (const href of ['/refunds', '/privacy', '/terms']) expect(footer).toContain(`href="${href}"`);
     expect(footer).toContain('<svg');
+    expect(footer).toMatch(/<a [^>]*href="\/"[^>]*>\s*<svg/);
   });
   it('is on every page: the root layout draws it after the page', () => {
     expect(at('app', 'layout.tsx')).toMatch(/\{children\}\s*<SiteFooter \/>/);

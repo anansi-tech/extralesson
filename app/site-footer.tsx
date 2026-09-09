@@ -10,7 +10,7 @@ export function SiteFooter() {
     <footer className="border-t-[1.5px] border-ink bg-white px-5 py-5 font-mono text-[11px] text-dim lg:px-6 lg:py-6">
       <div className="mx-auto max-w-[var(--bar-width)] lg:flex lg:items-center lg:justify-between lg:gap-6">
         <div className="lg:flex lg:shrink-0 lg:items-center lg:gap-6">
-          <Lockup width={LOCKUP_MIN_PX} />
+          <Link href="/" aria-label="ExtraLesson home" className="inline-flex"><Lockup width={LOCKUP_MIN_PX} /></Link>
           <nav className="mt-1 flex flex-wrap gap-x-5 lg:mt-0 lg:gap-x-6">
             <a href={`mailto:${LANDING.contactEmail}`} className={LINK}>Help</a>
             <Link href="/refunds" className={LINK}>Refunds</Link>
