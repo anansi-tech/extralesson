@@ -15,6 +15,7 @@ async function main() {
   const by = plan.updates.reduce<Record<string, number>>((acc, u) => ({ ...acc, [u.derived.by]: (acc[u.derived.by] ?? 0) + 1 }), {});
   console.log(`  decided by : ${Object.entries(by).map(([k, v]) => `${k}=${v}`).join(' · ') || 'nothing to decide'}`);
   console.log(`  new rows from a fulfilment with no payment: ${plan.creates.length}`);
+  console.log(`  keyed by their event, older than session tracking: ${plan.updates.filter((u) => u.synthetic).length}`);
   console.log(`  already settled by a live transition, left alone: ${plan.live.length}`);
 
   console.log(`\n== payments with no fulfilment to link to: ${plan.noFulfilment.length}`);

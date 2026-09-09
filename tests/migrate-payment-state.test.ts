@@ -89,9 +89,7 @@ describe('the plan', () => {
     const rows = await seed();
     const plan = await planMigration();
 
-    // No waiting: the payment with no fulfilment has no session id either, so
-    // it cannot be keyed and is reported rather than counted.
-    expect(plan.counts).toEqual({ granted: 1, duplicate: 1, closed: 1, refused: 1 });
+    expect(plan.counts).toEqual({ granted: 1, duplicate: 1, closed: 1, refused: 1, waiting: 1 });
     expect(plan.updates.find((u) => u.id === String(rows.granted._id))!.session_id).toBe('cs_g');
     // resolved_at beats the granted fulfilment beside it.
     expect(plan.updates.find((u) => u.id === String(rows.closed._id))!.derived).toMatchObject({ state: 'closed', reason: 'refunded' });
@@ -99,7 +97,10 @@ describe('the plan', () => {
     expect(plan.creates).toEqual([{ session_id: 'cs_refused', event_id: 'cs_refused', derived: { state: 'refused', reason: 'not-ours', by: 'fulfilment' } }]);
     // A payment with no fulfilment: reported by id, and still given a state.
     expect(plan.noFulfilment.map((p) => p.id)).toEqual([String(rows.lonely._id)]);
-    expect(plan.ambiguous.map((a) => a.why)).toEqual(['no session id on the payment or a fulfilment']);
+    // Older than session tracking: keyed by its event rather than left unkeyable.
+    const legacy = plan.updates.find((u) => u.id === String(rows.lonely._id))!;
+    expect(legacy).toMatchObject({ session_id: 'legacy:evt_l', synthetic: true, derived: { state: 'waiting', by: 'default' } });
+    expect(plan.ambiguous).toEqual([]);
     // A row a live transition already settled is left alone.
     expect(plan.live).toEqual([{ id: String(rows.live._id), state: 'granted' }]);
   }, 60000);
@@ -155,6 +156,25 @@ describe('writing it', () => {
     expect(await applyMigration()).toMatchObject({ created: 0 });
     expect(await Payment.countDocuments({ session_id: 'cs_only' })).toBe(1);
     expect((await Payment.findOne({ session_id: 'cs_only' }).lean<{ state: string }>())!.state).toBe('refused');
+  }, 60000);
+});
+
+describe('a row older than session tracking', () => {
+  it('is keyed by its event, uniquely, and says it holds no real session', async () => {
+    const { Payment } = await import('@/lib/db');
+    const { applyMigration, legacyKey, LEGACY_KEY_PREFIX } = await import('@/lib/db/migrate-payment-state');
+    const p = await Payment.create({ event_id: 'evt_old', received_at: new Date('2026-08-26'), amount_total: 2500, currency: 'usd' });
+    expect(legacyKey('evt_old')).toBe('legacy:evt_old');
+
+    await applyMigration();
+    const after = (await Payment.findById(p._id).lean<{ session_id: string; state: string }>())!;
+    expect(after.session_id).toBe('legacy:evt_old');
+    expect(after.session_id.startsWith(LEGACY_KEY_PREFIX)).toBe(true);
+    // Waiting, because the precedence never reads the entitlement: a person closes it.
+    expect(after.state).toBe('waiting');
+    // The key is a key: two rows cannot share one.
+    await Payment.syncIndexes();
+    await expect(Payment.create({ event_id: 'evt_other', session_id: 'legacy:evt_old', received_at: new Date() })).rejects.toThrow();
   }, 60000);
 });
 

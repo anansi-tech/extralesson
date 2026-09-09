@@ -103,11 +103,22 @@ export function deriveState(payment: PaymentRow | null, fulfilment: FulfilmentRo
   return { state: 'waiting', by: 'default' };
 }
 
+/**
+ * A KEY FOR A ROW THAT PREDATES SESSION TRACKING. Six payments were taken
+ * before Fulfilment existed, so nothing recorded which checkout session they
+ * came from and nothing ever will. They are keyed by the event that carried
+ * them, marked as what they are, so `session_id` can become required with a
+ * full unique index at the cutover rather than waiting on records that cannot
+ * be recovered. Nothing reads a session id back to Stripe.
+ */
+export const LEGACY_KEY_PREFIX = 'legacy:';
+export const legacyKey = (eventId: string) => `${LEGACY_KEY_PREFIX}${eventId}`;
+
 export interface Plan {
   /** Everything there is, so a count can be read against a total. */
   totals: { payments: number; fulfilments: number };
   /** What would be written to an existing Payment. */
-  updates: { id: string; session_id: string | null; derived: Derived }[];
+  updates: { id: string; session_id: string; synthetic?: true; derived: Derived }[];
   /** A Fulfilment with no Payment: the money was never recorded as one. */
   creates: { session_id: string; event_id: string; derived: Derived }[];
   /** Rows a live transition has already settled; the migration leaves them alone. */
@@ -161,13 +172,11 @@ export async function planMigration(): Promise<Plan> {
       plan.ambiguous.push({ id, session_id: p.session_id ?? null, why: derived.ambiguous, detail: describe(p) });
       continue;
     }
-    // The session id comes from the Fulfilment where the Payment has none.
-    const session_id = p.session_id ?? fulfilment?.session_id ?? null;
-    if (!session_id) {
-      plan.ambiguous.push({ id, session_id: null, why: 'no session id on the payment or a fulfilment', detail: describe(p) });
-      continue;
-    }
-    plan.updates.push({ id, session_id, derived });
+    // The session id comes from the Fulfilment where the Payment has none, and
+    // from the event where neither has one: a row older than session tracking.
+    const known = p.session_id ?? fulfilment?.session_id ?? null;
+    const session_id = known ?? legacyKey(p.event_id);
+    plan.updates.push({ id, session_id, ...(known ? {} : { synthetic: true as const }), derived });
     plan.counts[derived.state] = (plan.counts[derived.state] ?? 0) + 1;
   }
 

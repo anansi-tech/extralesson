@@ -185,6 +185,24 @@ Report counts per state, every payment with no Fulfilment to link to, and
 every ambiguous case, **by id, before running against production**.
 Ambiguous cases block deletion.
 
+**Two decisions, from the report of 9 September 2026.** Fifteen payments,
+nine fulfilments, nine rows to migrate — six granted, two closed, one
+duplicate — and six payments taken between 26 and 28 August, before
+Fulfilment existed at all.
+
+1. **A synthetic key for rows that predate session tracking.** Those six
+   carry no session id and nothing will ever recover one, so they are
+   keyed `legacy:<event_id>` and marked as such in the plan. That is what
+   lets `session_id` become required with a full unique index at the
+   cutover instead of waiting on records that no longer exist.
+2. **The two unresolved ones migrate to `waiting`, and a person closes
+   them on the queue.** Both accounts hold access, and one of the grants
+   is a manual comp — so reading the entitlement as evidence that the
+   payment granted it would record something false. The precedence
+   stands, the queue shows the two, and an operator closes each with the
+   reason. A payment whose disposition was never written down is exactly
+   what the queue is for.
+
 Only after the counts are checked and the screen reads correctly does the
 second commit switch the readers, remove `resolved_at`, and drop
 `Fulfilment` and its reconciliation paths.
