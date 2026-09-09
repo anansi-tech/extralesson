@@ -1,5 +1,7 @@
 import { Payment, Student } from './index';
 import { LEGACY_PREFIX } from '@/lib/payment-state';
+import { StripeError, stripeGet, type CheckoutSession, type StripeEventObject } from '@/lib/stripe-api';
+import { paymentIntentOf } from '@/lib/stripe-webhook';
 
 /**
  * THE REFERENCES A REFUND NEEDS, for rows written before ROUND_12 (Task 0).
@@ -148,4 +150,79 @@ export async function applyGrantLinks(): Promise<{ linked: number }> {
     if (res.modifiedCount === 1) linked++;
   }
   return { linked };
+}
+
+export interface Resolved {
+  id: string;
+  payment_intent_id?: string;
+  paid_at?: Date;
+  /** Why one or both could not be read, when they could not. */
+  why?: string;
+}
+
+/** The charge is when the money moved; the intent's own creation is not. */
+function chargeCreated(session: CheckoutSession): number | null {
+  const pi = session.payment_intent;
+  if (!pi || typeof pi === 'string') return null;
+  const charge = pi.latest_charge;
+  if (charge && typeof charge === 'object' && typeof charge.created === 'number') return charge.created;
+  return null;
+}
+
+/**
+ * Asks Stripe for what only Stripe knows. A row keyed by a session is read as a
+ * session; a `legacy:` row is read as the EVENT it is keyed by, because it never
+ * was a session and asking for one would 404 on every one of them.
+ */
+export async function resolveFromStripe(gap: PaymentGap): Promise<Resolved> {
+  try {
+    if (gap.kind === 'legacy-event') {
+      const event = await stripeGet<StripeEventObject>(`/events/${gap.lookup}`);
+      const session = event.data.object;
+      const intent = paymentIntentOf(session);
+      // The event that said the money arrived is the moment it did, which is
+      // what the webhook writes for every payment taken since.
+      return { id: gap.id, payment_intent_id: intent ?? undefined, paid_at: new Date(event.created * 1000), why: intent ? undefined : 'the event carried no payment intent' };
+    }
+    const session = await stripeGet<CheckoutSession>(`/checkout/sessions/${gap.lookup}`, {
+      'expand[]': 'payment_intent.latest_charge',
+    });
+    const intent = paymentIntentOf(session as unknown as Record<string, unknown>);
+    const created = chargeCreated(session);
+    const why = [!intent && 'no payment intent on the session', !created && 'no charge to date the payment from']
+      .filter(Boolean)
+      .join('; ');
+    return {
+      id: gap.id,
+      payment_intent_id: intent ?? undefined,
+      paid_at: created ? new Date(created * 1000) : undefined,
+      why: why || undefined,
+    };
+  } catch (e) {
+    const why = e instanceof StripeError ? `${e.status} ${e.code ?? ''} ${e.message}`.trim() : String(e);
+    return { id: gap.id, why };
+  }
+}
+
+/**
+ * Writes what Stripe answered, and only that. EACH FIELD IS CONDITIONAL ON
+ * ITSELF: a value written since — by the webhook, on a redelivery — is never
+ * overwritten by an older read, and a row that gained one field still gains
+ * the other it lacked.
+ */
+export async function applyStripeReferences(gaps: PaymentGap[]): Promise<{ resolved: Resolved[]; written: number }> {
+  const resolved: Resolved[] = [];
+  let written = 0;
+  for (const gap of gaps) {
+    const r = await resolveFromStripe(gap);
+    resolved.push(r);
+    let touched = false;
+    for (const [field, value] of [['payment_intent_id', r.payment_intent_id], ['paid_at', r.paid_at]] as const) {
+      if (!value) continue;
+      const res = await Payment.updateOne({ _id: gap.id, [field]: { $exists: false } }, { $set: { [field]: value } });
+      if (res.modifiedCount === 1) touched = true;
+    }
+    if (touched) written++;
+  }
+  return { resolved, written };
 }

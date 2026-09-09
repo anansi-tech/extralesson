@@ -62,9 +62,9 @@ boundaries · Vitest · KaTeX.
 ## Kill list — hard gates
 
 No code/imports/stubs for: WhatsApp/Twilio · parent reports · Stripe as a DEPENDENCY —
-no `stripe` npm package, no `@stripe/*`, no SDK, no outbound API call (exempt: the
-payment-link href, and a webhook handler verifying signatures with `node:crypto`
-alone) · Investigation-type questions ·
+no `stripe` npm package, no `@stripe/*`, no SDK (exempt: the payment-link href, a
+webhook handler verifying signatures with `node:crypto` alone, and the refund path's
+reads and writes through the Stripe API) · Investigation-type questions ·
 SBA coaching · spaced repetition · streak REWARDS · CAPE or second subject ·
 in-app payments · Railway/cron · offline sync · native apps.
 
@@ -80,6 +80,23 @@ exemption widened by one: a handler that verifies the signature with
 package is still a violation, and the pre-commit grep now also fails on stripe
 appearing in `package.json`, because the rule was about the dependency and the
 grep only knew about imports. Reasoning in `ROUND_2_EXAMINER.md` §8c.
+
+**The outbound-call ban lifted in Round 12, by decision.** The ban read "no
+outbound API call" and the reason under it was that hand-matching is right at a
+hundred sales. Round 12 is not matching: the landing page promises a refund
+within `REFUND_DAYS`, and a refund is issued by Stripe and by nobody else. The
+alternative to calling their API is an operator refunding in the dashboard while
+our record still says the payment granted access — money returned, access live,
+neither fact beside the other. That is the exact failure R11 removed from every
+other payment path.
+
+So the DEPENDENCY ban stands unchanged — no package, no SDK, and the pre-commit
+grep still fails on `stripe` in an import or in `package.json` — and the
+exemption widens by one more: the refund path reads payment intents and creates
+refunds over HTTPS with `fetch`, against a key that is now required. Note what
+the grep cannot see: an outbound call is prose-gated, not grep-gated, so a call
+added anywhere else is a violation the hook will not catch. Reasoning in
+`ROUND_12_REFUND_AND_REVOKE.md`, beside the principle.
 
 **Photo capture and vision left this list in Round 2.** They were R1 gates because
 R1 had no examiner, and half a camera would have been scope creep. R2

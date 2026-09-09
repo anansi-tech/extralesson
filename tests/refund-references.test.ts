@@ -219,3 +219,89 @@ describe('the backfill resolves only what is provable', () => {
     void s;
   }, 60000);
 });
+
+describe('what only Stripe knows', () => {
+  const calls: string[] = [];
+  const answer = (url: string, body: unknown, ok = true) => {
+    calls.push(url);
+    return Promise.resolve({ ok, json: async () => body } as Response);
+  };
+  beforeEach(() => {
+    calls.length = 0;
+    process.env.STRIPE_SECRET_KEY = 'sk_test_backfill';
+  });
+
+  it('reads a session as a session, expanding to the charge that dates the payment', async () => {
+    const { resolveFromStripe } = await import('@/lib/db/backfill-refund-references');
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) =>
+      answer(String(input), {
+        id: 'cs_1',
+        payment_status: 'paid',
+        payment_intent: { id: 'pi_1', latest_charge: { id: 'ch_1', created: PAID_AT } },
+      }),
+    );
+
+    const r = await resolveFromStripe({ id: 'p1', session_id: 'cs_1', kind: 'session', lookup: 'cs_1', state: 'granted', needs: ['payment_intent_id', 'paid_at'] });
+    expect(r).toEqual({ id: 'p1', payment_intent_id: 'pi_1', paid_at: new Date(PAID_AT * 1000), why: undefined });
+    expect(calls[0]).toContain('/v1/checkout/sessions/cs_1');
+    expect(calls[0]).toContain('expand');
+    vi.restoreAllMocks();
+  });
+
+  it('reads a legacy row as the EVENT it is keyed by, never as a session', async () => {
+    const { resolveFromStripe } = await import('@/lib/db/backfill-refund-references');
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) =>
+      answer(String(input), {
+        id: 'evt_1',
+        type: 'checkout.session.completed',
+        created: PAID_AT,
+        data: { object: { id: 'cs_gone', payment_intent: 'pi_2' } },
+      }),
+    );
+
+    const r = await resolveFromStripe({ id: 'p2', session_id: 'legacy:evt_1', kind: 'legacy-event', lookup: 'evt_1', state: 'closed', needs: ['payment_intent_id', 'paid_at'] });
+    expect(r).toEqual({ id: 'p2', payment_intent_id: 'pi_2', paid_at: new Date(PAID_AT * 1000), why: undefined });
+    expect(calls[0]).toContain('/v1/events/evt_1');
+    expect(calls.join(' ')).not.toContain('/checkout/sessions');
+    vi.restoreAllMocks();
+  });
+
+  it('says why when Stripe refuses, and writes nothing on the strength of a guess', async () => {
+    const { applyStripeReferences } = await import('@/lib/db/backfill-refund-references');
+    const { Payment } = await import('@/lib/db');
+    const { transition } = await import('@/lib/payment-state');
+    const p = await Payment.create({ event_id: 'evt_missing', session_id: 'cs_missing', received_at: new Date(), ...transition('granted') });
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) =>
+      answer(String(input), { error: { code: 'resource_missing', message: 'No such checkout.session' } }, false),
+    );
+
+    const { resolved, written } = await applyStripeReferences([
+      { id: String(p._id), session_id: 'cs_missing', kind: 'session', lookup: 'cs_missing', state: 'granted', needs: ['payment_intent_id', 'paid_at'] },
+    ]);
+    expect(written).toBe(0);
+    expect(resolved[0].why).toContain('resource_missing');
+    const after = await Payment.findById(p._id).lean<{ payment_intent_id?: string; paid_at?: Date }>();
+    expect(after!.payment_intent_id ?? null).toBeNull();
+    expect(after!.paid_at ?? null).toBeNull();
+    vi.restoreAllMocks();
+  }, 60000);
+
+  it('never overwrites a reference written since the plan was made', async () => {
+    const { applyStripeReferences } = await import('@/lib/db/backfill-refund-references');
+    const { Payment } = await import('@/lib/db');
+    const { transition } = await import('@/lib/payment-state');
+    const p = await Payment.create({ event_id: 'evt_live', session_id: 'cs_live', received_at: new Date(), ...transition('granted'), payment_intent_id: 'pi_written_by_the_webhook' });
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input) =>
+      answer(String(input), { id: 'cs_live', payment_status: 'paid', payment_intent: { id: 'pi_from_an_older_read', latest_charge: { created: PAID_AT } } }),
+    );
+
+    await applyStripeReferences([
+      { id: String(p._id), session_id: 'cs_live', kind: 'session', lookup: 'cs_live', state: 'granted', needs: ['paid_at'] },
+    ]);
+    const after = await Payment.findById(p._id).lean<{ payment_intent_id: string; paid_at?: Date }>();
+    expect(after!.payment_intent_id).toBe('pi_written_by_the_webhook');
+    // And the field it did lack is filled: each is conditional on itself.
+    expect(after!.paid_at).toEqual(new Date(PAID_AT * 1000));
+    vi.restoreAllMocks();
+  }, 60000);
+});

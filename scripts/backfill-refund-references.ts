@@ -3,7 +3,7 @@
 // Run: pnpm tsx scripts/backfill-refund-references.ts [--apply]
 import 'dotenv/config';
 import { dbConnect } from '@/lib/db';
-import { applyGrantLinks, planRefundReferences } from '@/lib/db/backfill-refund-references';
+import { applyGrantLinks, applyStripeReferences, planRefundReferences, resolveFromStripe } from '@/lib/db/backfill-refund-references';
 
 async function main() {
   const apply = process.argv.includes('--apply');
@@ -11,8 +11,9 @@ async function main() {
   const plan = await planRefundReferences();
 
   const key = process.env.STRIPE_SECRET_KEY?.trim();
-  console.log(`\n== STRIPE_SECRET_KEY: ${key ? `present (${key.slice(0, 7)}…)` : 'ABSENT'}`);
-  if (!key) console.log('   Without it nothing can be resolved from Stripe, and Task 2 cannot refund at all.');
+  const mode = key?.startsWith('sk_live') ? 'live' : key?.startsWith('sk_test') ? 'test' : 'unknown';
+  console.log(`\n== STRIPE_SECRET_KEY: ${key ? `present, ${mode} mode` : 'ABSENT'}`);
+  if (!key) console.log('   Without it nothing can be resolved from Stripe, and no refund can be issued.');
 
   console.log(`\n== ${plan.totals.payments} payments · ${plan.totals.grants} grants`);
   console.log(`\n== payments missing a reference: ${plan.gaps.length}`);
@@ -33,11 +34,27 @@ async function main() {
   for (const u of plan.unlabelledGrants) console.log(`   unlabelled ${u.studentId} · ${u.source} · no payments on the account · ${u.why}`);
 
   if (!apply) {
+    // A dry read of the first of each kind, so the report says whether Stripe
+    // can answer at all before anyone agrees to a write.
+    if (key) {
+      for (const kind of ['session', 'legacy-event'] as const) {
+        const first = plan.gaps.find((g) => g.kind === kind);
+        if (!first) continue;
+        const r = await resolveFromStripe(first);
+        console.log(`   dry read (${kind}): ${first.lookup} -> ${r.payment_intent_id ?? '—'} · ${r.paid_at?.toISOString() ?? '—'}${r.why ? ` · ${r.why}` : ''}`);
+      }
+    }
     console.log('\nreport only — nothing was written.');
     process.exit(0);
   }
+
+  const { resolved, written } = await applyStripeReferences(plan.gaps);
+  const unresolved = resolved.filter((r) => !r.payment_intent_id || !r.paid_at);
+  console.log(`\nwritten: ${written} payments given a reference · ${unresolved.length} still unresolved`);
+  for (const r of unresolved) console.log(`   UNRESOLVED ${r.id} · ${r.why ?? 'no reason given'}`);
+
   const { linked } = await applyGrantLinks();
-  console.log(`\nwritten: ${linked} grants linked to their payment. The Stripe references need a key.`);
+  console.log(`written: ${linked} grants linked to their payment`);
   process.exit(0);
 }
 

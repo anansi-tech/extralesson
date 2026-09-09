@@ -26,6 +26,27 @@ Take back the entitlement, never the record.
   window governs what is agreed to; it never acts on its own. A status
   update arriving from Stripe never authorises a refund.
 
+**The outbound-call ban is lifted for this path, by decision (9 September
+2026).** The kill list banned Stripe as a dependency *and* any outbound API
+call, exempting the payment-link href and the signature-verifying webhook. A
+refund cannot be issued by us: Stripe issues it, so a refund path that may not
+call Stripe is a refund path that does not exist, and the promise on the landing
+page stays unimplemented. The alternative — an operator refunding in the
+dashboard — is what this round exists to end, because it leaves the money
+returned and the access live with neither fact recorded beside the other.
+
+The dependency ban stands exactly as it was: no package, no SDK, and the
+pre-commit grep still fails on `stripe` in an import or in `package.json`. The
+exemption now covers the payment-link href, the webhook that verifies signatures
+with `node:crypto`, and this path's reads and writes through the Stripe API over
+`fetch`. `STRIPE_SECRET_KEY` is required from Round 12: without it the refund
+path cannot work at all, and a variable that silently disables the one operation
+that returns money is worse than a boot that refuses.
+
+What the grep cannot see is worth saying once: the dependency is grep-gated, the
+outbound call is not. A call added outside this path is a violation the hook will
+not catch.
+
 ## Task 0 — The references a refund needs
 
 Nothing here can run without these. One commit, additive, no behaviour

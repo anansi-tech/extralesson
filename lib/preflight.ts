@@ -2,6 +2,8 @@
  * Three of these fail silently (ROUND_3 §1): without the payment link a landing
  * page renders and cannot be bought from, without ADMIN_EMAILS no operator can
  * be provisioned for /admin/access, without the webhook secret every delivery 400s.
+ * A fourth joins them in ROUND_12: without the secret key no refund can be
+ * issued, and a promise on the landing page silently has no implementation.
  */
 export const REQUIRED_ENV = [
   'MONGODB_URI',
@@ -10,6 +12,7 @@ export const REQUIRED_ENV = [
   'NEXT_PUBLIC_STRIPE_PAYMENT_LINK',
   'ADMIN_EMAILS',
   'STRIPE_WEBHOOK_SECRET',
+  'STRIPE_SECRET_KEY',
 ] as const;
 
 /**
@@ -18,7 +21,6 @@ export const REQUIRED_ENV = [
  */
 export const OPTIONAL_ENV: Record<string, string> = {
   RESEND_API_KEY: 'unset falls back to logging the reset link',
-  STRIPE_SECRET_KEY: 'the backfill and the refund read it; unset, neither can reach Stripe (ROUND_12)',
   RESEND_FROM: 'defaults to ExtraLesson at the help address',
   NEXT_PUBLIC_BASE_URL: 'inferred from VERCEL_URL when unset',
   BASE_URL: 'audit scripts only, never the app',
