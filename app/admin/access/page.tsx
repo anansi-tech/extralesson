@@ -1,10 +1,9 @@
-import { dbConnect, Attempt, Fulfilment, Payment, PracticeSession, Student } from '@/lib/db';
+import { dbConnect, Attempt, Payment, PracticeSession, Student } from '@/lib/db';
 import { FREE_MODES, FREE_SESSIONS, hasAccess } from '@/lib/access';
 import { SITTINGS, SITTING_IDS, sittingsOpenAt } from '@/lib/sittings';
-import { grantAccess, matchPayment, resolvePayment, revokeAccess } from './actions';
+import { grantAccess, revokeAccess } from './actions';
 import { PaymentQueue } from './payment-queue';
 import { loadQueue } from '@/lib/payment-queue';
-import { PAYMENT_STATE_CUTOVER } from '@/lib/cutover';
 import { DeleteAccount } from './delete-account';
 import { Refusal } from '../../refusal';
 import { CAPS, FIELD, INK, QUIET, ROW, SELECT } from '../ui';
@@ -12,9 +11,7 @@ import { CAPS, FIELD, INK, QUIET, ROW, SELECT } from '../ui';
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Access — ExtraLesson admin' };
 
-
 /** A pending fulfilment older than this needs a person: the webhook should have finished in seconds. */
-import { STALE_PENDING_MS } from '@/lib/db/backfill-unmatched-fulfilments';
 
 /**
  * Who has paid, and who the webhook could not settle. Every grant is visible and
@@ -24,10 +21,8 @@ import { STALE_PENDING_MS } from '@/lib/db/backfill-unmatched-fulfilments';
  */
 export default async function AccessPage({ searchParams }: { searchParams: Promise<{ find?: string; attention?: string; granted?: string; sitting?: string; ungranted?: string }> }) {
   const { find = '', attention, granted, sitting: grantedSitting, ungranted } = await searchParams;
-  // One list from one record, once the cutover is verified; until then the
-  // three legacy lists stand exactly as they were (ROUND_11 rollout order).
-  const queue = PAYMENT_STATE_CUTOVER ? await loadQueue() : [];
   await dbConnect();
+  const queue = await loadQueue();
   const students = await Student.find()
     .sort({ created_at: -1 })
     .select('email name exam_sitting access created_at')
@@ -41,36 +36,6 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
         created_at: Date;
       }[]
     >();
-
-  // Payments the webhook could not attach to an account. Recorded rather than
-  // dropped: someone has paid, and this is the only place that says so.
-  // A pending payment is a session whose money has not arrived: it is not a
-  // payment with no matching account, and listing it would invent one.
-  const unmatched = await Payment.find({ student_id: null, resolved_at: null, state: { $ne: 'pending' } })
-    .sort({ received_at: -1 })
-    .lean<
-      { _id: unknown; event_id: string; email?: string; amount_total?: number; currency?: string; received_at: Date }[]
-    >();
-
-  // Checkout sessions the webhook would not grant: another product's link, a
-  // subscription, or not yet paid. Shown so a wrong allowlist is seen, not guessed.
-  const refused = await Fulfilment.find({ status: 'refused' })
-    .sort({ ts: -1 })
-    .limit(50)
-    .lean<{ _id: unknown; session_id: string; event_id: string; reason?: string; metadata?: Record<string, string>; ts: Date }[]>();
-  // A failed grant, one still pending an hour on, or a payment for a sitting
-  // the account already had: each is a payment a person must finish.
-  const needing = await Fulfilment.find({
-    $or: [
-      { status: 'failed' },
-      { status: 'duplicate' },
-      { status: 'unmatched' },
-      { status: 'pending', ts: { $lt: new Date(Date.now() - STALE_PENDING_MS) } },
-    ],
-  })
-    .sort({ ts: -1 })
-    .limit(50)
-    .lean<{ _id: unknown; session_id: string; event_id: string; status: string; reason?: string; payment_id?: unknown; ts: Date }[]>();
 
   const ids = students.map((s) => s._id);
   const [sessionCounts, attemptCounts] = await Promise.all([
@@ -108,7 +73,7 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
           <div className="flex flex-wrap items-center gap-x-4 font-mono text-xs text-dim">
             <span>
               <b className="text-ink">{paid}</b> with access ·{' '}
-              <b className={needing.length + unmatched.length > 0 ? 'text-red-pen' : 'text-ink'}>{needing.length + unmatched.length}</b> payments needing attention ·{' '}
+              <b className={queue.length > 0 ? 'text-red-pen' : 'text-ink'}>{queue.length}</b> payments needing attention ·{' '}
               <b className="text-ink">{usedRows.length}</b> free allowance used
             </span>
           </div>
@@ -131,49 +96,9 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
           </p>
         )}
 
-        {PAYMENT_STATE_CUTOVER && <PaymentQueue rows={queue} />}
+        <PaymentQueue rows={queue} />
 
-        {!PAYMENT_STATE_CUTOVER && needing.length > 0 && (
-          <Refusal
-            id="payments-attention"
-            amber
-            className="mb-6"
-            label="Payments needing attention"
-            sentence="A failed grant, a payment whose address has no account, a payment for a sitting the account already had, or one still pending an hour on — each is a payment a person must finish."
-          >
-            <ul className="mt-3 space-y-2">
-              {needing.map((f) => (
-                <li key={String(f._id)} className="break-all border-t border-paper-deep pt-2 font-mono text-[12px]">
-                  {f.status === 'failed'
-                    ? 'grant FAILED'
-                    : f.status === 'duplicate'
-                      ? 'ALREADY HAD ACCESS'
-                      : f.status === 'unmatched'
-                        ? 'no account for the paying address'
-                        : 'still pending after an hour'} · {new Date(f.ts).toISOString().slice(0, 16).replace('T', ' ')}
-                  <span className="ml-2 text-dim">{f.session_id} · {f.event_id}{f.reason ? ` · ${f.reason}` : ''}</span>
-                  <div className="mt-1 text-ink">
-                    {f.status === 'failed'
-                      ? 'Next: resend the event from Stripe once; if it fails again, grant the account by hand below with the event id as the note.'
-                      : f.status === 'duplicate'
-                        ? 'already had access for this sitting — refund in Stripe. Nothing was granted and the grant they had is untouched.'
-                        : f.status === 'unmatched' ? (
-                            <>
-                              Next: the payment is in the unmatched list below — give it the account it belongs to, or resolve it.{' '}
-                              {f.payment_id && (
-                                <a href={`#payment-${String(f.payment_id)}`} className="underline underline-offset-[3px]">
-                                  Go to the payment
-                                </a>
-                              )}
-                            </>
-                          )
-                        : 'Next: find the session in Stripe; if it is paid, grant the account by hand below with the event id as the note, then resend the event so the record closes.'}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </Refusal>
-        )}
+        
 
         <p className="mb-3 max-w-prose text-[13px] leading-snug text-dim">
           Free tier is the diagnostic plus {FREE_SESSIONS} sessions. Match a Stripe payment to the
@@ -200,43 +125,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
           </p>
         </details>
 
-        {!PAYMENT_STATE_CUTOVER && unmatched.length > 0 && (
-          <Refusal
-            id="payments-unmatched"
-            className="mb-6"
-            label={`${unmatched.length} payment${unmatched.length === 1 ? '' : 's'} with no matching account`}
-            sentence="Someone has paid and the email does not belong to a student."
-            remains="Give it the account they actually registered with — the sitting and the note come from the account, as they would have from the webhook — or mark it resolved if it was a refund or a duplicate."
-          >
-            <ul className="mt-3">
-              {unmatched.map((p) => (
-                <li key={String(p._id)} id={`payment-${String(p._id)}`} className={`${ROW}`}>
-                  <span className="block min-w-0 break-all font-mono text-[12px]">
-                    {p.email ?? 'no email on the payment'}
-                    <span className="ml-2 text-dim">
-                      {typeof p.amount_total === 'number'
-                        ? `${(p.amount_total / 100).toFixed(2)} ${(p.currency ?? '').toUpperCase()}`
-                        : ''}{' '}
-                      · {new Date(p.received_at).toISOString().slice(0, 10)} · {p.event_id}
-                    </span>
-                  </span>
-                  {/* The account it belongs to, or the reason nobody gets it. Either
-                      closes the payment and the record it opened. */}
-                  <form action={matchPayment} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-                    <input type="hidden" name="id" value={String(p._id)} />
-                    <input name="email" type="email" required placeholder="the account that should have it" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
-                    <button className={`${INK} w-full text-sm sm:w-auto`}>Give it this account</button>
-                  </form>
-                  <form action={resolvePayment} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-                    <input type="hidden" name="id" value={String(p._id)} />
-                    <input name="reason" required minLength={3} placeholder="why: refund · duplicate · granted to …" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
-                    <button className={`${QUIET} w-full text-left sm:w-auto`}>Mark resolved</button>
-                  </form>
-                </li>
-              ))}
-            </ul>
-          </Refusal>
-        )}
+        
 
         {/* Always here, whatever the lists hold: an account is granted by its address,
             so a payment with no matching account has somewhere to go. */}
@@ -259,27 +148,7 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
           </form>
         </section>
 
-        {!PAYMENT_STATE_CUTOVER && refused.length > 0 && (
-          <Refusal
-            id="payments-refused"
-            amber
-            className="mb-6"
-            label="Refused payments"
-            sentence="Signed checkouts the webhook did not grant."
-            remains="A Payment Link of ours without metadata product=extralesson shows here as not-ours; a delayed payment shows as not-paid until Stripe says it is paid."
-          >
-            <ul className="mt-3">
-              {refused.map((f) => (
-                <li key={String(f._id)} className={`break-all font-mono text-[12px] ${ROW}`}>
-                  {new Date(f.ts).toISOString().slice(0, 16).replace('T', ' ')} · {f.reason}
-                  <span className="ml-2 text-dim">
-                    metadata {JSON.stringify(f.metadata ?? {})} · {f.session_id}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </Refusal>
-        )}
+        
 
         {([
           ['Paid access', paidRows],

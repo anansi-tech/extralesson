@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHmac } from 'node:crypto';
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { NO_STUDENT_EMAIL, STUDENT_EMAIL_FIELD, emailFromSession } from '@/lib/stripe-webhook';
 
 // ROUND_11 Task 3. The student's address comes from the field that asks for
@@ -17,9 +17,9 @@ vi.mock('@/lib/email', () => ({
 }));
 
 const SECRET = 'whsec_field_test';
-let mongod: MongoMemoryServer;
+let mongod: MongoMemoryReplSet;
 beforeAll(async () => {
-  mongod = await MongoMemoryServer.create();
+  mongod = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
   process.env.MONGODB_URI = mongod.getUri();
   process.env.STRIPE_WEBHOOK_SECRET = SECRET;
 }, 120000);
@@ -28,9 +28,9 @@ afterAll(async () => {
   await mongod?.stop();
 });
 beforeEach(async () => {
-  const { dbConnect, Fulfilment, Payment, Student, StripeEvent } = await import('@/lib/db');
+  const { dbConnect, Payment, Student, StripeEvent } = await import('@/lib/db');
   await dbConnect();
-  await Promise.all([Student.deleteMany({}), Payment.deleteMany({}), Fulfilment.deleteMany({}), StripeEvent.deleteMany({})]);
+  await Promise.all([Student.deleteMany({}), Payment.deleteMany({}), StripeEvent.deleteMany({})]);
 });
 
 /** A session as Stripe sends one: the named field, and the payer's own address beside it. */
@@ -164,7 +164,7 @@ describe('an unpaid session', () => {
 describe('the fallback is gone, not merely unused', () => {
   const at = (...p: string[]) => readFileSync(join(process.cwd(), ...p), 'utf8');
   it('leaves no email_source and no payer-address note anywhere', () => {
-    for (const f of [['lib', 'stripe-webhook.ts'], ['lib', 'db', 'payment.ts'], ['lib', 'grant-from-payment.ts'], ['lib', 'claim.ts'], ['app', 'api', 'stripe', 'webhook', 'route.ts'], ['app', 'admin', 'access', 'actions.ts']]) {
+    for (const f of [['lib', 'stripe-webhook.ts'], ['lib', 'db', 'payment.ts'], ['lib', 'claim.ts'], ['app', 'api', 'stripe', 'webhook', 'route.ts'], ['app', 'admin', 'access', 'actions.ts']]) {
       expect(at(...f), f.join('/')).not.toMatch(/email_source|EmailSource|payer address/);
     }
     expect(at('lib', 'stripe-webhook.ts')).not.toMatch(/customer_details/);

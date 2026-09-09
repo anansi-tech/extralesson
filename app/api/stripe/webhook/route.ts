@@ -1,8 +1,7 @@
-import { dbConnect, Fulfilment, Payment, Student, StripeEvent, isDuplicateKey } from '@/lib/db';
+import { dbConnect, Payment, Student, StripeEvent, isDuplicateKey } from '@/lib/db';
 import { transition } from '@/lib/payment-state';
 import { GRANTING_EVENTS, NO_STUDENT_EMAIL, emailFromSession, metadataOf, scopeOfSession, verifyStripeSignature } from '@/lib/stripe-webhook';
-import { grantFromPayment } from '@/lib/grant-from-payment';
-import type { ExamSitting } from '@/lib/types';
+import { claim } from '@/lib/claim';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,9 +9,10 @@ export const dynamic = 'force-dynamic';
 /**
  * PAYMENT -> ACCESS. No Stripe package and no outbound call: the signed payload
  * carries everything acted on here — ROUND_2 §8c. Two records (ROUND_6 Task 2):
- * StripeEvent says the event arrived, Fulfilment says what became of the
- * session. A grant that fails answers 500 so Stripe delivers again, and the
- * redelivery retries the grant; only a granted fulfilment is a duplicate.
+ * StripeEvent says the event arrived; the Payment says what became of the
+ * money, and is the only record of it. A grant that fails answers 500 so
+ * Stripe delivers again and the redelivery retries the claim; a payment that
+ * is no longer waiting is a duplicate delivery and grants nothing.
  */
 export async function POST(req: Request): Promise<Response> {
   const raw = await req.text();
@@ -38,11 +38,11 @@ export async function POST(req: Request): Promise<Response> {
   const scope = scopeOfSession(session);
   if (!scope.ok) {
     console.warn(`[stripe] ${event.id} refused: ${scope.reason} (metadata ${JSON.stringify(metadataOf(session))})`);
-    await recordRefusal(event.id, session, scope.reason);
-    // Ours, in payment mode, and not yet paid: the money is not here, so the
-    // payment is pending and nothing about an address can move it (ROUND_11
-    // Task 3). A delayed payment method arrives later on the same session.
+    // Ours, in payment mode, and not yet paid is NOT a refusal: the money is
+    // simply not here, so the payment is pending and nothing about an address
+    // can move it. A delayed payment method arrives later on the same session.
     if (scope.reason === 'not-paid') await recordPending(event.id, session);
+    else await recordRefusal(event.id, session, scope.reason);
     return Response.json({ refused: scope.reason }, { status: 200 });
   }
 
@@ -60,8 +60,7 @@ export async function POST(req: Request): Promise<Response> {
 /**
  * An unpaid session, recorded as pending. The money has not arrived, so no
  * address and no account can move it: payment confirmation comes first,
- * always. Fulfilment still says refused/not-paid, which is what today's
- * readers read.
+ * always: `async_payment_succeeded` moves this same row to waiting.
  */
 async function recordPending(eventId: string, session: Record<string, unknown>): Promise<void> {
   await dbConnect();
@@ -80,18 +79,24 @@ async function recordPending(eventId: string, session: Record<string, unknown>):
   }
 }
 
-/** Refused is still a row: a payment nobody can see is the failure /admin/access exists to prevent. */
+/**
+ * A session that is not ours is still recorded: a payment nobody can see is
+ * the failure /admin/access exists to prevent. `refused` is terminal.
+ */
 async function recordRefusal(eventId: string, session: Record<string, unknown>, reason: string): Promise<void> {
   await dbConnect();
   const sessionId = typeof session.id === 'string' ? session.id : eventId;
+  // What the session said about itself goes into the reason, so a Payment Link
+  // missing its metadata is seen rather than guessed at.
+  const metadata = Object.entries(metadataOf(session));
+  const said = metadata.length ? metadata.map(([k, v]) => `${k}=${v}`).join(' ') : 'no metadata';
   try {
-    await Fulfilment.create({
-      session_id: sessionId,
+    await Payment.create({
       event_id: eventId,
-      status: 'refused',
-      reason,
-      metadata: metadataOf(session),
-      ts: new Date(),
+      session_id: sessionId,
+      ...transition('refused', { reason: `${reason} · ${said}` }),
+      amount_total: typeof session.amount_total === 'number' ? session.amount_total : undefined,
+      currency: typeof session.currency === 'string' ? session.currency : undefined,
     });
   } catch (e) {
     if (!isDuplicateKey(e)) throw e;
@@ -102,9 +107,6 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
   await dbConnect();
   const sessionId = typeof session.id === 'string' ? session.id : eventId;
 
-  const done = await Fulfilment.findOne({ session_id: sessionId, status: 'granted' }).lean();
-  if (done) return Response.json({ duplicate: true }, { status: 200 });
-
   try {
     await StripeEvent.create({ _id: eventId });
   } catch (e) {
@@ -113,34 +115,26 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
 
   // The named field, validated. No fallback to the payer's receipt address.
   const email = emailFromSession(session);
-  const student = email
-    ? await Student.findOne({ email }).select('exam_sitting access').lean<{
-        _id: unknown;
-        exam_sitting: ExamSitting;
-      } | null>()
-    : null;
 
-  // THE SESSION IS THE KEY, not the event: Stripe redelivers under a new
-  // event id, and a delayed payment succeeds on the same session it completed
-  // unpaid. Both must find the row that exists rather than write a second one.
-  let payment = await Payment.findOne({ session_id: sessionId }).lean<{ _id: unknown; state?: string } | null>();
+  // THE SESSION IS THE KEY, not the event: Stripe redelivers under a new event
+  // id, and a delayed payment succeeds on the session it completed unpaid.
+  let payment = await Payment.findOne({ session_id: sessionId }).lean<{ _id: unknown; state: string } | null>();
   if (!payment) {
     try {
       payment = await Payment.create({
         event_id: eventId,
         session_id: sessionId,
         // Paid and ours: a session that is neither never reaches here. No
-        // account holds it yet, which is what waiting means (ROUND_11).
+        // account holds it yet, which is what waiting means.
         ...transition('waiting', { reason: email ? undefined : NO_STUDENT_EMAIL }),
         email,
         amount_total: typeof session.amount_total === 'number' ? session.amount_total : undefined,
         currency: typeof session.currency === 'string' ? session.currency : undefined,
-        student_id: student?._id,
       });
     } catch (e) {
       // Another delivery for this session got there first; it is the same payment.
       if (!isDuplicateKey(e)) throw e;
-      payment = await Payment.findOne({ session_id: sessionId }).lean<{ _id: unknown; state?: string }>();
+      payment = await Payment.findOne({ session_id: sessionId }).lean<{ _id: unknown; state: string }>();
     }
   }
   if (!payment) throw new Error(`no payment for session ${sessionId}`);
@@ -152,35 +146,19 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
       { _id: payment._id, state: 'pending' },
       { $set: transition('waiting', { reason: email ? undefined : NO_STUDENT_EMAIL }) },
     );
+    payment = { ...payment, state: 'waiting' };
   }
+  // Settled already, by a person or by an earlier delivery: nothing to do.
+  if (payment.state !== 'waiting') return Response.json({ duplicate: true }, { status: 200 });
 
-  const open = await Fulfilment.findOne({ session_id: sessionId }).lean<{ _id: unknown; status: string } | null>();
-  let fulfilmentId: unknown = open?._id;
-  if (!open) {
-    try {
-      fulfilmentId = (await Fulfilment.create({ session_id: sessionId, event_id: eventId, payment_id: payment._id, status: 'pending', ts: new Date() }))._id;
-    } catch (e) {
-      // A concurrent delivery holds the session: it is doing this.
-      if (!isDuplicateKey(e)) throw e;
-      return Response.json({ duplicate: true }, { status: 200 });
-    }
-  }
-
+  const student = email
+    ? await Student.findOne({ email }).select('_id').lean<{ _id: unknown } | null>()
+    : null;
   if (!student) {
-    // Recorded, not dropped. It shows on /admin/access as unmatched — and if
-    // this address registers later, register() finds it and grants there.
-    // The fulfilment says so: left pending it read as a webhook that had not
-    // finished, and the screen told an operator to check Stripe for nothing.
-    // The address is on the Payment alone, which erasure anonymises.
-    await Fulfilment.updateOne(
-      { _id: fulfilmentId },
-      { $set: { status: 'unmatched', reason: 'no account for the paying address', ts: new Date() } },
-    );
-    // The payment stays waiting: paid, with no account holding it. Which of
-    // the two reasons it is matters to whoever picks it up — an address with
-    // no account is a typo to chase; no address at all is a Payment Link to fix.
-    // CONDITIONAL ON WAITING: a delivery never regresses a state something
-    // else has settled, so a redelivery cannot resurrect a closed payment.
+    // Recorded, not dropped. It waits on /admin/access — and if this address
+    // registers later, registration claims it there. Which reason it is
+    // matters: an address with no account is a typo to chase; no address at
+    // all is a Payment Link to fix.
     await Payment.updateOne(
       { _id: payment._id, state: 'waiting' },
       { $set: transition('waiting', { reason: email ? 'no account for the paying address' : NO_STUDENT_EMAIL }) },
@@ -188,16 +166,8 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
     return Response.json({ matched: false }, { status: 200 });
   }
 
-  try {
-    await grantFromPayment({
-      studentId: student._id,
-      registeredSitting: student.exam_sitting,
-      payment: { _id: payment._id, event_id: eventId },
-    });
-  } catch (e) {
-    const reason = e instanceof Error ? e.message : String(e);
-    await Fulfilment.updateOne({ _id: fulfilmentId }, { $set: { status: 'failed', reason, ts: new Date() } });
-    throw e;
-  }
-  return Response.json({ matched: true }, { status: 200 });
+  // ONE OPERATION assigns access, whatever calls it: the payment transition
+  // and the entitlement commit together, or neither does.
+  const outcome = await claim(sessionId, { id: student._id });
+  return Response.json({ matched: outcome === 'granted', outcome }, { status: 200 });
 }

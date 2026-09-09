@@ -80,6 +80,9 @@ async function seed() {
   await db.LineRejected.create({ transcription_id: read!._id, line_index: 0 });
   await db.Payment.create({
     event_id: `evt_${Date.now()}`,
+    session_id: `cs_${Date.now()}`,
+    state: 'granted',
+    state_at: new Date(),
     email: STUDENT.email,
     amount_total: 4900,
     currency: 'usd',
@@ -135,7 +138,7 @@ describe('deleting a student', () => {
     expect(p.amount_total).toBe(4900);
     expect(p.student_id).toBeUndefined();
     expect(p.email).toBeUndefined(); // the address names the person
-    expect(p.resolved_at).toBeTruthy(); // so it does not reappear to be chased
+    expect(p.state).toBe('closed'); // so it does not reappear on the queue to be chased
     expect(String(p.note)).toMatch(/account deleted/i);
     expect(JSON.stringify(payments)).not.toContain(STUDENT.email);
   });

@@ -23,9 +23,9 @@ afterAll(async () => {
   await mongod?.stop();
 });
 beforeEach(async () => {
-  const { dbConnect, Fulfilment, Payment, Student } = await import('@/lib/db');
+  const { dbConnect, Payment, Student } = await import('@/lib/db');
   await dbConnect();
-  await Promise.all([Student.deleteMany({}), Payment.deleteMany({}), Fulfilment.deleteMany({})]);
+  await Promise.all([Student.deleteMany({}), Payment.deleteMany({})]);
   sent.length = 0;
 });
 
@@ -36,11 +36,9 @@ async function student(email: string, access?: Record<string, unknown>) {
   return Student.create({ email, name: 'Kiara', exam_sitting: SITTING, target_modules: [1, 2, 3], password_hash: 'x', syllabus_mode: 'modular-2027', ...(access ? { access } : {}) });
 }
 async function waitingPayment(sessionId: string, email = 'payer@example.com', receivedAt = new Date()) {
-  const { Fulfilment, Payment } = await import('@/lib/db');
+  const { Payment } = await import('@/lib/db');
   const { transition } = await import('@/lib/payment-state');
-  const p = await Payment.create({ event_id: `evt_${sessionId}`, session_id: sessionId, email, received_at: receivedAt, ...transition('waiting') });
-  await Fulfilment.create({ session_id: sessionId, event_id: `evt_${sessionId}`, payment_id: p._id, status: 'pending', ts: new Date() });
-  return p;
+  return Payment.create({ event_id: `evt_${sessionId}`, session_id: sessionId, email, received_at: receivedAt, ...transition('waiting') });
 }
 const paymentOf = async (sessionId: string) => {
   const { Payment } = await import('@/lib/db');
@@ -50,10 +48,6 @@ const accessOf = async (email: string) => {
   const { Student } = await import('@/lib/db');
   const s = await Student.findOne({ email }).lean<{ access?: { sitting: string; source: string; note: string; granted_at: Date } }>();
   return s?.access ?? null;
-};
-const fulfilmentOf = async (sessionId: string) => {
-  const { Fulfilment } = await import('@/lib/db');
-  return Fulfilment.findOne({ session_id: sessionId }).lean<{ status: string; reason?: string }>();
 };
 
 describe('claim', () => {
@@ -69,7 +63,6 @@ describe('claim', () => {
     const access = await accessOf('kiara@example.com');
     expect(access!.sitting).toBe(SITTING);
     expect(access!.note).toContain('stripe evt_cs_grant');
-    expect((await fulfilmentOf('cs_grant'))!.status).toBe('granted');
     expect(sent.map((m) => m.to)).toEqual(['kiara@example.com']);
   }, 60000);
 
@@ -110,7 +103,6 @@ describe('claim', () => {
     expect(p.state).toBe('duplicate');
     expect(p.state_reason).toBe(`already had access for ${SITTING}`);
     expect(p.note).toContain(first.note);
-    expect((await fulfilmentOf('cs_dup'))!.status).toBe('duplicate');
     expect(sent).toHaveLength(0);
   }, 60000);
 
@@ -169,7 +161,6 @@ describe('neither write lands without the other', () => {
 
     expect((await paymentOf('cs_crash')).state).toBe('waiting');
     expect(await accessOf('crash@example.com')).toBeNull();
-    expect((await fulfilmentOf('cs_crash'))!.status).toBe('pending');
     expect(sent).toHaveLength(0);
   }, 60000);
 });
@@ -200,9 +191,9 @@ describe('the orderings that cannot miss each other', () => {
   const at = (...p: string[]) => readFileSync(join(process.cwd(), ...p), 'utf8');
   it('the webhook persists the payment before it looks up the student; registration persists the student first', () => {
     const route = at('app', 'api', 'stripe', 'webhook', 'route.ts');
-    expect(route.indexOf('Payment.create(')).toBeLessThan(route.indexOf('if (!student)'));
+    expect(route.indexOf('Payment.findOne({ session_id: sessionId })')).toBeLessThan(route.indexOf('const student = email'));
     const register = at('app', 'study', 'login', 'actions.ts');
-    expect(register.indexOf('const student = await Student.create(')).toBeLessThan(register.indexOf('pendingPaymentFor(email)'));
+    expect(register.indexOf('const student = await Student.create(')).toBeLessThan(register.indexOf('claimWaitingFor(email'));
   });
   it('comps take their own path and never touch payment state', () => {
     const actions = at('app', 'admin', 'access', 'actions.ts');

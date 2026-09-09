@@ -3,12 +3,12 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { STUDENT_EMAIL_FIELD } from '@/lib/stripe-webhook';
 
 // Set before the modules under test are imported: the route reads
 // STRIPE_WEBHOOK_SECRET at call time, but dbConnect caches on MONGODB_URI.
-let mongod: MongoMemoryServer;
+let mongod: MongoMemoryReplSet;
 const SECRET = 'whsec_ordering_test';
 
 const REGISTERED = 'may-june-2027';
@@ -58,18 +58,16 @@ let POST: (req: Request) => Promise<Response>;
 let Student: typeof import('@/lib/db').Student;
 let Payment: typeof import('@/lib/db').Payment;
 let StripeEvent: typeof import('@/lib/db').StripeEvent;
-let Fulfilment: typeof import('@/lib/db').Fulfilment;
-let grantFromPayment: typeof import('@/lib/grant-from-payment').grantFromPayment;
-let pendingPaymentFor: typeof import('@/lib/grant-from-payment').pendingPaymentFor;
+let claimWaitingFor: typeof import('@/lib/claim').claimWaitingFor;
 
 beforeAll(async () => {
-  mongod = await MongoMemoryServer.create();
+  mongod = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
   process.env.MONGODB_URI = mongod.getUri();
   process.env.STRIPE_WEBHOOK_SECRET = SECRET;
   await mongoose.connect(process.env.MONGODB_URI);
   ({ POST } = await import('@/app/api/stripe/webhook/route'));
-  ({ Student, Payment, StripeEvent, Fulfilment } = await import('@/lib/db'));
-  ({ grantFromPayment, pendingPaymentFor } = await import('@/lib/grant-from-payment'));
+  ({ Student, Payment, StripeEvent } = await import('@/lib/db'));
+  ({ claimWaitingFor } = await import('@/lib/claim'));
 }, 120000);
 
 afterAll(async () => {
@@ -79,7 +77,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   vi.restoreAllMocks();
-  await Promise.all([Student.deleteMany({}), Payment.deleteMany({}), StripeEvent.deleteMany({}), Fulfilment.deleteMany({})]);
+  await Promise.all([Student.deleteMany({}), Payment.deleteMany({}), StripeEvent.deleteMany({})]);
 });
 
 const makeStudent = (email: string, sitting = REGISTERED) =>
@@ -107,14 +105,7 @@ const accessOf = async (email: string) =>
  */
 async function registerAndClaim(email: string, sitting = REGISTERED) {
   const student = await makeStudent(email, sitting);
-  const pending = await pendingPaymentFor(email);
-  if (pending) {
-    await grantFromPayment({
-      studentId: student._id,
-      registeredSitting: sitting as 'may-june-2027' | 'jan-2027',
-      payment: pending,
-    });
-  }
+  await claimWaitingFor(email, { id: student._id });
   return student;
 }
 
@@ -145,7 +136,7 @@ describe('2. register first, then pay', () => {
 
     const res = await POST(signed(checkoutBody({ id: 'evt_2', studentField: email })));
 
-    expect(await res.json()).toEqual({ matched: true });
+    expect(await res.json()).toMatchObject({ matched: true, outcome: 'granted' });
     expect((await accessOf(email))?.sitting).toBe(REGISTERED);
     const paid = await Payment.findOne({ event_id: 'evt_2' }).lean<{ student_id?: unknown }>();
     expect(paid?.student_id).toBeTruthy();
@@ -237,7 +228,7 @@ describe('7. a Stripe retry does not grant twice', () => {
     const granted = (await accessOf(email))!.granted_at;
     const second = await POST(signed(body));
 
-    expect(await first.json()).toEqual({ matched: true });
+    expect(await first.json()).toMatchObject({ matched: true });
     expect(await second.json()).toEqual({ duplicate: true });
     expect(await Payment.countDocuments({ event_id: 'evt_7' })).toBe(1);
     // Not re-granted: the timestamp is the one from the first delivery.
@@ -256,21 +247,24 @@ describe('8. the oldest waiting payment is taken', () => {
     const first = await Payment.findOne({ event_id: 'evt_8_first' }).lean<{ student_id?: unknown }>();
     const second = await Payment.findOne({ event_id: 'evt_8_second' }).lean<{ student_id?: unknown }>();
     expect(first?.student_id).toBeTruthy();
-    expect(second?.student_id ?? null).toBeNull();
-    // A double charge is exactly the case a person should see.
-    expect(await Payment.countDocuments({ student_id: null, resolved_at: null })).toBe(1);
+    // A double charge is exactly the case a person should see: the second is
+    // a duplicate on the queue, and nothing granted twice.
+    const { loadQueue } = await import('@/lib/payment-queue');
+    const queue = await loadQueue();
+    expect(queue).toHaveLength(1);
+    expect(queue[0].state).toBe('duplicate');
   });
 });
 
-describe('9. a resolved payment is not re-taken', () => {
+describe('9. a closed payment is not re-taken', () => {
   it('leaves a payment an admin has already dealt with alone', async () => {
     const email = 'already-resolved@test.invalid';
     await POST(signed(checkoutBody({ id: 'evt_9', studentField: email })));
-    await Payment.updateOne({ event_id: 'evt_9' }, { $set: { resolved_at: new Date() } });
+    await Payment.updateOne({ event_id: 'evt_9' }, { $set: { state: 'closed', state_reason: 'refunded' } });
 
-    expect(await pendingPaymentFor(email)).toBeNull();
     await registerAndClaim(email);
     expect(await accessOf(email)).toBeUndefined();
+    expect(await Payment.findOne({ event_id: 'evt_9' }).lean<{ state: string }>().then((p) => p!.state)).toBe('closed');
   });
 });
 
@@ -312,22 +306,23 @@ describe('11. a payment for another Anansi product is not ours (ROUND_6 Task 2)'
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ refused: 'not-ours' });
     expect(await accessOf(email)).toBeUndefined();
-    expect(await Payment.countDocuments()).toBe(0);
-    expect(await Fulfilment.findOne({ session_id: 'cs_evt_11' }).lean()).toMatchObject({ status: 'refused', reason: 'not-ours', metadata: { product: 'cognicare' } });
-    const admin = readFileSync(join(process.cwd(), 'app', 'admin', 'access', 'page.tsx'), 'utf8');
-    expect(admin).toMatch(/Fulfilment\.find\(\{ status: 'refused' \}\)[\s\S]*Refused payments/);
+    // Recorded as refused, with what the session said about itself, and never on the queue.
+    const refused = await Payment.findOne({ session_id: 'cs_evt_11' }).lean<{ state: string; state_reason: string }>();
+    expect(refused).toMatchObject({ state: 'refused' });
+    expect(refused!.state_reason).toBe('not-ours · product=cognicare');
+    const { loadQueue } = await import('@/lib/payment-queue');
+    expect(await loadQueue()).toHaveLength(0);
   });
 
   it('refuses a session with no metadata at all, and one not in payment mode', async () => {
     const email = 'no-metadata@test.invalid';
     await makeStudent(email);
     expect(await (await POST(signed(checkoutBody({ id: 'evt_11b', studentField: email, metadata: null })))).json()).toEqual({ refused: 'not-ours' });
-    const bare = await Fulfilment.findOne({ session_id: 'cs_evt_11b' }).lean<{ status: string; metadata?: Record<string, string> }>();
-    expect(bare?.status).toBe('refused');
-    expect(bare?.metadata ?? {}).toEqual({});
+    const bare = await Payment.findOne({ session_id: 'cs_evt_11b' }).lean<{ state: string; state_reason: string }>();
+    expect(bare?.state).toBe('refused');
+    expect(bare?.state_reason).toBe('not-ours · no metadata');
     expect(await (await POST(signed(checkoutBody({ id: 'evt_11c', studentField: email, mode: 'subscription' })))).json()).toEqual({ refused: 'not-payment-mode' });
     expect(await accessOf(email)).toBeUndefined();
-    expect(await Payment.countDocuments()).toBe(0);
   });
 
   it('holds a delayed payment until Stripe says it is paid', async () => {
@@ -340,23 +335,25 @@ describe('11. a payment for another Anansi product is not ours (ROUND_6 Task 2)'
     const paid = await POST(
       signed(checkoutBody({ id: 'evt_11e', studentField: email, type: 'checkout.session.async_payment_succeeded', payment_status: 'paid' })),
     );
-    expect(await paid.json()).toEqual({ matched: true });
+    expect(await paid.json()).toMatchObject({ matched: true });
     expect((await accessOf(email))?.sitting).toBe(REGISTERED);
   });
 });
 
-describe('12. fulfilment is its own record (ROUND_6 Task 2)', () => {
-  const fulfilmentOf = (id: string) => Fulfilment.findOne({ session_id: `cs_${id}` }).lean<{ status: string; reason?: string } | null>();
+// ROUND_11 replaced the second record: the Payment says what became of the
+// money, and these are the same facts read off the one that is left.
+describe('12. the payment is its own record', () => {
+  const paymentOf = (id: string) => Payment.findOne({ session_id: `cs_${id}` }).lean<{ state: string; state_reason?: string } | null>();
 
   it('records the event once and the grant once, granted', async () => {
     const email = 'recorded@test.invalid';
     await makeStudent(email);
     await POST(signed(checkoutBody({ id: 'evt_12', studentField: email })));
     expect(await StripeEvent.countDocuments({ _id: 'evt_12' })).toBe(1);
-    expect(await fulfilmentOf('evt_12')).toMatchObject({ status: 'granted' });
+    expect(await paymentOf('evt_12')).toMatchObject({ state: 'granted' });
   });
 
-  it('a grant that fails is a failed fulfilment and a 500; the redelivery retries the grant', async () => {
+  it('a claim that throws is a 500 and leaves the payment waiting; the redelivery claims it', async () => {
     const email = 'grant-fails@test.invalid';
     await makeStudent(email);
     const body = checkoutBody({ id: 'evt_12b', studentField: email });
@@ -366,16 +363,16 @@ describe('12. fulfilment is its own record (ROUND_6 Task 2)', () => {
 
     const first = await POST(signed(body));
     expect(first.status).toBe(500);
-    expect(await fulfilmentOf('evt_12b')).toMatchObject({ status: 'failed', reason: 'db down' });
+    // Neither write landed: the money is still waiting and nobody has access.
+    expect(await paymentOf('evt_12b')).toMatchObject({ state: 'waiting' });
     expect(await accessOf(email)).toBeUndefined();
 
     const second = await POST(signed(body));
-    expect(await second.json()).toEqual({ matched: true });
-    expect(await fulfilmentOf('evt_12b')).toMatchObject({ status: 'granted' });
+    expect(await second.json()).toMatchObject({ matched: true });
+    expect(await paymentOf('evt_12b')).toMatchObject({ state: 'granted' });
     expect((await accessOf(email))?.sitting).toBe(REGISTERED);
     expect(await StripeEvent.countDocuments()).toBe(1);
     expect(await Payment.countDocuments()).toBe(1);
-    expect(await Fulfilment.countDocuments()).toBe(1);
   });
 
   it('a write error that is not a duplicate key is a failure, not a duplicate', async () => {
@@ -389,25 +386,18 @@ describe('12. fulfilment is its own record (ROUND_6 Task 2)', () => {
     expect(await accessOf(email)).toBeUndefined();
   });
 
-  it('marks the fulfilment granted when the account arrives after the payment', async () => {
+  it('the payment waits until the account arrives, then it is granted', async () => {
     const email = 'pay-then-register-fulfilled@test.invalid';
     await POST(signed(checkoutBody({ id: 'evt_12d', studentField: email })));
-    // Unmatched, not pending: the webhook finished and found no account for the address.
-    expect(await fulfilmentOf('evt_12d')).toMatchObject({ status: 'unmatched' });
+    expect(await paymentOf('evt_12d')).toMatchObject({ state: 'waiting', state_reason: 'no account for the paying address' });
     await registerAndClaim(email);
-    expect(await fulfilmentOf('evt_12d')).toMatchObject({ status: 'granted' });
+    expect(await paymentOf('evt_12d')).toMatchObject({ state: 'granted' });
   });
 });
 
-// THE ONLY SOURCE ASSERTION PERMITTED IN THIS FILE (ROUND_3 §4).
-//
-// register() sets a session cookie and redirects, both of which need a request
-// scope, so it cannot be called here. registerAndClaim above performs the same
-// two calls in the same order; this is what keeps that stand-in honest.
 describe('register() still performs the claim this file simulates', () => {
-  it('calls pendingPaymentFor and grantFromPayment', () => {
+  it('claims every waiting payment for the address', () => {
     const src = readFileSync(join(process.cwd(), 'app', 'study', 'login', 'actions.ts'), 'utf8');
-    expect(src).toContain('pendingPaymentFor');
-    expect(src).toContain('grantFromPayment');
+    expect(src).toContain('claimWaitingFor(email');
   });
 });

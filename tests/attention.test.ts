@@ -4,22 +4,25 @@ import { join } from 'node:path';
 
 const at = (...p: string[]) => readFileSync(join(process.cwd(), ...p), 'utf8');
 const page = at('app', 'admin', 'access', 'page.tsx');
+const queue = at('app', 'admin', 'access', 'payment-queue.tsx');
 const actions = at('app', 'admin', 'access', 'actions.ts');
 
-// ROUND_7 Task 3: payments needing attention.
+// ROUND_7 Task 3 asked for payments needing attention; ROUND_11 Task 4 made
+// them one list derived from one record. The intentions are the same: the work
+// first, a reason on every close, and the operator told what happened.
 describe('/admin/access', () => {
-  it('lists failed and stale pending fulfilments first, with reference and next step, then paid access, then free allowance used', () => {
-    expect(page).toMatch(/\{ status: 'failed' \},\s*\{ status: 'duplicate' \},\s*\{ status: 'unmatched' \},\s*\{ status: 'pending', ts: \{ \$lt: new Date\(Date\.now\(\) - STALE_PENDING_MS\) \} \}/);
-    // The hour lives with the backfill that reads it, and the page imports it.
-    expect(page).toMatch(/import \{ STALE_PENDING_MS \} from '@\/lib\/db\/backfill-unmatched-fulfilments'/);
-    expect(readFileSync(join(process.cwd(), 'lib', 'db', 'backfill-unmatched-fulfilments.ts'), 'utf8')).toMatch(/STALE_PENDING_MS = 60 \* 60 \* 1000/);
-    const order = ['Payments needing attention', 'Next: resend the event', 'Refused payments', "'Paid access'", "'Free allowance used'"].map((s) => page.indexOf(s));
+  it('leads with the one queue, then paid access, then free allowance used', () => {
+    const order = ['<PaymentQueue rows={queue} />', "'Paid access'", "'Free allowance used'"].map((s) => page.indexOf(s));
     expect(order.every((n) => n > 0)).toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
-    expect(page).toMatch(/\{f\.session_id\} · \{f\.event_id\}/);
+    // One counter, and it counts the list.
+    expect(page).toMatch(/\{queue\.length\}<\/b> payments needing attention/);
   });
-  it('never says waiting', () => {
-    expect(page.replace(/\/\*[\s\S]*?\*\//g, '')).not.toMatch(/\bwaiting\b/);
+  it('holds the two states with work in it, and nothing else', () => {
+    expect(at('lib', 'payment-queue.ts')).toMatch(/Payment\.find\(\{ state: \{ \$in: QUEUE_STATES \} \}\)/);
+    expect(at('lib', 'payment-state.ts')).toMatch(/QUEUE_STATES: PaymentState\[\] = \['waiting', 'duplicate'\]/);
+    // Oldest first: the queue is work, and the oldest debt has waited longest.
+    expect(at('lib', 'payment-queue.ts')).toMatch(/\.sort\(\{ received_at: 1 \}\)/);
   });
   it('searches by email, filters to attention, names the granted account and sitting', () => {
     expect(page).toMatch(/r\.email\.toLowerCase\(\)\.includes\(needle\)/);
@@ -29,9 +32,11 @@ describe('/admin/access', () => {
     expect(actions).toMatch(/redirect\(`\/admin\/access\?granted=\$\{encodeURIComponent\(student\.email\)\}&sitting=\$\{sitting\}`\)/);
     expect(actions).toMatch(/if \(!student\) redirect\(`\/admin\/access\?ungranted=/);
   });
-  it('resolving an unmatched payment requires a reason, written into the record', () => {
-    expect(page).toMatch(/name="reason" required minLength=\{3\}/);
-    expect(actions).toMatch(/if \(reason\.length < 3\) return;/);
-    expect(actions).toMatch(/note: `resolved: \$\{reason\}`/);
+  it('closing a payment requires a reason, and records who and when', () => {
+    expect(queue).toMatch(/name="reason" required minLength=\{3\}/);
+    expect(actions).toMatch(/if \(reason\.length < 3\) redirect\('\/admin\/access\?noreason=1'\)/);
+    expect(actions).toMatch(/transition\('closed', \{ reason, by: operator\.email \}\)/);
+    // Conditional: a form rendered while it was waiting closes nothing once it is granted.
+    expect(actions).toMatch(/\{ _id: id, state: \{ \$in: QUEUE_STATES \} \}/);
   });
 });

@@ -2,7 +2,7 @@ import { Schema, model, models, type InferSchemaType } from 'mongoose';
 
 /**
  * Every granting event Stripe delivered, keyed on its id — idempotency and
- * nothing else (ROUND_6 Task 2). What the event did lives on Fulfilment.
+ * nothing else (ROUND_6 Task 2). What became of the money lives on Payment.
  */
 const StripeEventSchema = new Schema({
   _id: { type: String, required: true },

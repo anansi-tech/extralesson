@@ -53,6 +53,6 @@ describe('the one email layout', () => {
     expect(SENDER).toBeTruthy();
     expect(readFileSync(join(process.cwd(), 'lib', 'email.ts'), 'utf8')).toMatch(/from: FROM/);
     expect(readFileSync(join(process.cwd(), 'scripts', 'provision-admin.ts'), 'utf8')).toContain('provisionEmail(link');
-    expect(readFileSync(join(process.cwd(), 'lib', 'grant-from-payment.ts'), 'utf8')).toMatch(/accessEmail\(\{ sitting: sittingLabel\(sitting\)/);
+    expect(readFileSync(join(process.cwd(), 'lib', 'claim.ts'), 'utf8')).toMatch(/accessEmail\(\{ sitting: sittingLabel\(sitting\)/);
   });
 });

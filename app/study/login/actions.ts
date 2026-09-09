@@ -12,7 +12,7 @@ import { resetEmail, sendEmail } from '@/lib/email';
 import { externalBaseUrl } from '@/lib/base-url';
 import { hashPassword, passwordProblem, verifyPassword } from '@/lib/auth/password';
 import { setSessionCookie } from '@/lib/auth/session';
-import { grantFromPayment, pendingPaymentFor } from '@/lib/grant-from-payment';
+import { claimWaitingFor } from '@/lib/claim';
 import { limited, TOO_MANY } from '@/lib/auth/rate-limit';
 
 // One deliberate asymmetry runs through this file: SIGNING IN says as little as
@@ -101,16 +101,10 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
   });
 
   // PAY FIRST, REGISTER SECOND — the ordering the checkout caption invites. The
-  // webhook could only record that payment as unmatched, and waiting for someone
-  // to read the admin screen would leave a paying student on the free tier.
-  const pending = await pendingPaymentFor(email);
-  if (pending) {
-    await grantFromPayment({
-      studentId: student._id,
-      registeredSitting: exam_sitting,
-      payment: pending,
-    });
-  }
+  // account is persisted above before this asks what is waiting for it, and the
+  // webhook persists the payment before it looks for an account: the two
+  // orderings cannot miss each other. Oldest first; any others are duplicates.
+  await claimWaitingFor(email, { id: student._id });
 
   await setSessionCookie(String(student._id), email);
   redirect('/study');

@@ -2,9 +2,10 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { createHmac } from 'node:crypto';
 import { STUDENT_EMAIL_FIELD } from '@/lib/stripe-webhook';
+import { transition } from '@/lib/payment-state';
 
 // ROUND_11 Task 1, ADDITIVE: the payment carries what happened to the money,
 // written beside the old fields. Nothing reads it yet, and every writer that
@@ -18,9 +19,9 @@ vi.mock('next/cache', () => ({ revalidatePath() {} }));
 vi.mock('@/lib/auth/session', () => ({ requireAdmin: async () => ({ student_id: 'a', email: 'ops@example.com', role: 'admin' }) }));
 
 const SECRET = 'whsec_state_test';
-let mongod: MongoMemoryServer;
+let mongod: MongoMemoryReplSet;
 beforeAll(async () => {
-  mongod = await MongoMemoryServer.create();
+  mongod = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
   process.env.MONGODB_URI = mongod.getUri();
   process.env.STRIPE_WEBHOOK_SECRET = SECRET;
 }, 120000);
@@ -29,9 +30,9 @@ afterAll(async () => {
   await mongod?.stop();
 });
 beforeEach(async () => {
-  const { dbConnect, Fulfilment, Payment, Student, StripeEvent } = await import('@/lib/db');
+  const { dbConnect, Payment, Student, StripeEvent } = await import('@/lib/db');
   await dbConnect();
-  await Promise.all([Student.deleteMany({}), Payment.deleteMany({}), Fulfilment.deleteMany({}), StripeEvent.deleteMany({})]);
+  await Promise.all([Student.deleteMany({}), Payment.deleteMany({}), StripeEvent.deleteMany({})]);
 });
 
 const delivery = (eventId: string, sessionId: string, email: string) => {
@@ -59,15 +60,14 @@ const stateOf = async (eventId: string) => {
 };
 
 describe('the record', () => {
-  it('keys the payment to its checkout session, uniquely over the rows that have one', async () => {
+  it('keys the payment to its checkout session, required and unique', async () => {
     const { Payment } = await import('@/lib/db');
     await Payment.syncIndexes();
-    await Payment.create({ event_id: 'e1', session_id: 'cs_x', received_at: new Date() });
-    await expect(Payment.create({ event_id: 'e2', session_id: 'cs_x', received_at: new Date() })).rejects.toThrow();
-    // Rows written before R11 have no session_id, and any number of them coexist.
-    await Payment.create({ event_id: 'e3', received_at: new Date() });
-    await Payment.create({ event_id: 'e4', received_at: new Date() });
-    expect(await Payment.countDocuments({ session_id: { $exists: false } })).toBe(2);
+    await Payment.create({ event_id: 'e1', session_id: 'cs_x', ...transition('waiting'), received_at: new Date() });
+    await expect(Payment.create({ event_id: 'e2', session_id: 'cs_x', ...transition('waiting'), received_at: new Date() })).rejects.toThrow();
+    // Every payment carries a key and a state: the migration left none without.
+    await expect(Payment.create({ event_id: 'e3', ...transition('waiting'), received_at: new Date() })).rejects.toThrow(/session_id/);
+    await expect(Payment.create({ event_id: 'e4', session_id: 'cs_y', received_at: new Date() })).rejects.toThrow(/state/);
   }, 60000);
 
   it('a new payment is written waiting, with its session and the moment', async () => {
@@ -82,13 +82,11 @@ describe('the record', () => {
 });
 
 describe('every writer keeps both representations', () => {
-  it('a grant writes granted beside the fulfilment', async () => {
-    const { Fulfilment } = await import('@/lib/db');
+  it('a grant writes granted', async () => {
     await student('kiara@example.com');
     const { POST } = await import('@/app/api/stripe/webhook/route');
     await POST(delivery('evt_g', 'cs_g', 'kiara@example.com'));
     expect((await stateOf('evt_g'))!.state).toBe('granted');
-    expect((await Fulfilment.findOne({ event_id: 'evt_g' }).lean<{ status: string }>())!.status).toBe('granted');
   }, 60000);
 
   it('a payment for a covered sitting writes duplicate, with the reason', async () => {
@@ -100,20 +98,18 @@ describe('every writer keeps both representations', () => {
     expect(p!.state_reason).toBe('already had access for may-june-2027');
   }, 60000);
 
-  it('resolving writes closed, the reason and the operator, beside resolved_at', async () => {
+  it('closing writes closed, the reason and the operator', async () => {
     const { Payment } = await import('@/lib/db');
-    const { resolvePayment } = await import('@/app/admin/access/actions');
-    const p = await Payment.create({ event_id: 'evt_c', session_id: 'cs_c', received_at: new Date() });
+    const { closePayment } = await import('@/app/admin/access/actions');
+    const p = await Payment.create({ event_id: 'evt_c', session_id: 'cs_c', ...transition('waiting'), received_at: new Date() });
     const form = new FormData();
     form.set('id', String(p._id));
     form.set('reason', 'refunded in Stripe');
-    await resolvePayment(form);
+    await expect(closePayment(form)).rejects.toThrow(/REDIRECT/);
     const after = await stateOf('evt_c');
     expect(after!.state).toBe('closed');
     expect(after!.state_reason).toBe('refunded in Stripe');
     expect(after!.closed_by).toBe('ops@example.com');
-    // The old field is still written: nothing reads state yet.
-    expect(after!.resolved_at).toBeInstanceOf(Date);
   }, 60000);
 });
 

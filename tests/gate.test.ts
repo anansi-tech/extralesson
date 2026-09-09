@@ -37,9 +37,9 @@ afterAll(async () => {
   await mongod?.stop();
 });
 beforeEach(async () => {
-  const { dbConnect, Fulfilment, Payment, Student, StripeEvent } = await import('@/lib/db');
+  const { dbConnect, Payment, Student, StripeEvent } = await import('@/lib/db');
   await dbConnect();
-  await Promise.all([Student.deleteMany({}), Payment.deleteMany({}), Fulfilment.deleteMany({}), StripeEvent.deleteMany({})]);
+  await Promise.all([Student.deleteMany({}), Payment.deleteMany({}), StripeEvent.deleteMany({})]);
   sent.length = 0;
   redirects.length = 0;
 });

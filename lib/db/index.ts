@@ -6,7 +6,7 @@ export { Student, type StudentDoc } from './student';
 export { SittingChange, type SittingChangeDoc } from './sitting-change';
 export { Payment, type PaymentDoc } from './payment';
 export { StripeEvent, type StripeEventDoc } from './stripe-event';
-export { Fulfilment, isDuplicateKey, type FulfilmentDoc } from './fulfilment';
+export { isDuplicateKey } from './duplicate-key';
 export { Attempt, type AttemptDoc } from './attempt';
 export { PracticeSession, type SessionDoc } from './session';
 export { SessionDraft, DRAFT_TTL_DAYS, type SessionDraftDoc } from './session-draft';

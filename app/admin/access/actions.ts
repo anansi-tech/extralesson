@@ -3,8 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { dbConnect, Fulfilment, Payment, Student } from '@/lib/db';
-import { grantFromPayment } from '@/lib/grant-from-payment';
+import { dbConnect, Payment, Student } from '@/lib/db';
 import { QUEUE_STATES, transition } from '@/lib/payment-state';
 import { claim } from '@/lib/claim';
 import { requireAdmin } from '@/lib/auth/session';
@@ -59,27 +58,6 @@ export async function revokeAccess(formData: FormData): Promise<void> {
   revalidatePath('/admin/access');
 }
 
-/**
- * Resolving is deliberately separate from granting: a refund or a duplicate
- * charge is resolved without anyone gaining access, and conflating the two
- * would hide that.
- */
-export async function resolvePayment(formData: FormData): Promise<void> {
-  const operator = await requireAdmin();
-  const id = IdZ.parse(String(formData.get('id')));
-  // A reason is the record: a payment resolved with none is a payment nobody can explain later.
-  const reason = String(formData.get('reason') ?? '').trim().slice(0, 200);
-  if (reason.length < 3) return;
-  await dbConnect();
-  await Payment.updateOne(
-    { _id: id },
-    { $set: { resolved_at: new Date(), note: `resolved: ${reason}`, ...transition('closed', { reason, by: operator.email }) } },
-  );
-  // The record it opened closes with it: the attention list reads the
-  // fulfilment, so a payment resolved without this stayed on the list forever.
-  await Fulfilment.updateOne({ payment_id: id }, { $set: { status: 'resolved', reason, ts: new Date() } });
-  revalidatePath('/admin/access');
-}
 
 /**
  * CLOSING A PAYMENT (ROUND_11 Task 4): settled by a person, without granting.
@@ -95,14 +73,12 @@ export async function closePayment(formData: FormData): Promise<void> {
   await dbConnect();
   const closed = await Payment.updateOne(
     { _id: id, state: { $in: QUEUE_STATES } },
-    { $set: { ...transition('closed', { reason, by: operator.email }), resolved_at: new Date(), note: `resolved: ${reason}` } },
+    { $set: { ...transition('closed', { reason, by: operator.email }) } },
   );
   if (closed.matchedCount === 0) {
     revalidatePath('/admin/access');
     redirect('/admin/access?stale=1');
   }
-  // Both representations, while both exist (ROUND_11 rollout order).
-  await Fulfilment.updateOne({ payment_id: id }, { $set: { status: 'resolved', reason, ts: new Date() } });
   revalidatePath('/admin/access');
   redirect('/admin/access?closed=1');
 }
@@ -129,30 +105,6 @@ export async function grantQueued(formData: FormData): Promise<void> {
   redirect('/admin/access?stale=1');
 }
 
-/**
- * An unmatched payment, given the account it belongs to. The grant runs
- * through the same path the webhook uses, so the sitting is the account's
- * registered one, a sitting already covered is flagged rather than
- * overwritten, and the payment and its fulfilment close either way.
- */
-export async function matchPayment(formData: FormData): Promise<void> {
-  await requireAdmin();
-  const id = IdZ.parse(String(formData.get('id')));
-  const email = String(formData.get('email') ?? '').trim().toLowerCase();
-  await dbConnect();
-  const student = await Student.findOne({ email }).select('exam_sitting').lean<{ _id: unknown; exam_sitting: ExamSitting } | null>();
-  if (!student) redirect(`/admin/access?ungranted=${encodeURIComponent(email)}`);
-  const payment = await Payment.findById(id).select('event_id').lean<{ _id: unknown; event_id: string } | null>();
-  if (!payment) redirect('/admin/access');
-  const outcome = await grantFromPayment({
-    studentId: student._id,
-    registeredSitting: student.exam_sitting,
-    payment: { _id: payment._id, event_id: payment.event_id },
-  });
-  revalidatePath('/admin/access');
-  if (outcome === 'duplicate') redirect(`/admin/access?ungranted=${encodeURIComponent(email)}&duplicate=1`);
-  redirect(`/admin/access?granted=${encodeURIComponent(email)}&sitting=${student.exam_sitting}`);
-}
 
 /**
  * The address must be TYPED: revoking is a click, deleting is a sentence you

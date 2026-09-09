@@ -11,12 +11,12 @@ const PaymentSchema = new Schema({
   /**
    * ONE PAYMENT PER CHECKOUT SESSION (ROUND_11). An event id identifies a
    * delivery, not a payment: Stripe redelivers, and a redelivery must find
-   * the same row. Optional while rows written before R11 have none; required
-   * with a full unique index once the migration has resolved every row.
+   * the same row. Rows taken before session tracking carry `legacy:<event_id>`,
+   * which is a key and says it is not a session.
    */
-  session_id: { type: String },
-  /** What happened to the money. Written alongside the old fields; read after Task 5. */
-  state: { type: String, enum: PAYMENT_STATES },
+  session_id: { type: String, required: true },
+  /** WHAT HAPPENED TO THE MONEY. The one record; nothing else stores it. */
+  state: { type: String, enum: PAYMENT_STATES, required: true },
   /** Why it is in that state, in words a person can act on. */
   state_reason: { type: String },
   state_at: { type: Date },
@@ -27,8 +27,6 @@ const PaymentSchema = new Schema({
   currency: { type: String },
   /** The student it was matched to, absent when nothing matched. */
   student_id: { type: Schema.Types.ObjectId, ref: 'Student' },
-  /** Set by hand on the admin screen once a mismatch has been sorted out. */
-  resolved_at: { type: Date },
   /**
    * Written when an account is deleted and the payment kept: student_id and
    * email go, the money stays, and without a line saying so the row reads as a
@@ -38,11 +36,8 @@ const PaymentSchema = new Schema({
   received_at: { type: Date, default: Date.now, required: true },
 });
 
-PaymentSchema.index({ student_id: 1, resolved_at: 1 });
-// PARTIAL, over populated values only: rows written before R11 have no
-// session_id, and a full unique index would either reject them or collide on
-// their absence. It becomes a full unique index in Task 5's second commit.
-PaymentSchema.index({ session_id: 1 }, { unique: true, partialFilterExpression: { session_id: { $type: 'string' } } });
+PaymentSchema.index({ student_id: 1, state: 1 });
+PaymentSchema.index({ session_id: 1 }, { unique: true });
 
 export type PaymentDoc = InferSchemaType<typeof PaymentSchema>;
 export const Payment = models.Payment ?? model('Payment', PaymentSchema);

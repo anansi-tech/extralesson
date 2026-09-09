@@ -38,22 +38,22 @@ describe('the admin surfaces use the system', () => {
     // The grant form stacks on a phone and shares a row from the small breakpoint.
     expect(access).toMatch(/<form action=\{grantAccess\} className="mt-2 flex flex-col gap-2 sm:flex-row/);
     expect(at('app', 'admin', 'review', 'page.tsx')).toMatch(/<form method="get" className="mb-4 flex flex-col gap-2 sm:flex-row"/);
-    expect(access).toMatch(/<Refusal\s+id="payments-attention"\s+amber/);
-    expect(access).toMatch(/<Refusal\s+id="payments-unmatched"\s+className/);
-    expect(access).toMatch(/<Refusal\s+id="payments-refused"\s+amber/);
+    // The three payment panels became one queue (ROUND_11 Task 4).
+    expect(access).toContain('<PaymentQueue rows={queue} />');
     expect(at('app', 'admin', 'review', 'page.tsx')).toMatch(/<Refusal id="queue-empty"/);
     expect(at('app', 'admin', 'disputes', 'page.tsx')).toMatch(/<Refusal id="no-disputes"/);
     expect(at('app', 'admin', 'layout.tsx')).toMatch(/id="before-launch"\s+amber/);
     expect(at('app', 'admin', 'access', 'delete-account.tsx')).toMatch(/className=\{`mt-3 \$\{FAILURE\}`\}/);
     expect(at('app', 'admin', 'review', 'review-card.tsx')).toMatch(/className=\{`mt-2 \$\{FAILURE\}`\}/);
   });
-  it('keeps the hint-count line green on equality, the card’s shortcuts and the attention query', () => {
+  it('keeps the hint-count line green on equality, the card’s shortcuts and the queue’s query', () => {
     expect(at('app', 'admin', 'review', 'page.tsx')).toMatch(/hints\.withHint === hints\.methodRows \? 'text-green-pen' : 'text-ink'/);
     const card = at('app', 'admin', 'review', 'review-card.tsx');
     expect(card).toMatch(/\(e\.key === 'a' \|\| e\.key === 'A'\) && question\.status === 'draft'\) approve\(\)/);
     expect(card).toMatch(/\(e\.key === 'r' \|\| e\.key === 'R'\) && question\.status !== 'retired'\) retire\(\)/);
     expect(card).toMatch(/e\.key === 'e' \|\| e\.key === 'E'/);
-    expect(at('app', 'admin', 'access', 'page.tsx')).toMatch(/\{ status: 'failed' \},\s*\{ status: 'duplicate' \},\s*\{ status: 'unmatched' \},\s*\{ status: 'pending', ts: \{ \$lt: new Date\(Date\.now\(\) - STALE_PENDING_MS\) \} \}/);
+    // The queue is derived from the one record: the states with work in them.
+    expect(at('lib', 'payment-queue.ts')).toMatch(/Payment\.find\(\{ state: \{ \$in: QUEUE_STATES \} \}\)/);
   });
 });
 

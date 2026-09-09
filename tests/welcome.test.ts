@@ -1,23 +1,22 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { transition } from '@/lib/payment-state';
 
 // ROUND_9 Task 1: /welcome reads the fulfilment the webhook wrote and
 // resolves who is holding the phone; the confirming page asks every three
 // seconds for a minute and then stops.
-let mongod: MongoMemoryServer;
+let mongod: MongoMemoryReplSet;
 let Student: typeof import('@/lib/db').Student;
 let Payment: typeof import('@/lib/db').Payment;
-let Fulfilment: typeof import('@/lib/db').Fulfilment;
 let resolveWelcome: typeof import('@/lib/welcome').resolveWelcome;
 let welcome: typeof import('@/lib/welcome');
 
 beforeAll(async () => {
-  mongod = await MongoMemoryServer.create();
+  mongod = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
   process.env.MONGODB_URI = mongod.getUri();
   await mongoose.connect(process.env.MONGODB_URI);
-  ({ Student, Payment, Fulfilment } = await import('@/lib/db'));
+  ({ Student, Payment } = await import('@/lib/db'));
   welcome = await import('@/lib/welcome');
   ({ resolveWelcome } = welcome);
 }, 120000);
@@ -28,7 +27,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  await Promise.all([Student.deleteMany({}), Payment.deleteMany({}), Fulfilment.deleteMany({})]);
+  await Promise.all([Student.deleteMany({}), Payment.deleteMany({})]);
 });
 
 const EMAIL = 'kiara@example.com';

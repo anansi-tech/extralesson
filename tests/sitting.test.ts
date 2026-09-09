@@ -3,7 +3,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} }), usePathname: () => '/study' }));
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { STUDENT_EMAIL_FIELD } from '@/lib/stripe-webhook';
 import { canStartSession, grantFor, hasAccess, type Access } from '@/lib/access';
 import { SITTINGS, SITTING_IDS, accessEndsAt, nextSittingAt, sittingsOpenAt } from '@/lib/sittings';
@@ -16,7 +16,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 // ROUND_9 Task 9: ACCESS IS GRANTED TO A SITTING. The grant records the
 // sitting it was for and expires on that sitting's dates, whatever the
 // account's sitting is later changed to.
-let mongod: MongoMemoryServer;
+let mongod: MongoMemoryReplSet;
 const SECRET = 'whsec_sitting_test';
 let Student: typeof import('@/lib/db').Student;
 let SittingChange: typeof import('@/lib/db').SittingChange;
@@ -25,7 +25,7 @@ let applySittingChange: typeof import('@/lib/change-sitting').applySittingChange
 let POST: (req: Request) => Promise<Response>;
 
 beforeAll(async () => {
-  mongod = await MongoMemoryServer.create();
+  mongod = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
   process.env.MONGODB_URI = mongod.getUri();
   process.env.STRIPE_WEBHOOK_SECRET = SECRET;
   await mongoose.connect(process.env.MONGODB_URI);

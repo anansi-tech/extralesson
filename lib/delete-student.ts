@@ -14,6 +14,7 @@ import {
 import { ResetToken } from '@/lib/db/reset-token';
 import { existsSync, readdirSync, unlinkSync } from 'node:fs';
 import { join } from 'node:path';
+import { transition } from '@/lib/payment-state';
 
 /**
  * Every collection attached to a student is listed in ONE place; a second copy
@@ -121,7 +122,7 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
     { student_id: studentId },
     {
       $unset: { student_id: '', email: '' },
-      $set: { resolved_at: new Date(), note: 'account deleted at the student’s request' },
+      $set: { ...transition('closed', { reason: 'account deleted at the student’s request' }), note: 'account deleted at the student’s request' },
     },
   );
 

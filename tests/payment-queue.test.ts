@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { PAYMENT_STATE_CUTOVER } from '@/lib/cutover';
 
 // ROUND_11 Task 4. One list from one record. A replica set, because granting
 // from the queue runs the claim, and the claim is a transaction.
@@ -30,9 +29,9 @@ afterAll(async () => {
   await mongod?.stop();
 });
 beforeEach(async () => {
-  const { dbConnect, Fulfilment, Payment, Student } = await import('@/lib/db');
+  const { dbConnect, Payment, Student } = await import('@/lib/db');
   await dbConnect();
-  await Promise.all([Student.deleteMany({}), Payment.deleteMany({}), Fulfilment.deleteMany({})]);
+  await Promise.all([Student.deleteMany({}), Payment.deleteMany({})]);
   redirects.length = 0;
 });
 
@@ -42,7 +41,7 @@ async function student(email: string, access?: Record<string, unknown>) {
   return Student.create({ email, name: 'Kiara', exam_sitting: SITTING, target_modules: [1, 2, 3], password_hash: 'x', syllabus_mode: 'modular-2027', ...(access ? { access } : {}) });
 }
 async function payment(state: string, over: Record<string, unknown> = {}) {
-  const { Fulfilment, Payment } = await import('@/lib/db');
+  const { Payment } = await import('@/lib/db');
   const { transition } = await import('@/lib/payment-state');
   const id = String(over.session_id ?? `cs_${state}_${Math.random().toString(36).slice(2, 8)}`);
   const p = await Payment.create({
@@ -55,7 +54,6 @@ async function payment(state: string, over: Record<string, unknown> = {}) {
     ...transition(state as 'waiting'),
     ...over,
   });
-  await Fulfilment.create({ session_id: id, event_id: `evt_${id}`, payment_id: p._id, status: 'pending', ts: new Date() });
   return p;
 }
 const stateOf = async (id: unknown) => {
@@ -258,22 +256,11 @@ describe('/welcome reads the payment', () => {
     expect(await resolveWelcome('cs_nothing_here', null)).toEqual({ state: 'confirming', settled: false });
   }, 60000);
 
-  it('reads no fulfilment at all', async () => {
+  it('reads the payment and nothing else', async () => {
     const { readFileSync } = await import('node:fs');
     const { join } = await import('node:path');
-    expect(readFileSync(join(process.cwd(), 'lib', 'welcome.ts'), 'utf8')).not.toMatch(/Fulfilment/);
-  });
-});
-
-describe('the switch', () => {
-  it('is off: the legacy readers still stand until the cutover is verified', async () => {
-    const { readFileSync } = await import('node:fs');
-    const { join } = await import('node:path');
-    expect(PAYMENT_STATE_CUTOVER).toBe(false);
-    const page = readFileSync(join(process.cwd(), 'app', 'admin', 'access', 'page.tsx'), 'utf8');
-    expect(page).toContain('{PAYMENT_STATE_CUTOVER && <PaymentQueue rows={queue} />}');
-    for (const legacy of ['needing.length > 0', 'unmatched.length > 0', 'refused.length > 0']) {
-      expect(page).toContain(`{!PAYMENT_STATE_CUTOVER && ${legacy} && (`);
-    }
+    const src = readFileSync(join(process.cwd(), 'lib', 'welcome.ts'), 'utf8');
+    expect(src).not.toMatch(/Fulfilment/);
+    expect(src).toContain("Payment.findOne({ session_id: sessionId })");
   });
 });

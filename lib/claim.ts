@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Fulfilment, Payment, Student } from '@/lib/db';
+import { Payment, Student } from '@/lib/db';
 import { hasAccess, type Access } from '@/lib/access';
 import { noteWithPrior } from '@/lib/grant-note';
 import { transition } from '@/lib/payment-state';
@@ -68,8 +68,6 @@ export async function claim(sessionId: string, student: { id: unknown }): Promis
             { $set: { student_id: fresh._id, note: noteWithPrior(`duplicate · ${reason}`, prior), ...transition('duplicate', { reason }) } },
             { session },
           );
-          // Both representations, while both exist (ROUND_11 rollout order).
-          await Fulfilment.updateOne({ payment_id: payment._id }, { $set: { status: 'duplicate', reason, ts: new Date() } }, { session });
           outcome = 'duplicate';
           return;
         }
@@ -80,7 +78,6 @@ export async function claim(sessionId: string, student: { id: unknown }): Promis
           { $set: { student_id: fresh._id, ...transition('granted') } },
           { session },
         );
-        await Fulfilment.updateOne({ payment_id: payment._id }, { $set: { status: 'granted', ts: new Date() }, $unset: { reason: '' } }, { session });
         await Student.updateOne(
           { _id: fresh._id },
           { $set: { access: { sitting, granted_at: new Date(), source: 'stripe', note } } },
