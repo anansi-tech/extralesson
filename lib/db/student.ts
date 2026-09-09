@@ -29,6 +29,13 @@ const StudentSchema = new Schema({
         granted_at: { type: Date, default: Date.now, required: true },
         source: { type: String, enum: ['manual', 'stripe'], default: 'manual', required: true },
         note: { type: String },
+        /**
+         * THE PAYMENT THIS GRANT WAS BOUGHT WITH (ROUND_12 Task 0). A refund
+         * ends the grant whose payment_id is the refunded payment and no
+         * other — that is how refunding an August payment cannot revoke a
+         * September purchase. A comp has none.
+         */
+        payment_id: { type: Schema.Types.ObjectId, ref: 'Payment' },
       },
       { _id: false },
     ),

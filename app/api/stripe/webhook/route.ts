@@ -1,6 +1,6 @@
 import { dbConnect, Payment, Student, StripeEvent, isDuplicateKey } from '@/lib/db';
 import { transition } from '@/lib/payment-state';
-import { GRANTING_EVENTS, NO_STUDENT_EMAIL, emailFromSession, metadataOf, scopeOfSession, verifyStripeSignature } from '@/lib/stripe-webhook';
+import { GRANTING_EVENTS, NO_STUDENT_EMAIL, emailFromSession, metadataOf, paidAtOf, paymentIntentOf, scopeOfSession, verifyStripeSignature } from '@/lib/stripe-webhook';
 import { claim } from '@/lib/claim';
 
 export const runtime = 'nodejs';
@@ -47,7 +47,7 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   try {
-    return await fulfil(event.id, session);
+    return await fulfil(event.id, session, paidAtOf(event));
   } catch (e) {
     // Every write error that is not a duplicate key is a failure, and a
     // failure is a 500: Stripe delivers again, and the next attempt retries.
@@ -70,6 +70,8 @@ async function recordPending(eventId: string, session: Record<string, unknown>):
       event_id: eventId,
       session_id: sessionId,
       ...transition('pending', { reason: 'awaiting payment confirmation' }),
+      // No paid_at: the money has not arrived, which is what pending says.
+      payment_intent_id: paymentIntentOf(session),
       email: emailFromSession(session),
       amount_total: typeof session.amount_total === 'number' ? session.amount_total : undefined,
       currency: typeof session.currency === 'string' ? session.currency : undefined,
@@ -103,7 +105,7 @@ async function recordRefusal(eventId: string, session: Record<string, unknown>, 
   }
 }
 
-async function fulfil(eventId: string, session: Record<string, unknown>): Promise<Response> {
+async function fulfil(eventId: string, session: Record<string, unknown>, paidAt: Date | null): Promise<Response> {
   await dbConnect();
   const sessionId = typeof session.id === 'string' ? session.id : eventId;
 
@@ -127,6 +129,9 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
         // Paid and ours: a session that is neither never reaches here. No
         // account holds it yet, which is what waiting means.
         ...transition('waiting', { reason: email ? undefined : NO_STUDENT_EMAIL }),
+        // The references a refund needs, written from the start (ROUND_12 Task 0).
+        payment_intent_id: paymentIntentOf(session),
+        paid_at: paidAt,
         email,
         amount_total: typeof session.amount_total === 'number' ? session.amount_total : undefined,
         currency: typeof session.currency === 'string' ? session.currency : undefined,
@@ -142,9 +147,10 @@ async function fulfil(eventId: string, session: Record<string, unknown>): Promis
   // The money has arrived on a session that completed without it. Conditional,
   // so a delivery never regresses a state something else has already settled.
   if (payment.state === 'pending') {
+    // The money arrived now, on this event: that is what paid_at means.
     await Payment.updateOne(
       { _id: payment._id, state: 'pending' },
-      { $set: transition('waiting', { reason: email ? undefined : NO_STUDENT_EMAIL }) },
+      { $set: { ...transition('waiting', { reason: email ? undefined : NO_STUDENT_EMAIL }), payment_intent_id: paymentIntentOf(session), paid_at: paidAt } },
     );
     payment = { ...payment, state: 'waiting' };
   }

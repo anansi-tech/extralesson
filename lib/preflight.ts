@@ -18,6 +18,7 @@ export const REQUIRED_ENV = [
  */
 export const OPTIONAL_ENV: Record<string, string> = {
   RESEND_API_KEY: 'unset falls back to logging the reset link',
+  STRIPE_SECRET_KEY: 'the backfill and the refund read it; unset, neither can reach Stripe (ROUND_12)',
   RESEND_FROM: 'defaults to ExtraLesson at the help address',
   NEXT_PUBLIC_BASE_URL: 'inferred from VERCEL_URL when unset',
   BASE_URL: 'audit scripts only, never the app',

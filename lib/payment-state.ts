@@ -7,7 +7,15 @@ export const PAYMENT_STATES = ['pending', 'waiting', 'duplicate', 'granted', 'cl
 
 export type PaymentState = (typeof PAYMENT_STATES)[number];
 
-/** The states with an obligation on a person: what Task 4's queue will hold. */
+/**
+ * A KEY FOR A ROW THAT PREDATES SESSION TRACKING (ROUND_11 Task 5). Six
+ * payments were taken before any session was recorded, so they are keyed by
+ * the event that carried them. Such a row is NOT a checkout session and must
+ * never be looked up as one.
+ */
+export const LEGACY_PREFIX = 'legacy:';
+
+/** The states with an obligation on a person: what the queue holds. */
 export const QUEUE_STATES: PaymentState[] = ['waiting', 'duplicate'];
 
 /** The fields one transition writes. */

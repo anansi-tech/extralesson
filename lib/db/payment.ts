@@ -17,6 +17,18 @@ const PaymentSchema = new Schema({
   session_id: { type: String, required: true },
   /** WHAT HAPPENED TO THE MONEY. The one record; nothing else stores it. */
   state: { type: String, enum: PAYMENT_STATES, required: true },
+  /**
+   * WHAT A REFUND IS ISSUED AGAINST (ROUND_12 Task 0). A refund is created on
+   * the payment intent, not on the checkout session, so without this a refund
+   * cannot be made from the app at all.
+   */
+  payment_intent_id: { type: String },
+  /**
+   * The moment STRIPE CONFIRMED PAYMENT, which is not `received_at`: that is
+   * when the delivery reached us, and for a delayed method the money arrives
+   * later than the session completes. The refund window is measured from this.
+   */
+  paid_at: { type: Date },
   /** Why it is in that state, in words a person can act on. */
   state_reason: { type: String },
   state_at: { type: Date },

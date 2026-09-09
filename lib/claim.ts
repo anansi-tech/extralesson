@@ -80,7 +80,8 @@ export async function claim(sessionId: string, student: { id: unknown }): Promis
         );
         await Student.updateOne(
           { _id: fresh._id },
-          { $set: { access: { sitting, granted_at: new Date(), source: 'stripe', note } } },
+          // Bound to the payment, so a refund ends this grant and no other.
+          { $set: { access: { sitting, granted_at: new Date(), source: 'stripe', note, payment_id: payment._id } } },
           { session },
         );
         outcome = 'granted';

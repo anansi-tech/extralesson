@@ -20,6 +20,8 @@ export interface Access {
   granted_at: Date;
   source: string;
   note?: string;
+  /** The payment this grant was bought with; a comp has none (ROUND_12). */
+  payment_id?: unknown;
 }
 
 /**

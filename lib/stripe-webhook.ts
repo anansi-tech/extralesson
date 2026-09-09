@@ -15,7 +15,33 @@ export type VerifyResult =
 export interface StripeEvent {
   id: string;
   type: string;
+  /** Seconds since the epoch: when Stripe made this event (ROUND_12 Task 0). */
+  created?: number;
   data: { object: Record<string, unknown> };
+}
+
+/**
+ * WHAT A REFUND IS ISSUED AGAINST. A refund is created on the payment intent,
+ * so the session's own id is no use for one. Expanded objects are accepted as
+ * well as the plain id, because a Payment Link's session may carry either.
+ */
+export function paymentIntentOf(session: Record<string, unknown>): string | null {
+  const pi = session.payment_intent;
+  if (typeof pi === 'string' && pi) return pi;
+  if (pi && typeof pi === 'object') {
+    const id = (pi as { id?: unknown }).id;
+    if (typeof id === 'string' && id) return id;
+  }
+  return null;
+}
+
+/**
+ * The moment Stripe CONFIRMED PAYMENT — the event that said so, not the moment
+ * the delivery reached us. For a delayed method that is
+ * `async_payment_succeeded`, which can be days after the session completed.
+ */
+export function paidAtOf(event: { created?: number }): Date | null {
+  return typeof event.created === 'number' ? new Date(event.created * 1000) : null;
 }
 
 export function verifyStripeSignature(
