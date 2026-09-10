@@ -213,22 +213,40 @@ sub-nesting · no image assets/CDN.
 
 These are enforced by a **pre-commit hook**, not by remembering to check:
 `.githooks/pre-commit` runs `scripts/check-kill-list.sh` over the staged files
-**and the whole test suite** (~9s), and fails the commit on either. `pnpm install` wires it up (`prepare` sets
-`core.hooksPath`); run `pnpm check:kill-list` to sweep the whole tree by hand.
-The hook exists because the greps were twice run alongside `git commit` and read
-after the push, and later because `pnpm test && git commit` in one block commits
-before anyone reads the output — main went red for a commit that way. Reading
-order is not a control; a gate is. A commit touching no `.ts`/`.tsx` under
-`app/ lib/ scripts/ tests/` skips both checks, so docs-only commits stay quick.
+**and the unit suite** — every test that does not start Chrome, 157 files in
+about 50s — and fails the commit on either. `pnpm install` wires it up
+(`prepare` sets `core.hooksPath`); run `pnpm check:kill-list` to sweep the whole
+tree by hand. The hook exists because the greps were twice run alongside `git
+commit` and read after the push, and later because `pnpm test && git commit` in
+one block commits before anyone reads the output — main went red for a commit
+that way. Reading order is not a control; a gate is. A commit touching no
+`.ts`/`.tsx`/`.mjs` under `app/ lib/ scripts/ tests/` skips both checks, so
+docs-only commits stay quick.
 
-**`.githooks/pre-push` runs `tsc --noEmit` and refuses the push on a type
-error.** The tests cannot see code that will not compile: a client
-component importing `next/headers` passed nine commits and every push
-failed on Vercel, which kept serving the build before them for a day. A
-push is what deploys, so compilation gates it. It ran `next build` until
-that grew too slow to sit through; the exchange is real and worth knowing
-— a Next-specific build error, that `next/headers` import among them, is
-caught by Vercel rather than by the hook.
+**The suite is split in two, and nothing is skipped.** `vitest.config.ts`
+declares a `unit` project and a `browser` project; `pnpm test` runs both and is
+still the whole suite. The 23 browser suites are two thirds of the wall time —
+the commit gate went from 50s to three and a half minutes with them in it, which
+is what teaches people to reach for `--no-verify` — so they run on push instead,
+once per push rather than once per commit and still before anything deploys.
+Which suites those are is decided by what a file IMPORTS, not by what it is
+named: `tests/browser-suites.mjs` lists every test importing `playwright-core`,
+and vitest and both hooks read that one list, so a new width test joins the push
+gate by existing and a rename cannot drop one out of either half. Both hooks
+check the arithmetic — the commit gate that everything on disk is either
+collected or a browser suite, the push gate that the count is exact — because a
+file that falls out of both halves is a green suite that means less than it
+says, and that is the one failure a passing run cannot report.
+
+**`.githooks/pre-push` runs `tsc --noEmit` and then the whole suite — 180
+files, about 3m20s together — and refuses the push on either.** The tests
+cannot see code that will not compile: a client component importing
+`next/headers` passed nine commits and every push failed on Vercel, which
+kept serving the build before them for a day. A push is what deploys, so
+compilation gates it, and so does every test the commit gate left for here.
+It ran `next build` until that grew too slow to sit through; the exchange is
+real and worth knowing — a Next-specific build error, that `next/headers`
+import among them, is caught by Vercel rather than by the hook.
 
 Verification greps must return zero hits in `app/ lib/ scripts/`:
 `whatsapp`, `twilio`, `stripe` (imports), `investigation`, `sba`,

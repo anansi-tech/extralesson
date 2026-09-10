@@ -11,8 +11,11 @@
 set -uo pipefail
 cd "$(git rev-parse --show-toplevel)" || exit 1
 
+# .mjs is in the list because the split the gates rely on is stated in one:
+# tests/browser-suites.mjs decides which suites this hook runs, and a change to
+# it that no gate reads would be a change to the gate itself.
 mapfile -t STAGED < <(git diff --cached --name-only --diff-filter=ACMR \
-  | grep -E '^(app|lib|scripts|tests)/.*\.(ts|tsx)$' || true)
+  | grep -E '^(app|lib|scripts|tests)/.*\.(ts|tsx|mjs)$' || true)
 
 # A commit touching no code — a spec, a README, the env example — needs neither
 # check, and paying nine seconds for it would teach people to reach for
@@ -21,31 +24,45 @@ mapfile -t STAGED < <(git diff --cached --name-only --diff-filter=ACMR \
 
 scripts/check-kill-list.sh "${STAGED[@]}" || exit 1
 
-# The whole suite, not the staged files' tests: a change in lib/ breaks tests
-# that do not name it, which is most of the ones worth catching. It runs in
-# about nine seconds, which is cheaper than a red main.
-echo "running tests…"
-if ! pnpm vitest run --silent >/tmp/el-pre-commit.log 2>&1; then
+# The whole unit suite, not the staged files' tests: a change in lib/ breaks
+# tests that do not name it, which is most of the ones worth catching. The
+# browser suites are not here — they are two thirds of the wall time and the
+# push gate runs them, along with everything this one ran.
+echo "running unit tests…"
+if ! pnpm vitest run --project unit --silent >/tmp/el-pre-commit.log 2>&1; then
   echo "TESTS FAILED — commit refused. Full output:"
   tail -40 /tmp/el-pre-commit.log
   echo "(bypass with --no-verify if you know why)"
   exit 1
 fi
 
-# EVERY TEST FILE ON DISK WAS ACTUALLY RUN.
+# EVERY TEST FILE ON DISK WAS ACTUALLY RUN, OR IS ONE THE PUSH GATE RUNS.
 #
 # Vitest already fails a file it cannot parse and a file declaring no tests —
 # both exit 1, both refuse the commit. What nothing checks is a file that is
 # never COLLECTED: an include pattern edited, a directory renamed, a file that
 # quietly stops matching. That run is green and smaller, and green-and-smaller
 # is the one failure a passing suite cannot tell you about.
+#
+# With the suite split in two the arithmetic is what proves nothing fell out of
+# both halves: everything on disk is either collected here or is a browser
+# suite. The count comes from the same module vitest.config.ts partitions with,
+# so the two cannot drift; if it cannot be read, the commit is refused rather
+# than waved through on a check that did not run.
 on_disk=$(find tests -name '*.test.ts' | wc -l | tr -d ' ')
+browser=$(node -e "import('./tests/browser-suites.mjs').then(m=>console.log(m.browserSuites.length))" 2>/dev/null)
+if ! [[ "$browser" =~ ^[0-9]+$ ]]; then
+  echo "COULD NOT READ THE SUITE SPLIT — commit refused."
+  echo "  tests/browser-suites.mjs did not report how many suites the push gate runs."
+  exit 1
+fi
 collected=$(grep -oE 'Test Files +[0-9]+ passed \(([0-9]+)\)' /tmp/el-pre-commit.log \
   | grep -oE '\(([0-9]+)\)' | tr -d '()')
-if [ -n "$collected" ] && [ "$on_disk" != "$collected" ]; then
+expected=$((on_disk - browser))
+if [ -n "$collected" ] && [ "$expected" != "$collected" ]; then
   echo "TEST COLLECTION MISMATCH — commit refused."
-  echo "  $on_disk test files on disk, $collected collected by vitest."
+  echo "  $on_disk test files on disk, $browser of them browser suites, so $expected expected here — $collected collected."
   echo "  A file on disk that never runs makes a green suite mean less than it says."
   exit 1
 fi
-echo "tests pass ($collected files)"
+echo "unit tests pass ($collected files; $browser browser suites run on push)"

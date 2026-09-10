@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
-# Gate the push on the types.
+# Gate the push on the types and on the whole suite.
 #
 # The pre-commit hook runs the tests, and the tests cannot see code that will
 # not compile: a client component that imported next/headers passed nine
 # commits, every push failed on Vercel, and the site served the build before
 # them for a day while "still broken" reports came in about fixes that were
 # never live. A push is what deploys, so compilation is the push's gate.
+#
+# The commit gate runs the unit tests, which is every test that does not start
+# Chrome. The browser suites are two thirds of the wall time and would teach
+# people to reach for --no-verify on every commit, so they run here instead —
+# once per push rather than once per commit, and still before anything deploys.
 #
 # Bypass with --no-verify only when you mean to.
 set -uo pipefail
@@ -26,3 +31,24 @@ if ! pnpm tsc --noEmit -p . >/tmp/el-pre-push.log 2>&1; then
   exit 1
 fi
 echo "types pass"
+
+echo "running the whole suite…"
+if ! pnpm vitest run --silent >/tmp/el-pre-push-tests.log 2>&1; then
+  echo "TESTS FAILED — push refused. Full output:"
+  tail -40 /tmp/el-pre-push-tests.log
+  echo "(bypass with --no-verify if you know why)"
+  exit 1
+fi
+
+# EVERY TEST FILE ON DISK WAS ACTUALLY RUN. The commit gate checks the same
+# thing against its own half; here the whole suite ran, so the count is exact.
+on_disk=$(find tests -name '*.test.ts' | wc -l | tr -d ' ')
+collected=$(grep -oE 'Test Files +[0-9]+ passed \(([0-9]+)\)' /tmp/el-pre-push-tests.log \
+  | grep -oE '\(([0-9]+)\)' | tr -d '()')
+if [ -n "$collected" ] && [ "$on_disk" != "$collected" ]; then
+  echo "TEST COLLECTION MISMATCH — push refused."
+  echo "  $on_disk test files on disk, $collected collected by vitest."
+  echo "  A file on disk that never runs makes a green suite mean less than it says."
+  exit 1
+fi
+echo "tests pass ($collected files)"
