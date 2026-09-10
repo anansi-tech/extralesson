@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { FREE_SESSIONS, hasAccess } from '@/lib/access';
+import { FREE_SESSIONS, hasAccess, isComp } from '@/lib/access';
 import { GRACE_DAYS, accessEndsAt } from '@/lib/sittings';
 
 const grant = (sitting: string) => ({
@@ -111,5 +111,28 @@ describe('the grant note convention', () => {
 
   it('tells the operator teacher comps go on the latest sitting', () => {
     expect(ADMIN.replace(/\s+/g, ' ')).toMatch(/latest sitting/);
+  });
+});
+
+// A COMP IS NAMED, NOT INFERRED. /admin/access requires the note form
+// `comp · kind · why · date` for every hand-granted comp, so the note is the
+// record; reading a missing payment reference as a comp says the money never
+// existed, which on an account that has paid us is false.
+describe('isComp', () => {
+  const note = (note?: string) => ({ sitting: 'may-june-2027', granted_at: new Date(), source: 'manual' as const, note });
+
+  it('is true only for a note that names it one, whatever the source says', () => {
+    expect(isComp(note('comp · teacher · st-marys · 2026-08-26'))).toBe(true);
+    expect(isComp(note('  comp · pilot · ms-allen · 2 of 5'))).toBe(true);
+    expect(isComp(note('Comp · other · launch week'))).toBe(true);
+  });
+
+  it('is false for a note that does not, and for no note at all', () => {
+    expect(isComp(note('friend'))).toBe(false);
+    expect(isComp(note('stripe evt_1'))).toBe(false);
+    expect(isComp(note())).toBe(false);
+    expect(isComp(null)).toBe(false);
+    // Not a prefix match on any word beginning with those letters.
+    expect(isComp(note('compensation for the outage'))).toBe(false);
   });
 });

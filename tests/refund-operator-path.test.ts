@@ -108,13 +108,50 @@ describe('a comp and a grant nobody can refund', () => {
     expect(text).not.toContain('refund unavailable');
   }, 60000);
 
-  it('a paid grant with no payment reference says so, and points at Stripe', async () => {
+  // THE NOTE DECIDES, not the state of the payment collection. A teacher whose
+  // school later bought a seat still holds a comp, and it still ends alone.
+  it('a comp stays a comp on an account that has paid us', async () => {
+    const s = await student('comp-and-paid@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'comp · pilot · ms-allen · 2 of 5' });
+    await payment({ student_id: s._id });
+    const { html, text } = await screen();
+
+    expect(html).toContain('>Revoke<');
+    expect(text).not.toContain('refund unavailable');
+  }, 60000);
+
+  it('a paid grant with no payment reference says so, points at Stripe, and still offers Revoke', async () => {
     await student('unresolved@example.com', { sitting: SITTING, granted_at: new Date(), source: 'stripe', note: 'friend' });
-    const { text } = await screen();
+    const { html, text } = await screen();
 
     expect(text).toContain('refund unavailable — no payment reference');
     expect(text).toContain('Refund it in the Stripe dashboard, then revoke here with the reason.');
     expect(text).not.toContain('The money goes back');
+    // Access still has to be endable — but never on its own, which is what
+    // read as a grant nobody had paid for.
+    expect(html).toContain('>Revoke<');
+  }, 60000);
+
+  // THE ROW THIS WAS FOUND ON: granted by hand, note naming nothing, and two
+  // payments on the account that no reference reaches. It used to render as a
+  // comp — Revoke alone, as though no money had ever changed hands.
+  it('a hand-granted row on an account that has paid reads as money we cannot reach', async () => {
+    const s = await student('lost-link@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'friend' });
+    await payment({ student_id: s._id });
+    const { html, text } = await screen();
+
+    expect(text).toContain('refund unavailable — no payment reference');
+    expect(html).toContain('>Revoke<');
+    expect(html).toContain('href="https://dashboard.stripe.com/test/search?query=lost-link%40example.com"');
+    expect(text).not.toContain('The money goes back');
+  }, 60000);
+
+  // The other half of the same rule: no note, and no money anywhere either.
+  it('a hand-granted row on an account that never paid is revoked alone', async () => {
+    await student('nothing-owed@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'granted by hand' });
+    const { html, text } = await screen();
+
+    expect(html).toContain('>Revoke<');
+    expect(text).not.toContain('refund unavailable');
   }, 60000);
 });
 

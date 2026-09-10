@@ -1,6 +1,6 @@
 import { dbConnect, Attempt, Payment, PracticeSession, Student } from '@/lib/db';
-import { FREE_MODES, FREE_SESSIONS, REFUND_DAYS, hasAccess, type Access } from '@/lib/access';
-import { dashboardUrl, windowOf } from '@/lib/payment-queue';
+import { FREE_MODES, FREE_SESSIONS, REFUND_DAYS, hasAccess, isComp, type Access } from '@/lib/access';
+import { dashboardSearchUrl, dashboardUrl, windowOf } from '@/lib/payment-queue';
 import { SITTINGS, SITTING_IDS, sittingsOpenAt } from '@/lib/sittings';
 import { grantAccess, refundPayment, revokeGrant } from './actions';
 import { PaymentQueue } from './payment-queue';
@@ -74,6 +74,9 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
       p,
     ]),
   );
+  // WHO HAS EVER PAID US, whatever became of the record. A grant with no
+  // payment reference on one of these accounts is a lost link, not a gift.
+  const hasPaid = new Set((await Payment.distinct('student_id', { student_id: { $in: ids } })).map(String));
   const attentionOnly = attention === '1';
   const defaultSitting = sittingsOpenAt(new Date())[0] ?? SITTING_IDS[SITTING_IDS.length - 1];
   const paid = paidRows.length;
@@ -210,7 +213,11 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                   {r.access.source}
                   {r.access.note ? ` · ${r.access.note}` : ''}
                 </span>
-                <GrantControls row={r} payment={r.access.payment_id ? paymentOfGrant.get(String(r.access.payment_id)) : undefined} />
+                <GrantControls
+                  row={r}
+                  payment={r.access.payment_id ? paymentOfGrant.get(String(r.access.payment_id)) : undefined}
+                  hasPaid={hasPaid.has(r.id)}
+                />
               </div>
             ) : (
               // Stacked on a phone: three controls in one row left the note two letters wide.
@@ -256,8 +263,23 @@ interface GrantPayment {
  * a comp is revoked alone because there is nothing to give back, and a paid
  * grant we cannot refund says so rather than offering a button that would
  * throw. Every one of them takes a reason.
+ *
+ * The third used to be read off `source`, which put a paid grant whose payment
+ * could not be resolved — granted by hand against money that did arrive — in
+ * with the comps, offering Revoke as though nobody had ever been charged. A
+ * comp is a comp because its note says so; anything else on an account that has
+ * paid us is a lost reference, and says which.
  */
-function GrantControls({ row, payment }: { row: { id: string; access?: Access | null }; payment?: GrantPayment }) {
+function GrantControls({
+  row,
+  payment,
+  hasPaid,
+}: {
+  row: { id: string; email: string; access?: Access | null };
+  payment?: GrantPayment;
+  /** The account has a payment somewhere, whatever this grant can point at. */
+  hasPaid: boolean;
+}) {
   const access = row.access;
   if (!access) return null;
   if (access.revoked_at) {
@@ -271,16 +293,6 @@ function GrantControls({ row, payment }: { row: { id: string; access?: Access | 
   const paid = access.payment_id ? payment : undefined;
   const link = dashboardUrl(paid?.payment_intent_id ?? null);
   const age = windowOf(paid?.paid_at ?? null);
-
-  // A grant bought with a payment nobody can find: the money is real and the
-  // app cannot reach it, so it says so and points at the one place that can.
-  if (access.source === 'stripe' && !paid?.payment_intent_id) {
-    return (
-      <p className="mt-1 font-mono text-[11px] leading-relaxed text-dim">
-        refund unavailable — no payment reference. Refund it in the Stripe dashboard, then revoke here with the reason.
-      </p>
-    );
-  }
 
   if (paid?.payment_intent_id) {
     return (
@@ -302,12 +314,27 @@ function GrantControls({ row, payment }: { row: { id: string; access?: Access | 
     );
   }
 
+  // Money we cannot reach: the payment is real, the link to it is not. Revoke
+  // is still offered — an operator has to be able to end access — but never on
+  // its own, because on its own it reads as a grant that cost nobody anything.
+  const unresolved = !isComp(access) && (access.source === 'stripe' || hasPaid);
+
   // A comp: nothing to give back, so this calls nobody.
   return (
-    <form action={revokeGrant} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-      <input type="hidden" name="id" value={row.id} />
-      <input name="reason" required minLength={3} placeholder="why: the pilot ended · granted in error" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
-      <button className={`${QUIET} w-full text-left sm:w-auto`}>Revoke</button>
-    </form>
+    <div className="mt-1">
+      {unresolved && (
+        <p className="border-l-3 border-amber bg-amber-tint px-3 py-2 font-mono text-[11px] leading-relaxed">
+          refund unavailable — no payment reference. Refund it in the Stripe dashboard, then revoke here with the reason.{' '}
+          <a href={dashboardSearchUrl(row.email)} target="_blank" rel="noopener" className="underline underline-offset-[3px]">
+            This account&rsquo;s payments at Stripe
+          </a>
+        </p>
+      )}
+      <form action={revokeGrant} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <input type="hidden" name="id" value={row.id} />
+        <input name="reason" required minLength={3} placeholder={unresolved ? 'why: refunded at Stripe on 2026-09-10' : 'why: the pilot ended · granted in error'} className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
+        <button className={`${QUIET} w-full text-left sm:w-auto`}>Revoke</button>
+      </form>
+    </div>
   );
 }

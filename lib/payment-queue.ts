@@ -53,6 +53,15 @@ export function dashboardUrl(paymentIntentId: string | null): string | null {
   return `https://dashboard.stripe.com/${test ? 'test/' : ''}payments/${paymentIntentId}`;
 }
 
+/**
+ * Where to look when there is no payment reference to link to: the dashboard's
+ * own search, on the address the money would have been paid under.
+ */
+export function dashboardSearchUrl(email: string): string {
+  const test = process.env.STRIPE_SECRET_KEY?.startsWith('sk_test') ?? false;
+  return `https://dashboard.stripe.com/${test ? 'test/' : ''}search?query=${encodeURIComponent(email)}`;
+}
+
 /** What a row's money reads as; the currency is the session's own, never assumed. */
 export function amountLine(row: Pick<QueueRow, 'amount_total' | 'currency'>): string {
   if (typeof row.amount_total !== 'number') return 'amount unknown';

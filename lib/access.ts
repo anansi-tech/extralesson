@@ -40,6 +40,17 @@ export function grantFor(access: Access | null | undefined, sitting: string): Ac
 }
 
 /**
+ * A COMP IS A COMP BECAUSE THE NOTE SAYS SO, never because a payment could not
+ * be found. Every comp is granted by hand through /admin/access, which requires
+ * a note in the `comp · kind · why · date` form; a grant that was paid for and
+ * lost its reference has a note of some other shape, and reading it as a comp
+ * says the money never existed.
+ */
+export function isComp(access: Access | null | undefined): boolean {
+  return /^comp\b/i.test((access?.note ?? '').trim());
+}
+
+/**
  * Access runs to the sitting it was bought for, plus grace. An expired account
  * is treated as one that never paid: the paywall returns on NEW sessions,
  * nothing earned is touched, and a sitting with no end date never expires.
