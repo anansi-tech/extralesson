@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { dbConnect, Payment, Student } from '@/lib/db';
 import { QUEUE_STATES, transition } from '@/lib/payment-state';
 import { claim } from '@/lib/claim';
+import { refundAndRevoke, revokeComp } from '@/lib/refund';
 import { requireAdmin } from '@/lib/auth/session';
 import { deleteStudent, type DeletionCounts } from '@/lib/delete-student';
 import { SITTING_IDS } from '@/lib/sittings';
@@ -58,6 +59,37 @@ export async function revokeAccess(formData: FormData): Promise<void> {
   revalidatePath('/admin/access');
 }
 
+
+/**
+ * REFUND AND REVOKE, from the one operation that does it (ROUND_12 Task 4).
+ * The reason is required for the same purpose a close's is: a refund nobody
+ * can explain later is a refund nobody can defend.
+ */
+export async function refundPayment(formData: FormData): Promise<void> {
+  const operator = await requireAdmin();
+  const id = IdZ.parse(String(formData.get('id')));
+  const reason = String(formData.get('reason') ?? '').trim().slice(0, 200);
+  if (reason.length < 3) redirect('/admin/access?noreason=1');
+  await dbConnect();
+  const outcome = await refundAndRevoke(id, { email: operator.email }, reason);
+  revalidatePath('/admin/access');
+  redirect(`/admin/access?refund=${outcome}`);
+}
+
+/**
+ * A COMP HAS NO PAYMENT, so revoking one calls nobody: it is a record, with
+ * the reason, the operator and the time. The grant is ended, never erased.
+ */
+export async function revokeGrant(formData: FormData): Promise<void> {
+  const operator = await requireAdmin();
+  const id = IdZ.parse(String(formData.get('id')));
+  const reason = String(formData.get('reason') ?? '').trim().slice(0, 200);
+  if (reason.length < 3) redirect('/admin/access?noreason=1');
+  await dbConnect();
+  const outcome = await revokeComp(id, { email: operator.email }, reason);
+  revalidatePath('/admin/access');
+  redirect(`/admin/access?revoked=${outcome}`);
+}
 
 /**
  * CLOSING A PAYMENT (ROUND_11 Task 4): settled by a person, without granting.

@@ -264,8 +264,8 @@ describe('when Stripe refuses', () => {
     const { payment: p } = await paidWithGrant();
     stripe({ create: () => new StripeError(400, 'charge_already_refunded', 'Charge has already been refunded.') });
 
-    // Refused, not not-refundable: Stripe rejected it, and the payment says so.
-    expect(await refundAndRevoke(String(p._id), OPERATOR, 'asked')).toBe('refused');
+    // Rejected, not not-refundable: Stripe refused it, and the payment says so.
+    expect(await refundAndRevoke(String(p._id), OPERATOR, 'asked')).toBe('refund_rejected');
     const failed = await stateOf(p._id);
     expect(failed.state).toBe('refund_failed');
     expect(failed.state_reason).toContain('charge_already_refunded');
@@ -381,13 +381,16 @@ describe('a comp', () => {
   }, 60000);
 });
 
-describe('nothing calls it yet', () => {
-  it('no screen or action reaches for the operation', async () => {
+describe('who calls it', () => {
+  it('is the operator, through the two admin actions, and nothing automatic', async () => {
     const { readFileSync } = await import('node:fs');
     const { join } = await import('node:path');
     const at = (...p: string[]) => readFileSync(join(process.cwd(), ...p), 'utf8');
-    for (const f of [['app', 'admin', 'access', 'actions.ts'], ['app', 'admin', 'access', 'payment-queue.tsx'], ['app', 'api', 'stripe', 'webhook', 'route.ts']]) {
-      expect(at(...f), f.join('/')).not.toMatch(/refundAndRevoke|revokeComp/);
-    }
+    const actions = at('app', 'admin', 'access', 'actions.ts');
+    // Each behind requireAdmin and a required reason (ROUND_12 Task 4).
+    expect(actions).toMatch(/refundPayment[\s\S]*requireAdmin\(\)[\s\S]*reason\.length < 3[\s\S]*refundAndRevoke\(/);
+    expect(actions).toMatch(/revokeGrant[\s\S]*requireAdmin\(\)[\s\S]*reason\.length < 3[\s\S]*revokeComp\(/);
+    // Never from a webhook: a status arriving from Stripe authorises nothing.
+    expect(at('app', 'api', 'stripe', 'webhook', 'route.ts')).not.toMatch(/refundAndRevoke|revokeComp/);
   });
 });

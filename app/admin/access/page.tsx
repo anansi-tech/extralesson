@@ -1,7 +1,8 @@
 import { dbConnect, Attempt, Payment, PracticeSession, Student } from '@/lib/db';
-import { FREE_MODES, FREE_SESSIONS, hasAccess } from '@/lib/access';
+import { FREE_MODES, FREE_SESSIONS, REFUND_DAYS, hasAccess, type Access } from '@/lib/access';
+import { dashboardUrl, windowOf } from '@/lib/payment-queue';
 import { SITTINGS, SITTING_IDS, sittingsOpenAt } from '@/lib/sittings';
-import { grantAccess, revokeAccess } from './actions';
+import { grantAccess, refundPayment, revokeGrant } from './actions';
 import { PaymentQueue } from './payment-queue';
 import { loadQueue } from '@/lib/payment-queue';
 import { DeleteAccount } from './delete-account';
@@ -32,7 +33,7 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
         email: string;
         name: string;
         exam_sitting: string;
-        access?: { sitting: string; granted_at: Date; source: string; note?: string } | null;
+        access?: Access | null;
         created_at: Date;
       }[]
     >();
@@ -60,9 +61,19 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
       attempts: attemptsBy.get(String(s._id)) ?? 0,
     }))
     .filter((r) => !needle || r.email.toLowerCase().includes(needle));
-  const paidRows = all.filter((r) => hasAccess(r.access)).sort((a, b) => b.sessions - a.sessions);
-  const usedRows = all.filter((r) => !hasAccess(r.access) && r.sessions >= FREE_SESSIONS).sort((a, b) => b.sessions - a.sessions);
-  const freeRows = all.filter((r) => !hasAccess(r.access) && r.sessions < FREE_SESSIONS).sort((a, b) => b.sessions - a.sessions);
+  // A revoked grant reads as no access, so it would drop into the free lists
+  // and read as somebody who never paid. It stays here, said plainly.
+  const onPaidList = (r: { access?: Access | null }) => hasAccess(r.access) || Boolean(r.access?.revoked_at);
+  const paidRows = all.filter(onPaidList).sort((a, b) => b.sessions - a.sessions);
+  const usedRows = all.filter((r) => !onPaidList(r) && r.sessions >= FREE_SESSIONS).sort((a, b) => b.sessions - a.sessions);
+  const freeRows = all.filter((r) => !onPaidList(r) && r.sessions < FREE_SESSIONS).sort((a, b) => b.sessions - a.sessions);
+  // The payment a grant was bought with, for the row that offers to refund it.
+  const paymentOfGrant = new Map(
+    (await Payment.find({ state: { $in: ['granted', 'refund_approved', 'refund_failed'] } }).select('paid_at payment_intent_id').lean<{ _id: unknown; paid_at?: Date; payment_intent_id?: string }[]>()).map((p) => [
+      String(p._id),
+      p,
+    ]),
+  );
   const attentionOnly = attention === '1';
   const defaultSitting = sittingsOpenAt(new Date())[0] ?? SITTING_IDS[SITTING_IDS.length - 1];
   const paid = paidRows.length;
@@ -169,7 +180,11 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                   {r.attempts} question{r.attempts === 1 ? '' : 's'}
                 </div>
               </div>
-              {r.access && hasAccess(r.access) ? (
+              {r.access?.revoked_at ? (
+                <span className="font-mono text-[11px] uppercase tracking-widest text-red-pen">
+                  revoked · {r.access.sitting}
+                </span>
+              ) : r.access && hasAccess(r.access) ? (
                 <span className="font-mono text-[11px] uppercase tracking-widest text-green-pen">
                   access · {r.access.sitting}
                 </span>
@@ -189,16 +204,13 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
             </div>
 
             {r.access ? (
-              <div className="mt-1 flex flex-wrap items-baseline justify-between gap-2">
-                <span className="font-mono text-[11px] text-dim">
+              <div className="mt-1">
+                <span className="block font-mono text-[11px] text-dim">
                   granted {new Date(r.access.granted_at).toISOString().slice(0, 10)} ·{' '}
                   {r.access.source}
                   {r.access.note ? ` · ${r.access.note}` : ''}
                 </span>
-                <form action={revokeAccess}>
-                  <input type="hidden" name="id" value={r.id} />
-                  <button className={`${QUIET} text-red-pen`}>Revoke</button>
-                </form>
+                <GrantControls row={r} payment={r.access.payment_id ? paymentOfGrant.get(String(r.access.payment_id)) : undefined} />
               </div>
             ) : (
               // Stacked on a phone: three controls in one row left the note two letters wide.
@@ -228,5 +240,74 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
         )}
         <DeleteAccount />
     </div>
+  );
+}
+
+/** A payment as a grant's row needs it: when it was paid, and where it lives at Stripe. */
+interface GrantPayment {
+  _id: unknown;
+  paid_at?: Date;
+  payment_intent_id?: string;
+}
+
+/**
+ * WHAT AN OPERATOR CAN DO ABOUT ONE GRANT (ROUND_12 Task 4). Three cases, and
+ * they are not interchangeable: a paid grant is refunded and revoked together,
+ * a comp is revoked alone because there is nothing to give back, and a paid
+ * grant we cannot refund says so rather than offering a button that would
+ * throw. Every one of them takes a reason.
+ */
+function GrantControls({ row, payment }: { row: { id: string; access?: Access | null }; payment?: GrantPayment }) {
+  const access = row.access;
+  if (!access) return null;
+  if (access.revoked_at) {
+    return (
+      <p className="mt-1 font-mono text-[11px] leading-relaxed text-red-pen">
+        revoked {new Date(access.revoked_at).toISOString().slice(0, 10)} by {access.revoked_by ?? 'nobody recorded'}
+        {access.revoked_reason ? ` · ${access.revoked_reason}` : ''}
+      </p>
+    );
+  }
+  const paid = access.payment_id ? payment : undefined;
+  const link = dashboardUrl(paid?.payment_intent_id ?? null);
+  const age = windowOf(paid?.paid_at ?? null);
+
+  // A grant bought with a payment nobody can find: the money is real and the
+  // app cannot reach it, so it says so and points at the one place that can.
+  if (access.source === 'stripe' && !paid?.payment_intent_id) {
+    return (
+      <p className="mt-1 font-mono text-[11px] leading-relaxed text-dim">
+        refund unavailable — no payment reference. Refund it in the Stripe dashboard, then revoke here with the reason.
+      </p>
+    );
+  }
+
+  if (paid?.payment_intent_id) {
+    return (
+      <form action={refundPayment} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <input type="hidden" name="id" value={String(paid._id)} />
+        <span className="font-mono text-[11px] leading-relaxed text-dim">
+          The money goes back, access ends now, and their work stays.
+          {age ? ` Paid ${age.days} day${age.days === 1 ? '' : 's'} ago${age.late ? `, past the ${REFUND_DAYS}-day window — the record will say it was late` : ''}.` : ''}
+          {link ? ' ' : ''}
+          {link && (
+            <a href={link} target="_blank" rel="noopener" className="underline underline-offset-[3px]">
+              This payment at Stripe
+            </a>
+          )}
+        </span>
+        <input name="reason" required minLength={3} placeholder="why: asked within the window · duplicate charge" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
+        <button className={`${INK} w-full text-sm sm:w-auto`}>Refund and revoke</button>
+      </form>
+    );
+  }
+
+  // A comp: nothing to give back, so this calls nobody.
+  return (
+    <form action={revokeGrant} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+      <input type="hidden" name="id" value={row.id} />
+      <input name="reason" required minLength={3} placeholder="why: the pilot ended · granted in error" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
+      <button className={`${QUIET} w-full text-left sm:w-auto`}>Revoke</button>
+    </form>
   );
 }

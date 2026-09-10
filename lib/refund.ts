@@ -6,15 +6,16 @@ import type { RefundAttempt } from '@/lib/refund-state';
 import { StripeError, stripeListAll, stripePost, type StripeRefund } from '@/lib/stripe-api';
 import { refundEmail, sendEmail } from '@/lib/email';
 import { externalBaseUrl } from '@/lib/base-url';
+import { REFUND_DAYS } from '@/lib/access';
 
 /**
- * `refused` is STRIPE REJECTING THE REFUND — a known outcome, and the payment
- * carries refund_failed with their reason. `not-refundable` is a payment that
- * was never in a paid state, which is a different thing entirely. Note the
- * word does double duty in this codebase: the payment state `refused` means a
- * session that was not ours, and has nothing to do with this.
+ * `refund_rejected` is STRIPE REJECTING THE REFUND — a known outcome, and the
+ * payment carries refund_failed with their reason. `not-refundable` is a
+ * payment that was never in a paid state, which is a different thing. Neither
+ * is the payment state `refused`, which means a session that was not ours and
+ * is the only thing that word means.
  */
-export type RefundOutcomeResult = 'done' | 'already-refunded' | 'unknown-outcome' | 'refused' | 'not-refundable';
+export type RefundOutcomeResult = 'done' | 'already-refunded' | 'unknown-outcome' | 'refund_rejected' | 'not-refundable';
 
 export interface Operator {
   email: string;
@@ -23,6 +24,7 @@ export interface Operator {
 interface PaymentRow {
   _id: unknown;
   state: PaymentState;
+  paid_at?: Date;
   amount_total?: number;
   payment_intent_id?: string;
   refund_id?: string;
@@ -57,7 +59,7 @@ export async function refundAndRevoke(paymentId: string, operator: Operator, rea
 
   // Settled already: revoke if that never happened, and say so. No second email.
   if (before.state === 'refunded') {
-    await revokeGrantOf(before, operator, reason);
+    await revokeGrantOf(before, operator, reasonWithWindow(reason, before.paid_at));
     return 'already-refunded';
   }
   if (!isRefundable(before.state) && before.state !== 'refund_approved' && before.state !== 'refund_failed') {
@@ -65,7 +67,8 @@ export async function refundAndRevoke(paymentId: string, operator: Operator, rea
   }
   if (!before.payment_intent_id) return 'not-refundable';
 
-  const { attempt, joined } = await approve(before, operator, reason);
+  const recorded = reasonWithWindow(reason, before.paid_at);
+  const { attempt, joined } = await approve(before, operator, recorded);
   if (!attempt) return 'not-refundable';
 
   // A joined approval may already have moved money; a fresh one cannot have.
@@ -73,7 +76,7 @@ export async function refundAndRevoke(paymentId: string, operator: Operator, rea
     const found = await recover(before.payment_intent_id, attempt, before.amount_total);
     if (found) {
       // The money moved already: finish the record and the revocation.
-      await complete(paymentId, attempt, found, operator, reason);
+      await complete(paymentId, attempt, found, operator, recorded);
       return 'already-refunded';
     }
   }
@@ -93,10 +96,10 @@ export async function refundAndRevoke(paymentId: string, operator: Operator, rea
     // with the reason, back on the queue for a person to approve a retry.
     const message = e instanceof StripeError ? `${e.code ?? e.status}: ${e.message}` : String(e);
     await fail(paymentId, attempt.key, message);
-    return 'refused';
+    return 'refund_rejected';
   }
 
-  await complete(paymentId, attempt, refund, operator, reason);
+  await complete(paymentId, attempt, refund, operator, recorded);
   return 'done';
 }
 
@@ -111,8 +114,19 @@ export async function revokeComp(studentId: string, operator: Operator, reason: 
 
 const read = (id: string) =>
   Payment.findById(id)
-    .select('state amount_total payment_intent_id refund_id student_id refund_attempts')
+    .select('state paid_at amount_total payment_intent_id refund_id student_id refund_attempts')
     .lean<PaymentRow | null>();
+
+/**
+ * THE WINDOW NEVER BLOCKS THE ACT; it is a stated policy, and what it governs
+ * is what we agree to. A refund granted past it is still a refund, and the
+ * record says it was late so nobody later reads it as one made inside.
+ */
+export function reasonWithWindow(reason: string, paidAt: Date | undefined, now: Date = new Date()): string {
+  if (!paidAt) return reason;
+  const days = Math.floor((now.getTime() - paidAt.getTime()) / 86_400_000);
+  return days > REFUND_DAYS ? `${reason} · late: ${days} days after payment, past the ${REFUND_DAYS}-day window` : reason;
+}
 
 const isTimeout = (e: unknown) => e instanceof Error && (e.name === 'TimeoutError' || e.name === 'AbortError');
 

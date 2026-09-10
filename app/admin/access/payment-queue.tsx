@@ -1,6 +1,7 @@
-import { closePayment, grantQueued } from './actions';
+import { closePayment, grantQueued, refundPayment } from './actions';
 import { FIELD, INK, QUIET, ROW } from '@/app/admin/ui';
-import { amountLine, type QueueRow } from '@/lib/payment-queue';
+import { REFUND_DAYS } from '@/lib/access';
+import { amountLine, dashboardUrl, windowOf, type QueueRow } from '@/lib/payment-queue';
 
 /**
  * PAYMENTS THAT NEED YOU (ROUND_11 Task 4): the one list, derived from the
@@ -28,6 +29,30 @@ export function PaymentQueue({ rows }: { rows: QueueRow[] }) {
                 <span className="text-dim">{new Date(r.received_at).toISOString().slice(0, 10)}</span>
               </div>
               {r.state_reason && <div className="mt-0.5 font-mono text-[11px] text-dim">{r.state_reason}</div>}
+              <div className="mt-0.5 font-mono text-[11px] text-dim">
+                {(() => {
+                  const age = windowOf(r.paid_at);
+                  return age ? `paid ${age.days} day${age.days === 1 ? '' : 's'} ago${age.late ? ` · past the ${REFUND_DAYS}-day window` : ''}` : 'no payment date';
+                })()}
+                {dashboardUrl(r.payment_intent_id) && (
+                  <>
+                    {' · '}
+                    <a href={dashboardUrl(r.payment_intent_id)!} target="_blank" rel="noopener" className="underline underline-offset-[3px]">
+                      This payment at Stripe
+                    </a>
+                  </>
+                )}
+              </div>
+
+              {/* Money we hold with no grant to revoke: refunding it returns
+                  the money and touches nobody's access. */}
+              {(r.state === 'waiting' || r.state === 'duplicate') && r.payment_intent_id && (
+                <form action={refundPayment} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                  <input type="hidden" name="id" value={r.id} />
+                  <input name="reason" required minLength={3} placeholder="why: refunding, no account claimed it" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
+                  <button className={`${QUIET} w-full text-left sm:w-auto`}>Refund — money back, no grant touched</button>
+                </form>
+              )}
 
               {r.state === 'waiting' && (
                 <form action={grantQueued} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
@@ -35,6 +60,32 @@ export function PaymentQueue({ rows }: { rows: QueueRow[] }) {
                   <input name="email" type="email" required placeholder="the account that should have it" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
                   <button className={`${INK} w-full text-sm sm:w-auto`}>Grant to this account</button>
                 </form>
+              )}
+
+              {/* A refund an operator approved, with no outcome yet: the one
+                  thing to do is finish it, and finishing recovers whatever
+                  already happened at Stripe. */}
+              {(r.state === 'refund_approved' || r.state === 'refund_failed') && (
+                <>
+                  <p className="mt-2 font-mono text-[11px] leading-relaxed text-dim">
+                    {r.state === 'refund_approved'
+                      ? 'Approved, and the outcome is not known. Finishing looks for the refund before making one, so this cannot refund twice.'
+                      : 'Stripe refused it. Retrying takes a new key, because the old one is spent.'}
+                    {r.refund_status ? ` Stripe says: ${r.refund_status}.` : ''}
+                    {r.attempt_key ? ` Attempt ${r.attempt_key}.` : ''}
+                  </p>
+                  <form action={refundPayment} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                    <input type="hidden" name="id" value={r.id} />
+                    <input
+                      name="reason"
+                      required
+                      minLength={3}
+                      placeholder={r.state === 'refund_approved' ? 'why: finishing an approved refund' : 'why: retrying after Stripe refused'}
+                      className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`}
+                    />
+                    <button className={`${INK} w-full text-sm sm:w-auto`}>{r.state === 'refund_approved' ? 'Finish the refund' : 'Retry the refund'}</button>
+                  </form>
+                </>
               )}
 
               {r.state === 'duplicate' && (
