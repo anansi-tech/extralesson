@@ -410,9 +410,7 @@ export default async function SessionPage({
           const line = correct ? undefined : hintLine(question.rubric ?? [], ref);
           return { label: ref, correct, reasonHtml: line ? renderMathHtml(line) : undefined };
         }),
-        feedbackTitleHtml: 'Worked solution',
         feedbackHtml: renderMathHtml(question.worked_solution),
-        isMisconception: false,
         // Same rule as actions.ts on the live path: the figure stands as the
         // construction only when the figure is the answer.
         construction:

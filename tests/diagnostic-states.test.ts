@@ -110,3 +110,38 @@ describe('the diagnostic card carries no verdict', () => {
     expect(html.slice(html.indexOf('id="hand-in"'))).toContain('bg-red-pen');
   });
 });
+
+// The screen after the tap, which no test had ever rendered.
+describe('the diagnostic card once it is answered', () => {
+  const order = (html: string) => ({ note: html.indexOf('id="misconception"'), solution: html.indexOf('id="worked-solution"') });
+
+  it('a wrong answer: the note about the answer, then the solution to the question', () => {
+    const html = DIAGNOSTIC['mcq-answered-wrong']();
+    const { note, solution } = order(html);
+    expect(note, 'the note is rendered').toBeGreaterThan(-1);
+    expect(solution, 'the solution is rendered').toBeGreaterThan(-1);
+    expect(note, 'the note comes first').toBeLessThan(solution);
+    const text = visibleText(html);
+    expect(text).toContain('Discount added, not subtracted');
+    expect(text).toContain('Worked solution');
+    expect(text).toContain('15% of $80 is $12');
+  });
+
+  it('a right answer: the solution, and no note', () => {
+    const html = DIAGNOSTIC['mcq-answered-right']();
+    expect(order(html).note, 'nothing to correct').toBe(-1);
+    expect(order(html).solution).toBeGreaterThan(-1);
+    expect(visibleText(html)).toContain('15% of $80 is $12');
+  });
+
+  it('both keep the answer marked as chosen and nothing else', () => {
+    for (const name of ['mcq-answered-right', 'mcq-answered-wrong'] as const) {
+      // The answer buttons by their own signature: once a card is answered
+      // there is no hand-in to slice at, and the continue button is red.
+      const options = [...DIAGNOSTIC[name]().matchAll(/<button[^>]*class="([^"]*border-\[1\.5px\] border-ink[^"]*)"/g)].map((m) => m[1]);
+      expect(options.length, name).toBe(5);
+      expect(options.filter((c) => c.includes('shadow-[inset_3px_0_0_var(--ink)]')).length, name).toBe(1);
+      expect(options.some((c) => /red-pen|green-pen/.test(c)), name).toBe(false);
+    }
+  });
+});

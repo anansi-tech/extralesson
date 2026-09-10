@@ -54,9 +54,15 @@ export interface Feedback {
    * and for a wrong value the scheme's own line for the slot.
    */
   partResults: { label: string; correct: boolean; formWithheld?: boolean; reasonHtml?: string }[];
-  feedbackTitleHtml: string;
+  /** The question's own solution. Always present: it is what was asked. */
   feedbackHtml: string;
-  isMisconception: boolean;
+  /**
+   * The named mistake this answer made, when it made one. It sits ABOVE the
+   * worked solution and never in its place — the note is about the answer, the
+   * solution is about the question, and the student who was wrong is the one
+   * who needs both.
+   */
+  misconception?: { nameHtml: string; remediationHtml: string };
   /** Right value, wrong required form (R1.6 §2). */
   formatFeedbackHtml?: string;
   /**
@@ -197,23 +203,15 @@ export async function submitAnswer(input: {
     return feedbackFor(theirs, sessionId, questionIndex);
   }
 
-  let feedbackTitleHtml = 'Worked solution';
-  let feedbackHtml = renderMathHtml(question.worked_solution);
-  let isMisconception = false;
-  if (!result.correct) {
-    const wrongAnswers =
-      question.kind === 'mcq'
-        ? [question.options?.[Number(answers[0]?.answer)] ?? String(answers[0]?.answer)]
-        : partResults.filter((p) => !p.correct).map((p) => answers.find((a) => a.label === p.label)?.answer ?? '');
-    const match = question.misconceptions.find((m) =>
-      wrongAnswers.some((w) => answersEquivalentAny(w, m.trigger)),
-    );
-    if (match) {
-      feedbackTitleHtml = renderMathHtml(match.name);
-      feedbackHtml = renderMathHtml(match.remediation);
-      isMisconception = true;
-    }
-  }
+  const feedbackHtml = renderMathHtml(question.worked_solution);
+  const misconception = result.correct
+    ? undefined
+    : misconceptionFor(
+        question.misconceptions,
+        question.kind === 'mcq'
+          ? [question.options?.[Number(answers[0]?.answer)] ?? String(answers[0]?.answer)]
+          : partResults.filter((p) => !p.correct).map((p) => answers.find((a) => a.label === p.label)?.answer ?? ''),
+      );
 
   // The construction, released now that the reads are committed. The acts are
   // the family's, not the question's: they are what an examiner credits for
@@ -263,9 +261,8 @@ export async function submitAnswer(input: {
     profile_marks: result.profile_marks,
     rubric_awarded: result.rubric_awarded,
     partResults,
-    feedbackTitleHtml,
     feedbackHtml,
-    isMisconception,
+    misconception,
     formatFeedbackHtml: result.format_feedback ? renderMathHtml(result.format_feedback) : undefined,
     construction,
     attemptId: String(written._id),
@@ -298,10 +295,13 @@ async function feedbackFor(attempt: StoredAttempt, sessionId: string, questionIn
     kind: 'mcq' | 'structured';
     parts?: QuestionPart[];
     rubric?: RubricItem[];
+    options?: string[];
+    misconceptions?: { trigger: string; name: string; remediation: string }[];
     worked_solution: string;
   } | null>();
   if (!question) return { error: 'Question not found.' };
   let partResults: Feedback['partResults'] = [{ label: 'a', correct: attempt.correct }];
+  let wrongAnswers: string[] = [question.options?.[Number(attempt.answer)] ?? String(attempt.answer)];
   if (question.kind === 'structured') {
     const parts = question.parts ?? [];
     const refs = markableSlots(parts);
@@ -311,6 +311,7 @@ async function feedbackFor(attempt: StoredAttempt, sessionId: string, questionIn
       const line = sr.correct ? undefined : hintLine(question.rubric ?? [], sr.ref);
       return { label: sr.ref, correct: sr.correct, formWithheld: sr.form_withheld, reasonHtml: line ? renderMathHtml(line) : undefined };
     });
+    wrongAnswers = partResults.filter((p) => !p.correct).map((p) => answers[p.label] ?? '');
   }
   const read = await Transcription.findOne({ session_id: sessionId, question_index: questionIndex, marker_version: { $exists: true } })
     .sort({ take: -1 })
@@ -333,13 +334,21 @@ async function feedbackFor(attempt: StoredAttempt, sessionId: string, questionIn
     profile_marks: attempt.profile_marks,
     rubric_awarded: attempt.rubric_awarded,
     partResults,
-    feedbackTitleHtml: 'Worked solution',
     feedbackHtml: renderMathHtml(question.worked_solution),
-    isMisconception: false,
+    misconception: attempt.correct ? undefined : misconceptionFor(question.misconceptions, wrongAnswers),
     attemptId: String(attempt._id),
     earnableByMethod: 0,
     working,
   };
+}
+
+/** The named mistake an answer made, if the bank knows one for it. */
+function misconceptionFor(
+  misconceptions: { trigger: string; name: string; remediation: string }[] | undefined,
+  wrongAnswers: string[],
+): Feedback['misconception'] {
+  const match = (misconceptions ?? []).find((m) => wrongAnswers.some((w) => answersEquivalentAny(w, m.trigger)));
+  return match ? { nameHtml: renderMathHtml(match.name), remediationHtml: renderMathHtml(match.remediation) } : undefined;
 }
 
 const DraftZ = z.object({

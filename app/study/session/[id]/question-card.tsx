@@ -947,14 +947,18 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             </div>
           )}
 
-          <div id="worked-solution" className="order-8 mt-5 border-t-[1.5px] border-rule pt-3.5 lg:mt-0 lg:pt-4">
-            <div className="section-label pb-0.5 shadow-[0_1.5px_0_var(--margin)]">
-              {feedback.isMisconception ? (
-                <Html as="span" html={feedback.feedbackTitleHtml} />
-              ) : (
-                'Worked solution'
-              )}
+          {/* WHAT THIS ANSWER DID, above what the question asked. The note
+              used to stand in the solution's place, so the student who most
+              needed the working was the only one who never saw it. */}
+          {feedback.misconception && (
+            <div id="misconception" className="order-8 mt-4 border-l-3 border-margin bg-note px-3 py-2 lg:mt-0">
+              <Html as="div" className="section-label" html={feedback.misconception.nameHtml} />
+              <Html className="question-prose mt-1 text-[13px] leading-snug" html={feedback.misconception.remediationHtml} />
             </div>
+          )}
+
+          <div id="worked-solution" className="order-8 mt-5 border-t-[1.5px] border-rule pt-3.5 lg:mt-0 lg:pt-4">
+            <div className="section-label pb-0.5 shadow-[0_1.5px_0_var(--margin)]">Worked solution</div>
             <Html
               className="question-prose mt-2.5 text-[15px] leading-relaxed lg:mt-3 lg:max-w-[62ch]"
               html={feedback.feedbackHtml}

@@ -26,6 +26,32 @@ const mcq: CardQuestion = {
 /** The card with a choice already made: the state a student is in most of the time. */
 const chosen = (selected: number): CardQuestion => ({ ...mcq, draft: { answers: {}, values: {}, selected } });
 
+const SOLUTION = '<p>15% of $80 is $12, so the selling price is $80 − $12 = <b>$68.00</b>.</p>';
+
+/**
+ * The screen after the tap, which nothing looked at until now. justMarked
+ * means the card was answered a moment ago rather than revisited, so it is the
+ * live panel and not the review one.
+ */
+const answered = (selected: number, misconception?: { nameHtml: string; remediationHtml: string }): CardQuestion => ({
+  ...mcq,
+  prior: {
+    answers: { 'a.i': String(selected) },
+    selected,
+    justMarked: true,
+    feedback: {
+      correct: !misconception,
+      profile_marks: { CK: misconception ? 0 : 1, AK: 0, R: 0 } as never,
+      rubric_awarded: misconception ? [] : ['CK1'],
+      partResults: [{ label: 'a', correct: !misconception }],
+      feedbackHtml: SOLUTION,
+      misconception,
+      attemptId: 'att-d1',
+      earnableByMethod: 0,
+    },
+  },
+});
+
 export const DIAGNOSTIC = {
   intro: () => renderToStaticMarkup(createElement(DiagnosticIntro, { total: 8, minutes: 12, href: '/study/session/d1?begin=1' })),
   mcq: () =>
@@ -37,6 +63,19 @@ export const DIAGNOSTIC = {
   'mcq-dont-know': () =>
     renderToStaticMarkup(createElement(SessionBar, { index: 2, total: 8, marksAnswered: 2, marksTotal: 8, diagnostic: true })) +
     renderToStaticMarkup(createElement(QuestionCard, { question: chosen(DONT_KNOW) })),
+  'mcq-answered-right': () =>
+    renderToStaticMarkup(createElement(SessionBar, { index: 2, total: 8, marksAnswered: 3, marksTotal: 8, diagnostic: true })) +
+    renderToStaticMarkup(createElement(QuestionCard, { question: answered(1) })),
+  'mcq-answered-wrong': () =>
+    renderToStaticMarkup(createElement(SessionBar, { index: 2, total: 8, marksAnswered: 3, marksTotal: 8, diagnostic: true })) +
+    renderToStaticMarkup(
+      createElement(QuestionCard, {
+        question: answered(3, {
+          nameHtml: 'Discount added, not subtracted',
+          remediationHtml: 'A 15% discount is taken off the marked price: $80 × 0.85, not $80 × 1.15.',
+        }),
+      }),
+    ),
   finish: () =>
     renderToStaticMarkup(
       createElement(DiagnosticFinish, {

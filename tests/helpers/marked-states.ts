@@ -43,9 +43,7 @@ const feedback = (working: Take): NonNullable<CardQuestion['prior']>['feedback']
     { label: 'a.i', correct: true },
     { label: 'b.i', correct: false, reasonHtml: 'Area of a triangle is ½ × base × height. The multiplication earned the method mark; the value did not earn the accuracy mark.' },
   ],
-  feedbackTitleHtml: 'Worked solution',
   feedbackHtml: '<p>(a) tan 34° = AB / BC, so BC = 8 / tan 34° = 11.9 cm (1 d.p.).</p><p>(b) Area = ½ × BC × AB = ½ × 11.9 × 8 = <b>47.6 cm²</b>.</p><p>(c) AC = 8 / sin 34° = 14.3 cm, so the perimeter is 8 + 11.9 + 14.3 = 34.2 cm, which is less than 35 cm.</p>',
-  isMisconception: false,
   attemptId: 'att1',
   earnableByMethod: 0,
   working: {
