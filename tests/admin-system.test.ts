@@ -53,7 +53,7 @@ describe('the admin surfaces use the system', () => {
     expect(card).toMatch(/\(e\.key === 'r' \|\| e\.key === 'R'\) && question\.status !== 'retired'\) retire\(\)/);
     expect(card).toMatch(/e\.key === 'e' \|\| e\.key === 'E'/);
     // The queue is derived from the one record: the states with work in them.
-    expect(at('lib', 'payment-queue.ts')).toMatch(/Payment\.find\(\{ state: \{ \$in: QUEUE_STATES \} \}\)/);
+    expect(at('lib', 'payment-queue.ts')).toMatch(/Payment\.find\(\{ \$or: \[\{ state: \{ \$in: QUEUE_STATES \} \}, \{ _id: \{ \$in: open\.map/);
   });
 });
 

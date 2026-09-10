@@ -5,6 +5,7 @@ export { Question, type QuestionDoc } from './question';
 export { Student, type StudentDoc } from './student';
 export { SittingChange, type SittingChangeDoc } from './sitting-change';
 export { Payment, type PaymentDoc } from './payment';
+export { RefundRequest, type RefundRequestDoc } from './refund-request';
 export { StripeEvent, type StripeEventDoc } from './stripe-event';
 export { isDuplicateKey } from './duplicate-key';
 export { Attempt, type AttemptDoc } from './attempt';

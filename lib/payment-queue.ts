@@ -1,4 +1,4 @@
-import { Payment } from '@/lib/db';
+import { Payment, RefundRequest, Student } from '@/lib/db';
 import { QUEUE_STATES, type PaymentState } from '@/lib/payment-state';
 import { REFUND_DAYS } from '@/lib/access';
 
@@ -11,7 +11,12 @@ import { REFUND_DAYS } from '@/lib/access';
 export interface QueueRow {
   id: string;
   session_id: string | null;
-  state: Extract<PaymentState, 'waiting' | 'duplicate' | 'refund_approved' | 'refund_failed'>;
+  /**
+   * A payment carrying an open request is on the queue whatever its state, so
+   * `granted` appears here too — one row for the payment, never one for the
+   * state and another for the asking.
+   */
+  state: PaymentState;
   /** What a refund is issued against, and what the dashboard link points at. */
   payment_intent_id: string | null;
   /** When Stripe confirmed payment; the window is measured from this. */
@@ -20,6 +25,8 @@ export interface QueueRow {
   refund_status: string | null;
   /** The key of the attempt the payment rests on, so a person can find it at Stripe. */
   attempt_key: string | null;
+  /** A student asking for this money back, while it is still open (ROUND_12 Task 5). */
+  request: { asked_at: Date; student_email: string | null; days: number | null; late: boolean } | null;
   /** The student's address from the session, or null where there was none we could use. */
   email: string | null;
   amount_total: number | null;
@@ -54,7 +61,19 @@ export function amountLine(row: Pick<QueueRow, 'amount_total' | 'currency'>): st
 
 /** Oldest first: the queue is work, and the oldest debt is the one waiting longest. */
 export async function loadQueue(): Promise<QueueRow[]> {
-  const rows = await Payment.find({ state: { $in: QUEUE_STATES } })
+  // ONE ROW PER PAYMENT. A payment with an open request and a refund state is
+  // one row and one count, so the request widens the query rather than adding
+  // a list of its own.
+  const open = await RefundRequest.find({ state: 'open' })
+    .select('payment_id student_id asked_at')
+    .lean<{ payment_id: unknown; student_id: unknown; asked_at: Date }[]>();
+  const requestBy = new Map(open.map((r) => [String(r.payment_id), r]));
+  const askers = await Student.find({ _id: { $in: open.map((r) => r.student_id) } })
+    .select('email')
+    .lean<{ _id: unknown; email: string }[]>();
+  const emailBy = new Map(askers.map((s) => [String(s._id), s.email]));
+
+  const rows = await Payment.find({ $or: [{ state: { $in: QUEUE_STATES } }, { _id: { $in: open.map((r) => r.payment_id) } }] })
     .sort({ received_at: 1 })
     .limit(200)
     .lean<
@@ -81,6 +100,18 @@ export async function loadQueue(): Promise<QueueRow[]> {
     paid_at: r.paid_at ?? null,
     refund_status: r.refund_status ?? null,
     attempt_key: r.refund_attempts?.[r.refund_attempts.length - 1]?.key ?? null,
+    // MEASURED FROM WHEN THEY ASKED, never from when an operator got to it.
+    request: (() => {
+      const asked = requestBy.get(String(r._id));
+      if (!asked) return null;
+      const age = r.paid_at ? windowOf(r.paid_at, asked.asked_at) : null;
+      return {
+        asked_at: asked.asked_at,
+        student_email: emailBy.get(String(asked.student_id)) ?? null,
+        days: age?.days ?? null,
+        late: age?.late ?? false,
+      };
+    })(),
     email: r.email ?? null,
     amount_total: typeof r.amount_total === 'number' ? r.amount_total : null,
     currency: r.currency ?? null,

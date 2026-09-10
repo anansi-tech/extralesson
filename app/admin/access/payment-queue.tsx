@@ -1,4 +1,4 @@
-import { closePayment, grantQueued, refundPayment } from './actions';
+import { closePayment, dismissRequest, grantQueued, refundPayment } from './actions';
 import { FIELD, INK, QUIET, ROW } from '@/app/admin/ui';
 import { REFUND_DAYS } from '@/lib/access';
 import { amountLine, dashboardUrl, windowOf, type QueueRow } from '@/lib/payment-queue';
@@ -60,6 +60,31 @@ export function PaymentQueue({ rows }: { rows: QueueRow[] }) {
                   <input name="email" type="email" required placeholder="the account that should have it" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
                   <button className={`${INK} w-full text-sm sm:w-auto`}>Grant to this account</button>
                 </form>
+              )}
+
+              {/* THE STUDENT ASKED. Part of this payment's one row, and the
+                  window is counted from when they asked. */}
+              {r.request && (
+                <>
+                  <p className="mt-2 font-mono text-[11px] leading-relaxed text-ink">
+                    {r.request.student_email ?? 'a student'} asked for a refund on{' '}
+                    {new Date(r.request.asked_at).toISOString().slice(0, 10)}
+                    {r.request.days === null
+                      ? ''
+                      : `, ${r.request.days} day${r.request.days === 1 ? '' : 's'} after paying${r.request.late ? ` — past the ${REFUND_DAYS}-day window` : ''}`}
+                    .
+                  </p>
+                  <form action={refundPayment} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                    <input type="hidden" name="id" value={r.id} />
+                    <input name="reason" required minLength={3} placeholder="why: asked within the window" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
+                    <button className={`${INK} w-full text-sm sm:w-auto`}>Refund and revoke</button>
+                  </form>
+                  <form action={dismissRequest} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                    <input type="hidden" name="id" value={r.id} />
+                    <input name="reason" required minLength={3} placeholder="why: spoke to them, they are staying" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
+                    <button className={`${QUIET} w-full text-left sm:w-auto`}>Dismiss</button>
+                  </form>
+                </>
               )}
 
               {/* A refund an operator approved, with no outcome yet: the one

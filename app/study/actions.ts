@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { dbConnect, PracticeSession, Student, isDuplicateKey } from '@/lib/db';
+import { dbConnect, Payment, PracticeSession, RefundRequest, Student, isDuplicateKey } from '@/lib/db';
 import { clearSessionCookie, requireSession } from '@/lib/auth/session';
 import { type SessionMode } from '@/lib/session/builder';
 import { planSession } from '@/lib/session/plan';
@@ -11,6 +11,7 @@ import { loadTopicChoices } from '@/lib/study/topics';
 import { canStartSession, grantFor, hasAccess, type Access } from '@/lib/access';
 import { applySittingChange } from '@/lib/change-sitting';
 import { SITTING_IDS } from '@/lib/sittings';
+import { LANDING } from '@/lib/landing-content';
 import type { ModuleNumber } from '@/lib/types';
 
 const MODES: SessionMode[] = ['adaptive', 'topic', 'revisit', 'diagnostic', 'first'];
@@ -97,6 +98,30 @@ export async function changeSitting(formData: FormData): Promise<void> {
   if (!student) redirect('/study/login');
   const gate = await canStartSession(auth.student_id, grantFor(student.access, student.exam_sitting), 'adaptive');
   redirect(gate.allowed ? '/study' : `/study?error=${gate.reason}`);
+}
+
+/**
+ * ASKING IS ONE TAP (ROUND_12 Task 5). The request is written for the
+ * SIGNED-IN STUDENT'S OWN payment — the id in the form is checked against
+ * their account, so a form with somebody else's payment in it writes nothing.
+ * One per payment: tapping twice has asked once.
+ */
+export async function requestRefund(paymentId: string): Promise<{ ok: boolean; mailto?: string }> {
+  const auth = await requireSession();
+  await dbConnect();
+  const payment = await Payment.findOne({ _id: paymentId, student_id: auth.student_id }).select('_id').lean<{ _id: unknown } | null>();
+  if (!payment) return { ok: false };
+  try {
+    await RefundRequest.create({ student_id: auth.student_id, payment_id: payment._id, asked_at: new Date(), state: 'open' });
+  } catch (e) {
+    // Already asked: the same answer, because the same thing is true.
+    if (!isDuplicateKey(e)) throw e;
+  }
+  // The explanation is optional — the policy says no questions asked — so the
+  // mail is prefilled and empty is a complete request.
+  const subject = encodeURIComponent('Refund request');
+  const body = encodeURIComponent('You can say why here if you want to. You do not have to.');
+  return { ok: true, mailto: `mailto:${LANDING.contactEmail}?subject=${subject}&body=${body}` };
 }
 
 export async function logout(): Promise<void> {

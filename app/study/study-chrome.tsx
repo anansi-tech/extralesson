@@ -5,6 +5,7 @@ import { LANDING } from '@/lib/landing-content';
 import { StudyTabs } from './study-tabs';
 import { SITTINGS, SITTING_IDS } from '@/lib/sittings';
 import { AccountDisclosure } from './account-disclosure';
+import { RequestRefundButton } from './request-refund-button';
 
 /**
  * THE NOTEBOOK'S CHROME (ROUND_8 Task 0): the white bar above the paper —
@@ -17,6 +18,7 @@ export function StudyChrome({
   current,
   email,
   isAdmin = false,
+  refundablePaymentId = null,
   children,
 }: {
   sitting: string;
@@ -24,9 +26,11 @@ export function StudyChrome({
   current: string;
   email: string;
   isAdmin?: boolean;
+  /** The payment behind a LIVE PAID grant, and null for a comp or no grant (ROUND_12). */
+  refundablePaymentId?: string | null;
   children: React.ReactNode;
 }) {
-  const account = <Account sitting={sitting} current={current} email={email} isAdmin={isAdmin} />;
+  const account = <Account sitting={sitting} current={current} email={email} isAdmin={isAdmin} refundablePaymentId={refundablePaymentId} />;
   return (
     <div className="flex min-h-screen flex-col bg-paper text-ink">
       <header className="border-b-[1.5px] border-ink bg-white px-5 lg:px-6">
@@ -68,7 +72,7 @@ const FIELD = 'mt-1 block w-full border-[1.5px] border-ink bg-paper p-2 font-san
  * the one thing about the account a student can change. A change is allowed
  * any time; the grant stays with the sitting it was for (ROUND_9 Task 9).
  */
-function Account({ sitting, current, email, isAdmin }: { sitting: string; current: string; email: string; isAdmin: boolean }) {
+function Account({ sitting, current, email, isAdmin, refundablePaymentId }: { sitting: string; current: string; email: string; isAdmin: boolean; refundablePaymentId: string | null }) {
   return (
     <AccountDisclosure>
       <summary className="account-toggle inline-flex min-h-11 cursor-pointer list-none items-center gap-1 rounded-[var(--radius)] border border-transparent px-2 hover:border-rule [&::-webkit-details-marker]:hidden">
@@ -98,6 +102,13 @@ function Account({ sitting, current, email, isAdmin }: { sitting: string; curren
             Change sitting
           </button>
         </form>
+        {/* Only where there is a live paid grant: a comp has nothing to give
+            back, and a payer who is not the student has no account at all. */}
+        {refundablePaymentId && (
+          <div className="mt-3 border-t border-paper-deep pt-2">
+            <RequestRefundButton paymentId={refundablePaymentId} className="min-h-11 w-full text-left underline underline-offset-[3px] disabled:opacity-60" />
+          </div>
+        )}
         <form action={logout} className="mt-3 border-t border-paper-deep pt-2">
           <button className="min-h-11 w-full text-left underline underline-offset-[3px]">Sign out</button>
         </form>

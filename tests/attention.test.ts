@@ -19,7 +19,7 @@ describe('/admin/access', () => {
     expect(page).toMatch(/\{queue\.length\}<\/b> payments needing attention/);
   });
   it('holds the states with work in them, and nothing else', () => {
-    expect(at('lib', 'payment-queue.ts')).toMatch(/Payment\.find\(\{ state: \{ \$in: QUEUE_STATES \} \}\)/);
+    expect(at('lib', 'payment-queue.ts')).toMatch(/Payment\.find\(\{ \$or: \[\{ state: \{ \$in: QUEUE_STATES \} \}, \{ _id: \{ \$in: open\.map/);
     // ROUND_12 added the two a refund leaves needing a person.
     expect(at('lib', 'payment-state.ts')).toMatch(
       /QUEUE_STATES: PaymentState\[\] = \['waiting', 'duplicate', 'refund_approved', 'refund_failed'\]/,

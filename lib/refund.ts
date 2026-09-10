@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import mongoose from 'mongoose';
-import { Payment, Student } from '@/lib/db';
+import { Payment, RefundRequest, Student } from '@/lib/db';
 import { REFUNDABLE_FROM, isRefundable, transition, type PaymentState } from '@/lib/payment-state';
 import type { RefundAttempt } from '@/lib/refund-state';
 import { StripeError, stripeListAll, stripePost, type StripeRefund } from '@/lib/stripe-api';
@@ -59,7 +59,9 @@ export async function refundAndRevoke(paymentId: string, operator: Operator, rea
 
   // Settled already: revoke if that never happened, and say so. No second email.
   if (before.state === 'refunded') {
-    await revokeGrantOf(before, operator, reasonWithWindow(reason, before.paid_at));
+    const recorded = reasonWithWindow(reason, before.paid_at);
+    await revokeGrantOf(before, operator, recorded);
+    await resolveRequest(paymentId, operator, recorded);
     return 'already-refunded';
   }
   if (!isRefundable(before.state) && before.state !== 'refund_approved' && before.state !== 'refund_failed') {
@@ -224,6 +226,7 @@ async function complete(paymentId: string, attempt: RefundAttempt, refund: Strip
           { session },
         );
         revoked = ended.modifiedCount === 1;
+        await resolveRequest(paymentId, operator, reason, session);
 
         // Whoever holds the grant that ended; failing that, the account the
         // payment is matched to — a waiting refund has no grant and may have
@@ -267,6 +270,19 @@ async function fail(paymentId: string, key: string, message: string): Promise<vo
         'refund_attempts.$.error': message,
       },
     },
+  );
+}
+
+/**
+ * A REQUEST RESOLVES ON THE MONEY GOING BACK, never on the click. A rejected
+ * or unknown refund leaves it outstanding, which is what keeps it in front of
+ * a person until it is really done.
+ */
+async function resolveRequest(paymentId: string, operator: Operator, reason: string, session?: mongoose.ClientSession): Promise<void> {
+  await RefundRequest.updateOne(
+    { payment_id: paymentId, state: 'open' },
+    { $set: { state: 'resolved', resolved_at: new Date(), resolved_by: operator.email, resolution_reason: `refunded: ${reason}` } },
+    session ? { session } : {},
   );
 }
 

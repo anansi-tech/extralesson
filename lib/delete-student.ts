@@ -1,16 +1,4 @@
-import {
-  Attempt,
-  CapturedImage,
-  DisputeReview,
-  LineRejected,
-  MarkDispute,
-  Payment,
-  PracticeSession,
-  SessionDraft,
-  SittingChange,
-  Student,
-  Transcription,
-} from '@/lib/db';
+import { Attempt, CapturedImage, DisputeReview, LineRejected, MarkDispute, Payment, PracticeSession, RefundRequest, SessionDraft, SittingChange, Student, Transcription } from '@/lib/db';
 import { ResetToken } from '@/lib/db/reset-token';
 import { existsSync, readdirSync, unlinkSync } from 'node:fs';
 import { join } from 'node:path';
@@ -28,6 +16,7 @@ export const DELETED_BY_STUDENT_ID = [
   'CapturedImage',
   'MarkDispute',
   'SittingChange',
+  'RefundRequest',
 ] as const;
 
 /**
@@ -44,6 +33,7 @@ export interface DeletionCounts {
   CapturedImage: number;
   MarkDispute: number;
   SittingChange: number;
+  RefundRequest: number;
   DisputeReview: number;
   LineRejected: number;
   SessionDraft: number;
@@ -114,6 +104,9 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
   const disputes = await MarkDispute.deleteMany({ student_id: studentId });
   const practiceSessions = await PracticeSession.deleteMany({ student_id: studentId });
   const sittingChanges = await SittingChange.deleteMany({ student_id: studentId });
+  // A request to be refunded is a request from a person who is now gone; the
+  // money's own record stays on the payment, which is where it belongs.
+  const refundRequests = await RefundRequest.deleteMany({ student_id: studentId });
   const resets = await ResetToken.deleteMany({ email: address });
 
   // The transaction stays; the person is taken out of it. No audit row names
@@ -137,6 +130,7 @@ export async function deleteStudent(email: string): Promise<DeleteResult> {
       CapturedImage: images.deletedCount ?? 0,
       MarkDispute: disputes.deletedCount ?? 0,
       SittingChange: sittingChanges.deletedCount ?? 0,
+      RefundRequest: refundRequests.deletedCount ?? 0,
       DisputeReview: disputeReviews.deletedCount ?? 0,
       LineRejected: rejections.deletedCount ?? 0,
       SessionDraft: drafts.deletedCount ?? 0,

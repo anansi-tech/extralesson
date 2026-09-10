@@ -7,6 +7,7 @@ import { dbConnect, Payment, Student } from '@/lib/db';
 import { QUEUE_STATES, transition } from '@/lib/payment-state';
 import { claim } from '@/lib/claim';
 import { refundAndRevoke, revokeComp } from '@/lib/refund';
+import { RefundRequest } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth/session';
 import { deleteStudent, type DeletionCounts } from '@/lib/delete-student';
 import { SITTING_IDS } from '@/lib/sittings';
@@ -74,6 +75,26 @@ export async function refundPayment(formData: FormData): Promise<void> {
   const outcome = await refundAndRevoke(id, { email: operator.email }, reason);
   revalidatePath('/admin/access');
   redirect(`/admin/access?refund=${outcome}`);
+}
+
+/**
+ * DISMISSING A REQUEST (ROUND_12 Task 5) closes it directly, with the reason:
+ * nothing is refunded and nothing is revoked. The row and its resolution are
+ * kept, because a request nobody can explain later is the same problem as a
+ * payment nobody can explain later.
+ */
+export async function dismissRequest(formData: FormData): Promise<void> {
+  const operator = await requireAdmin();
+  const id = IdZ.parse(String(formData.get('id')));
+  const reason = String(formData.get('reason') ?? '').trim().slice(0, 200);
+  if (reason.length < 3) redirect('/admin/access?noreason=1');
+  await dbConnect();
+  await RefundRequest.updateOne(
+    { payment_id: id, state: 'open' },
+    { $set: { state: 'resolved', resolved_at: new Date(), resolved_by: operator.email, resolution_reason: `dismissed: ${reason}` } },
+  );
+  revalidatePath('/admin/access');
+  redirect('/admin/access?dismissed=1');
 }
 
 /**
