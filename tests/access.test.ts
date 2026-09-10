@@ -89,19 +89,39 @@ describe('expiry', () => {
 // a spec file is not one the operator follows at 9pm. These assert it is where
 // notes are typed, and that the field cannot be left empty.
 describe('the grant note convention', () => {
-  const ADMIN = readFileSync(
-    join(process.cwd(), 'app', 'admin', 'access', 'page.tsx'),
-    'utf8',
-  );
+  const at = (f: string) => readFileSync(join(process.cwd(), 'app', 'admin', 'access', f), 'utf8');
+  // The page says what the classes mean; the form writes them. Both are read,
+  // so neither half can go missing.
+  const ADMIN = at('page.tsx');
+  const FORM = at('grant-form.tsx');
 
   // The convention used to be printed above a free-text box, which made it
   // advice; the form writes the note now, so what is on screen is which of the
   // two classes to pick.
   it('offers the two classes and nothing else', () => {
-    expect(ADMIN).toContain('<option value="sale">Sale</option>');
-    expect(ADMIN).toContain('<option value="comp">Comp</option>');
-    expect(ADMIN, 'no free-typed note survives').not.toContain('name="note"');
-    expect([...ADMIN.matchAll(/<option value="(sale|comp)"/g)].length, 'both forms').toBe(4);
+    expect(FORM).toContain('<option value="sale">Sale</option>');
+    expect(FORM).toContain('<option value="comp">Comp</option>');
+    expect(ADMIN + FORM, 'no free-typed note survives').not.toContain('name="note"');
+    // One component, used by both forms, so the pair is written once.
+    expect([...FORM.matchAll(/<option value="(sale|comp)"/g)].length).toBe(2);
+    expect([...ADMIN.matchAll(/<GrantForm/g)].length, 'the standalone form and the row form').toBe(2);
+  });
+
+  // The sitting is the account's, or it is nothing: defaulting to the first
+  // open sitting gave a January candidate access that ends in June.
+  it('never preselects a sitting the account did not choose', () => {
+    expect(FORM).toMatch(/<option value="" disabled>/);
+    expect(FORM).toMatch(/name="sitting"[\s\S]{0,120}required/);
+    expect(FORM, 'no first-option default').not.toMatch(/name="sitting"[\s\S]{0,200}defaultValue/);
+    expect(FORM).toContain('sittingFor');
+  });
+
+  it('asks before granting a sitting that is not the account’s, naming both', () => {
+    expect(FORM).toMatch(/window\.confirm\(/);
+    const flat = FORM.replace(/\s+/g, ' ');
+    expect(flat).toMatch(/registered for \$\{label\(registered\)\}/);
+    expect(flat).toMatch(/granting access to \$\{label\(sitting\)\}/);
+    expect(flat).toMatch(/if \(!registered \|\| sitting === registered \|\| !sitting\) return;/);
   });
 
   it('says what each class means where the operator picks it', () => {

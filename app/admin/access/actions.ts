@@ -29,12 +29,28 @@ const GrantClassZ = z.enum(GRANT_CLASSES);
  * is undone in one click and an unmatched payment surfaces here instead of
  * vanishing; the note carries the evidence. See ROUND_2 §8c.
  */
+/**
+ * The sitting an account is registered for, so the form can preselect it. Null
+ * for an address with no account: there is nothing to preselect and the form
+ * says so rather than guessing.
+ */
+export async function sittingFor(email: string): Promise<string | null> {
+  await requireAdmin();
+  await dbConnect();
+  const s = await Student.findOne({ email: String(email).trim().toLowerCase() })
+    .select('exam_sitting')
+    .lean<{ exam_sitting: string } | null>();
+  return s?.exam_sitting ?? null;
+}
+
 /** By the row's account, or by the address typed into the standalone form. */
 export async function grantAccess(formData: FormData): Promise<void> {
   await requireAdmin();
   const rowId = String(formData.get('id') ?? '');
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
-  const sitting = SittingZ.parse(String(formData.get('sitting')));
+  const chosen = SittingZ.safeParse(String(formData.get('sitting')));
+  if (!chosen.success) redirect('/admin/access?nositting=1');
+  const sitting = chosen.data;
   // The class is one of two and the date is ours; the operator says only why.
   const kind = GrantClassZ.parse(String(formData.get('class') ?? ''));
   const reason = String(formData.get('reason') ?? '').trim();

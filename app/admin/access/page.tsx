@@ -1,13 +1,13 @@
 import { dbConnect, Attempt, Payment, PracticeSession, Student } from '@/lib/db';
 import { FREE_MODES, FREE_SESSIONS, REFUND_DAYS, hasAccess, isComp, type Access } from '@/lib/access';
 import { dashboardSearchUrl, dashboardUrl, windowOf } from '@/lib/payment-queue';
-import { SITTINGS, SITTING_IDS, sittingsOpenAt } from '@/lib/sittings';
-import { grantAccess, refundPayment, revokeGrant } from './actions';
+import { refundPayment, revokeGrant } from './actions';
 import { PaymentQueue } from './payment-queue';
 import { loadQueue } from '@/lib/payment-queue';
 import { DeleteAccount } from './delete-account';
+import { GrantForm } from './grant-form';
 import { Refusal } from '../../refusal';
-import { CAPS, FIELD, INK, QUIET, ROW, SELECT } from '../ui';
+import { CAPS, FIELD, INK, QUIET, ROW } from '../ui';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Access — ExtraLesson admin' };
@@ -20,8 +20,8 @@ export const metadata = { title: 'Access — ExtraLesson admin' };
  * is what makes the automatic path safe (ROUND_2 §8c). What needs a person
  * comes first (ROUND_7 Task 3), then paid access, then the free allowance used.
  */
-export default async function AccessPage({ searchParams }: { searchParams: Promise<{ find?: string; attention?: string; granted?: string; sitting?: string; ungranted?: string; noreason?: string }> }) {
-  const { find = '', attention, granted, sitting: grantedSitting, ungranted, noreason } = await searchParams;
+export default async function AccessPage({ searchParams }: { searchParams: Promise<{ find?: string; attention?: string; granted?: string; sitting?: string; ungranted?: string; noreason?: string; nositting?: string }> }) {
+  const { find = '', attention, granted, sitting: grantedSitting, ungranted, noreason, nositting } = await searchParams;
   await dbConnect();
   const queue = await loadQueue();
   const students = await Student.find()
@@ -78,7 +78,6 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
   // payment reference on one of these accounts is a lost link, not a gift.
   const hasPaid = new Set((await Payment.distinct('student_id', { student_id: { $in: ids } })).map(String));
   const attentionOnly = attention === '1';
-  const defaultSitting = sittingsOpenAt(new Date())[0] ?? SITTING_IDS[SITTING_IDS.length - 1];
   const paid = paidRows.length;
 
   return (
@@ -99,6 +98,11 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
             <button className={CAPS}>Search</button>
           </form>
         </header>
+        {nositting && (
+          <p className="mb-4 border-l-3 border-amber bg-amber-tint px-3 py-2 font-mono text-[11px] leading-relaxed">
+            Nothing was granted: no sitting was chosen. Access ends with the sitting it is granted for, so it is never assumed.
+          </p>
+        )}
         {noreason && (
           <p className="mb-4 border-l-3 border-amber bg-amber-tint px-3 py-2 font-mono text-[11px] leading-relaxed">
             Nothing was granted: a grant needs a reason. A comp with no reason cannot be told from a mistake.
@@ -141,28 +145,7 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
           <p className="mt-1 font-mono text-[11px] leading-relaxed text-dim">
             By the address the student registered with, which need not be the address that paid.
           </p>
-          <form action={grantAccess} className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-            <input name="email" type="email" required placeholder="the account's email" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
-            <select name="sitting" defaultValue={defaultSitting} className={`${SELECT} w-full sm:w-auto`}>
-              {SITTING_IDS.map((s) => (
-                <option key={s} value={s}>
-                  {SITTINGS[s].label}
-                </option>
-              ))}
-            </select>
-            <select name="class" defaultValue="comp" className={`${SELECT} w-full sm:w-auto`}>
-              <option value="sale">Sale</option>
-              <option value="comp">Comp</option>
-            </select>
-            <input
-              name="reason"
-              required
-              minLength={3}
-              placeholder="why, or the Stripe event id"
-              className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`}
-            />
-            <button className={`${INK} w-full text-sm sm:w-auto`}>Grant access</button>
-          </form>
+          <GrantForm />
         </section>
 
         
@@ -224,28 +207,7 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
               </div>
             ) : (
               // Stacked on a phone: three controls in one row left the note two letters wide.
-              <form action={grantAccess} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-                <input type="hidden" name="id" value={r.id} />
-                <select name="sitting" defaultValue={r.exam_sitting} className={`${SELECT} w-full sm:w-auto`}>
-                  {SITTING_IDS.map((s) => (
-                    <option key={s} value={s}>
-                      {SITTINGS[s].label}
-                    </option>
-                  ))}
-                </select>
-                <select name="class" defaultValue="comp" className={`${SELECT} w-full sm:w-auto`}>
-                  <option value="sale">Sale</option>
-                  <option value="comp">Comp</option>
-                </select>
-                <input
-                  name="reason"
-                  required
-                  minLength={3}
-                  placeholder="why, or the Stripe event id"
-                  className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`}
-                />
-                <button className={`${INK} w-full text-sm sm:w-auto`}>Grant access</button>
-              </form>
+              <GrantForm row={{ id: r.id, email: r.email, sitting: r.exam_sitting }} />
             )}
           </li>
               ))}

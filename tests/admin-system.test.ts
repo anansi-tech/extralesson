@@ -35,8 +35,11 @@ describe('the admin surfaces use the system', () => {
   });
   it('shows a boundary on the refusal pattern and a failure on the amber one', () => {
     const access = at('app', 'admin', 'access', 'page.tsx');
-    // The grant form stacks on a phone and shares a row from the small breakpoint.
-    expect(access).toMatch(/<form action=\{grantAccess\} className="mt-2 flex flex-col gap-2 sm:flex-row/);
+    // The grant form stacks on a phone and shares a row from the small
+    // breakpoint. It is one component now, used by the page and by each row.
+    expect(at('app', 'admin', 'access', 'grant-form.tsx')).toMatch(
+      /<form action=\{grantAccess\} onSubmit=\{confirmMismatch\} className="mt-3 flex flex-col gap-2 sm:flex-row/,
+    );
     expect(at('app', 'admin', 'review', 'page.tsx')).toMatch(/<form method="get" className="mb-4 flex flex-col gap-2 sm:flex-row"/);
     // The three payment panels became one queue (ROUND_11 Task 4).
     expect(access).toContain('<PaymentQueue rows={queue} />');
