@@ -111,6 +111,27 @@ export function accessEmail(args: { sitting: string; baseUrl: string }): Email {
   });
 }
 
+/**
+ * After a refund. Two of them, because they are not the same fact: a refund of
+ * a payment that bought access says the access has ended, and a refund of
+ * money we held without granting anything must never say so — nothing ended.
+ */
+export function refundEmail(args: { revoked: boolean; baseUrl: string }): Email {
+  return args.revoked
+    ? emailLayout({
+        subject: 'Your ExtraLesson refund',
+        sentence: 'Your payment has been refunded, and your access has ended. Everything you have done stays here — your marks, your topics, and every question you have answered.',
+        button: { label: 'Read your marked work', url: `${args.baseUrl}/study/history` },
+        baseUrl: args.baseUrl,
+      })
+    : emailLayout({
+        subject: 'Your ExtraLesson refund',
+        sentence: 'Your payment has been refunded. It can take a few days to appear on your statement, depending on your bank.',
+        button: { label: 'Go to ExtraLesson', url: `${args.baseUrl}/study` },
+        baseUrl: args.baseUrl,
+      });
+}
+
 export function resetEmail(link: string, minutes: number, baseUrl = link.slice(0, link.indexOf('/study/'))): Email {
   return emailLayout({
     subject: 'Set a new ExtraLesson password',
