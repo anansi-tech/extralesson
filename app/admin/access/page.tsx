@@ -123,17 +123,12 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
 
         
 
-        <p className="mb-3 max-w-prose text-[13px] leading-snug text-dim">
-          Free tier is the diagnostic plus {FREE_SESSIONS} sessions. Match a Stripe payment to the
-          email the student paid with, then grant. Nothing a student has already earned is ever
-          hidden — the gate is on starting a new session.
-        </p>
         {/* The note is the only evidence a grant has, and the form writes it
             now rather than asking for it. What is left to say is which class to
             pick; the reasoning is ROUND_3 §3. */}
         <div className="mb-5 max-w-prose text-[13px] leading-snug text-dim">
-          <p><b className="text-ink">Sale</b> — money arrived and the automatic path did not connect it. The reason is the Stripe event id, so the payment can be found again.</p>
-          <p className="mt-1"><b className="text-ink">Comp</b> — access given, nothing paid. The reason is who it is for and why: six months on, a comp with no reason is indistinguishable from a mistake. Grant a teacher on the latest sitting — one that quietly dies in July is a teacher telling other teachers the thing stopped working.</p>
+          <p><b className="text-ink">Sale</b> — money arrived and the automatic path missed it. The reason is the Stripe event id.</p>
+          <p className="mt-1"><b className="text-ink">Comp</b> — access given, nothing paid. The reason is who it&rsquo;s for and why.</p>
         </div>
 
         

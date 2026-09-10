@@ -115,6 +115,31 @@ describe('claim', () => {
     expect(access!.sitting).toBe(SITTING);
     expect(access!.note).toContain('was jan-2028 manual: comp · pilot');
   }, 60000);
+
+  // ONE GENERATION. A note used to carry every grant before it, so the third
+  // read as a sentence about the second quoting the first; what an operator
+  // needs is what this access is and what it took the place of.
+  it('a third grant keeps its own fact and one prior, and drops the rest', async () => {
+    const { claim } = await import('@/lib/claim');
+    const { noteWithPrior } = await import('@/lib/grant-note');
+
+    const first = 'stripe evt_first';
+    const second = noteWithPrior('comp · pilot seat · 2026-09-01', { sitting: 'may-june-2027', source: 'stripe', note: first } as never);
+    const third = noteWithPrior('stripe evt_third', { sitting: 'jan-2027', source: 'manual', note: second } as never);
+
+    expect(second).toBe('comp · pilot seat · 2026-09-01 · was may-june-2027 stripe: stripe evt_first');
+    expect(third).toBe('stripe evt_third · was jan-2027 manual: comp · pilot seat · 2026-09-01');
+    expect(third, 'the grant before last is gone').not.toContain('evt_first');
+    expect(third.split(' · was ')).toHaveLength(2);
+
+    // And the same through a real claim, not only through the helper.
+    const s = await student('chained@example.com', { sitting: 'jan-2028', granted_at: new Date(), source: 'manual', note: second });
+    await waitingPayment('cs_chain');
+    expect(await claim('cs_chain', { id: s._id })).toBe('granted');
+    const access = await accessOf('chained@example.com');
+    expect(access!.note).toContain('was jan-2028 manual: comp · pilot seat · 2026-09-01');
+    expect(access!.note).not.toContain('evt_first');
+  }, 60000);
 });
 
 describe('two payments racing one account', () => {

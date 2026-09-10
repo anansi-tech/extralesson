@@ -108,7 +108,9 @@ describe('the grant note convention', () => {
   });
 
   // The sitting is the account's, or it is nothing: defaulting to the first
-  // open sitting gave a January candidate access that ends in June.
+  // open sitting gave a January candidate access that ends in June. This is
+  // what the deleted advice about teacher comps used to ask an operator to
+  // remember.
   it('never preselects a sitting the account did not choose', () => {
     expect(FORM).toMatch(/<option value="" disabled>/);
     expect(FORM).toMatch(/name="sitting"[\s\S]{0,120}required/);
@@ -124,21 +126,21 @@ describe('the grant note convention', () => {
     expect(flat).toMatch(/if \(!registered \|\| sitting === registered \|\| !sitting\) return;/);
   });
 
-  it('says what each class means where the operator picks it', () => {
+  it('says what each class means where the operator picks it, in a line each', () => {
     const flat = ADMIN.replace(/\s+/g, ' ');
-    expect(flat).toMatch(/Sale<\/b> — money arrived and the automatic path did not connect it/);
-    expect(flat).toMatch(/Comp<\/b> — access given, nothing paid/);
+    expect(flat).toMatch(/Sale<\/b> — money arrived and the automatic path missed it\. The reason is the Stripe event id\./);
+    expect(flat).toMatch(/Comp<\/b> — access given, nothing paid\. The reason is who it&rsquo;s for and why\./);
+    // Two lines, and nothing else: the free-tier paragraph and the advice
+    // about which sitting a teacher gets are gone — the second is the sitting
+    // default's job now, asserted below and in admin-grant-form.
+    expect(flat).not.toMatch(/Free tier is the diagnostic/);
+    expect(flat).not.toMatch(/latest sitting/);
   });
 
   it('will not accept a grant with no reason', () => {
-    // A bare grant six months on is indistinguishable from a mistake.
-    expect(ADMIN).toMatch(/name="reason"\s*\n?\s*required/);
-    expect(ADMIN.replace(/\s+/g, ' ')).toMatch(/a comp with no reason is indistinguishable from a mistake/i);
+    expect(FORM).toMatch(/name="reason"\s*\n?\s*required/);
   });
 
-  it('tells the operator teacher comps go on the latest sitting', () => {
-    expect(ADMIN.replace(/\s+/g, ' ')).toMatch(/latest sitting/);
-  });
 });
 
 // A COMP IS NAMED, NOT INFERRED. /admin/access requires the note form

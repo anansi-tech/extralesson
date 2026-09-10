@@ -16,13 +16,19 @@ export function grantNote(kind: GrantClass, reason: string, at: Date = new Date(
   return kind === 'comp' ? `comp · ${said} · ${at.toISOString().slice(0, 10)}` : `stripe ${said}`;
 }
 
+/** Where a note's own history begins, so it can be cut off there. */
+const WAS = ' · was ';
+
 /**
  * A grant is the only evidence of how access was given, so writing one never
- * erases the last: the new note carries what the old one said. Bounded,
- * because a chain of grants would otherwise grow without end.
+ * erases the last: the new note carries what the old one said. ONE GENERATION
+ * ONLY — the current fact and what it replaced. The prior note's own history is
+ * dropped, because a fourth grant otherwise reads as a sentence about a third
+ * grant quoting a second one, and the thing an operator needs to know is what
+ * this access is and what it took the place of.
  */
 export function noteWithPrior(note: string, prior: Access | null | undefined): string {
   if (!prior?.sitting) return note;
-  const was = `was ${prior.sitting} ${prior.source}${prior.note ? `: ${prior.note}` : ''}`;
-  return `${note} · ${was}`.slice(0, 400);
+  const said = (prior.note ?? '').split(WAS)[0];
+  return `${note}${WAS}${prior.sitting} ${prior.source}${said ? `: ${said}` : ''}`.slice(0, 400);
 }
