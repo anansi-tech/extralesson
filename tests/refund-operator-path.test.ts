@@ -98,6 +98,59 @@ describe('a student with a live paid grant', () => {
   }, 60000);
 });
 
+// DISPLAY ONLY (this round): what one account reads as, and what stays out of
+// the disclosure. Nothing here changes who has access.
+describe('an account row', () => {
+  it('names the exam entered for and the sitting access is on, separately', async () => {
+    await student('entered@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'comp · a teacher · 2026-09-10' });
+    const { text } = await screen();
+
+    expect(text).toContain(`Entered for ${SITTING}`);
+    expect(text).toContain(`Access for ${SITTING}`);
+    // The two labels are never folded into one line.
+    expect(text).not.toMatch(/Entered for [^ ]+ · Access/);
+  }, 60000);
+
+  it('reads the current grant out on its own lines', async () => {
+    await student('lines@example.com', { sitting: SITTING, granted_at: new Date('2026-09-10T00:00:00Z'), source: 'manual', note: 'comp · a teacher · 2026-09-10' });
+    const { text } = await screen();
+
+    expect(text).toContain('Current access');
+    expect(text).toContain(`Access for ${SITTING}`);
+    expect(text).toContain('Class Comp');
+    expect(text).toContain('Granted 2026-09-10 · manual');
+    expect(text).toContain('Reason a teacher');
+  }, 60000);
+
+  it('puts the one prior grant behind a disclosure, verbatim, and never calls it a history', async () => {
+    await student('prior@example.com', {
+      sitting: SITTING,
+      granted_at: new Date(),
+      source: 'manual',
+      note: 'comp · a teacher · 2026-09-10 · was jan-2027 stripe: stripe evt_1UDcTOR',
+    });
+    const { html, text } = await screen();
+
+    expect(text).toContain('Previous access');
+    const disclosure = /<details[^>]*>[\s\S]*?<\/details>/.exec(html)![0];
+    expect(disclosure).toContain('jan-2027');
+    expect(disclosure).toContain('stripe evt_1UDcTOR');
+    // The controls act on the present, so they stay out of the past.
+    expect(disclosure).not.toContain('Revoke');
+    expect(disclosure).not.toContain('<form');
+    expect(text).not.toMatch(/full history|complete history|all grants/i);
+  }, 60000);
+
+  it('says a note it cannot read is a note, and dates nothing it was not given', async () => {
+    await student('older@example.com', { sitting: SITTING, granted_at: new Date('2026-08-28T00:00:00Z'), source: 'manual', note: 'friend' });
+    const { text } = await screen();
+
+    expect(text).toContain('Note friend');
+    expect(text).toContain('Class not named in the note');
+    expect(text).toContain('Granted 2026-08-28 · manual');
+  }, 60000);
+});
+
 describe('a comp and a grant nobody can refund', () => {
   it('a comp carries Revoke alone, with a reason and no Stripe anywhere on it', async () => {
     await student('comp@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'comp · teacher · st-marys' });

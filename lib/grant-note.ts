@@ -32,3 +32,41 @@ export function noteWithPrior(note: string, prior: Access | null | undefined): s
   const said = (prior.note ?? '').split(WAS)[0];
   return `${note}${WAS}${prior.sitting} ${prior.source}${said ? `: ${said}` : ''}`.slice(0, 400);
 }
+
+export interface ReadNote {
+  /** The class the note names, or null when it names none. Never guessed. */
+  kind: GrantClass | null;
+  /** The reason, when the note is one the form wrote; otherwise the whole of it. */
+  reason: string;
+  /** Whether `reason` is the note verbatim rather than a part lifted out of it. */
+  verbatim: boolean;
+  /** The one prior grant a note carries, shown as it is stored. */
+  prior: { sitting: string; source: string; note: string } | null;
+}
+
+/** `comp · <reason> · <YYYY-MM-DD>` — the only shape a reason is lifted out of. */
+const WRITTEN_COMP = /^comp · (.+) · \d{4}-\d{2}-\d{2}$/;
+const WRITTEN_SALE = /^stripe (\S+)$/;
+/** What follows the split, which has already eaten the "was". */
+const PRIOR = /^(\S+) (\S+?)(?:: ([\s\S]*))?$/;
+
+/**
+ * A NOTE, READ FOR THE SCREEN. Display only: nothing here decides access, and
+ * nothing is inferred. A reason is lifted out only of the two shapes the form
+ * writes; every older note is shown as it stands, because they were typed by
+ * hand and some carry history nested inside history. What the code keeps is one
+ * prior grant, so that is all this reports — it is not a full record of the
+ * account, and it does not date the prior grant, which was never stored.
+ */
+export function readNote(note: string | undefined): ReadNote {
+  const [current = '', ...rest] = (note ?? '').split(WAS);
+  const priorText = rest.join(WAS);
+  const match = PRIOR.exec(priorText);
+  const prior = match ? { sitting: match[1], source: match[2], note: match[3] ?? '' } : null;
+
+  const comp = WRITTEN_COMP.exec(current);
+  if (comp) return { kind: 'comp', reason: comp[1], verbatim: false, prior };
+  const sale = WRITTEN_SALE.exec(current);
+  if (sale) return { kind: 'sale', reason: sale[1], verbatim: false, prior };
+  return { kind: current.trim().toLowerCase().startsWith('comp') ? 'comp' : null, reason: current, verbatim: true, prior };
+}

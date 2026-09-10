@@ -4,6 +4,7 @@ import { dashboardSearchUrl, dashboardUrl, windowOf } from '@/lib/payment-queue'
 import { refundPayment, revokeGrant } from './actions';
 import { PaymentQueue } from './payment-queue';
 import { loadQueue } from '@/lib/payment-queue';
+import { readNote } from '@/lib/grant-note';
 import { DeleteAccount } from './delete-account';
 import { GrantForm } from './grant-form';
 import { Refusal } from '../../refusal';
@@ -159,9 +160,13 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <div className="min-w-0">
                 <div className="min-w-0 break-all font-mono text-[13px]">{r.email}</div>
+                {/* ENTERED FOR is the exam the student registered for. It is
+                    not the sitting access was granted on, which is said under
+                    Access for and can differ; reading one as the other is how a
+                    grant ends in a month nobody is sitting. */}
+                <div className="font-mono text-[11px] text-dim">{r.name} · Entered for {r.exam_sitting}</div>
                 <div className="font-mono text-[11px] text-dim">
-                  {r.name} · {r.exam_sitting} · {r.sessions} session{r.sessions === 1 ? '' : 's'} ·{' '}
-                  {r.attempts} question{r.attempts === 1 ? '' : 's'}
+                  {r.sessions} session{r.sessions === 1 ? '' : 's'} · {r.attempts} question{r.attempts === 1 ? '' : 's'}
                 </div>
               </div>
               {r.access?.revoked_at ? (
@@ -188,12 +193,8 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
             </div>
 
             {r.access ? (
-              <div className="mt-1">
-                <span className="block font-mono text-[11px] text-dim">
-                  granted {new Date(r.access.granted_at).toISOString().slice(0, 10)} ·{' '}
-                  {r.access.source}
-                  {r.access.note ? ` · ${r.access.note}` : ''}
-                </span>
+              <div className="mt-2">
+                <CurrentAccess access={r.access} />
                 <GrantControls
                   row={r}
                   payment={r.access.payment_id ? paymentOfGrant.get(String(r.access.payment_id)) : undefined}
@@ -220,6 +221,42 @@ interface GrantPayment {
   _id: unknown;
   paid_at?: Date;
   payment_intent_id?: string;
+}
+
+/**
+ * ONE GRANT, READ OUT. Display only — every line is a stored field or the note
+ * as it stands. The prior grant sits behind a disclosure because it is the
+ * account's past and the controls act on its present; it is deliberately not
+ * called a history, and it carries no date, because only one prior is kept and
+ * a prior grant's date was never stored.
+ */
+function CurrentAccess({ access }: { access: Access }) {
+  const read = readNote(access.note);
+  const line = 'block font-mono text-[11px] leading-relaxed text-dim';
+  return (
+    <div className="mb-2">
+      <div className="section-label">Current access</div>
+      <span className={line}>Access for {access.sitting}</span>
+      <span className={line}>Class {read.kind === 'comp' ? 'Comp' : read.kind === 'sale' ? 'Sale' : 'not named in the note'}</span>
+      <span className={line}>
+        Granted {new Date(access.granted_at).toISOString().slice(0, 10)} · {access.source}
+      </span>
+      <span className={line}>
+        {read.verbatim ? 'Note' : 'Reason'} {read.reason ? <b className="font-normal text-ink">{read.reason}</b> : 'none recorded'}
+      </span>
+      {read.prior && (
+        <details className="mt-1">
+          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-[0.1em] text-dim">Previous access</summary>
+          <div className="mt-1 border-l-3 border-rule pl-3">
+            <span className={line}>Access for {read.prior.sitting} · {read.prior.source}</span>
+            <span className={`${line} break-all`}>
+              {read.prior.note ? <b className="font-normal text-ink">{read.prior.note}</b> : 'no note'}
+            </span>
+          </div>
+        </details>
+      )}
+    </div>
+  );
 }
 
 /**
