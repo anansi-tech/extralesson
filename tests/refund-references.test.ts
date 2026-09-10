@@ -135,11 +135,14 @@ describe('every new grant names its payment', () => {
     const form = new FormData();
     form.set('email', 'comp@example.com');
     form.set('sitting', SITTING);
-    form.set('note', 'comp · teacher · st-marys · 2026-09-09');
+    form.set('class', 'comp');
+    form.set('reason', 'teacher at st-marys');
     await expect(grantAccess(form)).rejects.toThrow(/REDIRECT/);
     const access = await accessOf('comp@example.com');
     expect(access!.source).toBe('manual');
     expect(access!.payment_id ?? null).toBeNull();
+    // The form built the note: the class first, then the reason, then today.
+    expect(access!.note).toBe(`comp · teacher at st-marys · ${new Date().toISOString().slice(0, 10)}`);
   }, 60000);
 });
 

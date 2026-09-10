@@ -29,7 +29,8 @@ describe('/admin/access grants without a row', () => {
     const form = /<form[^>]*>(?:(?!<\/form>)[\s\S])*?name="email"[\s\S]*?<\/form>/.exec(html);
     expect(form, 'the standalone grant form').not.toBeNull();
     expect(form![0]).toContain('name="sitting"');
-    expect(form![0]).toContain('name="note"');
+    expect(form![0]).toContain('name="class"');
+    expect(form![0]).toContain('name="reason"');
     // No row supplies an id here: the address is the key.
     expect(form![0]).not.toContain('name="id"');
     // It sits above the lists, under where an unmatched payment is reported.

@@ -20,8 +20,8 @@ export const metadata = { title: 'Access — ExtraLesson admin' };
  * is what makes the automatic path safe (ROUND_2 §8c). What needs a person
  * comes first (ROUND_7 Task 3), then paid access, then the free allowance used.
  */
-export default async function AccessPage({ searchParams }: { searchParams: Promise<{ find?: string; attention?: string; granted?: string; sitting?: string; ungranted?: string }> }) {
-  const { find = '', attention, granted, sitting: grantedSitting, ungranted } = await searchParams;
+export default async function AccessPage({ searchParams }: { searchParams: Promise<{ find?: string; attention?: string; granted?: string; sitting?: string; ungranted?: string; noreason?: string }> }) {
+  const { find = '', attention, granted, sitting: grantedSitting, ungranted, noreason } = await searchParams;
   await dbConnect();
   const queue = await loadQueue();
   const students = await Student.find()
@@ -99,6 +99,11 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
             <button className={CAPS}>Search</button>
           </form>
         </header>
+        {noreason && (
+          <p className="mb-4 border-l-3 border-amber bg-amber-tint px-3 py-2 font-mono text-[11px] leading-relaxed">
+            Nothing was granted: a grant needs a reason. A comp with no reason cannot be told from a mistake.
+          </p>
+        )}
         {ungranted && (
           <p className="mb-4 border-l-3 border-red-pen bg-red-tint px-3 py-2.5 font-mono text-[12px]">
             No account on <b className="break-all">{ungranted}</b> · nothing was granted. Search for the address they registered with.
@@ -119,25 +124,13 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
           email the student paid with, then grant. Nothing a student has already earned is ever
           hidden — the gate is on starting a new session.
         </p>
-        {/* The note is the only evidence a grant has. The convention lives here
-            because here is where notes are typed; the reasoning is ROUND_3 §3. */}
-        <details className="mb-5 max-w-prose text-[13px] text-dim">
-          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-widest">
-            Note convention — first token is the class of grant
-          </summary>
-          <pre className="mt-2 overflow-x-auto whitespace-pre bg-white p-3 font-mono text-[11px] leading-relaxed">
-{`stripe <event id>                         a sale
-comp · teacher · <school> · <YYYY-MM-DD>  a teacher's own account
-comp · pilot · <teacher> · <n of N>       a pilot seat
-comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
-          </pre>
-          <p className="mt-2 leading-snug">
-            The date is when the grant was <b>agreed</b>, not typed. A bare &ldquo;comp&rdquo; with
-            no reason is not acceptable — six months on it is indistinguishable from a mistake.
-            Teacher comps are granted on the <b>latest sitting</b> in the dropdown: a comp that
-            quietly dies in July is a teacher telling other teachers the thing stopped working.
-          </p>
-        </details>
+        {/* The note is the only evidence a grant has, and the form writes it
+            now rather than asking for it. What is left to say is which class to
+            pick; the reasoning is ROUND_3 §3. */}
+        <div className="mb-5 max-w-prose text-[13px] leading-snug text-dim">
+          <p><b className="text-ink">Sale</b> — money arrived and the automatic path did not connect it. The reason is the Stripe event id, so the payment can be found again.</p>
+          <p className="mt-1"><b className="text-ink">Comp</b> — access given, nothing paid. The reason is who it is for and why: six months on, a comp with no reason is indistinguishable from a mistake. Grant a teacher on the latest sitting — one that quietly dies in July is a teacher telling other teachers the thing stopped working.</p>
+        </div>
 
         
 
@@ -157,7 +150,17 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                 </option>
               ))}
             </select>
-            <input name="note" required placeholder="comp · teacher · school · 2026-08-26" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
+            <select name="class" defaultValue="comp" className={`${SELECT} w-full sm:w-auto`}>
+              <option value="sale">Sale</option>
+              <option value="comp">Comp</option>
+            </select>
+            <input
+              name="reason"
+              required
+              minLength={3}
+              placeholder="why, or the Stripe event id"
+              className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`}
+            />
             <button className={`${INK} w-full text-sm sm:w-auto`}>Grant access</button>
           </form>
         </section>
@@ -230,10 +233,15 @@ comp · other · <reason> · <YYYY-MM-DD>    anything else, reason required`}
                     </option>
                   ))}
                 </select>
+                <select name="class" defaultValue="comp" className={`${SELECT} w-full sm:w-auto`}>
+                  <option value="sale">Sale</option>
+                  <option value="comp">Comp</option>
+                </select>
                 <input
-                  name="note"
+                  name="reason"
                   required
-                  placeholder="comp · teacher · school · 2026-08-26"
+                  minLength={3}
+                  placeholder="why, or the Stripe event id"
                   className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`}
                 />
                 <button className={`${INK} w-full text-sm sm:w-auto`}>Grant access</button>

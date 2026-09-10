@@ -94,19 +94,26 @@ describe('the grant note convention', () => {
     'utf8',
   );
 
-  it('shows all four classes of grant on the screen that writes them', () => {
-    for (const token of ['stripe <event id>', 'comp · teacher', 'comp · pilot', 'comp · other']) {
-      expect(ADMIN, token).toContain(token);
-    }
+  // The convention used to be printed above a free-text box, which made it
+  // advice; the form writes the note now, so what is on screen is which of the
+  // two classes to pick.
+  it('offers the two classes and nothing else', () => {
+    expect(ADMIN).toContain('<option value="sale">Sale</option>');
+    expect(ADMIN).toContain('<option value="comp">Comp</option>');
+    expect(ADMIN, 'no free-typed note survives').not.toContain('name="note"');
+    expect([...ADMIN.matchAll(/<option value="(sale|comp)"/g)].length, 'both forms').toBe(4);
   });
 
-  it('will not accept a grant with no note at all', () => {
+  it('says what each class means where the operator picks it', () => {
+    const flat = ADMIN.replace(/\s+/g, ' ');
+    expect(flat).toMatch(/Sale<\/b> — money arrived and the automatic path did not connect it/);
+    expect(flat).toMatch(/Comp<\/b> — access given, nothing paid/);
+  });
+
+  it('will not accept a grant with no reason', () => {
     // A bare grant six months on is indistinguishable from a mistake.
-    expect(ADMIN).toMatch(/name="note"\s*\n\s*required/);
-  });
-
-  it('says the date is when the grant was agreed, not typed', () => {
-    expect(ADMIN.replace(/\s+/g, ' ')).toMatch(/when the grant was <b>agreed<\/b>, not typed/);
+    expect(ADMIN).toMatch(/name="reason"\s*\n?\s*required/);
+    expect(ADMIN.replace(/\s+/g, ' ')).toMatch(/a comp with no reason is indistinguishable from a mistake/i);
   });
 
   it('tells the operator teacher comps go on the latest sitting', () => {

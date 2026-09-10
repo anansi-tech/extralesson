@@ -12,7 +12,7 @@ import { requireAdmin } from '@/lib/auth/session';
 import { deleteStudent, type DeletionCounts } from '@/lib/delete-student';
 import { SITTING_IDS } from '@/lib/sittings';
 import type { ExamSitting } from '@/lib/types';
-import { noteWithPrior } from '@/lib/grant-note';
+import { GRANT_CLASSES, grantNote, noteWithPrior } from '@/lib/grant-note';
 import type { Access } from '@/lib/access';
 
 export type DeleteAccountState =
@@ -22,6 +22,7 @@ export type DeleteAccountState =
 
 const IdZ = z.string().regex(/^[a-f0-9]{24}$/);
 const SittingZ = z.enum(SITTING_IDS);
+const GrantClassZ = z.enum(GRANT_CLASSES);
 
 /**
  * Granting by hand, for the cases no automatic path can settle. A wrong grant
@@ -34,7 +35,11 @@ export async function grantAccess(formData: FormData): Promise<void> {
   const rowId = String(formData.get('id') ?? '');
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const sitting = SittingZ.parse(String(formData.get('sitting')));
-  const note = String(formData.get('note') ?? '').slice(0, 200);
+  // The class is one of two and the date is ours; the operator says only why.
+  const kind = GrantClassZ.parse(String(formData.get('class') ?? ''));
+  const reason = String(formData.get('reason') ?? '').trim();
+  if (reason.length < 3) redirect('/admin/access?noreason=1');
+  const note = grantNote(kind, reason);
   await dbConnect();
   const student = rowId
     ? await Student.findById(IdZ.parse(rowId)).select('email access').lean<{ _id: unknown; email: string; access?: Access | null } | null>()
