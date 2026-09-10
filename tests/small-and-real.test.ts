@@ -85,6 +85,11 @@ describe('(4) the backfill stamps what exists', () => {
     process.env.MONGODB_URI = mongod.getUri();
     await mongoose.connect(process.env.MONGODB_URI);
     db = await import('@/lib/db');
+    // THE INDEXES BEFORE THE FIXTURES. Mongoose builds them in the background
+    // after a model is first used, and a fixture written through the driver
+    // races that build: one that breaks a unique index inserts cleanly when it
+    // wins and fails when it loses, which is a test that passes by luck.
+    await db.Attempt.init();
   }, 60000);
   afterAll(async () => {
     await mongoose.disconnect();
@@ -93,8 +98,13 @@ describe('(4) the backfill stamps what exists', () => {
   it('takes the bank rubric for attempts made before the snapshot, and counts a gone question', async () => {
     const { backfillRubricSnapshot } = await import('@/lib/db/backfill-rubric-snapshot');
     const { insertedId } = await db.Question.collection.insertOne({ kind: 'structured', stem: 's', marks: 1, rubric: [{ code: 'A1', profile: 'AK', criterion: 'c', mark_value: 1, slot_ref: 'a.i', part_label: 'a' }], worked_solution: 'w', misconceptions: [], status: 'approved' });
-    const base = { student_id: new mongoose.Types.ObjectId(), session_id: new mongoose.Types.ObjectId(), question_index: 0, answer: '', rubric_awarded: [], profile_marks: { CK: 0, AK: 0, R: 0 }, correct: false, duration_ms: 0, ts: new Date() };
-    await db.Attempt.collection.insertMany([{ ...base, question_id: insertedId }, { ...base, question_id: new mongoose.Types.ObjectId() }]);
+    // Two attempts, so two sessions: one attempt exists per question per
+    // session, and sharing a session id here broke that index.
+    const base = { student_id: new mongoose.Types.ObjectId(), question_index: 0, answer: '', rubric_awarded: [], profile_marks: { CK: 0, AK: 0, R: 0 }, correct: false, duration_ms: 0, ts: new Date() };
+    await db.Attempt.collection.insertMany([
+      { ...base, session_id: new mongoose.Types.ObjectId(), question_id: insertedId },
+      { ...base, session_id: new mongoose.Types.ObjectId(), question_id: new mongoose.Types.ObjectId() },
+    ]);
     expect(await backfillRubricSnapshot()).toEqual({ stamped: 1, orphaned: 1 });
     const stamped = await db.Attempt.findOne({ question_id: insertedId }).lean<{ rubric_hash: string; rubric: { code: string }[] }>();
     expect(stamped?.rubric_hash).toMatch(/^[0-9a-f]{12}$/);
