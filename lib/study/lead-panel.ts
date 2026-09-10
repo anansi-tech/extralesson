@@ -1,7 +1,7 @@
-export type LeadPanel = 'resume' | 'no-questions' | 'paywall' | 'sitting-passed' | 'first' | 'diagnostic' | 'session';
+export type LeadPanel = 'resume' | 'revoked' | 'no-questions' | 'paywall' | 'sitting-passed' | 'first' | 'diagnostic' | 'session';
 
 /** Whether a session may start today, as the gate answers for the usual session. */
-export type SessionAccess = 'ok' | 'needs-access' | 'access-expired';
+export type SessionAccess = 'ok' | 'needs-access' | 'access-expired' | 'revoked';
 
 /**
  * What the top of /study asks for: an open session, else the refusal that
@@ -13,6 +13,9 @@ export type SessionAccess = 'ok' | 'needs-access' | 'access-expired';
  * sessions to sit.
  */
 export function leadPanel(args: { open: boolean; questions: boolean; access: SessionAccess; firstTaken: boolean; diagnosticTaken: boolean }): LeadPanel {
+  // Ahead of the open session: a revoked student may finish one already in
+  // flight, but the page never invites them into another.
+  if (args.access === 'revoked') return 'revoked';
   if (args.open) return 'resume';
   if (!args.questions) return 'no-questions';
   if (args.access === 'needs-access') return 'paywall';

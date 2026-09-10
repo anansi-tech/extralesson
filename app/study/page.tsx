@@ -53,7 +53,7 @@ export default async function StudyDashboard({
   const lead = leadPanel({
     open: Boolean(open),
     questions: Boolean(await Question.exists({ status: 'approved', module: { $in: student.target_modules } })),
-    access: !gate.allowed && (gate.reason === 'needs-access' || gate.reason === 'access-expired') ? gate.reason : 'ok',
+    access: !gate.allowed && (gate.reason === 'needs-access' || gate.reason === 'access-expired' || gate.reason === 'revoked') ? gate.reason : 'ok',
     firstTaken: await firstQuestionTaken(auth.student_id),
     diagnosticTaken: diagnosticOpensAtDate !== null,
   });

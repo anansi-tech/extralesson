@@ -112,7 +112,7 @@ One operation, called from one place:
 
 ```
 refundAndRevoke(payment_id, operator, reason)
-  -> 'done' | 'already-refunded' | 'unknown-outcome' | 'not-refundable'
+  -> 'done' | 'already-refunded' | 'unknown-outcome' | 'refused' | 'not-refundable'
 ```
 
 **Order matters, and it is the opposite of `claim`.** The external act is
@@ -153,9 +153,10 @@ happened — and never happen without a record that it was attempted.
   `refund_approved` on the queue; retrying recovers by step 2.
 - A payment already refunded, locally or at Stripe, is
   `already-refunded`: revoke if not yet revoked, and record it.
-- Stripe rejecting sets `refund_failed`. An operator-approved retry after
-  a confirmed failure takes a **new** key — the old one is spent, and
-  Stripe caches failures against it.
+- Stripe rejecting sets `refund_failed` and returns **`refused`** — a known
+  outcome, and not `not-refundable`, which means a payment that was never in a
+  paid state. An operator-approved retry after a confirmed failure takes a
+  **new** key — the old one is spent, and Stripe caches failures against it.
 - A refund failing *after* acceptance (a later status event) moves the
   payment to `refund_failed` and back onto the queue. Access stays
   revoked; the operator decides what happens next.
@@ -257,8 +258,8 @@ surface. It is a stated policy and never blocks the action.
    `refund_approved` on the queue, nothing revoked, retry completes it.
 4. **Concurrent refund clicks on one payment:** one approval, **one
    refund** — not necessarily one HTTP call — one email.
-5. Stripe rejects: `refund_failed` with the reason, on the queue, nothing
-   revoked; an approved retry uses a new key.
+5. Stripe rejects: **`refused`**, `refund_failed` with the reason, on the
+   queue, nothing revoked; an approved retry uses a new key.
 6. **A refund-status event reporting failure after acceptance:**
    `refund_failed`, on the queue, access stays revoked. A redelivered
    *checkout* event changes no refund state.
@@ -274,7 +275,8 @@ surface. It is a stated policy and never blocks the action.
     already in flight finishes.
 11. Refund past `REFUND_DAYS`: works, and the record says it was late.
 12. `already-refunded` for a payment already refunded locally or at
-    Stripe; `not-refundable` only for a state that was never paid.
+    Stripe; `not-refundable` only for a state that was never paid, and never
+    for a refund Stripe rejected.
 13. Refunding a `waiting` or `duplicate` payment: money returned, no
     grant touched anywhere, and the email never says access ended.
 14. A comp: **Revoke** only, no Stripe call, no payment state change.

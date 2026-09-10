@@ -48,7 +48,7 @@ export interface DashboardProps {
  */
 export function DashboardView(p: DashboardProps) {
   const { lead, prediction } = p;
-  const refused = lead === 'paywall' || lead === 'sitting-passed' || lead === 'no-questions';
+  const refused = lead === 'paywall' || lead === 'sitting-passed' || lead === 'no-questions' || lead === 'revoked';
   const showsEstimate = lead === 'session' || lead === 'resume' || refused;
   const showsCounters = showsEstimate && p.progress.sessionsCompleted > 0;
   const shortModule = prediction.modules.find((m) => m.marks_seen < MIN_MARKS_FOR_PREDICTION);
@@ -385,6 +385,21 @@ function Choose(p: DashboardProps) {
 function RefusedLead({ lead, sitting, nextSitting, email }: DashboardProps) {
   const cls = 'order-1';
   const help = { label: 'Email us', href: `mailto:${LANDING.contactEmail}` };
+  if (lead === 'revoked') {
+    // The paywall pattern, because the boundary is the same one: no new
+    // sessions. What differs is why, and that the work is still theirs.
+    return (
+      <Refusal
+        id="revoked"
+        className={cls}
+        label="Your access has ended"
+        sentence="Your payment was refunded, so the sessions have stopped."
+        remains="Everything you have done stays here — your marks, your topics, and every question you have answered. You can read all of it whenever you want to."
+        action={{ label: 'Read your marked work', small: 'EVERY QUESTION, AS IT WAS MARKED', red: true, href: '/study/history' }}
+        quiet={help}
+      />
+    );
+  }
   if (lead === 'no-questions') {
     return (
       <Refusal

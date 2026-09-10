@@ -1,4 +1,4 @@
-import { PracticeSession } from '@/lib/db';
+import { PracticeSession, Student } from '@/lib/db';
 import { accessEndsAt } from '@/lib/sittings';
 
 /**
@@ -91,11 +91,22 @@ export async function firstQuestionTaken(studentId: string): Promise<boolean> {
   return Boolean(await PracticeSession.exists({ student_id: studentId, mode: 'first' }));
 }
 
+/**
+ * REVOCATION IS ON THE STUDENT, NOT ON A SITTING'S GRANT (ROUND_12 Task 3).
+ * Read straight from the account, because a caller that filtered through
+ * `grantFor` would lose it the moment the student changed sitting, and every
+ * allowance would reopen.
+ */
+export async function isRevoked(studentId: string): Promise<boolean> {
+  return Boolean(await Student.exists({ _id: studentId, 'access.revoked_at': { $exists: true } }));
+}
+
 /** The refusal's reason IS the error code the hub reads. */
 export type SessionGate =
   /** slot: the number the chosen session takes — read HERE, so two starts that saw the same count collide on it (ROUND_6 Task 4). */
   | { allowed: true; slot?: number }
   | { allowed: false; reason: 'needs-access' | 'access-expired'; used: number }
+  | { allowed: false; reason: 'revoked' }
   | { allowed: false; reason: 'diagnostic-taken'; opensAt: Date }
   | { allowed: false; reason: 'first-taken' };
 
@@ -105,6 +116,11 @@ export async function canStartSession(
   mode: string,
   now: Date = new Date(),
 ): Promise<SessionGate> {
+  // BEFORE EVERY ALLOWANCE. The free sessions, the diagnostic and the first
+  // question are all allowances, and a revoked student has none of them: the
+  // money went back, so the service stops.
+  if (await isRevoked(studentId)) return { allowed: false, reason: 'revoked' };
+
   // Not a paywall but a cap, so it applies to a paying student too: they have
   // whole sessions to sit and do not need the diagnostic for questions.
   if (mode === 'diagnostic') {

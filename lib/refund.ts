@@ -7,7 +7,14 @@ import { StripeError, stripeListAll, stripePost, type StripeRefund } from '@/lib
 import { refundEmail, sendEmail } from '@/lib/email';
 import { externalBaseUrl } from '@/lib/base-url';
 
-export type RefundOutcomeResult = 'done' | 'already-refunded' | 'unknown-outcome' | 'not-refundable';
+/**
+ * `refused` is STRIPE REJECTING THE REFUND — a known outcome, and the payment
+ * carries refund_failed with their reason. `not-refundable` is a payment that
+ * was never in a paid state, which is a different thing entirely. Note the
+ * word does double duty in this codebase: the payment state `refused` means a
+ * session that was not ours, and has nothing to do with this.
+ */
+export type RefundOutcomeResult = 'done' | 'already-refunded' | 'unknown-outcome' | 'refused' | 'not-refundable';
 
 export interface Operator {
   email: string;
@@ -86,7 +93,7 @@ export async function refundAndRevoke(paymentId: string, operator: Operator, rea
     // with the reason, back on the queue for a person to approve a retry.
     const message = e instanceof StripeError ? `${e.code ?? e.status}: ${e.message}` : String(e);
     await fail(paymentId, attempt.key, message);
-    return 'not-refundable';
+    return 'refused';
   }
 
   await complete(paymentId, attempt, refund, operator, reason);

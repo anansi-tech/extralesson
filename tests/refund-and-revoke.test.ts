@@ -264,7 +264,8 @@ describe('when Stripe refuses', () => {
     const { payment: p } = await paidWithGrant();
     stripe({ create: () => new StripeError(400, 'charge_already_refunded', 'Charge has already been refunded.') });
 
-    expect(await refundAndRevoke(String(p._id), OPERATOR, 'asked')).toBe('not-refundable');
+    // Refused, not not-refundable: Stripe rejected it, and the payment says so.
+    expect(await refundAndRevoke(String(p._id), OPERATOR, 'asked')).toBe('refused');
     const failed = await stateOf(p._id);
     expect(failed.state).toBe('refund_failed');
     expect(failed.state_reason).toContain('charge_already_refunded');
