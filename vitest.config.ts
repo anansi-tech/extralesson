@@ -19,6 +19,7 @@ export default defineConfig({
   css: { postcss: { plugins: [] } },
   test: {
     environment: 'node',
+    setupFiles: ['./tests/setup/indexes.ts'],
     projects: [
       {
         extends: true,

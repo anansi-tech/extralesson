@@ -85,11 +85,6 @@ describe('(4) the backfill stamps what exists', () => {
     process.env.MONGODB_URI = mongod.getUri();
     await mongoose.connect(process.env.MONGODB_URI);
     db = await import('@/lib/db');
-    // THE INDEXES BEFORE THE FIXTURES. Mongoose builds them in the background
-    // after a model is first used, and a fixture written through the driver
-    // races that build: one that breaks a unique index inserts cleanly when it
-    // wins and fails when it loses, which is a test that passes by luck.
-    await db.Attempt.init();
   }, 60000);
   afterAll(async () => {
     await mongoose.disconnect();
