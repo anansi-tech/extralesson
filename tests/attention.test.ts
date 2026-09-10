@@ -18,9 +18,12 @@ describe('/admin/access', () => {
     // One counter, and it counts the list.
     expect(page).toMatch(/\{queue\.length\}<\/b> payments needing attention/);
   });
-  it('holds the two states with work in it, and nothing else', () => {
+  it('holds the states with work in them, and nothing else', () => {
     expect(at('lib', 'payment-queue.ts')).toMatch(/Payment\.find\(\{ state: \{ \$in: QUEUE_STATES \} \}\)/);
-    expect(at('lib', 'payment-state.ts')).toMatch(/QUEUE_STATES: PaymentState\[\] = \['waiting', 'duplicate'\]/);
+    // ROUND_12 added the two a refund leaves needing a person.
+    expect(at('lib', 'payment-state.ts')).toMatch(
+      /QUEUE_STATES: PaymentState\[\] = \['waiting', 'duplicate', 'refund_approved', 'refund_failed'\]/,
+    );
     // Oldest first: the queue is work, and the oldest debt has waited longest.
     expect(at('lib', 'payment-queue.ts')).toMatch(/\.sort\(\{ received_at: 1 \}\)/);
   });

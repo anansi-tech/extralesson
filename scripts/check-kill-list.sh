@@ -98,6 +98,20 @@ if [ -n "$stripe" ]; then
   echo "$stripe" | sed 's/^/  /'
   fail=1
 fi
+# The dependency ban is grep-gated; the outbound call was not, and ROUND_12
+# lifted it for ONE path. The API host named anywhere else is the violation the
+# hook could not see before: lib/stripe-api.ts holds the refund path's reads and
+# writes, and the webhook verifies signatures without calling anyone. buy.stripe.com
+# is not matched — that is the payment-link href, which a browser opens.
+host=$(printf '%s\n' "${FILES[@]}" \
+  | grep -vE '^(lib/stripe-api\.ts|app/api/stripe/webhook/route\.ts)$' \
+  | xargs -r grep -HniE "api\.stripe\.com" 2>/dev/null || true)
+if [ -n "$host" ]; then
+  echo "kill-list violation (an outbound Stripe call outside the refund path;"
+  echo "lib/stripe-api.ts is where reads and writes to Stripe live):"
+  echo "$host" | sed 's/^/  /'
+  fail=1
+fi
 dep=$(grep -HnE "\"@?stripe[/\"]" package.json 2>/dev/null || true)
 if [ -n "$dep" ]; then
   echo "kill-list violation (Stripe as a dependency in package.json):"

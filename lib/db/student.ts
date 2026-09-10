@@ -36,6 +36,14 @@ const StudentSchema = new Schema({
          * September purchase. A comp has none.
          */
         payment_id: { type: Schema.Types.ObjectId, ref: 'Payment' },
+        /**
+         * THE GRANT IS ENDED, NOT ERASED (ROUND_12 Task 1). hasAccess reads a
+         * revoked grant as no access; grantFor still returns it, so the screen
+         * and the note history can say what happened and when.
+         */
+        revoked_at: { type: Date },
+        revoked_by: { type: String },
+        revoked_reason: { type: String },
       },
       { _id: false },
     ),

@@ -29,6 +29,35 @@ const PaymentSchema = new Schema({
    * later than the session completes. The refund window is measured from this.
    */
   paid_at: { type: Date },
+  /** The refund this payment rests on, once Stripe has one (ROUND_12 Task 1). */
+  refund_id: { type: String },
+  /** STRIPE'S OWN word for it, kept unmapped: pending, succeeded, failed, canceled. */
+  refund_status: { type: String },
+  /**
+   * EVERY ATTEMPT, APPENDED. An idempotency key protects one attempt and Stripe
+   * may prune keys after a day, so the key is not a durable handle — this list
+   * is what a recovery reads to tell its own refund from any other on the
+   * intent, and what binds a late status event to the attempt it belongs to.
+   */
+  refund_attempts: {
+    type: [
+      new Schema(
+        {
+          /** The idempotency key this attempt was made under. */
+          key: { type: String, required: true },
+          at: { type: Date, required: true },
+          /** What came back, or `unknown` while it has not. */
+          outcome: { type: String, enum: ['unknown', 'pending', 'succeeded', 'failed', 'canceled'], required: true },
+          refund_id: { type: String },
+          /** Stripe's status for this attempt's refund, and its error if it gave one. */
+          status: { type: String },
+          error: { type: String },
+        },
+        { _id: false },
+      ),
+    ],
+    default: undefined,
+  },
   /** Why it is in that state, in words a person can act on. */
   state_reason: { type: String },
   state_at: { type: Date },

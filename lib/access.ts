@@ -22,12 +22,18 @@ export interface Access {
   note?: string;
   /** The payment this grant was bought with; a comp has none (ROUND_12). */
   payment_id?: unknown;
+  /** Ended, with who ended it and why. The grant itself stays (ROUND_12). */
+  revoked_at?: Date;
+  revoked_by?: string;
+  revoked_reason?: string;
 }
 
 /**
  * The grant, if it is for this sitting. Access is to a sitting, not to an
  * account: after a change of sitting the new one has no grant until it is
- * paid for, and the old grant keeps its own dates (ROUND_9 Task 9).
+ * paid for, and the old grant keeps its own dates (ROUND_9 Task 9). A revoked
+ * grant is still returned — it is ended, not erased, and a screen that cannot
+ * see it cannot say what happened.
  */
 export function grantFor(access: Access | null | undefined, sitting: string): Access | null {
   return access?.sitting === sitting ? access : null;
@@ -40,6 +46,9 @@ export function grantFor(access: Access | null | undefined, sitting: string): Ac
  */
 export function hasAccess(access: Access | null | undefined, now: Date = new Date()): boolean {
   if (!access?.sitting) return false;
+  // Revoked is not expired: the money went back, so the service stops now
+  // whatever the sitting says (ROUND_12).
+  if (access.revoked_at) return false;
   const endsAt = accessEndsAt(access.sitting);
   return endsAt === null || now.getTime() <= endsAt.getTime();
 }
