@@ -185,8 +185,8 @@ describe('what ships beside the app', () => {
       expect(read(...page), page.join('/')).toMatch(/<Lockup[\s/>]/);
     }
     for (const page of [
-      ['app', 'study', 'login', 'page.tsx'],
-      ['app', 'study', 'reset', 'page.tsx'],
+      ['app', '(door)', 'study', 'login', 'page.tsx'],
+      ['app', '(door)', 'study', 'reset', 'page.tsx'],
       ['app', 'welcome', 'welcome-view.tsx'],
     ]) {
       expect(read(...page), page.join('/')).toMatch(/<Door[\s>]/);

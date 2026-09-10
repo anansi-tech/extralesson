@@ -10,7 +10,7 @@ import { STATES as DASH } from './helpers/dashboard-states';
 import { STATES as CARD, renderBar, renderCard } from './helpers/card-states';
 import { DashboardView } from '@/app/study/dashboard';
 import { StudyChrome } from '@/app/study/study-chrome';
-import LoginForm from '@/app/study/login/login-form';
+import LoginForm from '@/app/(door)/study/login/login-form';
 
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} }), usePathname: () => '/study' }));
 

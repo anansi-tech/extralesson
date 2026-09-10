@@ -49,10 +49,10 @@ describe('welcome, four states', () => {
   });
 
   it('the create door takes the paid address, locked, from the session and never from the URL', () => {
-    const page = readFileSync(join(process.cwd(), 'app', 'study', 'login', 'page.tsx'), 'utf8');
+    const page = readFileSync(join(process.cwd(), 'app', '(door)', 'study', 'login', 'page.tsx'), 'utf8');
     expect(page).toMatch(/lockedEmail = paid \? await paidAddress\(paid\) : null/);
     expect(page).toMatch(/state\.state === 'unregistered' \? state\.email : null/);
-    const form = readFileSync(join(process.cwd(), 'app', 'study', 'login', 'login-form.tsx'), 'utf8');
+    const form = readFileSync(join(process.cwd(), 'app', '(door)', 'study', 'login', 'login-form.tsx'), 'utf8');
     expect(form).toMatch(/readOnly=\{!!lockedEmail\}/);
   });
 });

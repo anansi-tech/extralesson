@@ -397,7 +397,7 @@ describe('12. the payment is its own record', () => {
 
 describe('register() still performs the claim this file simulates', () => {
   it('claims every waiting payment for the address', () => {
-    const src = readFileSync(join(process.cwd(), 'app', 'study', 'login', 'actions.ts'), 'utf8');
+    const src = readFileSync(join(process.cwd(), 'app', '(door)', 'study', 'login', 'actions.ts'), 'utf8');
     expect(src).toContain('claimWaitingFor(email');
   });
 });

@@ -70,11 +70,11 @@ export function chromeBar(sitting: string, open = false, pathname = '/study'): s
 </header>`;
 }
 
-/** A whole page that draws its own chrome, such as a door. */
-export function bodyPage(inner: string): string {
+/** A whole page that draws its own chrome, such as a door or the landing. */
+export function bodyPage(inner: string, extraCss = ''): string {
   return `<!doctype html><html><head><meta name="viewport" content="width=device-width">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500;700&family=Caveat&display=swap">
-<script src="https://cdn.tailwindcss.com"></script><script>${TAILWIND_CONFIG}</script><style>${FONTS}${css}</style></head>
+<script src="https://cdn.tailwindcss.com"></script><script>${TAILWIND_CONFIG}</script><style>${FONTS}${css}${extraCss}</style></head>
 <body class="bg-paper text-ink">${inner}</body></html>`;
 }
 

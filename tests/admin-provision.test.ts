@@ -23,9 +23,9 @@ let mongod: MongoMemoryServer;
 let db: typeof import('@/lib/db');
 let ResetToken: typeof import('@/lib/db/reset-token').ResetToken;
 let provisionAdmin: typeof import('@/lib/auth/provision').provisionAdmin;
-let register: typeof import('@/app/study/login/actions').register;
-let signIn: typeof import('@/app/study/login/actions').signIn;
-let setPassword: typeof import('@/app/study/reset/actions').setPassword;
+let register: typeof import('@/app/(door)/study/login/actions').register;
+let signIn: typeof import('@/app/(door)/study/login/actions').signIn;
+let setPassword: typeof import('@/app/(door)/study/reset/actions').setPassword;
 let getSession: typeof import('@/lib/auth/session').getSession;
 let resetRateLimits: typeof import('@/lib/auth/rate-limit').resetRateLimits;
 let requireAdmin: typeof import('@/lib/auth/session').requireAdmin;
@@ -48,8 +48,8 @@ beforeAll(async () => {
   db = await import('@/lib/db');
   ({ ResetToken } = await import('@/lib/db/reset-token'));
   ({ provisionAdmin } = await import('@/lib/auth/provision'));
-  ({ register, signIn } = await import('@/app/study/login/actions'));
-  ({ setPassword } = await import('@/app/study/reset/actions'));
+  ({ register, signIn } = await import('@/app/(door)/study/login/actions'));
+  ({ setPassword } = await import('@/app/(door)/study/reset/actions'));
   ({ getSession, requireAdmin } = await import('@/lib/auth/session'));
   ({ resetRateLimits } = await import('@/lib/auth/rate-limit'));
 }, 120000);
@@ -154,18 +154,20 @@ describe('rate limits and session versions', () => {
 describe('create account is a door (ROUND_6 Task 5)', () => {
   const read = (...p: string[]) => require('node:fs').readFileSync(require('node:path').join(process.cwd(), ...p), 'utf8') as string;
   it('the landing’s free-question button opens the create door with the question named', () => {
-    expect(read('app', 'page.tsx')).toMatch(/href="\/study\/login\?new=1"[\s\S]{0,80}Mark one question free/);
-    const page = read('app', 'study', 'login', 'page.tsx');
+    const landing = read('app', 'page.tsx');
+    expect(landing).toMatch(/const freeQuestion = session \? '\/study' : '\/study\/login\?new=1';/);
+    expect(landing).toMatch(/href=\{freeQuestion\}[\s\S]{0,80}Mark one question free/);
+    const page = read('app', '(door)', 'study', 'login', 'page.tsx');
     expect(page).toMatch(/const creating = fresh === '1'/);
     expect(page).toMatch(/Your first question is waiting: one Paper 2 question/);
     // The door is decided by where they came from; a failed sign-in only carries the typed address.
     expect(page).toMatch(/<LoginForm[\s\S]{0,120}door=\{creating \? 'create' : 'signin'\}[\s\S]{0,40}initial=\{email \?/);
   });
   it('the form has no toggle and infers nothing from a failed sign-in', () => {
-    const form = read('app', 'study', 'login', 'login-form.tsx');
+    const form = read('app', '(door)', 'study', 'login', 'login-form.tsx');
     expect(form).not.toMatch(/setCreating|signInState\.needsProfile/);
     expect(form).toMatch(/href="\/study\/login\?new=1"/);
     expect(form).toMatch(/href="\/study\/login"[^>]*>[\s\S]{0,40}I already have an account/);
-    expect(read('app', 'study', 'login', 'actions.ts')).not.toMatch(/needsProfile/);
+    expect(read('app', '(door)', 'study', 'login', 'actions.ts')).not.toMatch(/needsProfile/);
   });
 });

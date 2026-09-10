@@ -192,7 +192,7 @@ describe('the orderings that cannot miss each other', () => {
   it('the webhook persists the payment before it looks up the student; registration persists the student first', () => {
     const route = at('app', 'api', 'stripe', 'webhook', 'route.ts');
     expect(route.indexOf('Payment.findOne({ session_id: sessionId })')).toBeLessThan(route.indexOf('const student = email'));
-    const register = at('app', 'study', 'login', 'actions.ts');
+    const register = at('app', '(door)', 'study', 'login', 'actions.ts');
     expect(register.indexOf('const student = await Student.create(')).toBeLessThan(register.indexOf('claimWaitingFor(email'));
   });
   it('comps take their own path and never touch payment state', () => {

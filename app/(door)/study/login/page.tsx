@@ -1,5 +1,6 @@
 import LoginForm from './login-form';
-import { Door } from '../../door';
+import { Door } from '../../../door';
+import { getSession } from '@/lib/auth/session';
 import { dbConnect } from '@/lib/db';
 import { resolveWelcome } from '@/lib/welcome';
 import { SENDER } from '@/lib/email';
@@ -24,11 +25,15 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string; new?: string; paid?: string; reset?: string; email?: string }>;
 }) {
   const { error, new: fresh, paid, reset, email } = await searchParams;
+  // The door draws its own bar, so it carries the only way out a signed-in
+  // visitor has here — someone signing in on a phone that is already someone
+  // else's would otherwise be stuck at a form they cannot use.
+  const signedIn = !!(await getSession());
   const creating = fresh === '1';
   const lockedEmail = paid ? await paidAddress(paid) : null;
 
   return (
-    <Door signedIn={false}>
+    <Door signedIn={signedIn}>
       {lockedEmail ? (
         <>
           <h1 className={HEADING}>Create your account<span className="text-red-pen">.</span></h1>

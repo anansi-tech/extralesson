@@ -30,8 +30,8 @@ describe('the token bucket', () => {
 describe('where the limits sit', () => {
   it('covers login, both reset steps, and the read', () => {
     expect(Object.keys(LIMITS).sort()).toEqual(['login', 'read', 'reset-confirm', 'reset-request']);
-    expect(at('app', 'study', 'login', 'actions.ts')).toMatch(/limited\('login', email\)[\s\S]*limited\('reset-request', email\)/);
-    expect(at('app', 'study', 'reset', 'actions.ts')).toMatch(/limited\('reset-confirm'/);
+    expect(at('app', '(door)', 'study', 'login', 'actions.ts')).toMatch(/limited\('login', email\)[\s\S]*limited\('reset-request', email\)/);
+    expect(at('app', '(door)', 'study', 'reset', 'actions.ts')).toMatch(/limited\('reset-confirm'/);
     expect(at('app', 'study', 'session', '[id]', 'capture.ts')).toMatch(/limited\('read', auth\.student_id\)/);
   });
 });

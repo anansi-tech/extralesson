@@ -52,6 +52,10 @@ export default async function LandingPage() {
       .lean<{ access?: Access | null; exam_sitting: string } | null>();
     signedInWithAccess = hasAccess(grantFor(student?.access, student?.exam_sitting ?? ''));
   }
+  // THE CREATE DOOR IS FOR SOMEONE WHO HAS NO ACCOUNT. A student who is signed
+  // in already has one, and their free question is on their own lead panel —
+  // ?new=1 would ask them to make a second account to reach it.
+  const freeQuestion = session ? '/study' : '/study/login?new=1';
   return (
     <div className="landing">
       {/* THE BAR. Signed out: Sign in. Signed in: the way back to the notebook. */}
@@ -61,7 +65,7 @@ export default async function LandingPage() {
           <Lockup width={140} className="lockup-lg" />
           {session ? (
             <Link className="authlink" href="/study">
-              Continue studying &rarr;
+              Your notebook
             </Link>
           ) : (
             <Link className="authlink" href="/study/login">
@@ -90,7 +94,7 @@ export default async function LandingPage() {
                   <small>YOUR ACCESS IS ACTIVE · PICK UP WHERE YOU LEFT OFF</small>
                 </Link>
               ) : (
-                <Link className="btn" href="/study/login?new=1">
+                <Link className="btn" href={freeQuestion}>
                   Mark one question free
                   <small>No card required.</small>
                 </Link>
@@ -188,7 +192,7 @@ export default async function LandingPage() {
             Fifteen minutes a day, aimed at the topics worth the most marks for you.
           </p>
           {!signedInWithAccess && (
-            <Link className="btn" href="/study/login?new=1">
+            <Link className="btn" href={freeQuestion}>
               Mark one question free
               <small>No card required.</small>
             </Link>
@@ -327,7 +331,7 @@ export default async function LandingPage() {
               <small>YOUR ACCESS IS ACTIVE · PICK UP WHERE YOU LEFT OFF</small>
             </Link>
           ) : (
-            <Link className="btn" href="/study/login?new=1">
+            <Link className="btn" href={freeQuestion}>
               Mark one question free
               <small>No card required.</small>
             </Link>

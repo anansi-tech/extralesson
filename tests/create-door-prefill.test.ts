@@ -1,8 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createElement, isValidElement, type ReactElement, type ReactNode } from 'react';
+
+vi.mock('@/lib/auth/session', () => ({ getSession: async () => null }));
 import { renderToStaticMarkup } from 'react-dom/server';
-import LoginPage from '@/app/study/login/page';
-import LoginForm from '@/app/study/login/login-form';
+import LoginPage from '@/app/(door)/study/login/page';
+import LoginForm from '@/app/(door)/study/login/login-form';
 
 /** The LoginForm element the page returns, wherever it sits in the tree. */
 function findForm(node: ReactNode): ReactElement | null {

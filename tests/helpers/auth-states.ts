@@ -1,9 +1,9 @@
 import { createElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Door } from '@/app/door';
-import LoginForm, { type Door as FormDoor } from '@/app/study/login/login-form';
-import ResetForm from '@/app/study/reset/reset-form';
-import type { AuthState } from '@/app/study/login/actions';
+import LoginForm, { type Door as FormDoor } from '@/app/(door)/study/login/login-form';
+import ResetForm from '@/app/(door)/study/reset/reset-form';
+import type { AuthState } from '@/app/(door)/study/login/actions';
 import { TOO_MANY } from '@/lib/auth/rate-limit';
 import { SIGN_IN_FAILED } from '@/lib/auth/sign-in-error';
 import { HELP_EMAIL } from '@/lib/help-email';
@@ -12,7 +12,7 @@ const SENDER = `ExtraLesson <${HELP_EMAIL}>`;
 export { visibleText } from './card-states';
 
 // The states of Auth and Welcome.dc.html §03 with the repo's words: the page's
-// heading and lede as app/study/login/page.tsx writes them, then the form.
+// heading and lede as app/(door)/study/login/page.tsx writes them, then the form.
 const h1 = (text: string, mark = '.') =>
   createElement('h1', { className: 'mb-1.5 text-2xl font-black tracking-[-0.015em]' }, text, createElement('span', { className: 'text-red-pen' }, mark));
 const lede = (text: ReactNode) => createElement('p', { className: 'mb-5 text-[13px] leading-normal text-dim' }, text);

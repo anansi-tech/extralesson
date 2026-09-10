@@ -5,8 +5,10 @@ import { StudyChrome } from './study-chrome';
 import { sittingLabel } from '@/lib/sittings';
 
 /**
- * Every student page inside the one chrome. A page with no session (login,
- * reset) is rendered bare: the chrome is for someone who is in.
+ * Every notebook page inside the one chrome. The doors live outside this
+ * branch — app/(door) — so the chrome can never stack on top of one. Every
+ * page here calls requireSession, so no session means a redirect is already
+ * on its way and there is no student to draw a bar for.
  */
 export default async function StudyLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();

@@ -48,7 +48,7 @@ describe('the auth screens', () => {
     expect(text['reset-sent']).toBe(
       '✓ Check your email . If there is an account for that email, a link to set a new password is on its way. It works once and expires in 30 minutes. Nothing in your inbox after a minute or two? Look in spam. The sender is ExtraLesson <extralesson@anansi.xyz>. Back to sign in',
     );
-    const page = readFileSync(join(process.cwd(), 'app', 'study', 'login', 'page.tsx'), 'utf8');
+    const page = readFileSync(join(process.cwd(), 'app', '(door)', 'study', 'login', 'page.tsx'), 'utf8');
     expect(page).toMatch(/sender=\{SENDER\} resetMinutes=\{RESET_TTL_MS \/ 60000\}/);
   });
   it('new password: one field, the error above it', () => {
