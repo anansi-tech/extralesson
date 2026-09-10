@@ -50,7 +50,14 @@ export default async function LoginPage({
           {error === 'expired' && (
             <p className="mb-4 border-l-3 border-amber bg-[#FDF8EC] px-3 py-2.5 text-[13px] leading-snug">Your session ended. Sign in again.</p>
           )}
-          <LoginForm door={creating ? 'create' : 'signin'} initial={email ? { email: email.slice(0, 254) } : undefined} />
+          {/* Keyed so the link out of a failed sign-in remounts the form: it is
+              a navigation inside this one route, and the field's default value
+              is read at mount and never again. */}
+          <LoginForm
+            key={`${creating ? 'create' : 'signin'}:${email ?? ''}`}
+            door={creating ? 'create' : 'signin'}
+            initial={email ? { email: email.slice(0, 254) } : undefined}
+          />
         </>
       )}
     </Door>

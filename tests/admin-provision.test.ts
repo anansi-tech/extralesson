@@ -159,7 +159,7 @@ describe('create account is a door (ROUND_6 Task 5)', () => {
     expect(page).toMatch(/const creating = fresh === '1'/);
     expect(page).toMatch(/Your first question is waiting: one Paper 2 question/);
     // The door is decided by where they came from; a failed sign-in only carries the typed address.
-    expect(page).toMatch(/<LoginForm door=\{creating \? 'create' : 'signin'\} initial=\{email \?/);
+    expect(page).toMatch(/<LoginForm[\s\S]{0,120}door=\{creating \? 'create' : 'signin'\}[\s\S]{0,40}initial=\{email \?/);
   });
   it('the form has no toggle and infers nothing from a failed sign-in', () => {
     const form = read('app', 'study', 'login', 'login-form.tsx');
