@@ -490,6 +490,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const queried = lastTake?.disputed.length ?? 0;
   const questionsLeft = question.total - question.index - 1;
   const marksLeft = Math.max(0, question.marksTotal - question.marksAnswered - question.marks);
+  // NOTHING HERE IS SCORED, so nothing here counts marks — not the stem, not
+  // the panel that opens after the tap, not the button out of it. Asked once
+  // and read everywhere, because it was answered in one place and forgotten in
+  // three.
+  const unscored = question.scored === false;
 
   // The desktop rail is 320px (--rail). Include the frame's border and
   // padding: a figure that cannot fit legibly gets the full sheet above it.
@@ -512,15 +517,21 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       {feedback && (
         <nav id="marking" className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b-[1.5px] border-rule pb-2.5 lg:gap-x-6 lg:gap-y-2">
           <b className="font-mono text-[15px] lg:text-[17px]">
-            {earned} of {outOf} marks
-            <span className="font-normal text-dim">
-              {fromPageMarks > 0 && <> · {fromPageMarks} from your page</>}
-              {queried > 0 && <> · {queried} re-mark{queried === 1 ? '' : 's'} requested</>}
-              {outcome.unassessedMarks > 0 && <> · {outcome.unassessedMarks} unassessed</>}
-            </span>
+            {unscored ? (
+              `Question ${question.index + 1} of ${question.total}`
+            ) : (
+              <>
+                {earned} of {outOf} marks
+                <span className="font-normal text-dim">
+                  {fromPageMarks > 0 && <> · {fromPageMarks} from your page</>}
+                  {queried > 0 && <> · {queried} re-mark{queried === 1 ? '' : 's'} requested</>}
+                  {outcome.unassessedMarks > 0 && <> · {outcome.unassessedMarks} unassessed</>}
+                </span>
+              </>
+            )}
           </b>
           <span className="flex gap-x-3 font-mono text-[10px] uppercase tracking-[0.1em] lg:gap-x-4">
-            <a href="#parts" className="underline underline-offset-[3px]">Your marking</a>
+            {!unscored && <a href="#parts" className="underline underline-offset-[3px]">Your marking</a>}
             <a href="#question" className="underline underline-offset-[3px]">Question</a>
             <a href="#worked-solution" className="underline underline-offset-[3px]"><span className="lg:hidden">Solution</span><span className="hidden lg:inline">Worked solution</span></a>
           </span>
@@ -564,10 +575,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       )}
       <div id="question" className={`flex items-baseline justify-between gap-3 lg:gap-4 ${feedback ? 'mt-4' : question.topicTitle ? 'mt-2.5 lg:mt-3' : ''}`}>
         <Html
-          className={`question-prose text-lg lg:max-w-[62ch] ${question.scored === false ? 'lg:text-[21px]' : ''}`}
+          className={`question-prose text-lg lg:max-w-[62ch] ${unscored ? 'lg:text-[21px]' : ''}`}
           html={question.stemHtml}
         />
-        {question.scored !== false && (
+        {!unscored && (
           <span className="shrink-0 font-mono text-xs text-dim">
             [{question.marks} mark{question.marks === 1 ? '' : 's'}]
           </span>
@@ -881,7 +892,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         reviewing ? null : (
         <>
         <HandIn
-          next={question.scored === false}
+          next={unscored}
           submitRef={submitRef}
           onClick={submit}
           disabled={pending || reading || !canSubmit}
@@ -995,7 +1006,8 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 <>
                   Next question →
                   <small className="mt-1 block font-mono text-[10px] font-medium tracking-[0.1em] opacity-85">
-                    {questionsLeft === 1 ? 'ONE MORE' : `${questionsLeft} MORE`} · {marksLeft} MARK{marksLeft === 1 ? '' : 'S'}
+                    {questionsLeft === 1 ? 'ONE MORE' : `${questionsLeft} MORE`}
+                    {!unscored && <> · {marksLeft} MARK{marksLeft === 1 ? '' : 'S'}</>}
                   </small>
                 </>
               )}

@@ -134,6 +134,26 @@ describe('the diagnostic card once it is answered', () => {
     expect(visibleText(html)).toContain('15% of $80 is $12');
   });
 
+  // NOT SCORED MEANS NOT SCORED, after the tap as well as before it. The
+  // panel used to open with "1 of 1 marks" over a question the diagnostic
+  // never marked, and the way out of it counted marks remaining.
+  it('neither shows a mark or a grade anywhere', () => {
+    const MARKS = /\bmarks?\b|\bgrade\b|\bscored?\b|\bearned\b|your marking|unassessed|re-mark/i;
+    for (const name of ['mcq-answered-right', 'mcq-answered-wrong'] as const) {
+      const text = visibleText(DIAGNOSTIC[name]());
+      // The bar's own "Not scored" is the one place the word belongs.
+      const card = text.slice(text.indexOf('Not scored') + 'Not scored'.length);
+      expect(card.match(MARKS), `${name}: ${card.slice(0, 120)}`).toBeNull();
+    }
+  });
+
+  it('the panel says where the student is, and the way out counts questions', () => {
+    const text = visibleText(DIAGNOSTIC['mcq-answered-right']());
+    expect(text).toContain('Question 3 of 8');
+    expect(text).toContain('Question Solution');
+    expect(text).toContain('5 MORE');
+  });
+
   it('both keep the answer marked as chosen and nothing else', () => {
     for (const name of ['mcq-answered-right', 'mcq-answered-wrong'] as const) {
       // The answer buttons by their own signature: once a card is answered

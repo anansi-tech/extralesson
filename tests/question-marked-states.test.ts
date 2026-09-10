@@ -55,7 +55,10 @@ describe('the marked question, three states', () => {
 
   it('the just-marked screen goes on to the next question with what is left', () => {
     const card = readFileSync(join(process.cwd(), 'app', 'study', 'session', '[id]', 'question-card.tsx'), 'utf8');
-    expect(card).toMatch(/Next question →[\s\S]{0,200}\{questionsLeft === 1 \? 'ONE MORE' : `\$\{questionsLeft\} MORE`\} · \{marksLeft\} MARK/);
+    // The marks half is the scored session's; a diagnostic counts questions alone.
+    expect(card).toMatch(
+      /Next question →[\s\S]{0,240}\{questionsLeft === 1 \? 'ONE MORE' : `\$\{questionsLeft\} MORE`\}\s*\{!unscored && <> · \{marksLeft\} MARK/,
+    );
     expect(card).toMatch(/questionsLeft <= 0 \? \(\s*'Finish session'/);
   });
 });
