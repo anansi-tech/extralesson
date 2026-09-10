@@ -105,11 +105,11 @@ function Account({ sitting, current, email, isAdmin, refundablePaymentId }: { si
         {/* Only where there is a live paid grant: a comp has nothing to give
             back, and a payer who is not the student has no account at all. */}
         {refundablePaymentId && (
-          <div className="mt-3 border-t border-paper-deep pt-2">
+          <div className="mt-2 border-t border-paper-deep pt-1">
             <RequestRefundButton paymentId={refundablePaymentId} className="min-h-11 w-full text-left underline underline-offset-[3px] disabled:opacity-60" />
           </div>
         )}
-        <form action={logout} className="mt-3 border-t border-paper-deep pt-2">
+        <form action={logout} className="mt-2 border-t border-paper-deep pt-1">
           <button className="min-h-11 w-full text-left underline underline-offset-[3px]">Sign out</button>
         </form>
       </div>
