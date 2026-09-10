@@ -12,6 +12,15 @@ import { earnableByMethod } from '@/lib/grade/method-marks';
 
 const IdZ = z.string().regex(/^[a-f0-9]{24}$/);
 
+/**
+ * A WRITE THAT MATCHED NOTHING IS NOT A SUCCESS. Every action here filters on
+ * a status as well as an id, so a card left open while the row moved writes
+ * nothing — and used to return as though it had, which read as saved.
+ */
+function refused({ matchedCount }: { matchedCount: number }, state: string): string | undefined {
+  return matchedCount === 0 ? `Nothing was written: this question is ${state}. Reload the card.` : undefined;
+}
+
 export type ApproveResult = { ok: true; hints: Record<string, string> } | { ok: false; error: string; problems: { code: string; hint?: string; problem: string }[] };
 
 /**
@@ -40,7 +49,9 @@ export async function approveQuestion(id: string): Promise<ApproveResult> {
   (q.rubric ?? []).forEach((r, i) => {
     if (hints[r.code]) set[`rubric.${i}.hint`] = hints[r.code];
   });
-  await Question.updateOne({ _id: id, status: 'draft' }, { $set: set });
+  const written = await Question.updateOne({ _id: id, status: 'draft' }, { $set: set });
+  const gone = refused(written, 'no longer a draft');
+  if (gone) return { ok: false, error: gone, problems: [] };
   // The bank grew, so the width fixture is taken again; an approval never fails on it.
   await snapshotLongMath().catch((e) => console.error('[long-math] snapshot failed:', e));
   revalidatePath('/admin/review');
@@ -51,22 +62,28 @@ export async function approveQuestion(id: string): Promise<ApproveResult> {
 // found after approval would otherwise be a script-only fix, visible to the
 // reviewer and not actionable. It is a status change, reversible, and deletes
 // nothing.
-export async function rejectQuestion(id: string): Promise<void> {
+export async function rejectQuestion(id: string): Promise<{ error?: string }> {
   await requireAdmin();
   await dbConnect();
-  await Question.updateOne(
+  const written = await Question.updateOne(
     { _id: IdZ.parse(id), status: { $in: ['draft', 'approved'] } },
     { $set: { status: 'retired' } },
   );
+  const gone = refused(written, 'already retired, or no longer in the bank');
+  if (gone) return { error: gone };
   revalidatePath('/admin/review');
+  return {};
 }
 
 /** Put a retired question back in the queue — the undo for the above. */
-export async function restoreQuestion(id: string): Promise<void> {
+export async function restoreQuestion(id: string): Promise<{ error?: string }> {
   await requireAdmin();
   await dbConnect();
-  await Question.updateOne({ _id: IdZ.parse(id), status: 'retired' }, { $set: { status: 'draft' } });
+  const written = await Question.updateOne({ _id: IdZ.parse(id), status: 'retired' }, { $set: { status: 'draft' } });
+  const gone = refused(written, 'not retired');
+  if (gone) return { error: gone };
   revalidatePath('/admin/review');
+  return {};
 }
 
 // Save an edit, WITHOUT approving: editing and approving are two judgements.
@@ -74,6 +91,12 @@ export async function restoreQuestion(id: string): Promise<void> {
 // approveQuestion is deliberately ungated because it approves a draft that has
 // already passed them. Saving without re-verifying would let edited content
 // reach a student unchecked.
+//
+// AN APPROVED QUESTION MAY BE EDITED, and doing so returns it to draft: the
+// edit changed what a student would see, so it faces review again, which is
+// what approve-gate.ts is for. The write used to filter on status: 'draft',
+// which made the demotion beside it unreachable and every approved question
+// silently uneditable.
 export async function saveQuestionEdit(
   id: string,
   editedJson: string,
@@ -90,15 +113,20 @@ export async function saveQuestionEdit(
     const issue = validated.error.issues[0];
     return { error: `${issue?.path.join('.') || 'question'}: ${issue?.message}` };
   }
+  // THE ROW FIRST, THE GATE SECOND. The gate's independent solve is a model
+  // call; a save that cannot land must not pay for one.
+  const _id = IdZ.parse(id);
+  await dbConnect();
+  if ((await Question.countDocuments({ _id })) === 0) {
+    return { error: 'Nothing was written: this question is no longer in the bank. Reload the queue.' };
+  }
   const gate = await approvalGate(validated.data);
   if (!gate.ok) {
     return { error: gate.reason };
   }
-  await dbConnect();
-  await Question.updateOne(
-    { _id: IdZ.parse(id), status: 'draft' },
-    { $set: { ...validated.data, status: 'draft' } },
-  );
+  const written = await Question.updateOne({ _id }, { $set: { ...validated.data, status: 'draft' } });
+  const gone = refused(written, 'no longer in the bank');
+  if (gone) return { error: gone };
   revalidatePath('/admin/review');
   return {};
 }

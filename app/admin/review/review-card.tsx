@@ -107,9 +107,16 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
 
   const [hintProblems, setHintProblems] = useState<{ code: string; hint?: string; problem: string }[]>([]);
   const [freshHints, setFreshHints] = useState<Record<string, string>>({});
-  const act = (fn: (id: string) => Promise<void>) =>
+  // A refusal stays on the card and says why; only a write that landed moves
+  // the queue on.
+  const act = (fn: (id: string) => Promise<{ error?: string }>) =>
     startTransition(async () => {
-      await fn(question.id);
+      const res = await fn(question.id);
+      if (res.error) {
+        setError(res.error);
+        return;
+      }
+      setError(undefined);
       router.replace(`/admin/review?from=${question.id}`);
     });
   // Approval writes the hints; a refusal names the rows and stays on the card.
