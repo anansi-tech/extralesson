@@ -19,11 +19,7 @@ export function DeleteAccount() {
     <section className="mt-8 border-[1.5px] border-ink bg-white p-5">
       <div className="section-label">Delete an account</div>
       <p className="mt-1 text-[13px] leading-snug">
-        Everything the student has: attempts, sessions, drafts, photographs and the readings of
-        them. It cannot be undone — attempts are the record every mark is folded from, so nothing
-        recomputes a deleted account back. The <b>payment is kept</b> and stripped of the person:
-        the money is a financial record, and the totals above stop reconciling if rows vanish from
-        under them.
+        Everything the student has: attempts, sessions, drafts, photos and the readings of them. It cannot be undone. The payment is kept and stripped of the person — the money is a financial record. If they have paid, refund and revoke first.
       </p>
 
       <form action={action} className="mt-3 flex flex-wrap items-end gap-2">
