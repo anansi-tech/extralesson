@@ -58,3 +58,55 @@ describe('the diagnostic', () => {
     expect(finishOrder(topics, (t) => measured.has(t.code), (t) => marks[t.code as keyof typeof marks]).map((t) => t.code)).toEqual(['c', 'e', 'b', 'a', 'd']);
   });
 });
+
+// NOTHING ON THIS CARD IS RIGHT OR WRONG. The diagnostic is not scored, so the
+// option a student picks is marked as chosen and nothing more — a red edge on
+// their own answer reads as a verdict, and the design sheet says it plainly:
+// no marks, no grade, no red pen anywhere in the diagnostic.
+describe('the diagnostic card carries no verdict', () => {
+  // Every token the system sheet spends on a verdict: the red pen and its
+  // tint, the green of an awarded mark, the amber of partial credit, and the
+  // marks themselves.
+  const VERDICT = /red-pen|green-pen|#fdf1f0|#c1121f|#2e7d5b|#e8f0e9|withheld|amber|✓|✗|✔|✘|\bcorrect\b|\bwrong\b/gi;
+  const cards = ['mcq', 'mcq-chosen', 'mcq-dont-know'] as const;
+
+  it('no verdict token reaches the question or its options, in any state', () => {
+    for (const name of cards) {
+      const html = DIAGNOSTIC[name]();
+      // Everything the student reads and picks from, up to the one action.
+      const asked = html.slice(0, html.indexOf('id="hand-in"'));
+      expect(asked.indexOf('id="hand-in"'), name).toBe(-1);
+      expect(asked.match(VERDICT), name).toBeNull();
+    }
+  });
+
+  it('the chosen option is marked as chosen, and differs from the ones not chosen', () => {
+    // Before the hand-in: the options, and nothing else the student can press.
+    const options = (html: string) =>
+      [...html.slice(0, html.indexOf('id="hand-in"')).matchAll(/<button[^>]*class="([^"]*)"/g)].map((m) => m[1]);
+    const plain = options(DIAGNOSTIC.mcq());
+    const picked = options(DIAGNOSTIC['mcq-chosen']());
+    expect(plain.length, 'four options and I don’t know').toBe(5);
+    expect(picked.length).toBe(plain.length);
+    const moved = picked.filter((c, i) => c !== plain[i]);
+    expect(moved.length, 'exactly one option changed').toBe(1);
+    expect(moved[0]).toContain('shadow-[inset_3px_0_0_var(--ink)]');
+    // Neutral: it gains a fill and a shadow the sheet already owns, and the
+    // border stays 1.5px so choosing does not move the row.
+    expect(moved[0]).toContain('border-[1.5px]');
+    expect(moved[0]).not.toMatch(VERDICT);
+  });
+
+  it('“I don’t know” is chosen the same way, without changing its ground', () => {
+    const dk = (html: string) => /<button[^>]*class="([^"]*)"[^>]*>I don/.exec(html)![1];
+    expect(dk(DIAGNOSTIC.mcq())).not.toContain('shadow-[inset_3px_0_0_var(--ink)]');
+    expect(dk(DIAGNOSTIC['mcq-dont-know']())).toContain('shadow-[inset_3px_0_0_var(--ink)]');
+    expect(dk(DIAGNOSTIC['mcq-dont-know']())).not.toMatch(VERDICT);
+  });
+
+  it('the one red on the card is the action, not a judgement', () => {
+    const html = DIAGNOSTIC['mcq-chosen']();
+    expect((html.match(/red-pen/g) ?? []).length).toBe(1);
+    expect(html.slice(html.indexOf('id="hand-in"'))).toContain('bg-red-pen');
+  });
+});

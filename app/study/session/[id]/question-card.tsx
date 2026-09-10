@@ -110,6 +110,9 @@ export interface CardQuestion {
 /** The MCQ index that means "I don't know": past every real option, so it can only score wrong. */
 export const DONT_KNOW = 4;
 
+/** The one mark an option carries: chosen. Never right, never wrong. */
+export const CHOSEN = 'bg-paper-deep shadow-[inset_3px_0_0_var(--ink)]';
+
 type CardSlot = CardQuestion['parts'][number]['slots'][number];
 type CardPart = CardQuestion['parts'][number];
 
@@ -608,8 +611,13 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 key={i}
                 disabled={!!feedback}
                 onClick={() => setSelected(i)}
-                className={`flex min-h-11 w-full items-baseline gap-3 border-[1.5px] p-3.5 text-left text-base ${
-                  selected === i ? 'border-red-pen bg-[#FDF1F0]' : 'border-ink bg-transparent'
+                // CHOSEN, NOT MARKED. The diagnostic is not scored, and a
+                // student reading a red edge on their own answer reads it as
+                // wrong. The mark is the sheet's 3px bar, inset so choosing
+                // moves nothing — it is the one signal that also reads on "I
+                // don't know", whose ground is already the tint.
+                className={`flex min-h-11 w-full items-baseline gap-3 border-[1.5px] border-ink p-3.5 text-left text-base ${
+                  selected === i ? CHOSEN : 'bg-transparent'
                 } disabled:opacity-70`}
               >
                 <span className="shrink-0 font-mono text-xs text-dim">{String.fromCharCode(65 + i)}</span>
@@ -622,8 +630,8 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             <button
               disabled={!!feedback}
               onClick={() => setSelected(DONT_KNOW)}
-              className={`min-h-11 w-full border-[1.5px] p-3.5 text-left text-base ${
-                selected === DONT_KNOW ? 'border-red-pen bg-[#FDF1F0]' : 'border-ink bg-paper-deep'
+              className={`min-h-11 w-full border-[1.5px] border-ink p-3.5 text-left text-base ${
+                selected === DONT_KNOW ? CHOSEN : 'bg-paper-deep'
               } disabled:opacity-70`}
             >
               I don&rsquo;t know

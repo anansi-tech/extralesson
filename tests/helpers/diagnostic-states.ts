@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import QuestionCard, { type CardQuestion } from '@/app/study/session/[id]/question-card';
+import QuestionCard, { DONT_KNOW, type CardQuestion } from '@/app/study/session/[id]/question-card';
 import { SessionBar } from '@/app/study/session/[id]/session-bar';
 import { DiagnosticIntro } from '@/app/study/session/[id]/diagnostic-intro';
 import { DiagnosticFinish } from '@/app/study/session/[id]/diagnostic-finish';
@@ -23,11 +23,20 @@ const mcq: CardQuestion = {
   rubricCodes: [],
 };
 
+/** The card with a choice already made: the state a student is in most of the time. */
+const chosen = (selected: number): CardQuestion => ({ ...mcq, draft: { answers: {}, values: {}, selected } });
+
 export const DIAGNOSTIC = {
   intro: () => renderToStaticMarkup(createElement(DiagnosticIntro, { total: 8, minutes: 12, href: '/study/session/d1?begin=1' })),
   mcq: () =>
     renderToStaticMarkup(createElement(SessionBar, { index: 2, total: 8, marksAnswered: 2, marksTotal: 8, diagnostic: true })) +
     renderToStaticMarkup(createElement(QuestionCard, { question: mcq })),
+  'mcq-chosen': () =>
+    renderToStaticMarkup(createElement(SessionBar, { index: 2, total: 8, marksAnswered: 2, marksTotal: 8, diagnostic: true })) +
+    renderToStaticMarkup(createElement(QuestionCard, { question: chosen(1) })),
+  'mcq-dont-know': () =>
+    renderToStaticMarkup(createElement(SessionBar, { index: 2, total: 8, marksAnswered: 2, marksTotal: 8, diagnostic: true })) +
+    renderToStaticMarkup(createElement(QuestionCard, { question: chosen(DONT_KNOW) })),
   finish: () =>
     renderToStaticMarkup(
       createElement(DiagnosticFinish, {
