@@ -229,7 +229,15 @@ ${
   // stapled together rather than one question that goes somewhere.
   const shapeSection =
     recipe.shape === 'drill'
-      ? ''
+      ? kind === 'mcq'
+        ? ''
+        : `QUESTION SHAPE — this is a SHORT DRILL ITEM, not a Paper 2 question:
+- It is worth ${recipe.marks} marks and it asks for ONE thing done once. A student meeting it should be able to finish it and see whether they were right, rather than settle in to a question that develops.
+- There is no chain. Do not open with a step that a later part uses, do not carry a scenario across the parts, and do not reach for a second context to fill the marks out. If the mathematics needs a chain to be worth asking, it is not this item.
+- ONE METHOD, short enough to write out and photograph: a few lines of working, not a page. The rubric marks the steps of that one method.
+- Say the whole setting in the stem. A drill item has no stimulus to return to.
+
+`
       : `QUESTION SHAPE — this is a WHOLE Paper 2 question, not a fragment:
 - It is worth ${recipe.marks} marks and it develops. The papers open a question with something a candidate can do immediately, then build on it: a computation that becomes an applied context, a formula rearranged and then used, a figure measured and then reasoned about.
 ${
@@ -322,6 +330,9 @@ function partCountGuidance(marks: number, shape: 'paper' | 'drill'): string {
   // the sub-parts under them, which are slots (ROUND_1_8 §2). A drill item keeps
   // the flat fingerprint: median 4 parts, a third at 5-6.
   if (shape === 'paper') return marks >= 12 ? '3-4' : '2-4';
+  // Four marks is one demand. Splitting it three ways makes each part a
+  // fragment, which is the shape a first question exists to avoid.
+  if (marks <= 4) return '1-2';
   if (marks <= 5) return '2-3';
   if (marks <= 7) return '3-4';
   return '4-6';

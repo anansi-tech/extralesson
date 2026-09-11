@@ -125,6 +125,42 @@ describe('buildDraftPrompt — R1.6 §7 paper patterns', () => {
   });
 });
 
+/**
+ * A SHORT QUESTION HAS TO BE DESCRIBED, the way a whole one is. The drill
+ * branch said nothing at all, so a model asked for four marks wrote a Paper 2
+ * question that happened to be small — and the bank holds no structured
+ * question under nine marks, in any status, to be a student's first.
+ */
+describe('buildDraftPrompt — a drill item is a different shape, and says so', () => {
+  const drill = (marks: number) => prompt({ topic: 'M2-ALG2', recipe: { marks, shape: 'drill' } });
+
+  it('says what a short question is, and does not say what a whole one is', () => {
+    const p = drill(4);
+    expect(p).toContain('SHORT DRILL ITEM');
+    expect(p).toContain('ONE thing done once');
+    expect(p).toContain('There is no chain');
+    expect(p).toContain('ONE METHOD');
+    expect(p).not.toContain('WHOLE Paper 2 question');
+  });
+
+  it('asks for one or two parts at four marks, and more when there are more marks', () => {
+    expect(drill(4)).toContain('1-2 lettered parts');
+    expect(drill(7)).toContain('3-4 lettered parts');
+  });
+
+  it('still tells a paper-shaped question it develops', () => {
+    const p = prompt({ topic: 'M2-ALG2', recipe: { marks: 10, shape: 'paper' } });
+    expect(p).toContain('WHOLE Paper 2 question');
+    expect(p).not.toContain('SHORT DRILL ITEM');
+  });
+
+  it('says neither to an MCQ, which is one mark and needs no shape at all', () => {
+    const p = prompt({ topic: 'M2-ALG2', recipe: { kind: 'mcq', marks: 1, shape: 'drill' } });
+    expect(p).not.toContain('SHORT DRILL ITEM');
+    expect(p).not.toContain('WHOLE Paper 2 question');
+  });
+});
+
 describe('buildDraftPrompt — figures are sketches, not scale drawings', () => {
   it('forbids measuring off a diagram, which our templates cannot support', () => {
     const p = buildDraftPrompt({

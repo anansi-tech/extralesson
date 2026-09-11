@@ -1,7 +1,7 @@
 // Recipe-driven question generation (R1.5 §5).
 // Default: `pnpm generate -- --count 10` — each question's recipe comes from
 // the largest target-matrix deficit. `--topic M1-ALG1` (and `--kind`,
-// `--difficulty`) narrow the deficit search as overrides.
+// `--difficulty`, `--shape`) narrow the deficit search as overrides.
 //
 // Post-gen gate order (§5): Zod → visual verify → independent solve →
 // internal dedup vs approved bank. Every rejection logs the full evidence.
@@ -37,6 +37,7 @@ const ArgsZ = z.object({
   kind: z.enum(['mcq', 'structured']).optional(),
   difficulty: z.coerce.number().pipe(z.union([z.literal(1), z.literal(2), z.literal(3)])).optional(),
   module: z.coerce.number().pipe(z.union([z.literal(1), z.literal(2), z.literal(3)])).optional(),
+  shape: z.enum(['paper', 'drill']).optional(),
   dryRun: z.boolean(),
   poison: z.boolean(),
 });
@@ -53,11 +54,12 @@ function parseArgs() {
     kind: get('kind'),
     difficulty: get('difficulty'),
     module: get('module'),
+    shape: get('shape'),
     dryRun: argv.includes('--dry-run'),
     poison: argv.includes('--poison'),
   });
   if (!parsed.success) {
-    console.error('Usage: pnpm generate -- --count 10 [--topic M1-ALG1] [--module 1] [--kind structured] [--difficulty 2] [--dry-run]');
+    console.error('Usage: pnpm generate -- --count 10 [--topic M1-ALG1] [--module 1] [--kind structured] [--difficulty 2] [--shape drill] [--dry-run]');
     console.error(parsed.error.flatten().fieldErrors);
     process.exit(1);
   }
@@ -118,6 +120,7 @@ async function buildRecipe(
     kind: args.kind,
     difficulty: args.difficulty,
     module: args.module,
+    shape: args.shape,
   });
   // A paper-shaped recipe draws objectives from two or three topics of one
   // module, so the prompt's topic line and objective block are assembled from

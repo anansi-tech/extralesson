@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import {
   computeMatrix,
   largestDeficit,
@@ -199,6 +201,28 @@ describe('nextRecipe — overrides constrain the search, never patch its output'
       shape: 'drill',
     }).recipe;
     expect(drill.marks).toBe(STRUCTURED_MARKS[3]);
+  });
+
+  it('a difficulty-1 drill is four marks — the size a first question needs', () => {
+    // Every structured question the bank holds is 9 marks or more, so a student
+    // who has not started is handed an exam question. Four marks is one demand.
+    expect(STRUCTURED_MARKS[1]).toBe(4);
+    const { recipe } = nextRecipe(emptyMatrix(), objectivesByTopic, {
+      kind: 'structured',
+      difficulty: 1,
+      shape: 'drill',
+    });
+    expect(recipe.marks).toBe(4);
+    expect(recipe.shape).toBe('drill');
+    // The rubric split still accounts for every mark of it.
+    const split = recipe.rubric_split!;
+    expect(split.CK + split.AK + split.R).toBe(4);
+  });
+
+  it('and a paper-shaped question of the same difficulty is unchanged', () => {
+    const { recipe } = nextRecipe(emptyMatrix(), objectivesByTopic, { kind: 'structured', difficulty: 1 });
+    expect(recipe.shape).toBe('paper');
+    expect(recipe.marks).toBe(PAPER_MARKS[1]);
   });
 
   it('a topic override selects that topic and its representation targets', () => {
@@ -607,5 +631,25 @@ describe('nextRecipe — integration at difficulty 3', () => {
       shape: 'drill',
     });
     expect(recipe.integrate).toBeUndefined();
+  });
+});
+
+/**
+ * THE FLAG THAT MAKES THE DRILL PATH REACHABLE. nextRecipe has honoured
+ * `shape` since R1.8 and the prompt has had a drill branch for as long, but the
+ * CLI never named it, so no structured question under nine marks has ever been
+ * generated — 446 approved and 106 retired, none of them.
+ *
+ * Read from the source, as the hints CLI is: importing the script RUNS it, and
+ * a test that starts a generation run is worse than the one it replaces.
+ */
+describe('pnpm generate -- --shape', () => {
+  const generate = readFileSync(join(process.cwd(), 'scripts', 'generate.ts'), 'utf8');
+
+  it('parses the flag and hands it to the deficit search', () => {
+    expect(generate).toMatch(/shape: z\.enum\(\['paper', 'drill'\]\)\.optional\(\)/);
+    expect(generate).toMatch(/shape: get\('shape'\)/);
+    expect(generate).toMatch(/shape: args\.shape,/);
+    expect(generate).toContain('[--shape drill]');
   });
 });

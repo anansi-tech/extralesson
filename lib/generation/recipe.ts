@@ -134,8 +134,11 @@ export interface ObjectiveCoverage {
 }
 
 // Anchored on the 2027 blueprint (30 marks / 3 questions); drill items run
-// smaller than an exam question at low difficulty.
-export const STRUCTURED_MARKS: Record<1 | 2 | 3, number> = { 1: 5, 2: 7, 3: 9 };
+// smaller than an exam question at low difficulty. FOUR at difficulty 1, so the
+// bank has something a student can finish before deciding whether to continue:
+// every structured question we hold is 9 marks or more, and a first question
+// that size is an exam paper handed to someone who has not started.
+export const STRUCTURED_MARKS: Record<1 | 2 | 3, number> = { 1: 4, 2: 7, 3: 9 };
 
 // The size the exam sets — ROUND_1_8 §2. Difficulty decides, so marks stay
 // derived from the settled recipe rather than chosen twice.
