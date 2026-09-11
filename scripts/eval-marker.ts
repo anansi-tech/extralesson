@@ -32,6 +32,7 @@ import { claimsFor } from '@/lib/grade/claim-template';
 import { applyFormatDependency, requireEvidence, requireGrounding } from '@/lib/grade/method-marks';
 import { questionText } from '@/app/study/session/[id]/mark-working';
 import { provenance, writeResults } from './eval-provenance';
+import { isEntryPoint } from './entry';
 
 const DIR = join(process.cwd(), 'design', 'golden');
 // THE BARS (ROUND_6 Task 7): CAO false award 0 in every run, method false
@@ -401,4 +402,7 @@ async function main() {
   process.exit(passes ? 0 : 1);
 }
 
-main();
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main();
+}

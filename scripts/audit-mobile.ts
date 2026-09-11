@@ -28,6 +28,7 @@ import { renderVisual } from '@/lib/visuals';
 import { legibleMinWidth, MIN_LABEL_PX } from '@/lib/visuals/legibility';
 import { readInputShape } from '@/lib/grade/input-shape';
 import { inputAffordance } from '@/lib/grade/input-hints';
+import { isEntryPoint } from './entry';
 
 const BASE = process.env.BASE_URL ?? 'http://localhost:3000';
 const W = 360;
@@ -292,4 +293,7 @@ async function main() {
   process.exit(failed === 0 ? 0 : 1);
 }
 
-main();
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main();
+}

@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { dbConnect, Question } from '@/lib/db';
 import type { HintRow } from './generate-hints';
+import { isEntryPoint } from './entry';
 
 async function main() {
   const n = Number(process.argv[2]);
@@ -24,7 +25,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

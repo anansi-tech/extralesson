@@ -25,6 +25,7 @@ import 'dotenv/config';
 import { chromium, type Page } from 'playwright-core';
 import { dbConnect, Attempt, PracticeSession, Question, SessionDraft, Student } from '@/lib/db';
 import { createSessionToken, getSecret } from '@/lib/auth/token';
+import { isEntryPoint } from './entry';
 
 const BASE = process.env.BASE_URL ?? 'http://localhost:3000';
 const AUDIT_EMAIL = 'draft-audit@extralesson.invalid';
@@ -161,7 +162,10 @@ async function main() {
   process.exit(failures.length === 0 ? 0 : 1);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

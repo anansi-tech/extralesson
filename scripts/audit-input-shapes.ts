@@ -11,6 +11,7 @@
 import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
 import { readInputShape, type InputShape } from '@/lib/grade/input-shape';
+import { isEntryPoint } from './entry';
 
 // Shapes whose value cannot be entered as one plain string without the student
 // supplying structure themselves — a delimiter, a bracket, a layout.
@@ -69,4 +70,7 @@ async function main() {
   process.exit(0);
 }
 
-main();
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main();
+}

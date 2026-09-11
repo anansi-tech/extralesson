@@ -8,6 +8,7 @@
 // Run: npx tsx scripts/reset-question-bank.ts --yes
 import 'dotenv/config';
 import { dbConnect, Attempt, PracticeSession, Question, Student, Topic, Blueprint } from '@/lib/db';
+import { isEntryPoint } from '../entry';
 
 async function main() {
   await dbConnect();
@@ -44,7 +45,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

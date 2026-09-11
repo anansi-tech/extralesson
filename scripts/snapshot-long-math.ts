@@ -3,6 +3,7 @@
 import 'dotenv/config';
 import { dbConnect } from '@/lib/db';
 import { snapshotLongMath } from '@/lib/admin/long-math-fixture';
+import { isEntryPoint } from './entry';
 
 async function main() {
   await dbConnect();
@@ -13,7 +14,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

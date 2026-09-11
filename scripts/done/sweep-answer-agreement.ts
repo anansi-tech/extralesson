@@ -3,6 +3,7 @@
 import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
 import { questionDisagreements, type SlotAgreement } from '@/lib/grade/answer-agrees';
+import { isEntryPoint } from '../entry';
 
 async function main() {
   await dbConnect();
@@ -30,4 +31,8 @@ async function main() {
   }
   process.exit(0);
 }
-void main();
+
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  void main();
+}

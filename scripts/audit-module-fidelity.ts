@@ -16,6 +16,7 @@
 import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
 import { reviewFlags, type FlaggableQuestion } from '@/lib/admin/review-flags';
+import { isEntryPoint } from './entry';
 
 async function main() {
   await dbConnect();
@@ -41,7 +42,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

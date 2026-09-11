@@ -8,6 +8,7 @@ import { dbConnect, Question } from '@/lib/db';
 import { transcribeWorking, linesForSlot, type TranscriptionResult } from '@/lib/grade/transcribe';
 import { markableSlots } from '@/lib/grade/mark';
 import { provenance, writeResults } from './eval-provenance';
+import { isEntryPoint } from './entry';
 
 const GOLDEN = join(process.cwd(), 'design', 'golden');
 const CASES = join(process.cwd(), 'calibration', 'reads');
@@ -100,7 +101,10 @@ async function main() {
   process.exit(clean ? 0 : 1);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

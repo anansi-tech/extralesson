@@ -3,6 +3,7 @@
 import 'dotenv/config';
 import { dbConnect, Blueprint } from '@/lib/db';
 import { seedBlueprints } from '@/lib/seed/blueprints';
+import { isEntryPoint } from './entry';
 
 function assertIntegrity() {
   for (const b of seedBlueprints) {
@@ -30,7 +31,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

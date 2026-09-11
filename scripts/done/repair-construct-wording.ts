@@ -17,6 +17,7 @@ import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
 import { figureGivesAnswer } from '@/lib/targets/construct';
 import { QuestionDraftZ } from '@/lib/validation/question';
+import { isEntryPoint } from '../entry';
 
 const SHOWN =
   /\b(?:use\s+the\s+[a-z' ]{0,24}?(?:grid|graph|diagram|figure|sketch)|the\s+[a-z' ]{0,24}?(?:grid|graph|diagram|figure|sketch)\s+(?:shows?|below|above|provided|is\s+for|represents)|shown\s+below|below\s+shows|as\s+shown)/i;
@@ -109,4 +110,7 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => { console.error(e); process.exit(1); });
+}

@@ -20,6 +20,7 @@
 // Run: pnpm tsx scripts/repair-unpaid-formats.ts [--apply]
 import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
+import { isEntryPoint } from '../entry';
 
 // A criterion already marking the form: relabelling it costs nothing.
 const FORM_ROW =
@@ -106,4 +107,7 @@ async function main() {
   process.exit(0);
 }
 
-main();
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main();
+}

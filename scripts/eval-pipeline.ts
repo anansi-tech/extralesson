@@ -14,6 +14,7 @@ import { dbConnect, Attempt, CapturedImage, PracticeSession, Question, Student, 
 import { attemptOutcome } from '@/lib/study/outcome';
 import { markableSlots } from '@/lib/grade/mark';
 import { supportedSlips } from '@/lib/grade/method-marks';
+import { isEntryPoint } from './entry';
 
 const GOLDEN = join(process.cwd(), 'design', 'golden');
 const CASES = join(process.cwd(), 'calibration', 'reads');
@@ -150,7 +151,10 @@ async function main() {
   process.exit(passes ? 0 : 1);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

@@ -15,6 +15,7 @@ import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
 import { independentSolve } from '@/lib/generation/solve';
 import { QuestionDraftZ } from '@/lib/validation/question';
+import { isEntryPoint } from './entry';
 
 async function main() {
   const apply = process.argv.includes('--yes');
@@ -73,7 +74,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

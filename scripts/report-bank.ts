@@ -16,6 +16,7 @@ import { CONSTRUCT_SHARE } from '@/lib/targets/construct';
 import { STRUCTURED_ARCHETYPE_TARGETS } from '@/lib/targets/representation';
 import { TARGET_ACTS_PER_MARK, TARGET_CHAIN_DEPTH } from '@/lib/targets/difficulty';
 import { NAMES, NAMING_RATE, namesAPerson, recentActors } from '@/lib/generation/territories';
+import { isEntryPoint } from './entry';
 
 /**
  * WHAT THE STEERING CHANGES WERE WORTH, MEASURED AGAINST THE DAY THEY LANDED.
@@ -332,7 +333,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

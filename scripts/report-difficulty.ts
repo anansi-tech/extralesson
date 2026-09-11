@@ -19,6 +19,7 @@ import {
   summarise,
   type QuestionShapeLike,
 } from '@/lib/targets/difficulty';
+import { isEntryPoint } from './entry';
 
 interface Lean extends QuestionShapeLike {
   _id: unknown;
@@ -119,7 +120,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

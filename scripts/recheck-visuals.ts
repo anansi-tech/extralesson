@@ -18,6 +18,7 @@ import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
 import { verifyQuestionVisual, verifyStimulusTable } from '@/lib/visuals/verify';
 import type { StoredVisual } from '@/lib/visuals';
+import { isEntryPoint } from './entry';
 
 interface LeanDraft {
   _id: unknown;
@@ -81,7 +82,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

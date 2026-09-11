@@ -12,6 +12,7 @@
 // Run: pnpm tsx scripts/clear-abandoned-sessions.ts [--apply]
 import 'dotenv/config';
 import { dbConnect, Attempt, PracticeSession, Student } from '@/lib/db';
+import { isEntryPoint } from './entry';
 
 async function main() {
   const apply = process.argv.includes('--apply');
@@ -41,4 +42,7 @@ async function main() {
   process.exit(0);
 }
 
-main();
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main();
+}

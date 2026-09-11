@@ -15,6 +15,7 @@
 // Run: pnpm tsx scripts/repair-diagnostic-mode.ts [--apply]
 import 'dotenv/config';
 import { dbConnect, PracticeSession, Question } from '@/lib/db';
+import { isEntryPoint } from '../entry';
 
 async function main() {
   const apply = process.argv.includes('--apply');
@@ -43,4 +44,7 @@ async function main() {
   process.exit(0);
 }
 
-main();
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main();
+}

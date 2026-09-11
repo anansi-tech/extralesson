@@ -10,6 +10,7 @@ import { MODEL_ID } from '@/lib/ai';
 import { dbConnect, Question } from '@/lib/db';
 import { earnableByMethod } from '@/lib/grade/method-marks';
 import { checkedHints, type HintTarget } from '@/lib/generation/hints';
+import { isEntryPoint } from './entry';
 
 const DIR = join(process.cwd(), 'design', 'hints');
 const DEFAULT_BATCH = 200;
@@ -111,7 +112,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

@@ -24,6 +24,7 @@ import { markSplit } from '@/lib/grade/assessable';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 import { GRADER_VERSION } from '@/lib/grade/version';
 import { loadStudyState } from '@/lib/study/state';
+import { isEntryPoint } from './entry';
 
 /**
  * The overall estimate this student would carry if every attempt were re-marked
@@ -207,7 +208,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

@@ -19,6 +19,7 @@ import { dbConnect, Question } from '@/lib/db';
 import { StructuredQuestionZ, McqQuestionZ } from '@/lib/validation/question';
 import { verifyStimulusTable } from '@/lib/visuals/verify';
 import { svgPlainLabel } from '@/lib/visuals/svg';
+import { isEntryPoint } from '../entry';
 
 const ARRAY_BLOCK = /\\\[\s*\\begin\{array\}\{([^}]*)\}([\s\S]*?)\\end\{array\}\s*\\\]/;
 
@@ -154,4 +155,7 @@ async function main() {
   process.exit(0);
 }
 
-void main();
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  void main();
+}

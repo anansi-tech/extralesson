@@ -5,6 +5,7 @@
 import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
 import { deriveTemplate, type ScopeSlot } from '@/lib/grade/claim-template';
+import { isEntryPoint } from '../entry';
 
 interface Row { code: string; criterion: string; slot_ref: string; template?: string }
 interface Q {
@@ -80,7 +81,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

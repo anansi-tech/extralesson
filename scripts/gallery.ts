@@ -2,6 +2,7 @@ import Module from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { join } from 'node:path';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { isEntryPoint } from './entry';
 
 // The card is a client component and asks the router for itself; outside the
 // app there is none, so the one import is answered by a stub.
@@ -39,7 +40,10 @@ async function main() {
   console.log(`${names.length} screens in ${OUT}`);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

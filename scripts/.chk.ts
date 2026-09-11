@@ -2,7 +2,9 @@ import 'dotenv/config';
 import { chromium } from 'playwright-core';
 import { dbConnect, PracticeSession, Question, SessionDraft, Student } from '@/lib/db';
 import { createSessionToken, getSecret } from '@/lib/auth/token';
-(async () => {
+import { isEntryPoint } from './entry';
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) void (async () => {
   await dbConnect();
   const all = await Question.find({}).select('_id').lean<any[]>();
   const q = all.find((x) => String(x._id).endsWith(process.argv[3]))!;

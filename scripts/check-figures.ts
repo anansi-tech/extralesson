@@ -11,6 +11,7 @@
 import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
 import { renderVisual, type StoredVisual } from '@/lib/visuals';
+import { isEntryPoint } from './entry';
 
 // Rounding puts a chord end a fraction of a pixel past the edge; that is not a
 // figure anyone can see is wrong.
@@ -69,7 +70,10 @@ async function main() {
   process.exit(1);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

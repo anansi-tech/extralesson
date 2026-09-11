@@ -3,6 +3,7 @@
 import 'dotenv/config';
 import { dbConnect } from '@/lib/db';
 import { backfillReadKeys } from '@/lib/db/backfill-read-keys';
+import { isEntryPoint } from '../entry';
 
 async function main() {
   await dbConnect();
@@ -11,7 +12,10 @@ async function main() {
   process.exit(n.unresolved ? 1 : 0);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

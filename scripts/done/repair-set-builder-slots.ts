@@ -14,6 +14,7 @@
 import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
 import { isSetBuilder } from '@/lib/grade/input-shape';
+import { isEntryPoint } from '../entry';
 
 async function main() {
   const apply = process.argv.includes('--apply');
@@ -49,4 +50,7 @@ async function main() {
   process.exit(0);
 }
 
-main();
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main();
+}

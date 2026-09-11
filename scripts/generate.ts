@@ -30,6 +30,7 @@ import { lintCriteria } from '@/lib/prompts/mark-scheme';
 import { paramsDocFor } from '@/lib/visuals';
 import { figureGivesAnswer } from '@/lib/targets/construct';
 import type { ModuleNumber } from '@/lib/types';
+import { isEntryPoint } from './entry';
 
 const ArgsZ = z.object({
   count: z.coerce.number().int().min(1).max(50),
@@ -541,7 +542,10 @@ async function main() {
   process.exit(inserted >= args.count ? 0 : 2);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

@@ -5,6 +5,7 @@
 import 'dotenv/config';
 import { dbConnect } from '@/lib/db';
 import { applyPurge, planPurge } from '@/lib/db/purge-test-payments';
+import { isEntryPoint } from '../entry';
 
 async function main() {
   const apply = process.argv.includes('--apply');
@@ -41,7 +42,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

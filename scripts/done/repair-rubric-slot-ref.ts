@@ -13,6 +13,7 @@
 // Run: pnpm tsx scripts/repair-rubric-slot-ref.ts [--yes]
 import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
+import { isEntryPoint } from '../entry';
 
 interface Lean {
   _id: unknown;
@@ -69,7 +70,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

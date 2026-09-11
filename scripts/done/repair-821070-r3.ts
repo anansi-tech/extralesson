@@ -4,6 +4,7 @@
 // Run: pnpm tsx scripts/repair-821070-r3.ts [--yes]
 import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
+import { isEntryPoint } from '../entry';
 
 const CODE = 'R3';
 
@@ -24,7 +25,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

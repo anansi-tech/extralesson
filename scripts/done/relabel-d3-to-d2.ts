@@ -15,6 +15,7 @@
 import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
 import { chainDepth } from '@/lib/targets/difficulty';
+import { isEntryPoint } from '../entry';
 
 async function main() {
   const apply = process.argv.includes('--yes');
@@ -63,7 +64,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

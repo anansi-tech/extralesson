@@ -13,6 +13,7 @@ import 'dotenv/config';
 import { dbConnect, Question } from '@/lib/db';
 import { StructuredQuestionZ, McqQuestionZ } from '@/lib/validation/question';
 import { renderMathHtml } from '@/lib/katex';
+import { isEntryPoint } from '../entry';
 
 const ESC = String.fromCharCode(27);
 
@@ -264,9 +265,8 @@ async function main() {
   process.exit(0);
 }
 
-// Only when run as a script: the helpers are imported by tests and by ad-hoc
-// checks, and an import must not start a database write.
-if (process.argv[1]?.endsWith('repair-formatting.ts')) {
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
   main().catch((err) => {
     console.error(err);
     process.exit(1);

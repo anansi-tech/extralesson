@@ -6,6 +6,7 @@ import { module1Topics } from '@/lib/seed/module1-topics';
 import { module2Topics } from '@/lib/seed/module2-topics';
 import { module3Topics } from '@/lib/seed/module3-topics';
 import { OBJECTIVE_ID_RE } from '@/lib/validation/question';
+import { isEntryPoint } from './entry';
 
 const allTopics = [...module1Topics, ...module2Topics, ...module3Topics];
 
@@ -35,7 +36,10 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only when run as a script: an import must not start the work.
+if (isEntryPoint(import.meta.url)) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
