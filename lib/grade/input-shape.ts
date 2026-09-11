@@ -229,7 +229,10 @@ export function readInputShape(rawAnswer: string): ShapeReading {
     return { shape: 'inequality', boxes: 1, ordered: true, values: [s] };
   }
 
-  const coord = s.match(/^\(\s*(-?[\d./\s]+)\s*,\s*(-?[\d./\s]+)\s*\)$/);
+  // The point may be named — O(0,0) is the point (0,0), the way "x = 5" is the
+  // value 5 — and the comparator strips the name. Without the same reading here
+  // the two sides split into different numbers of boxes and never meet.
+  const coord = s.match(/^(?:[A-Za-z]\s*)?\(\s*(-?[\d./\s]+)\s*,\s*(-?[\d./\s]+)\s*\)$/);
   if (coord && isValue(coord[1]) && isValue(coord[2])) {
     return { shape: 'coordinate', boxes: 2, ordered: true, values: [coord[1].trim(), coord[2].trim()] };
   }

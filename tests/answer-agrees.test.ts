@@ -63,9 +63,20 @@ describe('a slot that disagrees with itself', () => {
     expect(slotDisagreements('b.i', slot({ answer: '1 h 15 min', accept: ['75 min'] }))).toEqual([]);
   });
 
-  it('reports a canonical that does not survive a value-preserving rewrite', () => {
-    const found = slotDisagreements('a.i', slot({ answer: '18\\ 000' }));
-    expect(found.map((f) => f.failure)).toContain('spacing commands removed');
+  it('no longer reports digit grouping, which is what the comparator fix was', () => {
+    // `18\ 000` is eighteen thousand however the space is written. This case
+    // failed before the spacing commands were stripped ahead of the grouper.
+    expect(slotDisagreements('a.i', slot({ answer: '18\\ 000' }))).toEqual([]);
+    expect(slotDisagreements('a.i', slot({ answer: '$3\\ 080\\text{ L}$' }))).toEqual([]);
+  });
+
+  it('runs every rewrite, and each one preserves the value', () => {
+    // The rewrites are notations a student may type. A canonical that stops
+    // meaning the same thing under one of them is a slot nobody can answer, so
+    // each is exercised here on a value that uses it.
+    for (const answer of ['\\left(2 \\times 3\\right)', '12 \\div 4', 'x^2 + x^3', '18\\ 000', '2\\,000']) {
+      expect(slotDisagreements('a.i', slot({ answer })), answer).toEqual([]);
+    }
   });
 
   it('leaves a matrix alone: \\\\ is a row separator, not a space', () => {

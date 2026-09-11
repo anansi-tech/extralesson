@@ -64,6 +64,15 @@ const SPELLING: Record<string, string> = {
 // unit would reject it against 15.708, which is the same value written out.
 const MATH_WORDS = new Set(['pi', 'e', 'sqrt', 'frac', 'cdot', 'times', 'text', 'log', 'ln', 'sin', 'cos', 'tan']);
 
+/**
+ * Every multi-letter unit word, for readers that must tell a NAME from a
+ * product of symbols. "cm" is a centimetre and never c times m, in the same way
+ * "sin" is a function and never s times i times n.
+ */
+export const UNIT_WORDS: ReadonlySet<string> = new Set(
+  [...Object.keys(BASE), ...Object.keys(SPELLING)].filter((w) => w.length > 1),
+);
+
 function baseUnit(word: string): string {
   const w = word.trim();
   return SPELLING[w] ?? w;

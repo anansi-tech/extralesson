@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { answersEquivalent, answersEquivalentAny, parseNumeric } from '@/lib/grade/equivalence';
+import { answersEquivalent, answersEquivalentAny, parseNumeric, splitAdjacentSymbols } from '@/lib/grade/equivalence';
 
 describe('parseNumeric', () => {
   it('parses plain numbers, negatives, decimals', () => {
@@ -365,5 +365,86 @@ describe('\\% is the same sign as %', () => {
     // itself supplied is not a wrong answer, and percent was the one place we
     // used to refuse it.
     expect(answersEquivalent('$10\\%$', '10')).toBe(true);
+  });
+});
+
+// THE FOUR GAPS THE R13 AGREEMENT SWEEP FOUND, each a comparison the marker
+// could not see through. Every case below came off a slot in the bank.
+describe('a thin space is a space', () => {
+  it('groups digits written with \\ , \\, or \;', () => {
+    for (const written of ['18\\ 000', '18\\,000', '18\\;000', '18 000', '18,000']) {
+      expect(answersEquivalent(written, '18000'), written).toBe(true);
+    }
+    expect(answersEquivalent('$3\\ 080\\text{ L}$', '3080 L')).toBe(true);
+  });
+
+  it('leaves a matrix row separator alone', () => {
+    expect(answersEquivalent('\\begin{pmatrix}40 \\\\ 50\\end{pmatrix}', '\\begin{pmatrix}40\\\\50\\end{pmatrix}')).toBe(true);
+  });
+});
+
+describe('one equation is another scaled', () => {
+  // The same equation rearranged, re-scaled, factorised or written the other
+  // way round is the same equation: its difference is a multiple of the other's.
+  const same: [string, string][] = [
+    ['y = x', 'x = y'],
+    ['6m + 24 = 90', '6m = 66'],
+    ['0.75p = 360', '75p = 36000'],
+    ['P = M^2 - 2M', 'P = M(M-2)'],
+    ['2x + 4 = 10', 'x + 2 = 5'],
+  ];
+  for (const [a, b] of same) {
+    it(`${a} is ${b}`, () => expect(answersEquivalent(a, b)).toBe(true));
+  }
+
+  it('and a different equation is still different', () => {
+    expect(answersEquivalent('6m = 66', '6m = 67')).toBe(false);
+    expect(answersEquivalent('y = 2x', 'y = 3x')).toBe(false);
+    expect(answersEquivalent('h = d', 'h = 2d')).toBe(false);
+    expect(answersEquivalent('x = 5', 'x = 6')).toBe(false);
+  });
+});
+
+describe('adjacent letters are a product', () => {
+  it('reads gT^2 as g times T squared, in either order', () => {
+    expect(answersEquivalent('l=\\frac{gT^2}{4\\pi^2}', 'l=\\frac{T^2g}{4\\pi^2}')).toBe(true);
+  });
+
+  it('leaves a known name alone: a function, a constant, a unit, an ordinal', () => {
+    expect(answersEquivalent('sin(30)', 'sin(30)')).toBe(true);
+    expect(answersEquivalent('24 km/h', '24 km/h')).toBe(true);
+    expect(answersEquivalent('24 km/h', '24 m/h')).toBe(false);
+    expect(answersEquivalent('16th', '16th')).toBe(true);
+    expect(answersEquivalent('5\\pi', '15.70796')).toBe(true);
+  });
+
+  it('leaves prose and a set of words alone', () => {
+    // Split letter by letter these would read as algebra and reach mathjs,
+    // which is the thing the prose guard exists to prevent.
+    expect(answersEquivalent('{red, blue, green}', '{red, blue, green}')).toBe(true);
+    expect(answersEquivalent('{red, blue, green}', '{red, blue, yellow}')).toBe(false);
+    expect(answersEquivalent('the x-intercept is 4', 'the x-intercept is 4')).toBe(true);
+    expect(answersEquivalent('obtuse angle', 'acute angle')).toBe(false);
+  });
+
+  it('a longer run in front of a bracket is a name, so gf keeps its order', () => {
+    // gf is f then g, and a product would throw the order away. One letter in
+    // front of a bracket stays a product, which is what P = M(M-2) needs.
+    expect(splitAdjacentSymbols('gf(t)')).toBe('gf(t)');
+    expect(splitAdjacentSymbols('M(M-2)')).toBe('M*(M-2)');
+  });
+});
+
+describe('punctuation is not a difference', () => {
+  it('a full stop ends a sentence and not a value', () => {
+    expect(answersEquivalent('No.', 'No')).toBe(true);
+    expect(answersEquivalent('No.', 'Yes')).toBe(false);
+    expect(answersEquivalent('4.5', '4.5')).toBe(true);
+  });
+
+  it('a point named before its coordinates is that point', () => {
+    expect(answersEquivalent('O(0,0)', '(0,0)')).toBe(true);
+    expect(answersEquivalent('P(3,-2)', '(3, -2)')).toBe(true);
+    expect(answersEquivalent('O(0,0)', '(1,0)')).toBe(false);
   });
 });

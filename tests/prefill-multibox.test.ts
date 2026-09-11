@@ -93,3 +93,17 @@ describe('single-box behaviour is unchanged', () => {
     expect(prefillFromRead([part('a', slot('i', '5'))], [read('z.i', '5')])).toEqual({ answers: {}, values: {} });
   });
 });
+
+describe('a point may be named', () => {
+  it('O(0,0) is the coordinate (0,0), and reads as two boxes', () => {
+    // The comparator strips the name the way it strips "x = "; the shape reader
+    // has to strip it too, or the two sides split into different box counts and
+    // a student who types (0,0) is refused.
+    expect(readInputShape('$O(0,0)$')).toMatchObject({ shape: 'coordinate', boxes: 2, values: ['0', '0'] });
+    expect(readInputShape('P(3, -2)').values).toEqual(['3', '-2']);
+  });
+
+  it('and a function of one symbol is still an expression', () => {
+    expect(readInputShape('f(x)')).toMatchObject({ shape: 'expression', boxes: 1 });
+  });
+});

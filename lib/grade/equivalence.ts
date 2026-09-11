@@ -1,6 +1,6 @@
 import { evaluate, parse, rationalize, simplify } from 'mathjs';
 import { markMoney, normaliseDigitGroups } from '@/lib/money';
-import { parseQuantity, parseQuantityProduct, productsEqual, sameDimension } from './quantity';
+import { parseQuantity, parseQuantityProduct, productsEqual, sameDimension, UNIT_WORDS } from './quantity';
 import { roundingOf, roundTo, type Rounding } from './rounding';
 
 // Final-answer equivalence (ROUND_1 §6.3 and §4.3): documented deterministic
@@ -19,10 +19,16 @@ function preClean(raw: string): string {
   // Currency logic lives in lib/money.ts and nowhere else. Money is MARKED as a
   // unit, not stripped: deleting the currency made every amount a bare number,
   // so $70 matched 70 m.
-  const cleaned = normaliseDigitGroups(markMoney(stripInvisible(raw)))
+  // SPACING COMMANDS FIRST, THEN THE GROUPING. "18\\ 000" is eighteen thousand,
+  // but the grouper looks for a digit followed by a space or a comma and finds a
+  // BACKSLASH, so it never fired; and it ran before the strip below, so even the
+  // forms that strip cleanly were past saving by then. `\\ ` is a thin space and
+  // `\\\\ ` is a matrix row separator followed by one, so only an unpaired
+  // backslash is a space.
+  const despaced = stripInvisible(raw).replace(/\\left|\\right|\\,|\\;|(?<!\\)\\ /g, '');
+  const cleaned = normaliseDigitGroups(markMoney(despaced))
     .trim()
     .toLowerCase()
-    .replace(/\\left|\\right|\\,|\\;/g, '')
     .replace(/\$+/g, '') // KaTeX delimiters and bare dollar signs
     .replace(/\\text\{([^{}]*)\}/g, '$1') // \text{ and } wrappers carry no value
     // Authored answers are KaTeX, where a literal percent is \%. It is the same
@@ -40,6 +46,14 @@ function preClean(raw: string): string {
     .replace(/²/g, '^2') // unicode superscripts are exponents, not prose
     .replace(/³/g, '^3')
     .replace(/\s+/g, ' ')
+    // A full stop at the end of a written answer is punctuation, not a value:
+    // "No." and "No" are one answer. Only after a letter or a bracket, so a
+    // decimal point is never touched.
+    .replace(/([a-z)\]])\.$/, '$1')
+    // A point named before its coordinates — O(0,0) — is the same point as
+    // (0,0), exactly as "x = " in front of a value is the same value. Here and
+    // not in stripLabel, which only ever sees one side of the comma.
+    .replace(/^[a-z]\s*(\([^()]*,[^()]*\))$/, '$1')
     .trim();
   return rewritePositionalTimes(cleaned);
 }
@@ -71,6 +85,9 @@ function splitParts(cleaned: string): string[] {
 // digits, operators, braces and backslashes so an expression is never a label.
 const LABEL_LIKE = /^[a-z][a-z\s_]{0,24}$/;
 
+/** One letter standing alone: a name, not a value. */
+const BARE_NAME = /^[a-z](?:\^\{?-1\}?)?$/;
+
 // A function being defined or evaluated is a name too, and the answer is its
 // right-hand side. Without this, "gf(4) = 6" and "6" read as different answers.
 const DEFINITION_LHS = /^(?:[a-z](?:\^\{?-1\}?)?){1,4}(?:\((?:[^()]|\([^()]*\)){0,16}\))?$/;
@@ -87,11 +104,28 @@ function stripMapping(part: string): string {
 // otherwise "matrix = -PR" would throw away the matrix and keep the
 // restatement, and "3s = 2(s + 250)" would lose half the equation.
 function stripLabel(part: string): string {
-  const p = part.trim().replace(/^\(?[a-z]\)[\s.:]*/, '');
+  const p = part
+    .trim()
+    .replace(/^\(?[a-z]\)[\s.:]*/, '')
+    // A point named before its coordinates — O(0,0) — is the same point as
+    // (0,0), exactly as "x = " in front of a value is the same value. The comma
+    // is what says these are coordinates and not a function being evaluated.
+;
   for (const sep of ['=', ':']) {
     const i = p.indexOf(sep);
     if (i < 0) continue;
     const lhs = p.slice(0, i).trim();
+    const rhs = p.slice(i + 1).trim();
+    // "P = 30" is a value with a name on it. "h = d" is a RELATION between two
+    // unknowns, and dropping its left side left "d" facing "h" — which is how a
+    // scheme and its own accept list, the same relation written both ways round,
+    // compared unequal. A bare name on both sides means neither is a label.
+    //
+    // A function being APPLIED is still a definition, whatever is on the right:
+    // "ff^{-1}(x) = x" says the composition is the identity, and its answer is
+    // what the chain ends at.
+    const applied = DEFINITION_LHS.test(lhs) && lhs.includes('(');
+    if (!applied && BARE_NAME.test(rhs)) break;
     if (LABEL_LIKE.test(lhs) || DEFINITION_LHS.test(lhs)) {
       // Recurse: "f^{-1}(f(x)) = f(f^{-1}(x)) = x" is a chain of definitions
       // and the answer is what the chain ends at.
@@ -184,12 +218,58 @@ export function expandNestedCommands(s: string): string {
   return out;
 }
 
+/**
+ * Names mathjs owns. Everything else that is two letters or more is a PRODUCT
+ * of its letters: a mark scheme writes gT^2 for g times T squared, and the
+ * parser read `gT` as one symbol, so gT^2 and T^2g — the same product, written
+ * two ways — could not be compared. Splitting is not safe for a name, so the
+ * names are listed.
+ */
+const KNOWN_NAMES = new Set([
+  'sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'asin', 'acos', 'atan', 'atan2',
+  'sinh', 'cosh', 'tanh', 'log', 'log10', 'log2', 'ln', 'exp', 'sqrt', 'cbrt',
+  'nthroot', 'abs', 'sign', 'round', 'floor', 'ceil', 'mod', 'min', 'max',
+  'pi', 'tau', 'inf', 'nan', 'true', 'false',
+]);
+
+/** A name, not a product: cm is a centimetre and 16th is an ordinal. */
+function isName(run: string): boolean {
+  const lower = run.toLowerCase();
+  return KNOWN_NAMES.has(lower) || UNIT_WORDS.has(lower) || /^(st|nd|rd|th)$/.test(lower);
+}
+
+export function splitAdjacentSymbols(s: string): string {
+  // M(M-2) is M times (M-2), not a call of M — mathjs reads it as a call and
+  // throws, so a factorised form could not be compared with an expanded one.
+  // ONE LETTER ONLY: a longer run in front of a bracket is a name, and gf(t) is
+  // f then g, whose order a product would throw away.
+  const called = s.replace(/(^|[^a-zA-Z\\])([a-zA-Z])\s*\(/g, (whole, lead: string, name: string) =>
+    KNOWN_NAMES.has(name.toLowerCase()) ? whole : `${lead}${name}*(`);
+
+  return called.replace(/[a-zA-Z]{2,}/g, (run: string, offset: number) => {
+    if (isName(run)) return run;
+    // A run behind a backslash is a KaTeX command — \leq, \in, \mathbb — and a
+    // command name is a name whatever letters it is spelt with.
+    if (called[offset - 1] === '\\') return run;
+    // CONTEXT, or prose becomes algebra: "obtuse angle" split letter by letter
+    // would read as mathematics and reach mathjs, which is what the prose guard
+    // exists to prevent. A run is a product only where it touches arithmetic.
+    const before = called[offset - 1] ?? '';
+    const after = called[offset + run.length] ?? '';
+    // A hyphen joins words ("x-intercept", "right-angled") far more often than
+    // it multiplies, and a plus is a sign; neither makes a letter run a product.
+    // Nor does a brace, which groups a fraction and delimits a set: {red, blue}
+    // is three colours. What does: a power, an operator, a bracket, or a digit.
+    const touchesMath = /[*/^([\d]/.test(before) || /[*/^)\]\d]/.test(after);
+    return touchesMath ? run.split('').join('*') : run;
+  });
+}
+
 function toMathExpr(s: string): string {
-  return expandNestedCommands(s)
+  return splitAdjacentSymbols(expandNestedCommands(s)
     .replace(/\^\s*\{([^{}]+)\}/g, '^($1)') // 10^{-5}: mathjs wants parentheses
     .replace(/√\s*\(?([\d.a-z]+)\)?/g, 'sqrt($1)')
-    .replace(/\\pi|π/g, 'pi')
-    .replace(/\\/g, '');
+    .replace(/\\pi|π/g, 'pi')).replace(/\\/g, '');
 }
 
 // "a = b" becomes "(a) - (b)", so two forms of one equation ("3s = 2(s + 250)"
@@ -260,6 +340,47 @@ function sampledEquivalent(ea: string, eb: string, vars: string[]): boolean | nu
 // reported an expression not equivalent to ITSELF over a 2.2e-16 residue. So
 // rationalize and simplify are trusted ASYMMETRICALLY: '0' proves equality, a
 // non-zero residue proves nothing. A symbolic engine never returns false here.
+/**
+ * TWO EQUATIONS SAY THE SAME THING when one side's difference is a non-zero
+ * multiple of the other's. 6m + 24 = 90 and 6m = 66 are one equation written
+ * twice; so are 0.75p = 360 and 75p = 36 000, h = x and x = h, and
+ * P = M^2 - 2M and P = M(M - 2). Comparing the differences for EQUALITY caught
+ * only the last of those, which is why a mark scheme and its own accept list
+ * could disagree.
+ *
+ * A constant ratio across samples is the whole test. Zero on one side and not
+ * the other is a real difference; an identically-zero equation proves nothing
+ * and stays undecided.
+ */
+function proportional(ea: string, eb: string, vars: string[]): boolean | null {
+  const ratios: number[] = [];
+  let sawNonZero = false;
+  for (const base of SAMPLE_POINTS) {
+    const scope: Record<string, number> = {};
+    vars.forEach((v, j) => (scope[v] = base + j * 0.618));
+    let va: unknown;
+    let vb: unknown;
+    try {
+      va = evaluate(ea, { ...scope });
+      vb = evaluate(eb, { ...scope });
+    } catch {
+      continue;
+    }
+    if (typeof va !== 'number' || typeof vb !== 'number') return null;
+    if (!Number.isFinite(va) || !Number.isFinite(vb)) continue;
+    if (Math.abs(vb) < 1e-9) {
+      if (Math.abs(va) > 1e-6) return false;
+      continue;
+    }
+    ratios.push(va / vb);
+    if (Math.abs(va) > 1e-9) sawNonZero = true;
+  }
+  if (ratios.length < 3 || !sawNonZero) return null;
+  const k = ratios[0];
+  if (Math.abs(k) < 1e-9) return false;
+  return ratios.every((r) => Math.abs(r - k) <= 1e-6 * Math.max(1, Math.abs(k)));
+}
+
 function mathEquivalent(a: string, b: string, rounding: Rounding | null): boolean | null {
   const bothEquations = a.includes('=') && b.includes('=');
   const ea = toMathExpr(bothEquations ? asDifference(a) : a);
@@ -279,6 +400,12 @@ function mathEquivalent(a: string, b: string, rounding: Rounding | null): boolea
       // not something mathjs can evaluate — fall through
     }
   } else {
+    // An equation is a statement, not a value: scaling both sides leaves it
+    // saying the same thing, so the differences are compared up to a factor.
+    if (bothEquations) {
+      const scaled = proportional(ea, eb, vars);
+      if (scaled !== null) return scaled;
+    }
     const sampled = sampledEquivalent(ea, eb, vars);
     if (sampled !== null) return sampled;
   }
@@ -349,7 +476,12 @@ function wordsEquivalent(a: string, b: string): boolean {
 // and rationalize() returns garbage that would read as "not equivalent", so the
 // symbolic path runs only when both sides look mathematical.
 export function looksMathematical(s: string): boolean {
-  return !/[a-z]{2,}/.test(s.replace(/sqrt|frac|pi|text|cdot|times/g, ''));
+  // Adjacent letters beside arithmetic are a product, not a word: gT^2 is g
+  // times T squared, and reading it as prose kept the whole expression out of
+  // the symbolic path. The question is asked of the form the symbolic path
+  // receives, so the gate and the parse cannot disagree about what a string is.
+  const bare = toMathExpr(s).replace(/sqrt|frac|pi|text|cdot|times/g, '');
+  return !/[a-z]{2,}/.test(bare);
 }
 
 function valueEquivalent(a: string, b: string, rounding: Rounding | null): boolean {
@@ -377,8 +509,13 @@ function valueEquivalent(a: string, b: string, rounding: Rounding | null): boole
     return close(other, quantity.value) || (asWritten !== null && close(other, asWritten));
   }
 
-  const na = parseNumeric(a);
-  const nb = parseNumeric(b);
+  // AN EQUATION IS NOT ITS RIGHT-HAND SIDE. parseNumeric reads the value after
+  // the last "=", which is right for "x = 5" and wrong for two equations:
+  // "6m + 24 = 90" against "6m = 66" was compared as 90 against 66, so the
+  // statement was never looked at and the symbolic path never ran.
+  const bothEquations = a.includes('=') && b.includes('=');
+  const na = bothEquations ? null : parseNumeric(a);
+  const nb = bothEquations ? null : parseNumeric(b);
   if (na !== null && nb !== null) return close(na, nb);
   if (looksMathematical(a) && looksMathematical(b)) {
     const m = mathEquivalent(a, b, rounding);
