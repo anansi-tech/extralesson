@@ -104,7 +104,9 @@ describe('the grant note convention', () => {
     expect(ADMIN + FORM, 'no free-typed note survives').not.toContain('name="note"');
     // One component, used by both forms, so the pair is written once.
     expect([...FORM.matchAll(/<option value="(sale|comp)"/g)].length).toBe(2);
-    expect([...ADMIN.matchAll(/<GrantForm/g)].length, 'the standalone form and the row form').toBe(2);
+    // ONE grant form now: ROUND_13 Task 1 took the form out of every row — a
+    // closed row holds no input at all — and left it at the foot of the page.
+    expect([...ADMIN.matchAll(/<GrantForm/g)].length, 'only the one at the foot').toBe(1);
   });
 
   // The sitting is the account's, or it is nothing: defaulting to the first

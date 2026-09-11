@@ -19,6 +19,9 @@ describe('honest prefill', () => {
   });
   it('stacks the nav below 400px and wraps admin identifiers', () => {
     expect(at('app', 'study', 'study-chrome.tsx')).toMatch(/lg:hidden[\s\S]*hidden[\s\S]*lg:flex/);
-    expect((at('app', 'admin', 'access', 'page.tsx').match(/break-all/g) ?? []).length).toBeGreaterThanOrEqual(3);
+    // The rows moved into their own component in ROUND_13 Task 1; the addresses
+    // and notes that need wrapping went with them.
+    const admin = at('app', 'admin', 'access', 'page.tsx') + at('app', 'admin', 'access', 'account-rows.tsx');
+    expect((admin.match(/break-all/g) ?? []).length).toBeGreaterThanOrEqual(3);
   });
 });

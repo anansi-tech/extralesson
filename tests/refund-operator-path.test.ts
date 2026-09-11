@@ -1,4 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import mongoose from 'mongoose';
@@ -69,187 +71,103 @@ const queue = async () => {
 };
 
 describe('a student with a live paid grant', () => {
-  it('carries Refund and revoke, with a required reason and what will happen', async () => {
+  const control = async (email: string, p: { _id: unknown; paid_at?: Date; payment_intent_id?: string }) => {
+    const { Student } = await import('@/lib/db');
+    const { grantControl } = await import('@/lib/admin/account-control');
+    const s = (await Student.findOne({ email }).select('access').lean<{ _id: unknown; access: never } | null>())!;
+    return grantControl({ id: String(s._id), email, access: s.access }, p, false);
+  };
+
+  it('offers Refund and revoke, with what will happen and where the money is', async () => {
     const p = await payment();
     await student('kiara@example.com', { sitting: SITTING, granted_at: new Date(), source: 'stripe', note: 'stripe evt_1', payment_id: p._id });
-    const { html, text } = await screen();
 
-    expect(text).toContain('The money goes back, access ends now, and their work stays.');
-    // A server action is not serialized into static markup: the form is found by what it holds.
-    expect(html).toMatch(/<form[^>]*>(?:(?!<\/form>)[\s\S])*Refund and revoke/);
-    expect(html).toMatch(/<input required="" minLength="3"[^>]*name="reason"/);
-    // The row says how old the money is, against the window.
-    expect(text).toContain('Paid 2 days ago');
-    // And links to the payment itself, in the mode this key belongs to.
-    expect(html).toContain(`href="https://dashboard.stripe.com/test/payments/pi_row"`);
+    expect(await control('kiara@example.com', p)).toEqual({
+      kind: 'refund',
+      paymentId: String(p._id),
+      sentence: 'The money goes back, access ends now, and their work stays. Paid 2 days ago.',
+      link: 'https://dashboard.stripe.com/test/payments/pi_row',
+    });
   }, 60000);
 
   it('past the window it still refunds, and says the record will note it', async () => {
     const p = await payment({ paid_at: new Date(Date.now() - (REFUND_DAYS + 6) * DAY) });
     await student('late@example.com', { sitting: SITTING, granted_at: new Date(), source: 'stripe', note: 'stripe evt_1', payment_id: p._id });
-    const { html, text } = await screen();
 
-    expect(text).toContain(`past the ${REFUND_DAYS}-day window`);
-    // The control is still there: the window is a policy, not a lock.
-    expect(html).toContain('Refund and revoke');
+    const c = await control('late@example.com', p);
+    // The control is still offered: the window is a policy, not a lock.
+    expect(c?.kind).toBe('refund');
+    expect(c && 'sentence' in c ? c.sentence : '').toContain(`past the ${REFUND_DAYS}-day window`);
     // And the record really does say so.
     expect(reasonWithWindow('asked late', new Date(Date.now() - (REFUND_DAYS + 6) * DAY))).toContain(`past the ${REFUND_DAYS}-day window`);
     expect(reasonWithWindow('asked in time', new Date(Date.now() - 2 * DAY))).toBe('asked in time');
   }, 60000);
 });
 
-// DISPLAY ONLY (this round): what one account reads as, and what stays out of
-// the disclosure. Nothing here changes who has access.
+// WHAT A ROW SAYS, AND WHAT IT OFFERS (ROUND_13 Task 1). A closed row holds no
+// input at all and none of these words, so the blocks are built by the view
+// model and asserted there; what the page must still show is the queue, the
+// counts, and one line per changed account.
 describe('an account row', () => {
-  it('names the exam entered for and the sitting access is on, separately', async () => {
-    await student('entered@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'comp · a teacher · 2026-09-10' });
-    const { text } = await screen();
+  const rowFor = async (email: string) => {
+    const { Student } = await import('@/lib/db');
+    const { currentAccessOf, priorGrantsOf } = await import('@/lib/admin/account-view');
+    const s = await Student.findOne({ email }).select('access').lean<{ access: never } | null>();
+    if (!s) throw new Error(`no account ${email}`);
+    return { current: currentAccessOf(s.access), prior: priorGrantsOf(s.access) };
+  };
 
-    expect(text).toContain(`Entered for ${SITTING}`);
-    expect(text).toContain(`Access for ${SITTING}`);
-    // The two labels are never folded into one line.
-    expect(text).not.toMatch(/Entered for [^ ]+ · Access/);
-  }, 60000);
-
-  it('reads the current grant out on its own lines', async () => {
+  it('reads the current grant out as label and value, in the fixed column', async () => {
     await student('lines@example.com', { sitting: SITTING, granted_at: new Date('2026-09-10T00:00:00Z'), source: 'manual', note: 'comp · a teacher · 2026-09-10' });
-    const { text } = await screen();
 
-    expect(text).toContain('Current access');
-    expect(text).toContain(`Access for ${SITTING}`);
-    expect(text).toContain('Class Comp');
-    expect(text).toContain('Granted 2026-09-10 · manual');
-    expect(text).toContain('Reason a teacher');
+    expect(await rowFor('lines@example.com')).toEqual({
+      current: { accessFor: SITTING, klass: 'Comp', granted: '2026-09-10 · manual', reasonLabel: 'REASON', reason: 'a teacher' },
+      prior: [],
+    });
   }, 60000);
 
-  it('puts the one prior grant behind a disclosure, verbatim, and never calls it a history', async () => {
+  it('says a note it cannot read is a note, and names no class it was not given', async () => {
+    await student('older@example.com', { sitting: SITTING, granted_at: new Date('2026-08-28T00:00:00Z'), source: 'manual', note: 'friend' });
+
+    const { current } = await rowFor('older@example.com');
+    expect(current).toMatchObject({ klass: 'not named in the note', reasonLabel: 'NOTE', reason: 'friend', granted: '2026-08-28 · manual' });
+  }, 60000);
+
+  it('holds one line per prior grant, with no date in it', async () => {
     await student('prior@example.com', {
       sitting: SITTING,
       granted_at: new Date(),
       source: 'manual',
       note: 'comp · a teacher · 2026-09-10 · was jan-2027 stripe: stripe evt_1UDcTOR',
     });
+
+    const { prior } = await rowFor('prior@example.com');
+    expect(prior).toEqual([{ sitting: 'jan-2027', source: 'stripe', note: 'stripe evt_1UDcTOR' }]);
+    expect(JSON.stringify(prior), 'no date is shown and none is inferred').not.toMatch(/\d{4}-\d{2}-\d{2}/);
+  }, 60000);
+
+  it('a closed row has no input in it at all, and the page never says history', async () => {
+    await student('closed@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'comp · a teacher · 2026-09-10' });
     const { html, text } = await screen();
 
-    expect(text).toContain('Previous access');
-    const disclosure = /<details[^>]*>[\s\S]*?<\/details>/.exec(html)![0];
-    expect(disclosure).toContain('jan-2027');
-    expect(disclosure).toContain('stripe evt_1UDcTOR');
-    // The controls act on the present, so they stay out of the past.
-    expect(disclosure).not.toContain('Revoke');
-    expect(disclosure).not.toContain('<form');
+    // The rows, and not the two disclosures at the foot, which are forms.
+    const rows = html.slice(html.indexOf('Changed in the last'), html.indexOf('Grant access to an address'));
+    expect(rows, 'no field before anybody has decided anything').not.toMatch(/<input|<select|<textarea/);
     expect(text).not.toMatch(/full history|complete history|all grants/i);
+    // The address and its state word are what a closed row is for.
+    expect(text).toContain('closed@example.com');
   }, 60000);
 
-  it('says a note it cannot read is a note, and dates nothing it was not given', async () => {
-    await student('older@example.com', { sitting: SITTING, granted_at: new Date('2026-08-28T00:00:00Z'), source: 'manual', note: 'friend' });
-    const { text } = await screen();
+  it('names the exam entered for and the sitting access is on, separately', async () => {
+    const { currentAccessOf } = await import('@/lib/admin/account-view');
+    const s = await student('entered@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'comp · a teacher · 2026-09-10' });
 
-    expect(text).toContain('Note friend');
-    expect(text).toContain('Class not named in the note');
-    expect(text).toContain('Granted 2026-08-28 · manual');
-  }, 60000);
-});
-
-describe('a comp and a grant nobody can refund', () => {
-  it('a comp carries Revoke alone, with a reason and no Stripe anywhere on it', async () => {
-    await student('comp@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'comp · teacher · st-marys' });
-    const { html, text } = await screen();
-
-    expect(html).toContain('>Revoke<');
-    expect(text).not.toContain('The money goes back');
-    expect(text).not.toContain('refund unavailable');
-  }, 60000);
-
-  // THE NOTE DECIDES, not the state of the payment collection. A teacher whose
-  // school later bought a seat still holds a comp, and it still ends alone.
-  it('a comp stays a comp on an account that has paid us', async () => {
-    const s = await student('comp-and-paid@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'comp · pilot · ms-allen · 2 of 5' });
-    await payment({ student_id: s._id });
-    const { html, text } = await screen();
-
-    expect(html).toContain('>Revoke<');
-    expect(text).not.toContain('refund unavailable');
-  }, 60000);
-
-  it('a paid grant with no payment reference says so, points at Stripe, and still offers Revoke', async () => {
-    await student('unresolved@example.com', { sitting: SITTING, granted_at: new Date(), source: 'stripe', note: 'friend' });
-    const { html, text } = await screen();
-
-    expect(text).toContain('refund unavailable — no payment reference');
-    expect(text).toContain('Refund it in the Stripe dashboard, then revoke here with the reason.');
-    expect(text).not.toContain('The money goes back');
-    // Access still has to be endable — but never on its own, which is what
-    // read as a grant nobody had paid for.
-    expect(html).toContain('>Revoke<');
-  }, 60000);
-
-  // THE ROW THIS WAS FOUND ON: granted by hand, note naming nothing, and two
-  // payments on the account that no reference reaches. It used to render as a
-  // comp — Revoke alone, as though no money had ever changed hands.
-  it('a hand-granted row on an account that has paid reads as money we cannot reach', async () => {
-    const s = await student('lost-link@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'friend' });
-    await payment({ student_id: s._id });
-    const { html, text } = await screen();
-
-    expect(text).toContain('refund unavailable — no payment reference');
-    expect(html).toContain('>Revoke<');
-    expect(html).toContain('href="https://dashboard.stripe.com/test/search?query=lost-link%40example.com"');
-    expect(text).not.toContain('The money goes back');
-  }, 60000);
-
-  // The other half of the same rule: no note, and no money anywhere either.
-  it('a hand-granted row on an account that never paid is revoked alone', async () => {
-    await student('nothing-owed@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'granted by hand' });
-    const { html, text } = await screen();
-
-    expect(html).toContain('>Revoke<');
-    expect(text).not.toContain('refund unavailable');
-  }, 60000);
-});
-
-describe('the queue', () => {
-  it('gives a waiting or duplicate row a Refund that touches no grant', async () => {
-    const { transition } = await import('@/lib/payment-state');
-    await payment({ ...transition('waiting'), session_id: 'cs_w' });
-    await payment({ ...transition('duplicate'), session_id: 'cs_d' });
-    const { html, text } = await queue();
-
-    expect((html.match(/Refund — money back, no grant touched/g) ?? [])).toHaveLength(2);
-    expect(text).toContain('paid 2 days ago');
-    expect((html.match(/dashboard\.stripe\.com/g) ?? []).length).toBe(2);
-  }, 60000);
-
-  it('gives an approved or failed refund what is known and one control', async () => {
-    const { transition } = await import('@/lib/payment-state');
-    await payment({ ...transition('refund_approved'), session_id: 'cs_a', refund_attempts: [{ key: 'k-abc', at: new Date(), outcome: 'unknown' }] });
-    await payment({ ...transition('refund_failed', { reason: 'charge_already_refunded' }), session_id: 'cs_f', refund_attempts: [{ key: 'k-def', at: new Date(), outcome: 'failed' }] });
-    const { html, text } = await queue();
-
-    expect(text).toContain('Approved, and the outcome is not known');
-    expect(text).toContain('cannot refund twice');
-    expect(text).toContain('Attempt k-abc');
-    expect(html).toContain('Finish the refund');
-    expect(text).toContain('Stripe refused it');
-    expect(text).toContain('charge_already_refunded');
-    expect(html).toContain('Retry the refund');
-    // One control each, and each demands a reason.
-    expect((html.match(/name="reason"/g) ?? []).length).toBe(4); // finish/retry + close, per row
-  }, 60000);
-
-  it('is one row and one count per payment, whatever states it carries', async () => {
-    const { transition } = await import('@/lib/payment-state');
-    const { loadQueue } = await import('@/lib/payment-queue');
-    await payment({ ...transition('refund_approved'), session_id: 'cs_one' });
-    await payment({ ...transition('waiting'), session_id: 'cs_two' });
-
-    const rows = await loadQueue();
-    expect(rows).toHaveLength(2);
-    expect(new Set(rows.map((r) => r.id)).size).toBe(2);
-    const { html } = await queue();
-    // The counter is the list, so a payment cannot be counted twice.
-    expect(html).toContain('>2</span>');
-    expect((html.match(/<li /g) ?? []).length).toBe(2);
+    // The account is registered for one sitting and granted another; the row
+    // keeps them apart, which is the mistake the grant form confirms against.
+    expect(s.exam_sitting).toBe(SITTING);
+    expect(currentAccessOf(s.access as never).accessFor).toBe(SITTING);
+    const page = (await screen()).text;
+    expect(page).toContain('Changed in the last 7 days');
   }, 60000);
 });
 
@@ -267,12 +185,17 @@ describe('a refunded student', () => {
       revoked_reason: 'refunded, asked in the window',
     });
     const { text } = await screen();
+    const { revokedLineOf } = await import('@/lib/admin/account-view');
+    const { grantControl } = await import('@/lib/admin/account-control');
+    const { Student } = await import('@/lib/db');
+    const s = (await Student.findOne({ email: 'gone@example.com' }).select('access').lean<{ _id: unknown; access: never } | null>())!;
 
-    // Never silently absent: the paid list still holds them.
-    expect(text).toMatch(/Paid access · 1/);
-    expect(text).toContain('revoked · may-june-2027');
-    expect(text).toContain('revoked 2026-09-09 by ops@example.com · refunded, asked in the window');
+    // NEVER SILENTLY ABSENT: the changed list holds them, under the one word.
+    expect(text).toContain('gone@example.com');
+    expect(text).toContain('revoked');
+    expect(revokedLineOf(s.access)).toBe('revoked 2026-09-09 by ops@example.com · refunded, asked in the window');
     // And no control offering to refund it again.
+    expect(grantControl({ id: String(s._id), email: 'gone@example.com', access: s.access }, p, true)).toBeNull();
     expect(text).not.toContain('The money goes back');
   }, 60000);
 });
@@ -288,4 +211,32 @@ describe('the helpers the rows read', () => {
     expect(dashboardUrl(null)).toBeNull();
     expect(dashboardUrl('pi_1')).toBe('https://dashboard.stripe.com/test/payments/pi_1');
   });
+});
+
+// ROUND_13 Task 1: the page is the queue and a search, and one row opens at a
+// time. "One at a time" is a property of the state, not of a handler: the list
+// holds a single open id, so a second cannot be open without the first closing.
+describe('the page an operator arrives at', () => {
+  const rows = () => readFileSync(join(process.cwd(), 'app', 'admin', 'access', 'account-rows.tsx'), 'utf8');
+
+  it('opens one row at a time, by holding one id', () => {
+    const src = rows();
+    expect(src).toMatch(/const \[openId, setOpenId\] = useState<string \| null>\(null\)/);
+    expect(src).toMatch(/setOpenId\(open \? null : row\.id\)/);
+    // The blocks exist only while that row is open, so a closed row has none.
+    expect(src).toMatch(/const open = openId === row\.id;/);
+    expect(src).toMatch(/\{open && \(/);
+  });
+
+  it('puts the counts, the changed list and the two disclosures in that order', async () => {
+    await student('one@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'comp · a teacher · 2026-09-10' });
+    const { text } = await screen();
+
+    for (const part of ['with access', 'free allowance used', 'free tier', 'accounts', 'Changed in the last 7 days']) {
+      expect(text, part).toContain(part);
+    }
+    const order = ['Payments that need you', 'with access', 'Changed in the last 7 days', 'Grant access to an address', 'Delete an account'].map((p) => text.indexOf(p));
+    expect(order.every((n) => n > 0)).toBe(true);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+  }, 60000);
 });

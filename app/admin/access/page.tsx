@@ -4,13 +4,19 @@ import { dashboardSearchUrl, dashboardUrl, windowOf } from '@/lib/payment-queue'
 import { refundPayment, revokeGrant } from './actions';
 import { PaymentQueue } from './payment-queue';
 import { loadQueue } from '@/lib/payment-queue';
-import { readNote } from '@/lib/grant-note';
+import Link from 'next/link';
+import { currentAccessOf, priorGrantsOf, revokedLineOf, type AccountRow, type StateWord } from '@/lib/admin/account-view';
+import { grantControl } from '@/lib/admin/account-control';
+import { AccountRows } from './account-rows';
 import { DeleteAccount } from './delete-account';
 import { GrantForm } from './grant-form';
 import { Refusal } from '../../refusal';
-import { CAPS, FIELD, INK, QUIET, ROW } from '../ui';
+import { CAPS, FIELD, QUIET } from '../ui';
 
 export const dynamic = 'force-dynamic';
+
+/** The window the changed list covers, said once. */
+const CHANGED_WITHIN_DAYS = 7;
 export const metadata = { title: 'Access — ExtraLesson admin' };
 
 /** A pending fulfilment older than this needs a person: the webhook should have finished in seconds. */
@@ -21,8 +27,8 @@ export const metadata = { title: 'Access — ExtraLesson admin' };
  * is what makes the automatic path safe (ROUND_2 §8c). What needs a person
  * comes first (ROUND_7 Task 3), then paid access, then the free allowance used.
  */
-export default async function AccessPage({ searchParams }: { searchParams: Promise<{ find?: string; attention?: string; granted?: string; sitting?: string; ungranted?: string; noreason?: string; nositting?: string }> }) {
-  const { find = '', attention, granted, sitting: grantedSitting, ungranted, noreason, nositting } = await searchParams;
+export default async function AccessPage({ searchParams }: { searchParams: Promise<{ find?: string; attention?: string; granted?: string; sitting?: string; ungranted?: string; noreason?: string; nositting?: string; show?: string }> }) {
+  const { find = '', attention, granted, sitting: grantedSitting, ungranted, noreason, nositting, show } = await searchParams;
   await dbConnect();
   const queue = await loadQueue();
   const students = await Student.find()
@@ -79,18 +85,60 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
   // payment reference on one of these accounts is a lost link, not a gift.
   const hasPaid = new Set((await Payment.distinct('student_id', { student_id: { $in: ids } })).map(String));
   const attentionOnly = attention === '1';
-  const paid = paidRows.length;
+
+  const controlFor = (r: { id: string; email: string; access?: Access | null }) =>
+    grantControl(r, r.access?.payment_id ? paymentOfGrant.get(String(r.access.payment_id)) : undefined, hasPaid.has(r.id));
+
+  const wordFor = (r: (typeof all)[number]): StateWord =>
+    r.access?.revoked_at ? 'revoked' : hasAccess(r.access) ? 'access' : r.sessions >= FREE_SESSIONS ? 'free used' : 'free tier';
+
+  const toRow = (r: (typeof all)[number]): AccountRow => ({
+    id: r.id,
+    email: r.email,
+    name: r.name,
+    enteredFor: r.exam_sitting,
+    sessions: r.sessions,
+    attempts: r.attempts,
+    word: wordFor(r),
+    sitting: r.access?.sitting ?? r.exam_sitting,
+    current: r.access ? currentAccessOf(r.access) : null,
+    prior: r.access ? priorGrantsOf(r.access) : [],
+    control: controlFor(r),
+    revoked: r.access ? revokedLineOf(r.access) : null,
+  });
+
+  // CHANGED, NOT EVERYTHING. The operator arrives with work or with a name; a
+  // list of every account at rest is neither. Access granted or ended in the
+  // last week, and accounts that have just used their allowance up.
+  const since = Date.now() - CHANGED_WITHIN_DAYS * 86_400_000;
+  const recently = all
+    .filter((r) => {
+      const word = wordFor(r);
+      if (word === 'access') return new Date(r.access!.granted_at).getTime() >= since;
+      if (word === 'revoked') return new Date(r.access!.revoked_at!).getTime() >= since;
+      if (word === 'free used') return new Date(r.created_at).getTime() >= since;
+      return false;
+    })
+    .sort((a, b) => new Date(b.access?.revoked_at ?? b.access?.granted_at ?? b.created_at).getTime() - new Date(a.access?.revoked_at ?? a.access?.granted_at ?? a.created_at).getTime());
+
+  const shown = show === 'access' ? paidRows.filter((r) => !r.access?.revoked_at) : show === 'free-used' ? usedRows : show === 'free-tier' ? freeRows : show === 'all' ? all : null;
+  const listed = needle || attentionOnly ? all.filter((r) => !attentionOnly || wordFor(r) !== 'free tier') : (shown ?? recently);
+  const heading = needle
+    ? `Matching “${find.trim()}” · ${listed.length}`
+    : shown
+      ? `${show === 'access' ? 'With access' : show === 'free-used' ? 'Free allowance used' : show === 'free-tier' ? 'Free tier' : 'All accounts'} · ${listed.length}`
+      : `Changed in the last ${CHANGED_WITHIN_DAYS} days · ${listed.length}`;
+
+  const Count = ({ n, label, to }: { n: number; label: string; to: string }) => (
+    <Link href={`/admin/access?show=${to}`} className="underline underline-offset-[3px]">
+      <b className="text-ink">{n}</b> {label}
+    </Link>
+  );
 
   return (
     <div>
-        <header className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-x-4 font-mono text-xs text-dim">
-            <span>
-              <b className="text-ink">{paid}</b> with access ·{' '}
-              <b className={queue.length > 0 ? 'text-red-pen' : 'text-ink'}>{queue.length}</b> payments needing attention ·{' '}
-              <b className="text-ink">{usedRows.length}</b> free allowance used
-            </span>
-          </div>
+        <header className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
+          <div className="font-mono text-xs text-dim">Access</div>
           <form className="flex flex-wrap items-center gap-2" action="/admin/access">
             <input name="find" defaultValue={find} placeholder="find an email" className={FIELD} />
             <label className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-widest text-dim">
@@ -99,6 +147,7 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
             <button className={CAPS}>Search</button>
           </form>
         </header>
+
         {nositting && (
           <p className="mb-4 border-l-3 border-amber bg-amber-tint px-3 py-2 font-mono text-[11px] leading-relaxed">
             Nothing was granted: no sitting was chosen. Access ends with the sitting it is granted for, so it is never assumed.
@@ -120,223 +169,54 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
           </p>
         )}
 
+        {/* THE WORK, FIRST AND ALWAYS OPEN. It carries the page's one card
+            shadow, so the thing that needs deciding is the only thing that
+            looks like work. */}
         <PaymentQueue rows={queue} />
 
-        
-
-        {/* The note is the only evidence a grant has, and the form writes it
-            now rather than asking for it. What is left to say is which class to
-            pick; the reasoning is ROUND_3 §3. */}
-        <div className="mb-5 max-w-prose text-[13px] leading-snug text-dim">
-          <p><b className="text-ink">Sale</b> — money arrived and the automatic path missed it. The reason is the Stripe event id.</p>
-          <p className="mt-1"><b className="text-ink">Comp</b> — access given, nothing paid. The reason is who it&rsquo;s for and why.</p>
+        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-dim">
+          <Count n={paidRows.filter((r) => !r.access?.revoked_at).length} label="with access" to="access" />
+          <Count n={usedRows.length} label="free allowance used" to="free-used" />
+          <Count n={freeRows.length} label="free tier" to="free-tier" />
+          <Count n={all.length} label="accounts" to="all" />
         </div>
 
-        
+        <div className="section-label mt-5">{heading}</div>
+        <p className="mt-1 font-mono text-[11px] leading-relaxed text-dim">
+          Open one to see its grant and the one thing you can do about it.
+        </p>
+        <AccountRows rows={listed.map(toRow)} empty={needle ? 'No account on that address.' : 'Nothing changed in the last week.'} />
+        {!needle && !shown && (
+          <Link href="/admin/access?show=all" className={`${QUIET} mt-2`}>
+            All {all.length} accounts
+          </Link>
+        )}
 
-        {/* Always here, whatever the lists hold: an account is granted by its address,
-            so a payment with no matching account has somewhere to go. */}
-        <section className="mb-6 border-[1.5px] border-ink bg-white p-4">
-          <div className="section-label">Grant access</div>
-          <p className="mt-1 font-mono text-[11px] leading-relaxed text-dim">
+        {/* AT THE FOOT, BEHIND A LINE EACH. Neither is the page's work: one is
+            for when no account matched a payment, the other cannot be undone. */}
+        <details className="mt-8 border-t border-rule pt-3">
+          <summary className={`${CAPS} cursor-pointer`}>
+            Grant access to an address <span className="font-normal text-dim">— when no account matched a payment</span>
+          </summary>
+          <p className="mt-2 font-mono text-[11px] leading-relaxed text-dim">
             By the address the student registered with, which need not be the address that paid.
           </p>
-          <GrantForm />
-        </section>
-
-        
-
-        {([
-          ['Paid access', paidRows],
-          ['Free allowance used', usedRows],
-          ['Free tier', attentionOnly ? [] : freeRows],
-        ] as const).map(([title, list]) =>
-          list.length === 0 ? null : (
-            <div key={title}>
-              <div className="section-label mt-6">{title} · {list.length}</div>
-              <ul>
-              {list.map((r) => (
-          <li key={r.id} className={ROW}>
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <div className="min-w-0">
-                <div className="min-w-0 break-all font-mono text-[13px]">{r.email}</div>
-                {/* ENTERED FOR is the exam the student registered for. It is
-                    not the sitting access was granted on, which is said under
-                    Access for and can differ; reading one as the other is how a
-                    grant ends in a month nobody is sitting. */}
-                <div className="font-mono text-[11px] text-dim">{r.name} · Entered for {r.exam_sitting}</div>
-                <div className="font-mono text-[11px] text-dim">
-                  {r.sessions} session{r.sessions === 1 ? '' : 's'} · {r.attempts} question{r.attempts === 1 ? '' : 's'}
-                </div>
-              </div>
-              {r.access?.revoked_at ? (
-                <span className="font-mono text-[11px] uppercase tracking-widest text-red-pen">
-                  revoked · {r.access.sitting}
-                </span>
-              ) : r.access && hasAccess(r.access) ? (
-                <span className="font-mono text-[11px] uppercase tracking-widest text-green-pen">
-                  access · {r.access.sitting}
-                </span>
-              ) : r.access ? (
-                <span className="font-mono text-[11px] uppercase tracking-widest text-dim">
-                  expired · {r.access.sitting}
-                </span>
-              ) : r.sessions >= FREE_SESSIONS ? (
-                <span className="font-mono text-[11px] uppercase tracking-widest text-red-pen">
-                  free allowance used
-                </span>
-              ) : (
-                <span className="font-mono text-[11px] uppercase tracking-widest text-dim">
-                  free tier
-                </span>
-              )}
-            </div>
-
-            {r.access ? (
-              <div className="mt-2">
-                <CurrentAccess access={r.access} />
-                <GrantControls
-                  row={r}
-                  payment={r.access.payment_id ? paymentOfGrant.get(String(r.access.payment_id)) : undefined}
-                  hasPaid={hasPaid.has(r.id)}
-                />
-              </div>
-            ) : (
-              // Stacked on a phone: three controls in one row left the note two letters wide.
-              <GrantForm row={{ id: r.id, email: r.email, sitting: r.exam_sitting }} />
-            )}
-          </li>
-              ))}
-              </ul>
-            </div>
-          ),
-        )}
-        <DeleteAccount />
-    </div>
-  );
-}
-
-/** A payment as a grant's row needs it: when it was paid, and where it lives at Stripe. */
-interface GrantPayment {
-  _id: unknown;
-  paid_at?: Date;
-  payment_intent_id?: string;
-}
-
-/**
- * ONE GRANT, READ OUT. Display only — every line is a stored field or the note
- * as it stands. The prior grant sits behind a disclosure because it is the
- * account's past and the controls act on its present; it is deliberately not
- * called a history, and it carries no date, because only one prior is kept and
- * a prior grant's date was never stored.
- */
-function CurrentAccess({ access }: { access: Access }) {
-  const read = readNote(access.note);
-  const line = 'block font-mono text-[11px] leading-relaxed text-dim';
-  return (
-    <div className="mb-2">
-      <div className="section-label">Current access</div>
-      <span className={line}>Access for {access.sitting}</span>
-      <span className={line}>Class {read.kind === 'comp' ? 'Comp' : read.kind === 'sale' ? 'Sale' : 'not named in the note'}</span>
-      <span className={line}>
-        Granted {new Date(access.granted_at).toISOString().slice(0, 10)} · {access.source}
-      </span>
-      <span className={line}>
-        {read.verbatim ? 'Note' : 'Reason'} {read.reason ? <b className="font-normal text-ink">{read.reason}</b> : 'none recorded'}
-      </span>
-      {read.prior && (
-        <details className="mt-1">
-          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-[0.1em] text-dim">Previous access</summary>
-          <div className="mt-1 border-l-3 border-rule pl-3">
-            <span className={line}>Access for {read.prior.sitting} · {read.prior.source}</span>
-            <span className={`${line} break-all`}>
-              {read.prior.note ? <b className="font-normal text-ink">{read.prior.note}</b> : 'no note'}
-            </span>
+          <div className="max-w-prose text-[13px] leading-snug text-dim">
+            <p className="mt-2"><b className="text-ink">Sale</b> — money arrived and the automatic path missed it. The reason is the Stripe event id.</p>
+            <p className="mt-1"><b className="text-ink">Comp</b> — access given, nothing paid. The reason is who it&rsquo;s for and why.</p>
           </div>
+          <GrantForm />
         </details>
-      )}
+
+        <details className="mt-3 border-t border-rule pt-3">
+          <summary className={`${CAPS} cursor-pointer`}>
+            Delete an account <span className="font-normal text-dim">— cannot be undone</span>
+          </summary>
+          <DeleteAccount />
+        </details>
     </div>
   );
 }
 
-/**
- * WHAT AN OPERATOR CAN DO ABOUT ONE GRANT (ROUND_12 Task 4). Three cases, and
- * they are not interchangeable: a paid grant is refunded and revoked together,
- * a comp is revoked alone because there is nothing to give back, and a paid
- * grant we cannot refund says so rather than offering a button that would
- * throw. Every one of them takes a reason.
- *
- * The third used to be read off `source`, which put a paid grant whose payment
- * could not be resolved — granted by hand against money that did arrive — in
- * with the comps, offering Revoke as though nobody had ever been charged. A
- * comp is a comp because its note says so; anything else on an account that has
- * paid us is a lost reference, and says which.
- */
-function GrantControls({
-  row,
-  payment,
-  hasPaid,
-}: {
-  row: { id: string; email: string; access?: Access | null };
-  payment?: GrantPayment;
-  /** The account has a payment somewhere, whatever this grant can point at. */
-  hasPaid: boolean;
-}) {
-  const access = row.access;
-  if (!access) return null;
-  if (access.revoked_at) {
-    return (
-      <p className="mt-1 font-mono text-[11px] leading-relaxed text-red-pen">
-        revoked {new Date(access.revoked_at).toISOString().slice(0, 10)} by {access.revoked_by ?? 'nobody recorded'}
-        {access.revoked_reason ? ` · ${access.revoked_reason}` : ''}
-      </p>
-    );
-  }
-  const paid = access.payment_id ? payment : undefined;
-  const link = dashboardUrl(paid?.payment_intent_id ?? null);
-  const age = windowOf(paid?.paid_at ?? null);
-
-  if (paid?.payment_intent_id) {
-    return (
-      <form action={refundPayment} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-        <input type="hidden" name="id" value={String(paid._id)} />
-        <span className="font-mono text-[11px] leading-relaxed text-dim">
-          The money goes back, access ends now, and their work stays.
-          {age ? ` Paid ${age.days} day${age.days === 1 ? '' : 's'} ago${age.late ? `, past the ${REFUND_DAYS}-day window — the record will say it was late` : ''}.` : ''}
-          {link ? ' ' : ''}
-          {link && (
-            <a href={link} target="_blank" rel="noopener" className="underline underline-offset-[3px]">
-              This payment at Stripe
-            </a>
-          )}
-        </span>
-        <input name="reason" required minLength={3} placeholder="why: asked within the window · duplicate charge" className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
-        <button className={`${INK} w-full text-sm sm:w-auto`}>Refund and revoke</button>
-      </form>
-    );
-  }
-
-  // Money we cannot reach: the payment is real, the link to it is not. Revoke
-  // is still offered — an operator has to be able to end access — but never on
-  // its own, because on its own it reads as a grant that cost nobody anything.
-  const unresolved = !isComp(access) && (access.source === 'stripe' || hasPaid);
-
-  // A comp: nothing to give back, so this calls nobody.
-  return (
-    <div className="mt-1">
-      {unresolved && (
-        <p className="border-l-3 border-amber bg-amber-tint px-3 py-2 font-mono text-[11px] leading-relaxed">
-          refund unavailable — no payment reference. Refund it in the Stripe dashboard, then revoke here with the reason.{' '}
-          <a href={dashboardSearchUrl(row.email)} target="_blank" rel="noopener" className="underline underline-offset-[3px]">
-            This account&rsquo;s payments at Stripe
-          </a>
-        </p>
-      )}
-      <form action={revokeGrant} className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-        <input type="hidden" name="id" value={row.id} />
-        <input name="reason" required minLength={3} placeholder={unresolved ? 'why: refunded at Stripe on 2026-09-10' : 'why: the pilot ended · granted in error'} className={`${FIELD} w-full min-w-0 sm:w-auto sm:flex-1`} />
-        <button className={`${QUIET} w-full text-left sm:w-auto`}>Revoke</button>
-      </form>
-    </div>
-  );
-}
+// GrantControls and CurrentAccess moved into account-rows.tsx and
+// lib/admin/account-view.ts: a row builds its own blocks now (ROUND_13 Task 1).

@@ -11,12 +11,12 @@ const actions = at('app', 'admin', 'access', 'actions.ts');
 // them one list derived from one record. The intentions are the same: the work
 // first, a reason on every close, and the operator told what happened.
 describe('/admin/access', () => {
-  it('leads with the one queue, then paid access, then free allowance used', () => {
-    const order = ['<PaymentQueue rows={queue} />', "'Paid access'", "'Free allowance used'"].map((s) => page.indexOf(s));
-    expect(order.every((n) => n > 0)).toBe(true);
+  // ROUND_13 Task 1 put the work first and everything else behind a count: the
+  // queue, then the counts, then what changed, then the two disclosures.
+  it('leads with the one queue, then the counts, then the list, then the foot', () => {
+    const order = ['<PaymentQueue rows={queue} />', 'label="with access"', '<AccountRows', 'Grant access to an address', 'Delete an account'].map((s) => page.indexOf(s));
+    expect(order.every((n) => n > 0), 'every part is on the page').toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
-    // One counter, and it counts the list.
-    expect(page).toMatch(/\{queue\.length\}<\/b> payments needing attention/);
   });
   it('holds the states with work in them, and nothing else', () => {
     expect(at('lib', 'payment-queue.ts')).toMatch(/Payment\.find\(\{ \$or: \[\{ state: \{ \$in: QUEUE_STATES \} \}, \{ _id: \{ \$in: open\.map/);
