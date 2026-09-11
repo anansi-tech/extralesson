@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #e8e6e1; }
+  a { color: #1e2430; }
+  a:hover { color: #c1121f; }
+  summary::-webkit-details-marker { display: none; }
+  summary { list-style: none; }
+</style>
+</helmet>
+
+<section data-screen-label="Admin Access" style="padding:48px 40px 80px;font-family:'IBM Plex Mono',monospace">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#c1121f;font-weight:600">Admin · /admin/access · revised</div>
+    <div style="font-family:Fraunces,serif;font-size:28px;font-weight:900;letter-spacing:-.02em;color:#1e2430">Access</div>
+    <div style="font-size:12px;color:#6e7687;max-width:800px;line-height:1.7">You arrive with work or with a name. So: the queue, then a way to find someone, then the accounts that changed this week as one line each. Everything else — the full lists, granting, deleting — is behind a disclosure, because a page that shows every account at rest is a page you have to read past to do anything.</div>
+  </div>
+
+  <!-- ============================== 1280 ============================== -->
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:48px">
+    <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">A</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Access · 1280</span></div>
+    <div style="width:1280px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+
+      <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+        <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;gap:24px">
+          <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+          <nav style="display:flex;align-items:center;gap:4px;flex:1;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid #c1121f;font-weight:700">Access</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Review</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Coverage</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Topics</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Disputes</span>
+          </nav>
+          <div style="display:flex;align-items:center;gap:16px;flex:none;max-width:360px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687"><span style="text-transform:none;letter-spacing:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">david@anansi.xyz</span><span style="text-decoration:underline;text-underline-offset:3px;white-space:nowrap">Sign out</span></div>
+        </div>
+      </div>
+
+      <div style="position:relative;padding:28px 24px 32px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+        <div style="max-width:960px;margin:0 auto"><div style="position:relative">
+          <div style="position:absolute;top:-28px;bottom:-32px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+
+          <div style="border-left:3px solid #d9a62e;background:#fdf8ec;padding:10px 12px;margin-bottom:24px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Before launch</div>
+            <ul style="margin:8px 0 0;padding:0;list-style:none;font-size:14px;line-height:1.5">
+              <li>Stripe is in test mode — payments will not be real.</li>
+            </ul>
+          </div>
+
+          <!-- ===== 1 · THE QUEUE ===== -->
+          <section style="border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:4px 4px 0 #1e2430">
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px">Payments that need you</div>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c1121f">3</span>
+            </div>
+
+            <ul style="margin:12px 0 0;padding:0;list-style:none">
+
+              <!-- waiting · primary not yet chosen -->
+              <li style="border-bottom:1px solid #f1eada;padding:12px 0">
+                <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px">
+                  <span style="font-weight:700;text-transform:uppercase;letter-spacing:.14em">waiting</span>
+                  <span style="min-width:0;word-break:break-all">kiara.b@example.com</span>
+                  <span style="color:#6e7687">$49.00 USD</span>
+                  <span style="color:#6e7687">2026-09-08</span>
+                </div>
+                <div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">no account on that address at the time of payment</div>
+                <div style="margin-top:2px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">paid 2 days ago · <a href="#A" style="text-decoration:underline;text-underline-offset:3px">This payment at Stripe</a></div>
+
+                <form style="margin:12px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                  <input placeholder="the account that should have it" style="flex:1;min-width:0;min-height:44px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                  <button style="flex:none;min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Grant to this account</button>
+                </form>
+                <details style="margin-top:8px">
+                  <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Other actions</summary>
+                  <div style="margin-top:8px;border-left:3px solid #c9d6e8;padding-left:12px;display:flex;flex-direction:column;gap:8px">
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                      <button style="min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Refund — money back, no grant touched</button>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">asks for a reason next</span>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                      <button style="min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Close</button>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">asks for a reason next</span>
+                    </div>
+                  </div>
+                </details>
+              </li>
+
+              <!-- refund_approved · action chosen, reason revealed -->
+              <li style="border-bottom:1px solid #f1eada;padding:12px 0">
+                <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px">
+                  <span style="font-weight:700;text-transform:uppercase;letter-spacing:.14em">refund_approved</span>
+                  <span style="min-width:0;word-break:break-all">t.charles@example.com</span>
+                  <span style="color:#6e7687">$49.00 USD</span>
+                  <span style="color:#6e7687">2026-09-02</span>
+                </div>
+                <div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">paid 8 days ago · <a href="#A" style="text-decoration:underline;text-underline-offset:3px">This payment at Stripe</a></div>
+                <p style="margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">Approved, and the outcome is not known. Finishing looks for the refund before making one, so this cannot refund twice. Attempt rf_8c21.</p>
+
+                <div style="margin-top:12px;border-left:3px solid #1e2430;padding-left:12px">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#1e2430">Finish the refund</div>
+                  <form style="margin:8px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                    <input value="finishing an approved refund" style="flex:1;min-width:0;min-height:44px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430;outline:2px solid #c1121f;outline-offset:2px">
+                    <button style="flex:none;min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Finish it</button>
+                    <button style="flex:none;min-height:44px;display:inline-flex;align-items:center;background:none;border:0;padding:0;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Cancel</button>
+                  </form>
+                </div>
+              </li>
+
+              <!-- duplicate -->
+              <li style="padding:12px 0">
+                <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px">
+                  <span style="font-weight:700;text-transform:uppercase;letter-spacing:.14em">duplicate</span>
+                  <span style="min-width:0;word-break:break-all">r.mohammed@example.com</span>
+                  <span style="color:#6e7687">$49.00 USD</span>
+                  <span style="color:#6e7687">2026-08-30</span>
+                </div>
+                <div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">paid 11 days ago · <a href="#A" style="text-decoration:underline;text-underline-offset:3px">This payment at Stripe</a></div>
+                <p style="margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">That account’s sitting was already covered, so nothing was granted and the grant it had is untouched. Refund this one in Stripe — closing it here moves no money.</p>
+
+                <div style="margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                  <button style="min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Close (refunded)</button>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">asks for a reason next</span>
+                </div>
+                <details style="margin-top:8px">
+                  <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Other actions</summary>
+                  <div style="margin-top:8px;border-left:3px solid #c9d6e8;padding-left:12px">
+                    <button style="min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Refund — money back, no grant touched</button>
+                  </div>
+                </details>
+              </li>
+            </ul>
+          </section>
+
+          <!-- ===== 2 · SEARCH ===== -->
+          <form style="margin-top:28px;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+            <input placeholder="find an account by email" style="flex:1;min-width:0;min-height:44px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fff;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+            <button style="flex:none;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Search</button>
+          </form>
+
+          <!-- ===== 3 · COUNTS ===== -->
+          <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6e7687">
+            <b style="color:#1e2430">18</b> with access · <b style="color:#1e2430">7</b> free allowance used · <b style="color:#1e2430">64</b> free tier · <b style="color:#1e2430">89</b> accounts
+          </div>
+
+          <!-- ===== 4 · CHANGED THIS WEEK ===== -->
+          <section style="margin-top:28px">
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px">Changed in the last 7 days · 6</div>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">newest first</span>
+            </div>
+            <p style="margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">Open one to see its grant and the one thing you can do about it.</p>
+
+            <ul style="margin:10px 0 0;padding:0;list-style:none">
+
+              <li style="border-bottom:1px solid #f1eada">
+                <details>
+                  <summary style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;min-height:44px;padding:10px 0;cursor:pointer">
+                    <span style="min-width:0;font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;text-decoration:underline;text-underline-offset:3px">kiara@example.com</span>
+                    <span style="flex:none;display:inline-flex;align-items:baseline;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                      <span>may-june-2027</span>
+                      <span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b;min-width:11ch">access</span>
+                    </span>
+                  </summary>
+                  <div style="padding:0 0 16px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687;margin-top:6px">
+                      <span style="display:block">Kiara Bishop · entered for May/June 2027 · 12 sessions · 31 questions</span>
+                      <span style="display:block">Access for may-june-2027</span>
+                      <span style="display:block">Class Sale</span>
+                      <span style="display:block">Granted 2026-08-21 · stripe</span>
+                      <span style="display:block;word-break:break-all">Reason <b style="font-weight:400;color:#1e2430">evt_3PkQ8vF2eZvKYlo2</b></span>
+                    </div>
+                    <details style="margin-top:6px">
+                      <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Previous access</summary>
+                      <div style="margin-top:4px;border-left:3px solid #c9d6e8;padding-left:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">
+                        <span style="display:block">Access for may-june-2026 · admin</span>
+                        <span style="display:block;word-break:break-all"><b style="font-weight:400;color:#1e2430">comp: pilot cohort</b></span>
+                      </div>
+                    </details>
+                    <p style="margin:10px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">The money goes back, access ends now, and their work stays. Paid 20 days ago, past the 14-day window — the record will say it was late. <a href="#A" style="text-decoration:underline;text-underline-offset:3px">This payment at Stripe</a></p>
+                    <div style="margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                      <button style="min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Refund and revoke</button>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">asks for a reason next</span>
+                    </div>
+                  </div>
+                </details>
+              </li>
+
+              <li style="border-bottom:1px solid #f1eada">
+                <details>
+                  <summary style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;min-height:44px;padding:10px 0;cursor:pointer">
+                    <span style="min-width:0;font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;text-decoration:underline;text-underline-offset:3px">j.thomas@example.com</span>
+                    <span style="flex:none;display:inline-flex;align-items:baseline;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                      <span>may-june-2027</span>
+                      <span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b;min-width:11ch">access</span>
+                    </span>
+                  </summary>
+                  <div style="padding:0 0 16px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687;margin-top:6px">
+                      <span style="display:block">Jerome Thomas · entered for May/June 2027 · 2 sessions · 5 questions</span>
+                      <span style="display:block">Access for may-june-2027</span>
+                      <span style="display:block">Class not named in the note</span>
+                      <span style="display:block">Granted 2026-09-01 · admin</span>
+                      <span style="display:block;word-break:break-all">Note <b style="font-weight:400;color:#1e2430">paid by aunt, webhook missed it</b></span>
+                    </div>
+                    <p style="margin:10px 0 0;border-left:3px solid #d9a62e;background:#fdf8ec;padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7">refund unavailable — no payment reference. Refund it in the Stripe dashboard, then revoke here with the reason. <a href="#A" style="text-decoration:underline;text-underline-offset:3px">This account’s payments at Stripe</a></p>
+                    <div style="margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                      <button style="min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Revoke</button>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">asks for a reason next</span>
+                    </div>
+                  </div>
+                </details>
+              </li>
+
+              <li style="border-bottom:1px solid #f1eada">
+                <details>
+                  <summary style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;min-height:44px;padding:10px 0;cursor:pointer">
+                    <span style="min-width:0;font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;text-decoration:underline;text-underline-offset:3px">s.hinds@example.com</span>
+                    <span style="flex:none;display:inline-flex;align-items:baseline;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                      <span>may-june-2027</span>
+                      <span style="text-transform:uppercase;letter-spacing:.14em;color:#c1121f;min-width:11ch">free used</span>
+                    </span>
+                  </summary>
+                  <div style="padding:0 0 16px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">
+                      <span style="display:block">Shanice Hinds · entered for May/June 2027 · 1 session · 3 questions</span>
+                      <span style="display:block">No grant on this account.</span>
+                    </div>
+                    <div style="margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                      <button style="min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Grant access</button>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">asks for the sitting, the class and a reason next</span>
+                    </div>
+                  </div>
+                </details>
+              </li>
+
+              <li style="border-bottom:1px solid #f1eada">
+                <details>
+                  <summary style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;min-height:44px;padding:10px 0;cursor:pointer">
+                    <span style="min-width:0;font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;text-decoration:underline;text-underline-offset:3px">a.persaud@example.com</span>
+                    <span style="flex:none;display:inline-flex;align-items:baseline;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                      <span>january-2027</span>
+                      <span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b;min-width:11ch">access</span>
+                    </span>
+                  </summary>
+                  <div style="padding:0 0 16px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687;margin-top:6px">
+                      <span style="display:block">Anand Persaud · entered for January 2027 re-sit · 4 sessions · 9 questions</span>
+                      <span style="display:block">Access for january-2027</span>
+                      <span style="display:block">Class Comp</span>
+                      <span style="display:block">Granted 2026-08-14 · admin</span>
+                      <span style="display:block;word-break:break-all">Reason <b style="font-weight:400;color:#1e2430">St George’s pilot, teacher’s nephew</b></span>
+                    </div>
+                    <details style="margin-top:6px">
+                      <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Previous access</summary>
+                      <div style="margin-top:4px;border-left:3px solid #c9d6e8;padding-left:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">
+                        <span style="display:block">Access for may-june-2026 · admin</span>
+                        <span style="display:block;word-break:break-all"><b style="font-weight:400;color:#1e2430">comp: pilot cohort</b></span>
+                      </div>
+                    </details>
+                    <p style="margin:10px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">A comp: nothing was paid, so there is nothing to give back.</p>
+                    <div style="margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                      <button style="min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Revoke</button>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">asks for a reason next</span>
+                    </div>
+                  </div>
+                </details>
+              </li>
+
+              <li style="border-bottom:1px solid #f1eada">
+                <details>
+                  <summary style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;min-height:44px;padding:10px 0;cursor:pointer">
+                    <span style="min-width:0;font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;text-decoration:underline;text-underline-offset:3px">m.gill@example.com</span>
+                    <span style="flex:none;display:inline-flex;align-items:baseline;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                      <span>may-june-2026</span>
+                      <span style="text-transform:uppercase;letter-spacing:.14em;color:#c1121f;min-width:11ch">revoked</span>
+                    </span>
+                  </summary>
+                  <div style="padding:0 0 16px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687;margin-top:6px">
+                      <span style="display:block">Michelle Gill · entered for May/June 2026 · 6 sessions · 14 questions</span>
+                      <span style="display:block">Access for may-june-2026</span>
+                      <span style="display:block">Class Sale</span>
+                      <span style="display:block">Granted 2026-02-11 · stripe</span>
+                      <span style="display:block;word-break:break-all">Reason <b style="font-weight:400;color:#1e2430">evt_3OqB1nF2eZvKYlo2</b></span>
+                    </div>
+                    <p style="margin:10px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#c1121f">revoked 2026-09-06 by david@anansi.xyz · refunded, asked within the window</p>
+                    <p style="margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">Nothing left to do on this one. It stays on the list rather than dropping into the free tier, where it would read as somebody who never paid.</p>
+                  </div>
+                </details>
+              </li>
+
+              <li>
+                <details>
+                  <summary style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;min-height:44px;padding:10px 0;cursor:pointer">
+                    <span style="min-width:0;font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;text-decoration:underline;text-underline-offset:3px">d.james@example.com</span>
+                    <span style="flex:none;display:inline-flex;align-items:baseline;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                      <span>january-2027</span>
+                      <span style="text-transform:uppercase;letter-spacing:.14em;color:#c1121f;min-width:11ch">free used</span>
+                    </span>
+                  </summary>
+                  <div style="padding:0 0 16px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">
+                      <span style="display:block">Denelle James · entered for January 2027 re-sit · 1 session · 4 questions</span>
+                      <span style="display:block">No grant on this account.</span>
+                    </div>
+                    <div style="margin-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                      <button style="min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Grant access</button>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">asks for the sitting, the class and a reason next</span>
+                    </div>
+                  </div>
+                </details>
+              </li>
+            </ul>
+
+            <details style="margin-top:14px">
+              <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">All 89 accounts</summary>
+              <p style="margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">Same one line each, in the same three lists as before: paid access, free allowance used, free tier. Searching is faster than reading them.</p>
+            </details>
+          </section>
+
+          <!-- ===== 5 · THE TWO WRITES, BEHIND DISCLOSURES ===== -->
+          <div style="margin-top:32px;border-top:1.5px solid #1e2430;padding-top:8px">
+            <details>
+              <summary style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;min-height:44px;padding:12px 0;cursor:pointer">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Grant access to an address</span>
+                <span style="flex:none;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">when no account matched a payment</span>
+              </summary>
+              <div style="padding:0 0 20px">
+                <p style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">By the address the student registered with, which need not be the address that paid. The sitting is the account’s, so until an address matches an account there is nothing to preselect — and the form will not submit.</p>
+                <div style="margin-top:10px;max-width:65ch;font-size:13px;line-height:1.45;color:#6e7687">
+                  <p style="margin:0"><b style="color:#1e2430">Sale</b> — money arrived and the automatic path missed it. The reason is the Stripe event id.</p>
+                  <p style="margin:4px 0 0"><b style="color:#1e2430">Comp</b> — access given, nothing paid. The reason is who it’s for and why.</p>
+                </div>
+                <form style="margin:12px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                  <input placeholder="the account’s email" style="flex:1;min-width:0;min-height:44px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                  <select style="min-height:44px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#6e7687"><option>sitting — type the address first</option></select>
+                  <select style="min-height:44px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430"><option>Comp</option><option>Sale</option></select>
+                  <input placeholder="why, or the Stripe event id" style="flex:1;min-width:0;min-height:44px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                  <button style="flex:none;min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Grant access</button>
+                </form>
+              </div>
+            </details>
+
+            <details style="border-top:1px solid #f1eada">
+              <summary style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;min-height:44px;padding:12px 0;cursor:pointer">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Delete an account</span>
+                <span style="flex:none;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c1121f">cannot be undone</span>
+              </summary>
+              <div style="padding:0 0 20px">
+                <p style="margin:0;font-size:13px;line-height:1.45;max-width:72ch">Everything the student has: attempts, sessions, drafts, photos and the readings of them. It cannot be undone. The payment is kept and stripped of the person — the money is a financial record. If they have paid, refund and revoke first.</p>
+                <form style="margin:12px 0 0;display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px">
+                  <label style="display:block">
+                    <span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">Email address</span>
+                    <input style="margin-top:4px;display:block;width:256px;max-width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                  </label>
+                  <label style="display:block">
+                    <span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">Type it again</span>
+                    <input style="margin-top:4px;display:block;width:256px;max-width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                  </label>
+                  <button style="min-height:44px;background:#c1121f;color:#fff;border:0;padding:16px;font-family:Fraunces,serif;font-weight:900;font-size:17px;box-shadow:4px 4px 0 #1e2430">Delete this account</button>
+                </form>
+              </div>
+            </details>
+          </div>
+
+          <div style="margin-top:40px">
+            <a href="#A" style="display:inline-flex;min-height:44px;align-items:center;border-top:1.5px solid #c9d6e8;padding-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">← student app</a>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================== 390 ============================== -->
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">B</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Access · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <div style="display:flex;align-items:center;gap:8px;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">david@anansi.xyz</span><span style="text-transform:uppercase;letter-spacing:.1em;text-decoration:underline;text-underline-offset:3px;white-space:nowrap">Sign out</span></div>
+          </div>
+          <nav style="display:flex;flex-wrap:wrap;align-items:center;gap:0 4px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid #c1121f;font-weight:700">Access</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Review</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Coverage</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Topics</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Disputes</span>
+          </nav>
+        </div>
+
+        <div style="position:relative;padding:24px 20px 32px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+
+            <div style="border-left:3px solid #d9a62e;background:#fdf8ec;padding:10px 12px;margin-bottom:20px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em">Before launch</div>
+              <ul style="margin:8px 0 0;padding:0;list-style:none;font-size:14px;line-height:1.5"><li>Stripe is in test mode — payments will not be real.</li></ul>
+            </div>
+
+            <section style="border:1.5px solid #1e2430;background:#fff;padding:16px;box-shadow:4px 4px 0 #1e2430">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px">Payments that need you</div>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c1121f">3</span>
+              </div>
+              <ul style="margin:12px 0 0;padding:0;list-style:none">
+
+                <li style="border-bottom:1px solid #f1eada;padding:12px 0">
+                  <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;font-family:'IBM Plex Mono',monospace;font-size:12px">
+                    <span style="font-weight:700;text-transform:uppercase;letter-spacing:.14em">waiting</span>
+                    <span style="min-width:0;word-break:break-all">kiara.b@example.com</span>
+                    <span style="color:#6e7687">$49.00 USD</span>
+                    <span style="color:#6e7687">2026-09-08</span>
+                  </div>
+                  <div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">no account on that address at the time of payment</div>
+                  <div style="margin-top:2px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">paid 2 days ago · <a href="#B" style="text-decoration:underline;text-underline-offset:3px">This payment at Stripe</a></div>
+                  <form style="margin:12px 0 0;display:flex;flex-direction:column;gap:8px">
+                    <input placeholder="the account that should have it" style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                    <button style="width:100%;min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Grant to this account</button>
+                  </form>
+                  <details style="margin-top:8px">
+                    <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Other actions</summary>
+                    <div style="margin-top:8px;border-left:3px solid #c9d6e8;padding-left:12px;display:flex;flex-direction:column;gap:10px">
+                      <button style="width:100%;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:10px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Refund — money back, no grant touched</button>
+                      <button style="width:100%;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:10px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Close</button>
+                    </div>
+                  </details>
+                </li>
+
+                <li style="border-bottom:1px solid #f1eada;padding:12px 0">
+                  <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;font-family:'IBM Plex Mono',monospace;font-size:12px">
+                    <span style="font-weight:700;text-transform:uppercase;letter-spacing:.14em">refund_approved</span>
+                    <span style="min-width:0;word-break:break-all">t.charles@example.com</span>
+                    <span style="color:#6e7687">$49.00 USD</span>
+                  </div>
+                  <div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">paid 8 days ago · <a href="#B" style="text-decoration:underline;text-underline-offset:3px">This payment at Stripe</a></div>
+                  <p style="margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">Approved, and the outcome is not known. Finishing looks for the refund before making one, so this cannot refund twice.</p>
+                  <div style="margin-top:12px;border-left:3px solid #1e2430;padding-left:12px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#1e2430">Finish the refund</div>
+                    <form style="margin:8px 0 0;display:flex;flex-direction:column;gap:8px">
+                      <input value="finishing an approved refund" style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430;outline:2px solid #c1121f;outline-offset:2px">
+                      <button style="width:100%;min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Finish it</button>
+                      <button style="width:100%;text-align:left;min-height:44px;display:inline-flex;align-items:center;background:none;border:0;padding:0;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Cancel</button>
+                    </form>
+                  </div>
+                </li>
+
+                <li style="padding:12px 0">
+                  <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;font-family:'IBM Plex Mono',monospace;font-size:12px">
+                    <span style="font-weight:700;text-transform:uppercase;letter-spacing:.14em">duplicate</span>
+                    <span style="min-width:0;word-break:break-all">r.mohammed@example.com</span>
+                    <span style="color:#6e7687">$49.00 USD</span>
+                  </div>
+                  <div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">paid 11 days ago · <a href="#B" style="text-decoration:underline;text-underline-offset:3px">This payment at Stripe</a></div>
+                  <p style="margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">That account’s sitting was already covered, so nothing was granted and the grant it had is untouched. Refund this one in Stripe — closing it here moves no money.</p>
+                  <button style="margin-top:12px;width:100%;min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Close (refunded)</button>
+                  <details style="margin-top:8px">
+                    <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Other actions</summary>
+                    <div style="margin-top:8px;border-left:3px solid #c9d6e8;padding-left:12px">
+                      <button style="width:100%;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:10px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Refund — money back, no grant touched</button>
+                    </div>
+                  </details>
+                </li>
+              </ul>
+            </section>
+
+            <form style="margin-top:24px;display:flex;flex-direction:column;gap:8px">
+              <input placeholder="find an account by email" style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+              <button style="width:100%;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Search</button>
+            </form>
+
+            <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.8;color:#6e7687">
+              <b style="color:#1e2430">18</b> with access · <b style="color:#1e2430">7</b> free allowance used · <b style="color:#1e2430">64</b> free tier · <b style="color:#1e2430">89</b> accounts
+            </div>
+
+            <section style="margin-top:24px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Changed in the last 7 days · 6</div>
+              <p style="margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">Open one to see its grant and the one thing you can do about it.</p>
+
+              <ul style="margin:10px 0 0;padding:0;list-style:none">
+                <li style="border-bottom:1px solid #f1eada">
+                  <details>
+                    <summary style="display:flex;flex-direction:column;gap:2px;min-height:44px;padding:10px 0;cursor:pointer">
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;text-decoration:underline;text-underline-offset:3px">kiara@example.com</span>
+                      <span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687"><span>may-june-2027</span><span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b">access</span></span>
+                    </summary>
+                    <div style="padding:0 0 16px">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687;margin-top:6px">
+                        <span style="display:block">Kiara Bishop · entered for May/June 2027</span>
+                        <span style="display:block">12 sessions · 31 questions</span>
+                        <span style="display:block">Access for may-june-2027</span>
+                        <span style="display:block">Class Sale</span>
+                        <span style="display:block">Granted 2026-08-21 · stripe</span>
+                        <span style="display:block;word-break:break-all">Reason <b style="font-weight:400;color:#1e2430">evt_3PkQ8vF2eZvKYlo2</b></span>
+                      </div>
+                      <details style="margin-top:6px">
+                        <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Previous access</summary>
+                        <div style="margin-top:4px;border-left:3px solid #c9d6e8;padding-left:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">
+                          <span style="display:block">Access for may-june-2026 · admin</span>
+                          <span style="display:block;word-break:break-all"><b style="font-weight:400;color:#1e2430">comp: pilot cohort</b></span>
+                        </div>
+                      </details>
+                      <p style="margin:10px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">The money goes back, access ends now, and their work stays. Paid 20 days ago, past the 14-day window.</p>
+                      <button style="margin-top:10px;width:100%;min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Refund and revoke</button>
+                    </div>
+                  </details>
+                </li>
+
+                <li style="border-bottom:1px solid #f1eada">
+                  <details>
+                    <summary style="display:flex;flex-direction:column;gap:2px;min-height:44px;padding:10px 0;cursor:pointer">
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;text-decoration:underline;text-underline-offset:3px">j.thomas@example.com</span>
+                      <span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687"><span>may-june-2027</span><span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b">access</span></span>
+                    </summary>
+                    <div style="padding:0 0 16px">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687;margin-top:6px">
+                        <span style="display:block">Jerome Thomas · entered for May/June 2027</span>
+                        <span style="display:block">Access for may-june-2027</span>
+                        <span style="display:block">Class not named in the note</span>
+                        <span style="display:block;word-break:break-all">Note <b style="font-weight:400;color:#1e2430">paid by aunt, webhook missed it</b></span>
+                      </div>
+                      <p style="margin:10px 0 0;border-left:3px solid #d9a62e;background:#fdf8ec;padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7">refund unavailable — no payment reference. Refund it in the Stripe dashboard, then revoke here with the reason.</p>
+                      <button style="margin-top:10px;width:100%;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Revoke</button>
+                    </div>
+                  </details>
+                </li>
+
+                <li style="border-bottom:1px solid #f1eada">
+                  <details>
+                    <summary style="display:flex;flex-direction:column;gap:2px;min-height:44px;padding:10px 0;cursor:pointer">
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;text-decoration:underline;text-underline-offset:3px">s.hinds@example.com</span>
+                      <span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687"><span>may-june-2027</span><span style="text-transform:uppercase;letter-spacing:.14em;color:#c1121f">free used</span></span>
+                    </summary>
+                    <div style="padding:0 0 16px">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">
+                        <span style="display:block">Shanice Hinds · entered for May/June 2027</span>
+                        <span style="display:block">1 session · 3 questions</span>
+                        <span style="display:block">No grant on this account.</span>
+                      </div>
+                      <button style="margin-top:10px;width:100%;min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Grant access</button>
+                    </div>
+                  </details>
+                </li>
+
+                <li style="border-bottom:1px solid #f1eada">
+                  <details>
+                    <summary style="display:flex;flex-direction:column;gap:2px;min-height:44px;padding:10px 0;cursor:pointer">
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;text-decoration:underline;text-underline-offset:3px">a.persaud@example.com</span>
+                      <span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687"><span>january-2027</span><span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b">access</span></span>
+                    </summary>
+                    <div style="padding:0 0 16px">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687;margin-top:6px">
+                        <span style="display:block">Anand Persaud · entered for January 2027 re-sit</span>
+                        <span style="display:block">4 sessions · 9 questions</span>
+                        <span style="display:block">Access for january-2027</span>
+                        <span style="display:block">Class Comp</span>
+                        <span style="display:block;word-break:break-all">Reason <b style="font-weight:400;color:#1e2430">St George’s pilot, teacher’s nephew</b></span>
+                      </div>
+                      <details style="margin-top:6px">
+                        <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Previous access</summary>
+                        <div style="margin-top:4px;border-left:3px solid #c9d6e8;padding-left:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">
+                          <span style="display:block">Access for may-june-2026 · admin</span>
+                          <span style="display:block;word-break:break-all"><b style="font-weight:400;color:#1e2430">comp: pilot cohort</b></span>
+                        </div>
+                      </details>
+                      <p style="margin:10px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">A comp: nothing was paid, so there is nothing to give back.</p>
+                      <button style="margin-top:10px;width:100%;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Revoke</button>
+                    </div>
+                  </details>
+                </li>
+
+                <li style="border-bottom:1px solid #f1eada">
+                  <details>
+                    <summary style="display:flex;flex-direction:column;gap:2px;min-height:44px;padding:10px 0;cursor:pointer">
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;text-decoration:underline;text-underline-offset:3px">m.gill@example.com</span>
+                      <span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687"><span>may-june-2026</span><span style="text-transform:uppercase;letter-spacing:.14em;color:#c1121f">revoked</span></span>
+                    </summary>
+                    <div style="padding:0 0 16px">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687;margin-top:6px">
+                        <span style="display:block">Michelle Gill · entered for May/June 2026</span>
+                        <span style="display:block">6 sessions · 14 questions</span>
+                        <span style="display:block">Access for may-june-2026</span>
+                        <span style="display:block">Class Sale</span>
+                        <span style="display:block;word-break:break-all">Reason <b style="font-weight:400;color:#1e2430">evt_3OqB1nF2eZvKYlo2</b></span>
+                      </div>
+                      <p style="margin:10px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#c1121f">revoked 2026-09-06 by david@anansi.xyz · refunded, asked within the window</p>
+                      <p style="margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">Nothing left to do on this one. It stays on the list rather than dropping into the free tier, where it would read as somebody who never paid.</p>
+                    </div>
+                  </details>
+                </li>
+
+                <li>
+                  <details>
+                    <summary style="display:flex;flex-direction:column;gap:2px;min-height:44px;padding:10px 0;cursor:pointer">
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;text-decoration:underline;text-underline-offset:3px">d.james@example.com</span>
+                      <span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687"><span>january-2027</span><span style="text-transform:uppercase;letter-spacing:.14em;color:#c1121f">free used</span></span>
+                    </summary>
+                    <div style="padding:0 0 16px">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">
+                        <span style="display:block">Denelle James · entered for January 2027 re-sit</span>
+                        <span style="display:block">1 session · 4 questions</span>
+                        <span style="display:block">No grant on this account.</span>
+                      </div>
+                      <button style="margin-top:10px;width:100%;min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Grant access</button>
+                    </div>
+                  </details>
+                </li>
+              </ul>
+
+              <details style="margin-top:14px">
+                <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">All 89 accounts</summary>
+                <p style="margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">Same one line each, in the same three lists as before. Searching is faster than reading them.</p>
+              </details>
+            </section>
+
+            <div style="margin-top:28px;border-top:1.5px solid #1e2430;padding-top:8px">
+              <details>
+                <summary style="display:flex;flex-direction:column;gap:2px;min-height:44px;padding:12px 0;cursor:pointer">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Grant access to an address</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">when no account matched a payment</span>
+                </summary>
+                <div style="padding:0 0 20px">
+                  <p style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">By the address the student registered with, which need not be the address that paid.</p>
+                  <div style="margin-top:10px;font-size:13px;line-height:1.45;color:#6e7687">
+                    <p style="margin:0"><b style="color:#1e2430">Sale</b> — money arrived and the automatic path missed it. The reason is the Stripe event id.</p>
+                    <p style="margin:4px 0 0"><b style="color:#1e2430">Comp</b> — access given, nothing paid. The reason is who it’s for and why.</p>
+                  </div>
+                  <form style="margin:12px 0 0;display:flex;flex-direction:column;gap:8px">
+                    <input placeholder="the account’s email" style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                    <select style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fbf7ee;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#6e7687"><option>sitting — type the address first</option></select>
+                    <select style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fbf7ee;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430"><option>Comp</option><option>Sale</option></select>
+                    <input placeholder="why, or the Stripe event id" style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                    <button style="width:100%;min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Grant access</button>
+                  </form>
+                </div>
+              </details>
+
+              <details style="border-top:1px solid #f1eada">
+                <summary style="display:flex;flex-direction:column;gap:2px;min-height:44px;padding:12px 0;cursor:pointer">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">Delete an account</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c1121f">cannot be undone</span>
+                </summary>
+                <div style="padding:0 0 20px">
+                  <p style="margin:0;font-size:13px;line-height:1.45">Everything the student has: attempts, sessions, drafts, photos and the readings of them. It cannot be undone. The payment is kept and stripped of the person — the money is a financial record. If they have paid, refund and revoke first.</p>
+                  <form style="margin:12px 0 0;display:flex;flex-direction:column;gap:12px">
+                    <label style="display:block">
+                      <span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">Email address</span>
+                      <input style="margin-top:4px;display:block;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                    </label>
+                    <label style="display:block">
+                      <span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">Type it again</span>
+                      <input style="margin-top:4px;display:block;width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                    </label>
+                    <button style="width:100%;min-height:44px;background:#c1121f;color:#fff;border:0;padding:16px;font-family:Fraunces,serif;font-weight:900;font-size:17px;box-shadow:4px 4px 0 #1e2430">Delete this account</button>
+                  </form>
+                </div>
+              </details>
+            </div>
+
+            <div style="margin-top:36px">
+              <a href="#B" style="display:inline-flex;min-height:44px;align-items:center;border-top:1.5px solid #c9d6e8;padding-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">← student app</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="width:390px;font-size:11px;line-height:1.7;color:#6e7687">
+      <p style="margin:0 0 10px"><b style="color:#1e2430">The queue keeps its shadow;</b> nothing else on the page has one. It is the only card here, so it is the only thing that can be the work.</p>
+      <p style="margin:0 0 10px"><b style="color:#1e2430">A reason is asked for after the action is chosen,</b> not before — the field beside a button you have not pressed is a field you read past. The one exception is <code>waiting</code>, where the primary needs an address, not a reason: the address <em>is</em> the decision.</p>
+      <p style="margin:0 0 10px"><b style="color:#1e2430">A closed row has no inputs in it at all.</b> Six accounts used to mean up to eighteen form fields at rest; now it means six lines and a state word.</p>
+      <p style="margin:0 0 10px"><b style="color:#1e2430">Three state words only</b> — access, free used, revoked — at a fixed width so the column reads straight down. Green for access, red for the two that need a decision eventually.</p>
+      <p style="margin:0"><b style="color:#1e2430">One open at a time</b> is behaviour, not markup: opening a second row closes the first, so the page never grows under your thumb while you read it.</p>
+    </div>
+  </div>
+</section>
+
+
+<section data-screen-label="Admin Access row opened" style="padding:48px 40px 80px;font-family:'IBM Plex Mono',monospace;border-top:2px solid #1e2430">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#c1121f;font-weight:600">Admin · /admin/access · a row opened</div>
+    <div style="font-family:Fraunces,serif;font-size:28px;font-weight:900;letter-spacing:-.02em;color:#1e2430">The opened row</div>
+    <div style="font-size:12px;color:#6e7687;max-width:800px;line-height:1.7">The same three blocks every time: who they are, what grant they hold, and the one thing you can do about it. The only difference between the variants is which control the grant permits — and whether it can be done here at all.</div>
+  </div>
+
+  <!-- ===== 1280 ===== -->
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:40px">
+    <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">C</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Row opened · three variants · 1280</span></div>
+    <div style="width:1280px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+      <div style="position:relative;padding:28px 24px 32px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+        <div style="max-width:960px;margin:0 auto"><div style="position:relative">
+          <div style="position:absolute;top:-28px;bottom:-32px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Changed in the last 7 days · 6</div>
+
+          <ul style="margin:10px 0 0;padding:0;list-style:none">
+
+            <!-- variant 1 · paid grant -->
+            <li style="border-bottom:1px solid #f1eada">
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;min-height:44px;padding:10px 0">
+                <span style="min-width:0;font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;font-weight:600">kiara@example.com</span>
+                <span style="flex:none;display:inline-flex;align-items:baseline;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                  <span>may-june-2027</span>
+                  <span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b;min-width:11ch">access</span>
+                </span>
+              </div>
+              <div style="border-left:3px solid #1e2430;padding:0 0 16px 12px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">Kiara Bishop · entered for May/June 2027 · 12 sessions · 31 questions</div>
+
+                <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                <dl style="margin:6px 0 0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8">
+                  <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Access for</dt><dd style="margin:0">may-june-2027</dd>
+                  <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Class</dt><dd style="margin:0">Sale</dd>
+                  <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Granted</dt><dd style="margin:0">2026-08-21 · stripe</dd>
+                  <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Reason</dt><dd style="margin:0;word-break:break-all">evt_3PkQ8vF2eZvKYlo2</dd>
+                </dl>
+
+                <details style="margin-top:6px">
+                  <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Previous access · 1</summary>
+                  <div style="margin-top:4px;border-left:3px solid #c9d6e8;padding-left:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">
+                    <span style="display:block">Access for may-june-2026 · admin</span>
+                    <span style="display:block;word-break:break-all"><b style="font-weight:400;color:#1e2430">comp: pilot cohort</b></span>
+                  </div>
+                </details>
+
+                <p style="margin:12px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">The money goes back, access ends now, and their work stays. Paid 20 days ago, past the 14-day window — the record will say it was late. <a href="#C" style="text-decoration:underline;text-underline-offset:3px">This payment at Stripe</a></p>
+                <form style="margin:10px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                  <input placeholder="why: asked within the window · duplicate charge" style="flex:1;min-width:0;min-height:44px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                  <button style="flex:none;min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Refund and revoke</button>
+                </form>
+              </div>
+            </li>
+
+            <!-- variant 2 · comp -->
+            <li style="border-bottom:1px solid #f1eada">
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;min-height:44px;padding:10px 0">
+                <span style="min-width:0;font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;font-weight:600">a.persaud@example.com</span>
+                <span style="flex:none;display:inline-flex;align-items:baseline;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                  <span>january-2027</span>
+                  <span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b;min-width:11ch">access</span>
+                </span>
+              </div>
+              <div style="border-left:3px solid #1e2430;padding:0 0 16px 12px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">Anand Persaud · entered for January 2027 re-sit · 4 sessions · 9 questions</div>
+
+                <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                <dl style="margin:6px 0 0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8">
+                  <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Access for</dt><dd style="margin:0">january-2027</dd>
+                  <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Class</dt><dd style="margin:0">Comp</dd>
+                  <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Granted</dt><dd style="margin:0">2026-08-14 · admin</dd>
+                  <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Reason</dt><dd style="margin:0">St George’s pilot, teacher’s nephew</dd>
+                </dl>
+
+                <details style="margin-top:6px">
+                  <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Previous access · 1</summary>
+                  <div style="margin-top:4px;border-left:3px solid #c9d6e8;padding-left:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">
+                    <span style="display:block">Access for may-june-2026 · admin</span>
+                    <span style="display:block;word-break:break-all"><b style="font-weight:400;color:#1e2430">comp: pilot cohort</b></span>
+                  </div>
+                </details>
+
+                <p style="margin:12px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">A comp: nothing was paid, so there is nothing to give back. Access ends now and their work stays.</p>
+                <form style="margin:10px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                  <input placeholder="why: the pilot ended · granted in error" style="flex:1;min-width:0;min-height:44px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                  <button style="flex:none;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Revoke</button>
+                </form>
+              </div>
+            </li>
+
+            <!-- variant 3 · paid, no reference -->
+            <li>
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;min-height:44px;padding:10px 0">
+                <span style="min-width:0;font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;font-weight:600">j.thomas@example.com</span>
+                <span style="flex:none;display:inline-flex;align-items:baseline;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                  <span>may-june-2027</span>
+                  <span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b;min-width:11ch">access</span>
+                </span>
+              </div>
+              <div style="border-left:3px solid #1e2430;padding:0 0 16px 12px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">Jerome Thomas · entered for May/June 2027 · 2 sessions · 5 questions</div>
+
+                <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                <dl style="margin:6px 0 0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8">
+                  <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Access for</dt><dd style="margin:0">may-june-2027</dd>
+                  <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Class</dt><dd style="margin:0;color:#6e7687">not named in the note</dd>
+                  <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Granted</dt><dd style="margin:0">2026-09-01 · admin</dd>
+                  <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Note</dt><dd style="margin:0">paid by aunt, webhook missed it</dd>
+                </dl>
+
+                <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Previous access · none</div>
+
+                <p style="margin:12px 0 0;border-left:3px solid #d9a62e;background:#fdf8ec;padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7">refund unavailable — no payment reference. Refund it in the Stripe dashboard, then revoke here with the reason. <a href="#C" style="text-decoration:underline;text-underline-offset:3px">This account’s payments at Stripe</a></p>
+                <form style="margin:10px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                  <input placeholder="why: refunded at Stripe on 2026-09-10" style="flex:1;min-width:0;min-height:44px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                  <button style="flex:none;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Revoke</button>
+                </form>
+              </div>
+            </li>
+          </ul>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== open/close ===== -->
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start;margin-bottom:40px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">D</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">A second row opens · 1280</span></div>
+      <div style="width:640px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="position:relative;padding:24px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">before · kiara open</div>
+          <ul style="margin:8px 0 0;padding:0;list-style:none">
+            <li style="border-bottom:1px solid #f1eada">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;min-height:44px;padding:10px 0"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600">kiara@example.com</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2e7d5b;text-transform:uppercase;letter-spacing:.14em">access</span></div>
+              <div style="border-left:3px solid #1e2430;padding:0 0 12px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">Current access · Sale · granted 2026-08-21<br>Refund and revoke</div>
+            </li>
+            <li style="border-bottom:1px solid #f1eada"><div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;min-height:44px;padding:10px 0"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;text-decoration:underline;text-underline-offset:3px">j.thomas@example.com</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2e7d5b;text-transform:uppercase;letter-spacing:.14em">access</span></div></li>
+            <li><div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;min-height:44px;padding:10px 0"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;text-decoration:underline;text-underline-offset:3px">s.hinds@example.com</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c1121f;text-transform:uppercase;letter-spacing:.14em">free used</span></div></li>
+          </ul>
+
+          <div style="margin-top:24px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#c1121f">after · j.thomas clicked</div>
+          <ul style="margin:8px 0 0;padding:0;list-style:none">
+            <li style="border-bottom:1px solid #f1eada"><div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;min-height:44px;padding:10px 0"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;text-decoration:underline;text-underline-offset:3px">kiara@example.com</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2e7d5b;text-transform:uppercase;letter-spacing:.14em">access</span></div></li>
+            <li style="border-bottom:1px solid #f1eada">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;min-height:44px;padding:10px 0"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600">j.thomas@example.com</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2e7d5b;text-transform:uppercase;letter-spacing:.14em">access</span></div>
+              <div style="border-left:3px solid #1e2430;padding:0 0 12px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">Current access · not named · granted 2026-09-01<br>refund unavailable · Revoke</div>
+            </li>
+            <li><div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;min-height:44px;padding:10px 0"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;text-decoration:underline;text-underline-offset:3px">s.hinds@example.com</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c1121f;text-transform:uppercase;letter-spacing:.14em">free used</span></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div style="width:390px;font-size:11px;line-height:1.7;color:#6e7687">
+      <p style="margin:0 0 10px"><b style="color:#1e2430">Kiara closes when Jerome opens.</b> Only one account is expanded at a time, so the list never grows past the row you are reading and no two reason fields are ever on screen together.</p>
+      <p style="margin:0 0 10px"><b style="color:#1e2430">The open row loses its underline and gains weight;</b> the ink bar down its left is the same bar the queue uses for a chosen action. Closed rows stay underlined, because they are still links.</p>
+      <p style="margin:0"><b style="color:#1e2430">List position does not move.</b> Opening reveals below the line, it does not reorder — you always know where you were.</p>
+    </div>
+  </div>
+
+  <!-- ===== 390 ===== -->
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">E</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Row opened · three variants · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="position:relative;padding:24px 20px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Changed in the last 7 days · 6</div>
+            <ul style="margin:10px 0 0;padding:0;list-style:none">
+
+              <li style="border-bottom:1px solid #f1eada">
+                <div style="display:flex;flex-direction:column;gap:2px;min-height:44px;padding:10px 0">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;font-weight:600">kiara@example.com</span>
+                  <span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687"><span>may-june-2027</span><span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b">access</span></span>
+                </div>
+                <div style="border-left:3px solid #1e2430;padding:0 0 16px 12px">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">Kiara Bishop · entered for May/June 2027<br>12 sessions · 31 questions</div>
+                  <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                  <dl style="margin:6px 0 0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8">
+                    <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Access</dt><dd style="margin:0">may-june-2027</dd>
+                    <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Class</dt><dd style="margin:0">Sale</dd>
+                    <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Granted</dt><dd style="margin:0">2026-08-21 · stripe</dd>
+                    <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Reason</dt><dd style="margin:0;word-break:break-all">evt_3PkQ8vF2eZvKYlo2</dd>
+                  </dl>
+                  <details style="margin-top:6px">
+                    <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Previous access · 1</summary>
+                    <div style="margin-top:4px;border-left:3px solid #c9d6e8;padding-left:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">
+                      <span style="display:block">Access for may-june-2026 · admin</span>
+                      <span style="display:block;word-break:break-all"><b style="font-weight:400;color:#1e2430">comp: pilot cohort</b></span>
+                    </div>
+                  </details>
+                  <p style="margin:12px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">The money goes back, access ends now, and their work stays. Paid 20 days ago, past the 14-day window.</p>
+                  <form style="margin:10px 0 0;display:flex;flex-direction:column;gap:8px">
+                    <input placeholder="why: asked within the window" style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                    <button style="width:100%;min-height:44px;background:#1e2430;color:#fbf7ee;border:0;padding:10px 16px;font-family:Fraunces,serif;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #c1121f">Refund and revoke</button>
+                  </form>
+                </div>
+              </li>
+
+              <li style="border-bottom:1px solid #f1eada">
+                <div style="display:flex;flex-direction:column;gap:2px;min-height:44px;padding:10px 0">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;font-weight:600">a.persaud@example.com</span>
+                  <span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687"><span>january-2027</span><span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b">access</span></span>
+                </div>
+                <div style="border-left:3px solid #1e2430;padding:0 0 16px 12px">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">Anand Persaud · entered for January 2027 re-sit<br>4 sessions · 9 questions</div>
+                  <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                  <dl style="margin:6px 0 0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8">
+                    <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Access</dt><dd style="margin:0">january-2027</dd>
+                    <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Class</dt><dd style="margin:0">Comp</dd>
+                    <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Granted</dt><dd style="margin:0">2026-08-14 · admin</dd>
+                    <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Reason</dt><dd style="margin:0">St George’s pilot, teacher’s nephew</dd>
+                  </dl>
+                  <details style="margin-top:6px">
+                    <summary style="display:inline-flex;min-height:44px;align-items:center;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Previous access · 1</summary>
+                    <div style="margin-top:4px;border-left:3px solid #c9d6e8;padding-left:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">
+                      <span style="display:block">Access for may-june-2026 · admin</span>
+                      <span style="display:block;word-break:break-all"><b style="font-weight:400;color:#1e2430">comp: pilot cohort</b></span>
+                    </div>
+                  </details>
+                  <p style="margin:12px 0 0;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">A comp: nothing was paid, so there is nothing to give back.</p>
+                  <form style="margin:10px 0 0;display:flex;flex-direction:column;gap:8px">
+                    <input placeholder="why: the pilot ended · granted in error" style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                    <button style="width:100%;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Revoke</button>
+                  </form>
+                </div>
+              </li>
+
+              <li>
+                <div style="display:flex;flex-direction:column;gap:2px;min-height:44px;padding:10px 0">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;font-weight:600">j.thomas@example.com</span>
+                  <span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687"><span>may-june-2027</span><span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b">access</span></span>
+                </div>
+                <div style="border-left:3px solid #1e2430;padding:0 0 16px 12px">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;color:#6e7687">Jerome Thomas · entered for May/June 2027<br>2 sessions · 5 questions</div>
+                  <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">Current access</div>
+                  <dl style="margin:6px 0 0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8">
+                    <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Access</dt><dd style="margin:0">may-june-2027</dd>
+                    <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Class</dt><dd style="margin:0;color:#6e7687">not named in the note</dd>
+                    <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Granted</dt><dd style="margin:0">2026-09-01 · admin</dd>
+                    <dt style="color:#6e7687;text-transform:uppercase;letter-spacing:.1em;font-size:10px">Note</dt><dd style="margin:0">paid by aunt, webhook missed it</dd>
+                  </dl>
+                  <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687">Previous access · none</div>
+                  <p style="margin:12px 0 0;border-left:3px solid #d9a62e;background:#fdf8ec;padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7">refund unavailable — no payment reference. Refund it in the Stripe dashboard, then revoke here with the reason.</p>
+                  <form style="margin:10px 0 0;display:flex;flex-direction:column;gap:8px">
+                    <input placeholder="why: refunded at Stripe on 2026-09-10" style="width:100%;box-sizing:border-box;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 10px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#1e2430">
+                    <button style="width:100%;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Revoke</button>
+                  </form>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="width:390px;font-size:11px;line-height:1.7;color:#6e7687">
+      <p style="margin:0 0 10px"><b style="color:#1e2430">Label-value pairs, not sentences.</b> A grant is four facts; as prose you read all of it to find the one you wanted. The label column is set to its content, so the values line up however long the words are.</p>
+      <p style="margin:0 0 10px"><b style="color:#1e2430">The three variants differ only in the last block.</b> Paid gets the ink primary; a comp and an unreferenced payment both get the outline Revoke — one because there is no money, the other because the money cannot be reached from here.</p>
+      <p style="margin:0"><b style="color:#1e2430">The warning sits above the control it limits,</b> not beside it: you need to know the refund is unavailable before you decide that revoking alone is the right move.</p>
+    </div>
+  </div>
+</section>
+</x-dc>
+</body>
+</html>

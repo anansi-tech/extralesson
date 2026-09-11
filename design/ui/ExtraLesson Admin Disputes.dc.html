@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #e8e6e1; }
+  a { color: #1e2430; }
+  a:hover { color: #c1121f; }
+</style>
+</helmet>
+
+<section data-screen-label="Admin Disputes list" style="padding:48px 40px 64px;font-family:'IBM Plex Mono',monospace;border-bottom:2px solid #1e2430">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#c1121f;font-weight:600">Admin · /admin/disputes</div>
+    <div style="font-family:Fraunces,serif;font-size:28px;font-weight:900;letter-spacing:-.02em;color:#1e2430">Disputes — the list</div>
+    <div style="font-size:12px;color:#6e7687;max-width:780px;line-height:1.7">Read only. Nothing here changes a mark — you reply by email and correct the marker if it was wrong, which is why the one action on a row opens the case rather than resolving it. Rows the marker could not decide come first, because those are a question it asked rather than one a student raised.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+
+    <!-- list 1280 -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">A</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">List · 1280</span></div>
+      <div style="width:1280px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+          <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;gap:24px">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <nav style="display:flex;align-items:center;gap:4px;flex:1;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Access</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Review</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Coverage</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Topics</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid #c1121f;font-weight:700">Disputes</span>
+            </nav>
+            <div style="display:flex;align-items:center;gap:16px;flex:none;max-width:360px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687"><span style="text-transform:none;letter-spacing:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">david@anansi.xyz</span><span style="text-decoration:underline;text-underline-offset:3px;white-space:nowrap">Sign out</span></div>
+          </div>
+        </div>
+
+        <div style="position:relative;padding:28px 24px 32px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="max-width:960px;margin:0 auto"><div style="position:relative">
+            <div style="position:absolute;top:-28px;bottom:-32px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+
+            <section style="margin-bottom:24px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The marker asked for a look</div>
+              <div style="margin-top:12px;border-left:3px solid #d9a62e;background:#fdf8ec;padding:12px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">10/09/2026, 14:02:11 · AK2 · <a href="#B" style="color:#c1121f;text-decoration:underline;text-underline-offset:3px">open the case</a></div>
+                <div style="margin-top:4px;font-size:13px">A tank holds 4,500 litres when full. Water is drawn off at 75 litres per minute.</div>
+                <p style="margin:4px 0 0;font-size:13px">Two readings of line 3 are equally likely — “t = 60” and “t = 6.0” — and the mark turns on which it is.</p>
+                <ul style="margin:4px 0 0;padding:0 0 0 12px;list-style:none;border-left:3px solid #f1eada">
+                  <li style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.45">4500 / 75</li>
+                  <li style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.45">= 60</li>
+                  <li style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.45">t = 6.0 min</li>
+                </ul>
+              </div>
+            </section>
+
+            <p style="margin:0 0 16px;font-size:12px;line-height:1.45;color:#6e7687">4 — newest first. Nothing here changes a mark: reply by email, and correct the marker if it was wrong.</p>
+
+            <section style="border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:3px 3px 0 #1e2430;margin-bottom:16px">
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                <span>10/09/2026, 09:41:02</span>
+                <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">kiara@example.com</span>
+                <span style="display:inline-flex;align-items:baseline;gap:12px">
+                  <span style="text-transform:uppercase;letter-spacing:.14em;color:#c1121f">not yet reviewed</span>
+                  <a href="#B" style="display:inline-flex;min-height:44px;align-items:center;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#c1121f;text-decoration:underline;text-underline-offset:3px">Open the case</a>
+                </span>
+              </div>
+              <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The question</div>
+              <div style="margin-top:4px;font-size:14px">The diagram shows triangle ABC, right-angled at B, with AB = 8 cm and angle ACB = 34°. Calculate the area of triangle ABC.</div>
+              <p style="margin:4px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12px">typed: 95.2</p>
+
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The row</div>
+              <p style="margin:4px 0 0;font-size:13px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px">AK3</span><span style="margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">withheld</span> (AK, 1) — area correct to 1 decimal place</p>
+
+              <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The reason it was withheld</div>
+              <p style="margin:4px 0 0;border-left:3px solid #c1121f;background:#fdf1f0;padding:4px 8px;font-size:13px">95.2 is twice the area — the half is missing from ½ × base × height.</p>
+
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The read — take 1, part (b)</div>
+              <ul style="margin:4px 0 0;padding:0 0 0 12px;list-style:none;border-left:3px solid #f1eada">
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.45">8 × 11.9 = 95.2</li>
+              </ul>
+            </section>
+
+            <section style="border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:3px 3px 0 #1e2430;margin-bottom:16px">
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                <span>08/09/2026, 20:15:44</span>
+                <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">a.persaud@example.com</span>
+                <span style="display:inline-flex;align-items:baseline;gap:12px">
+                  <span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b">reviewed 09/09/2026</span>
+                  <a href="#B" style="display:inline-flex;min-height:44px;align-items:center;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#c1121f;text-decoration:underline;text-underline-offset:3px">Open the case</a>
+                </span>
+              </div>
+              <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The question</div>
+              <div style="margin-top:4px;font-size:14px">A shopkeeper buys 40 kg of rice at $3.75 per kg and sells it at a profit of 24%. Calculate the selling price per kg.</div>
+              <p style="margin:4px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12px">typed: 4.65</p>
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The row</div>
+              <p style="margin:4px 0 0;font-size:13px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px">CK2</span><span style="margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">withheld</span> (CK, 1) — 24% applied to the cost price</p>
+              <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The reason it was withheld</div>
+              <p style="margin:4px 0 0;border-left:3px solid #c1121f;background:#fdf1f0;padding:4px 8px;font-size:13px">The working shows 3.75 × 0.24 alone, which is the profit and not the selling price.</p>
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The read — take 2, part (a)</div>
+              <ul style="margin:4px 0 0;padding:0 0 0 12px;list-style:none;border-left:3px solid #f1eada">
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.45">3.75 × 0.24 = 0.90</li>
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.45">3.75 + 0.90 = 4.65</li>
+              </ul>
+            </section>
+
+            <section style="border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:3px 3px 0 #1e2430">
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                <span>05/09/2026, 16:22:09</span>
+                <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">account deleted</span>
+                <span style="display:inline-flex;align-items:baseline;gap:12px">
+                  <span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b">reviewed 06/09/2026</span>
+                  <a href="#B" style="display:inline-flex;min-height:44px;align-items:center;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#c1121f;text-decoration:underline;text-underline-offset:3px">Open the case</a>
+                </span>
+              </div>
+              <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The question</div>
+              <p style="margin:4px 0 0;font-size:13px;color:#6e7687">Question no longer in the bank.</p>
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The row</div>
+              <p style="margin:4px 0 0;font-size:13px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px">R1</span></p>
+              <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The reason it was withheld</div>
+              <p style="margin:4px 0 0;border-left:3px solid #c1121f;background:#fdf1f0;padding:4px 8px;font-size:13px">row not on this read</p>
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The read</div>
+              <p style="margin:4px 0 0;font-size:13px;color:#6e7687">Read not found.</p>
+            </section>
+
+            <div style="margin-top:40px">
+              <a href="#A" style="display:inline-flex;min-height:44px;align-items:center;border-top:1.5px solid #c9d6e8;padding-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">← student app</a>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- list 390 -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">C</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">List · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <div style="display:flex;align-items:center;gap:8px;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">david@anansi.xyz</span><span style="text-transform:uppercase;letter-spacing:.1em;text-decoration:underline;text-underline-offset:3px;white-space:nowrap">Sign out</span></div>
+          </div>
+          <nav style="display:flex;flex-wrap:wrap;align-items:center;gap:0 4px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Access</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Review</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Coverage</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Topics</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid #c1121f;font-weight:700">Disputes</span>
+          </nav>
+        </div>
+
+        <div style="position:relative;padding:24px 20px 32px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The marker asked for a look</div>
+            <div style="margin-top:12px;border-left:3px solid #d9a62e;background:#fdf8ec;padding:12px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;color:#6e7687">10/09/2026, 14:02:11 · AK2 · <a href="#D" style="color:#c1121f;text-decoration:underline;text-underline-offset:3px">open the case</a></div>
+              <div style="margin-top:4px;font-size:13px">A tank holds 4,500 litres when full. Water is drawn off at 75 litres per minute.</div>
+              <p style="margin:4px 0 0;font-size:13px">Two readings of line 3 are equally likely — “t = 60” and “t = 6.0” — and the mark turns on which it is.</p>
+              <ul style="margin:4px 0 0;padding:0 0 0 12px;list-style:none;border-left:3px solid #f1eada">
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.45">4500 / 75</li>
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.45">= 60</li>
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.45">t = 6.0 min</li>
+              </ul>
+            </div>
+
+            <p style="margin:16px 0;font-size:12px;line-height:1.45;color:#6e7687">4 — newest first. Nothing here changes a mark: reply by email, and correct the marker if it was wrong.</p>
+
+            <section style="border:1.5px solid #1e2430;background:#fff;padding:16px;box-shadow:3px 3px 0 #1e2430;margin-bottom:16px">
+              <div style="display:flex;flex-direction:column;gap:2px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                <span>10/09/2026, 09:41:02</span>
+                <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">kiara@example.com</span>
+                <span style="text-transform:uppercase;letter-spacing:.14em;color:#c1121f">not yet reviewed</span>
+              </div>
+              <a href="#D" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#c1121f;text-decoration:underline;text-underline-offset:3px">Open the case</a>
+              <div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The question</div>
+              <div style="margin-top:4px;font-size:14px">The diagram shows triangle ABC, right-angled at B, with AB = 8 cm and angle ACB = 34°. Calculate the area of triangle ABC.</div>
+              <p style="margin:4px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12px">typed: 95.2</p>
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The row</div>
+              <p style="margin:4px 0 0;font-size:13px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px">AK3</span><span style="margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">withheld</span> (AK, 1) — area correct to 1 decimal place</p>
+              <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The reason it was withheld</div>
+              <p style="margin:4px 0 0;border-left:3px solid #c1121f;background:#fdf1f0;padding:4px 8px;font-size:13px">95.2 is twice the area — the half is missing from ½ × base × height.</p>
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The read — take 1, part (b)</div>
+              <ul style="margin:4px 0 0;padding:0 0 0 12px;list-style:none;border-left:3px solid #f1eada">
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.45">8 × 11.9 = 95.2</li>
+              </ul>
+            </section>
+
+            <section style="border:1.5px solid #1e2430;background:#fff;padding:16px;box-shadow:3px 3px 0 #1e2430">
+              <div style="display:flex;flex-direction:column;gap:2px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+                <span>08/09/2026, 20:15:44</span>
+                <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">a.persaud@example.com</span>
+                <span style="text-transform:uppercase;letter-spacing:.14em;color:#2e7d5b">reviewed 09/09/2026</span>
+              </div>
+              <a href="#D" style="display:inline-flex;min-height:44px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#c1121f;text-decoration:underline;text-underline-offset:3px">Open the case</a>
+              <div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The question</div>
+              <div style="margin-top:4px;font-size:14px">A shopkeeper buys 40 kg of rice at $3.75 per kg and sells it at a profit of 24%. Calculate the selling price per kg.</div>
+              <p style="margin:4px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12px">typed: 4.65</p>
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The row</div>
+              <p style="margin:4px 0 0;font-size:13px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px">CK2</span><span style="margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">withheld</span> (CK, 1) — 24% applied to the cost price</p>
+              <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The reason it was withheld</div>
+              <p style="margin:4px 0 0;border-left:3px solid #c1121f;background:#fdf1f0;padding:4px 8px;font-size:13px">The working shows 3.75 × 0.24 alone, which is the profit and not the selling price.</p>
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">The read — take 2, part (a)</div>
+              <ul style="margin:4px 0 0;padding:0 0 0 12px;list-style:none;border-left:3px solid #f1eada">
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.45">3.75 × 0.24 = 0.90</li>
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.45">3.75 + 0.90 = 4.65</li>
+              </ul>
+            </section>
+
+            <div style="margin-top:36px">
+              <a href="#C" style="display:inline-flex;min-height:44px;align-items:center;border-top:1.5px solid #c9d6e8;padding-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">← student app</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="width:390px;font-size:11px;line-height:1.7;color:#6e7687">
+      <p style="margin:0 0 10px"><b style="color:#1e2430">The three-part header stacks at 390.</b> Date, address and state are one row at 1280 and three lines on a phone, with “Open the case” dropping below them — a 44px target and a truncated email cannot share a row.</p>
+      <p style="margin:0 0 10px"><b style="color:#1e2430">Red on “not yet reviewed”, green on reviewed.</b> It is the only state on the row, and it is the only thing that decides whether you open it.</p>
+      <p style="margin:0"><b style="color:#1e2430">Amber for the marker’s own question,</b> ink-bordered card for a student’s: one is a request for help, the other is a complaint, and they do not look alike.</p>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="Admin Dispute case" style="padding:48px 40px 80px;font-family:'IBM Plex Mono',monospace">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#c1121f;font-weight:600">Admin · /admin/disputes/[id]</div>
+    <div style="font-family:Fraunces,serif;font-size:28px;font-weight:900;letter-spacing:-.02em;color:#1e2430">Disputes — the case</div>
+    <div style="font-size:12px;color:#6e7687;max-width:780px;line-height:1.7">Everything a person needs to decide, on one page, in the order they need it: the question, the working and the photograph, the criterion and the decision, then the reply. The disputed part carries a red bar in the parts list so the eye lands on it without being told.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start">
+
+    <!-- case 1280 -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">B</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Case · 1280</span></div>
+      <div style="width:1280px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 24px">
+          <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;gap:24px">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <nav style="display:flex;align-items:center;gap:4px;flex:1;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Access</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Review</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Coverage</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Topics</span>
+              <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 12px;border-bottom:2px solid #c1121f;font-weight:700">Disputes</span>
+            </nav>
+            <div style="display:flex;align-items:center;gap:16px;flex:none;max-width:360px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6e7687"><span style="text-transform:none;letter-spacing:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">david@anansi.xyz</span><span style="text-decoration:underline;text-underline-offset:3px;white-space:nowrap">Sign out</span></div>
+          </div>
+        </div>
+
+        <div style="position:relative;padding:28px 24px 32px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="max-width:960px;margin:0 auto"><div style="position:relative">
+            <div style="position:absolute;top:-28px;bottom:-32px;left:-14px;width:1.5px;background:#e4b8b4"></div>
+
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+              <a href="#A" style="display:inline-flex;min-height:44px;align-items:center;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">← disputes</a>
+              <span>queried 10/09/2026, 09:41:02</span>
+            </div>
+
+            <h1 style="margin:12px 0 0;font-family:Fraunces,serif;font-size:24px;font-weight:900;letter-spacing:-.015em">AK3 <span style="margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">withheld</span></h1>
+            <p style="margin:4px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12px;word-break:break-all">kiara@example.com · may-june-2027</p>
+
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px;margin-top:16px;align-items:start">
+              <div style="display:flex;flex-direction:column;gap:16px">
+
+                <section style="border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:3px 3px 0 #1e2430">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The question</div>
+                  <div style="margin-top:6px;font-size:14px">The diagram shows triangle ABC, right-angled at B, with AB = 8 cm and angle ACB = 34°.</div>
+                  <div style="margin-top:4px;font-size:15px">Calculate the length of BC and the area of triangle ABC.</div>
+                  <div style="margin-top:8px;border:1px solid #f1eada;background:#fff;padding:8px;max-width:300px">
+                    <svg viewBox="0 0 280 150" style="width:100%;height:auto" role="img" aria-label="Right-angled triangle ABC">
+                      <polygon points="40,120 40,30 240,120" fill="none" stroke="#1e2430" stroke-width="1.5"></polygon>
+                      <polyline points="40,104 56,104 56,120" fill="none" stroke="#1e2430" stroke-width="1.5"></polyline>
+                      <path d="M 216 120 A 26 26 0 0 0 224 108" fill="none" stroke="#1e2430" stroke-width="1.5"></path>
+                      <text x="30" y="26" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">A</text>
+                      <text x="28" y="134" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">B</text>
+                      <text x="240" y="134" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">C</text>
+                      <text x="14" y="80" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#6e7687">8 cm</text>
+                      <text x="196" y="106" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#6e7687">34°</text>
+                    </svg>
+                  </div>
+                  <ol style="margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px">
+                    <li style="font-size:13px;padding-left:8px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">(a) [3]</span> Calculate the length of BC. <span style="margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">i: 11.9</span></li>
+                    <li style="font-size:13px;border-left:3px solid #c1121f;padding-left:8px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">(b) [2]</span> Calculate the area of triangle ABC. <span style="margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">i: 47.6</span></li>
+                    <li style="font-size:13px;padding-left:8px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">(c) [2]</span> Show that the perimeter is less than 35 cm.</li>
+                  </ol>
+                </section>
+
+                <section style="border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:3px 3px 0 #1e2430">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The working for (b) — take 1</div>
+                  <ul style="margin:6px 0 0;padding:0 0 0 12px;list-style:none;border-left:3px solid #f1eada">
+                    <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.45">8 × 11.9 = 95.2</li>
+                  </ul>
+                  <p style="margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12px">typed: 95.2</p>
+                  <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The reader’s note</div>
+                  <p style="margin:6px 0 0;font-size:13px;color:#6e7687">Line 2 is crossed out and rewritten; the ½ appears in neither version.</p>
+                  <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The photo</div>
+                  <div style="margin-top:6px;border:1.5px solid #1e2430;background:repeating-linear-gradient(to bottom,#fffdf6 0 21px,#c9d6e8 21px 22px);height:220px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;bottom:0;left:22px;width:1.5px;background:#e4b8b4"></div>
+                    <div style="position:absolute;left:34px;top:16px;font-family:Caveat,cursive;font-size:22px;line-height:22px;color:#2a3550">tan 34 = 8 / BC<br>BC = 8 / tan 34<br>= 11.9 cm<br><s>8 x 11.9</s><br>8 × 11.9 = 95.2<br>area = 95.2 cm²</div>
+                  </div>
+                </section>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <section style="border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:3px 3px 0 #1e2430">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The criterion</div>
+                  <p style="margin:6px 0 0;font-size:13px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px">AK3</span> (AK, 1) — area correct to 1 decimal place</p>
+                  <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The decision</div>
+                  <p style="margin:6px 0 0;border-left:3px solid #c1121f;background:#fdf1f0;padding:4px 8px;font-size:13px">withheld — 95.2 is twice the area; the half is missing from ½ × base × height. The method mark on the same part was awarded.</p>
+                </section>
+
+                <section style="border:1.5px solid #1e2430;background:#fff;padding:20px;box-shadow:3px 3px 0 #1e2430">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">What to do</div>
+                  <a href="#B" style="display:block;margin-top:12px;background:#c1121f;color:#fff;padding:16px;text-align:center;font-family:Fraunces,serif;font-weight:900;font-size:17px;text-decoration:none;box-shadow:4px 4px 0 #1e2430;min-height:44px;box-sizing:border-box">Reply by email</a>
+                  <form style="margin-top:12px">
+                    <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">Note for the record</label>
+                    <textarea rows="3" placeholder="What you found, and what you told them." style="margin-top:8px;width:100%;box-sizing:border-box;border:1.5px solid #1e2430;background:#fff;padding:10px;font-family:Fraunces,serif;font-size:14px;color:#1e2430"></textarea>
+                    <button style="margin-top:8px;width:100%;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Mark as reviewed</button>
+                  </form>
+                  <p style="margin:12px 0 0;font-size:11px;line-height:1.7;color:#6e7687">Nothing here changes a mark. Replies go from extralesson@anansi.xyz. Golden case: <a href="#B" style="text-decoration:underline;text-underline-offset:3px">export</a> · <a href="#B" style="text-decoration:underline;text-underline-offset:3px">with image</a></p>
+                </section>
+              </div>
+            </div>
+
+            <div style="margin-top:40px">
+              <a href="#B" style="display:inline-flex;min-height:44px;align-items:center;border-top:1.5px solid #c9d6e8;padding-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">← student app</a>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- case 390 -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:10px"><span style="background:#c1121f;color:#fff;font-size:11px;font-weight:600;letter-spacing:.14em;padding:4px 8px">D</span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6e7687">Case · 390</span></div>
+      <div style="width:390px;box-sizing:border-box;border:1.5px solid #1e2430;background:#fbf7ee;color:#1e2430;font-family:Fraunces,serif;line-height:1.55">
+        <div style="background:#fff;border-bottom:1.5px solid #1e2430;padding:0 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0">
+            <img src="public/brand/lockup.svg" width="130" alt="ExtraLesson" style="flex:none">
+            <div style="display:flex;align-items:center;gap:8px;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6e7687"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">david@anansi.xyz</span><span style="text-transform:uppercase;letter-spacing:.1em;text-decoration:underline;text-underline-offset:3px;white-space:nowrap">Sign out</span></div>
+          </div>
+          <nav style="display:flex;flex-wrap:wrap;align-items:center;gap:0 4px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em">
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Access</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Review</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Coverage</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid transparent;color:#6e7687;text-decoration:underline;text-underline-offset:3px">Topics</span>
+            <span style="display:inline-flex;min-height:44px;align-items:center;padding:0 10px;border-bottom:2px solid #c1121f;font-weight:700">Disputes</span>
+          </nav>
+        </div>
+
+        <div style="position:relative;padding:24px 20px 32px;background-image:repeating-linear-gradient(to bottom,transparent 0 31px,#c9d6e8 31px 32px)">
+          <div style="position:absolute;top:0;bottom:0;left:16px;width:1.5px;background:#e4b8b4"></div>
+          <div style="position:relative">
+            <div style="display:flex;flex-direction:column;gap:2px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">
+              <a href="#C" style="display:inline-flex;min-height:44px;align-items:center;font-size:11px;text-transform:uppercase;letter-spacing:.14em;text-decoration:underline;text-underline-offset:3px">← disputes</a>
+              <span>queried 10/09/2026, 09:41:02</span>
+            </div>
+
+            <h1 style="margin:8px 0 0;font-family:Fraunces,serif;font-size:24px;font-weight:900;letter-spacing:-.015em">AK3 <span style="margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">withheld</span></h1>
+            <p style="margin:4px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12px;word-break:break-all">kiara@example.com · may-june-2027</p>
+
+            <section style="margin-top:16px;border:1.5px solid #1e2430;background:#fff;padding:16px;box-shadow:3px 3px 0 #1e2430">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The question</div>
+              <div style="margin-top:6px;font-size:14px">The diagram shows triangle ABC, right-angled at B, with AB = 8 cm and angle ACB = 34°.</div>
+              <div style="margin-top:4px;font-size:15px">Calculate the length of BC and the area of triangle ABC.</div>
+              <div style="margin-top:8px;border:1px solid #f1eada;background:#fff;padding:8px">
+                <svg viewBox="0 0 280 150" style="width:100%;height:auto" role="img" aria-label="Right-angled triangle ABC">
+                  <polygon points="40,120 40,30 240,120" fill="none" stroke="#1e2430" stroke-width="1.5"></polygon>
+                  <polyline points="40,104 56,104 56,120" fill="none" stroke="#1e2430" stroke-width="1.5"></polyline>
+                  <path d="M 216 120 A 26 26 0 0 0 224 108" fill="none" stroke="#1e2430" stroke-width="1.5"></path>
+                  <text x="30" y="26" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">A</text>
+                  <text x="28" y="134" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">B</text>
+                  <text x="240" y="134" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#1e2430">C</text>
+                  <text x="14" y="80" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#6e7687">8 cm</text>
+                  <text x="196" y="106" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#6e7687">34°</text>
+                </svg>
+              </div>
+              <ol style="margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px">
+                <li style="font-size:13px;padding-left:8px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">(a) [3]</span> Calculate the length of BC.</li>
+                <li style="font-size:13px;border-left:3px solid #c1121f;padding-left:8px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">(b) [2]</span> Calculate the area of triangle ABC.</li>
+                <li style="font-size:13px;padding-left:8px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6e7687">(c) [2]</span> Show that the perimeter is less than 35 cm.</li>
+              </ol>
+            </section>
+
+            <section style="margin-top:16px;border:1.5px solid #1e2430;background:#fff;padding:16px;box-shadow:3px 3px 0 #1e2430">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The working for (b) — take 1</div>
+              <ul style="margin:6px 0 0;padding:0 0 0 12px;list-style:none;border-left:3px solid #f1eada">
+                <li style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.45">8 × 11.9 = 95.2</li>
+              </ul>
+              <p style="margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12px">typed: 95.2</p>
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The reader’s note</div>
+              <p style="margin:6px 0 0;font-size:13px;color:#6e7687">Line 2 is crossed out and rewritten; the ½ appears in neither version.</p>
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The photo</div>
+              <div style="margin-top:6px;border:1.5px solid #1e2430;background:repeating-linear-gradient(to bottom,#fffdf6 0 21px,#c9d6e8 21px 22px);height:200px;position:relative;overflow:hidden">
+                <div style="position:absolute;top:0;bottom:0;left:20px;width:1.5px;background:#e4b8b4"></div>
+                <div style="position:absolute;left:30px;top:14px;font-family:Caveat,cursive;font-size:20px;line-height:22px;color:#2a3550">tan 34 = 8 / BC<br>BC = 8 / tan 34<br>= 11.9 cm<br><s>8 x 11.9</s><br>8 × 11.9 = 95.2<br>area = 95.2 cm²</div>
+              </div>
+            </section>
+
+            <section style="margin-top:16px;border:1.5px solid #1e2430;background:#fff;padding:16px;box-shadow:3px 3px 0 #1e2430">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The criterion</div>
+              <p style="margin:6px 0 0;font-size:13px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px">AK3</span> (AK, 1) — area correct to 1 decimal place</p>
+              <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">The decision</div>
+              <p style="margin:6px 0 0;border-left:3px solid #c1121f;background:#fdf1f0;padding:4px 8px;font-size:13px">withheld — 95.2 is twice the area; the half is missing from ½ × base × height. The method mark on the same part was awarded.</p>
+            </section>
+
+            <section style="margin-top:16px;border:1.5px solid #1e2430;background:#fff;padding:16px;box-shadow:3px 3px 0 #1e2430">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;box-shadow:0 1.5px 0 #e4b8b4;padding-bottom:2px;display:inline-block">What to do</div>
+              <a href="#D" style="display:block;margin-top:12px;background:#c1121f;color:#fff;padding:16px;text-align:center;font-family:Fraunces,serif;font-weight:900;font-size:17px;text-decoration:none;box-shadow:4px 4px 0 #1e2430;min-height:44px;box-sizing:border-box">Reply by email</a>
+              <form style="margin-top:12px">
+                <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687">Note for the record</label>
+                <textarea rows="3" placeholder="What you found, and what you told them." style="margin-top:8px;width:100%;box-sizing:border-box;border:1.5px solid #1e2430;background:#fff;padding:10px;font-family:Fraunces,serif;font-size:14px;color:#1e2430"></textarea>
+                <button style="margin-top:8px;width:100%;min-height:44px;border:1.5px solid #1e2430;background:#fff;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#1e2430">Mark as reviewed</button>
+              </form>
+              <p style="margin:12px 0 0;font-size:11px;line-height:1.7;color:#6e7687">Nothing here changes a mark. Replies go from extralesson@anansi.xyz. Golden case: <a href="#D" style="text-decoration:underline;text-underline-offset:3px">export</a> · <a href="#D" style="text-decoration:underline;text-underline-offset:3px">with image</a></p>
+            </section>
+
+            <div style="margin-top:36px">
+              <a href="#D" style="display:inline-flex;min-height:44px;align-items:center;border-top:1.5px solid #c9d6e8;padding-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6e7687;text-decoration:underline;text-underline-offset:3px">← student app</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="width:390px;font-size:11px;line-height:1.7;color:#6e7687">
+      <p style="margin:0 0 10px"><b style="color:#1e2430">The case is the one admin screen with a red primary,</b> and it is “Reply by email” — the only thing on the page that reaches the student. “Mark as reviewed” is the mono-caps secondary: it acts on the record, not on the person.</p>
+      <p style="margin:0 0 10px"><b style="color:#1e2430">The photograph is the evidence,</b> so it sits with the read rather than in a rail — you compare the lines against the page, and at 1280 they stay in one column together while the criterion and decision move right.</p>
+      <p style="margin:0"><b style="color:#1e2430">The decision keeps its red bar</b> because it is quoting a withheld mark, which is the one place red is correct here. An awarded row would carry the green bar instead.</p>
+    </div>
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>
