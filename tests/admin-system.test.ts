@@ -89,7 +89,10 @@ describe('the review card as drawn', () => {
   it('makes Approve the screen’s primary and the rest secondary', () => {
     expect(html).toContain(`class="${PRIMARY}">Approve`);
     expect(html).toContain(`class="${SECONDARY}">Edit`);
-    expect(html).toContain(`class="${SECONDARY} text-red-pen">Reject`);
+    // ROUND_13 Task 2: Edit and Reject are outline and equal to each other.
+    // Rejecting is not more dangerous than editing, and the one red thing on
+    // the card is the commitment.
+    expect(html).toContain(`class="${SECONDARY}">Reject`);
   });
 });
 

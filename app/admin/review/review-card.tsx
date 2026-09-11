@@ -471,7 +471,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
           ) : (
             <button onClick={approve} disabled={pending || question.status !== 'draft'} className={PRIMARY}>
               {question.status === 'approved' ? 'Approved' : 'Approve'}{' '}
-              <kbd className="font-mono text-xs opacity-80">A</kbd>
+              <kbd className="hidden font-mono text-xs opacity-80 lg:inline">A</kbd>
             </button>
           )}
           <button
@@ -481,11 +481,13 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
             }}
             className={SECONDARY}
           >
-            Edit <kbd className="font-mono text-xs text-dim">E</kbd>
+            Edit <kbd className="hidden font-mono text-xs text-dim lg:inline">E</kbd>
           </button>
-          <button onClick={retire} disabled={pending || question.status === 'retired'} className={`${SECONDARY} text-red-pen`}>
+          {/* Outline and equal to Edit: rejecting is not more dangerous than
+              editing, and the one red thing on the card is the commitment. */}
+          <button onClick={retire} disabled={pending || question.status === 'retired'} className={SECONDARY}>
             {question.status === 'approved' ? 'Retire' : 'Reject'}{' '}
-            <kbd className="font-mono text-xs opacity-80">R</kbd>
+            <kbd className="hidden font-mono text-xs opacity-80 lg:inline">R</kbd>
           </button>
           {pending && <span className="font-mono text-xs text-dim">saving…</span>}
         </div>

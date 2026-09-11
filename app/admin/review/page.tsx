@@ -46,17 +46,20 @@ export default async function ReviewPage({
   const p1Short = P1_TOTAL - matrix.p1_actual_total;
   const p2Short = P2_MARKS_TOTAL - matrix.p2_marks_actual_total;
 
-  const deficits: { value: string; label: string }[] = [];
-  const onTarget: string[] = [];
-  if (neverAssessed > 0) deficits.push({ value: String(neverAssessed), label: 'objectives with no approved question' });
-  if (belowFloor > neverAssessed) {
-    deficits.push({ value: String(belowFloor - neverAssessed), label: `more below the floor of ${OBJECTIVE_FLOOR}` });
-  }
-  if (neverAssessed === 0 && belowFloor === 0) onTarget.push('objectives');
-  if (p1Short > 0) deficits.push({ value: `${p1Short}`, label: 'P1 items short' });
-  else onTarget.push('P1');
-  if (p2Short > 0) deficits.push({ value: `${p2Short}`, label: 'P2 marks short' });
-  else onTarget.push('P2');
+  /**
+   * FOUR FACTS, NOT A SENTENCE (ROUND_13 Task 2). The strip ran them together
+   * with an "everything on target" branch, so which fact you were reading
+   * depended on which branch had fired. The same four are always here, in the
+   * same order, and a met target says so rather than vanishing — "0 short" and
+   * "not measured" are different answers and the strip has to be able to give
+   * either.
+   */
+  const facts = [
+    { n: neverAssessed, label: 'objectives with no approved question' },
+    { n: Math.max(0, belowFloor - neverAssessed), label: `more below the floor of ${OBJECTIVE_FLOOR}` },
+    { n: Math.max(0, p1Short), label: 'P1 items short', met: 'P1 on target' },
+    { n: Math.max(0, p2Short), label: 'P2 marks short', met: 'P2 on target' },
+  ];
   // THE TRUTH (ROUND_7 Task 3): totals can be met while topics are short,
   // because a total is a sum. Each short topic opens the search on it.
   const totalsMet = p1Short <= 0 && p2Short <= 0;
@@ -296,37 +299,36 @@ export default async function ReviewPage({
           </div>
         )}
 
-        {/* DEFICITS ONLY. The full picture lives on the coverage page; under
-            a review card it was a dashboard, and what is on target is worth
-            exactly two words. */}
-        <section className="mb-6 border-l-3 border-paper-deep bg-note px-3 py-2.5 text-sm">
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-dim">deficits</span>
-            {deficits.length === 0 && shortTopics.length === 0 ? (
-              <span className="text-green-pen">Everything on target.</span>
-            ) : totalsMet && shortTopics.length > 0 ? (
-              <span>
-                Overall totals met; <b className="text-red-pen">{shortTopics.length}</b> topic target{shortTopics.length === 1 ? '' : 's'} short:{' '}
-                {shortTopics.map((r, i) => (
-                  <span key={r.code}>
-                    {i > 0 && ', '}
-                    <Link href={`/admin/review?find=${encodeURIComponent(`topic:${r.code}`)}`} className="underline">{r.code}</Link>
-                  </span>
-                ))}
-              </span>
-            ) : (
-              deficits.map((d) => (
-                <span key={d.label}>
-                  <b className="text-red-pen">{d.value}</b> {d.label}
-                </span>
-              ))
-            )}
-            {onTarget.length > 0 && (
-              <span className="text-dim">
-                {onTarget.join(', ')} on target
-              </span>
-            )}
+        {/* ABOVE THE CARD, and four facts in a fixed order. The full picture
+            lives on the coverage page; under a review card it was a dashboard. */}
+        <section className="mb-6 border-l-3 border-paper-deep bg-note px-3 py-2.5">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm lg:grid-cols-4">
+            {facts.map((f) => (
+              <div key={f.label}>
+                {f.n > 0 || !f.met ? (
+                  <>
+                    <b className={f.n > 0 ? 'text-red-pen' : 'text-ink'}>{f.n}</b>{' '}
+                    <span className={f.n > 0 ? '' : 'text-dim'}>{f.label}</span>
+                  </>
+                ) : (
+                  <span className="text-dim">{f.met}</span>
+                )}
+              </div>
+            ))}
           </div>
+          {/* A total is a sum, so it can be met while topics under it are short.
+              These are the ones the search can actually open. */}
+          {totalsMet && shortTopics.length > 0 && (
+            <p className="mt-2 border-t border-paper-deep pt-1.5 font-mono text-[11px] leading-relaxed text-dim">
+              Totals met, <b className="text-red-pen">{shortTopics.length}</b> topic target{shortTopics.length === 1 ? '' : 's'} short:{' '}
+              {shortTopics.map((r, i) => (
+                <span key={r.code}>
+                  {i > 0 && ', '}
+                  <Link href={`/admin/review?find=${encodeURIComponent(`topic:${r.code}`)}`} className="underline underline-offset-[3px]">{r.code}</Link>
+                </span>
+              ))}
+            </p>
+          )}
         </section>
 
         {question ? (
