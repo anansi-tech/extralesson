@@ -4,7 +4,12 @@ import { ROW } from '../ui';
 export const metadata = { title: 'Syllabus & blueprints — ExtraLesson admin' };
 export const dynamic = 'force-dynamic';
 
-// Read-only syllabus graph + blueprint viewer (ROUND_1 §2).
+/**
+ * The syllabus graph and the allocations it is built from, to be read and
+ * nothing else (ROUND_1 §2; ROUND_13 Task 4). It says so once, at the top:
+ * a page that repeats "read only" on every section is a page that does not
+ * trust its own first sentence.
+ */
 export default async function TopicsPage() {
   await dbConnect();
   const [topics, blueprints] = await Promise.all([
@@ -80,9 +85,13 @@ export default async function TopicsPage() {
                   </summary>
                   <ul className="px-4 pb-2">
                     {t.objectives.map((o) => (
+                      // ONE LINE PER OBJECTIVE. The syllabus note belongs to
+                      // the objective, so it sits on the objective's line —
+                      // as a second line it doubled the length of the list
+                      // without saying whose note it was.
                       <li key={o.id} className={`text-sm ${ROW}`}>
                         <span className="font-mono text-xs font-semibold">{o.id}</span> {o.text}
-                        {o.notes && <div className="text-xs text-dim">{o.notes}</div>}
+                        {o.notes && <span className="text-dim"> · {o.notes}</span>}
                       </li>
                     ))}
                   </ul>
