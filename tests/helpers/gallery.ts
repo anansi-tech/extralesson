@@ -85,6 +85,7 @@ export const GALLERY: Shot[] = [
   dashboard('refusal-sitting-passed', { ...returning, lead: 'sitting-passed' }),
   dashboard('refusal-sitting-passed-none', { ...returning, lead: 'sitting-passed', nextSitting: null }),
   dashboard('refusal-no-questions', { ...returning, lead: 'no-questions' }),
+  dashboard('refusal-revoked', { ...returning, lead: 'revoked' }),
   dashboard('refusal-diagnostic-taken', { ...returning, error: 'diagnostic-taken' }),
   dashboard('refusal-first-taken', { ...returning, error: 'first-taken' }),
   dashboard('refusal-nothing-to-revisit', { ...returning, error: 'nothing-to-revisit' }),

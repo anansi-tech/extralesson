@@ -17,6 +17,10 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} 
  */
 const REFUSES: Record<string, RegExp> = {
   paywall: /Start today|Mark one question|diagnostic|Carry on|Practise|Revisit/i,
+  // Revoked refuses new sessions, not the way back to access: the offer is
+  // inside the panel, which rule 2 does not count, and nothing outside it may
+  // invite the student into a session.
+  revoked: /Start today|Mark one question|diagnostic|Carry on|Practise|Revisit/i,
   'sitting-passed': /Start today|Mark one question|diagnostic|Carry on|Practise|Revisit/i,
   'no-questions': /Start today|Mark one question|diagnostic|Carry on|Practise|Revisit/i,
   'no-questions-topic': /(?!)/,
@@ -35,6 +39,7 @@ const REFUSES: Record<string, RegExp> = {
 /** Where each refusal's own action must not go: a session mode the refusal itself blocks. */
 const BLOCKS: Record<string, RegExp> = {
   paywall: /^(adaptive|topic|revisit|first)$/,
+  revoked: /^(adaptive|topic|revisit|first)$/,
   'sitting-passed': /^(adaptive|topic|revisit|first)$/,
   'no-questions': /./,
   'no-questions-topic': /^topic$/,

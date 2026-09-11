@@ -136,3 +136,54 @@ describe('what they meet instead', () => {
     expect(text).not.toMatch(/Start today|Take a diagnostic|Mark one question|Practise/);
   });
 });
+
+// The way back, on the one screen that can offer it. A revoked student never
+// sees the paywall — leadPanel returns 'revoked' ahead of it — so this is their
+// only entry to checkout, not a second surface for the same fact.
+describe('the revoked refusal offers the way back', () => {
+  const render = async () => {
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const { createElement } = await import('react');
+    const { DashboardView } = await import('@/app/study/dashboard');
+    const { STATES } = await import('./helpers/dashboard-states');
+    const html = renderToStaticMarkup(createElement(DashboardView, { ...STATES.returning, lead: 'revoked' as const }));
+    return { html, text: html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ') };
+  };
+
+  it('carries Get access · $49 to the same checkout the paywall uses', async () => {
+    const { html, text } = await render();
+    const { LANDING, paymentLink } = await import('@/lib/landing-content');
+
+    expect(text).toContain(`Get access · ${LANDING.price}`);
+    const offer = /<a[^>]*>Get access[^<]*<\/a>/.exec(html)![0];
+    expect(offer).toContain(`href="${paymentLink()}"`);
+    // Beside the notebook, never over it, as the paywall opens it.
+    expect(offer).toContain('target="_blank"');
+    expect(offer).toContain('rel="noopener"');
+  });
+
+  it('keeps the work first and Email us beside the offer', async () => {
+    const { text } = await render();
+
+    expect(text).toContain('Read your marked work');
+    expect(text).toContain('Email us');
+    expect(text.indexOf('Read your marked work')).toBeLessThan(text.indexOf('Get access'));
+  });
+
+  it('is the only entry to checkout in this state: the paywall cannot also show', async () => {
+    const { leadPanel } = await import('@/lib/study/lead-panel');
+
+    // Whatever else is true of the account, revoked wins the lead.
+    for (const open of [true, false]) {
+      for (const firstTaken of [true, false]) {
+        expect(leadPanel({ open, questions: true, access: 'revoked', firstTaken, diagnosticTaken: false })).toBe('revoked');
+      }
+    }
+    const { html } = await render();
+    const { paymentLink } = await import('@/lib/landing-content');
+    expect([...html.matchAll(/data-refusal="/g)], 'one refusal on the page').toHaveLength(1);
+    // One link to checkout on the whole screen, and it is the paywall's own.
+    const toCheckout = [...html.matchAll(new RegExp(`href="${paymentLink().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`, 'g'))];
+    expect(toCheckout, 'one way to checkout').toHaveLength(1);
+  });
+});

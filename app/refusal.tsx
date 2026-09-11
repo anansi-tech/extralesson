@@ -23,6 +23,13 @@ const QUIET = 'inline-flex min-h-11 items-center font-mono text-[11px] uppercase
  * link. Ink, never red — except where the action is the page's one primary
  * — and never a cross.
  */
+interface QuietWay {
+  label: string;
+  href: string;
+  /** Checkout opens beside the notebook, never over it. */
+  newTab?: boolean;
+}
+
 export function Refusal({
   id,
   label,
@@ -43,7 +50,12 @@ export function Refusal({
   action?: RefusalAction;
   /** One mono line under the action, such as how to hold the phone. */
   advice?: string;
-  quiet?: { label: string; href: string };
+  /**
+   * Under the action, on its own rule. A list where a refusal has more than one
+   * quiet way on — the revoked panel offers the work AND the way back to
+   * access, and neither is the commitment.
+   */
+  quiet?: QuietWay | QuietWay[];
   /** A failure: the label and the sentence on the amber bar — none of these costs a mark, so never red. */
   amber?: boolean;
   /** Already inside a card, such as the door's: no frame of its own. */
@@ -70,8 +82,12 @@ export function Refusal({
       {action && <Action {...action} />}
       {advice && <p className="mt-2.5 font-mono text-[11px] leading-relaxed text-dim">{advice}</p>}
       {quiet && (
-        <div className="mt-[18px] border-t border-paper-deep pt-3">
-          <Link href={quiet.href} className={QUIET}>{quiet.label}</Link>
+        <div className="mt-[18px] flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-paper-deep pt-3">
+          {(Array.isArray(quiet) ? quiet : [quiet]).map((way) => (
+            <Link key={way.label} href={way.href} className={QUIET} {...(way.newTab ? { target: '_blank', rel: 'noopener' } : {})}>
+              {way.label}
+            </Link>
+          ))}
         </div>
       )}
     </section>

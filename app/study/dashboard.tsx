@@ -396,7 +396,11 @@ function RefusedLead({ lead, sitting, nextSitting, email }: DashboardProps) {
         sentence="Your payment was refunded, so the sessions have stopped."
         remains="Everything you have done stays here — your marks, your topics, and every question you have answered. You can read all of it whenever you want to."
         action={{ label: 'Read your marked work', small: 'EVERY QUESTION, AS IT WAS MARKED', red: true, href: '/study/history' }}
-        quiet={help}
+        // THE WAY BACK, QUIETLY. The paywall never renders for this student —
+        // leadPanel returns 'revoked' ahead of it — so this is the one entry to
+        // checkout they have, not a second surface for the same fact. It sits
+        // after the work, because the work is what is theirs already.
+        quiet={[{ label: `Get access · ${LANDING.price}`, href: paymentLink(), newTab: true }, help]}
       />
     );
   }
