@@ -161,11 +161,32 @@ function closeEnough(a: number, b: number, rounding: Rounding | null): boolean {
 }
 
 
+/**
+ * \frac and \sqrt, INNERMOST FIRST AND REPEATEDLY. The braces nest and a single
+ * pass of `[^{}]+` cannot see past them: \frac{2}{\sqrt{29}} left the fraction
+ * unconverted, mathjs was handed `frac{2}{sqrt(29)}`, and the value never became
+ * a number. A surd alone evaluated, a fraction alone evaluated, and the two
+ * together did not — so a unit vector written the way a mark scheme writes one
+ * could not be compared with anything, including its own accept list.
+ *
+ * Each pass converts the groups that are now brace-free, which makes the next
+ * one visible; it stops when nothing changes.
+ */
+export function expandNestedCommands(s: string): string {
+  let out = s;
+  for (let pass = 0; pass < 12; pass++) {
+    const next = out
+      .replace(/\\d?frac\{([^{}]*)\}\{([^{}]*)\}/g, '(($1)/($2))')
+      .replace(/\\sqrt\{([^{}]*)\}/g, 'sqrt($1)');
+    if (next === out) break;
+    out = next;
+  }
+  return out;
+}
+
 function toMathExpr(s: string): string {
-  return s
-    .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '(($1)/($2))')
+  return expandNestedCommands(s)
     .replace(/\^\s*\{([^{}]+)\}/g, '^($1)') // 10^{-5}: mathjs wants parentheses
-    .replace(/\\sqrt\{([^{}]+)\}/g, 'sqrt($1)')
     .replace(/√\s*\(?([\d.a-z]+)\)?/g, 'sqrt($1)')
     .replace(/\\pi|π/g, 'pi')
     .replace(/\\/g, '');
@@ -327,7 +348,7 @@ function wordsEquivalent(a: string, b: string): boolean {
 // Prose is not algebra: mathjs reads "obtuse angle" as implicit multiplication
 // and rationalize() returns garbage that would read as "not equivalent", so the
 // symbolic path runs only when both sides look mathematical.
-function looksMathematical(s: string): boolean {
+export function looksMathematical(s: string): boolean {
   return !/[a-z]{2,}/.test(s.replace(/sqrt|frac|pi|text|cdot|times/g, ''));
 }
 
