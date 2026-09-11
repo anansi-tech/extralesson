@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { checkWelcome } from './actions';
-import { POLL_EVERY_MS, pollDue } from '@/lib/welcome';
+import { POLL_EVERY_MS, pollDue } from '@/lib/welcome-poll';
 
 /**
  * Asks every three seconds for a minute whether the fulfilment has landed,

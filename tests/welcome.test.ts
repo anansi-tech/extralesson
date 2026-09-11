@@ -86,11 +86,14 @@ describe('resolveWelcome', () => {
 });
 
 describe('the poll and the mask', () => {
-  it('asks every three seconds for a minute, then stops', () => {
-    expect(welcome.POLL_EVERY_MS).toBe(3000);
-    expect(welcome.pollDue(0, 0)).toBe(true);
-    expect(welcome.pollDue(0, 59_999)).toBe(true);
-    expect(welcome.pollDue(0, 60_000)).toBe(false);
-    expect(welcome.pollDue(1_000, 61_000)).toBe(false);
+  it('asks every three seconds for a minute, then stops', async () => {
+    // In their own module, out of the database's reach: the client polls with
+    // these, and importing them from lib/welcome bundled Mongoose.
+    const poll = await import('@/lib/welcome-poll');
+    expect(poll.POLL_EVERY_MS).toBe(3000);
+    expect(poll.pollDue(0, 0)).toBe(true);
+    expect(poll.pollDue(0, 59_999)).toBe(true);
+    expect(poll.pollDue(0, 60_000)).toBe(false);
+    expect(poll.pollDue(1_000, 61_000)).toBe(false);
   });
 });

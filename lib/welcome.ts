@@ -1,14 +1,6 @@
 import { Payment, Student } from '@/lib/db';
 import { sittingLabel } from '@/lib/sittings';
 
-/** The confirming page asks again every three seconds, for a minute. */
-export const POLL_EVERY_MS = 3000;
-export const POLL_FOR_MS = 60_000;
-
-export function pollDue(startedAt: number, now: number): boolean {
-  return now - startedAt < POLL_FOR_MS;
-}
-
 /**
  * WHO IS HOLDING THE PHONE after checkout (ROUND_9 Task 1; ROUND_11 Task 4).
  * Read from the Payment for the checkout session, which is the one record of
