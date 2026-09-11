@@ -88,6 +88,10 @@ export default async function DisputeCasePage({ params, searchParams }: { params
       </h1>
       <p className="mt-1 break-all font-mono text-[12px]">{student?.email ?? 'account deleted'}{student ? ` · ${student.exam_sitting}` : ''}</p>
 
+      {/* AT 1280 THE CASE IS READ ACROSS (ROUND_13 Task 5): what was asked on
+          the left, what the marker decided on the right, and the one panel of
+          things to do beneath both. Stacked on a phone, in the same order. */}
+      <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-5">
       <section className="mt-4 border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-panel)]">
         <div className="section-label">The question</div>
         {question ? (
@@ -147,6 +151,7 @@ export default async function DisputeCasePage({ params, searchParams }: { params
           {decision ? <>{decision.awarded ? 'awarded' : 'withheld'}{decision.needs_review ? ', sent for review' : ''} — <span dangerouslySetInnerHTML={{ __html: renderMathHtml(decision.reason) }} /></> : 'row not on this read'}
         </p>
       </section>
+      </div>
 
       <section className="mt-4 border-[1.5px] border-ink bg-white p-5 shadow-[var(--shadow-panel)]">
         <div className="section-label">What to do</div>

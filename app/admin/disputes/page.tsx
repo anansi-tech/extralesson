@@ -82,10 +82,14 @@ export default async function DisputesPage() {
             t.method_marks
               .filter((m) => m.needs_review)
               .map((m) => (
-                <div key={`${String(t._id)}-${m.code}`} className="mt-3 border-l-3 border-amber bg-amber-tint p-3">
+                // THE MARKER ASKING, in the card the rest of the page uses.
+                // It was an amber-barred warning, which is the shape a failure
+                // takes here — a request for a look is not a complaint and the
+                // two must not read alike (ROUND_13 Task 5).
+                <div key={`${String(t._id)}-${m.code}`} className="mt-3 border-[1.5px] border-ink bg-white p-4">
                   <div className="font-mono text-[11px] text-dim">
                     {t.created_at.toLocaleString('en-GB')} · {m.code} ·{' '}
-                    <Link href={`/admin/disputes/${String(t._id)}?code=${m.code}`} className="text-red-pen underline">open the case</Link>
+                    <Link href={`/admin/disputes/${String(t._id)}?code=${m.code}`} className="underline underline-offset-[3px]">open the case</Link>
                   </div>
                   <div
                     className="question-prose mt-1 text-[13px]"
@@ -134,7 +138,9 @@ export default async function DisputesPage() {
                 ) : (
                   <span className="uppercase tracking-widest text-red-pen">not yet reviewed</span>
                 )}
-                <Link href={`/admin/disputes/${String(d._id)}`} className={`${QUIET} text-red-pen`}>
+                {/* The state is the one red thing on a row; the way in is not
+                    a state and does not compete with it. */}
+                <Link href={`/admin/disputes/${String(d._id)}`} className={QUIET}>
                   Open the case
                 </Link>
               </span>
