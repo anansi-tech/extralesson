@@ -20,6 +20,9 @@ import { CAPS, FIELD, QUIET } from '../ui';
 export const metadata = { title: 'Review queue — ExtraLesson admin' };
 export const dynamic = 'force-dynamic';
 
+/** How many objective ids a fact shows before the rest go to Coverage. */
+const IDS_IN_STRIP = 6;
+
 export default async function ReviewPage({
   searchParams,
 }: {
@@ -54,11 +57,16 @@ export default async function ReviewPage({
    * "not measured" are different answers and the strip has to be able to give
    * either.
    */
+  // The objectives each of the first two facts is counting, so the fact can be
+  // opened rather than only read. The two P facts name no objective — they are
+  // a shortfall against a total — so they stay facts.
+  const noneApproved = allObjectives.filter((o) => o.approved === 0).map((o) => o.id);
+  const underFloor = allObjectives.filter((o) => o.approved > 0 && o.approved < OBJECTIVE_FLOOR).map((o) => o.id);
   const facts = [
-    { n: neverAssessed, label: 'objectives with no approved question' },
-    { n: Math.max(0, belowFloor - neverAssessed), label: `more below the floor of ${OBJECTIVE_FLOOR}` },
-    { n: Math.max(0, p1Short), label: 'P1 items short', met: 'P1 on target' },
-    { n: Math.max(0, p2Short), label: 'P2 marks short', met: 'P2 on target' },
+    { n: neverAssessed, label: 'objectives with no approved question', ids: noneApproved },
+    { n: Math.max(0, belowFloor - neverAssessed), label: `more below the floor of ${OBJECTIVE_FLOOR}`, ids: underFloor },
+    { n: Math.max(0, p1Short), label: 'P1 items short', met: 'P1 on target', ids: [] },
+    { n: Math.max(0, p2Short), label: 'P2 marks short', met: 'P2 on target', ids: [] },
   ];
   // THE TRUTH (ROUND_7 Task 3): totals can be met while topics are short,
   // because a total is a sum. Each short topic opens the search on it.
@@ -309,6 +317,30 @@ export default async function ReviewPage({
                   <>
                     <b className={f.n > 0 ? 'text-red-pen' : 'text-ink'}>{f.n}</b>{' '}
                     <span className={f.n > 0 ? '' : 'text-dim'}>{f.label}</span>
+                    {/* The objectives it counts, through the one filter that
+                        names an objective. Six, then the rest on Coverage:
+                        forty ids in a strip above the card is a wall, not a
+                        way in. */}
+                    {f.ids.length > 0 && (
+                      <div className="mt-0.5 font-mono text-[10px] leading-relaxed text-dim">
+                        {f.ids.slice(0, IDS_IN_STRIP).map((id, i) => (
+                          <span key={id}>
+                            {i > 0 && ' · '}
+                            <Link href={`/admin/review?find=${encodeURIComponent(`objective:${id}`)}`} className="underline underline-offset-[3px]">
+                              {id}
+                            </Link>
+                          </span>
+                        ))}
+                        {f.ids.length > IDS_IN_STRIP && (
+                          <>
+                            {' · '}
+                            <Link href="/admin/coverage" className="underline underline-offset-[3px]">
+                              {f.ids.length - IDS_IN_STRIP} more
+                            </Link>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </>
                 ) : (
                   <span className="text-dim">{f.met}</span>

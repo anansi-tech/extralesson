@@ -24,9 +24,18 @@ export async function findQuestions(query: string, limit = 25): Promise<FoundQue
   const topicFilter = topic ? await byTopic(topic.toUpperCase()) : null;
   if (topic && !topicFilter) return [];
 
+  // objective:M1.1.1 — the questions that are evidence for one objective
+  // (ROUND_13 Task 3, the round's one new capability). A coverage chip knows
+  // its objective, and a report you have to navigate by hand is a report you
+  // stop reading. Declared, not matched against prose: objective_ids is the
+  // field the coverage counts are computed from, so the chip and the search
+  // cannot disagree.
+  const objective = /^objective:([A-Z0-9.]+)$/i.exec(term)?.[1];
+  const objectiveFilter = objective ? { objective_ids: objective.toUpperCase() } : null;
+
   // An id, whole or by its tail — `$regex` on _id needs the id as a string, so
   // the match is done with $expr over its string form.
-  const filter = topicFilter ?? (HEX.test(term)
+  const filter = topicFilter ?? objectiveFilter ?? (HEX.test(term)
     ? { $expr: { $regexMatch: { input: { $toString: '$_id' }, regex: `${term.toLowerCase()}$` } } }
     : {
         $or: [

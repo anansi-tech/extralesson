@@ -76,3 +76,34 @@ describe('the deficits strip', () => {
     expect(card).not.toMatch(/<kbd className="font-mono/);
   });
 });
+
+// ROUND_13 Task 3: the round's one new capability, authorised by David, and
+// the two places it is used. Declared, not matched against prose: objective_ids
+// is the field the coverage counts are computed from, so a chip and the search
+// it opens cannot disagree.
+describe('objective: in the search', () => {
+  it('matches on the declared field, and nothing else joins the grammar', () => {
+    const src = at('lib', 'admin', 'find-questions.ts');
+    expect(src).toMatch(/\/\^objective:\(\[A-Z0-9\.\]\+\)\$\/i/);
+    expect(src).toMatch(/objective_ids: objective\.toUpperCase\(\)/);
+    // topic:, objective:, an id, free text. No fifth.
+    expect([...src.matchAll(/\/\^[a-z]+:\(/g)].map((m) => m[0])).toEqual(['/^topic:(', '/^objective:(']);
+  });
+
+  it('every coverage chip opens Review filtered to its objective', () => {
+    const coverage = at('app', 'admin', 'coverage', 'page.tsx');
+    expect(coverage).toMatch(/href=\{`\/admin\/review\?find=\$\{encodeURIComponent\(`objective:\$\{o\.id\}`\)\}`\}/);
+    // A chip is the link, not a span with a link beside it.
+    expect(coverage).toMatch(/<Link\s+key=\{o\.id\}/);
+    expect(coverage).not.toMatch(/<span\s+key=\{o\.id\}/);
+  });
+
+  it('the two objective facts are openable and the two P facts are not', () => {
+    const page = at('app', 'admin', 'review', 'page.tsx');
+    expect(page).toMatch(/ids: noneApproved/);
+    expect(page).toMatch(/ids: underFloor/);
+    // A shortfall against a total names no objective, so it stays a fact.
+    expect([...page.matchAll(/ids: \[\]/g)], 'P1 and P2').toHaveLength(2);
+    expect(page).toMatch(/objective:\$\{id\}/);
+  });
+});

@@ -7,6 +7,7 @@ import {
   P2_PROFILE_SPLIT,
   STRUCTURED_ARCHETYPE_TARGETS,
 } from '@/lib/targets/matrix';
+import Link from 'next/link';
 import { OBJECTIVE_FLOOR } from '@/lib/targets/objectives';
 import { ROW } from '../ui';
 
@@ -60,9 +61,13 @@ export default async function CoveragePage() {
                       </span>
                     </div>
                     <div className="mt-1 flex flex-wrap gap-1">
+                      {/* EVERY CHIP IS A LINK (ROUND_13 Task 3). A chip knows
+                          its objective, and a report you navigate by hand is a
+                          report you stop reading. */}
                       {row.objectives.map((o) => (
-                        <span
+                        <Link
                           key={o.id}
+                          href={`/admin/review?find=${encodeURIComponent(`objective:${o.id}`)}`}
                           title={`${o.id} — ${o.text} (${o.approved} approved${o.draft ? `, ${o.draft} draft` : ''})`}
                           className={`rounded px-1 py-0.5 font-mono text-[10px] ${
                             o.approved >= OBJECTIVE_FLOOR
@@ -78,7 +83,7 @@ export default async function CoveragePage() {
                           {o.approved > 0 ? `${o.approved}a` : ''}
                           {o.draft > 0 ? `${o.approved > 0 ? '+' : ''}${o.draft}d` : ''}
                           {o.approved === 0 && o.draft === 0 ? '✗' : ''}
-                        </span>
+                        </Link>
                       ))}
                     </div>
                   </div>
