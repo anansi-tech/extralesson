@@ -63,7 +63,7 @@ export function WorkingPhoto({
   /** A read already taken, so a reload or a submit does not lose it. */
   initial?: (ReadResult | CaptureResult) | null;
   /** The boxes to fill from a read; only ever called before submit. */
-  onRead?: (prefill: Record<string, string>) => void;
+  onRead?: (prefill: import('@/lib/grade/prefill').Prefill) => void;
   /** The one state of the photograph, as it changes: the card orders and words itself by it. */
   onState?: (state: CaptureState) => void;
   /** After submit, the marking of a read: the card shows the rows beside the parts. */

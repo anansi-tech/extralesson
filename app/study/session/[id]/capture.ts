@@ -18,7 +18,7 @@ import { MAX_BYTES, MAX_TAKES, transcribeWorking, type TranscriptionResult } fro
 import { constructionRows, alreadyEarnedByMethod } from '@/lib/grade/method-marks';
 import { constructionChecks } from '@/lib/grade/construction';
 import { checkConstruction } from '@/lib/grade/check-construction';
-import { prefillFromRead } from '@/lib/grade/prefill';
+import { prefillFromRead, type Prefill } from '@/lib/grade/prefill';
 import { markWorking, type CaptureResult } from './mark-working';
 import { limited, TOO_MANY } from '@/lib/auth/rate-limit';
 import type { StoredVisual } from '@/lib/visuals';
@@ -47,7 +47,7 @@ export interface ReadResult {
   take: number;
   takesLeft: number;
   /** Single-box slots the read filled, by slot ref. */
-  prefill: Record<string, string>;
+  prefill: Prefill;
 }
 
 /**
@@ -168,13 +168,20 @@ export async function readWorking(input: {
   // submitting. A question already handed in has no draft to fill.
   const prefill = prefillFromRead(parts, read.transcription.answers);
   const submitted = await Attempt.exists({ session_id: sessionId, question_id: questionId });
-  if (Object.keys(prefill).length > 0 && !submitted) {
+  const filled = Object.keys(prefill.answers).length + Object.keys(prefill.values).length;
+  if (filled > 0 && !submitted) {
     const draft = await SessionDraft.findOne({ session_id: sessionId, question_index: questionIndex })
-      .select('answers')
-      .lean<{ answers?: Record<string, string> } | null>();
+      .select('answers values')
+      .lean<{ answers?: Record<string, string>; values?: Record<string, string[]> } | null>();
     await SessionDraft.updateOne(
       { session_id: sessionId, question_index: questionIndex },
-      { $set: { answers: { ...(draft?.answers ?? {}), ...prefill }, updated_at: new Date() } },
+      {
+        $set: {
+          answers: { ...(draft?.answers ?? {}), ...prefill.answers },
+          values: { ...(draft?.values ?? {}), ...prefill.values },
+          updated_at: new Date(),
+        },
+      },
       { upsert: true },
     );
   }

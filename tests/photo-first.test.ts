@@ -132,15 +132,19 @@ beforeEach(() => {
 const imageCalls = () => calls.filter((c) => c.image).length;
 
 describe('photo first — ROUND_4 Task 1', () => {
-  it('prefill lands in the draft, single-box slots only, and the read has no attempt', async () => {
+  it('prefill lands in the draft, and a multi-box slot fills when the split matches', async () => {
     const sessionId = await session(await question());
     const res = await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
-    expect(res).toMatchObject({ take: 1, takesLeft: 1, prefill: { 'a.i': '5' } });
+    expect(res).toMatchObject({ take: 1, takesLeft: 1 });
     if ('error' in res) return;
-    expect(res.prefill).not.toHaveProperty('b.i'); // a list is typed one box per value
+    // (a) is one box. (b) is a four-box list and the read gives four values, so
+    // it fills too — one box per value, the same split the marker uses.
+    expect(res.prefill.answers).toEqual({ 'a.i': '5' });
+    expect(res.prefill.values).toEqual({ 'b.i': ['1', '2', '3', '6'] });
 
-    const draft = await db.SessionDraft.findOne({ session_id: sessionId, question_index: 0 }).lean<{ answers: Record<string, string> } | null>();
+    const draft = await db.SessionDraft.findOne({ session_id: sessionId, question_index: 0 }).lean<{ answers: Record<string, string>; values: Record<string, string[]> } | null>();
     expect(draft?.answers).toEqual({ 'a.i': '5' });
+    expect(draft?.values).toEqual({ 'b.i': ['1', '2', '3', '6'] });
 
     const read = await db.Transcription.findOne({ session_id: sessionId, question_index: 0 }).lean<Record<string, unknown> | null>();
     expect(read?.attempt_id).toBeUndefined();
@@ -179,7 +183,7 @@ describe('photo first — ROUND_4 Task 1', () => {
     await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
     readerAnswers = [{ slot_ref: 'a.i', text: '7' }];
     const second = await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
-    expect(second).toMatchObject({ take: 2, takesLeft: 0, prefill: { 'a.i': '7' } });
+    expect(second).toMatchObject({ take: 2, takesLeft: 0, prefill: { answers: { 'a.i': '7' } } });
     const draft = await db.SessionDraft.findOne({ session_id: sessionId, question_index: 0 }).lean<{ answers: Record<string, string> } | null>();
     expect(draft?.answers['a.i']).toBe('7');
     expect(await readWorking({ sessionId, questionIndex: 0, ...IMAGE })).toMatchObject({ error: /limit/ });

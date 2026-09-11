@@ -71,7 +71,8 @@ async function main() {
       // The typed answers are the reader's own prefill: what a student who
       // trusts the read would hand in.
       const refs = markableSlots(q.parts ?? []);
-      const answer = refs.map((r) => `(${r}) ${read.prefill[r] ?? ''}`).join('; ');
+      const filled = (r: string) => read.prefill.answers[r] ?? (read.prefill.values[r] ?? []).join(', ');
+      const answer = refs.map((r) => `(${r}) ${filled(r)}`).join('; ');
       const attempt = await Attempt.create({
         student_id: student._id,
         question_id: q._id,

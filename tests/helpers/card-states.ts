@@ -49,7 +49,7 @@ const read = {
   transcriptionId: 't1',
   take: 1,
   takesLeft: 1,
-  prefill: { 'a.i': '11.9', 'b.i': '47.6' },
+  prefill: { answers: { 'a.i': '11.9', 'b.i': '47.6' }, values: {} },
   rejected: [],
 } as NonNullable<CardQuestion['draft']>['read'];
 
@@ -57,7 +57,7 @@ const read = {
 const illegible = {
   ...read,
   transcription: { lines: [], answers: [], legible: false, notes: 'The page is blurred and the ink is faint; the student may have written in pencil.' },
-  prefill: {},
+  prefill: { answers: {}, values: {} },
   transcriptionId: 't2',
 } as NonNullable<CardQuestion['draft']>['read'];
 

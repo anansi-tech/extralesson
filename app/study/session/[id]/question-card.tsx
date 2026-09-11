@@ -156,10 +156,12 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const [feedback, setFeedback] = useState<Feedback | null>(question.prior?.feedback ?? null);
   // THE ONE STATE OF THE PHOTOGRAPH, reported by the camera box; the card derives none of its own.
   const [capture, setCapture] = useState<CaptureState>(() => captureState(takesOf(question.draft?.read), MAX_TAKES, false));
-  // HONEST PREFILL (ROUND_7 Task 2): a read fills single boxes only. Which
-  // boxes it filled and which it did not is said, with a way to each.
+  // HONEST PREFILL (ROUND_7 Task 2): which boxes a read filled and which it did
+  // not is said, with a way to each. A multi-box slot fills only when the read
+  // split into exactly its boxes, so both maps name slots it really filled.
   const [readFilled, setReadFilled] = useState<string[] | null>(() => {
-    const filled = Object.keys(question.draft?.read?.prefill ?? {});
+    const prefill = question.draft?.read?.prefill;
+    const filled = [...Object.keys(prefill?.answers ?? {}), ...Object.keys(prefill?.values ?? {})];
     return filled.length > 0 ? filled : null;
   });
   const [error, setError] = useState<string>();
@@ -604,8 +606,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           questionIndex={question.index}
           initial={question.draft?.read}
           onRead={(prefill) => {
-            setPartAnswers((prev) => ({ ...prev, ...prefill }));
-            setReadFilled(Object.keys(prefill));
+            setPartAnswers((prev) => ({ ...prev, ...prefill.answers }));
+            // A multi-box slot fills only when the read split into exactly its
+            // boxes, so these arrive whole or not at all.
+            setBoxValues((prev) => ({ ...prev, ...prefill.values }));
+            setReadFilled([...Object.keys(prefill.answers), ...Object.keys(prefill.values)]);
           }}
           onState={setCapture}
           className={`order-3 ${pageRead ? 'lg:order-first' : 'lg:order-none'}`}

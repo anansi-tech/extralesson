@@ -19,10 +19,13 @@ describe('the photo-first card', () => {
     expect(camera).toBeLessThan(boxes);
   });
 
-  it('fills the boxes from a read, and leaves what the read did not touch', () => {
-    expect(card).toMatch(/onRead=\{\(prefill\) => \{\s*setPartAnswers\(\(prev\) => \(\{ \.\.\.prev, \.\.\.prefill \}\)\);/);
-    // Multi-value slots live in boxValues, which a read never writes.
-    expect(card).not.toMatch(/onRead[\s\S]{0,120}setBoxValues/);
+  it('fills the boxes from a read, and says which boxes it filled', () => {
+    expect(card).toMatch(/setPartAnswers\(\(prev\) => \(\{ \.\.\.prev, \.\.\.prefill\.answers \}\)\);/);
+    // A multi-box slot fills too now, but only when the read split into exactly
+    // its boxes — so these arrive whole, and the two maps are separate because
+    // one box and several are stored differently.
+    expect(card).toMatch(/setBoxValues\(\(prev\) => \(\{ \.\.\.prev, \.\.\.prefill\.values \}\)\);/);
+    expect(card).toMatch(/setReadFilled\(\[\.\.\.Object\.keys\(prefill\.answers\), \.\.\.Object\.keys\(prefill\.values\)\]\)/);
   });
 
   it('reads before submit and marks after it, through one control', () => {

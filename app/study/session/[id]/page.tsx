@@ -479,7 +479,8 @@ export default async function SessionPage({
         transcriptionId: String(latest._id),
         take: latest.take,
         takesLeft: MAX_TAKES - reads.length,
-        prefill: {},
+        // Rebuilt from the stored read; the boxes already hold what it filled.
+        prefill: { answers: {}, values: {} },
         rejected: rejectedLines,
       }
     : undefined;
