@@ -44,6 +44,7 @@ let server: ChildProcess;
 let browser: Browser;
 let origin = '';
 let cookie = '';
+let adminCookie = '';
 
 async function run(command: string, args: string[], env: NodeJS.ProcessEnv) {
   await new Promise<void>((resolve, reject) => {
@@ -75,19 +76,22 @@ beforeAll(async () => {
     NEXT_PUBLIC_BASE_URL: origin,
   };
 
-  // A student with access, so the notebook has somebody to be.
+  // A student with access, so the notebook has somebody to be, and an operator
+  // so the admin screens have somebody to be.
   await mongoose.connect(env.MONGODB_URI!);
   const { Student } = await import('@/lib/db');
-  const student = await Student.create({
-    email: 'smoke@extralesson.invalid',
-    name: 'Smoke',
-    exam_sitting: 'may-june-2027',
-    target_modules: [1, 2, 3],
-    password_hash: 'x',
-    syllabus_mode: 'modular-2027',
-    access: { sitting: 'may-june-2027', granted_at: new Date(), source: 'manual', note: 'comp · smoke check · 2026-09-10' },
-  });
+  const grant = (note: string) => ({ sitting: 'may-june-2027', granted_at: new Date(), source: 'manual', note });
+  const make = (email: string, over: Record<string, unknown> = {}) =>
+    Student.create({ email, name: 'Smoke', exam_sitting: 'may-june-2027', target_modules: [1, 2, 3], password_hash: 'x', syllabus_mode: 'modular-2027', ...over });
+
+  const student = await make('smoke@extralesson.invalid', { access: grant('comp · smoke check · 2026-09-10') });
   cookie = createSessionToken(String(student._id), 'smoke@extralesson.invalid', SECRET, Date.now(), 1);
+
+  const operator = await make('ops@extralesson.invalid', { role: 'admin' });
+  adminCookie = createSessionToken(String(operator._id), 'ops@extralesson.invalid', SECRET, Date.now(), 1);
+  // Two more changed accounts, so Access has rows to open and close.
+  await make('one@extralesson.invalid', { access: grant('comp · one · 2026-09-10') });
+  await make('two@extralesson.invalid', { access: grant('comp · two · 2026-09-10') });
 
   await run('pnpm', ['exec', 'next', 'build'], env);
   server = spawn('pnpm', ['exec', 'next', 'start', '-p', String(port)], { env, stdio: 'pipe' });
@@ -119,9 +123,17 @@ interface Trouble {
   failed: string[];
 }
 
-async function load(path: string, { signedIn = false } = {}): Promise<Trouble> {
+async function load(path: string, { signedIn = false, admin = false } = {}): Promise<Trouble> {
+  const { page, context, trouble } = await open(path, { signedIn, admin });
+  // THE THREE SECONDS THAT MATTERED: the crash was in an interval, not a render.
+  await page.waitForTimeout(SETTLE_MS);
+  await context.close();
+  return trouble;
+}
+
+async function open(path: string, { signedIn = false, admin = false } = {}) {
   const context = await browser.newContext({ baseURL: origin });
-  if (signedIn) await context.addCookies([{ name: SESSION_COOKIE, value: cookie, url: origin }]);
+  if (signedIn || admin) await context.addCookies([{ name: SESSION_COOKIE, value: admin ? adminCookie : cookie, url: origin }]);
   const page = await context.newPage();
   const trouble: Trouble = { consoleErrors: [], pageErrors: [], failed: [] };
 
@@ -140,10 +152,7 @@ async function load(path: string, { signedIn = false } = {}): Promise<Trouble> {
   });
 
   await page.goto(path, { waitUntil: 'domcontentloaded' });
-  // THE THREE SECONDS THAT MATTERED: the crash was in an interval, not a render.
-  await page.waitForTimeout(SETTLE_MS);
-  await context.close();
-  return trouble;
+  return { page, context, trouble };
 }
 
 const clean = (t: Trouble) => [...t.pageErrors.map((e) => `page error: ${e}`), ...t.consoleErrors.map((e) => `console error: ${e}`), ...t.failed.map((f) => `failed request: ${f}`)];
@@ -166,4 +175,56 @@ describe.skipIf(!hasChrome)('the app survives being loaded', () => {
   it('the notebook, signed in', async () => {
     expect(clean(await load('/study', { signedIn: true }))).toEqual([]);
   }, 120_000);
+
+  for (const path of ['/admin/access', '/admin/review', '/admin/coverage', '/admin/topics', '/admin/disputes']) {
+    it(`the operator's ${path.split('/').pop()}`, async () => {
+      expect(clean(await load(path, { admin: true }))).toEqual([]);
+    }, 120_000);
+  }
+});
+
+/**
+ * ONE ROW OPEN, IN A REAL BROWSER. The list holds a single open id, so one at a
+ * time is true by construction — but "by construction" is an argument about the
+ * source, and what an operator gets is a hydrated bundle. This clicks.
+ */
+describe.skipIf(!hasChrome)('the account list', () => {
+  it('opens a row in place, and opening a second closes the first', async () => {
+    const { page, context, trouble } = await open('/admin/access', { admin: true });
+    const rows = page.locator('li button[aria-expanded]');
+    await rows.first().waitFor();
+    expect(await rows.count(), 'rows to open').toBeGreaterThanOrEqual(2);
+
+    const openCount = () => page.locator('li button[aria-expanded="true"]').count();
+    expect(await openCount(), 'closed to begin with').toBe(0);
+    // A closed row holds no field at all — not a hidden one, none.
+    expect(await page.locator('li input, li select, li textarea').count()).toBe(0);
+
+    await rows.nth(0).click();
+    expect(await openCount(), 'one open').toBe(1);
+    expect(await rows.nth(0).getAttribute('aria-expanded')).toBe('true');
+    expect(await page.locator('li input[name="reason"]').count(), 'and its control appeared').toBe(1);
+
+    await rows.nth(1).click();
+    expect(await openCount(), 'still one open').toBe(1);
+    expect(await rows.nth(0).getAttribute('aria-expanded'), 'the first closed').toBe('false');
+    expect(await rows.nth(1).getAttribute('aria-expanded')).toBe('true');
+
+    await rows.nth(1).click();
+    expect(await openCount(), 'clicking it again closes it').toBe(0);
+
+    expect(clean(trouble), 'and nothing broke while doing it').toEqual([]);
+    await context.close();
+  }, 180_000);
+
+  for (const width of [320, 360, 390, 1280]) {
+    it(`an open row fits the viewport at ${width}px`, async () => {
+      const { page, context } = await open('/admin/access', { admin: true });
+      await page.setViewportSize({ width, height: 900 });
+      await page.locator('li button[aria-expanded]').first().click();
+      const measured = await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth));
+      await context.close();
+      expect(measured).toBe(width);
+    }, 180_000);
+  }
 });

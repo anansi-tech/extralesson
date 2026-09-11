@@ -20,13 +20,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           bare
           className="mb-6"
           label="Before launch"
-          sentence={
-            <ul className="space-y-1">
-              {warnings.map((w) => (
-                <li key={w}>{w}</li>
-              ))}
-            </ul>
-          }
+          // A LIST CANNOT LIVE IN A PARAGRAPH. Refusal renders its sentence
+          // inside a <p>, so a <ul> here was invalid HTML: the browser closed
+          // the paragraph and moved the list out, the DOM stopped matching what
+          // React rendered, and hydration failed on EVERY admin page whenever
+          // the banner was showing — which in production, on a test-mode link,
+          // is always. Found by the browser smoke check (ROUND_13 gate).
+          sentence={warnings.map((w) => (
+            <span key={w} className="block [&+&]:mt-1">
+              {w}
+            </span>
+          ))}
         />
       )}
       {children}
