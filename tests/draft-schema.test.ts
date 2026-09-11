@@ -96,6 +96,41 @@ describe('the strict boundary treats null as absent, because that is how it arri
     expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
   });
 
+  /**
+   * THE QUESTION-LEVEL OPTIONALS, which the block above never reached. A
+   * prose question has no figure and no table, so the model returns null for
+   * all three — and `stimulus_table` was declared with a bare `.optional()`,
+   * which refuses null. Every draft of a prose question failed the schema gate
+   * on it: three attempts of three in the run that found it.
+   */
+  it('accepts nulls on the question itself, not only inside its parts', () => {
+    const parsed = QuestionDraftZ.safeParse({
+      ...draftWithNulls,
+      stimulus: null,
+      visual: null,
+      stimulus_table: null,
+    });
+    expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
+
+    const q = QuestionDraftZ.parse({ ...draftWithNulls, stimulus: null, visual: null, stimulus_table: null });
+    expect(q.stimulus).toBeUndefined();
+    expect(q.visual).toBeUndefined();
+    expect(q.stimulus_table).toBeUndefined();
+  });
+
+  it('and still reads one the model actually set', () => {
+    const q = QuestionDraftZ.parse({ ...draftWithNulls, stimulus: 'A line passes through two points.' });
+    expect(q.stimulus).toBe('A line passes through two points.');
+  });
+
+  it('but a real table still needs a visual, which null never triggered', () => {
+    // Tolerating null must not tolerate a TABLE without the figure it belongs
+    // to: that rule is the reason the field exists.
+    const parsed = QuestionDraftZ.safeParse({ ...draftWithNulls, stimulus_table: { rows: [['x', 'y']] } });
+    expect(parsed.success).toBe(false);
+    expect(JSON.stringify(parsed.error?.issues)).toContain('visual slot is taken');
+  });
+
   it('normalises those nulls away rather than storing them', () => {
     const q = QuestionDraftZ.parse(draftWithNulls);
     const structured = q as Extract<typeof q, { kind: 'structured' }>;

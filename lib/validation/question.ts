@@ -339,11 +339,11 @@ function checkRenderable(q: Record<string, unknown>, ctx: z.RefinementCtx): void
 const QuestionBaseZ = z.object({
   objective_ids: z.array(z.string().regex(OBJECTIVE_ID_RE)).min(1),
   module: z.union([z.literal(1), z.literal(2), z.literal(3)]),
-  stimulus: z.string().min(1).optional(), // shared context (KaTeX-safe)
+  stimulus: optional(z.string().min(1)), // shared context (KaTeX-safe)
   stem: z.string().min(10),
-  visual: VisualZ.optional(),
+  visual: optional(VisualZ),
   // R3 — dataTable params, verified by the visual gate like any other table.
-  stimulus_table: z.record(z.unknown()).optional(),
+  stimulus_table: optional(z.record(z.unknown())),
   archetype: ArchetypeZ,
   // Declared because Zod STRIPS what it does not know: an undeclared field the
   // pipeline sets is dropped silently on the way to the database.
