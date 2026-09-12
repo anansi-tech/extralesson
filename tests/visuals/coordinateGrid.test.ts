@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { coordinateGrid, CoordinateGridParamsZ, readableStep, MIN_INTERVALS } from '@/lib/visuals/templates/coordinateGrid';
+import { coordinateGrid, CoordinateGridParamsZ, readableStep, gridStep, MIN_INTERVALS, MAX_INTERVALS } from '@/lib/visuals/templates/coordinateGrid';
 
 // ORIGINAL fixture data only (R1.5 ground truth — no CXC content anywhere).
 const params = CoordinateGridParamsZ.parse({
@@ -668,5 +668,103 @@ describe('coordinateGrid: a window is bounded by its intervals, not its size', (
       x_range: [0, 4], y_range: [0, 4],
       polygons: [{ vertices: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }], name: 'Quadrilateral P' }],
     }).success).toBe(true);
+  });
+});
+
+/**
+ * A WIDE RANGE, WHICH NOTHING COVERED. The interval rule made spans over 40
+ * legal, and every snapshot stayed byte-identical because no figure in the bank
+ * used one — so the first question that did, a cost graph over 0..450, rendered
+ * as a solid dark slab under a mangled axis. Two faults met there:
+ *
+ *  · balanceWindow widens the narrow axis to hold the aspect, turning x 0..4
+ *    beside y 0..450 into x -139..143. Nothing divides 282 into whole steps, so
+ *    the strict readableStep returned nothing and the renderer fell back to 1 —
+ *    283 ruled lines and 283 numerals in a 550px plot, capped at 100 by ticks.
+ *  · the mesh cell was square, u * x_step on both axes, so a y_step of 50 drew
+ *    at the x step: a 0.89px cell whose four 0.25-wide rules filled it in.
+ */
+describe('coordinateGrid at a wide range', () => {
+  const wide = (y: number, y_step: number) =>
+    coordinateGrid.render(CoordinateGridParamsZ.parse({ x_range: [0, 4], y_range: [0, y], y_step }), undefined as never);
+
+  const meshCell = (svg: string) => {
+    const m = svg.match(/<pattern id="gridMesh" width="([\d.]+)" height="([\d.]+)"/)!;
+    return { w: Number(m[1]), h: Number(m[2]) };
+  };
+  const gridlines = (svg: string) => (svg.match(/stroke-width="0.5"/g) ?? []).length;
+  const numerals = (svg: string) => (svg.match(/font-size="9"/g) ?? []).length;
+
+  for (const [span, step] of [[100, 10], [450, 50], [1000, 100]] as [number, number][]) {
+    it(`rules 0..${span} in cells a reader can see`, () => {
+      const svg = wide(span, step);
+      const cell = meshCell(svg);
+
+      // A cell narrower than its own rules is a filled rectangle, not a mesh.
+      expect(cell.w, 'mesh cell width').toBeGreaterThan(4);
+      expect(cell.h, 'mesh cell height').toBeGreaterThan(4);
+      // Few enough lines and numerals to read, at every width.
+      expect(gridlines(svg)).toBeLessThanOrEqual(MAX_INTERVALS * 2 + 4);
+      expect(numerals(svg)).toBeLessThanOrEqual(MAX_INTERVALS * 2 + 4);
+    });
+  }
+
+  it('gives each axis its own cell, one per step in that axis own scale', () => {
+    // x 0..4 across the 550px plot is 137.5px per unit, at a step of 1;
+    // y 0..450 down the 400px plot is 0.889px per unit, at a step of 50.
+    const cell = meshCell(wide(450, 50));
+    expect(cell.w).toBeCloseTo(137.5, 1);
+    expect(cell.h).toBeCloseTo(44.44, 1);
+  });
+
+  it('keeps the x numerals far enough apart to read', () => {
+    // THE REPORTED FAULT: "-130 -120 -110 …" ran together across 250px. A
+    // numeral needs room, and a count of intervals cannot tell you whether it
+    // has any.
+    for (const [span, step] of [[100, 10], [450, 50], [1000, 100]] as [number, number][]) {
+      const svg = wide(span, step);
+      const xs = [...svg.matchAll(/<text x="([\d.]+)" y="[\d.]+" font-size="9" text-anchor="middle"[^>]*>-?[\d.]+</g)]
+        .map((m) => Number(m[1]))
+        .sort((a, b) => a - b);
+      const closest = Math.min(...xs.slice(1).map((v, i) => v - xs[i]));
+      expect(closest, `0..${span}: closest pair of x numerals`).toBeGreaterThanOrEqual(20);
+    }
+  });
+
+  it('shows the domain the question asked about, not a fabricated one', () => {
+    // Equal scales made x 0..4 into -139..143 to hold the aspect: a hundred
+    // and thirty negative items on a graph of cost against four of them.
+    const svg = wide(450, 50);
+    const numerals = [...svg.matchAll(/font-size="9" text-anchor="middle"[^>]*>(-?[\d.]+)</g)].map((m) => Number(m[1]));
+    expect(Math.max(...numerals)).toBeLessThanOrEqual(4);
+    expect(Math.min(...numerals)).toBeGreaterThanOrEqual(0);
+  });
+
+  it('leaves a shape on one scale, because a square must stay square', () => {
+    const withShape = CoordinateGridParamsZ.parse({
+      x_range: [0, 4], y_range: [0, 450], y_step: 50,
+      polygons: [{ vertices: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 50 }] }],
+    });
+    const cell = meshCell(coordinateGrid.render(withShape, undefined as never));
+    expect(cell.w).toBeCloseTo(cell.h, 1);
+  });
+
+  it('gridStep always resolves, where readableStep may decline', () => {
+    // 282 is what balanceWindow produces from 4 beside 450, and no nice step
+    // divides it whole — the case that fell back to a step of 1.
+    expect(readableStep(282)).toBeUndefined();
+    expect(gridStep(282)).toBe(10);
+    expect(282 / gridStep(282)).toBeLessThanOrEqual(MAX_INTERVALS);
+
+    for (const span of [7, 41, 64, 282, 626, 1000, 9999]) {
+      const step = gridStep(span);
+      expect(step, `span ${span}`).toBeGreaterThan(0);
+      expect(span / step, `span ${span} intervals`).toBeLessThanOrEqual(MAX_INTERVALS);
+    }
+  });
+
+  it('draws the figure that found this, and keeps drawing it', () => {
+    // Question 30482e: a cost graph, x 0..4 against y 0..450 in fifties.
+    expect(wide(450, 50)).toMatchSnapshot();
   });
 });

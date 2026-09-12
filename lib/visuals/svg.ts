@@ -159,10 +159,21 @@ export function round(n: number): number {
  * x = 1.5 off a grid ruled only in units is guesswork. Tiled as a pattern, so
  * a dense grid costs the same as a sparse one.
  */
-export function meshDefs(id: string, spacing: number, divisions = 5): string {
+export function meshDefs(id: string, spacing: number, divisions = 5, spacingY = spacing): string {
   const fine = spacing / divisions;
-  return `<defs><pattern id="${id}" width="${round(spacing)}" height="${round(spacing)}" patternUnits="userSpaceOnUse"><path d="M ${round(fine)} 0 L ${round(fine)} ${round(spacing)} M 0 ${round(fine)} L ${round(spacing)} ${round(fine)}" stroke="${INK}" stroke-width="0.25" opacity="0.55" fill="none" /><path d="M ${round(fine * 2)} 0 L ${round(fine * 2)} ${round(spacing)} M 0 ${round(fine * 2)} L ${round(spacing)} ${round(fine * 2)}" stroke="${INK}" stroke-width="0.25" opacity="0.55" fill="none" /><path d="M ${round(fine * 3)} 0 L ${round(fine * 3)} ${round(spacing)} M 0 ${round(fine * 3)} L ${round(spacing)} ${round(fine * 3)}" stroke="${INK}" stroke-width="0.25" opacity="0.55" fill="none" /><path d="M ${round(fine * 4)} 0 L ${round(fine * 4)} ${round(spacing)} M 0 ${round(fine * 4)} L ${round(spacing)} ${round(fine * 4)}" stroke="${INK}" stroke-width="0.25" opacity="0.55" fill="none" /></pattern></defs>`;
+  const fineY = spacingY / divisions;
+  // A cell narrower than its own rules is not a mesh, it is a filled rectangle:
+  // at a 0.89px cell the four sub-lines and their 0.25 strokes overlap into a
+  // solid dark slab. Below that width the fine rules are dropped.
+  const rules = (n: number) =>
+    fine < MIN_FINE || fineY < MIN_FINE
+      ? ''
+      : `<path d="M ${round(fine * n)} 0 L ${round(fine * n)} ${round(spacingY)} M 0 ${round(fineY * n)} L ${round(spacing)} ${round(fineY * n)}" stroke="${INK}" stroke-width="0.25" opacity="0.55" fill="none" />`;
+  return `<defs><pattern id="${id}" width="${round(spacing)}" height="${round(spacingY)}" patternUnits="userSpaceOnUse">${rules(1)}${rules(2)}${rules(3)}${rules(4)}</pattern></defs>`;
 }
+
+/** Below this the rule is wider than the gap it leaves, and the mesh fills in. */
+const MIN_FINE = 1.5;
 
 /** A rectangle filled with that mesh, drawn under everything else. */
 export function meshRect(id: string, x: number, y: number, w: number, h: number): string {

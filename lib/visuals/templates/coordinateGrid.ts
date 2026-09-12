@@ -33,6 +33,36 @@ export function readableStep(span: number): number | undefined {
   });
 }
 
+/**
+ * The step to DRAW a span with, which always resolves. readableStep answers a
+ * stricter question — may an author write this range — and returns nothing when
+ * no step divides the span whole. The renderer cannot decline: balanceWindow
+ * widens the narrow axis to keep the aspect, and the span it produces (282 from
+ * a range of 4 beside one of 450) divides evenly by nothing at all. Falling
+ * back to 1 there ruled 283 lines into a 550px plot.
+ */
+/** Room a numeral needs before the next one, in px, at the 9px axis face. */
+const X_LABEL_PX = 34;
+const Y_LABEL_PX = 16;
+
+/**
+ * The step for an axis of this many pixels: the smallest nice step whose
+ * numerals still clear each other. A count alone cannot answer this — forty
+ * intervals is readable across 550px and unreadable across 250.
+ */
+export function axisStep(span: number, pixels: number, labelPx: number): number {
+  const fits = (step: number) => (step / span) * pixels >= labelPx;
+  return NICE_STEPS.find((s) => fits(s) && wholeIntervals(span, s) !== null) ?? NICE_STEPS.find(fits) ?? gridStep(span);
+}
+
+export function gridStep(span: number): number {
+  return (
+    readableStep(span) ??
+    NICE_STEPS.find((s) => span / s <= MAX_INTERVALS) ??
+    NICE_STEPS[NICE_STEPS.length - 1]
+  );
+}
+
 // A, A', A'', A_1 — every way the papers name an image point.
 const NameZ = z.string().regex(/^[A-Z](?:'{1,2}|_\d)?$/);
 
@@ -98,7 +128,9 @@ export const CoordinateGridParamsZ = z.object({
   lines: z
     .array(
       z.object({
-        m: z.number().min(-50).max(50),
+        // A gradient is a ratio between the two axes' units, so a tall window
+        // makes it large: y = 80x + 120 is an ordinary cost line.
+        m: z.number().min(-LIMIT).max(LIMIT),
         c: z.number().min(-LIMIT).max(LIMIT),
         label: z.string().max(24).optional(),
       }),
@@ -109,8 +141,8 @@ export const CoordinateGridParamsZ = z.object({
   curves: z
     .array(
       z.object({
-        a: z.number().min(-20).max(20),
-        b: z.number().min(-50).max(50),
+        a: z.number().min(-LIMIT).max(LIMIT),
+        b: z.number().min(-LIMIT).max(LIMIT),
         c: z.number().min(-LIMIT).max(LIMIT),
         label: z.string().max(24).optional(),
         domain: z.tuple([CoordZ, CoordZ]).optional(),
@@ -152,6 +184,8 @@ const MAX_PLOT_H = 400;
 // lopsided window widens its short axis symmetrically instead, which shows more
 // of the plane and can never hide a feature the question refers to.
 const MAX_ASPECT = 1.6;
+/** Past this, one scale cannot draw both axes and each gets its own. */
+const PER_AXIS_RATIO = 8;
 
 // Labels ride near the far end of a run: the middle of a graph is its most
 // crowded part, at the origin and the tick numerals. Only when the end itself
@@ -628,25 +662,55 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     // A `named` figure is a sketch unless the question is about the grid
     // itself; a sketch shows the shape and its labels, and nothing to measure.
     const sketch = (p.named?.sketch ?? false) && figure !== undefined;
-    const { xmin, xmax, ymin, ymax } = balanceWindow(
-      (derived?.x ?? p.x_range ?? [-5, 5]) as [number, number],
-      (derived?.y ?? p.y_range ?? [-5, 5]) as [number, number],
-    );
+    const askedX = (derived?.x ?? p.x_range ?? [-5, 5]) as [number, number];
+    const askedY = (derived?.y ?? p.y_range ?? [-5, 5]) as [number, number];
+    /**
+     * A SHAPE NEEDS ONE SCALE; A GRAPH NEEDS TWO. Equal units keep a square
+     * square and a reflection honest, so balanceWindow widens the narrow axis
+     * to hold the aspect. For a cost against four items that fabricated an
+     * x-axis of -139..143 — a hundred and thirty negative items — and then
+     * crammed its numerals into 250px. The papers do the opposite and say so:
+     * "2 cm to represent 1 unit on the x-axis and 50 on the y-axis".
+     *
+     * So a figure carrying geometry keeps one scale, and a plot of lines and
+     * curves gets a scale per axis. Only figures whose ranges are too far apart
+     * to share a scale change at all.
+     */
+    const geometry = p.named !== undefined || p.polygons.length > 0;
+    const ratio =
+      Math.max(askedX[1] - askedX[0], askedY[1] - askedY[0]) /
+      Math.max(1, Math.min(askedX[1] - askedX[0], askedY[1] - askedY[0]));
+    // Equal scales cope with a window half again as tall as it is wide, and
+    // with one four times taller; measured over the bank, only three figures of
+    // 155 are past this, and one of them is 450 against 4.
+    const lopsided = ratio > PER_AXIS_RATIO;
+    const perAxis = lopsided && !geometry;
+
+    const { xmin, xmax, ymin, ymax } = perAxis
+      ? { xmin: askedX[0], xmax: askedX[1], ymin: askedY[0], ymax: askedY[1] }
+      : balanceWindow(askedX, askedY);
     const spanX = Math.max(1, xmax - xmin);
     const spanY = Math.max(1, ymax - ymin);
-    // Derived when the author leaves it out, which for any window of 40 or
-    // less is 1 — the unit grid every figure drawn before steps existed has.
-    const xStep = p.x_step ?? readableStep(spanX) ?? 1;
-    const yStep = p.y_step ?? readableStep(spanY) ?? 1;
     const u = Math.min((W - 2 * PAD) / spanX, MAX_PLOT_H / spanY);
-    const gridW = spanX * u;
-    const gridH = spanY * u;
+    const gridW = perAxis ? W - 2 * PAD : spanX * u;
+    const gridH = perAxis ? MAX_PLOT_H : spanY * u;
+    const ux = gridW / spanX;
+    const uy = gridH / spanY;
+    // A NUMERAL NEEDS ROOM, NOT JUST A SMALL COUNT. Forty intervals is few
+    // enough to count and still illegible across 250px, which is what "-130"
+    // beside "-120" beside "-110" was. Only a lopsided window is measured in
+    // pixels: every window that already fit keeps the unit grid it has always
+    // drawn, and an author's own step is never overridden.
+    const step = (span: number, px: number, labelPx: number) =>
+      lopsided ? axisStep(span, px, labelPx) : gridStep(span);
+    const xStep = p.x_step ?? step(spanX, gridW, X_LABEL_PX);
+    const yStep = p.y_step ?? step(spanY, gridH, Y_LABEL_PX);
     const canvasW = Math.round(Math.min(W, gridW + 2 * PAD));
     const ox = (canvasW - gridW) / 2;
     const oy = PAD;
     const H = Math.round(gridH + 2 * PAD);
-    const X = (v: number) => ox + (v - xmin) * u;
-    const Y = (v: number) => oy + (ymax - v) * u;
+    const X = (v: number) => ox + (v - xmin) * ux;
+    const Y = (v: number) => oy + (ymax - v) * uy;
 
     // Where the axes are drawn, so a label can be kept off them. A sketch draws
     // none, and then there is nothing to avoid.
@@ -663,7 +727,9 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     if (!sketch) {
     // The paper's fine mesh, under the unit lines: reading an intercept or a
     // value between two whole numbers is only fair when it is there.
-    parts.push(meshDefs('gridMesh', u * xStep));
+    // One cell per STEP on each axis: the steps differ whenever the ranges do,
+    // and a single square cell drew the x step against the y range.
+    parts.push(meshDefs('gridMesh', ux * xStep, 5, uy * yStep));
     parts.push(meshRect('gridMesh', ox, oy, gridW, gridH));
     for (const gx of ticks(xmin, xmax, xStep)) {
       parts.push(
