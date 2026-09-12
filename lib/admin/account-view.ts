@@ -30,7 +30,12 @@ export interface CurrentAccess {
 
 /** The one thing the grant permits, with the words that belong to it. */
 export type RowControl =
-  | { kind: 'refund'; paymentId: string; sentence: string; link: string | null }
+  /**
+   * `window` is null when the payment carries no date: the two lines say what
+   * they can show and nothing more, rather than inventing a third phrasing for
+   * a payment whose age is unknown.
+   */
+  | { kind: 'refund'; paymentId: string; window: { label: string; value: string } | null; link: string | null }
   | { kind: 'revoke'; sentence: string }
   | { kind: 'revoke-unresolved'; warning: string; link: string };
 

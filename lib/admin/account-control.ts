@@ -20,13 +20,22 @@ export function grantControl(
     const access = r.access;
     if (!access || access.revoked_at) return null;
     if (payment?.payment_intent_id) {
+      // THE WINDOW IS A LABEL, NOT A CLAUSE. Whether the refund is owed or is
+      // the operator's own call is the first thing to know, so it reads as the
+      // label of its own line rather than arriving at the end of a sentence.
       const age = windowOf(payment.paid_at ?? null);
+      const days = age ? `paid ${age.days} day${age.days === 1 ? '' : 's'} ago` : '';
       return {
         kind: 'refund',
         paymentId: String(payment._id),
-        sentence:
-          'The money goes back, access ends now, and their work stays.' +
-          (age ? ` Paid ${age.days} day${age.days === 1 ? '' : 's'} ago${age.late ? `, past the ${REFUND_DAYS}-day window — the record will say it was late` : ''}.` : ''),
+        window: age
+          ? {
+              label: age.late ? 'Outside the window' : 'Within the window',
+              value: age.late
+                ? `${days} · the ${REFUND_DAYS}-day window has passed — this is your call`
+                : `${days} · this is owed`,
+            }
+          : null,
         link: dashboardUrl(payment.payment_intent_id),
       };
     }

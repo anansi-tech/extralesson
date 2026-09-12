@@ -82,10 +82,12 @@ describe('a student with a live paid grant', () => {
     const p = await payment();
     await student('kiara@example.com', { sitting: SITTING, granted_at: new Date(), source: 'stripe', note: 'stripe evt_1', payment_id: p._id });
 
+    // Two lines, not a paragraph: the window is what has to be decided about,
+    // and what happens is said by the row itself, identically every time.
     expect(await control('kiara@example.com', p)).toEqual({
       kind: 'refund',
       paymentId: String(p._id),
-      sentence: 'The money goes back, access ends now, and their work stays. Paid 2 days ago.',
+      window: { label: 'Within the window', value: 'paid 2 days ago · this is owed' },
       link: 'https://dashboard.stripe.com/test/payments/pi_row',
     });
   }, 60000);
@@ -97,7 +99,9 @@ describe('a student with a live paid grant', () => {
     const c = await control('late@example.com', p);
     // The control is still offered: the window is a policy, not a lock.
     expect(c?.kind).toBe('refund');
-    expect(c && 'sentence' in c ? c.sentence : '').toContain(`past the ${REFUND_DAYS}-day window`);
+    const win = c && 'window' in c ? c.window : null;
+    expect(win?.label).toBe('Outside the window');
+    expect(win?.value).toBe(`paid ${REFUND_DAYS + 6} days ago · the ${REFUND_DAYS}-day window has passed — this is your call`);
     // And the record really does say so.
     expect(reasonWithWindow('asked late', new Date(Date.now() - (REFUND_DAYS + 6) * DAY))).toContain(`past the ${REFUND_DAYS}-day window`);
     expect(reasonWithWindow('asked in time', new Date(Date.now() - 2 * DAY))).toBe('asked in time');
@@ -225,7 +229,7 @@ describe('the page an operator arrives at', () => {
     expect(src).toMatch(/setOpenId\(open \? null : row\.id\)/);
     // The blocks exist only while that row is open, so a closed row has none.
     expect(src).toMatch(/const open = openId === row\.id;/);
-    expect(src).toMatch(/\{open && \(/);
+    expect(src).toMatch(/\{open && <OpenRow row=\{row\} \/>\}/);
   });
 
   it('puts the counts, the changed list and the two disclosures in that order', async () => {

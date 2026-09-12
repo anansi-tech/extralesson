@@ -4,9 +4,11 @@ import { join } from 'node:path';
 import mongoose from 'mongoose';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { chromium, type Browser } from 'playwright-core';
+import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { bodyPage } from './helpers/chrome-page';
 import { checkRules, reportOn } from './helpers/gallery-rules';
+import type { AccountRow } from '@/lib/admin/account-view';
 
 /**
  * EVERY OPERATOR SCREEN, UNDER THE SAME RULES (ROUND_13 gate). The five admin
@@ -87,6 +89,34 @@ beforeAll(async () => {
   );
   const { default: TopicsPage } = await import('@/app/admin/topics/page');
   shots.push({ screen: 'topics', state: 'seeded', page: bodyPage(renderToStaticMarkup(await TopicsPage())) });
+
+  /**
+   * AN OPEN ROW, WHICH THE RULES HAD NEVER SEEN. The list renders closed, so
+   * every shot above shows closed rows; and the design frames only ever drew
+   * an open row that HAD a prior grant. That is how a disclosure with nothing
+   * to open went on drawing an empty box.
+   */
+  const { OpenRow } = await import('@/app/admin/access/account-rows');
+  const openRow = (over: Partial<AccountRow> = {}): AccountRow => ({
+    id: 'r1', email: 'kiara@example.com', name: 'Kiara Bishop', enteredFor: 'may-june-2027',
+    sessions: 12, attempts: 31, word: 'access', sitting: 'may-june-2027',
+    current: { accessFor: 'may-june-2027', klass: 'Sale', granted: '2026-08-21 · stripe', reason: 'evt_3PkQ8vF2eZvKYlo2', reasonLabel: 'REASON' },
+    prior: [], revoked: null,
+    control: { kind: 'refund', paymentId: 'p1', window: { label: 'Outside the window', value: 'paid 20 days ago · the 14-day window has passed — this is your call' }, link: 'https://dashboard.stripe.com/test/payments/pi_1' },
+    ...over,
+  });
+  shots.push(
+    { screen: 'access', state: 'row-open-no-prior', page: bodyPage(renderToStaticMarkup(createElement(OpenRow, { row: openRow() }))) },
+    {
+      screen: 'access',
+      state: 'row-open-with-prior',
+      page: bodyPage(
+        renderToStaticMarkup(
+          createElement(OpenRow, { row: openRow({ prior: [{ sitting: 'may-june-2026', source: 'admin', note: 'comp: pilot cohort' }] }) }),
+        ),
+      ),
+    },
+  );
 }, 300_000);
 
 afterAll(async () => {
@@ -98,7 +128,7 @@ afterAll(async () => {
 describe.skipIf(!hasChrome)('every operator screen, one set of rules', () => {
   for (const width of WIDTHS) {
     it(`all five screens at ${width}px`, async () => {
-      expect(shots.length, 'every screen was rendered').toBe(7);
+      expect(shots.length, 'every screen was rendered').toBe(9);
       expect(new Set(shots.map((s) => s.screen)), 'all five').toEqual(new Set(['access', 'review', 'coverage', 'disputes', 'topics']));
 
       for (const shot of shots) {
@@ -154,9 +184,40 @@ describe('the gate’s confirmations', () => {
     expect(prior).toHaveLength(1);
     expect(prior[0]).toEqual({ sitting: 'jan-2027', source: 'stripe', note: 'stripe evt_old' });
     expect(JSON.stringify(prior), 'no date shown and none inferred').not.toMatch(/\d{4}-\d{2}-\d{2}/);
-    // One line per prior, in the same label column as Current access.
-    const rows = readFileSync(join(process.cwd(), 'app', 'admin', 'access', 'account-rows.tsx'), 'utf8');
-    expect(rows).toMatch(/row\.prior\.map\(/);
-    expect(rows).toMatch(/Previous access \{row\.prior\.length \? `· \$\{row\.prior\.length\}` : '· none'\}/);
+    // One line per prior, in the same label column as Current access — read off
+    // the rendered row now that the gallery draws one, rather than off the
+    // source, which only ever proved how the count was spelled.
+    const withPrior = shots.find((sh) => sh.state === 'row-open-with-prior')!.page;
+    expect(withPrior).toContain('Previous access · 1');
+    expect((withPrior.match(/Access for/g) ?? []).length, 'current, and one line per prior').toBe(2);
+    // Scoped to the prior block: Current access shows its own granted date,
+    // and always did — it is the prior lines that carry none.
+    const priorBlock = withPrior.slice(withPrior.indexOf('Previous access')).replace(/<[^>]+>/g, ' ');
+    expect(priorBlock).toContain('may-june-2026');
+    expect(priorBlock, 'no date shown and none inferred').not.toMatch(/\d{4}-\d{2}-\d{2}/);
+  });
+
+  /**
+   * A DISCLOSURE WITH NOTHING TO OPEN IS A LINE. The design frames only ever
+   * drew an open row that had a prior grant, so an empty bordered box with an
+   * arrow that opened on nothing was never in front of anybody.
+   */
+  it('an open row with no prior grant states it as a line, not a box', () => {
+    const noPrior = shots.find((sh) => sh.state === 'row-open-no-prior')!.page;
+
+    expect(noPrior).toContain('Previous access · none');
+    expect(noPrior, 'nothing to disclose, so nothing to open').not.toMatch(/<details|<summary/);
+    expect(shots.find((sh) => sh.state === 'row-open-with-prior')!.page).toMatch(/<details/);
+  });
+
+  it('the heading of an open row is ruled, not boxed', () => {
+    // CAPS is the bordered white box the controls use; on a heading it drew an
+    // empty box and left its own pairs outside it on the paper.
+    const open = shots.find((sh) => sh.state === 'row-open-no-prior')!.page;
+    const heading = open.match(/<div class="([^"]*)">Current access<\/div>/)?.[1] ?? '';
+
+    expect(heading, 'ruled with the margin colour').toContain('border-margin');
+    expect(heading, 'not a control').not.toContain('border-ink');
+    expect(heading).not.toContain('bg-white');
   });
 });
