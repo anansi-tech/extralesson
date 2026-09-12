@@ -16,11 +16,16 @@ export async function approvalGate(
   draft: QuestionDraft,
   solve: (d: QuestionDraft) => Promise<SolveOutcome> = independentSolve,
 ): Promise<ApprovalGateResult> {
+  // The SLOT prompts too, which is the text scripts/generate.ts checks
+  // against. A question stating its coordinates in a slot prompt passed
+  // generation and was refused here, for text only one gate could see.
+  const partPrompts = draft.parts.flatMap((p) => [p.prompt, ...(p.slots ?? []).map((s) => s.prompt ?? '')]);
+
   if (draft.visual) {
     const vres = verifyQuestionVisual(draft.visual as never, {
       stimulus: draft.stimulus,
       stem: draft.stem,
-      partPrompts: draft.parts.map((p) => p.prompt),
+      partPrompts,
     });
     if (!vres.ok) {
       return { ok: false, reason: `visual verify failed: ${vres.issues.join(' | ')}` };
@@ -30,7 +35,7 @@ export async function approvalGate(
     const tres = verifyStimulusTable(draft.stimulus_table, {
       stimulus: draft.stimulus,
       stem: draft.stem,
-      partPrompts: draft.parts.map((p) => p.prompt),
+      partPrompts,
     });
     if (!tres.ok) {
       return { ok: false, reason: `stimulus table verify failed: ${tres.issues.join(' | ')}` };

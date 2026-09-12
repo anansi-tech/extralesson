@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { verifyQuestionVisual } from '@/lib/visuals/verify';
 import { paramsDocFor, renderVisual, describeVisual } from '@/lib/visuals';
 import { TEMPLATES } from '@/lib/visuals';
@@ -128,8 +130,14 @@ describe('template contract completeness', () => {
     expect(doc).toContain('exactly as many cells as there are headers');
 
     const grid = paramsDocFor(['coordinateGrid']);
-    expect(grid).toContain('span at most 40 units');
+    expect(grid).toContain('between 2 and 40 of them');
     expect(grid).toContain('standard transformation');
+    // The named invariants reach the model here or nowhere: this list is the
+    // channel it follows, and it used to say nothing about `named` at all.
+    expect(grid).toContain('TWO branches');
+    expect(grid).toContain('must OMIT `named` entirely');
+    expect(grid).toContain('at least one polygon or point');
+    expect(grid).toContain('leave x_range and y_range out');
   });
 });
 
@@ -331,5 +339,19 @@ describe('svgPlainLabel — exponents and indices', () => {
     expect(svgPlainLabel('3 \\times 4')).toBe('3 × 4');
     expect(svgPlainLabel('\\$50')).toBe('$50');
     expect(svgPlainLabel('\\vec{AB}')).toBe('AB⃗');
+  });
+});
+
+// The two gates must read the SAME text, or a question passes generation and
+// is refused at approval for words only one of them can see.
+describe('generation and approval read one question', () => {
+  it('the approval gate sees slot prompts, as scripts/generate.ts does', () => {
+    const gate = readFileSync(join(process.cwd(), 'lib', 'generation', 'approve-gate.ts'), 'utf8');
+    const generate = readFileSync(join(process.cwd(), 'scripts', 'generate.ts'), 'utf8');
+    const shape = /p\.slots\s*\?\?\s*\[\]|p\.slots\)\.map|\.\.\.p\.slots/;
+
+    expect(gate).toMatch(/partPrompts = draft\.parts\.flatMap/);
+    expect(shape.test(gate), 'approve-gate reads slot prompts').toBe(true);
+    expect(generate).toMatch(/partPrompts: draft\.parts\.flatMap/);
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { coordinateGrid, CoordinateGridParamsZ } from '@/lib/visuals/templates/coordinateGrid';
+import { coordinateGrid, CoordinateGridParamsZ, readableStep, MIN_INTERVALS } from '@/lib/visuals/templates/coordinateGrid';
 
 // ORIGINAL fixture data only (R1.5 ground truth — no CXC content anywhere).
 const params = CoordinateGridParamsZ.parse({
@@ -566,5 +566,107 @@ describe('coordinateGrid — several named shapes, one of them shaded', () => {
     });
     const svg = coordinateGrid.render(corners);
     for (const l of ['A', 'B', 'C', 'T']) expect(svg).toContain(`>${l}<`);
+  });
+});
+
+/**
+ * THE CONTRACT THE MODEL COULD NOT FOLLOW. A generation batch lost 23 of 34
+ * drafts to this template, 16 of them because the model attached a `named`
+ * block to a question that states no coordinates — which the rendered params
+ * doc permitted, since every field inside `named` has a default. Four more went
+ * to a magnitude cap that refused honest mathematics.
+ */
+describe('coordinateGrid: named is one branch, not the way in', () => {
+  const ctx = (stem: string, partPrompts: string[] = []) => ({ stem, partPrompts, stimulus: '' }) as never;
+  const parse = (params: unknown) => CoordinateGridParamsZ.safeParse(params);
+
+  it('refuses an empty named block at the SCHEMA, not only at verify', () => {
+    const res = parse({ named: {}, x_range: [0, 10], y_range: [0, 10], lines: [{ m: 2, c: 3 }] });
+    expect(res.success).toBe(false);
+    expect(JSON.stringify(res.error?.issues)).toContain('omit named entirely');
+  });
+
+  it('refuses a named block holding only a sketch flag', () => {
+    expect(parse({ named: { sketch: false } }).success).toBe(false);
+  });
+
+  it('accepts the same figure with named left out', () => {
+    const params = CoordinateGridParamsZ.parse({ x_range: [0, 10], y_range: [0, 10], lines: [{ m: 2, c: 3 }] });
+    expect(coordinateGrid.verify(params, ctx('Draw the graph of $y = 2x + 3$.'))).toEqual([]);
+  });
+
+  it('checks the rest of the figure even when named is present', () => {
+    // The early return meant a named block stopped lines, curves, points and
+    // regions being looked at at all: the figure was discarded by a sibling key.
+    const params = CoordinateGridParamsZ.parse({
+      named: { points: ['A'] },
+      lines: [{ m: 2, c: 3, label: 'y = 5x + 1' }],
+      curves: [{ a: 0, b: 1, c: 0 }],
+    });
+    const issues = coordinateGrid.verify(params, ctx('The point $A(1,1)$ is marked.'));
+
+    expect(issues.join(' ')).toContain('does not match the drawn line');
+    expect(issues.join(' ')).toContain('a = 0 is a straight line');
+  });
+
+  it('still reports a named block whose labels the question never states', () => {
+    const params = CoordinateGridParamsZ.parse({ named: { polygons: [{ points: ['A', 'B', 'C'] }] } });
+    const issues = coordinateGrid.verify(params, ctx('Reflect the triangle in the $y$-axis.'));
+
+    expect(issues.join(' ')).toContain('states no coordinates');
+    expect(issues.join(' ')).toContain('needs at least three points');
+  });
+
+  it('lets a named figure omit the ranges, and still requires them otherwise', () => {
+    const named = CoordinateGridParamsZ.parse({ named: { points: ['A'] } });
+    expect(coordinateGrid.verify(named, ctx('The point $A(1,1)$ is marked.'))).toEqual([]);
+
+    const plain = CoordinateGridParamsZ.parse({ lines: [{ m: 1, c: 0 }] });
+    expect(coordinateGrid.verify(plain, ctx('Draw $y = x$.')).join(' ')).toContain('x_range and y_range are required');
+  });
+});
+
+describe('coordinateGrid: a window is bounded by its intervals, not its size', () => {
+  const ctx = () => ({ stem: 'A car travels for five hours.', partPrompts: [], stimulus: '' }) as never;
+  const verify = (params: unknown) => coordinateGrid.verify(CoordinateGridParamsZ.parse(params), ctx());
+
+  it('draws a distance-time graph to 120 km', () => {
+    expect(verify({ x_range: [0, 5], y_range: [0, 120], y_step: 10, lines: [{ m: 24, c: 0 }] })).toEqual([]);
+  });
+
+  it('draws a cost graph to $500', () => {
+    expect(verify({ x_range: [0, 20], y_range: [0, 500], y_step: 50, lines: [{ m: 25, c: 0 }] })).toEqual([]);
+  });
+
+  it('derives the step when the span is small enough to need none', () => {
+    expect(readableStep(10)).toBe(1);
+    expect(readableStep(40)).toBe(1);
+    expect(readableStep(120)).toBe(5);
+  });
+
+  it('every span the bank already uses still rules in whole units', () => {
+    // Measured over 306 ranges on 195 approved questions: 2 to 40.
+    for (let span = MIN_INTERVALS; span <= 40; span++) {
+      expect(readableStep(span), `span ${span}`).toBe(1);
+    }
+  });
+
+  it('refuses a step the span does not divide into', () => {
+    expect(verify({ x_range: [0, 10], y_range: [0, 120], y_step: 7 }).join(' ')).toContain('not a whole number of steps');
+  });
+
+  it('refuses a window ruled into too many intervals to read', () => {
+    expect(verify({ x_range: [0, 10], y_range: [0, 500], y_step: 1 }).join(' ')).toContain('a readable grid has between');
+  });
+
+  it('refuses a wide span given no step at all', () => {
+    expect(verify({ x_range: [0, 10], y_range: [0, 121] }).join(' ')).toContain('no readable number of steps');
+  });
+
+  it('names a whole shape at the length its own example needs', () => {
+    expect(CoordinateGridParamsZ.safeParse({
+      x_range: [0, 4], y_range: [0, 4],
+      polygons: [{ vertices: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }], name: 'Quadrilateral P' }],
+    }).success).toBe(true);
   });
 });

@@ -1,9 +1,37 @@
 import { z } from 'zod';
-import { hatchDefs, hatchFill, INK, line, meshDefs, meshRect, plotMark, round, svgOpen, text } from '../svg';
+import { hatchDefs, hatchFill, INK, line, meshDefs, meshRect, plotMark, round, svgOpen, text, ticks } from '../svg';
 import type { VerifyContext, VisualTemplate } from '../types';
 import { namedPoints, resolvePoints } from '../points';
 
-const CoordZ = z.number().min(-50).max(50);
+// A COORDINATE IS BOUNDED BY WHAT CAN BE DRAWN, NOT BY HOW BIG IT IS. Distance
+// against time reaches 120 km and a cost graph reaches $500; capping the value
+// refused the mathematics instead of the figure. What has to stay readable is
+// the number of INTERVALS ruled across the window, which `readableStep` fixes.
+const LIMIT = 10_000;
+const CoordZ = z.number().min(-LIMIT).max(LIMIT);
+const RangeZ = z.tuple([z.number().int().min(-LIMIT).max(LIMIT), z.number().int().min(-LIMIT).max(LIMIT)]);
+
+/** Steps a reader expects to see a grid ruled in. */
+const NICE_STEPS = [1, 2, 2.5, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000];
+export const MIN_INTERVALS = 2;
+export const MAX_INTERVALS = 40;
+
+const wholeIntervals = (span: number, step: number) => {
+  const n = span / step;
+  return Number.isInteger(Number(n.toFixed(6))) ? n : null;
+};
+
+/**
+ * The step this span is ruled in: whole intervals, and few enough to read.
+ * A span of 40 or less still comes back as 1, so every figure drawn before
+ * steps existed is drawn the same way.
+ */
+export function readableStep(span: number): number | undefined {
+  return NICE_STEPS.find((s) => {
+    const n = wholeIntervals(span, s);
+    return n !== null && n >= MIN_INTERVALS && n <= MAX_INTERVALS;
+  });
+}
 
 // A, A', A'', A_1 — every way the papers name an image point.
 const NameZ = z.string().regex(/^[A-Z](?:'{1,2}|_\d)?$/);
@@ -11,8 +39,14 @@ const NameZ = z.string().regex(/^[A-Z](?:'{1,2}|_\d)?$/);
 export const CoordinateGridParamsZ = z.object({
   // Omit both ranges when `named` supplies the geometry: the window is then
   // derived from the points the question states.
-  x_range: z.tuple([z.number().int().min(-50).max(50), z.number().int().min(-50).max(50)]).optional(),
-  y_range: z.tuple([z.number().int().min(-50).max(50), z.number().int().min(-50).max(50)]).optional(),
+  x_range: RangeZ.optional(),
+  y_range: RangeZ.optional(),
+  /**
+   * How far apart the ruled lines and their numerals sit. Omit it and the step
+   * is derived from the span, which is 1 for every window narrow enough.
+   */
+  x_step: z.number().positive().max(1000).optional(),
+  y_step: z.number().positive().max(1000).optional(),
   /**
    * Coordinates live in the question text and nowhere else, so the figure
    * cannot disagree with it. `sketch` (the default) drops axes, gridlines and
@@ -26,13 +60,20 @@ export const CoordinateGridParamsZ = z.object({
             points: z.array(NameZ).min(3).max(10),
             dashed: z.boolean().default(false),
             shaded: z.boolean().default(false),
-            name: z.string().min(1).max(6).optional(),
+            name: z.string().min(1).max(15).optional(),
           }),
         )
         .max(3)
         .default([]),
       points: z.array(NameZ).max(8).default([]),
       sketch: z.boolean().default(true),
+    })
+    // AN EMPTY `named` IS NOT A FIGURE. Every field inside it has a default, so
+    // `named: {}` used to parse clean and then fail verification — and because
+    // the block was present, the lines and curves that WERE the figure went
+    // unchecked with it. A question that states no coordinates omits `named`.
+    .refine((n) => n.polygons.length > 0 || n.points.length > 0, {
+      message: 'named must reference at least one polygon or point; omit named entirely when the question states no coordinates',
     })
     .optional(),
   points: z
@@ -46,7 +87,7 @@ export const CoordinateGridParamsZ = z.object({
         /** Per-VERTEX labels, in order: A, B, C round the shape. */
         labels: z.array(z.string().min(1).max(6)).max(10).optional(),
         /** Names the WHOLE shape ("Quadrilateral P"), not its corners. */
-        name: z.string().min(1).max(6).optional(),
+        name: z.string().min(1).max(15).optional(),
         dashed: z.boolean().default(false),
         shaded: z.boolean().default(false),
       }),
@@ -58,7 +99,7 @@ export const CoordinateGridParamsZ = z.object({
     .array(
       z.object({
         m: z.number().min(-50).max(50),
-        c: z.number().min(-100).max(100),
+        c: z.number().min(-LIMIT).max(LIMIT),
         label: z.string().max(24).optional(),
       }),
     )
@@ -70,7 +111,7 @@ export const CoordinateGridParamsZ = z.object({
       z.object({
         a: z.number().min(-20).max(20),
         b: z.number().min(-50).max(50),
-        c: z.number().min(-100).max(100),
+        c: z.number().min(-LIMIT).max(LIMIT),
         label: z.string().max(24).optional(),
         domain: z.tuple([CoordZ, CoordZ]).optional(),
         plotted: z.array(CoordZ).max(12).optional(),
@@ -562,7 +603,11 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
   name: 'coordinateGrid',
   // Invariants enforced by verify(); surfaced to the draft prompt.
   rules: [
-    "x_range and y_range must be ascending and each span at most 40 units",
+    "this template has TWO branches and you pick one: `named`, for a question that STATES coordinates, or the plain fields (x_range/y_range with points, polygons, lines, curves, regions) for everything else",
+    "a question that states no coordinates must OMIT `named` entirely — an empty or pointless `named` is not a figure, and `named` is not how this template is driven",
+    "if you use `named` it must reference at least one polygon or point, every label it references must be a point the question itself states as A(1,1) or C' = (6,1), and each of its polygons needs at least three such points",
+    "if you use `named`, leave x_range and y_range out: the window is derived from the question's own coordinates",
+    "x_range and y_range must be ascending, and must divide into a whole number of steps — between 2 and 40 of them. A window is as wide as its mathematics needs: 0 to 120 with y_step 10, or 0 to 500 with y_step 50. Give x_step/y_step for any span over 40; below that the step is 1 and you may leave it out",
     "every point and polygon vertex must lie inside the ranges",
     "if you supply TWO polygons the second must be the image of the first under ONE standard transformation: translation, reflection in an axis or y = x, rotation of 90/180/270 about the origin, or enlargement from the origin",
     "a line label written as y = mx + c must match that line's m and c",
@@ -589,6 +634,10 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     );
     const spanX = Math.max(1, xmax - xmin);
     const spanY = Math.max(1, ymax - ymin);
+    // Derived when the author leaves it out, which for any window of 40 or
+    // less is 1 — the unit grid every figure drawn before steps existed has.
+    const xStep = p.x_step ?? readableStep(spanX) ?? 1;
+    const yStep = p.y_step ?? readableStep(spanY) ?? 1;
     const u = Math.min((W - 2 * PAD) / spanX, MAX_PLOT_H / spanY);
     const gridW = spanX * u;
     const gridH = spanY * u;
@@ -614,14 +663,14 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     if (!sketch) {
     // The paper's fine mesh, under the unit lines: reading an intercept or a
     // value between two whole numbers is only fair when it is there.
-    parts.push(meshDefs('gridMesh', u));
+    parts.push(meshDefs('gridMesh', u * xStep));
     parts.push(meshRect('gridMesh', ox, oy, gridW, gridH));
-    for (let gx = xmin; gx <= xmax; gx++) {
+    for (const gx of ticks(xmin, xmax, xStep)) {
       parts.push(
         `<line x1="${round(X(gx))}" y1="${round(oy)}" x2="${round(X(gx))}" y2="${round(oy + gridH)}" stroke-width="0.5" />`,
       );
     }
-    for (let gy = ymin; gy <= ymax; gy++) {
+    for (const gy of ticks(ymin, ymax, yStep)) {
       parts.push(
         `<line x1="${round(ox)}" y1="${round(Y(gy))}" x2="${round(ox + gridW)}" y2="${round(Y(gy))}" stroke-width="0.5" />`,
       );
@@ -641,11 +690,11 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
       parts.push(text(x, oy - 24, 'y', { italic: true }));
     }
     const labelY = hasXAxis ? Y(0) + 14 : oy + gridH + 16;
-    for (let gx = xmin; gx <= xmax; gx++) {
+    for (const gx of ticks(xmin, xmax, xStep)) {
       if (gx !== 0) parts.push(text(X(gx), labelY, String(gx), { size: 9 }));
     }
     const labelX = hasYAxis ? X(0) - 5 : ox - 6;
-    for (let gy = ymin; gy <= ymax; gy++) {
+    for (const gy of ticks(ymin, ymax, yStep)) {
       if (gy !== 0) parts.push(text(labelX, Y(gy) + 3, String(gy), { size: 9, anchor: 'end' }));
     }
     if (hasXAxis && hasYAxis) parts.push(text(X(0) - 5, Y(0) + 14, 'O', { size: 10, anchor: 'end' }));
@@ -808,8 +857,11 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
   verify(p, context) {
     const issues: string[] = [];
 
-    // A `named` figure carries no coordinates of its own, so all there is to
-    // check is that the question states the ones it references.
+    // A `named` figure carries no coordinates of its own, so what is checked of
+    // it is that the question states the ones it references. It is one BRANCH
+    // of this template and not a gate on the rest: the lines, curves, points
+    // and regions below are this figure too, and a sibling key must never stop
+    // them being checked.
     if (p.named) {
       const referenced = [...p.named.polygons.flatMap((poly) => poly.points), ...p.named.points];
       const { missing } = resolvePoints(referenced, context);
@@ -824,23 +876,44 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
           issues.push(`coordinateGrid: shape ${poly.points.join('')} needs at least three points the question names`);
         }
       }
-      if (referenced.length === 0) {
-        issues.push('coordinateGrid: named block references no points at all');
-      }
-      return issues;
     }
 
     const [xmin, xmax] = p.x_range ?? [-5, 5];
     const [ymin, ymax] = p.y_range ?? [-5, 5];
-    if (!p.x_range || !p.y_range) {
+    // A named figure derives its window from the question's own points, so it
+    // is the only one that may leave the ranges out.
+    if (!p.named && (!p.x_range || !p.y_range)) {
       issues.push('coordinateGrid: x_range and y_range are required unless the figure uses named points');
     }
     if (xmin >= xmax) issues.push('coordinateGrid: x_range must be ascending');
     if (ymin >= ymax) issues.push('coordinateGrid: y_range must be ascending');
-    // The mesh step scales with the span, so a wide window stays readable, and
-    // applied contexts need one: cost against 30 items, distance over 40 km.
-    if (xmax - xmin > 40) issues.push('coordinateGrid: x_range span exceeds 40');
-    if (ymax - ymin > 40) issues.push('coordinateGrid: y_range span exceeds 40');
+    // READABILITY IS A COUNT OF INTERVALS, NOT A SIZE. A window is as wide as
+    // its mathematics needs so long as it divides into lines a reader can
+    // count; 0 to 120 in tens is a distance-time graph, 0 to 500 in fifties a
+    // cost graph, and a cap on the span refused both.
+    for (const [axis, min, max, step] of [
+      ['x_range', xmin, xmax, p.x_step],
+      ['y_range', ymin, ymax, p.y_step],
+    ] as const) {
+      if (min >= max) continue;
+      const span = max - min;
+      if (step === undefined) {
+        if (!readableStep(span)) {
+          issues.push(
+            `coordinateGrid: ${axis} spans ${span}, which divides into no readable number of steps — give ${axis === 'x_range' ? 'x_step' : 'y_step'}, or choose a span that does`,
+          );
+        }
+        continue;
+      }
+      const n = wholeIntervals(span, step);
+      if (n === null) {
+        issues.push(`coordinateGrid: ${axis} spans ${span}, which is not a whole number of steps of ${step}`);
+      } else if (n < MIN_INTERVALS || n > MAX_INTERVALS) {
+        issues.push(
+          `coordinateGrid: ${axis} draws ${n} intervals of ${step}; a readable grid has between ${MIN_INTERVALS} and ${MAX_INTERVALS}`,
+        );
+      }
+    }
     const inRange = (x: number, y: number) => x >= xmin && x <= xmax && y >= ymin && y <= ymax;
     for (const pt of p.points) {
       if (!inRange(pt.x, pt.y)) {

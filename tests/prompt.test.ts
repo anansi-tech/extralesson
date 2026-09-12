@@ -504,3 +504,29 @@ describe('setting variety', () => {
     expect(recentActors(['The graph shows a curve through the origin.'])).toEqual([]);
   });
 });
+
+/**
+ * The paragraph that lost a batch. It explained the `named` branch and nothing
+ * else, so a model writing a graph question with no stated coordinates still
+ * reached for `named` — 16 of 23 visual rejections in one run.
+ */
+describe('buildDraftPrompt — coordinateGrid has two branches and says so', () => {
+  const graph = () => prompt({ topic: 'M2-RFG1', recipe: { representation: 'graph', shape: 'paper', marks: 10 } });
+
+  it('names both branches and which question takes which', () => {
+    const p = graph();
+    expect(p).toContain('TWO BRANCHES');
+    expect(p).toContain('OMIT "named" ENTIRELY');
+    expect(p).toContain('is not how the template is driven');
+  });
+
+  it('says a window is as wide as its mathematics needs', () => {
+    const p = graph();
+    expect(p).toContain('"y_range": [0, 120], "y_step": 10');
+    expect(p).toContain('Never shrink the mathematics to fit the grid');
+  });
+
+  it('says none of it for a prose question, which has no figure', () => {
+    expect(prompt({ topic: 'M2-ALG2', recipe: { representation: 'prose' } })).not.toContain('TWO BRANCHES');
+  });
+});
