@@ -448,3 +448,38 @@ describe('punctuation is not a difference', () => {
     expect(answersEquivalent('O(0,0)', '(1,0)')).toBe(false);
   });
 });
+
+// Found on a generated draft: a slot whose canonical was "$y=80x+120$" listed
+// "$y-120=80x$" — the same line rearranged — and disagreed with itself.
+describe('a bare letter facing other variables is a variable', () => {
+  it('keeps an equation an equation, so the rearranged form compares equal', () => {
+    expect(answersEquivalent('$y=80x+120$', '$y-120=80x$')).toBe(true);
+    expect(answersEquivalent('y = 80x + 120', '80x + 120 = y')).toBe(true);
+  });
+
+  it('and a different equation is still different', () => {
+    expect(answersEquivalent('y = 80x + 120', 'y = 80x + 130')).toBe(false);
+    expect(answersEquivalent('y = 2x', 'y = 3x')).toBe(false);
+  });
+
+  it('but a NAME is still a name the student may leave off', () => {
+    // The other half of the rule: stripping less must not refuse the student
+    // who answers "5x" where the scheme wrote "A = 5x".
+    expect(answersEquivalent('A = 5x', '5x')).toBe(true);
+    expect(answersEquivalent('C = 25n', '25n')).toBe(true);
+    expect(answersEquivalent('P = 2l + 2w', '2l + 2w')).toBe(true);
+    expect(answersEquivalent('A = 5x', '6x')).toBe(false);
+  });
+
+  it('leaves a plain labelled value alone, whose right side names nothing', () => {
+    expect(answersEquivalent('x = 5', '5')).toBe(true);
+    expect(answersEquivalent('P = 30', '30')).toBe(true);
+    expect(answersEquivalent('x = 5', 'x = 6')).toBe(false);
+  });
+
+  it('and a relation between two unknowns still reads both ways round', () => {
+    expect(answersEquivalent('h = d', 'd = h')).toBe(true);
+    expect(answersEquivalent('y = x', 'x = y')).toBe(true);
+    expect(answersEquivalent('f(x) = x^2', 'x^2')).toBe(true);
+  });
+});

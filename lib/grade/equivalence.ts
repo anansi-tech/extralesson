@@ -100,6 +100,12 @@ function stripMapping(part: string): string {
   return /^[a-z]$/.test(part.slice(0, i).trim()) ? part.slice(i + 2).trim() : part;
 }
 
+/** Whether the right side is written in variables the left side is not. */
+function inOtherVariables(lhs: string, rhs: string): boolean {
+  const vars = freeVariables(toMathExpr(rhs));
+  return vars !== null && vars.some((v) => v.toLowerCase() !== lhs.toLowerCase());
+}
+
 // The left side is discarded only when it actually looks like a label —
 // otherwise "matrix = -PR" would throw away the matrix and keep the
 // restatement, and "3s = 2(s + 250)" would lose half the equation.
@@ -126,6 +132,12 @@ function stripLabel(part: string): string {
     // what the chain ends at.
     const applied = DEFINITION_LHS.test(lhs) && lhs.includes('(');
     if (!applied && BARE_NAME.test(rhs)) break;
+    // "y = 80x + 120" is an EQUATION, not a labelled expression: a bare
+    // single-letter left side is a variable when the right side is written in
+    // other variables. Stripping it made an equation into an expression, so
+    // "y - 120 = 80x" — the same line rearranged — never reached the rule that
+    // compares two equations, and a student who wrote it was refused.
+    if (!applied && BARE_NAME.test(lhs) && inOtherVariables(lhs, rhs)) break;
     if (LABEL_LIKE.test(lhs) || DEFINITION_LHS.test(lhs)) {
       // Recurse: "f^{-1}(f(x)) = f(f^{-1}(x)) = x" is a chain of definitions
       // and the answer is what the chain ends at.
@@ -381,8 +393,24 @@ function proportional(ea: string, eb: string, vars: string[]): boolean | null {
   return ratios.every((r) => Math.abs(r - k) <= 1e-6 * Math.max(1, Math.abs(k)));
 }
 
+/** "A = 5x" as the student may answer it, with the name left off. */
+function withoutName(s: string): string | null {
+  const i = s.indexOf('=');
+  if (i < 0) return null;
+  return BARE_NAME.test(s.slice(0, i).trim()) ? s.slice(i + 1).trim() : null;
+}
+
 function mathEquivalent(a: string, b: string, rounding: Rounding | null): boolean | null {
   const bothEquations = a.includes('=') && b.includes('=');
+  // A named quantity is still a name the student may leave off: "A = 5x" is
+  // answered by "5x". Only against a side that is NOT an equation — two
+  // equations are statements and are compared whole, below.
+  if (!bothEquations) {
+    const ra = withoutName(a);
+    const rb = withoutName(b);
+    if (ra !== null && rb === null) return mathEquivalent(ra, b, rounding);
+    if (rb !== null && ra === null) return mathEquivalent(a, rb, rounding);
+  }
   const ea = toMathExpr(bothEquations ? asDifference(a) : a);
   const eb = toMathExpr(bothEquations ? asDifference(b) : b);
 
