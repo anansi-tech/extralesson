@@ -1,5 +1,8 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { buildSession, FIRST_ARCHETYPE_ORDER, type CandidateQuestion } from '@/lib/session/builder';
+import { ArchetypeZ } from '@/lib/validation/question';
+import type { Archetype } from '@/lib/types';
 import { join } from 'node:path';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -92,5 +95,82 @@ describe("the 'first' summary", () => {
     expect(first).toMatch(/mode: 'diagnostic'/);
     // No ranking and no estimate: one question cannot support either.
     expect(first).not.toMatch(/rankByVerdict|topicsSeen|overall_percent/);
+  });
+});
+
+/**
+ * THE FIRST QUESTION TAKES THE SIMPLEST SHAPE, NOT THE SCARCEST. The generator
+ * chooses archetypes by the bank's deficit, which balances a bank and is the
+ * wrong instinct for meeting a stranger: a cold account was handed
+ * reverse-reasoning — the result given, the input asked for — because it
+ * happened to be the rarest thing we had.
+ */
+describe("'first' ranks archetypes by how much must be done before writing", () => {
+  const weights = new Map<string, number>([['M1.1.', 10], ['M1.2.', 10]]);
+  const base = {
+    perObjectiveMastery: new Map<string, number>(),
+    m1Mastery: 0,
+    targetModules: [1, 2, 3] as (1 | 2 | 3)[],
+    topicWeightByPrefix: weights,
+    mode: 'first' as const,
+  };
+  const cand = (id: string, archetype: Archetype | undefined, module: 1 | 2 | 3 = 1, objective = 'M1.1.1'): CandidateQuestion => ({
+    id, objective_ids: [objective], module, kind: 'structured', marks: 5, method_rows: 2, part_count: 1, archetype,
+  });
+
+  it('takes the gentlest archetype the pool offers', () => {
+    const picked = buildSession({
+      ...base,
+      candidates: [cand('hard', 'reverse-reasoning'), cand('mid', 'multi-step-application'), cand('easy', 'direct-procedure')],
+    });
+    expect(picked.map((p) => p.id)).toEqual(['easy']);
+  });
+
+  it('falls to the next gentlest when the simplest is not there', () => {
+    const picked = buildSession({
+      ...base,
+      candidates: [cand('hard', 'reverse-reasoning'), cand('mid', 'multi-step-application')],
+    });
+    expect(picked.map((p) => p.id)).toEqual(['mid']);
+  });
+
+  it('still takes reverse-reasoning when it is all the bank has', () => {
+    // Never an empty session: the ordering is a preference, not a filter.
+    expect(buildSession({ ...base, candidates: [cand('only', 'reverse-reasoning')] }).map((p) => p.id)).toEqual(['only']);
+  });
+
+  it('lets the M1 gate outrank it, because a prerequisite is not a preference', () => {
+    const picked = buildSession({
+      ...base,
+      m1Mastery: 0,
+      candidates: [cand('m3-easy', 'direct-procedure', 3, 'M3.1.1'), cand('m1-hard', 'reverse-reasoning', 1, 'M1.1.1')],
+    });
+    expect(picked.map((p) => p.id)).toEqual(['m1-hard']);
+  });
+
+  it('outranks topic coverage, which is what this one question is not for', () => {
+    const picked = buildSession({
+      ...base,
+      attemptedObjectives: new Set(['M1.1.1']),
+      candidates: [cand('unstarted-hard', 'reverse-reasoning', 1, 'M1.2.1'), cand('started-easy', 'direct-procedure', 1, 'M1.1.1')],
+    });
+    expect(picked.map((p) => p.id)).toEqual(['started-easy']);
+  });
+
+  it('sorts an unknown shape last without excluding it', () => {
+    expect(buildSession({ ...base, candidates: [cand('none', undefined), cand('known', 'justification')] }).map((p) => p.id)).toEqual(['known']);
+    expect(buildSession({ ...base, candidates: [cand('none', undefined)] }).map((p) => p.id)).toEqual(['none']);
+  });
+
+  it('changes nothing for the modes that are balancing, not welcoming', () => {
+    const candidates = [cand('hard', 'reverse-reasoning', 1, 'M1.1.1'), cand('easy', 'direct-procedure', 1, 'M1.2.1')];
+    // The order adaptive produces must not move when the shapes are removed.
+    const withShapes = buildSession({ ...base, mode: 'adaptive', candidates });
+    const without = buildSession({ ...base, mode: 'adaptive', candidates: candidates.map((c) => ({ ...c, archetype: undefined })) });
+    expect(withShapes.map((p) => p.id)).toEqual(without.map((p) => p.id));
+  });
+
+  it('orders every archetype, so a new one cannot sort last by accident', () => {
+    expect([...FIRST_ARCHETYPE_ORDER].sort()).toEqual([...ArchetypeZ.options].sort());
   });
 });

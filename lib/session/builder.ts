@@ -1,5 +1,5 @@
 import { M1_PREREQ_THRESHOLD } from '@/lib/mastery/config';
-import type { ModuleNumber, QuestionKind } from '@/lib/types';
+import type { Archetype, ModuleNumber, QuestionKind } from '@/lib/types';
 
 // Session builder — see ROUND_1 §6.2. Pure and deterministic so ordering is
 // unit-testable.
@@ -43,7 +43,36 @@ export interface CandidateQuestion {
   method_rows?: number;
   /** Lettered parts; 'first' takes a short question. */
   part_count?: number;
+  /** The shape of the demand; 'first' takes the gentlest one available. */
+  archetype?: Archetype;
 }
+
+/**
+ * THE FIRST QUESTION TAKES THE SIMPLEST ARCHETYPE, NOT THE SCARCEST. Ordered by
+ * how much a student must do before they can write anything at all: a direct
+ * procedure names its own operation, while reverse-reasoning gives the result
+ * and asks for the input, which means inverting the relationship before the
+ * first line goes down.
+ *
+ * The generator picks archetypes by the bank's deficit, which is right for
+ * BALANCING a bank and wrong for meeting a stranger — it offered a cold account
+ * the hardest shape we have because it happened to be the rarest.
+ */
+export const FIRST_ARCHETYPE_ORDER: Archetype[] = [
+  'direct-procedure',
+  'complete-the-table',
+  'interpretation',
+  'comparison',
+  'multi-step-application',
+  'justification',
+  'reverse-reasoning',
+];
+
+/** Unknown shapes sort last: never preferred, never excluded. */
+const archetypeRank = (a: Archetype | undefined): number => {
+  const i = a ? FIRST_ARCHETYPE_ORDER.indexOf(a) : -1;
+  return i === -1 ? FIRST_ARCHETYPE_ORDER.length : i;
+};
 
 /**
  * The first question is the shortest the bank has. Module 1's approved
@@ -190,6 +219,12 @@ export function buildSession(args: BuildSessionArgs): CandidateQuestion[] {
     })
     .sort((a, b) => {
       if (m1Gated && (a.module === 1) !== (b.module === 1)) return a.module === 1 ? -1 : 1;
+      // Simplest shape the pool offers, ranked under the M1 gate and above
+      // coverage: what this one question is for is showing a stranger what
+      // marking looks like, and the gentlest demand shows it best.
+      if (mode === 'first' && archetypeRank(a.archetype) !== archetypeRank(b.archetype)) {
+        return archetypeRank(a.archetype) - archetypeRank(b.archetype);
+      }
       // COVER BEFORE DEEPEN. A topic never asked about outranks one part way
       // through, whatever the blueprint weight: weight times deficit alone left
       // three M1 topics unseen after sixteen sessions.

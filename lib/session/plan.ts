@@ -3,7 +3,7 @@ import { buildSession, RECENT_DAYS, type CandidateQuestion, type SessionMode } f
 import { loadStudyState } from '@/lib/study/state';
 import { loadMistakes } from '@/lib/study/mistakes';
 import { earnableByMethod } from '@/lib/grade/method-marks';
-import type { RubricItem } from '@/lib/types';
+import type { Archetype, RubricItem } from '@/lib/types';
 import type { ModuleNumber } from '@/lib/types';
 
 /**
@@ -27,7 +27,7 @@ export async function planSession(args: PlanArgs): Promise<CandidateQuestion[]> 
   const [state, raw, mistakes, recent] = await Promise.all([
     loadStudyState(studentId, targetModules),
     Question.find({ status: 'approved' })
-      .select(mode === 'first' ? 'objective_ids module kind marks parts rubric' : 'objective_ids module kind marks parts')
+      .select(mode === 'first' ? 'objective_ids module kind marks parts rubric archetype' : 'objective_ids module kind marks parts')
       .lean<
         {
           _id: unknown;
@@ -37,6 +37,7 @@ export async function planSession(args: PlanArgs): Promise<CandidateQuestion[]> 
           marks: number;
           parts?: { label: string; slots?: { label: string; response_mode?: string }[] }[];
           rubric?: RubricItem[];
+          archetype?: Archetype;
         }[]
       >(),
     mode === 'revisit' ? loadMistakes(studentId, now) : null,
@@ -57,6 +58,7 @@ export async function planSession(args: PlanArgs): Promise<CandidateQuestion[]> 
       ),
       method_rows: c.rubric ? earnableByMethod(c, []).length : undefined,
       part_count: c.parts?.length,
+      archetype: c.archetype,
     })),
     perObjectiveMastery: state.perObjective,
     attemptedObjectives: state.attemptedObjectives,
