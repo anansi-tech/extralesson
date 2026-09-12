@@ -548,17 +548,21 @@ describe("buildSession — 'first' is one question that shows the examiner", () 
     expect(picked).toEqual([]);
   });
 
-  // The shortest the bank has: nine marks and three parts is the smallest cap
-  // leaving 20 Module 1 questions (28, measured 2026-09-04). Five marks left none.
+  // The shortest the bank has. It was nine marks over three parts while every
+  // approved structured question ran 9-12 over 3-4; four over two is now
+  // fillable — 28 approved questions clear it, in every module — and it is the
+  // size a first question wants: one demand, finished before deciding whether
+  // to continue.
   it('takes a short question within the cap the bank supports', () => {
-    expect(FIRST_MAX_MARKS).toBe(9);
-    expect(FIRST_MAX_PARTS).toBe(3);
+    expect(FIRST_MAX_MARKS).toBe(4);
+    expect(FIRST_MAX_PARTS).toBe(2);
     const picked = buildSession({
       ...base,
       candidates: [
-        { ...withRows(q('long', 1, 'M1.1.1', 'structured', 12), 3), part_count: 4 },
-        { ...withRows(q('many-parts', 1, 'M1.1.2', 'structured', 9), 3), part_count: 4 },
-        { ...withRows(q('short', 1, 'M1.1.3', 'structured', 9), 2), part_count: 3 },
+        // Over on both counts, over on parts alone, then within.
+        { ...withRows(q('long', 1, 'M1.1.1', 'structured', 9), 3), part_count: 3 },
+        { ...withRows(q('many-parts', 1, 'M1.1.2', 'structured', 4), 3), part_count: 3 },
+        { ...withRows(q('short', 1, 'M1.1.3', 'structured', 4), 2), part_count: 2 },
       ],
     });
     expect(picked.map((p) => p.id)).toEqual(['short']);
@@ -587,7 +591,7 @@ describe("buildSession — 'first' is one question that shows the examiner", () 
       ...base,
       candidates: [
         { ...withRows(q('heavy-long', 1, 'M1.1.1', 'structured', 12), 3), part_count: 4 },
-        { ...withRows(q('light-short', 1, 'M1.5.1', 'structured', 9), 2), part_count: 3 },
+        { ...withRows(q('light-short', 1, 'M1.5.1', 'structured', 4), 2), part_count: 2 },
       ],
     });
     expect(picked.map((p) => p.id)).toEqual(['light-short']);

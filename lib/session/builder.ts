@@ -75,17 +75,26 @@ const archetypeRank = (a: Archetype | undefined): number => {
 };
 
 /**
- * The first question is the shortest the bank has. Module 1's approved
- * structured questions run 9–12 marks over 3–4 parts (171 of them, measured
- * 2026-09-04); nine marks and three parts is the smallest cap that leaves 20
- * or more — it leaves 28. A cap that leaves none is a "check back soon" for
- * every new student, which is what a five-mark cap did.
+ * The first question is the shortest the bank has. It was nine marks over three
+ * parts because that was the smallest cap the bank could fill: every approved
+ * structured question ran 9–12 marks over 3–4 parts, so a new student's first
+ * meeting with the marker was an exam question.
+ *
+ * Four marks over two parts is now fillable, and it is the size a first
+ * question wants: one demand, finished before deciding whether to continue.
+ * Measured against the approved bank the day it moved — 28 questions clear it,
+ * 11 in module 1, 10 in module 2 and 7 in module 3, so every target module has
+ * one and the shortPool fallback below stays shut.
+ *
+ * A cap that leaves none is a "check back soon" for every new student, which is
+ * what a five-mark cap did when nothing that size existed. That is what the
+ * fallback is for, and why it must be watched rather than trusted.
  */
 /** A question seen this recently tests memory of its answer, not the skill. */
 export const RECENT_DAYS = 14;
 
-export const FIRST_MAX_MARKS = 9;
-export const FIRST_MAX_PARTS = 3;
+export const FIRST_MAX_MARKS = 4;
+export const FIRST_MAX_PARTS = 2;
 
 const isFirstCandidate = (c: CandidateQuestion) => c.kind === 'structured' && (c.method_rows ?? 0) > 0;
 const isShort = (c: CandidateQuestion) => c.marks <= FIRST_MAX_MARKS && (c.part_count ?? 1) <= FIRST_MAX_PARTS;
