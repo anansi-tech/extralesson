@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import {
   FLAVOUR,
   FLAVOUR_MEMORY,
@@ -8,6 +10,7 @@ import {
   leastUsedName,
   recentActors,
   shouldNamePerson,
+  namingQuota,
   namesAPerson,
   NAMING_RATE,
 } from '@/lib/generation/territories';
@@ -274,14 +277,81 @@ describe('recentActors counts actors only', () => {
 // over 14 Paper 2 papers and 178 question chunks: 19.1% name a person, and of
 // those 79% name exactly one.
 describe('the naming rate', () => {
-  it('names somebody while the bank is below the measured rate', () => {
-    expect(shouldNamePerson([])).toBe(true);
-    expect(shouldNamePerson(Array(20).fill('A nurse records the times.'))).toBe(true);
+  const NAMED = 'Amara buys fabric.';
+  const UNNAMED = 'A nurse records the times.';
+  const runOf = (n: number, quota: number) => {
+    const run: string[] = [];
+    for (let k = 0; k < n; k++) run.push(shouldNamePerson(run, quota) ? NAMED : UNNAMED);
+    return run;
+  };
+
+  /**
+   * THE QUOTA IS COUNTED OVER STRUCTURED QUESTIONS ONLY. The 19.1% was measured
+   * on Paper 2; with MCQs in the denominator — 1.8% named, and a paper never
+   * measured for this — the mixed pool needed structured to reach 24.9% before
+   * the target could be met, so the answer was "name" permanently.
+   */
+  it('aims past the target by the size of the shortfall, as the profile split does', () => {
+    expect(namingQuota(Array(20).fill(UNNAMED))).toBeCloseTo(0.38, 2);
+    const atRate = [...Array(19).fill(NAMED), ...Array(81).fill(UNNAMED)];
+    expect(namingQuota(atRate)).toBeCloseTo(NAMING_RATE, 2);
+    const over = [...Array(40).fill(NAMED), ...Array(60).fill(UNNAMED)];
+    expect(namingQuota(over)).toBeLessThan(NAMING_RATE);
   });
 
-  it('stops once the rate is met, so it converges instead of drifting', () => {
-    const mixed = [...Array(4).fill('Amara buys fabric.'), ...Array(16).fill('A nurse records.')];
-    expect(shouldNamePerson(mixed)).toBe(false);
+  it('never aims outside a share, however far the bank has drifted', () => {
+    expect(namingQuota(Array(20).fill(NAMED))).toBeGreaterThanOrEqual(0);
+    expect(namingQuota(Array(20).fill(UNNAMED))).toBeLessThanOrEqual(1);
+  });
+
+  it('its fixed point is the rate itself', () => {
+    // A run produces `quota`, the bank moves toward it, and
+    // have === rate + (rate - have) only when have === rate.
+    const atRate = [...Array(19).fill(NAMED), ...Array(81).fill(UNNAMED)];
+    expect(namingQuota(atRate)).toBeCloseTo(NAMING_RATE, 5);
+  });
+
+  /**
+   * A QUOTA OVER THE RUN, NOT A THRESHOLD ON THE BANK. `named / total < rate`
+   * could not vary inside a batch — one question moves a 637-question share by
+   * a tenth of a point — so all 29 of one run named a person.
+   */
+  it('spreads the named questions through the run instead of deciding once', () => {
+    const run = runOf(30, 0.19);
+    const named = run.map((s, i) => (namesAPerson(s) ? i + 1 : 0)).filter(Boolean);
+
+    expect(named.length).toBe(6);
+    // Spread, not clustered at either end.
+    expect(named[0]).toBeGreaterThan(1);
+    expect(named[named.length - 1]).toBeLessThan(30);
+    const gaps = named.slice(1).map((v, i) => v - named[i]);
+    expect(Math.max(...gaps) - Math.min(...gaps), 'evenly spaced').toBeLessThanOrEqual(1);
+  });
+
+  it('hits the quota it was given, at any run length', () => {
+    for (const n of [10, 30, 100]) {
+      const share = runOf(n, 0.19).filter(namesAPerson).length / n;
+      expect(Math.abs(share - 0.19), `run of ${n}`).toBeLessThanOrEqual(1 / n);
+    }
+    // A run at a raised quota names more, which is how the bank catches up.
+    expect(runOf(30, 0.237).filter(namesAPerson).length).toBe(7);
+  });
+
+  it('is deterministic: one bank and one run length yield one pattern', () => {
+    expect(runOf(30, 0.19).map((s) => (namesAPerson(s) ? 'N' : '.')).join(''))
+      .toBe(runOf(30, 0.19).map((s) => (namesAPerson(s) ? 'N' : '.')).join(''));
+  });
+
+  it('names nobody at a quota of zero, and everybody at one', () => {
+    expect(runOf(10, 0).filter(namesAPerson)).toHaveLength(0);
+    expect(runOf(10, 1).filter(namesAPerson)).toHaveLength(10);
+  });
+
+  it('the generator counts structured questions only, and the run for the quota', () => {
+    const gen = readFileSync(join(process.cwd(), 'scripts', 'generate.ts'), 'utf8');
+    expect(gen).toMatch(/namingQuota\(/);
+    expect(gen).toMatch(/kind: 'structured', status: \{ \$in: \['draft', 'approved'\] \}/);
+    expect(gen).toMatch(/shouldNamePerson\(runStems, namingTarget\)/);
   });
 
   it('reads NAMES, a list we declare, rather than guessing what looks like a name', () => {

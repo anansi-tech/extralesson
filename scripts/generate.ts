@@ -24,7 +24,7 @@ import { checkDuplicate } from '@/lib/generation/dedup';
 import { reviewFlags, type FlaggableQuestion } from '@/lib/admin/review-flags';
 import { CONTEXT_FREE_MCQ_SHARE } from '@/lib/generation/contexts';
 import { neediestContext } from '@/lib/generation/context-targets';
-import { leastUsedName, shouldNamePerson } from '@/lib/generation/territories';
+import { leastUsedName, namingQuota, shouldNamePerson } from '@/lib/generation/territories';
 import { verifyQuestionVisual, verifyStimulusTable } from '@/lib/visuals/verify';
 import { lintCriteria } from '@/lib/prompts/mark-scheme';
 import { paramsDocFor } from '@/lib/visuals';
@@ -169,6 +169,19 @@ async function main() {
     void topic;
   };
 
+  // THE QUOTA IS FIXED AT THE START OF THE RUN, from the bank's structured
+  // share alone. Recomputing it per attempt would fold the run's own output
+  // back into its own target.
+  const namingTarget = namingQuota(
+    (
+      await Question.find({ kind: 'structured', status: { $in: ['draft', 'approved'] } })
+        .select('stem stimulus')
+        .lean<{ stem: string; stimulus?: string }[]>()
+    ).map((q) => [q.stimulus, q.stem].filter(Boolean).join(' ')),
+  );
+  // What this run has written, which is what the quota is counted over.
+  const runStems: string[] = [];
+
   while (inserted < args.count && attempts < maxAttempts) {
     attempts++;
     try {
@@ -273,7 +286,9 @@ async function main() {
           // name is the least-used one; when no, the prompt is told to name
           // nobody rather than left to decide.
           wantName:
-            contextFree || !shouldNamePerson(allStems) ? null : leastUsedName(allStems),
+            contextFree || !shouldNamePerson(runStems, namingTarget)
+              ? null
+              : leastUsedName(allStems),
         }),
       });
 
@@ -487,6 +502,7 @@ async function main() {
         },
       });
       insertedIds.push(created._id);
+      runStems.push([draft.stimulus, draft.stem].filter(Boolean).join(' '));
       inserted++;
       tally(context.topic_code).inserted++;
       console.log(`  ✓ inserted draft (${inserted}/${args.count}): ${draft.stem.slice(0, 70)}…`);

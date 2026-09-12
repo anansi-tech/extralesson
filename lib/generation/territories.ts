@@ -38,13 +38,36 @@ export function namesAPerson(text: string): boolean {
 }
 
 /**
- * Below the measured rate it should name, above it should not: a share
- * converges against the total, or it does not converge.
+ * The share THIS RUN aims at, which is past the target by the size of the
+ * bank's shortfall — the same move rubricSplitFor makes for the profile split.
+ * Its fixed point is the rate itself: a run produces `quota`, the bank moves
+ * toward it, and have == rate + (rate - have) only when have == rate.
+ *
+ * COUNTED OVER STRUCTURED QUESTIONS ONLY, because that is the population the
+ * 19.1% was measured on. With 163 MCQs in the denominator — a paper never
+ * measured for this, and 1.8% named — the target needed structured to reach
+ * 24.9% before it could ever be met, so the decision was "name" permanently and
+ * structured overshot Paper 2 by five points.
  */
-export function shouldNamePerson(stems: string[], rate = NAMING_RATE): boolean {
-  if (stems.length === 0) return true;
-  const named = stems.filter(namesAPerson).length;
-  return named / stems.length < rate;
+export function namingQuota(structuredStems: string[], rate = NAMING_RATE): number {
+  if (structuredStems.length === 0) return rate;
+  const have = structuredStems.filter(namesAPerson).length / structuredStems.length;
+  return Math.min(1, Math.max(0, rate + (rate - have)));
+}
+
+/**
+ * A QUOTA OVER THE RUN, NOT A THRESHOLD ON THE BANK. Name the next question
+ * when doing so leaves the run's own share nearest the quota — largest
+ * remainder, the way the profile split distributes marks.
+ *
+ * `named / total < rate` could not vary within a batch: one question moves a
+ * 637-question share by a tenth of a point, so all 29 of a run got the same
+ * answer. The same shape as the archetype deficit, for the same reason.
+ */
+export function shouldNamePerson(runStems: string[], quota = NAMING_RATE): boolean {
+  const named = runStems.filter(namesAPerson).length;
+  const total = runStems.length + 1;
+  return Math.abs((named + 1) / total - quota) <= Math.abs(named / total - quota);
 }
 
 /**
