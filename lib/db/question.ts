@@ -139,6 +139,18 @@ const QuestionSchema = new Schema({
     recipe: { type: Schema.Types.Mixed }, // R1.5: the 6-field recipe, shown to reviewers
     dedup_score: { type: Number }, // R1.5: max cosine vs approved bank (score only)
   },
+},
+{
+  /**
+   * AN EDIT TRAIL, BECAUSE THERE WAS NONE. Five questions were found storing a
+   * shape their own recipe contradicted, and there was no way to tell whether
+   * an editor or a script had done it: nothing recorded when a row was last
+   * written. `updatedAt` is what the next audit of that kind reads.
+   *
+   * Additive: mongoose sets both on every save from here, and the backfill
+   * beside this commit fills `created_at` for rows written before it.
+   */
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 });
 
 QuestionSchema.index({ status: 1, module: 1 });
