@@ -75,6 +75,29 @@ async function report(shot: Shot, width: number): Promise<Report> {
 }
 
 describe.skipIf(!hasChrome)('every screen, every state, one set of rules', () => {
+  for (const state of ['marked', 'queried', 'failed']) {
+    it(`marked-question ${state}: desktop read starts beside the first part`, async () => {
+      const shot = GALLERY.find((s) => s.screen === 'marked-question' && s.state === state)!;
+      const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+      try {
+        await page.setContent(shot.page, { waitUntil: 'networkidle' });
+        const parts = page.locator('#parts');
+        const read = page.getByText('This is what we read', { exact: true });
+        const partsBox = (await parts.boundingBox())!;
+        const readBox = (await read.boundingBox())!;
+        // The read panel has padding; allow that, not a stretched empty grid row.
+        expect(readBox.x).toBeGreaterThan(partsBox.x + partsBox.width);
+        expect(readBox.y - partsBox.y).toBeGreaterThanOrEqual(0);
+        expect(readBox.y - partsBox.y).toBeLessThanOrEqual(24);
+        const solution = (await page.locator('#worked-solution').boundingBox())!;
+        expect(solution.y).toBeGreaterThanOrEqual(partsBox.y + partsBox.height);
+        await page.screenshot({ path: `/tmp/extralesson-marked-${state}-1280.png`, fullPage: true });
+      } finally {
+        await page.close();
+      }
+    }, 60000);
+  }
+
   for (const shot of GALLERY) {
     for (const width of WIDTHS) {
       const name = shotName(shot, width);

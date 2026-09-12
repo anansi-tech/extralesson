@@ -158,6 +158,11 @@ details[open] > .account-toggle .account-chevron {
   background: #fff;
 }
 
+.figure-inner table th,
+.figure-inner table td {
+  text-align: center;
+}
+
 .figure-inner {
   margin-inline: auto;
   padding: 8px;

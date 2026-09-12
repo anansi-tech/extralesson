@@ -587,14 +587,15 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         )}
       </div>
 
-      {wideFigure && figure}
+      {(wideFigure || feedback) && figure}
 
       {/* ONE DOM FOR BOTH WIDTHS: a flex column ordered for the phone, a grid
           at lg with a small figure and camera in the rail before the parts, and the
-          read and the codes in the rail after them. */}
-      <div className="flex flex-col lg:mt-5 lg:grid lg:grid-cols-[minmax(0,1fr)_var(--rail)] lg:items-start lg:gap-x-10">
+          read and the codes in the rail after them. The first rail row only
+          takes its content's height; an empty row must not push the read down. */}
+      <div className="flex flex-col lg:mt-5 lg:grid lg:grid-cols-[minmax(0,1fr)_var(--rail)] lg:grid-rows-[min-content_1fr] lg:items-start lg:gap-x-10">
       <div className="contents lg:col-start-2 lg:row-start-1 lg:flex lg:flex-col lg:gap-5">
-      {!wideFigure && figure}
+      {!wideFigure && !feedback && figure}
 
       {/* PHOTO FIRST (ROUND_4 Task 1): the camera sits above the boxes from the
           start. A read fills the single-box slots; the student checks them and
