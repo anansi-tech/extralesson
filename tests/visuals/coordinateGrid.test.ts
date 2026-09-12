@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { paramsDocFor } from '@/lib/visuals';
 import { coordinateGrid, CoordinateGridParamsZ, readableStep, gridStep, MIN_INTERVALS, MAX_INTERVALS } from '@/lib/visuals/templates/coordinateGrid';
 
 // ORIGINAL fixture data only (R1.5 ground truth — no CXC content anywhere).
@@ -766,5 +767,47 @@ describe('coordinateGrid at a wide range', () => {
   it('draws the figure that found this, and keeps drawing it', () => {
     // Question 30482e: a cost graph, x 0..4 against y 0..450 in fifties.
     expect(wide(450, 50)).toMatchSnapshot();
+  });
+});
+
+/**
+ * AN EMPTY GRID ASKS THE STUDENT TO READ WHAT IS NOT THERE. Found on draft
+ * 30482e: a stem saying "use the table and the grid" above params holding two
+ * ranges and nothing else. The grid was there to satisfy the sentence — no part
+ * drew on it, and the one line it could have shown was the answer to part (b).
+ */
+describe('coordinateGrid: ranges are not a figure', () => {
+  const ctx = (stem = 'Use the grid to answer the parts below.') => ({ stem, partPrompts: [], stimulus: '' }) as never;
+  const verify = (params: unknown) => coordinateGrid.verify(CoordinateGridParamsZ.parse(params), ctx());
+  const EMPTY = /nothing drawn in them/;
+
+  it('refuses a grid with ranges and nothing inside them', () => {
+    expect(verify({ x_range: [0, 4], y_range: [0, 450], y_step: 50 }).join(' ')).toMatch(EMPTY);
+  });
+
+  it('refuses it however the empty arrays are written', () => {
+    expect(verify({ x_range: [0, 10], y_range: [0, 10], lines: [], curves: [], points: [], polygons: [], regions: [] }).join(' ')).toMatch(EMPTY);
+  });
+
+  it('accepts a grid with anything at all drawn in it', () => {
+    const drawn: [string, unknown][] = [
+      ['a line', { lines: [{ m: 2, c: 3 }] }],
+      ['a curve', { curves: [{ a: 1, b: 0, c: -4 }] }],
+      ['a point', { points: [{ x: 2, y: 3 }] }],
+      ['a polygon', { polygons: [{ vertices: [{ x: 0, y: 0 }, { x: 4, y: 0 }, { x: 4, y: 4 }] }] }],
+      ['a region', { regions: [{ constraints: [{ a: 1, b: 1, c: 6, op: 'le' }] }] }],
+    ];
+    for (const [what, extra] of drawn) {
+      expect(verify({ x_range: [-6, 6], y_range: [-6, 6], ...(extra as object) }).join(' '), what).not.toMatch(EMPTY);
+    }
+  });
+
+  it('accepts a named figure, which draws from the question own coordinates', () => {
+    const named = CoordinateGridParamsZ.parse({ named: { points: ['A'] } });
+    expect(coordinateGrid.verify(named, ctx('The point $A(1,1)$ is marked.')).join(' ')).not.toMatch(EMPTY);
+  });
+
+  it('tells the model the same, in the list it reads', () => {
+    expect(paramsDocFor(['coordinateGrid'])).toContain('a grid must have something IN it');
   });
 });

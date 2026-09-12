@@ -642,6 +642,7 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     "if you use `named` it must reference at least one polygon or point, every label it references must be a point the question itself states as A(1,1) or C' = (6,1), and each of its polygons needs at least three such points",
     "if you use `named`, leave x_range and y_range out: the window is derived from the question's own coordinates",
     "x_range and y_range must be ascending, and must divide into a whole number of steps — between 2 and 40 of them. A window is as wide as its mathematics needs: 0 to 120 with y_step 10, or 0 to 500 with y_step 50. Give x_step/y_step for any span over 40; below that the step is 1 and you may leave it out",
+    "a grid must have something IN it: a line, curve, point, polygon or region, or a `named` block. Ranges alone draw an empty grid, and a question that sends the student to an empty grid asks them to read what is not there",
     "every point and polygon vertex must lie inside the ranges",
     "if you supply TWO polygons the second must be the image of the first under ONE standard transformation: translation, reflection in an axis or y = x, rotation of 90/180/270 about the origin, or enlargement from the origin",
     "a line label written as y = mx + c must match that line's m and c",
@@ -950,6 +951,15 @@ export const coordinateGrid: VisualTemplate<CoordinateGridParams> = {
     // is the only one that may leave the ranges out.
     if (!p.named && (!p.x_range || !p.y_range)) {
       issues.push('coordinateGrid: x_range and y_range are required unless the figure uses named points');
+    }
+    // AN EMPTY GRID TELLS A STUDENT TO READ SOMETHING THAT IS NOT THERE. Found
+    // on a draft whose stem said "use the table and the grid" while the params
+    // held two ranges and nothing else: the grid was there to satisfy the
+    // sentence, and no part of the question drew on it or read from it.
+    if (!p.named && !p.points.length && !p.polygons.length && !p.lines.length && !p.curves.length && !p.regions.length) {
+      issues.push(
+        'coordinateGrid: ranges but nothing drawn in them — give it a line, curve, point, polygon or region, or drop the figure and the words that send the student to it',
+      );
     }
     if (xmin >= xmax) issues.push('coordinateGrid: x_range must be ascending');
     if (ymin >= ymax) issues.push('coordinateGrid: y_range must be ascending');
