@@ -1,4 +1,5 @@
 import 'katex/dist/katex.min.css';
+import { editableDraft } from '@/lib/admin/edit-json';
 import { hintCoverage } from '@/lib/admin/hints';
 import { dbConnect, Question } from '@/lib/db';
 import { getCoverage, getNextDraftId } from '@/lib/admin/coverage';
@@ -207,28 +208,7 @@ export default async function ReviewPage({
         })),
         recipeJson: raw.gen_meta?.recipe ? JSON.stringify(raw.gen_meta.recipe) : undefined,
         dedupScore: raw.gen_meta?.dedup_score,
-        editJson: JSON.stringify(
-          {
-            kind: raw.kind,
-            objective_ids: raw.objective_ids,
-            module: raw.module,
-            stimulus: raw.stimulus,
-            stem: raw.stem,
-            visual: raw.visual?.template ? raw.visual : undefined,
-            archetype: raw.archetype,
-            representation: raw.representation,
-            parts: raw.parts,
-            ...(raw.kind === 'mcq'
-              ? { options: raw.options, answer_key: raw.answer_key, profile: raw.profile }
-              : { rubric: raw.rubric, final_answer: raw.final_answer }),
-            difficulty: raw.difficulty,
-            marks: raw.marks,
-            worked_solution: raw.worked_solution,
-            misconceptions: raw.misconceptions,
-          },
-          null,
-          2,
-        ),
+        editJson: JSON.stringify(editableDraft(raw as unknown as Record<string, unknown>), null, 2),
       };
     }
   }
