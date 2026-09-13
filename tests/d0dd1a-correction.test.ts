@@ -42,3 +42,14 @@ it('is non-mutating, repeatable and refuses changed content', () => {
   expect(prepare(q).changed).toBe(false);
   expect(() => prepare({ ...original, stem: 'Changed' })).toThrow('changed since review');
 });
+
+it('ignores the database update timestamp but still refuses actual content edits', () => {
+  const updated_at = new Date('2026-09-13T19:01:18.918Z');
+  expect(prepare({ ...original, updated_at }).changed).toBe(true);
+  expect(prepare({ ...q, updated_at }).changed).toBe(false);
+  expect(prepare({ ...q, updated_at: updated_at.toISOString() }).changed).toBe(false);
+  expect(() => prepare({ ...q, updated_at, stem: 'Changed' })).toThrow('changed since review');
+  const edited = structuredClone(q);
+  edited.rubric[0].criterion = 'Changed';
+  expect(() => prepare({ ...edited, updated_at })).toThrow('changed since review');
+});

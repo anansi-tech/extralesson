@@ -25,11 +25,11 @@ export function correctedQuestion() {
 }
 
 const fields = ['parts', 'rubric', 'misconceptions'] as const;
-export function prepare(q: typeof original) {
+export function prepare(q: typeof original & { updated_at?: unknown }) {
   const next = correctedQuestion();
   // Metadata unrelated to content may change; all authored fields must agree.
-  const authored = (x: typeof original) => {
-    const { _id, __v, created_at, gen_meta, ...content } = x;
+  const authored = (x: typeof original & { updated_at?: unknown }) => {
+    const { _id, __v, created_at, updated_at, gen_meta, ...content } = x;
     return JSON.stringify(content);
   };
   if (authored(q) === authored(next)) return { next, changed: false };
