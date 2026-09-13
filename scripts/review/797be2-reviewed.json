@@ -1,0 +1,330 @@
+{
+  "objective_ids": [
+    "M3.1.2",
+    "M3.1.4",
+    "M3.1.5"
+  ],
+  "module": 3,
+  "kind": "structured",
+  "stimulus": "A building contractor recorded the masses of 40 bags of cement in a delivery. The histogram shows the results. A bag is accepted if its mass lies within one estimated semi-interquartile range of the estimated median mass.",
+  "stem": "Use the histogram to answer the questions below.",
+  "context_category": "construction",
+  "visual": {
+    "template": "histogram",
+    "params": {
+      "title": "Masses of bags of cement",
+      "x_label": "Mass m (kg)",
+      "y_label": "Frequency",
+      "y_step": 2,
+      "boundaries": [
+        20,
+        30,
+        40,
+        50,
+        60,
+        70
+      ],
+      "frequencies": [
+        4,
+        7,
+        12,
+        9,
+        8
+      ]
+    }
+  },
+  "parts": [
+    {
+      "label": "a",
+      "prompt": "State the class width for the interval $40 \\le m < 50$.",
+      "marks": 1,
+      "slots": [
+        {
+          "label": "i",
+          "answer": "$10$ kg",
+          "response_mode": "answer",
+          "rubric_codes": [
+            "CK1"
+          ],
+          "depends_on": [],
+          "objective_id": "M3.1.2"
+        }
+      ]
+    },
+    {
+      "label": "b",
+      "prompt": "Estimate the mean mass of a bag of cement.",
+      "marks": 3,
+      "slots": [
+        {
+          "label": "i",
+          "answer": "$47.5$ kg",
+          "response_mode": "answer",
+          "rubric_codes": [
+            "CK2",
+            "AK1",
+            "AK2"
+          ],
+          "depends_on": [
+            "a.i"
+          ],
+          "objective_id": "M3.1.4"
+        }
+      ]
+    },
+    {
+      "label": "c",
+      "prompt": "Complete the statement below.",
+      "marks": 3,
+      "slots": [
+        {
+          "label": "i",
+          "answer": "$40 \\le m < 50$",
+          "response_mode": "answer",
+          "rubric_codes": [
+            "CK3"
+          ],
+          "depends_on": [],
+          "objective_id": "M3.1.4"
+        },
+        {
+          "label": "ii",
+          "answer": "$47.5$",
+          "response_mode": "answer",
+          "rubric_codes": [
+            "AK3"
+          ],
+          "depends_on": [
+            "c.i"
+          ],
+          "objective_id": "M3.1.4"
+        },
+        {
+          "label": "iii",
+          "answer": "approximately symmetrical",
+          "accept": [
+            "approximately symmetric",
+            "symmetrical",
+            "symmetric"
+          ],
+          "response_mode": "explain",
+          "rubric_codes": [
+            "R1"
+          ],
+          "depends_on": [
+            "b.i",
+            "c.ii"
+          ],
+          "objective_id": "M3.1.4"
+        }
+      ],
+      "statement": "The median class is {}. The estimated median mass is {} kg. The distribution is {}."
+    },
+    {
+      "label": "d",
+      "prompt": "Complete the statement below. Give numerical estimates correct to 1 decimal place.",
+      "marks": 5,
+      "slots": [
+        {
+          "label": "i",
+          "answer": "$19.2$",
+          "response_mode": "answer",
+          "answer_format": "dp:1",
+          "rubric_codes": [
+            "CK4",
+            "AK4",
+            "AK5"
+          ],
+          "depends_on": [],
+          "objective_id": "M3.1.5"
+        },
+        {
+          "label": "ii",
+          "answer": "$9.6$",
+          "response_mode": "answer",
+          "answer_format": "dp:1",
+          "rubric_codes": [
+            "R2"
+          ],
+          "depends_on": [
+            "d.i"
+          ],
+          "objective_id": "M3.1.5"
+        },
+        {
+          "label": "iii",
+          "answer": "not acceptable",
+          "accept": [
+            "outside the acceptable range",
+            "rejected",
+            "not accepted"
+          ],
+          "response_mode": "explain",
+          "rubric_codes": [
+            "R3"
+          ],
+          "depends_on": [
+            "c.ii",
+            "d.ii"
+          ],
+          "objective_id": "M3.1.5"
+        }
+      ],
+      "statement": "The estimated interquartile range is {} kg and the estimated semi-interquartile range is {} kg. A bag weighing $58$ kg is {}."
+    }
+  ],
+  "archetype": "multi-step-application",
+  "representation": "chart",
+  "shape": "paper",
+  "difficulty": 3,
+  "marks": 12,
+  "rubric": [
+    {
+      "code": "CK1",
+      "profile": "CK",
+      "criterion": "States class width $50 - 40 = 10$ kg.",
+      "mark_value": 1,
+      "slot_ref": "a.i",
+      "part_label": "a",
+      "for_format": false,
+      "template": "States class width $50 - 40 = {a.i}$ kg.",
+      "hint": "Subtract the lower class boundary from the upper class boundary to find the class width in kg."
+    },
+    {
+      "code": "CK2",
+      "profile": "CK",
+      "criterion": "Selects appropriate class midpoints.",
+      "mark_value": 1,
+      "slot_ref": "b.i",
+      "part_label": "b",
+      "for_format": false,
+      "template": "Selects appropriate class midpoints.",
+      "hint": "Find each class midpoint by averaging the two boundaries of that class."
+    },
+    {
+      "code": "AK1",
+      "profile": "AK",
+      "criterion": "Obtains weighted total $\\sum fx = 1900$.",
+      "mark_value": 1,
+      "slot_ref": "b.i",
+      "part_label": "b",
+      "for_format": false,
+      "template": "Obtains weighted total $\\sum fx = 1900$.",
+      "hint": "Multiply every class midpoint by its frequency and add the products to calculate $\\sum fx$."
+    },
+    {
+      "code": "AK2",
+      "profile": "AK",
+      "criterion": "Divides by total frequency to obtain $1900 \\div 40 = 47.5$.",
+      "mark_value": 1,
+      "slot_ref": "b.i",
+      "part_label": "b",
+      "for_format": false,
+      "template": "Divides by total frequency to obtain $1900 \\div 40 = {b.i}$.",
+      "hint": "Divide your weighted total by the total frequency using $\\text{weighted total} \\div \\text{total frequency}$."
+    },
+    {
+      "code": "CK3",
+      "profile": "CK",
+      "criterion": "Identifies the 20th value and the median class $40 \\le m < 50$.",
+      "mark_value": 1,
+      "slot_ref": "c.i",
+      "part_label": "c",
+      "for_format": false,
+      "template": "Identifies the 20th value and the median class $40 \\le m < 50$.",
+      "hint": "Find the halfway observation from the total frequency, then identify its class and write the boundaries as lower boundary $\\le m <$ upper boundary."
+    },
+    {
+      "code": "AK3",
+      "profile": "AK",
+      "criterion": "Interpolates to obtain estimated median $40 + \\frac{20-11}{12}\\times10 = 47.5$.",
+      "mark_value": 1,
+      "slot_ref": "c.ii",
+      "part_label": "c",
+      "for_format": false,
+      "template": "Interpolates to obtain estimated median $40 + \\frac{20-11}{12}\\times10 = {c.ii}$.",
+      "hint": "Interpolate within the median class by adding the lower boundary to $\\frac{\\text{position into class}}{\\text{class frequency}}\\times\\text{class width}$."
+    },
+    {
+      "code": "R1",
+      "profile": "R",
+      "criterion": "Compares their estimated mean and median to conclude that the distribution is approximately symmetrical.",
+      "mark_value": 1,
+      "slot_ref": "c.iii",
+      "part_label": "c",
+      "for_format": false,
+      "template": "Compares their estimated mean and median to conclude that the distribution is approximately symmetrical.",
+      "hint": "Compare your estimated mean with your estimated median and use how close they are to state whether the distribution is approximately symmetrical."
+    },
+    {
+      "code": "CK4",
+      "profile": "CK",
+      "criterion": "Identifies quartile positions as the 10th and 30th values.",
+      "mark_value": 1,
+      "slot_ref": "d.i",
+      "part_label": "d",
+      "for_format": false,
+      "template": "Identifies quartile positions as the 10th and 30th values.",
+      "hint": "Find the observations one quarter and three quarters of the way through the total frequency."
+    },
+    {
+      "code": "AK4",
+      "profile": "AK",
+      "criterion": "Interpolates to obtain $Q_1 \\approx 38.6$ and $Q_3 \\approx 57.8$.",
+      "mark_value": 1,
+      "slot_ref": "d.i",
+      "part_label": "d",
+      "for_format": false,
+      "template": "Interpolates to obtain $Q_1 \\approx 38.6$ and $Q_3 \\approx 57.8$.",
+      "hint": "Interpolate in the two quartile classes and record the estimates as $Q_1 \\approx \\ldots$ and $Q_3 \\approx \\ldots$."
+    },
+    {
+      "code": "AK5",
+      "profile": "AK",
+      "criterion": "Uses their quartiles to calculate interquartile range and semi-interquartile range.",
+      "mark_value": 1,
+      "slot_ref": "d.i",
+      "part_label": "d",
+      "for_format": false,
+      "template": "Uses their quartiles to calculate interquartile range and semi-interquartile range.",
+      "hint": "Subtract your lower quartile from your upper quartile, then divide this interquartile range by two to find the semi-interquartile range."
+    },
+    {
+      "code": "R2",
+      "profile": "R",
+      "criterion": "Expresses the estimated semi-interquartile range correct to 1 decimal place.",
+      "mark_value": 1,
+      "slot_ref": "d.ii",
+      "part_label": "d",
+      "for_format": true,
+      "template": "Expresses the estimated semi-interquartile range correct to 1 decimal place.",
+      "hint": "Round your estimated semi-interquartile range to one decimal place."
+    },
+    {
+      "code": "R3",
+      "profile": "R",
+      "criterion": "Uses their estimated median plus or minus their semi-interquartile range to decide that $58$ kg is not acceptable.",
+      "mark_value": 1,
+      "slot_ref": "d.iii",
+      "part_label": "d",
+      "for_format": false,
+      "template": "Uses their estimated median plus or minus their semi-interquartile range to decide that $58$ kg is not acceptable.",
+      "hint": "Use your estimated median plus or minus your semi-interquartile range to form the acceptable interval, compare the bag mass with it, and state that the bag is not acceptable."
+    }
+  ],
+  "final_answer": "$10$ kg; $47.5$ kg; $40 \\le m < 50$; $47.5$; approximately symmetrical; $19.2$; $9.6$; not acceptable",
+  "worked_solution": "(a) The class width is $50-40=10$ kg.\n\n(b) The class midpoints are $25,35,45,55,65$. The weighted total is\n\\[\n(25\\times4)+(35\\times7)+(45\\times12)+(55\\times9)+(65\\times8)=1900.\n\\]\nThe total frequency is $40$, giving an estimated mean of $1900\\div40=47.5$ kg.\n\n(c) The median position is $\\frac{40}{2}=20$. The cumulative frequencies are $4,11,23,32,40$, so the median class is $40\\le m<50$. The estimated median is\n\\[\n40+\\left(\\frac{20-11}{12}\\right)\\times10=47.5\\text{ kg}.\n\\]\nThe estimated mean and estimated median are both $47.5$ kg, so the distribution is approximately symmetrical.\n\n(d) The lower-quartile position is $\\frac{40}{4}=10$ and the upper-quartile position is $\\frac{3\\times40}{4}=30$. The estimated lower quartile is\n\\[\n30+\\left(\\frac{10-4}{7}\\right)\\times10=38.6\\text{ kg} \\text{ approximately}.\n\\]\nThe estimated upper quartile is\n\\[\n50+\\left(\\frac{30-23}{9}\\right)\\times10=57.8\\text{ kg} \\text{ approximately}.\n\\]\nTherefore, the estimated interquartile range is $57.8-38.6=19.2$ kg and the estimated semi-interquartile range is $19.2\\div2=9.6$ kg. The acceptable interval is approximately $47.5\\pm9.6$, or from $37.9$ kg to $57.1$ kg. Since $58$ kg is outside this interval, the bag is not acceptable.",
+  "misconceptions": [
+    {
+      "trigger": "$12$ kg",
+      "name": "Modal frequency given as the mean",
+      "remediation": "The value 12 is the greatest frequency, not a mass estimate. For grouped data, multiply each class midpoint by its frequency and divide the total by 40."
+    },
+    {
+      "trigger": "$38.6$ to $57.8$ kg",
+      "name": "Range reported as an interval",
+      "remediation": "The interquartile range is one number. Subtract the lower quartile from the upper quartile: $57.8-38.6=19.2$ kg."
+    }
+  ],
+  "status": "approved"
+}

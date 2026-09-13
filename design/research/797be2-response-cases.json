@@ -1,0 +1,16 @@
+{
+  "status": "proposed reviewer expectations; no model evaluation or bank application",
+  "question_id": "6a854012e7fc40f429797be2",
+  "cases": [
+    {"id":"unequal-bars","ref":"c.iii","answer":"Not exactly symmetric: the outer bars have frequencies 4 and 8, and the next pair 7 and 9.","expected_R1":1,"reason":"Correct feature and supporting frequencies."},
+    {"id":"central-peak","ref":"c.iii","answer":"It has one peak, in the 40–50 kg class, which has frequency 12, higher than every other class.","expected_R1":1,"reason":"Correct shape feature supported by histogram data."},
+    {"id":"qualified-approximate","ref":"c.iii","answer":"Roughly symmetric overall, with a central peak and decreasing heights towards both ends, but not exactly: the corresponding frequencies 4 and 8 and 7 and 9 differ.","expected_R1":1,"reason":"Explicitly qualified visual judgement with its evidence and limitation."},
+    {"id":"equal-estimates-only","ref":"c.iii","answer":"Symmetrical because the mean and median both equal 47.5.","expected_R1":0,"reason":"Equal estimates do not establish symmetry."},
+    {"id":"unsupported-label","ref":"c.iii","answer":"Approximately symmetrical.","expected_R1":0,"reason":"No graphical evidence for the description."},
+    {"id":"invented-equality","ref":"c.iii","answer":"Exactly symmetric because the outer frequencies are both 4 and the next pair are both 7.","expected_R1":0,"reason":"Contradicts the histogram."},
+    {"id":"blank","ref":"c.iii","answer":"","expected_R1":0,"reason":"No evidence for the one reasoning mark."},
+    {"id":"correct-interval","ref":"d.iii","answer":"47.5 ± 9.6 gives 37.9 to 57.1 kg. Since 58 is above 57.1, the bag is not acceptable.","expected_R3":1,"reason":"Correct application of the printed interval rule."},
+    {"id":"wrong-interval-conclusion","ref":"d.iii","answer":"The limits are 37.9 and 57.1 kg, so 58 kg is acceptable.","expected_R3":0,"reason":"Conclusion contradicts the stated interval."},
+    {"id":"different-values-follow-through","ref":"d.iii","prior_answers":{"c.ii":"50","d.ii":"10"},"answer":"My acceptable interval is 40 to 60 kg, so 58 kg is acceptable.","expected_R3":1,"reason":"Approved follow-through: the decision matches the student's own interval. Earlier calculation errors lose their own marks."}
+  ]
+}
