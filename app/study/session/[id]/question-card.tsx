@@ -736,7 +736,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                         />
                         {i < p.slots.length && (
                           <span className="inline-flex items-baseline gap-1">
-                          {slotAnswerInput(p.slots[i], {
+                          {p.slots[i].mode === 'explain' ? (
+                            <span className="text-xs text-dim">[reason {i + 1} below]</span>
+                          ) : slotAnswerInput(p.slots[i], {
                             describe: `Answer ${i + 1} in the statement for part (${p.label})`,
                             className:
                               'min-h-11 w-24 border-0 border-b-[1.5px] border-ink bg-transparent px-1 py-2 text-center font-mono text-sm',
@@ -750,6 +752,17 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                     ))}
                   </div>
                 )}
+                {p.statementHtml && p.slots.map((slot, i) => slot.mode === 'explain' && (
+                  <div key={`reason-${slot.ref}`} className="mt-3 ml-4 border-l-3 border-paper-deep pl-3 text-sm">
+                    <span className="font-mono text-[11px] text-dim">Reason {i + 1}</span>
+                    {slot.promptHtml ? (
+                      <Html as="p" className="question-prose mt-1" html={slot.promptHtml} />
+                    ) : (
+                      <p className="mt-1">Give the reason that completes the statement.</p>
+                    )}
+                    <p className="mt-1 text-xs text-dim">Write your reason on paper, labelled ({p.label}) ({slot.label}). It is marked from your photo; nothing to type here.</p>
+                  </div>
+                ))}
                 {/* A cloze part's gaps are answer slots too. One strip serves
                     the row, inserting into whichever gap the caret is in. */}
                 {p.statementHtml && (
