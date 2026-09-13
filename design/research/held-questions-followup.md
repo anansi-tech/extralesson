@@ -1,6 +1,6 @@
 # Held question configurations: follow-up review
 
-Current follow-up: [applied wording cleanup, 2026-09-13](question-cleanup-review-2026-09-13.md). The approved d0dd1a and 037e5d AK4 corrections are already applied. The approved wording cleanup is now applied to 66 records, including 037e5d d.iii and the separate 45-question missing-instruction inventory. Post-apply verification reports zero remaining changes; 797be2 and all marking decisions remain held. Historical preparation notes below are retained.
+Current status: [response consistency closure, 2026-09-13](response-consistency-closure-2026-09-13.md). The approved d0dd1a and 037e5d AK4 corrections, 66-question wording cleanup, 797be2 separate review, and reviewed explanation exemplars are applied. Five optional response-mode conversions remain intentionally paper-assessed. Historical preparation notes below are retained.
 
 Reviewed 2026-09-13. Read-only inspection of all 22 held records. No bank changes or new grading logic. This reviews response configuration and rubric alignment; it is not an independent re-solve of every question or diagram.
 
@@ -12,7 +12,7 @@ The flagpole geometry is consistent: h = d, d = 20/(sqrt(3)-1) = 10(sqrt(3)+1), 
 
 Recommendation: preserve all 12 marks and the profile split; make AK4 the exact-form mark for the correct value, accepting both existing exact expressions. Update its criterion/template to match and set for_format true. Keep the existing calculation criteria R1/R2/AK3 and the separate 3-significant-figure mark in (d). Add the already-reviewed d.iii paper prompt. This changes the written AK4 criterion and its form classification, so approval is needed before applying. Do not merely remove exact form or mark rationalisation compulsory when the question does not ask for it.
 
-Subsequently approved and applied: AK4's criterion/template now reward the correct exact value, and for_format is true. All 12 marks, profiles, accepted answers and historical attempts are unchanged. `scripts/done/repair-037e5d.ts` preview and post-apply verification passed (changed: false). Tests confirm both exact forms earn all four part-(c) marks; an equivalent decimal earns the three calculation marks only; wrong and blank entries earn none. Four focused suites passed 124 tests, with type checking and whitespace checks also passing. This application changed AK4 only; the separate d.iii prompt is not yet applied. No grading-code change or deployment was needed.
+Subsequently approved and applied: AK4's criterion/template now reward the correct exact value, and for_format is true. All 12 marks, profiles, accepted answers and historical attempts are unchanged. `scripts/done/repair-037e5d.ts` preview and post-apply verification passed (changed: false). Tests confirm both exact forms earn all four part-(c) marks; an equivalent decimal earns the three calculation marks only; wrong and blank entries earn none. Four focused suites passed 124 tests, with type checking and whitespace checks also passing. The separate d.iii prompt was subsequently applied in the approved 66-question wording cleanup. No grading-code change or deployment was needed.
 
 ### 797be2 — do not infer symmetry solely from equal mean and median
 

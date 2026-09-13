@@ -1,6 +1,6 @@
 # Response consistency follow-up
 
-Current follow-up: [applied wording cleanup, 2026-09-13](question-cleanup-review-2026-09-13.md). The approved d0dd1a and 037e5d AK4 corrections are already applied. The approved wording cleanup is now applied to 66 records, including 037e5d d.iii and the separate 45-question missing-instruction inventory. Post-apply verification reports zero remaining changes; 797be2 and all marking decisions remain held. Historical preparation notes below are retained.
+Current status: [response consistency closure, 2026-09-13](response-consistency-closure-2026-09-13.md). The approved d0dd1a and 037e5d AK4 corrections, 66-question wording cleanup, 797be2 separate review, and reviewed explanation exemplars are applied. Five optional response-mode conversions remain intentionally paper-assessed. Historical preparation notes below are retained.
 
 Branch: `fix/question-response-consistency`. Preparation only; no live writes or deployment.
 
