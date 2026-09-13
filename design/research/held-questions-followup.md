@@ -1,5 +1,7 @@
 # Held question configurations: follow-up review
 
+Current follow-up: [applied wording cleanup, 2026-09-13](question-cleanup-review-2026-09-13.md). The approved d0dd1a and 037e5d AK4 corrections are already applied. The approved wording cleanup is now applied to 66 records, including 037e5d d.iii and the separate 45-question missing-instruction inventory. Post-apply verification reports zero remaining changes; 797be2 and all marking decisions remain held. Historical preparation notes below are retained.
+
 Reviewed 2026-09-13. Read-only inspection of all 22 held records. No bank changes or new grading logic. This reviews response configuration and rubric alignment; it is not an independent re-solve of every question or diagram.
 
 ## Decisions requiring approval
