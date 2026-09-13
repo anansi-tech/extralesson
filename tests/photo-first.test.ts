@@ -23,7 +23,7 @@ vi.mock('ai', () => ({
       return {
         object: {
           lines: [{ part_label: 'a', slot_label: null, text: '3x = 15', confidence: 0.9 }],
-          answers: readerAnswers,
+          answers: readerAnswers.map((a) => ({ ...a, entries: a.text.split(',').map((s) => s.trim()), source_lines: [1] })),
           legible: true,
         },
         usage: { inputTokens: 10, outputTokens: 5 },
@@ -149,7 +149,10 @@ describe('photo first — ROUND_4 Task 1', () => {
     const read = await db.Transcription.findOne({ session_id: sessionId, question_index: 0 }).lean<Record<string, unknown> | null>();
     expect(read?.attempt_id).toBeUndefined();
     expect(read?.answers).toEqual(
-      expect.arrayContaining([{ slot_ref: 'a.i', text: '5' }, { slot_ref: 'b.i', text: '1, 2, 3, 6' }]),
+      expect.arrayContaining([
+        expect.objectContaining({ slot_ref: 'a.i', text: '5', entries: ['5'], source_lines: [1] }),
+        expect.objectContaining({ slot_ref: 'b.i', text: '1, 2, 3, 6', entries: ['1', '2', '3', '6'] }),
+      ]),
     );
     expect(read?.method_marks).toEqual([]);
     expect(imageCalls()).toBe(1);
@@ -178,16 +181,26 @@ describe('photo first — ROUND_4 Task 1', () => {
     expect(calls.map((c) => c.kind)).toEqual(['read', 'mark']);
   });
 
-  it('a second read replaces the prefill, and a third is refused', async () => {
+  it('a second read preserves existing entries, and a third is refused', async () => {
     const sessionId = await session(await question());
     await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
     readerAnswers = [{ slot_ref: 'a.i', text: '7' }];
     const second = await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
-    expect(second).toMatchObject({ take: 2, takesLeft: 0, prefill: { answers: { 'a.i': '7' } } });
+    expect(second).toMatchObject({ take: 2, takesLeft: 0, prefill: { answers: {}, values: {} } });
     const draft = await db.SessionDraft.findOne({ session_id: sessionId, question_index: 0 }).lean<{ answers: Record<string, string> } | null>();
-    expect(draft?.answers['a.i']).toBe('7');
+    expect(draft?.answers['a.i']).toBe('5');
     expect(await readWorking({ sessionId, questionIndex: 0, ...IMAGE })).toMatchObject({ error: /limit/ });
     expect(await db.Transcription.countDocuments({ session_id: sessionId })).toBe(2);
+  });
+
+  it('an upload preserves a manually entered answer and a partially completed grid', async () => {
+    const sessionId = await session(await question());
+    await db.SessionDraft.create({ session_id: sessionId, question_index: 0, answers: { 'a.i': '99' }, values: { 'b.i': ['9', '', '', ''] } });
+    const result = await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
+    expect(result).toMatchObject({ prefill: { answers: {}, values: {} } });
+    const draft = await db.SessionDraft.findOne({ session_id: sessionId, question_index: 0 });
+    expect(draft?.answers['a.i']).toBe('99');
+    expect(draft?.values['b.i']).toEqual(['9', '', '', '']);
   });
 
   it('a read with no submit expires with the draft', async () => {

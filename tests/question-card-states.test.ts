@@ -41,7 +41,7 @@ describe('the question card, four states', () => {
     expect(text.read).toBe(
       STEM +
         'This is what we read (a) 1 tan 34 = 8 / BC Not what I wrote — line 1 2 BC = 8 / tan 34 = 11.9 hard to read Not what I wrote — line 2 (b) 3 ½ × 8 × 11.9 = 47.6 Not what I wrote — line 3 Take it again 1 retake left ' +
-        'We filled the single answers. ' +
+        'We filled answer boxes. Check each entry. ' +
         '(a) Calculate the length of BC. [3] Answer to (a) 11.9 From your page — check it Give the length in cm to 1 decimal place. (b) Calculate the area of triangle ABC. [2] Answer to (b) 47.6 From your page — check it Insert √ ° ² ' +
         '(c) Show that the perimeter is less than 35 cm. [2] Marked from your photo — nothing to type. ' +
         'Hand in TWO BOXES FROM YOUR PAGE · CHECKED BY YOU' + NAV,

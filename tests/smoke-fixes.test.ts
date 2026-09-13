@@ -41,7 +41,7 @@ describe('(c) a right value in the wrong form is amber, not green', () => {
   });
 
   it('is drawn as “✓ value · form withheld” in amber', () => {
-    expect(CARD).toMatch(/partFeedback\.formWithheld\s*\?\s*'text-\[#B8860B\]'/);
+    expect(CARD).toMatch(/result\.formWithheld\s*\?\s*'text-\[#B8860B\]'/);
     expect(CARD).toContain('value · form withheld');
   });
 });

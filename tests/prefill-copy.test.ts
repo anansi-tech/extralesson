@@ -8,7 +8,7 @@ const at = (...p: string[]) => readFileSync(join(process.cwd(), ...p), 'utf8');
 describe('honest prefill', () => {
   it('names the boxes a read filled and the ones it did not, with a jump to each', () => {
     const card = at('app', 'study', 'session', '[id]', 'question-card.tsx');
-    expect(card).toMatch(/We filled the single answers/);
+    expect(card).toMatch(/We filled answer boxes/);
     expect(card).toMatch(/Enter the rest yourself/);
     expect(card).toMatch(/href=\{`#slot-\$\{sl\.ref\}\$\{sl\.input \? '-0' : ''\}`\}/);
   });

@@ -31,7 +31,11 @@ const TranscriptionSchema = new Schema({
   lines: { type: [LineSchema], required: true },
   /** The reader's final answer per slot ref, in the grader's conventions — the prefill. */
   answers: {
-    type: [new Schema({ slot_ref: { type: String, required: true }, text: { type: String, required: true } }, { _id: false })],
+    type: [new Schema({
+      slot_ref: { type: String, required: true }, text: { type: String, required: true },
+      entries: { type: [String], default: undefined },
+      source_lines: { type: [Number], default: undefined },
+    }, { _id: false })],
     default: [],
   },
   /** The drawing check, run at read time and decided from at submit; never re-read. */

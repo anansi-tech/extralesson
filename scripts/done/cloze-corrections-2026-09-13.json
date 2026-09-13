@@ -1,0 +1,2954 @@
+[
+  {
+    "id": "6a83b99311edd390f46a52b3",
+    "fingerprint": "6e5eaadf1930b9f03544c8cda131812c25bf964be827177b5d624c8f29f0092b",
+    "refs": [
+      "d.ii"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "The contractor places $S$ so that $\\vec{OS}=\\vec{OR}-3\\vec{a}-3\\vec{b}$. Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "6\\vec{a}+6\\vec{b}",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R2",
+              "AK4"
+            ],
+            "depends_on": [
+              "a.i",
+              "c.i"
+            ]
+          },
+          {
+            "label": "ii",
+            "answer": "parallelogram",
+            "accept": [
+              "a parallelogram"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "b.i",
+              "d.i"
+            ]
+          }
+        ],
+        "statement": "Since $\\vec{PS}=$ {} is equal to $\\vec{QR}$, quadrilateral $PQRS$ is a {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Uses \"their\" $\\vec{OR}$ to obtain $\\vec{OS}$ and forms $\\vec{PS}=\\vec{OS}-\\vec{OP}$",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "template": "Uses \"their\" $\\vec{OR}$ to obtain $\\vec{OS}$ and forms $\\vec{PS}=\\vec{OS}-\\vec{OP}$",
+        "hint": "Use your $\\vec{OR}$ to find $\\vec{OS}$, then form $\\vec{PS}=\\vec{OS}-\\vec{OP}$."
+      },
+      {
+        "code": "AK4",
+        "profile": "AK",
+        "criterion": "Simplifies, CAO $\\vec{PS}=6\\vec{a}+6\\vec{b}$",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "template": "Simplifies, CAO $\\vec{PS}=6\\vec{a}+6\\vec{b}$"
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Concludes parallelogram since \"their\" $\\vec{PS}$ equals \"their\" $\\vec{QR}$",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "template": "Concludes parallelogram since \"their\" $\\vec{PS}$ equals \"their\" $\\vec{QR}$",
+        "hint": "Conclude that $PQRS$ is a parallelogram by showing that your $\\vec{PS}$ equals your $\\vec{QR}$."
+      }
+    ]
+  },
+  {
+    "id": "6a83c096c24c2d59f4d9c237",
+    "fingerprint": "80ad1c8a1822366fc4fc371f5f985d8f0b25ab0ef91e723b47d7296b65221ea9",
+    "refs": [
+      "c.verdict"
+    ],
+    "parts": [
+      {
+        "label": "c",
+        "prompt": "Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "increase",
+            "answer": "7.8°",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK3",
+              "AK3"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          },
+          {
+            "label": "verdict",
+            "answer": "incorrect",
+            "accept": [
+              "not correct",
+              "No"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "c.increase"
+            ]
+          }
+        ],
+        "statement": "The angle of elevation has increased by {}, so the captain's statement that it increased by more than $15^\\circ$ is {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "Forms the increase as \"their\" angle from (b) minus $30^\\circ$",
+        "mark_value": 1,
+        "slot_ref": "c.increase",
+        "part_label": "c",
+        "template": "Forms the increase as \"their\" angle from (b) minus $30^\\circ$",
+        "hint": "Find the increase by subtracting $30^\\circ$ from your angle from part (b)."
+      },
+      {
+        "code": "AK3",
+        "profile": "AK",
+        "criterion": "CAO $7.8^\\circ$",
+        "mark_value": 1,
+        "slot_ref": "c.increase",
+        "part_label": "c",
+        "template": "CAO ${c.increase}^\\circ$"
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "States incorrect because \"their\" increase is less than $15^\\circ$",
+        "mark_value": 1,
+        "slot_ref": "c.verdict",
+        "part_label": "c",
+        "template": "States incorrect because \"their\" increase is less than $15^\\circ$",
+        "hint": "Compare your increase with $15^\\circ$ and state that the captain is incorrect if it is less."
+      }
+    ]
+  },
+  {
+    "id": "6a83c866c24c2d59f4d9c30d",
+    "fingerprint": "070ba0f0e0e89be7f6dcf2a8ed87f26157ac6b6533ceea6f1820a146c17617e7",
+    "refs": [
+      "c.reason"
+    ],
+    "parts": [
+      {
+        "label": "c",
+        "prompt": "Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "decision",
+            "answer": "can",
+            "accept": [
+              "yes"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          },
+          {
+            "label": "reason",
+            "answer": "less than",
+            "accept": [
+              "less than or equal to"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "CK3",
+              "R2"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          }
+        ],
+        "statement": "The fisherman {} make the direct journey from $F$ to $H$ using the fuel available because the distance $HF$ is {} $14$ km."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "Recognises that the direct distance must not exceed the available fuel range of $14$ km",
+        "mark_value": 1,
+        "slot_ref": "c.reason",
+        "part_label": "c",
+        "template": "Recognises that the direct distance must not exceed the available fuel range of $14$ km",
+        "hint": "Check that the direct distance is no greater than the available fuel range of $14$ km."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Compares \"their\" distance $HF$ correctly with $14$ km",
+        "mark_value": 1,
+        "slot_ref": "c.reason",
+        "part_label": "c",
+        "template": "Compares \"their\" distance $HF$ correctly with $14$ km",
+        "hint": "Compare your distance $HF$ correctly with $14$ km."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Concludes that the fisherman can make the journey from \"their\" comparison",
+        "mark_value": 1,
+        "slot_ref": "c.decision",
+        "part_label": "c",
+        "template": "Concludes that the fisherman can make the journey from \"their\" comparison",
+        "hint": "Use your comparison to decide whether the fisherman can make the journey."
+      }
+    ]
+  },
+  {
+    "id": "6a83d825f8a49010ad80498a",
+    "fingerprint": "c7a28d835d1b1a10fa0976885b0bcc919105f357cef1133e422b5a8dce79c6a3",
+    "refs": [
+      "d.ii"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 2,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "not disjoint",
+            "accept": [
+              "overlapping",
+              "intersecting"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R2"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          },
+          {
+            "label": "ii",
+            "answer": "5",
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          }
+        ],
+        "statement": "The sets $A$ and $B$ are {} because $n(A \\cap B) =$ {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "States that the sets are not disjoint",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "template": "States that the sets are not disjoint",
+        "hint": "State that the sets are not disjoint because they overlap."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Gives a non-zero intersection, $n(A \\cap B)=5$",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "template": "Gives a non-zero intersection, $n(A \\cap B)=5$",
+        "hint": "Read the overlapping region and write it as a non-zero value of $n(A \\cap B)$."
+      }
+    ]
+  },
+  {
+    "id": "6a83da96f8a49010ad8049c8",
+    "fingerprint": "05bd1c4ab71fb88c9cae07b1d7ed0934a41a7c8f764db382a47d0fcd436fe8b1",
+    "refs": [
+      "d.reason"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 2,
+        "slots": [
+          {
+            "label": "verdict",
+            "answer": "did not",
+            "accept": [
+              "No"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "c.i"
+            ]
+          },
+          {
+            "label": "reason",
+            "answer": "$\\frac{5}{6}$",
+            "accept": [
+              "$0.833\\ldots$",
+              "$0.83\\overline{3}$"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "AK3"
+            ],
+            "depends_on": [
+              "c.i"
+            ]
+          }
+        ],
+        "statement": "Kemar {} meet the required average speed of at least $0.9$ m/s because his average speed was {} m/s."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "States that Kemar did not meet the requirement since \"their\" speed is less than $0.9$ m/s",
+        "mark_value": 1,
+        "slot_ref": "d.verdict",
+        "part_label": "d",
+        "template": "States that Kemar did not meet the requirement since \"their\" speed is less than $0.9$ m/s",
+        "hint": "State that Kemar does not meet the requirement because your speed is less than $0.9$ m/s."
+      },
+      {
+        "code": "AK3",
+        "profile": "AK",
+        "criterion": "Converts \"their\" speed from m/min to m/s by dividing by $60$",
+        "mark_value": 1,
+        "slot_ref": "d.reason",
+        "part_label": "d",
+        "template": "Converts \"their\" speed from m/min to m/s by dividing by $60$",
+        "hint": "Convert your speed from m/min to m/s by dividing by $60$."
+      }
+    ]
+  },
+  {
+    "id": "6a83e045f8a49010ad804a64",
+    "fingerprint": "54a7972aaa26b539faa52d0f2ebf9da8d1660fc608efdeaaa6a2cc644fc0eb78",
+    "refs": [
+      "c.ii"
+    ],
+    "parts": [
+      {
+        "label": "c",
+        "prompt": "Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "8",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "AK3"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          },
+          {
+            "label": "ii",
+            "answer": "no profit or loss",
+            "accept": [
+              "neither a profit nor a loss",
+              "break-even"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "CK3",
+              "R3"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          }
+        ],
+        "statement": "At this point, Anisa has received \\$ {} from sales and has made {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "AK3",
+        "profile": "AK",
+        "criterion": "Multiplies \\$2 by \"their\" number of bottles",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "template": "Multiplies \\$2 by \"their\" number of bottles",
+        "hint": "Multiply \\$2 by your number of bottles to find the sales received."
+      },
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "Recognises that sales received equal the initial loss when net amount is $0$",
+        "mark_value": 1,
+        "slot_ref": "c.ii",
+        "part_label": "c",
+        "template": "Recognises that sales received equal the initial loss when net amount is $0$",
+        "hint": "Recognise that a net amount of $0$ means the sales received exactly cover the initial loss."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "States that there is no profit or loss",
+        "mark_value": 1,
+        "slot_ref": "c.ii",
+        "part_label": "c",
+        "template": "States that there is no profit or loss",
+        "hint": "State that the situation results in no profit or loss."
+      }
+    ]
+  },
+  {
+    "id": "6a83e1f0f8a49010ad804a99",
+    "fingerprint": "41dc75c201536c28d5aaa7f1b318c79aa035377548c6eb69381628d800b8aaff",
+    "refs": [
+      "d.ii"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "not",
+            "accept": [
+              "No",
+              "no",
+              "insufficient"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "c.i"
+            ]
+          },
+          {
+            "label": "ii",
+            "answer": "\\$493.28",
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R1",
+              "R2"
+            ],
+            "depends_on": [
+              "c.i"
+            ]
+          }
+        ],
+        "statement": "The cash available is {} sufficient. This is because the total amount payable is {} more than the cash available."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "Compares \"their\" total amount payable with \\$4 000",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "template": "Compares \"their\" total amount payable with \\$4 000",
+        "hint": "Compare your total amount payable with \\$4 000."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Finds the shortfall from \"their\" total amount payable",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "template": "Finds the shortfall from \"their\" total amount payable",
+        "hint": "Subtract \\$4 000 from your total amount payable to find the shortfall."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "States that the cash is not sufficient",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "template": "States that the cash is not sufficient",
+        "hint": "State that the cash is not sufficient because your total amount payable is greater than the cash available."
+      }
+    ]
+  },
+  {
+    "id": "6a83f1a39aba6d73cb8210c0",
+    "fingerprint": "dab92bb926f7b8e46f32643728ea976845e7f6bb5bcf8a317cc0f9169b06793e",
+    "refs": [
+      "d.reason"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 4,
+        "slots": [
+          {
+            "label": "amount",
+            "answer": "\\$2 295",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "AK5"
+            ],
+            "depends_on": [
+              "b.i",
+              "c.i"
+            ]
+          },
+          {
+            "label": "set",
+            "answer": "N",
+            "accept": [
+              "\\mathbb{N}",
+              "natural numbers",
+              "natural number"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R1"
+            ],
+            "depends_on": [
+              "d.amount"
+            ]
+          },
+          {
+            "label": "reason",
+            "answer": "positive whole number",
+            "accept": [
+              "positive integer",
+              "a positive integer",
+              "a positive whole number"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R2"
+            ],
+            "depends_on": [
+              "d.amount",
+              "d.set"
+            ]
+          },
+          {
+            "label": "change",
+            "answer": "\\$5",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "d.amount"
+            ]
+          }
+        ],
+        "statement": "The amount Anisa pays is {}. This amount belongs to the smallest set {} because it is a {}. If Anisa pays with \\$2 300, she receives {} change."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "AK5",
+        "profile": "AK",
+        "criterion": "Adds \"their\" sale price and \"their\" sales tax to obtain \\$2 295",
+        "mark_value": 1,
+        "slot_ref": "d.amount",
+        "part_label": "d",
+        "template": "Adds \"their\" sale price and \"their\" sales tax to obtain \\${d.amount}",
+        "hint": "Add your sale price and your sales tax to find your total paid."
+      },
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "Selects $N$ as the smallest set containing \"their\" total",
+        "mark_value": 1,
+        "slot_ref": "d.set",
+        "part_label": "d",
+        "template": "Selects $N$ as the smallest set containing \"their\" total",
+        "hint": "Choose $N$ as the smallest set containing your total."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Justifies the choice by identifying \"their\" total as a positive whole number",
+        "mark_value": 1,
+        "slot_ref": "d.reason",
+        "part_label": "d",
+        "template": "Justifies the choice by identifying \"their\" total as a positive whole number",
+        "hint": "Justify your choice by stating that your total is a positive whole number."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Subtracts \"their\" total from \\$2 300 to determine the change",
+        "mark_value": 1,
+        "slot_ref": "d.change",
+        "part_label": "d",
+        "template": "Subtracts \"their\" total from \\$2 300 to determine the change",
+        "hint": "Subtract your total from \\$2 300 to find the change."
+      }
+    ]
+  },
+  {
+    "id": "6a83f5419aba6d73cb821132",
+    "fingerprint": "c5c3fa7e2f9209fdddfec479c69f20a396ecfad809f3f49577f3f89f626d3fdd",
+    "refs": [
+      "b.reason"
+    ],
+    "parts": [
+      {
+        "label": "b",
+        "prompt": "Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "angle",
+            "answer": "50",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "AK2",
+              "R1"
+            ],
+            "depends_on": [
+              "a.i"
+            ]
+          },
+          {
+            "label": "reason",
+            "answer": "alternate segment theorem",
+            "accept": [
+              "angle between a tangent and a chord equals the angle in the alternate segment",
+              "tangent-chord theorem"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "CK2"
+            ],
+            "depends_on": [
+              "a.i"
+            ]
+          }
+        ],
+        "statement": "The angle $PAB$ is {}°, because {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "AK2",
+        "profile": "AK",
+        "criterion": "Equates angle $PAB$ to \"their\" angle $ACB$.",
+        "mark_value": 1,
+        "slot_ref": "b.angle",
+        "part_label": "b",
+        "template": "Equates angle $PAB$ to \"their\" angle $ACB$.",
+        "hint": "Set $\\angle PAB$ equal to your earlier $\\angle ACB$."
+      },
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "Identifies angle $ACB$ as the angle in the alternate segment for chord $AB$.",
+        "mark_value": 1,
+        "slot_ref": "b.angle",
+        "part_label": "b",
+        "template": "Identifies angle $ACB$ as the angle in the alternate segment for chord $AB$.",
+        "hint": "Identify $\\angle ACB$ as the angle in the alternate segment for chord $AB$."
+      },
+      {
+        "code": "CK2",
+        "profile": "CK",
+        "criterion": "States the alternate segment theorem.",
+        "mark_value": 1,
+        "slot_ref": "b.reason",
+        "part_label": "b",
+        "template": "States the alternate segment theorem.",
+        "hint": "State the alternate segment theorem before applying it to the tangent and chord."
+      }
+    ]
+  },
+  {
+    "id": "6a83ff560676ebb26b9e878b",
+    "fingerprint": "2acb54c05cde100d55b70b91d03136dd26d72f3bfdf59c5bbbaa5f12f82afb03",
+    "refs": [
+      "c.ii"
+    ],
+    "parts": [
+      {
+        "label": "c",
+        "prompt": "Complete the statement below.",
+        "marks": 5,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "32",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK3",
+              "R1",
+              "AK4",
+              "R2"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          },
+          {
+            "label": "ii",
+            "answer": "angle in the alternate segment theorem",
+            "accept": [
+              "alternate segment theorem",
+              "the tangent-chord theorem"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "a.i",
+              "b.i",
+              "c.i"
+            ]
+          }
+        ],
+        "statement": "The angle between the tangent at $P$ and $PQ$ is {} $°$. This agrees with $\\angle PRQ$ by the {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "Recognises that the tangent at $P$ is perpendicular to radius $OP$",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "template": "Recognises that the tangent at $P$ is perpendicular to radius $OP$",
+        "hint": "Use the fact that the tangent at $P$ is perpendicular to the radius $OP$."
+      },
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "Forms the complementary relationship $x+\\text{“their” }\\angle OPQ=90°$",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "template": "Forms the complementary relationship $x+\\text{“their” }\\angle OPQ=90°$",
+        "hint": "Write the complementary relationship $x+\\text{your }\\angle OPQ=90°$."
+      },
+      {
+        "code": "AK4",
+        "profile": "AK",
+        "criterion": "Evaluates $90°-\\text{“their” }58°$",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "template": "Evaluates $90°-\\text{“their” }{b.i}°$",
+        "hint": "Evaluate $90°-\\text{your earlier angle}$."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Concludes that the tangent-chord angle is $32°$, consistent with $\\angle PRQ$",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "template": "Concludes that the tangent-chord angle is $32°$, consistent with $\\angle PRQ$",
+        "hint": "State that the angle between the tangent and chord equals $\\angle PRQ$."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "States the angle in the alternate segment theorem",
+        "mark_value": 1,
+        "slot_ref": "c.ii",
+        "part_label": "c",
+        "template": "States the angle in the alternate segment theorem",
+        "hint": "State the angle in the alternate segment theorem."
+      }
+    ]
+  },
+  {
+    "id": "6a840a4f0676ebb26b9e889a",
+    "fingerprint": "7d4f000ab478f33514657657f0435abb4472062d150764cca88697dd86fdf959",
+    "refs": [
+      "d.iii"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 4,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "2 295",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK3",
+              "AK4"
+            ],
+            "depends_on": [
+              "b.i",
+              "c.i"
+            ]
+          },
+          {
+            "label": "ii",
+            "answer": "can",
+            "accept": [
+              "is able to"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R1"
+            ],
+            "depends_on": [
+              "d.i"
+            ]
+          },
+          {
+            "label": "iii",
+            "answer": "5",
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R2"
+            ],
+            "depends_on": [
+              "d.i"
+            ]
+          }
+        ],
+        "statement": "The total cost is \\${}. Kemar {} afford the tiles because the total cost is \\${} less than \\$2 300."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "Identifies total cost as \"their\" discounted price plus \"their\" sales tax",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "template": "Identifies total cost as \"their\" discounted price plus \"their\" sales tax",
+        "hint": "Treat the total cost as your discounted price plus your sales tax."
+      },
+      {
+        "code": "AK4",
+        "profile": "AK",
+        "criterion": "Adds \"their\" discounted price and sales tax",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "template": "Adds \"their\" discounted price and sales tax",
+        "hint": "Add your discounted price and sales tax to find the total cost."
+      },
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "States the correct affordability decision from \"their\" total cost",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "template": "States the correct affordability decision from \"their\" total cost",
+        "hint": "Use your total cost to state whether Kemar can afford the tiles."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Compares \"their\" total cost with \\$2 300 to find the amount less",
+        "mark_value": 1,
+        "slot_ref": "d.iii",
+        "part_label": "d",
+        "template": "Compares \"their\" total cost with \\$2 300 to find the amount less",
+        "hint": "Compare your total cost with \\$2 300 to find how much less it is."
+      }
+    ]
+  },
+  {
+    "id": "6a840e250676ebb26b9e88f0",
+    "fingerprint": "fabd5b789be272717cb2ed2a6b15c8d9856789f749e45baaf96bc78c13c6aa65",
+    "refs": [
+      "a.ii"
+    ],
+    "parts": [
+      {
+        "label": "a",
+        "prompt": "Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "37°",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R1",
+              "AK1"
+            ],
+            "depends_on": []
+          },
+          {
+            "label": "ii",
+            "answer": "angle in the alternate segment",
+            "accept": [
+              "alternate segment theorem",
+              "the angle between a tangent and a chord equals the angle in the alternate segment"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "CK1"
+            ],
+            "depends_on": []
+          }
+        ],
+        "statement": "The acute angle between $t$ and $AB$ is {} because {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "Equates the angle between tangent $t$ and chord $AB$ to $\\angle ACB$",
+        "mark_value": 1,
+        "slot_ref": "a.i",
+        "part_label": "a",
+        "template": "Equates the angle between tangent $t$ and chord $AB$ to $\\angle ACB$",
+        "hint": "Set the angle between tangent $t$ and chord $AB$ equal to $\\angle ACB$."
+      },
+      {
+        "code": "AK1",
+        "profile": "AK",
+        "criterion": "CAO $37°$",
+        "mark_value": 1,
+        "slot_ref": "a.i",
+        "part_label": "a",
+        "template": "CAO $37°$"
+      },
+      {
+        "code": "CK1",
+        "profile": "CK",
+        "criterion": "States angle in the alternate segment",
+        "mark_value": 1,
+        "slot_ref": "a.ii",
+        "part_label": "a",
+        "template": "States angle in the alternate segment",
+        "hint": "State that the tangent-chord angle equals the angle in the alternate segment."
+      }
+    ]
+  },
+  {
+    "id": "6a8410ad0676ebb26b9e893a",
+    "fingerprint": "6372587a1f916a2015cac60c40da896e513eadee1d7ffbf8c73139f6b703781b",
+    "refs": [
+      "c.iii"
+    ],
+    "parts": [
+      {
+        "label": "c",
+        "prompt": "Complete the statement below.",
+        "marks": 4,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "\\frac{125\\pi}{6}",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK3",
+              "R1"
+            ],
+            "depends_on": []
+          },
+          {
+            "label": "ii",
+            "answer": "will",
+            "accept": [
+              "can"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R2"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          },
+          {
+            "label": "iii",
+            "answer": "less than",
+            "accept": [
+              "smaller than",
+              "<"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          }
+        ],
+        "statement": "The greatest possible volume of a tank which can fit is {} $\\text{ m}^3$. The proposed tank {} fit because its radius is {} the maximum permitted radius."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "Identifies $2.5\\text{ m}$ as the greatest permitted radius from the number line",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "template": "Identifies $2.5\\text{ m}$ as the greatest permitted radius from the number line",
+        "hint": "Read the rightmost included point on the number line as the greatest permitted radius in $\\text{m}$."
+      },
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "Uses the maximum permitted radius to determine the greatest volume, CAO $\\frac{125\\pi}{6}\\text{ m}^3$",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "template": "Uses the maximum permitted radius to determine the greatest volume, CAO $\\frac{125\\pi}{6}\\text{ m}^3$"
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Concludes that the proposed tank will fit using \"their\" radius from part (b)",
+        "mark_value": 1,
+        "slot_ref": "c.ii",
+        "part_label": "c",
+        "template": "Concludes that the proposed tank will fit using \"their\" radius from part (b)",
+        "hint": "Use your radius from part (b) to conclude whether the proposed tank will fit."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "States that \"their\" radius is less than the maximum permitted radius",
+        "mark_value": 1,
+        "slot_ref": "c.iii",
+        "part_label": "c",
+        "template": "States that \"their\" radius is less than the maximum permitted radius",
+        "hint": "Compare your radius with the maximum permitted radius and state that it is less."
+      }
+    ]
+  },
+  {
+    "id": "6a84112a0676ebb26b9e894a",
+    "fingerprint": "00e192214db25aa690ff770e468ba971a7b71023377451f66a2d3329496fd517",
+    "refs": [
+      "d.midpoint"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 2,
+        "slots": [
+          {
+            "label": "ratio",
+            "answer": "2:3",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "a.i",
+              "c.i"
+            ]
+          },
+          {
+            "label": "midpoint",
+            "answer": "not",
+            "accept": [
+              "not"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R4"
+            ],
+            "depends_on": [
+              "d.ratio"
+            ]
+          }
+        ],
+        "statement": "The point $B$ divides $AC$ in the ratio $AB:BC =$ {}, so $B$ is {} the midpoint of $AC$."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Uses “their” lengths or parallel displacement vectors to obtain $AB:BC=2:3$, or correct follow-through",
+        "mark_value": 1,
+        "slot_ref": "d.ratio",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Uses “their” lengths or parallel displacement vectors to obtain $AB:BC=2:3$, or correct follow-through",
+        "hint": "Use your two lengths, or compare the parallel displacement vectors, and simplify $AB:BC$ to its lowest whole-number ratio."
+      },
+      {
+        "code": "R4",
+        "profile": "R",
+        "criterion": "States that $B$ is not the midpoint because $AB\\ne BC$",
+        "mark_value": 1,
+        "slot_ref": "d.midpoint",
+        "part_label": "d",
+        "for_format": false,
+        "template": "States that $B$ is not the midpoint because $AB\\ne BC$",
+        "hint": "Compare the lengths $AB$ and $BC$, then state that $B$ is not the midpoint when $AB\\ne BC$."
+      }
+    ]
+  },
+  {
+    "id": "6a8411a40676ebb26b9e8957",
+    "fingerprint": "c16afa02db5e8117b9824c7395c0706a19003036a63ded47b73d9beae491ec66",
+    "refs": [
+      "d.iii"
+    ],
+    "parts": [
+      {
+        "label": "c",
+        "prompt": "Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "1410",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R1",
+              "AK4"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          },
+          {
+            "label": "ii",
+            "answer": "not every ferry departure was included in the sample",
+            "accept": [
+              "only some ferry departures were surveyed",
+              "the result is based on a sample rather than all departures"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R2"
+            ],
+            "depends_on": [
+              "c.i"
+            ]
+          }
+        ],
+        "statement": "Based on the sample, the estimated number of passengers carried on the 150 departures is {}. This is an estimate because {}."
+      },
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "sample statistic",
+            "accept": [
+              "statistic",
+              "sample mean"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK2"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          },
+          {
+            "label": "ii",
+            "answer": "population parameter",
+            "accept": [
+              "parameter",
+              "population mean"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK3"
+            ],
+            "depends_on": [
+              "c.i"
+            ]
+          },
+          {
+            "label": "iii",
+            "answer": "representative",
+            "accept": [
+              "representative of the population",
+              "typical"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "d.i",
+              "d.ii"
+            ]
+          }
+        ],
+        "statement": "The mean calculated in (b) is a {}. The mean number of passengers for all 150 departures is a {}. The sample mean may be used to estimate this value because the random sample is likely to be {} of all ferry departures."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "Uses \"their\" sample mean as the estimated number of passengers per departure for 150 departures",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "template": "Uses \"their\" sample mean as the estimated number of passengers per departure for 150 departures",
+        "hint": "Multiply your sample mean by the total number of departures to estimate the total number of passengers."
+      },
+      {
+        "code": "AK4",
+        "profile": "AK",
+        "criterion": "Calculates $150 \\times \"their\"\\ 9.4$, CAO 1410",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "template": "Calculates $150 \\times \"their\"\\ {b.i}$, CAO {c.i}"
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Explains that the result is based on only some, rather than all, ferry departures",
+        "mark_value": 1,
+        "slot_ref": "c.ii",
+        "part_label": "c",
+        "template": "Explains that the result is based on only some, rather than all, ferry departures",
+        "hint": "Explain that this is an estimate because the sample includes only some ferry departures, not every departure."
+      },
+      {
+        "code": "CK2",
+        "profile": "CK",
+        "criterion": "Identifies the sample mean as a sample statistic",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "template": "Identifies the sample mean as a sample statistic",
+        "hint": "Identify the mean calculated from the sample as a sample statistic."
+      },
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "Identifies the mean for all departures as a population parameter",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "template": "Identifies the mean for all departures as a population parameter",
+        "hint": "Identify the mean for all ferry departures as a population parameter."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Recognises that a random sample is likely to be representative of the population",
+        "mark_value": 1,
+        "slot_ref": "d.iii",
+        "part_label": "d",
+        "template": "Recognises that a random sample is likely to be representative of the population",
+        "hint": "State that a random sample is likely to represent the whole population."
+      }
+    ]
+  },
+  {
+    "id": "6a84161c5222177bc0d16f32",
+    "fingerprint": "8678fb35f7b4d6b6807855d678a87ae7e8f6cafb7810967c825fa15d33295747",
+    "refs": [
+      "d.verdict"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "The shopkeeper paid \\$18 for each soap. Complete the statement below.",
+        "marks": 4,
+        "slots": [
+          {
+            "label": "percentage",
+            "answer": "40.625",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK4",
+              "R1",
+              "R2"
+            ],
+            "depends_on": [
+              "c.number",
+              "c.amount"
+            ]
+          },
+          {
+            "label": "verdict",
+            "answer": "exceeded",
+            "accept": [
+              "did exceed",
+              "yes"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "d.percentage"
+            ]
+          }
+        ],
+        "statement": "The percentage profit, based on cost, is {}%, so it {} $35\\%$."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK4",
+        "profile": "CK",
+        "criterion": "Selects percentage profit $= \\dfrac{\\text{profit}}{\\text{cost}} \\times 100$",
+        "mark_value": 1,
+        "slot_ref": "d.percentage",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Selects percentage profit $= \\dfrac{\\text{profit}}{\\text{cost}} \\times 100$",
+        "hint": "Use percentage profit $= \\dfrac{\\text{profit}}{\\text{cost}} \\times 100$."
+      },
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "Forms $\\dfrac{\\text{their payment} - (36 \\times 18)}{36 \\times 18} \\times 100$",
+        "mark_value": 1,
+        "slot_ref": "d.percentage",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Forms $\\dfrac{\\text{their payment} - ({c.number} \\times 18)}{{c.number} \\times 18} \\times 100$",
+        "hint": "Form $\\dfrac{\\text{your payment} - (\\text{number of soaps} \\times 18)}{\\text{number of soaps} \\times 18} \\times 100$ to calculate the percentage profit."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "CAO $40.625\\%$",
+        "mark_value": 1,
+        "slot_ref": "d.percentage",
+        "part_label": "d",
+        "for_format": false,
+        "template": "CAO ${d.percentage}\\%$"
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Concludes that \"their\" percentage profit exceeds $35\\%$",
+        "mark_value": 1,
+        "slot_ref": "d.verdict",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Concludes that \"their\" percentage profit exceeds $35\\%$",
+        "hint": "Compare your percentage profit with $35\\%$ and state whether it exceeds this amount."
+      }
+    ]
+  },
+  {
+    "id": "6a84221b5222177bc0d1706f",
+    "fingerprint": "7326ef3db077283ce78f398c1814d357ec55c8ea3ca4c68722726bb432fec770",
+    "refs": [
+      "c.verdict"
+    ],
+    "parts": [
+      {
+        "label": "c",
+        "prompt": "Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "total",
+            "answer": "1 630.20",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK3",
+              "R2"
+            ],
+            "depends_on": [
+              "b.i"
+            ]
+          },
+          {
+            "label": "verdict",
+            "answer": "not",
+            "accept": [
+              "not"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "b.i",
+              "c.total"
+            ]
+          }
+        ],
+        "statement": "The expected total ticket revenue is \\${}. Therefore, the target will {} be met."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "Identifies the expected total as the sum of the two entries in \"their\" projected revenue matrix",
+        "mark_value": 1,
+        "slot_ref": "c.total",
+        "part_label": "c",
+        "template": "Identifies the expected total as the sum of the two entries in \"their\" projected revenue matrix",
+        "hint": "Add the two entries in your projected revenue matrix to find the expected total."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Adds \"their\" projected revenues and compares the result with \\$1 650",
+        "mark_value": 1,
+        "slot_ref": "c.total",
+        "part_label": "c",
+        "template": "Adds \"their\" projected revenues and compares the result with \\$1 650",
+        "hint": "Add your projected revenues and compare the total with \\$1 650."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Concludes that the target will not be met",
+        "mark_value": 1,
+        "slot_ref": "c.verdict",
+        "part_label": "c",
+        "template": "Concludes that the target will not be met",
+        "hint": "State whether the target is met after making your comparison."
+      }
+    ]
+  },
+  {
+    "id": "6a852996ed771942b6d0dc87",
+    "fingerprint": "e351e828590197f0485ef1c462c0b60058c621bb285c9e8048f5cad999bab64c",
+    "refs": [
+      "d.ii"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "$10$",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK4",
+              "AK5"
+            ],
+            "depends_on": [
+              "a.i",
+              "c.i"
+            ],
+            "objective_id": "M3.4.5"
+          },
+          {
+            "label": "ii",
+            "answer": "not parallel",
+            "accept": [
+              "non-parallel"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "d.i"
+            ],
+            "objective_id": "M3.4.4"
+          }
+        ],
+        "statement": "Using $\\overrightarrow{AB}$ and $\\overrightarrow{AD}$ as the first and second columns respectively, the determinant is {}. Therefore, paths $AB$ and $AD$ are {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK4",
+        "profile": "CK",
+        "criterion": "Sets up the determinant $\\begin{vmatrix}4&3\\\\2&4\\end{vmatrix}=4(4)-2(3)$.",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Sets up the determinant $\\begin{vmatrix}4&3\\\\2&4\\end{vmatrix}=4(4)-2(3)$.",
+        "hint": "Place the components of $\\overrightarrow{AB}$ and $\\overrightarrow{AD}$ into $\\begin{vmatrix}a&c\\\\b&d\\end{vmatrix}=a(d)-b(c)$ and evaluate the determinant."
+      },
+      {
+        "code": "AK5",
+        "profile": "AK",
+        "criterion": "CAO $10$.",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "for_format": false,
+        "template": "CAO ${d.i}$."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Concludes that the paths are not parallel because \"their\" determinant is non-zero.",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Concludes that the paths are not parallel because \"their\" determinant is non-zero.",
+        "hint": "If your determinant is non-zero, conclude that the paths are not parallel."
+      }
+    ]
+  },
+  {
+    "id": "6a8529eeed771942b6d0dc8f",
+    "fingerprint": "8d337dd20f1e82083196a76feb053490d60f7aa53b4cd38659d274abf78ede22",
+    "refs": [
+      "d.ii"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 4,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "48",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK4",
+              "AK5",
+              "R2"
+            ],
+            "depends_on": [
+              "c.i"
+            ],
+            "objective_id": "M2.4.6"
+          },
+          {
+            "label": "ii",
+            "answer": "insufficient",
+            "accept": [
+              "not enough",
+              "not sufficient"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "d.i"
+            ],
+            "objective_id": "M2.4.6"
+          }
+        ],
+        "statement": "The total length of timber needed for the outside of the frame and the support is {} m, so a length of $47.5$ m is {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK4",
+        "profile": "CK",
+        "criterion": "Recognises that both sloping sides contribute $13$ m",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Recognises that both sloping sides contribute $13$ m",
+        "hint": "Include both sloping sides, with each contributing $13$ m, when finding the timber length."
+      },
+      {
+        "code": "AK5",
+        "profile": "AK",
+        "criterion": "Adds $13 + 13 + 10 + \"their\" AD$, CAO $48$ m",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Adds $13 + 13 + 10 + \"their\" AD$, CAO ${d.i}$ m"
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Includes the central support as part of the required timber length",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Includes the central support as part of the required timber length",
+        "hint": "Add the central support $AD$ to the outside edges when finding the required timber length."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Compares $47.5$ m with \"their\" total and concludes that it is insufficient",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Compares $47.5$ m with \"their\" total and concludes that it is insufficient",
+        "hint": "Compare \\$47.5 m with your total length and state that it is insufficient if the total is greater."
+      }
+    ]
+  },
+  {
+    "id": "6a852cc0ed771942b6d0dccb",
+    "fingerprint": "0d2868fd933f2eeef6a0a7445103b0520a6078e49aa4c5a9aafe3e09191ac703",
+    "refs": [
+      "c.days",
+      "c.comparison",
+      "c.decision"
+    ],
+    "parts": [
+      {
+        "label": "c",
+        "prompt": "Complete the statement below to justify whether the supplier should make the arrangement.",
+        "marks": 4,
+        "slots": [
+          {
+            "label": "days",
+            "answer": "7",
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R1",
+              "R2"
+            ],
+            "depends_on": [
+              "a.iii",
+              "b.mode"
+            ],
+            "objective_id": "M2.1.11"
+          },
+          {
+            "label": "comparison",
+            "answer": "more",
+            "accept": [
+              "greater"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "c.days"
+            ],
+            "objective_id": "M2.1.11"
+          },
+          {
+            "label": "decision",
+            "answer": "should",
+            "accept": [
+              "should make",
+              "should make the arrangement"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R4"
+            ],
+            "depends_on": [
+              "c.comparison"
+            ],
+            "objective_id": "M2.1.11"
+          }
+        ],
+        "statement": "The supplier proposes to deliver the modal number of baskets each day, but will do so only if this number was sold on more than one-third of the 20 days. The modal number of baskets was sold on {} of the 20 days. Since this is {} than one-third, the supplier {} make the arrangement."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "Uses \"their\" modal value to select the relevant frequency",
+        "mark_value": 1,
+        "slot_ref": "c.days",
+        "part_label": "c",
+        "template": "Uses \"their\" modal value to select the relevant frequency",
+        "hint": "Use your modal value to select the matching frequency from the completed table."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "States that \"their\" modal value occurred on 7 of the 20 days",
+        "mark_value": 1,
+        "slot_ref": "c.days",
+        "part_label": "c",
+        "template": "States that \"their\" modal value occurred on 7 of the 20 days",
+        "hint": "State how many days your modal value occurs, out of the total number of days."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Compares $\\frac{7}{20}$ with $\\frac{1}{3}$ correctly",
+        "mark_value": 1,
+        "slot_ref": "c.comparison",
+        "part_label": "c",
+        "template": "Compares $\\frac{7}{20}$ with $\\frac{1}{3}$ correctly",
+        "hint": "Compare $\\frac{f}{n}$ with one third by writing both fractions with a common denominator."
+      },
+      {
+        "code": "R4",
+        "profile": "R",
+        "criterion": "Concludes that the supplier should make the arrangement, based on \"their\" comparison",
+        "mark_value": 1,
+        "slot_ref": "c.decision",
+        "part_label": "c",
+        "template": "Concludes that the supplier should make the arrangement, based on \"their\" comparison",
+        "hint": "Use your comparison to decide whether the supplier should make the arrangement and state the conclusion."
+      }
+    ]
+  },
+  {
+    "id": "6a852f6fed771942b6d0dd12",
+    "fingerprint": "d2dee2f09d3212dc9216e604c3cd4dfef4e2111eaa5953222a8dac99b102498f",
+    "refs": [
+      "b.iii",
+      "d.ii"
+    ],
+    "parts": [
+      {
+        "label": "b",
+        "prompt": "Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "$t=3$",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK2"
+            ],
+            "depends_on": [
+              "a.i"
+            ],
+            "objective_id": "M2.3.18"
+          },
+          {
+            "label": "ii",
+            "answer": "$12$",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK3"
+            ],
+            "depends_on": [
+              "a.i"
+            ],
+            "objective_id": "M2.3.18"
+          },
+          {
+            "label": "iii",
+            "answer": "downwards",
+            "accept": [
+              "downward"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R1"
+            ],
+            "depends_on": [
+              "a.i",
+              "b.ii"
+            ],
+            "objective_id": "M2.3.18"
+          }
+        ],
+        "statement": "The axis of symmetry is {}. The greatest water level is {} cm because the graph opens {}."
+      },
+      {
+        "label": "d",
+        "prompt": "One hour after the water level first reaches the safe level, complete the statement below.",
+        "marks": 2,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "$2$",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "AK5"
+            ],
+            "depends_on": [
+              "c.i"
+            ],
+            "objective_id": "M2.3.17"
+          },
+          {
+            "label": "ii",
+            "answer": "increasing",
+            "accept": [
+              "rising"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "c.i",
+              "d.i"
+            ],
+            "objective_id": "M2.3.17"
+          }
+        ],
+        "statement": "The gradient of the water-level curve is {} cm per hour. Therefore, the water level is {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK2",
+        "profile": "CK",
+        "criterion": "Identifies the axis from the vertex form, CAO $x=3$",
+        "mark_value": 1,
+        "slot_ref": "b.i",
+        "part_label": "b",
+        "template": "Identifies the axis from the vertex form, CAO $x=3$"
+      },
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "Identifies the vertex value, CAO $12$",
+        "mark_value": 1,
+        "slot_ref": "b.ii",
+        "part_label": "b",
+        "template": "Identifies the vertex value, CAO $12$"
+      },
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "States that the graph opens downwards, so the vertex gives a greatest value",
+        "mark_value": 1,
+        "slot_ref": "b.iii",
+        "part_label": "b",
+        "template": "States that the graph opens downwards, so the vertex gives a greatest value",
+        "hint": "State that the parabola opens downwards, so its vertex represents the greatest water level."
+      },
+      {
+        "code": "AK5",
+        "profile": "AK",
+        "criterion": "Calculates the gradient of the tangent as $2$",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "template": "Calculates the gradient of the tangent as $2$",
+        "hint": "Calculate the tangent gradient by dividing the vertical change by the horizontal change between two clear points on the tangent."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Interprets a positive gradient as an increasing water level",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "template": "Interprets a positive gradient as an increasing water level",
+        "hint": "Interpret the positive gradient by stating that the water level is increasing."
+      }
+    ]
+  },
+  {
+    "id": "6a852fcaed771942b6d0dd1a",
+    "fingerprint": "c2ed15991789ae454aff2a063884c4c61bcc481bed08bb917b5212d952911a33",
+    "refs": [
+      "d.claim"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below. Give the estimates correct to 1 decimal place.",
+        "marks": 5,
+        "slots": [
+          {
+            "label": "lower_quartile",
+            "answer": "18.9",
+            "response_mode": "answer",
+            "answer_format": "dp:1",
+            "rubric_codes": [
+              "AK3"
+            ],
+            "depends_on": [
+              "b.i"
+            ],
+            "objective_id": "M3.1.5"
+          },
+          {
+            "label": "upper_quartile",
+            "answer": "28.3",
+            "response_mode": "answer",
+            "answer_format": "dp:1",
+            "rubric_codes": [
+              "AK4"
+            ],
+            "depends_on": [
+              "b.i"
+            ],
+            "objective_id": "M3.1.5"
+          },
+          {
+            "label": "interquartile_range",
+            "answer": "9.3",
+            "response_mode": "answer",
+            "answer_format": "dp:1",
+            "rubric_codes": [
+              "AK5",
+              "R3"
+            ],
+            "depends_on": [
+              "d.lower_quartile",
+              "d.upper_quartile"
+            ],
+            "objective_id": "M3.1.5"
+          },
+          {
+            "label": "claim",
+            "answer": "false",
+            "accept": [
+              "incorrect",
+              "not valid",
+              "untrue",
+              "false"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R2"
+            ],
+            "depends_on": [
+              "c.modal_class",
+              "d.lower_quartile",
+              "d.upper_quartile"
+            ],
+            "objective_id": "M3.1.5"
+          }
+        ],
+        "statement": "The lower quartile is {} min, the upper quartile is {} min and the interquartile range is {} min. Therefore, the manager's claim is {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "AK3",
+        "profile": "AK",
+        "criterion": "Calculates lower quartile as $9.5 + \\frac{12.5-4}{9}\\times10 = 18.9$ to 1 d.p., using \"their\" frequency",
+        "mark_value": 1,
+        "slot_ref": "d.lower_quartile",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Calculates lower quartile as $9.5 + \\frac{12.5-4}{9}\\times10 = {d.lower_quartile}$ to 1 d.p., using \"their\" frequency",
+        "hint": "Use your frequency in the lower-quartile interpolation formula $L+\\frac{p-c}{f}\\times w$ and round the estimate to one decimal place."
+      },
+      {
+        "code": "AK4",
+        "profile": "AK",
+        "criterion": "Calculates upper quartile as $19.5 + \\frac{37.5-13}{28}\\times10 = 28.3$ to 1 d.p., using \"their\" frequency",
+        "mark_value": 1,
+        "slot_ref": "d.upper_quartile",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Calculates upper quartile as $19.5 + \\frac{37.5-13}{{b.i}}\\times10 = {d.upper_quartile}$ to 1 d.p., using \"their\" frequency",
+        "hint": "Use your frequency in the upper-quartile interpolation formula $L+\\frac{p-c}{f}\\times w$ and round the estimate to one decimal place."
+      },
+      {
+        "code": "AK5",
+        "profile": "AK",
+        "criterion": "Finds $28.25 - 18.94\\ldots = 9.3$ to 1 d.p.",
+        "mark_value": 1,
+        "slot_ref": "d.interquartile_range",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Finds $28.25 - 18.94\\ldots = {d.interquartile_range}$ to 1 d.p.",
+        "hint": "Subtract your lower-quartile estimate from your upper-quartile estimate, use $\\ldots$ for any continuing decimal if needed, and round the interquartile range to one decimal place."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Concludes that the claim is false since \"their\" lower quartile is below the lower boundary $19.5$ of the modal class",
+        "mark_value": 1,
+        "slot_ref": "d.claim",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Concludes that the claim is false since \"their\" lower quartile is below the lower boundary $19.5$ of the modal class",
+        "hint": "Compare your lower-quartile estimate with the lower boundary of the modal class and use this comparison to decide whether the claim is false."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Expresses the quartile estimates and interquartile range to 1 decimal place",
+        "mark_value": 1,
+        "slot_ref": "d.interquartile_range",
+        "part_label": "d",
+        "for_format": true,
+        "template": "Expresses the quartile estimates and interquartile range to 1 decimal place",
+        "hint": "Write both quartile estimates and the interquartile range consistently to one decimal place."
+      }
+    ]
+  },
+  {
+    "id": "6a853df3e7fc40f429797bbe",
+    "fingerprint": "3e4548e695da1290137d31026fa8ca6239c53b5b7b8bcac6ceb06e06da7bf65d",
+    "refs": [
+      "d.ii",
+      "d.iii"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 4,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "$8.5 \\times 10^6$",
+            "response_mode": "answer",
+            "answer_format": "standard_form",
+            "rubric_codes": [
+              "AK5",
+              "R2"
+            ],
+            "depends_on": [
+              "c.i"
+            ],
+            "objective_id": "M1.1.12"
+          },
+          {
+            "label": "ii",
+            "answer": "suitable",
+            "accept": [
+              "appropriate"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "d.i"
+            ],
+            "objective_id": "M1.1.12"
+          },
+          {
+            "label": "iii",
+            "answer": "greater",
+            "accept": [
+              "more",
+              "higher"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R4"
+            ],
+            "depends_on": [
+              "d.i"
+            ],
+            "objective_id": "M1.1.12"
+          }
+        ],
+        "statement": "The panel produces {} flashes in standard form. The panel is {} for the event because its output is {} than the minimum."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "AK5",
+        "profile": "AK",
+        "criterion": "Converts \"their\" number of flashes to $8.5 \\times 10^6$",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "template": "Converts \"their\" number of flashes to $8.5 \\times 10^6$",
+        "hint": "Rewrite your number of flashes in standard form, using $a \\times 10^n$."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Expresses \"their\" answer in standard form",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "for_format": true,
+        "template": "Expresses \"their\" answer in standard form",
+        "hint": "State your flash output in standard form using $a \\times 10^n$."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Concludes suitable using \"their\" standard-form output",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "template": "Concludes suitable using \"their\" standard-form output",
+        "hint": "Use your standard-form output to decide whether the panel is suitable for the event."
+      },
+      {
+        "code": "R4",
+        "profile": "R",
+        "criterion": "States that \"their\" output is greater than the minimum requirement",
+        "mark_value": 1,
+        "slot_ref": "d.iii",
+        "part_label": "d",
+        "template": "States that \"their\" output is greater than the minimum requirement",
+        "hint": "Compare your output with the minimum requirement and state that it is greater."
+      }
+    ]
+  },
+  {
+    "id": "6a8540dbe7fc40f429797bf4",
+    "fingerprint": "d9423371443ed9dddfcc0f37cefa3d25365c8029d19e06b4016541f1c73d178b",
+    "refs": [
+      "c.orientation"
+    ],
+    "parts": [
+      {
+        "label": "c",
+        "prompt": "Complete the statement below.",
+        "marks": 2,
+        "slots": [
+          {
+            "label": "congruency",
+            "answer": "congruent",
+            "accept": [
+              "the same size and shape"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK3"
+            ],
+            "depends_on": [
+              "b.i"
+            ],
+            "objective_id": "M3.3.4"
+          },
+          {
+            "label": "orientation",
+            "answer": "reversed",
+            "accept": [
+              "opposite",
+              "changed",
+              "opposite orientation",
+              "orientation reversed"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R1"
+            ],
+            "depends_on": [
+              "b.i"
+            ],
+            "objective_id": "M3.3.4"
+          }
+        ],
+        "statement": "The final triangular image is {} to triangle $ABC$, and its orientation is {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "States congruent.",
+        "mark_value": 1,
+        "slot_ref": "c.congruency",
+        "part_label": "c",
+        "template": "States congruent.",
+        "hint": "State that the final triangular image is congruent to $ABC$ because the transformations preserve size and shape."
+      },
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "States that the orientation is reversed because a reflection reverses orientation.",
+        "mark_value": 1,
+        "slot_ref": "c.orientation",
+        "part_label": "c",
+        "template": "States that the orientation is reversed because a reflection reverses orientation.",
+        "hint": "State that the orientation is reversed because a reflection reverses orientation."
+      }
+    ]
+  },
+  {
+    "id": "6a854697e7fc40f429797c67",
+    "fingerprint": "2a6daa113cad49f4a1a093e776ae8873d3dc3f031ee3dfb268316693efad86ac",
+    "refs": [
+      "d.ii"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below to support the conclusion.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "\\$528",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R2",
+              "R3"
+            ],
+            "depends_on": [
+              "b.ii"
+            ],
+            "objective_id": "M1.2.4"
+          },
+          {
+            "label": "ii",
+            "answer": "not",
+            "accept": [
+              "No",
+              "unacceptable"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R4"
+            ],
+            "depends_on": [
+              "b.ii",
+              "c.i",
+              "d.i"
+            ],
+            "objective_id": "M1.2.4"
+          }
+        ],
+        "statement": "For Amara to make a profit of $10\\%$, the minimum acceptable selling price is {}. The promotional selling price is {} acceptable."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Determines 10% of the cost price as \\$48",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "template": "Determines 10% of the cost price as \\$48",
+        "hint": "Calculate 10% of the cost price to find the required profit."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Adds the required profit to the cost price to obtain \\$528",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "template": "Adds the required profit to the cost price to obtain \\${d.i}",
+        "hint": "Add the required profit to the cost price to find the minimum acceptable selling price."
+      },
+      {
+        "code": "R4",
+        "profile": "R",
+        "criterion": "States that the promotional price is not acceptable because \"their\" selling price is below \"their\" minimum price, or because \"their\" percentage profit is less than $10\\%$",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "template": "States that the promotional price is not acceptable because \"their\" selling price is below \"their\" minimum price, or because \"their\" percentage profit is less than $10\\%$",
+        "hint": "State that the promotional price is not acceptable because your selling price is below your minimum price or your percentage profit is less than $10\\%$."
+      }
+    ]
+  },
+  {
+    "id": "6a854d92c99a188733a9f4d0",
+    "fingerprint": "6d3997c951ef8bf14865e3597e020b96a8c79bee2e5b4d82283afc785eaefaf5",
+    "refs": [
+      "d.iv"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 4,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "similar",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK3"
+            ],
+            "depends_on": [
+              "a.i",
+              "b.i",
+              "b.ii",
+              "c.i"
+            ],
+            "objective_id": "M3.3.4"
+          },
+          {
+            "label": "ii",
+            "answer": "the same",
+            "accept": [
+              "same",
+              "unchanged"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK4"
+            ],
+            "depends_on": [
+              "a.i",
+              "b.i",
+              "b.ii",
+              "c.i"
+            ],
+            "objective_id": "M3.3.4"
+          },
+          {
+            "label": "iii",
+            "answer": "not congruent",
+            "accept": [
+              "non-congruent"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R2"
+            ],
+            "depends_on": [
+              "a.i",
+              "b.i",
+              "b.ii",
+              "c.i"
+            ],
+            "objective_id": "M3.3.4"
+          },
+          {
+            "label": "iv",
+            "answer": "twice",
+            "accept": [
+              "two times"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "a.i",
+              "b.i",
+              "b.ii",
+              "c.i"
+            ],
+            "objective_id": "M3.3.4"
+          }
+        ],
+        "statement": "The triangles $ABC$ and $A''B''C''$ are {}, have {} orientation and are {} because each corresponding side of $A''B''C''$ is {} as long as the corresponding side of $ABC$."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "States similar.",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "template": "States similar.",
+        "hint": "State that the triangles are similar."
+      },
+      {
+        "code": "CK4",
+        "profile": "CK",
+        "criterion": "States same orientation.",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "template": "States same orientation.",
+        "hint": "State that the triangles have the same orientation."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Judges that the triangles are not congruent.",
+        "mark_value": 1,
+        "slot_ref": "d.iii",
+        "part_label": "d",
+        "template": "Judges that the triangles are not congruent.",
+        "hint": "Judge that the triangles are not congruent."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Justifies the judgement by stating that corresponding sides are twice as long.",
+        "mark_value": 1,
+        "slot_ref": "d.iv",
+        "part_label": "d",
+        "template": "Justifies the judgement by stating that corresponding sides are twice as long.",
+        "hint": "Justify this by stating that corresponding sides are twice as long."
+      }
+    ]
+  },
+  {
+    "id": "6a854e3ec99a188733a9f4e0",
+    "fingerprint": "3afd8284268f964996af4da8aaa29497e98098f1698faeeab28d32ed638531af",
+    "refs": [
+      "c.i"
+    ],
+    "parts": [
+      {
+        "label": "c",
+        "prompt": "Complete the statement below.",
+        "marks": 2,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "bisects",
+            "accept": [
+              "divides into two equal parts"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R2"
+            ],
+            "depends_on": [
+              "a.i"
+            ],
+            "objective_id": "M2.4.6"
+          },
+          {
+            "label": "ii",
+            "answer": "$5\\sqrt{2}$",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "AK2"
+            ],
+            "depends_on": [
+              "b.i",
+              "c.i"
+            ],
+            "objective_id": "M2.4.6"
+          }
+        ],
+        "statement": "Since $AN$ is the line of symmetry, it {} $BC$. Therefore, $BN =$ {} m."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "States that the line of symmetry bisects $BC$",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "for_format": false,
+        "template": "States that the line of symmetry bisects $BC$",
+        "hint": "State that the line of symmetry bisects $BC$."
+      },
+      {
+        "code": "AK2",
+        "profile": "AK",
+        "criterion": "Divides \"their\" $BC$ by $2$, CAO $5\\sqrt{2}$",
+        "mark_value": 1,
+        "slot_ref": "c.ii",
+        "part_label": "c",
+        "for_format": false,
+        "template": "Divides \"their\" $BC$ by $2$, CAO $5\\sqrt{2}$"
+      }
+    ]
+  },
+  {
+    "id": "6a85563ec99a188733a9f592",
+    "fingerprint": "deb8bfb05db09eeeb31bb9aa1b536a9b4946a224d0b8f915536ed4ed830250bc",
+    "refs": [
+      "d.iii"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 4,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "$3$",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "AK5"
+            ],
+            "depends_on": [
+              "c.i"
+            ],
+            "objective_id": "M2.1.4"
+          },
+          {
+            "label": "ii",
+            "answer": "$3$",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R2"
+            ],
+            "depends_on": [
+              "c.i"
+            ],
+            "objective_id": "M2.1.4"
+          },
+          {
+            "label": "iii",
+            "answer": "false",
+            "accept": [
+              "No",
+              "not true",
+              "incorrect"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "c.i"
+            ],
+            "objective_id": "M2.1.11"
+          },
+          {
+            "label": "iv",
+            "answer": "3 occurs most often",
+            "accept": [
+              "3 has the greatest frequency",
+              "the frequency of 3 is 5, which is greatest",
+              "3 occurs 5 times"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R4"
+            ],
+            "depends_on": [
+              "c.i"
+            ],
+            "objective_id": "M2.1.11"
+          }
+        ],
+        "statement": "The median number of patients is {} and the mode is {}. The manager's statement that 4 patients is the single most usual number is {} because {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "AK5",
+        "profile": "AK",
+        "criterion": "Uses \"their\" frequency table to locate the 6th and 7th values, giving median $3$",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Uses \"their\" frequency table to locate the 6th and 7th values, giving median $3$",
+        "hint": "Use your frequency table to locate the 6th and 7th values in order, then use them to find the median."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Uses \"their\" frequency table to identify the modal value as $3$",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Uses \"their\" frequency table to identify the modal value as $3$",
+        "hint": "Use your frequency table to identify the patient number with the greatest frequency as the mode."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Judges the manager's statement as false",
+        "mark_value": 1,
+        "slot_ref": "d.iii",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Judges the manager's statement as false",
+        "hint": "Compare the manager's statement with the mode and state whether the statement is false."
+      },
+      {
+        "code": "R4",
+        "profile": "R",
+        "criterion": "Justifies the judgement by stating that 3 has the greatest frequency",
+        "mark_value": 1,
+        "slot_ref": "d.iv",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Justifies the judgement by stating that 3 has the greatest frequency",
+        "hint": "Justify your judgement by stating which patient number has the greatest frequency."
+      }
+    ]
+  },
+  {
+    "id": "6a866d39274ccc2bbe037d47",
+    "fingerprint": "de7bea5c07f845451ac7f8a59bdd092d73a9773fbdcb6ea999061c1a9e0e56c8",
+    "refs": [
+      "d.decision"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "A retailer will accept the delivery only if at least $80\\%$ of the breadfruit have mass less than $10$ kg. Complete the statement below.",
+        "marks": 3,
+        "slots": [
+          {
+            "label": "percentage",
+            "answer": "$81.25\\%$",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK3",
+              "R2"
+            ],
+            "depends_on": [
+              "b.i",
+              "c.i"
+            ],
+            "objective_id": "M3.1.9"
+          },
+          {
+            "label": "decision",
+            "answer": "qualifies",
+            "accept": [
+              "is accepted",
+              "will be accepted"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "d.percentage"
+            ],
+            "objective_id": "M3.1.9"
+          }
+        ],
+        "statement": "The percentage of breadfruit with mass less than $10$ kg is {}, so the delivery {}."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "Recognises that the class $10\\le m<12$ is excluded when considering masses less than $10$ kg.",
+        "mark_value": 1,
+        "slot_ref": "d.percentage",
+        "part_label": "d",
+        "template": "Recognises that the class $10\\le m<12$ is excluded when considering masses less than $10$ kg.",
+        "hint": "Leave out the class $10\\le m<12$ when you count breadfruit with masses less than $10$ kg."
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Uses $\\text{their }30-15$ to find the $8\\le m<10$ group and combines this with their number below $8$ kg to obtain $65$ and $81.25\\%$.",
+        "mark_value": 1,
+        "slot_ref": "d.percentage",
+        "part_label": "d",
+        "template": "Uses $\\text{their }{c.i}-15$ to find the $8\\le m<10$ group and combines this with their number below $8$ kg to obtain $65$ and ${d.percentage}\\%$.",
+        "hint": "Subtract the frequency in the at-least-$10$ kg class from $\\text{your not-small total}$ to find the $8\\le m<10$ group, combine it with $\\text{your below-$8$ total}$, and calculate the $\\%$."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Compares their percentage with $80\\%$ and concludes that the delivery qualifies.",
+        "mark_value": 1,
+        "slot_ref": "d.decision",
+        "part_label": "d",
+        "template": "Compares their percentage with $80\\%$ and concludes that the delivery qualifies.",
+        "hint": "Compare your percentage with $80\\%$ and state whether the delivery qualifies."
+      }
+    ]
+  },
+  {
+    "id": "6a867f0c519aa120d69cc675",
+    "fingerprint": "f384001589e079a2694d780c120da27fe7d9e0b546fa36bf84c9886d4af8ce06",
+    "refs": [
+      "c.iii"
+    ],
+    "parts": [
+      {
+        "label": "c",
+        "prompt": "Complete the statement below.",
+        "marks": 4,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "\\$26 244",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK3",
+              "AK4"
+            ],
+            "depends_on": [
+              "a.i",
+              "b.i"
+            ],
+            "objective_id": "M1.2.8"
+          },
+          {
+            "label": "ii",
+            "answer": "\\$756",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R2"
+            ],
+            "depends_on": [
+              "c.i"
+            ],
+            "objective_id": "M1.2.8"
+          },
+          {
+            "label": "iii",
+            "answer": "accept",
+            "accept": [
+              "accept the offer",
+              "sell"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R3"
+            ],
+            "depends_on": [
+              "c.i",
+              "c.ii"
+            ],
+            "objective_id": "M1.2.8"
+          }
+        ],
+        "statement": "At the end of 2026, the estimated value of Kemar's taxi is {}. The offer is {} more than this value, so Kemar should {} the offer."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "Uses $0.9$ as the annual depreciation multiplier on \"their\" purchase value",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "template": "Uses $0.9$ as the annual depreciation multiplier on \"their\" purchase value",
+        "hint": "Multiply your purchase value by $0.9$ once for each year of depreciation."
+      },
+      {
+        "code": "AK4",
+        "profile": "AK",
+        "criterion": "CAO \\$26 244",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "template": "CAO \\${c.i}"
+      },
+      {
+        "code": "R2",
+        "profile": "R",
+        "criterion": "Finds the excess of \\$27 000 over \"their\" estimated value",
+        "mark_value": 1,
+        "slot_ref": "c.ii",
+        "part_label": "c",
+        "template": "Finds the excess of \\$27 000 over \"their\" estimated value",
+        "hint": "Subtract your estimated value from \\$27 000 to find how much greater the offer is."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Concludes that Kemar should accept because the offer exceeds \"their\" estimated value",
+        "mark_value": 1,
+        "slot_ref": "c.iii",
+        "part_label": "c",
+        "template": "Concludes that Kemar should accept because the offer exceeds \"their\" estimated value",
+        "hint": "Conclude that Kemar should accept because the offer exceeds your estimated value."
+      }
+    ]
+  },
+  {
+    "id": "6a8790c1c9e9c423972ee7b5",
+    "fingerprint": "1c2fe8bbe9d39077170e1605c6ec99e023cf1560ab030b32f60378dd99816629",
+    "refs": [
+      "d.iii"
+    ],
+    "parts": [
+      {
+        "label": "d",
+        "prompt": "Complete the statement below.",
+        "marks": 4,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "$I_2$",
+            "accept": [
+              "the identity matrix",
+              "identity matrix of order 2"
+            ],
+            "response_mode": "answer",
+            "rubric_codes": [
+              "CK3"
+            ],
+            "depends_on": [
+              "c.i"
+            ],
+            "objective_id": "M3.4.6"
+          },
+          {
+            "label": "ii",
+            "answer": "$\\binom{2}{3}$",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "R3",
+              "AK5"
+            ],
+            "depends_on": [
+              "c.i"
+            ],
+            "objective_id": "M3.4.9"
+          },
+          {
+            "label": "iii",
+            "answer": "agrees",
+            "accept": [
+              "is consistent"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R4"
+            ],
+            "depends_on": [
+              "b.i",
+              "d.ii"
+            ],
+            "objective_id": "M3.4.6"
+          }
+        ],
+        "statement": "A multiplicative inverse of $A$ is a matrix which gives {} when it is multiplied by $A$ in either order. For the order, the product of $A^{-1}$ and $\\binom{8}{9}$ is {}. This {} with the prices found from the graph."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "CK3",
+        "profile": "CK",
+        "criterion": "States $I_2$ as the product of a matrix and its multiplicative inverse",
+        "mark_value": 1,
+        "slot_ref": "d.i",
+        "part_label": "d",
+        "for_format": false,
+        "template": "States $I_2$ as the product of a matrix and its multiplicative inverse",
+        "hint": "State that multiplying a matrix by its multiplicative inverse in either order gives $I_2$."
+      },
+      {
+        "code": "R3",
+        "profile": "R",
+        "criterion": "Forms $A^{-1}\\binom{8}{9}$ to obtain the prices from the receipt totals",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Forms $A^{-1}\\binom{8}{9}$ to obtain the prices from the receipt totals",
+        "hint": "Form $A^{-1}\\binom{r}{s}$ using the receipt-total column vector to find the prices."
+      },
+      {
+        "code": "AK5",
+        "profile": "AK",
+        "criterion": "Correctly evaluates $A^{-1}\\binom{8}{9}=\\binom{2}{3}$",
+        "mark_value": 1,
+        "slot_ref": "d.ii",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Correctly evaluates $A^{-1}\\binom{8}{9}=\\binom{2}{3}$",
+        "hint": "Evaluate $A^{-1}\\binom{r}{s}$ by multiplying each row of the inverse by the column vector."
+      },
+      {
+        "code": "R4",
+        "profile": "R",
+        "criterion": "Concludes that the matrix result agrees with the candidate's values from the graph",
+        "mark_value": 1,
+        "slot_ref": "d.iii",
+        "part_label": "d",
+        "for_format": false,
+        "template": "Concludes that the matrix result agrees with the candidate's values from the graph",
+        "hint": "Compare your matrix result with your coordinates from the graph and state whether they agree."
+      }
+    ]
+  },
+  {
+    "id": "6a8faf5a0b810d6232b7709e",
+    "fingerprint": "4da14d8c56f0c39bca3d7867c5a0fd8416bb7e540a4392ce824cd3e4e6683eee",
+    "refs": [
+      "c.ii"
+    ],
+    "parts": [
+      {
+        "label": "c",
+        "prompt": "Complete the statement below.",
+        "marks": 2,
+        "slots": [
+          {
+            "label": "i",
+            "answer": "\\$26 700",
+            "response_mode": "answer",
+            "rubric_codes": [
+              "AK4"
+            ],
+            "depends_on": [
+              "a.i",
+              "b.i"
+            ],
+            "objective_id": "M1.2.6"
+          },
+          {
+            "label": "ii",
+            "answer": "accept",
+            "accept": [
+              "accept the agreement"
+            ],
+            "response_mode": "explain",
+            "rubric_codes": [
+              "R1"
+            ],
+            "depends_on": [
+              "c.i"
+            ],
+            "objective_id": "M1.2.6"
+          }
+        ],
+        "statement": "The total amount paid for the refrigerator is {}. Since this is no more than \\$27 000, the supervisor should {} the agreement."
+      }
+    ],
+    "rubric": [
+      {
+        "code": "AK4",
+        "profile": "AK",
+        "criterion": "Adds the deposit, \\\"their\\\" amount financed and \\\"their\\\" interest",
+        "mark_value": 1,
+        "slot_ref": "c.i",
+        "part_label": "c",
+        "template": "Adds the deposit, \\\"their\\\" amount financed and \\\"their\\\" interest",
+        "hint": "Add the deposit, your amount financed, and your interest to find the total paid."
+      },
+      {
+        "code": "R1",
+        "profile": "R",
+        "criterion": "Compares \\\"their\\\" total with \\$27 000 and accepts the agreement",
+        "mark_value": 1,
+        "slot_ref": "c.ii",
+        "part_label": "c",
+        "template": "Compares \\\"their\\\" total with \\$27 000 and accepts the agreement",
+        "hint": "Compare your total with $\\$27\\,000$ and accept the agreement if it is less."
+      }
+    ]
+  }
+]

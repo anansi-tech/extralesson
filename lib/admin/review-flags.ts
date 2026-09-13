@@ -127,6 +127,12 @@ export function reviewFlags(q: FlaggableQuestion): ReviewFlag[] {
   // of the slot that fills it.
   const namedByFigure = slotRefsNamedByVisual(q.visual);
   for (const p of parts) {
+    if (p.statement && (p.slots ?? []).some((s) => (s.response_mode ?? 'answer') !== 'answer')) {
+      flags.push({ level: 'warn', text: `Part (${p.label}) has a visible statement blank marked from working instead of a typed answer — review its response mode` });
+    }
+    if (!p.statement && (p.slots ?? []).length > 1 && (p.slots ?? []).some((s) => s.response_mode === 'explain' && !(s.prompt ?? '').trim())) {
+      flags.push({ level: 'warn', text: `Part (${p.label}) has an explanation subpart with no instruction of its own` });
+    }
     const marked = (p.slots ?? []).filter((s) => (s.response_mode ?? 'answer') === 'answer');
     if (p.statement || marked.length < 2) continue;
     if (

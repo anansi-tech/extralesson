@@ -1,6 +1,7 @@
 import { generateObject } from 'ai';
 import { z } from 'zod';
 import { reader, READER_MODEL_ID } from '@/lib/ai';
+import { normaliseSlotRef, readFields } from './read-fields';
 
 /**
  * READING A PHOTOGRAPHED PAGE, AND NOTHING ELSE: marking is a separate call
@@ -28,6 +29,10 @@ export const TranscribedAnswerZ = z.object({
   /** Exactly as it was listed to the reader: 'a.i', 'b.ii'. */
   slot_ref: z.string().max(30),
   text: z.string().max(200),
+  /** Form entries are separate from the verbatim answer, in row-major order. */
+  entries: z.array(z.string().max(200)).max(40).optional(),
+  /** One-based transcription lines supporting these entries. */
+  source_lines: z.array(z.number().int().min(1).max(80)).max(80).optional(),
 });
 
 export const TranscriptionZ = z.object({
@@ -57,6 +62,7 @@ export interface TranscribeArgs {
   contentType: string;
   /** The labels this question actually has, so the reader knows what to look for. */
   slotRefs: string[];
+  context?: { stimulus?: string; stem: string; visual?: string; fields: ReturnType<typeof readFields> };
 }
 
 export interface TranscribeOutcome {
@@ -105,6 +111,21 @@ async function readOnce(args: TranscribeArgs): Promise<TranscribeOutcome> {
               `no label of its own belongs to the same part as the line above it. If a ` +
               `line cannot be attributed, set part_label to null.\n\n` +
               `${CONVENTIONS}\n\n` +
+              (args.context ? `QUESTION AND FORM (context only; never copy its givens into an answer):\n${JSON.stringify(args.context)}\n\n` +
+                `For each confidently identified FINAL answer, also return entries and source_lines. ` +
+                `entries contains ONLY what belongs in the form's boxes, not the surrounding sentence, variable label or equation. ` +
+                `Use valid mathematical syntax in entries: write sqrt(29), never sqrt29; put the full argument inside function parentheses and group compound numerators/denominators. ` +
+                `For example, an explicitly written 1/sqrt(13) times the column (3,2) gives entries ["3/sqrt(13)","2/sqrt(13)"]. Preserve exact form; do not decimalise, solve or correct the student's answer. ` +
+                `A number field takes a number without units; a quantity field may include its unit. Never repeat a unit already printed outside a blank. ` +
+                `For a sentence blank extract its written value; for a coordinate or vector return components in order; ` +
+                `for a matrix return entries row by row, left to right. One entry per box. ` +
+                `For a variable-length list/set (boxes absent), return one entry per value actually written; never infer how many values there should be. ` +
+                `If pairs is true, flatten complete pairs in order, two entries per pair. ` +
+                `source_lines are the one-based indices in your lines array that support the entries. ` +
+                `A sentence can support several blanks, but only when it explicitly supplies each answer. ` +
+                `Each blank is a SEPARATE slot_ref: never put the answers for two blanks into the entries of one slot. ` +
+                `Never calculate, complete a missing answer, or fix a wrong answer. If assignment, reading or order is uncertain, omit that suggestion. ` +
+                `Non-fillable fields still have working to transcribe, but never suggest entries for them.\n\n` : '') +
               `In answers, give the student's FINAL answer for each slot listed above that ` +
               `has one, written the same way: slot_ref is the slot exactly as listed, text ` +
               `is what they wrote as their answer — the value they boxed, underlined or wrote ` +
@@ -138,6 +159,7 @@ async function readOnce(args: TranscribeArgs): Promise<TranscribeOutcome> {
 function normaliseLabels(t: TranscriptionResult): TranscriptionResult {
   return {
     ...t,
+    answers: t.answers.map((a) => ({ ...a, slot_ref: normaliseSlotRef(a.slot_ref) })),
     lines: t.lines.map((line) => {
       const raw = (line.part_label ?? '').replace(/[()\s]/g, '');
       if (!raw) return { ...line, part_label: null };

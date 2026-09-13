@@ -20,12 +20,13 @@ describe('the photo-first card', () => {
   });
 
   it('fills the boxes from a read, and says which boxes it filled', () => {
-    expect(card).toMatch(/setPartAnswers\(\(prev\) => \(\{ \.\.\.prev, \.\.\.prefill\.answers \}\)\);/);
+    expect(card).toContain('fillEmpty(currentEntries.current, prefill)');
+    expect(card).toMatch(/setPartAnswers\(\(prev\) => \(\{ \.\.\.prev, \.\.\.applied\.answers \}\)\);/);
     // A multi-box slot fills too now, but only when the read split into exactly
     // its boxes — so these arrive whole, and the two maps are separate because
     // one box and several are stored differently.
-    expect(card).toMatch(/setBoxValues\(\(prev\) => \(\{ \.\.\.prev, \.\.\.prefill\.values \}\)\);/);
-    expect(card).toMatch(/setReadFilled\(\[\.\.\.Object\.keys\(prefill\.answers\), \.\.\.Object\.keys\(prefill\.values\)\]\)/);
+    expect(card).toMatch(/setBoxValues\(\(prev\) => \(\{ \.\.\.prev, \.\.\.applied\.values \}\)\);/);
+    expect(card).toContain('...Object.keys(applied.answers), ...Object.keys(applied.values)');
   });
 
   it('reads before submit and marks after it, through one control', () => {

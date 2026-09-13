@@ -16,6 +16,7 @@ import { MethodRows, WorkingRead } from './working-read';
 import { Html } from './html';
 import { isPositionalLabel } from '@/lib/notation';
 import { PROFILE_GLOSS } from '@/lib/study/profiles';
+import { fillEmpty } from '@/lib/grade/fill-empty';
 
 export interface CardQuestion {
   sessionId: string;
@@ -138,6 +139,18 @@ const chipColor: Record<string, string> = {
   R: 'bg-[#FDF1F0] text-red-pen',
 };
 
+function AnswerVerdict({ result, inline = false }: { result?: { correct: boolean; formWithheld?: boolean }; inline?: boolean }) {
+  if (!result) return null;
+  return (
+    <span
+      aria-label={result.formWithheld ? 'Value correct; form withheld' : result.correct ? 'Correct' : 'Incorrect'}
+      className={`shrink-0 ${inline ? '' : 'pt-1.5'} font-hand text-xl ${result.formWithheld ? 'text-[#B8860B]' : result.correct ? 'text-green-pen' : 'text-red-pen'}`}
+    >
+      {result.formWithheld ? <>✓<span className="ml-1 font-mono text-[10px]">value · form withheld</span></> : result.correct ? '✓' : '✗'}
+    </span>
+  );
+}
+
 export default function QuestionCard({ question }: { question: CardQuestion }) {
   const router = useRouter();
   const [selected, setSelected] = useState<number | null>(
@@ -154,6 +167,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       : (question.draft?.values ?? {}),
   );
   const [feedback, setFeedback] = useState<Feedback | null>(question.prior?.feedback ?? null);
+  // A photo can finish after the student has typed. Read the latest form, not
+  // the snapshot captured when that upload began.
+  const currentEntries = useRef({ answers: partAnswers, values: boxValues });
+  currentEntries.current = { answers: partAnswers, values: boxValues };
   // THE ONE STATE OF THE PHOTOGRAPH, reported by the camera box; the card derives none of its own.
   const [capture, setCapture] = useState<CaptureState>(() => captureState(takesOf(question.draft?.read), MAX_TAKES, false));
   // HONEST PREFILL (ROUND_7 Task 2): which boxes a read filled and which it did
@@ -607,11 +624,12 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           questionIndex={question.index}
           initial={question.draft?.read}
           onRead={(prefill) => {
-            setPartAnswers((prev) => ({ ...prev, ...prefill.answers }));
+            const applied = fillEmpty(currentEntries.current, prefill);
+            setPartAnswers((prev) => ({ ...prev, ...applied.answers }));
             // A multi-box slot fills only when the read split into exactly its
             // boxes, so these arrive whole or not at all.
-            setBoxValues((prev) => ({ ...prev, ...prefill.values }));
-            setReadFilled([...Object.keys(prefill.answers), ...Object.keys(prefill.values)]);
+            setBoxValues((prev) => ({ ...prev, ...applied.values }));
+            setReadFilled((prev) => [...new Set([...(prev ?? []), ...Object.keys(applied.answers), ...Object.keys(applied.values)])]);
           }}
           onState={setCapture}
           className={`order-3 ${pageRead ? 'lg:order-first' : 'lg:order-none'}`}
@@ -663,15 +681,15 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         // and its link goes to the first box of it the read did not fill.
         const part = (ref: string) => ref.split('.')[0];
         const filledParts = [...new Set(markedSlots.filter((sl) => readFilled.includes(sl.ref)).map((sl) => part(sl.ref)))];
-        const unfilled = markedSlots.filter((sl) => !readFilled.includes(sl.ref)).filter((sl, i, all) => all.findIndex((o) => part(o.ref) === part(sl.ref)) === i);
+        const unfilled = markedSlots.filter((sl) => !readFilled.includes(sl.ref) && !(partAnswers[sl.ref] ?? '').trim() && !(boxValues[sl.ref] ?? []).some((v) => v.trim())).filter((sl, i, all) => all.findIndex((o) => part(o.ref) === part(sl.ref)) === i);
         const allFilled = unfilled.length === 0;
         return (
           <p className="order-4 mt-2.5 border-l-3 border-margin bg-[#FFFDF6] px-3 py-1.5 text-xs leading-snug text-dim lg:mt-0">
             {filledParts.length === 0 ? (
-              'We could not fill any boxes from the page. Enter them yourself.'
+              'No empty boxes were filled from this photo. Existing entries are kept; check the remaining boxes.'
             ) : (
               <>
-                {`We filled the single answers${allFilled ? '' : ` for (${filledParts.join('), (')})`}.`}
+                {`We filled answer boxes${allFilled ? '' : ` for (${filledParts.join('), (')})`}. Check each entry.`}
                 {!allFilled && (
                   <>
                     {' '}Enter the rest yourself:{' '}
@@ -717,11 +735,16 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                           html={piece}
                         />
                         {i < p.slots.length && (
-                          slotAnswerInput(p.slots[i], {
+                          <span className="inline-flex items-baseline gap-1">
+                          {slotAnswerInput(p.slots[i], {
                             describe: `Answer ${i + 1} in the statement for part (${p.label})`,
                             className:
                               'min-h-11 w-24 border-0 border-b-[1.5px] border-ink bg-transparent px-1 py-2 text-center font-mono text-sm',
-                          })
+                          })}
+                          {p.slots[i].mode === 'answer' && (
+                            <AnswerVerdict inline result={feedback?.partResults.find((r) => r.label === p.slots[i].ref)} />
+                          )}
+                          </span>
                         )}
                       </Fragment>
                     ))}
@@ -796,27 +819,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                                 ? `Answer to (${p.label})(${slot.label})`
                                 : `Answer to (${p.label})`,
                           })}
-                          {partFeedback && (
-                            <span
-                              className={`shrink-0 pt-1.5 font-hand text-xl ${
-                                partFeedback.formWithheld
-                                  ? 'text-[#B8860B]'
-                                  : partFeedback.correct
-                                    ? 'text-green-pen'
-                                    : 'text-red-pen'
-                              }`}
-                            >
-                              {partFeedback.formWithheld ? (
-                                <>
-                                  ✓<span className="ml-1 font-mono text-[10px]">value · form withheld</span>
-                                </>
-                              ) : partFeedback.correct ? (
-                                '✓'
-                              ) : (
-                                '✗'
-                              )}
-                            </span>
-                          )}
+                          <AnswerVerdict result={partFeedback} />
                           </div>
                           </div>
                           <div className={p.slots.length > 1 ? 'sm:ml-auto sm:basis-[62%]' : ''}>

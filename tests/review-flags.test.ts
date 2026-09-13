@@ -6,6 +6,18 @@ import { reviewFlags, type FlaggableQuestion } from '@/lib/admin/review-flags';
 const base: FlaggableQuestion = { module: 2, stem: 'A line passes through two points.', parts: [] };
 
 describe('review flags', () => {
+  it('flags unnamed explanation subparts and non-typed statement blanks', () => {
+    const flags = reviewFlags({ ...base, parts: [
+      { label: 'b', prompt: 'Find BD. Give a reason.', slots: [
+        { label: 'i', answer: '5' }, { label: 'ii', answer: 'symmetry', response_mode: 'explain' },
+      ] },
+      { label: 'd', prompt: 'Complete.', statement: 'The timber is {}.', slots: [
+        { label: 'i', answer: 'insufficient', response_mode: 'explain' },
+      ] },
+    ] });
+    expect(flags.some((f) => f.text.includes('explanation subpart with no instruction'))).toBe(true);
+    expect(flags.some((f) => f.text.includes('visible statement blank'))).toBe(true);
+  });
   it('says nothing about a clean question', () => {
     expect(reviewFlags(base)).toEqual([]);
   });

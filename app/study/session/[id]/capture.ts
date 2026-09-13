@@ -18,7 +18,9 @@ import { MAX_BYTES, MAX_TAKES, transcribeWorking, type TranscriptionResult } fro
 import { constructionRows, alreadyEarnedByMethod } from '@/lib/grade/method-marks';
 import { constructionChecks } from '@/lib/grade/construction';
 import { checkConstruction } from '@/lib/grade/check-construction';
-import { prefillFromRead, type Prefill } from '@/lib/grade/prefill';
+import { structuredPrefill, type Prefill } from '@/lib/grade/prefill';
+import { fillEmpty } from '@/lib/grade/fill-empty';
+import { readContext, type ReadPart } from '@/lib/grade/read-fields';
 import { markWorking, type CaptureResult } from './mark-working';
 import { limited, TOO_MANY } from '@/lib/auth/rate-limit';
 import type { StoredVisual } from '@/lib/visuals';
@@ -91,10 +93,11 @@ export async function readWorking(input: {
   }
 
   const question = await Question.findById(questionId).lean<{
-    parts?: { label: string; marks: number; slots: { label: string; answer?: string; response_mode?: string }[] }[];
+    parts?: (ReadPart & { marks: number })[];
     stem: string;
     stimulus?: string;
     visual?: StoredVisual;
+    stimulus_table?: unknown;
   } | null>();
   if (!question) return { error: 'That question could not be found.' };
   const parts = question.parts ?? [];
@@ -113,7 +116,7 @@ export async function readWorking(input: {
 
   let read;
   try {
-    read = await transcribeWorking({ image: bytes, contentType, slotRefs: markableSlots(parts) });
+    read = await transcribeWorking({ image: bytes, contentType, slotRefs: markableSlots(parts), context: readContext(question) });
   } catch {
     // The reservation goes with the failure, so the take is not spent.
     await Transcription.deleteOne({ _id: shell._id });
@@ -166,24 +169,33 @@ export async function readWorking(input: {
 
   // Prefill goes into the DRAFT, never an attempt: the student confirms it by
   // submitting. A question already handed in has no draft to fill.
-  const prefill = prefillFromRead(parts, read.transcription.answers);
+  let prefill = structuredPrefill(parts, read.transcription);
   const submitted = await Attempt.exists({ session_id: sessionId, question_id: questionId });
   const filled = Object.keys(prefill.answers).length + Object.keys(prefill.values).length;
   if (filled > 0 && !submitted) {
     const draft = await SessionDraft.findOne({ session_id: sessionId, question_index: questionIndex })
-      .select('answers values')
-      .lean<{ answers?: Record<string, string>; values?: Record<string, string[]> } | null>();
-    await SessionDraft.updateOne(
-      { session_id: sessionId, question_index: questionIndex },
-      {
-        $set: {
-          answers: { ...(draft?.answers ?? {}), ...prefill.answers },
-          values: { ...(draft?.values ?? {}), ...prefill.values },
-          updated_at: new Date(),
-        },
-      },
-      { upsert: true },
-    );
+      .select('answers values updated_at')
+      .lean<{ _id: unknown; updated_at: Date; answers?: Record<string, string>; values?: Record<string, string[]> } | null>();
+    prefill = fillEmpty({ answers: draft?.answers ?? {}, values: draft?.values ?? {} }, prefill);
+    const fields = {
+      answers: { ...(draft?.answers ?? {}), ...prefill.answers },
+      values: { ...(draft?.values ?? {}), ...prefill.values },
+      updated_at: new Date(),
+    };
+    // Do not overwrite a manual save that raced this read. The client also
+    // checks its latest entries before applying and autosaving suggestions.
+    if (draft) {
+      await SessionDraft.updateOne({ _id: draft._id, updated_at: draft.updated_at }, { $set: fields });
+    } else {
+      try {
+        await SessionDraft.updateOne(
+          { session_id: sessionId, question_index: questionIndex },
+          { $setOnInsert: fields }, { upsert: true },
+        );
+      } catch (e) {
+        if (!isDuplicateKey(e)) throw e; // A concurrent manual save won insertion.
+      }
+    }
   }
 
   return { transcription: read.transcription, transcriptionId: String(stored._id), take, takesLeft: MAX_TAKES - take, prefill };

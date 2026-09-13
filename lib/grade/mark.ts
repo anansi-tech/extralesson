@@ -2,6 +2,7 @@ import { answersEquivalentAny } from './equivalence';
 import { componentsEquivalent } from './components';
 import { checkAnswerFormat, valueLooksRight } from './format';
 import { roundingOf, type Rounding } from './rounding';
+import { readInputShape } from './input-shape';
 import type { AnswerFormat, ProfileMarks, RubricItem } from '@/lib/types';
 
 // Round 1 marking (ROUND_1 §6): final-answer equivalence drives accuracy marks
@@ -63,7 +64,7 @@ export interface MarkableSlot {
 
 export function markStructuredParts(
   rubric: RubricItem[],
-  parts: { label: string; prompt?: string; slots: MarkableSlot[] }[],
+  parts: { label: string; prompt?: string; statement?: string; slots: MarkableSlot[] }[],
   inputs: SlotInput[],
 ): MarkResult & { slot_results: SlotVerdict[] } {
   const inputByRef = new Map(inputs.map((i) => [i.ref, i]));
@@ -91,6 +92,7 @@ export function markStructuredParts(
         slot.answer_format as AnswerFormat | undefined,
         input?.values,
         roundingOf({ answer_format: slot.answer_format, prompts: [part.prompt, slot.prompt], canonical: slot.answer }),
+        Boolean(part.statement && readInputShape(slot.answer).shape === 'word'),
       );
       // ONLY A SLOT THAT CARRIES MARKS VOTES ON THE VERDICT: five auto-marked
       // slots in the bank have no rubric row, so a miss there cost no marks and
@@ -125,9 +127,15 @@ export function markStructured(
   answerFormat?: AnswerFormat,
   enteredValues?: string[],
   rounding: Rounding | null = roundingOf({ answer_format: answerFormat, canonical: canonicalAnswer }),
+  exactWordBlank = false,
 ): MarkResult {
+  // A word completing a printed sentence is not a freely paraphrased
+  // explanation: "should not" must not match "should" by token overlap.
+  const word = (s: string) => s.trim().toLowerCase().replace(/[.!?]+$/, '').replace(/\s+/g, ' ').trim();
   const equivalent =
-    enteredValues && enteredValues.length > 0
+    exactWordBlank
+      ? [canonicalAnswer, ...(accept ?? [])].some((a) => word(a) === word(studentAnswer))
+      : enteredValues && enteredValues.length > 0
       ? componentsEquivalent(enteredValues, canonicalAnswer, accept, rounding)
       : answersEquivalentAny(studentAnswer, canonicalAnswer, accept, rounding);
   // A required form is part of the question: the value earns its marks and the
