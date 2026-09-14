@@ -96,6 +96,27 @@ No second provider. No teacher surface. No dispute resolution or correction
 events. No per-row marker calls. No landing-page change. No new question
 types. No marker tuning against the existing golden set.
 
+## Known, not fixed — d16f3a AK3
+
+`Evaluates ${b.i}\times100$ to obtain ${b.i}\%$.` Both references were
+derived from the same criterion literal, because `\frac{33}{60}` and `55\%`
+are the same NUMBER: 0.55. The second is right — it is the student's answer to
+(b). The first stands for the fraction they formed, which is not `b.i` at all,
+so the claim renders as "Evaluates 55%x100 to obtain 55%".
+
+It is left alone because the honest template —
+`Evaluates $\frac{{a.i}}{60}\times100$ to obtain ${b.i}\%$` — needs `a.i` in
+`b.i`'s dependency scope, and `scopeOf` reaches only the row's slot and what
+that slot declares it depends on. Adding the dependency changes what the marker
+is shown for every row on (b), so it is a question redesign and not a
+substitution. The other three rows on that question, and the five on c0bf0b and
+d16fbd, were repaired by the rule that only the student's own value is a
+reference.
+
+The derivation that produced all of them is fixed: `questionText` now reads
+part statements, so a requirement written only in a cloze is seen as the
+constant it is.
+
 ## After launch — written down so it stays out
 
 - Dispute resolution as a correction event folded into mastery.

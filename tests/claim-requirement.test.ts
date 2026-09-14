@@ -74,3 +74,47 @@ describe('a fixed requirement stays literal', () => {
     expect(said.match(/67\.3/g), 'the requirement moved with their answer').toHaveLength(2);
   });
 });
+
+/**
+ * A CAO ROW MUST NOT FOLLOW THROUGH. "Divides 72 by 30, CAO {a.i}" renders as
+ * "CAO <whatever they wrote>", which every answer satisfies — the one thing
+ * CAO exists to refuse. d16fbd AK2 said exactly that, because 2.4 is both the
+ * answer to (a) and a constant printed in part (c)'s statement.
+ */
+describe('a CAO row states the answer, not theirs', () => {
+  const canonical = { 'a.i': '2.4' };
+
+  it('renders the same claim whatever the student wrote', () => {
+    const fixed = 'Divides $72$ by $30$, CAO $2.4$';
+    expect(renderClaim(fixed, { 'a.i': '3.1' }, canonical)).toBe(fixed);
+    expect(renderClaim(fixed, {}, canonical)).toBe(fixed);
+  });
+
+  it('the fault it replaces agreed with any answer at all', () => {
+    const templated = 'Divides $72$ by $30$, CAO ${a.i}$';
+    expect(renderClaim(templated, { 'a.i': '3.1' }, canonical)).toContain('3.1');
+    expect(renderClaim(templated, { 'a.i': '999' }, canonical)).toContain('999');
+  });
+});
+
+/**
+ * A REFERENCE ON THE ROW'S OWN SLOT IS STILL THEIRS. c0bf0b AK1 was flagged by
+ * the same re-derivation, and is right as it stands: the 24 is the result of
+ * 3x8, which IS a.i, so a student who answers 20 gets a claim that is false and
+ * can be refused.
+ */
+describe('the row own slot keeps its reference', () => {
+  it('makes a claim that fails when their value is wrong', () => {
+    const ak1 = 'Calculates $3\\times8={a.i}$.';
+    expect(renderClaim(ak1, { 'a.i': '20' }, { 'a.i': '24' })).toBe('Calculates $3\\times8=20$.');
+  });
+
+  it('and a follow-through reference beside a constant still can be false', () => {
+    // c0bf0b AK4: their H.C.F. stays a reference, the 24 and 36 do not.
+    const ak4 = 'Substitutes ${b.iii}$ and calculates $\\frac{24\\times36}{{b.iii}}=72$.';
+    const said = renderClaim(ak4, { 'b.iii': '6' }, { 'b.iii': '12' });
+    expect(said).toContain('24\\times36');
+    expect(said).toContain('{6}');
+    expect(said, 'the target stays the question own').toContain('=72');
+  });
+});
