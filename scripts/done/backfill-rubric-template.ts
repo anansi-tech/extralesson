@@ -12,17 +12,26 @@ interface Q {
   _id: unknown;
   stem: string;
   stimulus?: string;
-  parts?: { label: string; prompt: string; slots: { label: string; answer: string; prompt?: string; depends_on?: string[] }[] }[];
+  parts?: { label: string; prompt: string; statement?: string; slots: { label: string; answer: string; prompt?: string; depends_on?: string[] }[] }[];
   rubric?: Row[];
   visual?: { params?: unknown };
   stimulus_table?: unknown;
 }
 
+/**
+ * EVERYTHING THE QUESTION STATES, and the cloze statement is part of that. It
+ * was missing, so a requirement written only in the statement — "the required
+ * $55\%$" — was invisible as a CONSTANT, and a criterion's 55 looked like the
+ * student's answer alone. deriveTemplate's ambiguity guard never fired, and
+ * three rows templated the fixed requirement as {b.i}: a student whose part
+ * (b) read 67.3% was marked against "an amount equal to 67.3% satisfies the
+ * condition at least 67.3%", which is true of any number at all.
+ */
 export function questionText(q: Q): string {
   return [
     q.stem,
     q.stimulus ?? '',
-    ...(q.parts ?? []).flatMap((p) => [p.prompt, ...p.slots.map((s) => s.prompt ?? '')]),
+    ...(q.parts ?? []).flatMap((p) => [p.prompt, p.statement ?? '', ...p.slots.map((s) => s.prompt ?? '')]),
     JSON.stringify(q.visual?.params ?? ''),
     JSON.stringify(q.stimulus_table ?? ''),
   ].join(' ');
