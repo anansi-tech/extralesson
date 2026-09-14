@@ -63,7 +63,8 @@ describe('final explanation exemplars match their existing evidence rows', () =>
     expect(text['804a31:d.reason']).toContain('$4\\times8-30=2$');
     expect(text['9e87f7:d.reason']).toContain('$84-72=12$');
     expect(text['0ab933:c.i']).toContain('will not be accepted');
-    expect(text['037df1:d.reason']).toContain('greatest sector angle');
+    expect(text['037df1:d.reason']).toContain('exceeds $90°$, $90°$ and $60°$');
+    expect(text['037df1:d.reason']).toContain('greatest frequency');
     expect(text['c0c0ed:b.mirror_line']).toContain('equal distances above and below');
   });
 });

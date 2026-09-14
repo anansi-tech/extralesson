@@ -6,8 +6,9 @@ import { dbConnect, Question } from '@/lib/db';
 import { deriveFinalAnswer, QuestionDraftZ } from '@/lib/validation/question';
 import { authoredFields } from './preview-question-cleanup';
 import { isEntryPoint } from '../entry';
+import { assertReviewedContext } from './exemplar-review-guard';
 
-type Change = { ref: string; answer: string; accept: string[]; before: { answer: string; accept: string[] } };
+type Change = { ref: string; answer: string; accept: string[]; before: { answer: string; accept: string[] }; previous?: { answer: string; accept: string[] } };
 type Repair = { id: string; changes: Change[] };
 
 // These slots remain photo-assessed. The examples show every row attached to the slot;
@@ -134,8 +135,12 @@ export const repairs: Repair[] = [
     changes: [{
       ref: 'd.reason',
       before: { answer: 'It has the largest sector and was selected by the greatest number of students.', accept: ['It has the largest sector.', 'It has the greatest frequency.', 'It was chosen by the most students.'] },
-      answer: 'Mango juice has the greatest sector angle, $120°$, so it was selected by the greatest number of students and is the mode.',
-      accept: ['Mango juice has the largest sector, so it has the greatest frequency and is the modal drink.'],
+      previous: {
+        answer: 'Mango juice has the greatest sector angle, $120°$, so it was selected by the greatest number of students and is the mode.',
+        accept: ['Mango juice has the largest sector, so it has the greatest frequency and is the modal drink.'],
+      },
+      answer: 'Using $x=60$, Mango juice has angle $2x=120°$, Sorrel has $x+30=90°$, Coconut water has $90°$, and Mauby has $x=60°$. Since $120°$ exceeds $90°$, $90°$ and $60°$, Mango juice has the greatest frequency and is the mode.',
+      accept: ['With $x=60$, the sector angles are Mango juice $120°$, Sorrel $90°$, Coconut water $90°$ and Mauby $60°$. Mango juice has the greatest sector angle, so it was selected by the most students and is the modal drink.'],
     }],
   },
   {
@@ -159,6 +164,7 @@ export type Content = {
 } & Record<string, unknown>;
 
 export function prepare(q: Content, repair: Repair) {
+  assertReviewedContext(q, repair);
   const next = structuredClone(q);
   for (const change of repair.changes) {
     const [partLabel, slotLabel] = change.ref.split('.');
@@ -167,7 +173,7 @@ export function prepare(q: Content, repair: Repair) {
     const actual = { answer: slot.answer, accept: slot.accept ?? [] };
     const after = { answer: change.answer, accept: change.accept };
     if (isDeepStrictEqual(actual, after)) continue;
-    if (!isDeepStrictEqual(actual, change.before)) throw new Error(`${repair.id}: ${change.ref} changed since review; re-review required.`);
+    if (!isDeepStrictEqual(actual, change.before) && !isDeepStrictEqual(actual, change.previous)) throw new Error(`${repair.id}: ${change.ref} changed since review; re-review required.`);
     Object.assign(slot, after);
   }
   next.final_answer = deriveFinalAnswer(next.parts);

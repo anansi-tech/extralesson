@@ -6,6 +6,7 @@ import { dbConnect, Question } from '@/lib/db';
 import { deriveFinalAnswer, QuestionDraftZ } from '@/lib/validation/question';
 import { authoredFields } from './preview-question-cleanup';
 import { isEntryPoint } from '../entry';
+import { assertReviewedContext } from './exemplar-review-guard';
 
 type Change = { ref: string; answer: string; accept: string[]; before: { answer: string; accept: string[] } };
 type Repair = { id: string; changes: Change[] };
@@ -76,6 +77,7 @@ export type Content = {
 } & Record<string, unknown>;
 
 export function prepare(q: Content, repair: Repair) {
+  assertReviewedContext(q, repair);
   const next = structuredClone(q);
   for (const change of repair.changes) {
     const [partLabel, slotLabel] = change.ref.split('.');
