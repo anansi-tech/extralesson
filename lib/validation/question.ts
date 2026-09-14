@@ -181,7 +181,11 @@ export const SlotZ = z.object({
   answer: z.string().min(1), // values-only convention
   // Alternative correct forms of THIS answer, as real schemes write them
   // ("edge (accept: line segment)"). Grading treats any listed form as correct.
-  accept: optional(z.array(z.string().min(1)).max(4)),
+  // Six, not four: a cloze gap on a modal verb has more right answers than a
+  // value does — "a cement delivery {} be arranged" takes will, should and
+  // must, and a student may type either the modal alone or with "be". Four was
+  // a cap on a list of alternative VALUES and was never argued for this.
+  accept: optional(z.array(z.string().min(1)).max(6)),
   // A part may mix an auto-marked value with a reason the student self-marks,
   // and only the reason leaves the graded pool (ROUND_1_6 §1).
   response_mode: defaulted(ResponseModeZ, 'answer'),
