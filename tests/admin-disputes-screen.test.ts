@@ -83,11 +83,23 @@ describe('the case page', () => {
   it('a case already added says so and offers nothing', () => {
     const panel = CASE.slice(CASE.indexOf('What to do'));
     expect(panel).toMatch(/alreadyGolden \?/);
-    expect(panel).toContain('In the eval set as');
+    expect(panel).toContain('Kept for the eval set as');
     expect(panel).toContain('proposed until approved by hand');
-    // Read from the golden files, not a flag on the dispute: a case added by
-    // `pnpm golden:import` counts the same.
-    expect(CASE).toMatch(/hasGoldenCase\(goldenId\)/);
+    // Kept means recorded OR already in the committed files — never a flag on
+    // the dispute, so a case added by `pnpm golden:import` counts the same.
+    expect(CASE).toMatch(/await alreadyKept\(goldenId\)/);
+  });
+
+  /**
+   * THE CLICK CANNOT WRITE THE REPO. design/golden is committed and a deployed
+   * function's filesystem is read-only, so the button records the bundle and a
+   * script carries it into the files on a machine that has them.
+   */
+  it('names the pull rather than promising the files are written', () => {
+    const panel = CASE.slice(CASE.indexOf('What to do'));
+    expect(panel).toContain('pnpm golden:pull');
+    expect(panel, 'it keeps, it does not write').toContain('Keeps the read');
+    expect(at('package.json')).toContain('"golden:pull"');
   });
 
   it('says that nothing here changes a mark', () => {

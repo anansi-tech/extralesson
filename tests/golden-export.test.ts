@@ -193,39 +193,56 @@ describe('export matches the take (ROUND_6 Task 7)', () => {
 });
 
 /**
- * THE LOOP CLOSED. The export and the importer both existed and nothing joined
- * them: a case the product got wrong in the field reached the eval only if
- * somebody remembered to run a script against an id they had to go and find.
- * One click on the panel that resolves the dispute now does it.
+ * THE LOOP CLOSED, IN TWO HALVES. The click records the case in the database;
+ * `pnpm golden:pull` carries it into the committed files. It cannot be one
+ * half: design/golden is in the repo and a deployed function cannot write the
+ * repo — Vercel's filesystem is read-only outside /tmp, and what is written
+ * there is gone by the next request.
  */
 describe('adding a dispute to the eval set', () => {
   let addGoldenCase: typeof import('@/lib/golden/add-case').addGoldenCase;
-  let hasGoldenCase: typeof import('@/lib/golden/import').hasGoldenCase;
+  let alreadyKept: typeof import('@/lib/golden/add-case').alreadyKept;
+  let pullGoldenCases: typeof import('../scripts/golden-pull').pullGoldenCases;
 
   beforeAll(async () => {
-    ({ addGoldenCase } = await import('@/lib/golden/add-case'));
-    ({ hasGoldenCase } = await import('@/lib/golden/import'));
+    ({ addGoldenCase, alreadyKept } = await import('@/lib/golden/add-case'));
+    ({ pullGoldenCases } = await import('../scripts/golden-pull'));
   });
 
   const entriesOf = (dir: string) =>
     JSON.parse(readFileSync(join(dir, 'review.json'), 'utf8')) as { entries: { id: string; proposed?: boolean; marks: { proposed?: boolean }[] }[] };
 
-  it('writes the case unapproved, and the loader ignores it until it is approved', async () => {
+  it('the click writes no file at all: it records the bundle', async () => {
     const { disputeId } = await smokeDispute();
     const dir = goldenDir();
+    const before = readFileSync(join(dir, 'review.json'), 'utf8');
 
     const out = await addGoldenCase(disputeId, dir);
     expect(out.added).toBe(true);
     const id = (out as { id: string }).id;
 
-    // Written, in both files, in the directory's own style.
-    expect(hasGoldenCase(id, dir)).toBe(true);
-    const review = entriesOf(dir);
-    const entry = review.entries.find((e) => e.id === id)!;
+    // THE POINT: nothing on disk moved. A deployed function cannot write here.
+    expect(readFileSync(join(dir, 'review.json'), 'utf8')).toBe(before);
+    const kept = await db.GoldenCase.findOne({ case_id: id }).lean<{ bundle: { id: string }; pulled_at: Date | null } | null>();
+    expect(kept, 'recorded in the database instead').toBeTruthy();
+    expect(kept!.bundle.id).toBe(id);
+    expect(kept!.pulled_at, 'not yet in the files').toBeNull();
+    // And the page says it is kept, from the record rather than the files.
+    expect(await alreadyKept(id, dir)).toBe(true);
+  }, 60000);
+
+  it('the pull writes it unapproved, and the loader ignores it until it is approved', async () => {
+    const { disputeId } = await smokeDispute();
+    const dir = goldenDir();
+    const id = ((await addGoldenCase(disputeId, dir)) as { id: string }).id;
+
+    const res = await pullGoldenCases(dir, true);
+    expect(res.written).toContain(id);
+
+    const entry = entriesOf(dir).entries.find((e) => e.id === id)!;
     expect(entry.proposed, 'the whole case is proposed').toBe(true);
     expect(entry.marks.every((m) => m.proposed), 'every row proposed').toBe(true);
 
-    // And the eval does not read it: proposed is the state the loader skips.
     const loaded = loadGoldenSet(dir);
     expect(loaded.inputs.map((e) => e.id)).not.toContain(id);
     expect(loaded.verdicts.has(id)).toBe(false);
@@ -235,7 +252,8 @@ describe('adding a dispute to the eval set', () => {
   it('approving it by hand is what makes the eval read it', async () => {
     const { disputeId } = await smokeDispute();
     const dir = goldenDir();
-    const id = (await addGoldenCase(disputeId, dir) as { id: string }).id;
+    const id = ((await addGoldenCase(disputeId, dir)) as { id: string }).id;
+    await pullGoldenCases(dir, true);
     expect(loadGoldenSet(dir).inputs.map((e) => e.id)).not.toContain(id);
 
     // What a person does to approve: the case stops being proposed, and so do
@@ -248,23 +266,43 @@ describe('adding a dispute to the eval set', () => {
 
     const loaded = loadGoldenSet(dir);
     expect(loaded.inputs.map((e) => e.id)).toContain(id);
-    expect(loaded.verdicts.get(id), 'its rows are ground truth now').toBeTruthy();
-    expect(loaded.verdicts.get(id)!.length).toBeGreaterThan(0);
+    expect(loaded.verdicts.get(id)!.length, 'its rows are ground truth now').toBeGreaterThan(0);
   }, 60000);
 
-  it('adding twice writes once', async () => {
+  it('adding twice records once, and pulling twice writes once', async () => {
     const { disputeId } = await smokeDispute();
     const dir = goldenDir();
 
     const first = await addGoldenCase(disputeId, dir);
     expect(first.added).toBe(true);
-    const after = readFileSync(join(dir, 'review.json'), 'utf8');
+    const id = (first as { id: string }).id;
 
-    const second = await addGoldenCase(disputeId, dir);
-    expect(second).toEqual({ added: false, reason: 'already-added', id: (first as { id: string }).id });
-    // Not an error page and not a second entry: the files are untouched.
-    expect(readFileSync(join(dir, 'review.json'), 'utf8')).toBe(after);
-    expect(entriesOf(dir).entries.filter((e) => e.id === (first as { id: string }).id)).toHaveLength(1);
+    expect(await addGoldenCase(disputeId, dir)).toEqual({ added: false, reason: 'already-added', id });
+    expect(await db.GoldenCase.countDocuments({ case_id: id })).toBe(1);
+
+    await pullGoldenCases(dir, true);
+    const afterPull = readFileSync(join(dir, 'review.json'), 'utf8');
+    expect(entriesOf(dir).entries.filter((e) => e.id === id)).toHaveLength(1);
+
+    // A second pull has nothing waiting, and a third add is still a quiet no.
+    expect((await pullGoldenCases(dir, true)).written).toEqual([]);
+    expect(readFileSync(join(dir, 'review.json'), 'utf8')).toBe(afterPull);
+    expect(await addGoldenCase(disputeId, dir)).toEqual({ added: false, reason: 'already-added', id });
+  }, 60000);
+
+  it('a case already in the files is marked pulled and written again to nothing', async () => {
+    const { disputeId } = await smokeDispute();
+    const dir = goldenDir();
+    const id = ((await addGoldenCase(disputeId, dir)) as { id: string }).id;
+    // Somebody ran `pnpm golden:import` for it in the meantime.
+    await pullGoldenCases(dir, true);
+    await db.GoldenCase.updateOne({ case_id: id }, { $set: { pulled_at: null } });
+    const before = readFileSync(join(dir, 'review.json'), 'utf8');
+
+    const res = await pullGoldenCases(dir, true);
+    expect(res.written, 'nothing written twice').toEqual([]);
+    expect(res.marked, 'but it stops being offered').toBe(1);
+    expect(readFileSync(join(dir, 'review.json'), 'utf8')).toBe(before);
   }, 60000);
 
   it('says nothing to add when the dispute is not there', async () => {

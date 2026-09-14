@@ -8,7 +8,8 @@ import { linesForSlot } from '@/lib/grade/transcribe';
 import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from '@/lib/study/outcome';
 import { LANDING } from '@/lib/landing-content';
 import { addDisputeToGolden, reviewDispute } from '../actions';
-import { goldenCaseId, hasGoldenCase } from '@/lib/golden/import';
+import { goldenCaseId } from '@/lib/golden/import';
+import { alreadyKept } from '@/lib/golden/add-case';
 import type { RubricItem } from '@/lib/types';
 import { CAPS, PRIMARY, QUIET } from '../../ui';
 
@@ -48,10 +49,11 @@ export default async function DisputeCasePage({ params, searchParams }: { params
   } | null>();
   const reads = attemptId ? await Transcription.find({ attempt_id: attemptId }).select('legible marker_version method_marks').lean<OutcomeRead[]>() : [read];
   const reviews = dispute ? await DisputeReview.find({ dispute_id: dispute._id }).sort({ reviewed_at: -1 }).lean<{ _id: unknown; reviewed_at: Date; note: string }[]>() : [];
-  // Read from the golden files themselves rather than a flag on the dispute:
-  // the set is the record, and a case added by `pnpm golden:import` counts.
+  // Kept means EITHER already in the committed files — added by `pnpm
+  // golden:import` at some point — or recorded here and waiting for a pull.
+  // Neither is a flag on the dispute: the set is the record.
   const goldenId = goldenCaseId(String(readId));
-  const alreadyGolden = hasGoldenCase(goldenId);
+  const alreadyGolden = await alreadyKept(goldenId);
   const photo = await CapturedImage.exists({ session_id: read.session_id, question_index: read.question_index, take: read.take });
 
   const rubric = (attempt?.rubric?.length ? attempt.rubric : question?.rubric) ?? [];
@@ -182,14 +184,15 @@ export default async function DisputeCasePage({ params, searchParams }: { params
         {dispute && (
           alreadyGolden ? (
             <p className="mt-3 font-mono text-[11px] leading-relaxed text-dim">
-              In the eval set as <b className="text-ink">{goldenId}</b>, proposed until approved by hand.
+              Kept for the eval set as <b className="text-ink">{goldenId}</b>. It reaches the golden files on
+              the next <code>pnpm golden:pull</code>, proposed until approved by hand.
             </p>
           ) : (
             <form action={addDisputeToGolden} className="mt-3">
               <input type="hidden" name="disputeId" value={String(dispute._id)} />
               <button className={`${CAPS} w-full`}>Add to the eval set</button>
               <p className="mt-1 font-mono text-[10px] leading-relaxed text-dim">
-                Writes the read, the typed answers and every row proposed, with {code || 'the disputed row'} flagged. The eval ignores it until you approve it.
+                Keeps the read, the typed answers and every row proposed, with {code || 'the disputed row'} flagged. <code>pnpm golden:pull</code> carries it into the golden files; the eval ignores it until you approve it.
               </p>
             </form>
           )
