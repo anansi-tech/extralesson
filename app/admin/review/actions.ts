@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { dbConnect, Question } from '@/lib/db';
 import { snapshotLongMath } from '@/lib/admin/long-math-fixture';
 import { requireAdmin } from '@/lib/auth/session';
+import { explainDraftError } from '@/lib/admin/draft-error';
 import { QuestionDraftZ } from '@/lib/validation/question';
 import { approvalGate } from '@/lib/generation/approve-gate';
 import { hintsOrProblems } from '@/lib/generation/hints';
@@ -110,8 +111,7 @@ export async function saveQuestionEdit(
   }
   const validated = QuestionDraftZ.safeParse(parsed);
   if (!validated.success) {
-    const issue = validated.error.issues[0];
-    return { error: `${issue?.path.join('.') || 'question'}: ${issue?.message}` };
+    return { error: explainDraftError(validated.error) };
   }
   // THE ROW FIRST, THE GATE SECOND. The gate's independent solve is a model
   // call; a save that cannot land must not pay for one.
