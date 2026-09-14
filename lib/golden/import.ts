@@ -3,6 +3,30 @@ import { dirname, join } from 'node:path';
 import type { GoldenBundle } from './bundle';
 import { transcribeWorking } from '@/lib/grade/transcribe';
 
+/** The golden set as it sits in the repo. */
+export const GOLDEN_DIR = join(process.cwd(), 'design', 'golden');
+
+/**
+ * A case's id, from the READ it came from — the same read whichever way the
+ * case is added, so the export and the page asking "is this already in?"
+ * cannot answer differently.
+ */
+export function goldenCaseId(transcriptionId: string): string {
+  return `f-${transcriptionId.slice(-6)}`;
+}
+
+/** Whether the golden set already carries this case, approved or proposed. */
+export function hasGoldenCase(id: string, dir: string = GOLDEN_DIR): boolean {
+  const has = (file: string, read: (parsed: unknown) => { id: string }[]) => {
+    const path = join(dir, file);
+    return existsSync(path) && read(JSON.parse(readFileSync(path, 'utf8'))).some((e) => e.id === id);
+  };
+  return (
+    has('set.json', (j) => j as { id: string }[]) ||
+    has('review.json', (j) => (j as { entries: { id: string }[] }).entries)
+  );
+}
+
 /**
  * Appends a bundle to a golden directory in that directory's own style, so
  * the diff is the case and nothing else. Refuses an id already present.

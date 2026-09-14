@@ -7,7 +7,8 @@ import { renderVisual } from '@/lib/visuals';
 import { linesForSlot } from '@/lib/grade/transcribe';
 import { attemptOutcome, type OutcomeQuestion, type OutcomeRead } from '@/lib/study/outcome';
 import { LANDING } from '@/lib/landing-content';
-import { reviewDispute } from '../actions';
+import { addDisputeToGolden, reviewDispute } from '../actions';
+import { goldenCaseId, hasGoldenCase } from '@/lib/golden/import';
 import type { RubricItem } from '@/lib/types';
 import { CAPS, PRIMARY, QUIET } from '../../ui';
 
@@ -47,6 +48,10 @@ export default async function DisputeCasePage({ params, searchParams }: { params
   } | null>();
   const reads = attemptId ? await Transcription.find({ attempt_id: attemptId }).select('legible marker_version method_marks').lean<OutcomeRead[]>() : [read];
   const reviews = dispute ? await DisputeReview.find({ dispute_id: dispute._id }).sort({ reviewed_at: -1 }).lean<{ _id: unknown; reviewed_at: Date; note: string }[]>() : [];
+  // Read from the golden files themselves rather than a flag on the dispute:
+  // the set is the record, and a case added by `pnpm golden:import` counts.
+  const goldenId = goldenCaseId(String(readId));
+  const alreadyGolden = hasGoldenCase(goldenId);
   const photo = await CapturedImage.exists({ session_id: read.session_id, question_index: read.question_index, take: read.take });
 
   const rubric = (attempt?.rubric?.length ? attempt.rubric : question?.rubric) ?? [];
@@ -168,6 +173,28 @@ export default async function DisputeCasePage({ params, searchParams }: { params
             <button className={`${CAPS} mt-2 w-full`}>Mark as reviewed</button>
           </form>
         )}
+        {/* THE LOOP CLOSED, IN THE PANEL THAT RESOLVES IT. The export and the
+            importer both existed; what did not was one click between them, so
+            a case the product got wrong reached the eval only if somebody
+            remembered to run a script against an id they had to go and find.
+            The entry is written PROPOSED, which the loader skips until a
+            person approves it — adding is not deciding. */}
+        {dispute && (
+          alreadyGolden ? (
+            <p className="mt-3 font-mono text-[11px] leading-relaxed text-dim">
+              In the eval set as <b className="text-ink">{goldenId}</b>, proposed until approved by hand.
+            </p>
+          ) : (
+            <form action={addDisputeToGolden} className="mt-3">
+              <input type="hidden" name="disputeId" value={String(dispute._id)} />
+              <button className={`${CAPS} w-full`}>Add to the eval set</button>
+              <p className="mt-1 font-mono text-[10px] leading-relaxed text-dim">
+                Writes the read, the typed answers and every row proposed, with {code || 'the disputed row'} flagged. The eval ignores it until you approve it.
+              </p>
+            </form>
+          )
+        )}
+
         {reviews.length > 0 && (
           <ul className="mt-3 space-y-1">
             {reviews.map((r) => (

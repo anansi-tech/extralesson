@@ -65,6 +65,31 @@ describe('the case page', () => {
     expect([...panel.matchAll(/\$\{PRIMARY\}/g)]).toHaveLength(1);
   });
 
+  /**
+   * The loop is closed in the panel that closes the dispute — resolving it and
+   * keeping it are one decision, not a script somebody has to remember to run
+   * against an id they had to go and find.
+   */
+  it('offers Add to the eval set in the same panel, and only where it can be added', () => {
+    const panel = CASE.slice(CASE.indexOf('What to do'));
+    expect(panel).toContain('Add to the eval set');
+    expect(panel).toMatch(/action=\{addDisputeToGolden\}/);
+    // One click: the button posts the dispute id and nothing else is asked for.
+    expect(panel).toMatch(/name="disputeId"[\s\S]{0,120}Add to the eval set/);
+    // Adding is not a second commitment; reply is still the only one.
+    expect([...panel.matchAll(/\$\{PRIMARY\}/g)]).toHaveLength(1);
+  });
+
+  it('a case already added says so and offers nothing', () => {
+    const panel = CASE.slice(CASE.indexOf('What to do'));
+    expect(panel).toMatch(/alreadyGolden \?/);
+    expect(panel).toContain('In the eval set as');
+    expect(panel).toContain('proposed until approved by hand');
+    // Read from the golden files, not a flag on the dispute: a case added by
+    // `pnpm golden:import` counts the same.
+    expect(CASE).toMatch(/hasGoldenCase\(goldenId\)/);
+  });
+
   it('says that nothing here changes a mark', () => {
     expect(CASE).toContain('Nothing here changes a mark.');
     expect(LIST, 'and the list says it too').toContain('Nothing here changes a mark');

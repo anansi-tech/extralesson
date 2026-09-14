@@ -191,3 +191,83 @@ describe('export matches the take (ROUND_6 Task 7)', () => {
     expect(readme).toMatch(/golden:field-prune --yes[\s\S]*90 days/);
   });
 });
+
+/**
+ * THE LOOP CLOSED. The export and the importer both existed and nothing joined
+ * them: a case the product got wrong in the field reached the eval only if
+ * somebody remembered to run a script against an id they had to go and find.
+ * One click on the panel that resolves the dispute now does it.
+ */
+describe('adding a dispute to the eval set', () => {
+  let addGoldenCase: typeof import('@/lib/golden/add-case').addGoldenCase;
+  let hasGoldenCase: typeof import('@/lib/golden/import').hasGoldenCase;
+
+  beforeAll(async () => {
+    ({ addGoldenCase } = await import('@/lib/golden/add-case'));
+    ({ hasGoldenCase } = await import('@/lib/golden/import'));
+  });
+
+  const entriesOf = (dir: string) =>
+    JSON.parse(readFileSync(join(dir, 'review.json'), 'utf8')) as { entries: { id: string; proposed?: boolean; marks: { proposed?: boolean }[] }[] };
+
+  it('writes the case unapproved, and the loader ignores it until it is approved', async () => {
+    const { disputeId } = await smokeDispute();
+    const dir = goldenDir();
+
+    const out = await addGoldenCase(disputeId, dir);
+    expect(out.added).toBe(true);
+    const id = (out as { id: string }).id;
+
+    // Written, in both files, in the directory's own style.
+    expect(hasGoldenCase(id, dir)).toBe(true);
+    const review = entriesOf(dir);
+    const entry = review.entries.find((e) => e.id === id)!;
+    expect(entry.proposed, 'the whole case is proposed').toBe(true);
+    expect(entry.marks.every((m) => m.proposed), 'every row proposed').toBe(true);
+
+    // And the eval does not read it: proposed is the state the loader skips.
+    const loaded = loadGoldenSet(dir);
+    expect(loaded.inputs.map((e) => e.id)).not.toContain(id);
+    expect(loaded.verdicts.has(id)).toBe(false);
+    expect(loaded.inputs.map((e) => e.id), 'the approved case is still there').toEqual(['aaaaaa']);
+  }, 60000);
+
+  it('approving it by hand is what makes the eval read it', async () => {
+    const { disputeId } = await smokeDispute();
+    const dir = goldenDir();
+    const id = (await addGoldenCase(disputeId, dir) as { id: string }).id;
+    expect(loadGoldenSet(dir).inputs.map((e) => e.id)).not.toContain(id);
+
+    // What a person does to approve: the case stops being proposed, and so do
+    // its rows. Nothing else about the entry changes.
+    const review = entriesOf(dir);
+    const entry = review.entries.find((e) => e.id === id)!;
+    delete entry.proposed;
+    for (const m of entry.marks) delete m.proposed;
+    writeFileSync(join(dir, 'review.json'), JSON.stringify(review, null, 2) + '\n');
+
+    const loaded = loadGoldenSet(dir);
+    expect(loaded.inputs.map((e) => e.id)).toContain(id);
+    expect(loaded.verdicts.get(id), 'its rows are ground truth now').toBeTruthy();
+    expect(loaded.verdicts.get(id)!.length).toBeGreaterThan(0);
+  }, 60000);
+
+  it('adding twice writes once', async () => {
+    const { disputeId } = await smokeDispute();
+    const dir = goldenDir();
+
+    const first = await addGoldenCase(disputeId, dir);
+    expect(first.added).toBe(true);
+    const after = readFileSync(join(dir, 'review.json'), 'utf8');
+
+    const second = await addGoldenCase(disputeId, dir);
+    expect(second).toEqual({ added: false, reason: 'already-added', id: (first as { id: string }).id });
+    // Not an error page and not a second entry: the files are untouched.
+    expect(readFileSync(join(dir, 'review.json'), 'utf8')).toBe(after);
+    expect(entriesOf(dir).entries.filter((e) => e.id === (first as { id: string }).id)).toHaveLength(1);
+  }, 60000);
+
+  it('says nothing to add when the dispute is not there', async () => {
+    expect(await addGoldenCase(String(new mongoose.Types.ObjectId()), goldenDir())).toEqual({ added: false, reason: 'not-found' });
+  }, 60000);
+});

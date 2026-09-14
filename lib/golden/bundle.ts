@@ -1,6 +1,7 @@
 import { Attempt, CapturedImage, LineRejected, MarkDispute, Question, Transcription } from '@/lib/db';
 import { markableSlots } from '@/lib/grade/mark';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
+import { goldenCaseId } from './import';
 
 /**
  * A DISPUTE AS A GOLDEN CASE (ROUND_5 Task 3): the exact shape of
@@ -78,7 +79,7 @@ export async function buildGoldenBundle(disputeId: string, opts: { withImage?: b
     ? await CapturedImage.findOne({ session_id: read.session_id, question_index: read.question_index, take: read.take })
         .lean<{ data: Buffer; content_type: string } | null>()
     : null;
-  const id = `f-${String(read._id).slice(-6)}`;
+  const id = goldenCaseId(String(read._id));
   // Under field/, which is gitignored: a real student's page stays on the
   // machine that imported it, while the entry commits like any other.
   const filename = `field/${id}.${image?.content_type === 'image/png' ? 'png' : 'jpg'}`;
