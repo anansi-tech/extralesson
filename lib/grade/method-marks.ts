@@ -49,12 +49,25 @@ export function constructionRows(q: MethodMarkQuestion, awarded: string[]): Rubr
 /**
  * A slip is kept only when its quoted line is on the page (ROUND_7 Task 1).
  * The marker writes the part as "(b)" as often as "b"; the label is bare here.
+ *
+ * A LENGTH FLOOR DISCARDED THE COMMONEST WRONG VALUE THERE IS. The rule was
+ * two characters, to stop a one-character quote matching half the page by
+ * accident — but a student's wrong answer is very often a bare numeral, and a
+ * page reading "8" on its own line had its slip dropped for being too short,
+ * with the quote verbatim on the page. What the floor was really protecting
+ * against is a quote found INSIDE another line, so that is what is asked
+ * instead: a short quote must be a line of its own.
  */
 export function supportedSlips<S extends { quote: string; part: string }>(slips: S[], lines: string[]): S[] {
   const page = flatLine(lines.join(' '));
+  const ownLine = new Set(lines.map(flatLine));
   return slips
     .map((s) => ({ ...s, part: s.part.replace(/[()\s]/g, '').toLowerCase() }))
-    .filter((s) => flatLine(s.quote).length >= 2 && page.includes(flatLine(s.quote)));
+    .filter((s) => {
+      const quote = flatLine(s.quote);
+      if (quote.length === 0) return false;
+      return quote.length >= 2 ? page.includes(quote) : ownLine.has(quote);
+    });
 }
 
 /**

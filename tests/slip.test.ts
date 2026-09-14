@@ -27,6 +27,44 @@ describe('the slip', () => {
     );
     expect(kept.map((s) => s.part)).toEqual(['b']);
   });
+  /**
+   * A LENGTH FLOOR DISCARDED THE COMMONEST WRONG VALUE THERE IS. The rule was
+   * two characters, so a page reading "8" on its own line had its slip dropped
+   * for being too short, with the quote verbatim on the page — and a bare
+   * numeral is exactly what a student writes when the value is wrong. What the
+   * floor protected against is a short quote found INSIDE another line, so a
+   * short quote must now be a line of its own.
+   */
+  describe('a short quote', () => {
+    const bare = ['3x = 15', '8', 'fabric remains after 8 costumes.'];
+    const slip = (quote: string) => supportedSlips([{ part: 'd', quote, sentence: 'the wrong number of costumes' }], bare);
+
+    it('is kept when it stands on its own line', () => {
+      expect(slip('8')).toHaveLength(1);
+      // However the marker punctuates it, since flatLine strips that.
+      expect(slip(' "8" ')).toHaveLength(1);
+    });
+
+    it('is dropped when it only appears inside another line', () => {
+      // The 5 of "15" and the 3 of "3x": on the page, but not as a line.
+      expect(slip('5')).toEqual([]);
+      expect(slip('3')).toEqual([]);
+    });
+
+    it('still refuses a quote that is nowhere at all, and an empty one', () => {
+      expect(slip('9')).toEqual([]);
+      expect(slip('')).toEqual([]);
+      expect(slip('   ')).toEqual([]);
+    });
+
+    it('leaves the two-character-and-longer rule as it was', () => {
+      // A longer quote is still matched anywhere on the page, not just as a line.
+      expect(slip('after 8 costumes')).toHaveLength(1);
+      expect(slip('3x = 15')).toHaveLength(1);
+      expect(slip('3x = 16')).toEqual([]);
+    });
+  });
+
   it('is part of the marker contract and optional in its answer', () => {
     expect(MethodResultZ.safeParse({ decisions: [] }).success).toBe(true);
     expect(MethodResultZ.safeParse({ decisions: [], slips: [{ part: 'a', quote: 'x', sentence: 's' }] }).success).toBe(true);
