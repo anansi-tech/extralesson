@@ -623,8 +623,17 @@ describe('prose reaches the word path because it is prose', () => {
   });
 
   it('a value dressed in words is not prose', () => {
-    for (const v of ['5\\sqrt{2}\\text{ cm}', '20-29 min', '$2 \\le x \\le 7$', '2x + 3']) {
+    for (const v of ['5\\sqrt{2}\\text{ cm}', '$2 \\le x \\le 7$', '2x + 3', 'a \\star b = 2a + b']) {
       expect(isProse(v), v).toBe(false);
+    }
+  });
+
+  it('but words with a value beside them are', () => {
+    // "Figure 3" carries a number and no mathematics, and the words are the
+    // only thing that can tell it from "Figure 5". Nine accept entries in the
+    // bank read exactly like this, and refusing them the word path kills them.
+    for (const v of ['Figure 3', '40 ticket holders', 'the year 2025', 'order $1$', '16th departure']) {
+      expect(isProse(v), v).toBe(true);
     }
   });
 });
@@ -717,5 +726,46 @@ describe('order is read from the shape, not assumed away', () => {
   it('either side saying it carries no order is enough', () => {
     // A student may write the members of a set in whatever order they like.
     expect(answersEquivalent('{1,2}', '2, 1')).toBe(true);
+  });
+});
+
+/**
+ * WORDS ARE COMPARED AS WORDS, AND NOTHING ELSE IS. wordsEquivalent matches
+ * token SETS, which is right for prose and catastrophic for notation: it said a
+ * matrix equalled itself reversed, 3 : 2 was 2 : 3, and 2b - a was 2a - b. Each
+ * was fixed where it was found and the hole they came through stayed open.
+ */
+describe('a value that is not words is never token-matched', () => {
+  it('a matrix compares element-wise, in reading order', () => {
+    const grid = (body: string) => `\\begin{pmatrix}${body}\\end{pmatrix}`;
+    expect(answersEquivalent(grid('3\\\\-2'), grid('3\\\\-2'))).toBe(true);
+    expect(answersEquivalent(grid('3\\\\-2'), grid('-2\\\\3'))).toBe(false);
+    expect(answersEquivalent(grid('1&2\\\\3&4'), grid('2&1\\\\4&3'))).toBe(false);
+    expect(answersEquivalent(grid('1&2\\\\3&4'), grid('1.0&2\\\\3&4')), 'by value, not by text').toBe(true);
+    expect(answersEquivalent('\\binom{3}{-2}', '\\binom{-2}{3}')).toBe(false);
+  });
+
+  it('and reads the bracket form the app writes its own boxes back as', () => {
+    // composeAnswer stores a column vector from the boxes as "[9, 2]". A
+    // comparator that cannot read its own output marks a student wrong for
+    // using the boxes — four stored attempts were refused exactly that way.
+    expect(answersEquivalent('[9, 2]', '\\begin{pmatrix}9\\\\2\\end{pmatrix}')).toBe(true);
+    expect(answersEquivalent('[2, 9]', '\\begin{pmatrix}9\\\\2\\end{pmatrix}')).toBe(false);
+    expect(answersEquivalent('[2, 0, 0, 2]', '\\begin{pmatrix}2&0\\\\0&2\\end{pmatrix}')).toBe(true);
+    expect(answersEquivalent('[2, 0, 0, 2]', '\\begin{pmatrix}0&2\\\\2&0\\end{pmatrix}')).toBe(false);
+    expect(answersEquivalent('(4,-2)', '\\binom{4}{-2}')).toBe(true);
+  });
+
+  it('a ratio is a fraction, not two numbers side by side', () => {
+    expect(answersEquivalent('3 : 2', '6 : 4')).toBe(true);
+    expect(answersEquivalent('3 : 2', '2 : 3')).toBe(false);
+    expect(answersEquivalent('2 : 3 : 4', '4 : 6 : 8')).toBe(true);
+    expect(answersEquivalent('2 : 3 : 4', '4 : 6 : 9')).toBe(false);
+    expect(answersEquivalent('3 : 2', '1.5'), 'a ratio is not a number').toBe(false);
+  });
+
+  it('and what nothing can evaluate equals itself and nothing else', () => {
+    expect(answersEquivalent('$a \\star b = 2a + b$', '$a \\star b = 2a + b$')).toBe(true);
+    expect(answersEquivalent('$a \\star b = 2a + b$', '$a \\star b = b + 2a$')).toBe(false);
   });
 });

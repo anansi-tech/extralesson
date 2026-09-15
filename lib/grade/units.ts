@@ -84,7 +84,8 @@ export const UNIT_WORDS: ReadonlySet<string> = new Set(
   [...Object.keys(BASE), ...Object.keys(SPELLING)].filter((w) => w.length > 1),
 );
 
-function baseUnit(word: string): string {
+/** One spelling per unit: "minutes" and "min" are the same word. */
+export function baseUnit(word: string): string {
   const w = word.trim();
   return SPELLING[w] ?? w;
 }

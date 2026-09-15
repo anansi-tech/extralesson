@@ -21,9 +21,17 @@ export { sameDimension, UNIT_WORDS, type Quantity } from './units';
  * they are most of the traffic. Reading the head as mathematics is the last
  * resort, not the first.
  */
+/**
+ * "20-29 min" is a CLASS INTERVAL, not twenty minus twenty-nine. A hyphen with
+ * no space between two bare numbers is a range wherever the syllabus writes
+ * one, and reading it as a subtraction made the modal class -9 minutes — a
+ * quantity that agreed with itself and with nothing a student would ever type.
+ */
+const RANGE = /^\d+(?:\.\d+)?-\d+(?:\.\d+)?$/;
+
 function headValue(raw: string): number | null {
   const s = raw.trim();
-  if (s === '') return null;
+  if (s === '' || RANGE.test(s)) return null;
   const mixed = s.match(/^(-?)(\d+)\s+(\d+)\/(\d+)$/);
   if (mixed) {
     const sign = mixed[1] === '-' ? -1 : 1;

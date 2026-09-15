@@ -1,6 +1,6 @@
 import { parseQuantity } from './quantity';
 import { canEvaluate, isProse, parseNumeric } from './equivalence';
-import { bare, NUMBERISH, splitTopLevel, unorderedReading, wrapped } from './answer-syntax';
+import { bare, matrixRows, NUMBERISH, splitTopLevel, unorderedReading, wrapped } from './answer-syntax';
 
 /**
  * One box per value, so the student never types a delimiter. Read from the
@@ -88,24 +88,6 @@ function isValue(piece: string): boolean {
 }
 
 /**
- * The contents of the brace group starting at `from`, and where it ends.
- * \binom{\frac{3}{5}}{\frac{4}{5}} nests, and a single [^{}]* pass stops at the
- * first inner brace — so a column vector of fractions was not read as one and
- * rendered a box asking the student to type KaTeX.
- */
-function braceAt(s: string, from: number): { body: string; end: number } | null {
-  let i = from;
-  while (s[i] === ' ') i++;
-  if (s[i] !== '{') return null;
-  let depth = 0;
-  for (let j = i; j < s.length; j++) {
-    if (s[j] === '{') depth++;
-    else if (s[j] === '}' && --depth === 0) return { body: s.slice(i + 1, j), end: j + 1 };
-  }
-  return null;
-}
-
-/**
  * A COMPONENT OF A POINT IS WHATEVER THE ANSWER IS EXACT IN. An intersection
  * lands on \frac{5}{2} as readily as on 2, and the old rule admitted digits, a
  * dot and a slash — so an exact point was not a point, split into no boxes, and
@@ -125,27 +107,10 @@ export function readInputShape(rawAnswer: string): ShapeReading {
   const lower = s.toLowerCase();
   const one = (shape: InputShape): ShapeReading => ({ shape, boxes: 1, ordered: true, values: [s] });
 
-  // \binom{4}{-2} is a column vector too: the shorter way the papers and the
-  // generator write a 2x1. Missing it renders a box asking for typed KaTeX.
-  const binom = s.match(/\\[dt]?binom/);
-  if (binom) {
-    const top = braceAt(s, binom.index! + binom[0].length);
-    const bottom = top && braceAt(s, top.end);
-    if (top && bottom) {
-      return {
-        shape: 'column_vector',
-        boxes: 2,
-        ordered: true,
-        values: [top.body.trim(), bottom.body.trim()],
-      };
-    }
-  }
-
-  const grid = s.match(/\\begin\{[bp]matrix\}([\s\S]*?)\\end\{[bp]matrix\}/);
-  if (grid) {
-    const rows = grid[1].split(/\\\\/).map((r) => r.trim()).filter(Boolean);
-    const cols = Math.max(...rows.map((r) => r.split('&').length));
-    const cells = rows.flatMap((r) => r.split('&').map((c) => c.trim()));
+  const rows = matrixRows(s);
+  if (rows) {
+    const cols = Math.max(...rows.map((r) => r.length));
+    const cells = rows.flat();
     return cols > 1
       ? { shape: 'matrix', boxes: rows.length * cols, ordered: true, values: cells, cols }
       : { shape: 'column_vector', boxes: rows.length, ordered: true, values: cells };

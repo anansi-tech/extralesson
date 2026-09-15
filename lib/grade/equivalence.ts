@@ -1,8 +1,9 @@
 import { evaluate, rationalize, simplify } from 'mathjs';
 import { markMoney, normaliseDigitGroups } from '@/lib/money';
-import { carriesOrder } from './answer-syntax';
+import { bracketedCells, carriesOrder, matrixRows, wrapped } from './answer-syntax';
 import { expandNestedCommands, freeVariables, splitAdjacentSymbols, toMathExpr } from './notation';
 import { parseQuantity, parseQuantityProduct, productsEqual, sameDimension, UNIT_WORDS } from './quantity';
+import { baseUnit } from './units';
 import { roundingOf, roundTo, type Rounding } from './rounding';
 
 // Final-answer equivalence (ROUND_1 §6.3 and §4.3): documented deterministic
@@ -50,6 +51,8 @@ function preClean(raw: string): string {
     // Authored answers are KaTeX, where a literal percent is \%. It is the same
     // sign, so unescaping it is what lets "10\%" match "10" and "10%".
     .replace(/\\%/g, '%')
+    // \{ and \} are how KaTeX writes a set's braces; a student types them bare.
+    .replace(/\\([{}])/g, '$1')
     .replace(/\\[dt]frac\b/g, '\\frac') // display/inline fractions are one fraction
     .replace(/[−–]/g, '-') // unicode minus / en-dash
     // One spelling per relation, whichever notation the writer reached for.
@@ -61,6 +64,10 @@ function preClean(raw: string): string {
     .replace(/\\geq?(?![a-z])|≥/g, '>=')
     .replace(/\\lt\b/g, '<')
     .replace(/\\gt\b/g, '>')
+    // One SPACING too. "fg\\ne gf" keeps the space the command ate and
+    // "fg \u2260 gf" does not, so the same statement reached the comparison as
+    // two different strings — which only a token comparison could see past.
+    .replace(/\s*(!=|<=|>=|->)\s*/g, ' $1 ')
     .replace(/⁻¹/g, '^{-1}')
     .replace(/[×·]|\\times|\\cdot/g, '*')
     .replace(/÷|\\div\b/g, '/')
@@ -97,7 +104,10 @@ function rewritePositionalTimes(s: string): string {
 // still standing is a separator. Requiring a space after it marked
 // "18kg,27kg,36kg" wrong against the same list typed with the spacebar.
 function splitParts(cleaned: string): string[] {
-  return cleaned
+  // A SET'S BRACES ARE DELIMITERS, NOT PART OF ITS MEMBERS. Splitting "{1,2}"
+  // on the comma left "{1" and "2}", and only a token comparison could put
+  // those back together — which is what the comparison below no longer does.
+  return (wrapped(cleaned, '{') ?? wrapped(cleaned, '(') ?? cleaned)
     .split(/\s+or\s+|\s+and\s+|;|\n|,\s*/)
     .map(stripLabel)
     .filter((p) => p.length > 0);
@@ -477,6 +487,32 @@ function sameInequality(a: Inequality, b: Inequality): boolean {
 }
 
 /**
+ * A RATIO IS A FRACTION, not two numbers side by side. 3 : 2 is 6 : 4 and is
+ * not 2 : 3 — and both of those were decided by wordsEquivalent comparing the
+ * token SET {2, 3}, which cannot tell the two apart at all.
+ *
+ * Cross-multiplication rather than a division, so a zero part is not a special
+ * case: 3:2 is 6:4 because 3*4 = 2*6.
+ */
+function parseRatio(s: string): number[] | null {
+  const parts = s.split(':').map((p) => p.trim());
+  if (parts.length < 2) return null;
+  const values = parts.map(parseNumeric);
+  if (values.some((v) => v === null)) return null;
+  const numbers = values as number[];
+  return numbers.some((v) => v !== 0) ? numbers : null;
+}
+
+function sameRatio(a: number[], b: number[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((_, i) =>
+    a.every((__, j) => {
+      const cross = a[i] * b[j] - a[j] * b[i];
+      return Math.abs(cross) <= 1e-9 * Math.max(1, Math.abs(a[i] * b[j]));
+    }));
+}
+
+/**
  * WORDS, NOT SYMBOLS. "non-square", "right-angled isosceles triangle" and a
  * sentence that quotes a value are English, and English is compared as words —
  * mathjs reads "obtuse angle" as a product of eleven letters. A hyphen joins
@@ -490,8 +526,12 @@ export function isProse(s: string): boolean {
     .trim();
   if (plain === '') return false;
   if (/^[a-z][a-z\s-]*$/i.test(plain)) return true;
-  // A sentence keeps its values, so it is the WORDS that say what it is.
   const words = plain.replace(/[^a-z\s-]/gi, ' ').split(/[\s-]+/).filter((w) => w.length >= 3);
+  // A VALUE WITH WORDS ROUND IT IS WORDS: "Figure 3", "40 ticket holders",
+  // "the year 2025", "order 1". They carry a number and no mathematics, and
+  // the words are the only thing that can tell two of them apart.
+  if (words.length >= 1 && !/[=+*/^<>]|\\[a-z]/i.test(s)) return true;
+  // A sentence keeps its values, so it is the WORDS that say what it is.
   return words.length >= 3;
 }
 
@@ -567,8 +607,11 @@ function contentTokens(s: string): string[] {
     .replace(/[^a-z0-9°/.\s-]/g, ' ')
     .split(/\s+/)
     .filter(Boolean);
-  const kept = all.filter((t) => !GENERIC_WORDS.has(t));
-  return kept.length > 0 ? kept : all;
+  // A UNIT'S ABBREVIATION IS THE UNIT. "20-29 min" and "20-29 minutes" are one
+  // answer, and an accept list written in the other spelling is not a
+  // difference the marker should find.
+  const kept = all.filter((t) => !GENERIC_WORDS.has(t)).map(baseUnit);
+  return kept.length > 0 ? kept : all.map(baseUnit);
 }
 
 // Short classification answers must match on content words exactly, so "acute"
@@ -667,6 +710,23 @@ function valueEquivalent(a: string, b: string, rounding: Rounding | null): boole
   const ib = parseInequality(b);
   if (ia && ib) return sameInequality(ia, ib);
   if (ia || ib) return false;
+
+  // A MATRIX IS ITS ELEMENTS IN READING ORDER. Compared as words it equalled
+  // itself reversed, and a student who swapped two entries was awarded the mark.
+  const ga = matrixRows(a);
+  const gb = matrixRows(b);
+  if (ga || gb) {
+    if (ga && gb && (ga.length !== gb.length || ga.some((row, i) => row.length !== gb[i].length))) return false;
+    const ca = ga ? ga.flat() : bracketedCells(a);
+    const cb = gb ? gb.flat() : bracketedCells(b);
+    if (!ca || !cb || ca.length !== cb.length) return false;
+    return ca.every((cell, i) => valueEquivalent(cell, cb[i], rounding));
+  }
+
+  const ra = parseRatio(a);
+  const rb = parseRatio(b);
+  if (ra && rb) return sameRatio(ra, rb);
+  if (ra || rb) return false;
   // QUANTITIES FIRST, and decisively: if either side carries a unit the numeric
   // path below must not see it, because that path drops the unit — which is how
   // 72 cm came to equal 72 m. A product of quantities is tried before a single
@@ -701,8 +761,18 @@ function valueEquivalent(a: string, b: string, rounding: Rounding | null): boole
     const m = mathEquivalent(a, b, rounding);
     if (m !== null) return m;
   }
-  // both sides are already pre-cleaned/label-stripped
-  return a === b || wordsEquivalent(a, b);
+  // WORDS ARE COMPARED AS WORDS, AND NOTHING ELSE IS. wordsEquivalent matches
+  // token SETS, which is right for prose and catastrophic for notation: it said
+  // a matrix equalled itself reversed, 3 : 2 was 2 : 3, and 2b - a was 2a - b.
+  // Each of those was fixed where it was found, and the hole they came through
+  // stayed open — so it is closed here instead, and a value that is not words
+  // and that nothing above could evaluate is not equal to anything but itself.
+  //
+  // Identical strings still match, because refusing those would mark a student
+  // wrong for typing the answer exactly as the scheme wrote it. What the sweep
+  // reports as unparseable is precisely the set that gets no more than that.
+  if (isProse(a) || isProse(b)) return wordsEquivalent(a, b);
+  return a === b;
 }
 
 // True when two answers are equivalent. Multi-part answers ("x = -1/3 or

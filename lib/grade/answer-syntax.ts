@@ -56,8 +56,8 @@ export function splitTopLevel(s: string, sep: string): string[] {
  * The contents of a leading bracket, but only when it closes at the very END.
  * "{1,2}" wraps; "{1,3}, {2,3}" does not — it is two groups side by side.
  */
-export function wrapped(s: string, open: '{' | '('): string | null {
-  const close = open === '{' ? '}' : ')';
+export function wrapped(s: string, open: '{' | '(' | '['): string | null {
+  const close = open === '{' ? '}' : open === '(' ? ')' : ']';
   const body = s.replace(/^\\?\s*/, '');
   if (!body.startsWith(open)) return null;
   let depth = 0;
@@ -70,6 +70,24 @@ export function wrapped(s: string, open: '{' | '('): string | null {
         return body.slice(i + 1).replace(/^\\/, '').trim() === '' ? body.slice(1, i).replace(/\\$/, '') : null;
       }
     }
+  }
+  return null;
+}
+
+/**
+ * The contents of the brace group starting at `from`, and where it ends.
+ * \binom{\frac{3}{5}}{\frac{4}{5}} nests, and a single [^{}]* pass stops at the
+ * first inner brace — so a column vector of fractions was not read as one and
+ * rendered a box asking the student to type KaTeX.
+ */
+export function braceAt(s: string, from: number): { body: string; end: number } | null {
+  let i = from;
+  while (s[i] === ' ') i++;
+  if (s[i] !== '{') return null;
+  let depth = 0;
+  for (let j = i; j < s.length; j++) {
+    if (s[j] === '{') depth++;
+    else if (s[j] === '}' && --depth === 0) return { body: s.slice(i + 1, j), end: j + 1 };
   }
   return null;
 }
@@ -166,4 +184,40 @@ export function unorderedReading(s: string): Unordered | null {
 /** Whether where a value sits is part of the answer. */
 export function carriesOrder(rawAnswer: string): boolean {
   return unorderedReading(bare(rawAnswer)) === null;
+}
+
+/**
+ * The rows of a matrix, cell by cell, or null. \binom is the two-row column
+ * vector written short, so it reads as one here too.
+ *
+ * The comparator and the shape reader both need this, and for the same reason:
+ * a matrix is its elements IN ORDER, and anything that reads it as one blob
+ * compares it as words — which said a matrix equalled itself reversed.
+ */
+export function matrixRows(s: string): string[][] | null {
+  const binom = s.match(/\\[dt]?binom/);
+  if (binom) {
+    const top = braceAt(s, binom.index! + binom[0].length);
+    const bottom = top && braceAt(s, top.end);
+    if (top && bottom) return [[top.body.trim()], [bottom.body.trim()]];
+  }
+  const grid = s.match(/\\begin\{[bp]matrix\}([\s\S]*?)\\end\{[bp]matrix\}/);
+  if (!grid) return null;
+  const rows = grid[1].split(/\\\\/).map((r) => r.trim()).filter(Boolean);
+  if (rows.length === 0) return null;
+  return rows.map((r) => r.split('&').map((c) => c.trim()));
+}
+
+/**
+ * A bracketed list of cells in reading order: "[9, 2]" and "(4, -2)".
+ *
+ * The first of those is what composeAnswer writes a matrix back as, so it is a
+ * spelling of a matrix that the APP ITSELF produces — and a comparator that
+ * cannot read its own output marks a student wrong for using the boxes.
+ */
+export function bracketedCells(s: string): string[] | null {
+  const body = wrapped(s, '[') ?? wrapped(s, '(');
+  if (body === null) return null;
+  const cells = splitTopLevel(body, ',');
+  return cells.length >= 2 ? cells : null;
 }
