@@ -1,5 +1,6 @@
 import { parseQuantity } from './quantity';
 import { canEvaluate, isProse, parseNumeric } from './equivalence';
+import { bare, NUMBERISH, splitTopLevel, unorderedReading, wrapped } from './answer-syntax';
 
 /**
  * One box per value, so the student never types a delimiter. Read from the
@@ -69,50 +70,6 @@ export function inputGroup(reading: Pick<ShapeReading, 'groups' | 'groupKind'>):
     ? { size, kind: reading.groupKind } : undefined;
 }
 
-/** KaTeX dressing removed, so the shape underneath is visible. */
-function bare(raw: string): string {
-  return raw
-    .trim()
-    .replace(/^\$+|\$+$/g, '')
-    .replace(/\\left\b|\\right\b|\\,|\;|\\!/g, '')
-    .replace(/\\(?:text|mathrm)\{([^{}]*)\}/g, '$1')
-    .replace(/\\[dt]frac/g, '\\frac')
-    .replace(/²/g, '^2')
-    .replace(/³/g, '^3')
-    .trim();
-}
-
-const NUMBERISH = /^-?\d+(?:\.\d+)?(?:\s*\/\s*-?\d+(?:\.\d+)?)?$/;
-
-/**
- * bare() strips only the $ at the ENDS, so a split strands the inner ones
- * inside the values, in the boxes and in what the marker compares against. An
- * ESCAPED \$ is money and stays: the papers write \$1 860, which is a value.
- */
-function tidyPiece(piece: string): string {
-  return piece
-    .replace(/(^|[^\\])\$/g, '$1')
-    .replace(/^\\[,;!\s]+|\\[,;!\s]+$/g, '')
-    .trim();
-}
-
-function splitTopLevel(s: string, sep: string): string[] {
-  const out: string[] = [];
-  let depth = 0;
-  let current = '';
-  for (const ch of s) {
-    if ('([{'.includes(ch)) depth++;
-    // Clamped: an unbalanced close must not make later separators read as top level.
-    else if (')]}'.includes(ch)) depth = Math.max(0, depth - 1);
-    if (ch === sep && depth <= 0) {
-      out.push(current);
-      current = '';
-    } else current += ch;
-  }
-  out.push(current);
-  return out.map(tidyPiece).filter(Boolean);
-}
-
 /**
  * A set written as a CONDITION, not as members: {x in N : 1 <= x <= 12}. The
  * answer is a predicate — nothing to put in boxes, nothing a phone can type —
@@ -128,28 +85,6 @@ function isValue(piece: string): boolean {
   const p = piece.trim().toLowerCase();
   if (p === '') return false;
   return NUMBERISH.test(p) || parseQuantity(p) !== null || parseNumeric(p) !== null;
-}
-
-/**
- * The contents of a leading bracket, but only when it closes at the very END.
- * "{1,2}" wraps; "{1,3}, {2,3}" does not — it is two groups side by side.
- */
-function wrapped(s: string, open: '{' | '('): string | null {
-  const close = open === '{' ? '}' : ')';
-  const body = s.replace(/^\\?\s*/, '');
-  if (!body.startsWith(open)) return null;
-  let depth = 0;
-  for (let i = 0; i < body.length; i++) {
-    const ch = body[i];
-    if (ch === open) depth++;
-    else if (ch === close) {
-      depth--;
-      if (depth === 0) {
-        return body.slice(i + 1).replace(/^\\/, '').trim() === '' ? body.slice(1, i).replace(/\\$/, '') : null;
-      }
-    }
-  }
-  return null;
 }
 
 /**
@@ -184,30 +119,6 @@ function isComponent(piece: string): boolean {
   return p !== '' && !isProse(p) && canEvaluate(p);
 }
 
-/**
- * Members that are each a group — (1,H) or {1,2} — flattened with boundaries
- * recorded. Null when they are plain values, which is the ordinary case.
- */
-function asGroups(
-  members: string[],
-): { boxes: number; values: string[]; groups: number[]; groupKind: '(' | '{' } | null {
-  if (members.length === 0) return null;
-  const kinds = new Set<'(' | '{'>();
-  const inner: string[][] = [];
-  for (const m of members) {
-    const paren = wrapped(m, '(');
-    const brace = wrapped(m, '{');
-    const body = paren ?? brace;
-    if (body === null) return null;
-    kinds.add(paren !== null ? '(' : '{');
-    const parts = splitTopLevel(body, ',');
-    if (parts.length < 2) return null; // a bracket round one value is not a group
-    inner.push(parts);
-  }
-  if (kinds.size !== 1) return null;
-  const values = inner.flat();
-  return { boxes: values.length, values, groups: inner.map((g) => g.length), groupKind: [...kinds][0] };
-}
 
 export function readInputShape(rawAnswer: string): ShapeReading {
   const s = bare(rawAnswer);
@@ -240,33 +151,18 @@ export function readInputShape(rawAnswer: string): ShapeReading {
       : { shape: 'column_vector', boxes: rows.length, ordered: true, values: cells };
   }
 
-  // A SET only when the outer brace wraps the WHOLE answer: on a LIST of sets
-  // — {6,10}, {2,6,10} — a greedy match spans first brace to last and splits
-  // on the commas inside them.
-  const set = wrapped(s, '{');
-  if (set !== null) {
-    const members = splitTopLevel(set, ',');
-    const grouped = asGroups(members);
-    if (grouped) return { shape: 'set', ordered: false, ...grouped };
-    return { shape: 'set', boxes: Math.max(1, members.length), ordered: false, values: members };
-  }
-
-  // The papers write an enumeration of subsets with no outer brace: {1,3},
-  // {2,3}. Unordered, like the braced form it is shorthand for.
-  const bare_groups = asGroups(splitTopLevel(s, ','));
-  if (bare_groups && bare_groups.groups.length >= 2) {
-    return { shape: 'set', ordered: false, ...bare_groups };
-  }
-
-  // "or" is how the papers write roots, and also an ordinary English word, so
-  // the pieces must LOOK like roots — otherwise prose splits into boxes each
-  // holding half a sentence, which the marker then compares against.
-  if (/\bor\b/.test(lower)) {
-    const roots = s.split(/\s+or\s+/i).map(tidyPiece).filter(Boolean);
-    const rootish =
-      roots.length >= 2 &&
-      roots.every((r) => r.includes('=') && r.length <= 40 && r.split(/\s+/).length <= 6 && !/[.;]$/.test(r));
-    if (rootish) return { shape: 'roots', boxes: roots.length, ordered: false, values: roots };
+  // SETS AND ROOTS ARE READ BY answer-syntax.ts, which is also what the
+  // comparator asks. The two used to decide separately whether an answer
+  // carried an order, and `ordered` below is now that one answer.
+  const unordered = unorderedReading(s);
+  if (unordered) {
+    return {
+      shape: unordered.shape,
+      boxes: Math.max(1, unordered.values.length),
+      ordered: false,
+      values: unordered.values.length ? unordered.values : [s],
+      ...(unordered.groups ? { groups: unordered.groups, groupKind: unordered.groupKind } : {}),
+    };
   }
 
   // A RELATION SIGN ON ITS OWN answers "which sign goes in the box": a symbol to

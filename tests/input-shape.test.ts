@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { boxWidthChars, FIXED_ARITY, isMultiValue, readInputShape } from '@/lib/grade/input-shape';
+import { carriesOrder } from '@/lib/grade/answer-syntax';
 import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
 
 describe('readInputShape — what input an answer wants', () => {
@@ -209,5 +210,28 @@ describe('a coordinate keeps its shape when its components are exact', () => {
       shape: 'column_vector', boxes: 2, values: ['\\frac{3}{5}', '\\frac{4}{5}'],
     });
     expect(readInputShape('$\\binom{4}{-2}$').values, 'and the plain form is unchanged').toEqual(['4', '-2']);
+  });
+});
+
+// One source of the order fact: readInputShape sets `ordered` from
+// answer-syntax, and the comparator asks answer-syntax directly. A test that
+// they agree is the only thing keeping them from drifting apart again.
+describe('the shape reader and the comparator read order the same way', () => {
+  it('a list of roots with the name written once is roots, not a list', () => {
+    expect(readInputShape('$x=1, 6$')).toMatchObject({ shape: 'roots', ordered: false, values: ['x=1', '6'] });
+    expect(readInputShape('$t=-2,\\ 2$').shape).toBe('roots');
+    expect(readInputShape('18kg, 27kg, 36kg').shape, 'a list of measurements is not').toBe('list');
+    expect(readInputShape('x = 2, y = 3').shape, 'nor are two named quantities').toBe('list');
+  });
+
+  it('every shape agrees with carriesOrder', () => {
+    const answers = [
+      '(1,2)', '{1,2}', '{1,3}, {2,3}', 'x = 2 or x = -1/3', 'x = 1, 6', '2, 3, 4',
+      '\\begin{pmatrix}3\\\\-2\\end{pmatrix}', '\\binom{4}{-2}', '2 : 3', '5 cm', '42',
+      '2x + 3', 'a straight line', '$2 \\le x \\le 7$',
+    ];
+    for (const a of answers) {
+      expect(readInputShape(a).ordered, a).toBe(carriesOrder(a));
+    }
   });
 });

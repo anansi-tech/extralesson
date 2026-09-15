@@ -1,5 +1,6 @@
 import { evaluate, rationalize, simplify } from 'mathjs';
 import { markMoney, normaliseDigitGroups } from '@/lib/money';
+import { carriesOrder } from './answer-syntax';
 import { expandNestedCommands, freeVariables, splitAdjacentSymbols, toMathExpr } from './notation';
 import { parseQuantity, parseQuantityProduct, productsEqual, sameDimension, UNIT_WORDS } from './quantity';
 import { roundingOf, roundTo, type Rounding } from './rounding';
@@ -718,6 +719,21 @@ export function answersEquivalent(a: string, b: string, rounding?: Rounding | nu
   if (partsA.length !== partsB.length) {
     // Different part counts: only a whole-string comparison can save it.
     return valueEquivalent(stripLabel(preClean(a)), stripLabel(preClean(b)), rounding);
+  }
+
+  // WHERE A VALUE SITS IS PART OF THE ANSWER unless the shape says otherwise.
+  // A coordinate, a column vector and an ordered pair are ordered by
+  // definition; a set and a list of roots are not. Matching every answer as an
+  // unordered SET said (2,1) was (1,2) — a student who swapped x and y was
+  // awarded the mark on every path that compares whole strings, which is photo
+  // grading, the solve gate and revisiting a marked question.
+  //
+  // The question is asked of answer-syntax.ts, which is where readInputShape
+  // asks it too, so the two cannot come to different conclusions. Either side
+  // saying it carries no order is enough: a student may write the members of a
+  // set in any order they like.
+  if (carriesOrder(a) && carriesOrder(b)) {
+    return partsA.every((pa, i) => valueEquivalent(pa, partsB[i], rounding));
   }
 
   const used = new Array<boolean>(partsB.length).fill(false);

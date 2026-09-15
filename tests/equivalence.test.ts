@@ -683,3 +683,39 @@ describe('a quantity whose value is mathematics', () => {
     expect(answersEquivalent('$5\\sqrt{2}\\text{ cm}$', '5 cm')).toBe(false);
   });
 });
+
+/**
+ * WHERE A VALUE SITS IS PART OF THE ANSWER unless the shape says otherwise.
+ * Matching every answer as an unordered set said (2,1) was (1,2) — on every
+ * path that compares whole strings, which is photo grading, the solve gate and
+ * revisiting a marked question. The box path was already right.
+ */
+describe('order is read from the shape, not assumed away', () => {
+  it('a coordinate is ordered', () => {
+    expect(answersEquivalent('(1,2)', '(2,1)')).toBe(false);
+    expect(answersEquivalent('(1,2)', '(1,2)')).toBe(true);
+    expect(answersEquivalent('$\\left(\\frac{5}{2},2\\right)$', '$(2,2.5)$')).toBe(false);
+  });
+
+  it('a set is not', () => {
+    expect(answersEquivalent('{1,2}', '{2,1}')).toBe(true);
+    expect(answersEquivalent('{1,3}, {2,3}', '{2,3}, {1,3}')).toBe(true);
+    expect(answersEquivalent('{1,2}', '{1,3}')).toBe(false);
+  });
+
+  it('nor is a list of roots, however the label is written', () => {
+    expect(answersEquivalent('x = -1, 3', 'x = 3, -1')).toBe(true);
+    expect(answersEquivalent('x = 2 or x = -1/3', 'x = -1/3 or x = 2')).toBe(true);
+    expect(answersEquivalent('x = -1, 3', 'x = 3, -2')).toBe(false);
+  });
+
+  it('and a plain list keeps its order, which is how a reordered one is reported', () => {
+    expect(answersEquivalent('2, 3, 4', '4, 3, 2')).toBe(false);
+    expect(answersEquivalent('2, 3, 4', '2, 3, 4')).toBe(true);
+  });
+
+  it('either side saying it carries no order is enough', () => {
+    // A student may write the members of a set in whatever order they like.
+    expect(answersEquivalent('{1,2}', '2, 1')).toBe(true);
+  });
+});
