@@ -55,7 +55,7 @@ export interface CardQuestion {
        * never the answer, and `boxes` only where the count is part of the
        * question rather than part of the answer.
        */
-      input?: { shape: string; boxes?: number; cols?: number; chars?: number; pairs?: boolean };
+      input?: { shape: string; boxes?: number; cols?: number; chars?: number; pairs?: boolean; group?: { size: number; kind: '(' | '{' } };
     }[];
   }[];
   optionsHtml?: string[];
@@ -305,7 +305,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // layouts — a stacked box, and a gap inside a cloze statement — differ only in
   // PRESENTATION, so both branch on slot.input and no shape is honoured in one.
   const slotAnswerInput = (
-    slot: { ref: string; input?: { shape: string; boxes?: number; cols?: number; chars?: number; pairs?: boolean } },
+    slot: { ref: string; input?: { shape: string; boxes?: number; cols?: number; chars?: number; pairs?: boolean; group?: { size: number; kind: '(' | '{' } } },
     opts: { describe: string; className: string; placeholder?: string },
   ) =>
     slot.input ? (
@@ -313,6 +313,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
         shape={slot.input.shape}
         boxes={slot.input.boxes}
         pairs={slot.input.pairs}
+        group={slot.input.group}
         cols={slot.input.cols}
         chars={slot.input.chars}
         values={boxValues[slot.ref] ?? []}

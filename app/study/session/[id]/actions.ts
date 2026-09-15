@@ -9,7 +9,8 @@ import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
 import { hintLine, missReason } from '@/lib/grade/reason';
 import { earnableByMethod } from '@/lib/grade/method-marks';
-import { readInputShape } from '@/lib/grade/input-shape';
+import { inputGroup, readInputShape } from '@/lib/grade/input-shape';
+import { groupedEntries } from '@/lib/grade/grouped-entries';
 import { renderMathHtml } from '@/lib/katex';
 import type { ProfileMarks, QuestionPart, RubricItem, TemplateName } from '@/lib/types';
 import { ANSWER_REF_RE } from '@/lib/notation';
@@ -151,9 +152,15 @@ export async function submitAnswer(input: {
     // reads the way the papers write it and nothing has to guess a delimiter.
     const entered = answers.map((a) => {
       const slot = slotByRef.get(a.label);
-      const values = a.values?.map((v) => v.trim()).filter(Boolean) ?? [];
-      if (!slot?.answer || values.length === 0) return { ...a, values: undefined, text: a.answer };
+      let values = a.values?.map((v) => v.trim()) ?? [];
+      if (!slot?.answer || !values.some(Boolean)) return { ...a, values: undefined, text: a.answer };
       const reading = readInputShape(slot.answer);
+      const group = inputGroup(reading);
+      if (group) {
+        const normalised = groupedEntries(values, group);
+        if (!normalised) return { ...a, values, text: composeAnswer(values, reading.shape) };
+        values = normalised;
+      } else values = values.filter(Boolean);
       return { ...a, values, text: composeAnswer(values, reading.shape, reading) };
     });
     const inputs = entered.map((a) => ({ ref: a.label, answer: a.text, values: a.values }));

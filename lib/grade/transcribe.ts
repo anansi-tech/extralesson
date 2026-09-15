@@ -121,6 +121,7 @@ async function readOnce(args: TranscribeArgs): Promise<TranscribeOutcome> {
                 `for a matrix return entries row by row, left to right. One entry per box. ` +
                 `For a variable-length list/set (boxes absent), return one entry per value actually written; never infer how many values there should be. ` +
                 `If pairs is true, flatten complete pairs in order, two entries per pair. ` +
+                `If group is present, each member has group.size components with group.kind brackets. Flatten complete groups in written order, one component per entry; do not include the group brackets in entries. The number of groups must come from the student's page, never be inferred. ` +
                 `source_lines are the one-based indices in your lines array that support the entries. ` +
                 `A sentence can support several blanks, but only when it explicitly supplies each answer. ` +
                 `Each blank is a SEPARATE slot_ref: never put the answers for two blanks into the entries of one slot. ` +

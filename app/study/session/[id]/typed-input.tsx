@@ -23,6 +23,7 @@ interface Props {
    * pair appearing when the last one is filled.
    */
   pairs?: boolean;
+  group?: { size: number; kind: '(' | '{' };
   cols?: number;
   /** How many characters wide each box starts; it grows past this as typed. */
   chars?: number;
@@ -49,6 +50,7 @@ export function TypedInput({
   shape,
   boxes,
   pairs,
+  group,
   cols = 1,
   chars = 5,
   values,
@@ -62,14 +64,14 @@ export function TypedInput({
   const filled = values.filter((v) => v.trim() !== '').length;
   // A pair is only complete when BOTH of its boxes hold something, so a
   // half-typed pair does not open the next one.
-  const wholePairs = values.reduce(
-    (n, _, i) => (i % 2 === 1 && values[i - 1]?.trim() && values[i]?.trim() ? n + 1 : n),
-    0,
-  );
+  const member = group ?? (pairs ? { size: 2, kind: '(' as const } : undefined);
+  const size = member?.size ?? 1;
+  const wholePairs = values.reduce((n, _, i) =>
+    i % size === size - 1 && values.slice(i - size + 1, i + 1).every(v => v.trim()) ? n + 1 : n, 0);
   const count = fixed
     ? boxes!
-    : pairs
-      ? Math.max(2, (wholePairs + 1) * 2, values.length + (values.length % 2))
+    : member
+      ? Math.max(size, (wholePairs + 1) * size, Math.ceil(values.length / size) * size)
       : Math.max(GROW_FROM, filled + 1, values.length);
 
   const set = (i: number, v: string) => {
@@ -145,20 +147,22 @@ export function TypedInput({
     );
   }
 
-  if (pairs) {
+  if (member) {
     const open = shape === 'set' ? '{' : '';
     const close = shape === 'set' ? '}' : '';
     return (
       <div className="mt-1 flex flex-wrap items-center gap-1">
         {open && punct(open)}
-        {Array.from({ length: Math.ceil(count / 2) }, (_, g) => (
+        {Array.from({ length: Math.ceil(count / size) }, (_, g) => (
           <span key={g} className="flex items-center gap-1">
             {g > 0 && punct(',')}
-            {punct('(')}
-            {box(g * 2)}
-            {punct(',')}
-            {box(g * 2 + 1)}
-            {punct(')')}
+            {punct(member.kind)}
+            {Array.from({ length: size }, (_, i) => (
+              <span key={i} className="flex items-center gap-1">
+                {i > 0 && punct(',')}{box(g * size + i)}
+              </span>
+            ))}
+            {punct(member.kind === '(' ? ')' : '}')}
           </span>
         ))}
         {close && punct(close)}

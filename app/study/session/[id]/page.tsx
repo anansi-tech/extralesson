@@ -18,7 +18,7 @@ import { DiagnosticIntro } from './diagnostic-intro';
 import { DiagnosticFinish } from './diagnostic-finish';
 import { loadStudyState } from '@/lib/study/state';
 import { attemptOutcome, type OutcomeQuestion, type OutcomeRead, type OutcomeRow } from '@/lib/study/outcome';
-import { boxWidthChars, isMultiValue, readInputShape, showsBoxCount } from '@/lib/grade/input-shape';
+import { boxWidthChars, inputGroup, isMultiValue, readInputShape, showsBoxCount } from '@/lib/grade/input-shape';
 import { inputAffordance } from '@/lib/grade/input-hints';
 import QuestionCard, { type CardQuestion } from './question-card';
 import { SessionBar } from './session-bar';
@@ -549,6 +549,7 @@ export default async function SessionPage({
                   // a sample space is always two values, so saying so tells the
                   // student nothing they are being asked for.
                   pairs: reading.groups?.every((g) => g === 2) && reading.groupKind === '(',
+                  group: inputGroup(reading),
                   cols: reading.cols,
                   // Wide enough for the longest value in the slot, so a box is
                   // never a clue to the length of its own answer.

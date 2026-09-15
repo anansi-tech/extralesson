@@ -62,6 +62,13 @@ export function isMultiValue(shape: InputShape): boolean {
   return shape === 'list' || shape === 'set' || shape === 'roots' || FIXED_ARITY.has(shape);
 }
 
+/** Public member structure, never the number of groups in the answer key. */
+export function inputGroup(reading: Pick<ShapeReading, 'groups' | 'groupKind'>): { size: number; kind: '(' | '{' } | undefined {
+  const size = reading.groups?.[0];
+  return size && reading.groupKind && reading.groups?.every(n => n === size)
+    ? { size, kind: reading.groupKind } : undefined;
+}
+
 /** KaTeX dressing removed, so the shape underneath is visible. */
 function bare(raw: string): string {
   return raw

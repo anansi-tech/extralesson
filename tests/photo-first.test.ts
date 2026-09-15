@@ -11,7 +11,7 @@ vi.mock('@/lib/auth/session', () => ({
 // A COUNTING STUB. What is under test is where the image goes and how often,
 // never what the model sees in it.
 const calls: { image: boolean; kind: 'read' | 'drawing' | 'mark' }[] = [];
-let readerAnswers: { slot_ref: string; text: string }[] = [];
+let readerAnswers: { slot_ref: string; text: string; entries?: string[] }[] = [];
 vi.mock('ai', () => ({
   generateObject: async (opts: { schema: unknown; messages?: { content: unknown }[] }) => {
     const content = opts.messages?.[0]?.content; // markMethod sends a prompt, not messages
@@ -23,7 +23,7 @@ vi.mock('ai', () => ({
       return {
         object: {
           lines: [{ part_label: 'a', slot_label: null, text: '3x = 15', confidence: 0.9 }],
-          answers: readerAnswers.map((a) => ({ ...a, entries: a.text.split(',').map((s) => s.trim()), source_lines: [1] })),
+          answers: readerAnswers.map((a) => ({ ...a, entries: a.entries ?? a.text.split(',').map((s) => s.trim()), source_lines: [1] })),
           legible: true,
         },
         usage: { inputTokens: 10, outputTokens: 5 },
@@ -132,6 +132,25 @@ beforeEach(() => {
 const imageCalls = () => calls.filter((c) => c.image).length;
 
 describe('photo first — ROUND_4 Task 1', () => {
+  it.each([false, true])('submits nested subsets without invented empty sets (legacy entries: %s)', async legacy => {
+    const id = await question();
+    const sets = ['{1,2}', '{1,3}', '{1,6}', '{2,3}', '{2,6}', '{3,6}'];
+    const answer = `{${sets.join(',')}}`;
+    const rows = ['CK3', 'AK3', 'AK4', 'AK5'].map(code => ({ code, slot_ref: 'c.i', part_label: 'c', criterion: 'Lists the required subsets', mark_value: 1, profile: code === 'CK3' ? 'CK' : 'AK' }));
+    await db.Question.collection.updateOne({ _id: id }, { $set: {
+      marks: 4, parts: [{ label: 'c', prompt: 'List all two-element subsets.', marks: 4,
+        slots: [{ label: 'i', answer, response_mode: 'answer' }] }], rubric: rows,
+    } });
+    const sessionId = await session(id);
+    readerAnswers = [{ slot_ref: 'c.i', text: sets.join(', '), entries: sets }];
+    const read = await readWorking({ sessionId, questionIndex: 0, ...IMAGE });
+    if ('error' in read) throw new Error(read.error);
+    expect(read.prefill.values['c.i']).toEqual(['1', '2', '1', '3', '1', '6', '2', '3', '2', '6', '3', '6']);
+    await submitAnswer({ sessionId, questionIndex: 0, answers: [{ label: 'c.i', answer: '', values: legacy ? sets : read.prefill.values['c.i'] }] });
+    const attempt = await db.Attempt.findOne({ session_id: sessionId }).lean<{ answer: string; rubric_awarded: string[] }>();
+    expect(attempt?.answer).toBe('(c.i) {{1, 2}, {1, 3}, {1, 6}, {2, 3}, {2, 6}, {3, 6}}');
+    expect(attempt?.rubric_awarded).toEqual(['CK3', 'AK3', 'AK4', 'AK5']);
+  });
   it('prefill lands in the draft, and a multi-box slot fills when the split matches', async () => {
     const sessionId = await session(await question());
     const res = await readWorking({ sessionId, questionIndex: 0, ...IMAGE });

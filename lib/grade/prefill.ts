@@ -1,5 +1,6 @@
 import { isMultiValue, readInputShape } from './input-shape';
 import { normaliseSlotRef, readFields, type ReadPart } from './read-fields';
+import { groupedEntries } from './grouped-entries';
 
 export interface Prefill {
   /** Single-box slots: one value, one box, as before. */
@@ -28,12 +29,13 @@ export function structuredPrefill(
     // Normalise suggested maths entries only, never verbatim lines, prose or
     // student typing. Leave symbolic/compound arguments alone: their scope
     // cannot safely be inferred from a missing pair of parentheses.
-    const entries = a.entries?.map((v) => {
+    let entries = a.entries?.map((v) => {
       const value = v.trim();
       return field?.shape && field.shape !== 'word'
         ? value.replace(/(^|[^\w\\])sqrt\s*(\d+(?:\.\d+)?)(?=$|[\s+\-*/,)\]])/g, '$1sqrt($2)')
         : value;
     });
+    if (entries && field?.group) entries = groupedEntries(entries, field.group) ?? undefined;
     if (!field?.fillable || counts.get(ref) !== 1 || !entries?.length || (field.boxes !== undefined && entries.length !== field.boxes) || entries.some((v) => !v)) continue;
     if (field.pairs && entries.length % 2 !== 0) continue;
     if (!a.source_lines?.length || a.source_lines.some((n) => !Number.isInteger(n) || !read.lines[n - 1]?.text.trim())) continue;

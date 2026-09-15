@@ -1,4 +1,4 @@
-import { isMultiValue, readInputShape, showsBoxCount } from './input-shape';
+import { inputGroup, isMultiValue, readInputShape, showsBoxCount } from './input-shape';
 import { describeVisual, describeStimulusTable, type StoredVisual } from '@/lib/visuals';
 
 export interface ReadPart {
@@ -34,6 +34,7 @@ export function readFields(parts: ReadPart[]) {
       boxes: multi ? (showsBoxCount(shape) ? shape.boxes : undefined) : 1,
       columns: multi ? shape.cols : undefined,
       pairs: multi ? shape.groups?.every((g) => g === 2) && shape.groupKind === '(' : undefined,
+      group: multi ? inputGroup(shape) : undefined,
     };
   }));
 }

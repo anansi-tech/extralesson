@@ -1,6 +1,6 @@
 import { answersEquivalentAny } from './equivalence';
 import type { Rounding } from './rounding';
-import { readInputShape } from './input-shape';
+import { inputGroup, readInputShape } from './input-shape';
 
 /**
  * Each box is compared with the value in the SAME POSITION of the mark scheme;
@@ -69,10 +69,20 @@ export function composeAnswer(
 ): string {
   const vals = entered.map((v) => v.trim());
   if (grouping?.groups) {
+    const uniform = inputGroup(grouping);
+    // Compose only what was submitted, not the answer key's number of groups.
+    if (uniform) {
+      const groups: string[] = [];
+      for (let i = 0; i < vals.length; i += uniform.size) {
+        groups.push(`${uniform.kind}${vals.slice(i, i + uniform.size).join(', ')}${uniform.kind === '(' ? ')' : '}'}`);
+      }
+      return shape === 'set' ? `{${groups.join(', ')}}` : groups.join(', ');
+    }
     const close = grouping.groupKind === '(' ? ')' : '}';
     const parts: string[] = [];
     let at = 0;
     for (const size of grouping.groups) {
+      if (at >= vals.length) break;
       parts.push(`${grouping.groupKind}${vals.slice(at, at + size).join(', ')}${close}`);
       at += size;
     }
