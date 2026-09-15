@@ -25,7 +25,9 @@
     "hints:generate": "tsx scripts/generate-hints.ts",
     "hints:approve": "tsx scripts/approve-hints.ts",
     "hints:next": "tsx scripts/generate-hints.ts --next",
-    "golden:pull": "tsx scripts/golden-pull.ts"
+    "golden:pull": "tsx scripts/golden-pull.ts",
+    "verdicts": "tsx scripts/verdicts.ts",
+    "verdicts:update": "tsx scripts/verdicts.ts --update"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.118",

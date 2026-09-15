@@ -52,3 +52,23 @@ if [ -n "$collected" ] && [ "$on_disk" != "$collected" ]; then
   exit 1
 fi
 echo "tests pass ($collected files)"
+
+# EVERY COMPARISON THE MARKER MAKES, against what it made last time, and every
+# value it reads. The suite argues each comparator change from the case in front
+# of it; what no case can see is the answer that USED to be marked right and now
+# is not.
+#
+# Two halves, because one of them is not enough. The VERDICTS catch the loud
+# failure — a student's answer that was accepted and now is not. They would NOT
+# have caught "20-29 min" becoming twenty minus twenty-nine: both it and
+# "20-29 minutes" read as -9, so they still agreed and no verdict moved. The
+# READINGS catch that one, because the shape changed underneath the agreement.
+#
+# Either may move. Neither may move silently: update the baseline and say why.
+echo "checking verdicts…"
+if ! pnpm verdicts >/tmp/el-pre-push-verdicts.log 2>&1; then
+  echo "VERDICTS MOVED — push refused."
+  cat /tmp/el-pre-push-verdicts.log
+  exit 1
+fi
+tail -1 /tmp/el-pre-push-verdicts.log
