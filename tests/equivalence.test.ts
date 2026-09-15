@@ -656,3 +656,30 @@ describe('a command ends where its letters do', () => {
     expect(answersEquivalent('x\\ge12', '$x \\ge 12$')).toBe(true);
   });
 });
+
+/**
+ * An exact answer carrying a unit is a value with a unit, not text. The head
+ * used to be a digit regex, so \frac{196\pi}{3} cm² fell out of the quantity
+ * path AND the numeric one, and every such answer in the bank was compared as
+ * a string against its own accept list.
+ */
+describe('a quantity whose value is mathematics', () => {
+  it('compares by value, through the unit', () => {
+    expect(answersEquivalent('3\\sqrt[3]{10}\\text{ cm}', '\\sqrt[3]{270}\\text{ cm}')).toBe(true);
+    expect(answersEquivalent('$5\\sqrt{2}\\text{ cm}$', '$\\sqrt{50}\\text{ cm}$')).toBe(true);
+    expect(answersEquivalent('$\\frac{508\\pi}{3}\\text{ cm}^3$', '$\\frac{508}{3}\\pi\\text{ cm}^3$')).toBe(true);
+  });
+
+  it('and the unit still decides', () => {
+    expect(answersEquivalent('$5\\sqrt{2}\\text{ cm}$', '$\\sqrt{50}\\text{ m}$'), 'a different length').toBe(false);
+    expect(answersEquivalent('$90\\pi\\text{ cm}^3$', '$90\\pi\\text{ cm}^2$'), 'a volume is not an area').toBe(false);
+    expect(answersEquivalent('$90\\pi\\text{ cm}^3$', '$72\\pi\\text{ cm}^3$')).toBe(false);
+  });
+
+  it('the omitted unit is lenient about the value AS WRITTEN, which is now exact', () => {
+    // A bare number is accepted against a unit the question supplied. Reading
+    // the head as its first digits would have accepted 5 for 5\sqrt{2} cm.
+    expect(answersEquivalent('72 cm', '72')).toBe(true);
+    expect(answersEquivalent('$5\\sqrt{2}\\text{ cm}$', '5 cm')).toBe(false);
+  });
+});

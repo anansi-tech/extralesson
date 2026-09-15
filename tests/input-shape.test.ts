@@ -182,7 +182,7 @@ describe('the word path is arrived at, not fallen into', () => {
   });
 
   it('and a value is not made prose by carrying a unit', () => {
-    expect(readInputShape('$5\\sqrt{2}\\text{ cm}$').shape).toBe('expression');
+    expect(readInputShape('$5\\sqrt{2}\\text{ cm}$').shape, 'an exact length is a quantity').toBe('quantity');
     expect(readInputShape('2x + 3').shape).toBe('expression');
   });
 });

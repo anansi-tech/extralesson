@@ -73,9 +73,30 @@ describe('units are compared, not stripped', () => {
   });
 
   it('normalises to a base unit so conversion is one rule, not a list of cases', () => {
-    expect(parseQuantity('72 cm')).toEqual({ value: 0.72, dimension: 'length' });
-    expect(parseQuantity('336 m²')).toEqual({ value: 336, dimension: 'area' });
-    expect(parseQuantity('2 hours')).toEqual({ value: 7200, dimension: 'time' });
+    expect(parseQuantity('72 cm')).toEqual({ value: 0.72, dimension: 'length', written: 72 });
+    expect(parseQuantity('336 m²')).toEqual({ value: 336, dimension: 'area', written: 336 });
+    expect(parseQuantity('2 hours')).toEqual({ value: 7200, dimension: 'time', written: 2 });
+  });
+
+  /**
+   * THE VALUE IN FRONT OF A UNIT IS NOT ALWAYS A NUMBER. Every exact answer in
+   * the bank carrying a unit — an area of \\frac{196\\pi}{3} cm², a length of
+   * 3\\sqrt[3]{10} cm — fell out of the quantity path and the numeric one both,
+   * and was compared as TEXT against its own accept list.
+   */
+  it('reads a head that is mathematics, not a digit', () => {
+    expect(parseQuantity('90\\pi cm^3')?.written).toBeCloseTo(282.743, 3);
+    expect(parseQuantity('5\\sqrt{2} cm')?.dimension).toBe('length');
+    expect(parseQuantity('3\\sqrt[3]{10} cm')?.written).toBeCloseTo(6.4633, 4);
+    expect(parseQuantity('\\frac{196\\pi}{3}-49\\sqrt{3} cm^2')?.dimension).toBe('area');
+  });
+
+  it('and still refuses a head it cannot read', () => {
+    expect(parseQuantity('(2x+3) m'), 'a head with an unknown in it').toBeNull();
+    expect(parseQuantity('red apples'), 'words').toBeNull();
+    expect(parseQuantity('1 h 15 min'), 'a compound the grammar does not cover').toBeNull();
+    expect(parseQuantity('42'), 'a bare number is not a quantity').toBeNull();
+    expect(parseQuantity('3 x'), 'algebra keeps its letter').toBeNull();
   });
 });
 
