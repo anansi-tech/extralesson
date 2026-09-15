@@ -399,8 +399,6 @@ accept	c0c045	c.mode	"bus"	"Bus"	true
 accept	c0c05d	d.i	"No, Devon is not correct"	"No"	true
 accept	c0c08e	a.i	"$\\frac{h}{12}$"	"$\\frac{BC}{AB}$"	false
 accept	c0c08e	d.i	"6 of each type"	"6 vertical poles and 6 diagonal poles"	false
-accept	c0c0d6	a.i	"$\\tan 30^\\circ = \\frac{QR}{PQ}$"	"$\\tan 30^\\circ = \\frac{QR}{6}$"	false
-accept	c0c0d6	d.i	"$\\frac{3}{2\\sqrt{3}}$"	"$\\frac{\\sqrt{3}}{2}$"	true
 accept	c0c0ed	b.type	"reflection in a line"	"reflection"	true
 accept	c0c102	c.ii	"$J' \\cap P'$"	"$(J \\cup P)'$"	false
 accept	c29c20	b.ii	"a lower standard deviation"	"the smaller standard deviation"	false
@@ -2608,12 +2606,6 @@ reading	c0c0ad	c.i	"$34.6\\text{ m}$"	quantity
 reading	c0c0ce	a.i	"$x+y\\leq12$"	number
 reading	c0c0ce	b.i	"$(0,0), (12,0), (6,6), (0,10)$"	set
 reading	c0c0ce	c.profits	"$0, \\$840, \\$960, \\$900$"	list
-reading	c0c0d6	a.i	"$\\tan 30^\\circ = \\frac{QR}{6}$"	expression
-reading	c0c0d6	a.i	"$\\tan 30^\\circ = \\frac{QR}{PQ}$"	expression
-reading	c0c0d6	b.i	"$2\\sqrt{3}\\text{ m}$"	quantity
-reading	c0c0d6	c.i	"$4\\sqrt{3}\\text{ m}$"	quantity
-reading	c0c0d6	d.i	"$\\frac{3}{2\\sqrt{3}}$"	expression
-reading	c0c0d6	d.i	"$\\frac{\\sqrt{3}}{2}$"	expression
 reading	c0c0ed	b.type	"reflection in a line"	word
 reading	c0c0ed	b.type	"reflection"	word
 reading	c0c0ed	c.i	"$G(-1,-4), H(7,-4), I(3,-10)$"	expression
