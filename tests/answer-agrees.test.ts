@@ -169,6 +169,32 @@ describe('the approval gate', () => {
     expect(res.reason).toContain('disagrees with itself');
   });
 
+  /**
+   * WHOSE FAULT THE REFUSAL IS. The last check is a model answering the
+   * question and comparing, so it can refuse on one run and pass on the next.
+   * An operator shown only "disagreed" reads it as a verdict on their edit, and
+   * the card can only say otherwise if the gate says which kind it is.
+   */
+  it('names the independent solve as a model check, not a rule', async () => {
+    const disagreed = async () => ({ agrees: false, draftAnswer: '12', solveAnswer: '13' }) as never;
+    const res = await approvalGate(draft([slot({ answer: '12' })]), disagreed);
+
+    expect(res.ok).toBe(false);
+    expect(res.kind).toBe('model');
+    expect(res.reason).toContain('independent solve disagreed');
+  });
+
+  it('and every other refusal as the question, which does not vary', async () => {
+    for (const bad of [
+      draft([slot({ answer: '12', accept: ['13'] })]),
+      draft([slot({ answer: '$a \\star b = 2a + b$' })]),
+    ]) {
+      const res = await approvalGate(bad, solved);
+      expect(res.ok).toBe(false);
+      expect(res.kind, res.reason).toBe('question');
+    }
+  });
+
   it('finds a disagreement in any part, not only the first', async () => {
     const two = { parts: [{ label: 'a', prompt: 'p', marks: 1, slots: [slot({ answer: '12' })] }, { label: 'b', prompt: 'p', marks: 1, slots: [slot({ answer: '5', accept: ['6'] })] }], stem: 's' } as never;
     expect(questionDisagreements((two as { parts: never[] }).parts)).toHaveLength(1);

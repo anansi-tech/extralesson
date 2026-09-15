@@ -9,7 +9,7 @@ vi.mock('@/lib/auth/session', () => ({ requireAdmin: async () => ({ role: 'admin
 vi.mock('next/cache', () => ({ revalidatePath: () => {} }));
 // The gate's solve is a model call. Stubbed, and counted: a save that cannot
 // land must not reach it.
-const gate = vi.hoisted(() => vi.fn(async () => ({ ok: true }) as { ok: boolean; reason?: string }));
+const gate = vi.hoisted(() => vi.fn(async () => ({ ok: true }) as { ok: boolean; reason?: string; kind?: 'question' | 'model' }));
 vi.mock('@/lib/generation/approve-gate', () => ({ approvalGate: gate }));
 
 let mongod: MongoMemoryServer;
@@ -114,6 +114,35 @@ describe('saving an edit', () => {
 
     expect(await actions.saveQuestionEdit(id, edit(EDITED))).toEqual({ error: 'visual verify failed: nope' });
     expect(await read(id)).toMatchObject({ stem: STEM, status: 'approved' });
+  }, 30000);
+});
+
+/**
+ * WHOSE FAULT THE REFUSAL IS. The gate's last check asks a model to answer the
+ * question and compares, so it can refuse on one run and pass on the next. An
+ * operator shown only the disagreement reads it as a verdict on their edit, and
+ * the card can only say otherwise if the action tells it which kind it was.
+ */
+describe('a refusal the operator can simply try again', () => {
+  it('carries retry when the independent solve is what disagreed', async () => {
+    const id = await question('draft');
+    gate.mockResolvedValue({ ok: false, kind: 'model', reason: 'independent solve disagreed — draft: 12 · solver: 13' });
+
+    const res = await actions.saveQuestionEdit(id, edit(EDITED));
+
+    expect(res.error).toContain('independent solve disagreed');
+    expect(res.retry).toBe(true);
+    expect(await read(id), 'and nothing was written').toMatchObject({ stem: STEM });
+  }, 30000);
+
+  it('and does not when the question itself is at fault', async () => {
+    const id = await question('draft');
+    gate.mockResolvedValue({ ok: false, kind: 'question', reason: 'the question disagrees with itself: (a.i) …' });
+
+    const res = await actions.saveQuestionEdit(id, edit(EDITED));
+
+    expect(res.error).toContain('disagrees with itself');
+    expect(res.retry, 'trying again would refuse again').toBeFalsy();
   }, 30000);
 });
 

@@ -10,6 +10,19 @@ import type { QuestionDraft } from '@/lib/validation/question';
 export interface ApprovalGateResult {
   ok: boolean;
   reason?: string;
+  /**
+   * WHOSE FAULT THE REFUSAL IS, because the operator cannot tell from the text.
+   *
+   * 'question' — a rule about the draft itself: a figure that does not verify,
+   * an answer that disagrees with its own accept list, a value nothing can
+   * evaluate. The same edit refused now is refused every time.
+   *
+   * 'model' — the independent solve, which asks a model to answer the question
+   * and compares. It is not a rule and it does not repeat: it can refuse on one
+   * run and pass on the next. An operator told only "disagreed" reads that as
+   * their edit being wrong, and it is not what the check said.
+   */
+  kind?: 'question' | 'model';
 }
 
 export async function approvalGate(
@@ -28,7 +41,7 @@ export async function approvalGate(
       partPrompts,
     });
     if (!vres.ok) {
-      return { ok: false, reason: `visual verify failed: ${vres.issues.join(' | ')}` };
+      return { ok: false, kind: 'question', reason: `visual verify failed: ${vres.issues.join(' | ')}` };
     }
   }
   if (draft.stimulus_table) {
@@ -38,7 +51,7 @@ export async function approvalGate(
       partPrompts,
     });
     if (!tres.ok) {
-      return { ok: false, reason: `stimulus table verify failed: ${tres.issues.join(' | ')}` };
+      return { ok: false, kind: 'question', reason: `stimulus table verify failed: ${tres.issues.join(' | ')}` };
     }
   }
   /**
@@ -57,16 +70,17 @@ export async function approvalGate(
   const disagreements = findings.filter((d) => d.kind !== 'unparseable');
   if (disagreements.length > 0) {
     const said = disagreements.map((d) => `(${d.ref}) ${d.kind === 'accept' ? `accept ${JSON.stringify(d.failure)} does not equal the answer` : d.failure}`);
-    return { ok: false, reason: `the question disagrees with itself: ${said.join(' | ')}` };
+    return { ok: false, kind: 'question', reason: `the question disagrees with itself: ${said.join(' | ')}` };
   }
   if (blind.length > 0) {
-    return { ok: false, reason: `the comparator cannot evaluate this question's own answers, so nothing here can check it: ${blind.map((d) => `(${d.ref}) ${d.failure}`).join(' | ')}` };
+    return { ok: false, kind: 'question', reason: `the comparator cannot evaluate this question's own answers, so nothing here can check it: ${blind.map((d) => `(${d.ref}) ${d.failure}`).join(' | ')}` };
   }
 
   const outcome = await solve(draft);
   if (!outcome.agrees) {
     return {
       ok: false,
+      kind: 'model',
       reason: `independent solve disagreed — draft: ${outcome.draftAnswer} · solver: ${outcome.solveAnswer}`,
     };
   }

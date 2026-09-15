@@ -101,7 +101,7 @@ export async function restoreQuestion(id: string): Promise<{ error?: string }> {
 export async function saveQuestionEdit(
   id: string,
   editedJson: string,
-): Promise<{ error?: string }> {
+): Promise<{ error?: string; retry?: boolean }> {
   await requireAdmin();
   let parsed: unknown;
   try {
@@ -122,7 +122,11 @@ export async function saveQuestionEdit(
   }
   const gate = await approvalGate(validated.data);
   if (!gate.ok) {
-    return { error: gate.reason };
+    // The independent solve is a model check, and the card has to say so: an
+    // operator shown only "disagreed" reads it as a verdict on their edit.
+    // Set only when it is true, so a refusal that is about the question keeps
+    // the shape it had.
+    return gate.kind === 'model' ? { error: gate.reason, retry: true } : { error: gate.reason };
   }
   const written = await Question.updateOne({ _id }, { $set: { ...validated.data, status: 'draft' } });
   const gone = refused(written, 'no longer in the bank');

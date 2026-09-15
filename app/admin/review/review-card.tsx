@@ -82,6 +82,9 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
   const [editing, setEditing] = useState(false);
   const [json, setJson] = useState(question.editJson);
   const [error, setError] = useState<string>();
+  // A refusal the operator can simply try again, told apart from one that is
+  // about their edit. Cleared with the error it belongs to.
+  const [retryable, setRetryable] = useState(false);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   const editRef = useRef<HTMLTextAreaElement>(null);
@@ -90,6 +93,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
     setEditing(false);
     setJson(question.editJson);
     setError(undefined);
+    setRetryable(false);
   }, [question.id, question.editJson]);
 
   // Acting moves the queue on, so the question just judged — a keystroke is the
@@ -114,9 +118,11 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
       const res = await fn(question.id);
       if (res.error) {
         setError(res.error);
+        setRetryable(false);
         return;
       }
       setError(undefined);
+      setRetryable(false);
       router.replace(`/admin/review?from=${question.id}`);
     });
   // Approval writes the hints; a refusal names the rows and stays on the card.
@@ -125,6 +131,7 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
       const res = await approveQuestion(question.id);
       if (!res.ok) {
         setError(res.error);
+        setRetryable(false);
         setHintProblems(res.problems);
         return;
       }
@@ -166,11 +173,13 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
       const res = await saveQuestionEdit(question.id, json);
       if (res.error) {
         setError(res.error);
+        setRetryable(res.retry === true);
         return;
       }
       // Close the editor so the reviewer reads the rendered result and decides
       // whether to approve it, rather than approving unseen.
       setError(undefined);
+      setRetryable(false);
       setEditing(false);
     });
 
@@ -452,10 +461,25 @@ export default function ReviewCard({ question }: { question: ReviewQuestion }) {
             rows={16}
             className="w-full border-[1.5px] border-ink p-2 font-mono text-xs"
           />
-          {error && <p className={`mt-2 ${FAILURE}`}>{error}</p>}
+          {error && (
+            <div className={`mt-2 ${FAILURE}`}>
+              {/* THE GATE'S LAST CHECK IS A MODEL, NOT A RULE. It answers the
+                  question itself and compares, so it can refuse on one run and
+                  pass on the next. Shown only the disagreement, an operator
+                  reads it as a verdict on their edit, and it is not one. */}
+              {retryable && (
+                <p className="font-semibold">
+                  This is the gate&rsquo;s independent solve, which asks a model to answer the
+                  question and compares. It can disagree on one run and agree on the next, so
+                  nothing here says your edit is wrong. Read what it answered, then try again.
+                </p>
+              )}
+              <p className={retryable ? 'mt-1.5' : undefined}>{error}</p>
+            </div>
+          )}
           <div className="mt-2 flex gap-2">
             <button onClick={saveEdit} disabled={pending} className={INK}>
-              {pending ? 'Checking…' : 'Save'}
+              {pending ? 'Checking…' : retryable ? 'Try again' : 'Save'}
             </button>
             <button onClick={() => setEditing(false)} className={SECONDARY}>
               Cancel

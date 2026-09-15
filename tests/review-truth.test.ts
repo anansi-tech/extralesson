@@ -14,6 +14,19 @@ describe('the review card', () => {
     expect(card).toMatch(/question\.status === 'approved' && !window\.confirm\(/);
     expect(card).toMatch(/onClick=\{retire\}/);
   });
+  it('never lets a model check read as a verdict on the edit', () => {
+    const card = at('app', 'admin', 'review', 'review-card.tsx');
+    // The button changes with it: pressing Save again on a refusal that was
+    // never about the edit is what the operator needs, and saying "Save" a
+    // second time does not tell them that is worth doing.
+    expect(card).toMatch(/setRetryable\(res\.retry === true\)/);
+    expect(card).toMatch(/nothing here says your edit is wrong/);
+    expect(card).toMatch(/retryable \? 'Try again' : 'Save'/);
+    // And a refusal that IS about the question keeps its plain treatment.
+    expect(at('app', 'admin', 'review', 'actions.ts'))
+      .toMatch(/gate\.kind === 'model' \? \{ error: gate\.reason, retry: true \}/);
+  });
+
   it('says "Overall totals met; N topic targets short" and opens each short topic in the search', () => {
     const page = at('app', 'admin', 'review', 'page.tsx');
     expect(page).toMatch(/const totalsMet = p1Short <= 0 && p2Short <= 0;/);
