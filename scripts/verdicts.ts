@@ -12,6 +12,7 @@
 // Keys present on only one side are ignored. A student submitting an attempt
 // adds one and a deleted attempt removes one, and neither is a code change.
 import 'dotenv/config';
+import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dbConnect, Attempt, Question } from '@/lib/db';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
@@ -21,6 +22,37 @@ import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 import { isEntryPoint } from './entry';
 
 const BASELINE = 'scripts/verdicts.baseline.tsv';
+
+/**
+ * WHAT A STUDENT TYPED DOES NOT GO IN THE REPOSITORY. The bank's own answers
+ * stay readable — they are ours, and a diff of them is the point — but the text
+ * on the other side of an attempt comparison is a student's work, and the gate
+ * only needs it to be the SAME text as last time.
+ *
+ * Not a secret: a short answer hashes to a value anyone can look up, and the
+ * canonical is on the same line. It is not readable, which is what was asked
+ * for, and it is stable, which is what the gate needs. The question and the
+ * slot stay in the clear so a moved verdict says where to look.
+ */
+const typedByKey = new Map<string, string>();
+
+function typedKey(answer: string): string {
+  const key = createHash('sha256').update(answer).digest('hex').slice(0, 16);
+  typedByKey.set(key, answer);
+  return key;
+}
+
+/**
+ * The hash is for the FILE, not for the person reading the failure. A regression
+ * you cannot read is one you cannot act on, so the report puts the text back —
+ * it is in memory from the run that just found it.
+ */
+function readable(line: string): string {
+  return line.replace(/typed:([0-9a-f]{16})/, (whole, key: string) => {
+    const typed = typedByKey.get(key);
+    return typed === undefined ? whole : JSON.stringify(typed);
+  });
+}
 
 interface Slot {
   ref: string;
@@ -88,7 +120,7 @@ export async function verdicts(): Promise<string[]> {
       const v = typed[s.ref] ?? '';
       if (v === '') continue;
       const ok = answersEquivalentAny(v, s.answer, s.accept, s.rounding);
-      out.push(`attempt\t${String(q._id).slice(-6)}\t${s.ref}\t${JSON.stringify(v)}\t${JSON.stringify(s.answer)}\t${ok}`);
+      out.push(`attempt\t${String(q._id).slice(-6)}\t${s.ref}\ttyped:${typedKey(v)}\t${JSON.stringify(s.answer)}\t${ok}`);
     }
   }
   // Two students typing the same answer to the same slot is the same
@@ -128,15 +160,15 @@ async function main(): Promise<void> {
 
   if (regressed.length > 0) {
     console.error(`\n${regressed.length} VERDICT${regressed.length > 1 ? 'S' : ''} MOVED TRUE TO FALSE:\n`);
-    for (const l of regressed) console.error(`  ${l.split('\t').slice(0, 5).join('  ')}`);
+    for (const l of regressed) console.error(`  ${readable(l).split('\t').slice(0, 5).join('  ')}`);
   }
   if (improved.length > 0) {
     console.error(`\n${improved.length} moved false to true:\n`);
-    for (const l of improved) console.error(`  ${l.split('\t').slice(0, 5).join('  ')}`);
+    for (const l of improved) console.error(`  ${readable(l).split('\t').slice(0, 5).join('  ')}`);
   }
   if (reread.length > 0) {
     console.error(`\n${reread.length} value${reread.length > 1 ? 's are' : ' is'} now read as a different shape:\n`);
-    for (const l of reread) console.error(`  ${l.split('\t').slice(1).join('  ')}`);
+    for (const l of reread) console.error(`  ${readable(l).split('\t').slice(1).join('  ')}`);
   }
   if (regressed.length + improved.length + reread.length > 0) {
     console.error(`\nEvery one of these is an answer the marker now reads differently.`);

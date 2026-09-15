@@ -580,282 +580,282 @@ accept	fe84d4	c.i	"$\\frac{3}{50}$"	"$0.06$"	true
 accept	fe84d4	d.ii	">"	"greater than"	false
 accept	fe84d4	d.ii	"more than"	"greater than"	false
 accept	fe84d4	d.iii	"should not"	"not"	true
-attempt	037c66	a.i	"1.6, 9/5, 2, 11/5"	"$1.6, \\frac{9}{5}, 2.0, \\frac{11}{5}$"	true
-attempt	037c66	a.i	"1.6,(9/5),2.0,(11/5) ​"	"$1.6, \\frac{9}{5}, 2.0, \\frac{11}{5}$"	true
-attempt	037c66	a.i	"1.6,9/5,2.0,11/5"	"$1.6, \\frac{9}{5}, 2.0, \\frac{11}{5}$"	true
-attempt	037c66	b.i	"0.2(n-1) + 1.6"	"$T_n=0.2n+1.4$"	true
-attempt	037c66	b.i	"0.2m+1.4"	"$T_n=0.2n+1.4$"	false
-attempt	037c66	b.i	"1.6+0.2(n−1)"	"$T_n=0.2n+1.4$"	true
-attempt	037c66	d.i	"23"	"$23$"	true
-attempt	037c6e	a.i	"729.67"	"81 kg"	false
-attempt	037c6e	a.i	"81"	"81 kg"	true
-attempt	037c6e	a.i	"81kg"	"81 kg"	true
-attempt	037c6e	b.shares	"162.15, 243.22, 324.30"	"18 kg, 27 kg, 36 kg"	false
-attempt	037c6e	b.shares	"18, 27, 36"	"18 kg, 27 kg, 36 kg"	true
-attempt	037c6e	b.shares	"18kg,27kg,36kg"	"18 kg, 27 kg, 36 kg"	true
-attempt	037c6e	d.i	"1"	"1 bag per day"	true
-attempt	037c88	b.i	"16"	"16"	true
-attempt	037c88	b.ii	"1600"	"\\$1 600"	true
-attempt	037c88	c.i	"240"	"\\$240"	true
-attempt	037c88	d.i	"1840"	"\\$1 840"	true
-attempt	0ab933	a.i	"144000"	"144 000"	true
-attempt	0ab933	b.i	"0.88"	"1 056 000"	false
-attempt	0ab933	b.i	"1056000"	"1 056 000"	true
-attempt	0ab933	b.i	"88%"	"1 056 000"	false
-attempt	0ab933	b.ii	"1000000"	"88%"	false
-attempt	0ab933	b.ii	"1056000"	"88%"	false
-attempt	0ab933	b.ii	"88%"	"88%"	true
-attempt	0ab933	c.ii	"2.4 * 10^4"	"$2.4 \\times 10^4$"	true
-attempt	0ab933	c.ii	"2.4 x 10^4"	"$2.4 \\times 10^4$"	true
-attempt	0ab933	c.ii	"2.4x10^4"	"$2.4 \\times 10^4$"	false
-attempt	0ab933	c.ii	"2.4×10^4"	"$2.4 \\times 10^4$"	true
-attempt	0ab933	c.ii	"No"	"$2.4 \\times 10^4$"	false
-attempt	0ab945	a.i	"3²"	"5"	false
-attempt	0ab945	b.axis	"0"	"$t=3$"	false
-attempt	0ab945	b.maximum	"6³"	"9"	false
-attempt	0ab945	c.i	"10"	"$5$ seconds"	false
-attempt	0ab945	d.composite	"1"	"$gf(t)=-(t-3)^2+4$"	false
-attempt	0ab945	d.number	"1"	"2"	false
-attempt	220c3b	a.i	"0.05"	"$0.05\\text{ m}$"	true
-attempt	2f9272	a.x	"2"	"2"	true
-attempt	2f9272	a.y	"2"	"2"	true
-attempt	2f9272	b.i	"[9, 2]"	"\\begin{pmatrix}9\\\\2\\end{pmatrix}"	true
-attempt	2f9272	c.i	"[7, 8]"	"\\begin{pmatrix}7\\\\8\\end{pmatrix}"	true
-attempt	2f9272	d.i	"[2/sqrt(29), 5/sqrt(29)]"	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	true
-attempt	4af6d2	a.i	"3"	"3"	true
-attempt	4af6d2	a.ii	"5"	"5"	true
-attempt	4af6d2	a.iii	"7"	"7"	true
-attempt	4af6d2	a.iv	"4"	"4"	true
-attempt	4af6d2	a.v	"1"	"1"	true
-attempt	4af6d2	b.mean	"3.95"	"3.95"	true
-attempt	4af6d2	b.median	"4"	"4"	true
-attempt	4af6d2	b.mode	"4"	"4"	true
-attempt	4af6d2	c.comparison	"more"	"more"	true
-attempt	4af6d2	c.days	"7"	"7"	true
-attempt	4af6d2	c.decision	"will"	"should"	false
-attempt	5cb2e6	a.i	"75 pi square meters"	"$75\\pi\\text{ m}^2$"	true
-attempt	5cb2e6	c.i	"10 sqrt(2) meters"	"$10\\sqrt{2}\\text{ m}$"	true
-attempt	5cb2e6	d.i	"(250√2π)/3 m³"	"$\\frac{250\\sqrt{2}\\pi}{3}\\text{ m}^3$"	true
-attempt	5cb2fb	b.i	"4"	"$4\\text{ cm}$"	true
-attempt	5cb2fb	c.i	"25 cm²"	"$25\\text{ cm}^2$"	true
-attempt	5cb2fb	d.i	"78.5 cm²"	"$78.5\\text{ cm}^2$"	true
-attempt	5cb2fb	d.ii	"180 degrees"	"$180^\\circ$"	true
-attempt	5d3d6c	a.x	"2"	"2"	true
-attempt	5d3d6c	a.y	"2"	"2"	true
-attempt	5d3d6c	b.i	"[9, 2]"	"\\begin{pmatrix}9\\\\2\\end{pmatrix}"	true
-attempt	5d3d6c	c.i	"[7, 8]"	"\\begin{pmatrix}7\\\\8\\end{pmatrix}"	true
-attempt	5d3d6c	d.i	"[2/sqrt29, 5/sqrt29]"	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	false
-attempt	620313	a.i	"432"	"432"	true
-attempt	620313	b.i	"168"	"168"	true
-attempt	620313	b.ii	"25"	"25"	true
-attempt	620313	b.iii	"600"	"600"	true
-attempt	620313	c.i	"75"	"75"	true
-attempt	620313	d.i	"10"	"10"	true
-attempt	620313	d.ii	"5"	"5"	true
-attempt	821070	a.i	"16"	"16"	true
-attempt	821070	a.i	"4"	"16"	false
-attempt	821070	b.i	"300"	"\\$400"	false
-attempt	821070	b.i	"4"	"\\$400"	false
-attempt	821070	b.i	"400"	"\\$400"	true
-attempt	821070	c.i	"15%"	"15%"	true
-attempt	821070	c.i	"20"	"15%"	false
-attempt	821070	c.i	"4"	"15%"	false
-attempt	821070	c.i	"60"	"15%"	false
-attempt	8210d8	a.i	"30,000 meters"	"$30\\,000\\text{ m}$"	true
-attempt	8210d8	b.i	"45 minutes"	"$45\\text{ min}$"	true
-attempt	8210d8	c.i	"34.3"	"$34.3\\text{ km/h}$"	true
-attempt	8210d8	d.i	"303.75"	"\\$303.75"	true
-attempt	9cc6c1	a.i	"[2, 0, 0, 2]"	"\\begin{pmatrix}2 & 0 \\\\ 0 & 2\\end{pmatrix}"	true
-attempt	9cc6c1	b.i	"[0, 2, -2, 0]"	"\\begin{pmatrix}0 & -2 \\\\ 2 & 0\\end{pmatrix}"	false
-attempt	9cc6c1	c.i	"[0, -0.5, 0.5, 0]"	"\\begin{pmatrix}0 & \\frac{1}{2} \\\\ -\\frac{1}{2} & 0\\end{pmatrix}"	false
-attempt	9cc6c1	d.i	"I"	"I"	true
-attempt	9cc6c1	d.ii	"(-3, -4)"	"$(3,4)$"	false
-attempt	9e8767	a.i	"∛(3V/(4π))"	"$\\sqrt[3]{\\frac{3V}{4\\pi}}$"	true
-attempt	9e8767	b.i	"6 cm"	"$6\\text{ cm}$"	true
-attempt	9e8767	c.i	"[-18, 12]"	"$\\begin{pmatrix}-18\\\\12\\end{pmatrix}$"	true
-attempt	9e877e	a.i	"144000"	"12"	false
-attempt	9e877e	b.i	"88%"	"\\$180"	false
-attempt	9e877e	c.i	"24000"	"12 bags"	false
-attempt	9e87bd	a.i	"d"	"108°"	false
-attempt	9e87bd	b.i	"d"	"108°"	false
-attempt	9e87bd	d.i	"d"	"18°"	false
-attempt	9e88e3	a.i	"d"	"40"	false
-attempt	9e88e3	b.i	"d"	"80\\%"	false
-attempt	9e88e3	c.decision	"s"	"meets"	false
-attempt	9e88e3	c.minimum	"s"	"30"	false
-attempt	a9f5af	a.i	"5"	"$14\\text{ cm}$"	false
-attempt	a9f5af	b.i	"5"	"$124\\text{ cm}$"	false
-attempt	a9f5af	c.i	"5"	"$31\\text{ cm}$"	false
-attempt	a9f5af	d.i	"5"	"$31\\sqrt{2}$"	false
-attempt	a9f5af	d.ii	"5"	"4 lines of symmetry and rotational symmetry of order 4"	false
-attempt	b1a5fb	a.i	"500"	"\\$500"	true
-attempt	b1a5fb	c.i	"6.4 percent more"	"$6.4\\%$ more"	false
-attempt	b1a63a	b.i	"(0,16) and (6,4)"	"$(0,16)$ and $(6,4)$"	true
-attempt	b1a63a	d.profit	"2600"	"$26$ hundred dollars"	true
-attempt	b1a668	b.centre	"0,0"	"$O(0,0)$"	true
-attempt	b1a668	b.factor	"2"	"$2$"	true
-attempt	b1a668	b.type	"enlargement"	"enlargement"	true
-attempt	b1a668	c.A''	"(8, -6)"	"$(8,-6)$"	true
-attempt	b1a668	c.B''	"(8, 6)"	"$(8,6)$"	true
-attempt	b1a668	d.i	"73.7°, 53.1"	"$73.7°, 53.1°$"	true
-attempt	b1a692	b.i	"68 meters"	"$68\\text{ m}$"	true
-attempt	b1a692	c.i	"40 centimeter"	"$40\\text{ m}$"	false
-attempt	b1a692	d.i	"164"	"$164^\\circ$"	true
-attempt	c0bf0b	a.i	"24"	"24"	true
-attempt	c0bf0b	b.i	"2^3 x 3"	"$2^3 \\times 3$"	true
-attempt	c0bf0b	b.i	"70"	"$2^3 \\times 3$"	false
-attempt	c0bf0b	b.ii	"2^2 x 3^2"	"$2^2 \\times 3^2$"	true
-attempt	c0bf0b	b.ii	"5"	"$2^2 \\times 3^2$"	false
-attempt	c0bf0b	b.iii	"10"	"12"	false
-attempt	c0bf0b	b.iii	"12"	"12"	true
-attempt	c0bfa2	a.i	"12+6x"	"$6x+12$"	true
-attempt	c0c009	b.i	"[2, 0, 0, 2]"	"$\\begin{pmatrix}0&2\\\\2&0\\end{pmatrix}$"	false
-attempt	c0c009	c.i	"[0, 1/2, 0.5, 0]"	"$\\begin{pmatrix}0&\\frac{1}{2}\\\\\\frac{1}{2}&0\\end{pmatrix}$"	true
-attempt	c0c009	d.i	"[5, 3]"	"$\\begin{pmatrix}3\\\\5\\end{pmatrix}$"	false
-attempt	c0c05d	a.i	"3/8"	"$\\frac{3}{8}$"	true
-attempt	c0c05d	a.i	"37.5/100"	"$\\frac{3}{8}$"	true
-attempt	c0c05d	a.i	"5"	"$\\frac{3}{8}$"	false
-attempt	c0c05d	a.i	"7"	"$\\frac{3}{8}$"	false
-attempt	c0c05d	b.i	"36"	"36"	true
-attempt	c0c05d	b.i	"5"	"36"	false
-attempt	c0c05d	b.i	"8"	"36"	false
-attempt	c0c05d	c.i	"1, 36"	"$1,36$"	true
-attempt	c0c05d	c.i	"2, 3"	"$1,36$"	false
-attempt	c0c05d	c.i	"7, I"	"$1,36$"	false
-attempt	c0c05d	c.ii	"2, 18"	"$2,18$"	true
-attempt	c0c05d	c.ii	"5, 7"	"$2,18$"	false
-attempt	c0c05d	c.ii	"7, O"	"$2,18$"	false
-attempt	c0c05d	c.iii	"3, 12"	"$3,12$"	true
-attempt	c0c05d	c.iii	"3, 9"	"$3,12$"	false
-attempt	c0c05d	c.iii	"H, U"	"$3,12$"	false
-attempt	c0c05d	c.iv	"4, 10"	"$4,9$"	false
-attempt	c0c05d	c.iv	"4, 9"	"$4,9$"	true
-attempt	c0c05d	c.iv	"7, 9"	"$4,9$"	false
-attempt	c0c05d	c.iv	"7, U"	"$4,9$"	false
-attempt	c0c05d	c.iv	"8, I"	"$4,9$"	false
-attempt	c0c05d	d.i	"No"	"No"	true
-attempt	c0c05d	d.i	"Y"	"No"	false
-attempt	c0c05d	d.i	"Yes"	"No"	false
-attempt	c0c05d	d.i	"yes"	"No"	false
-attempt	d0dc6a	a.i	"10"	"$24\\text{ m} \\times 16\\text{ m}$"	false
-attempt	d0dc6a	a.i	"24m by 16m"	"$24\\text{ m} \\times 16\\text{ m}$"	true
-attempt	d0dc6a	a.i	"24m x 16m"	"$24\\text{ m} \\times 16\\text{ m}$"	true
-attempt	d0dc6a	a.i	"24m × 16m"	"$24\\text{ m} \\times 16\\text{ m}$"	true
-attempt	d0dc6a	a.i	"5³"	"$24\\text{ m} \\times 16\\text{ m}$"	false
-attempt	d0dc6a	a.ii	"34.5"	"$8\\text{ m} \\times 6\\text{ m}$"	false
-attempt	d0dc6a	a.ii	"7³"	"$8\\text{ m} \\times 6\\text{ m}$"	false
-attempt	d0dc6a	a.ii	"8m * 6cm"	"$8\\text{ m} \\times 6\\text{ m}$"	false
-attempt	d0dc6a	a.ii	"8m by 6m"	"$8\\text{ m} \\times 6\\text{ m}$"	true
-attempt	d0dc6a	a.ii	"8m x 6m"	"$8\\text{ m} \\times 6\\text{ m}$"	true
-attempt	d0dc6a	a.ii	"8x6"	"$8\\text{ m} \\times 6\\text{ m}$"	false
-attempt	d0dc6a	b.i	"336 square metres"	"$336\\text{ m}^2$"	true
-attempt	d0dc6a	b.i	"336"	"$336\\text{ m}^2$"	true
-attempt	d0dc6a	b.i	"336m^2"	"$336\\text{ m}^2$"	true
-attempt	d0dc6a	b.i	"34.5"	"$336\\text{ m}^2$"	false
-attempt	d0dc6a	b.i	"T"	"$336\\text{ m}^2$"	false
-attempt	d0dc6a	c.i	"0.05 metre"	"$0.050\\text{ m}$"	true
-attempt	d0dc6a	c.i	"0.05"	"$0.050\\text{ m}$"	true
-attempt	d0dc6a	c.i	"0.050m"	"$0.050\\text{ m}$"	true
-attempt	d0dc6a	c.i	"16.8, 8"	"$0.050\\text{ m}$"	false
-attempt	d0dc6a	c.i	"6²"	"$0.050\\text{ m}$"	false
-attempt	d0dc6a	d.i	"341.4"	"341.4"	true
-attempt	d0dc6a	d.i	"344.25"	"341.4"	false
-attempt	d0dc6a	d.i	"6"	"341.4"	false
-attempt	d0dc6a	d.i	"accepted"	"341.4"	false
-attempt	d0dc6a	d.iii	"0.05"	"does not"	false
-attempt	d0dc6a	d.iii	"No"	"does not"	false
-attempt	d0dc6a	d.iii	"does not"	"does not"	true
-attempt	d0dc6a	d.iii	"estimated mass is less than 34kg."	"does not"	false
-attempt	d0dc72	a.midpoint	"34.5"	"$34.5$ kg"	true
-attempt	d0dc72	a.width	"10"	"$10$ kg"	true
-attempt	d0dc72	a.width	"70"	"$10$ kg"	false
-attempt	d0dc72	b.i	"34.5"	"$34.5$ kg"	true
-attempt	d0dc72	c.i	"16.8, 8"	"$16.8$ kg, $8.4$ kg"	false
-attempt	d0dc72	c.i	"16.8, 8.4"	"$16.8$ kg, $8.4$ kg"	true
-attempt	d0dc72	d.decision	"accept"	"Yes"	false
-attempt	d0dc72	d.decision	"accepted"	"Yes"	true
-attempt	d0dc7f	a.i	"(4,-2)"	"$\\binom{4}{-2}$"	true
-attempt	d0dc7f	a.i	"[4, -2]"	"$\\binom{4}{-2}$"	true
-attempt	d0dc7f	b.i	"(3, 3)"	"$(3,3)$"	true
-attempt	d0dc7f	b.ii	"(2, 6)"	"$(6,2)$"	false
-attempt	d0dc7f	b.ii	"(6, -2)"	"$(6,2)$"	false
-attempt	d0dc7f	b.ii	"(6, 2)"	"$(6,2)$"	true
-attempt	d0dc87	a.i	"[2, 4°]"	"$\\begin{pmatrix}4\\\\2\\end{pmatrix}$"	false
-attempt	d0dc87	a.i	"[4, 2]"	"$\\begin{pmatrix}4\\\\2\\end{pmatrix}$"	true
-attempt	d0dc87	b.i	"26.6 degrees"	"$26.6°$"	true
-attempt	d0dc87	b.i	"26.6°"	"$26.6°$"	true
-attempt	d0dc87	b.i	"26°"	"$26.6°$"	false
-attempt	d0dc87	b.i	"4"	"$26.6°$"	false
-attempt	d0dc87	c.i	"(4, 5)"	"$(4,5)$"	true
-attempt	d0dc87	c.i	"(59, 5)"	"$(4,5)$"	false
-attempt	d0dc87	d.i	"10"	"$10$"	true
-attempt	d0dc87	d.i	"24"	"$10$"	false
-attempt	d0dc87	d.ii	"not parallel"	"not parallel"	true
-attempt	d0dc8f	a.i	"1"	"1"	true
-attempt	d0dc8f	b.i	"BD = 5m"	"5 m"	true
-attempt	d0dc8f	c.i	"AD = 12m"	"12 m"	true
-attempt	d0dc8f	d.i	"Total lenght is 48m so a lenght of 47.5m is not sufficient."	"48"	false
-attempt	d0dca9	a.i	"10"	"10"	true
-attempt	d0dca9	a.i	"d"	"10"	false
-attempt	d0dca9	b.i	"{2,4,6,8,10}"	"\\{2,4,6,8,10\\}"	true
-attempt	d0dca9	b.i	"{4, 45, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4}"	"\\{2,4,6,8,10\\}"	false
-attempt	d0dca9	c.i	"8"	"8"	true
-attempt	d0dca9	c.i	"d"	"8"	false
-attempt	d0dca9	c.i	"r"	"8"	false
-attempt	d0dca9	d.i	"{4}"	"\\{6,10\\}, \\{2,6,10\\}, \\{4,6,10\\}, \\{6,8,10\\}"	false
-attempt	d0dca9	d.i	"{6,10},{2,6,10},{4,6,10},{6,8,10}"	"\\{6,10\\}, \\{2,6,10\\}, \\{4,6,10\\}, \\{6,8,10\\}"	true
-attempt	d0dca9	d.i	"{r, r}"	"\\{6,10\\}, \\{2,6,10\\}, \\{4,6,10\\}, \\{6,8,10\\}"	false
-attempt	d0dcb1	a.i	"7n - 18 - 4n"	"$7n-18-4n$"	true
-attempt	d0dcb1	a.i	"7n-4n-18"	"$7n-18-4n$"	true
-attempt	d0dcb1	b.i	"-6"	"$-6$ dollars"	true
-attempt	d0dcb1	b.i	"6"	"$-6$ dollars"	false
-attempt	d0dcc3	a.i	"260"	"\\$260"	true
-attempt	d0dcc3	b.i	"0.2"	"20%"	true
-attempt	d0dcc3	b.i	"20"	"20%"	true
-attempt	d0dcc3	b.i	"20%"	"20%"	true
-attempt	d0dcc3	c.i	"0.3"	"\\$200"	false
-attempt	d0dcc3	c.i	"182"	"\\$200"	false
-attempt	d0dcc3	c.i	"200"	"\\$200"	true
-attempt	d0dcc3	c.i	"7"	"\\$200"	false
-attempt	d0dcc3	d.i	"14.29"	"4%"	false
-attempt	d0dcc3	d.i	"200"	"4%"	false
-attempt	d0dcc3	d.i	"4"	"4%"	true
-attempt	d0dcc3	d.i	"9"	"4%"	false
-attempt	d0dccb	a.i	"3"	"3"	true
-attempt	d0dccb	a.ii	"5"	"5"	true
-attempt	d0dccb	a.iii	"7"	"7"	true
-attempt	d0dccb	a.iv	"4"	"4"	true
-attempt	d0dccb	a.v	"1"	"1"	true
-attempt	d0dccb	b.mean	"3.95"	"3.95"	true
-attempt	d0dccb	b.median	"4"	"4"	true
-attempt	d0dccb	b.mode	"4"	"4"	true
-attempt	d0dd05	a.i	"-3"	"-3"	true
-attempt	d0dd05	b.i	"y = -3x + 36"	"y = -3x + 36"	true
-attempt	d0dd05	c.i	"15"	"15 m"	true
-attempt	d0dd05	d.number	"8"	"7"	false
-attempt	d0dd9b	a.x	"2"	"2"	true
-attempt	d0dd9b	a.x	"x = 2"	"2"	true
-attempt	d0dd9b	a.y	"2"	"2"	true
-attempt	d0dd9b	a.y	"y = 2"	"2"	true
-attempt	d0dd9b	b.i	"[9, 2]"	"\\begin{pmatrix}9\\\\2\\end{pmatrix}"	true
-attempt	d0dd9b	c.i	"[7, 8]"	"\\begin{pmatrix}7\\\\8\\end{pmatrix}"	true
-attempt	d0dd9b	d.i	"[2/sqrt(29), 5/sqrt(29)]"	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	true
-attempt	d0dd9b	d.i	"[2/√29, 5/√29]"	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	true
-attempt	d9c215	a.i	"5"	"3"	false
-attempt	d9c215	b.i	"5"	"3n+1"	false
-attempt	d9c215	c.i	"5"	"17"	false
-attempt	d9c21d	a.i	"8°"	"55°"	false
-attempt	d9c21d	b.i	"9°"	"11.6 km"	false
-attempt	d9c21d	c.i	"6°"	"135°"	false
-attempt	d9c237	a.i	"5"	"77.9 m"	false
-attempt	d9c237	b.i	"5°"	"37.8°"	false
-attempt	d9c264	a.i	"$1038.00"	"\\$1 038.00"	true
-attempt	d9c264	b.i	"$103.80"	"\\$103.80"	true
-attempt	d9c264	c.i	"1135.2"	"\\$1 135.98"	false
-attempt	d9c264	d.i	"Can pay"	"cannot"	false
-attempt	d9c264	d.ii	"5.98"	"\\$5.98"	true
-attempt	fe84c4	a.i	"898"	"$132°$"	false
-attempt	fe84c4	b.i	"895"	"$66°$"	false
+attempt	037c66	a.i	typed:66f221df2d78891c	"$1.6, \\frac{9}{5}, 2.0, \\frac{11}{5}$"	true
+attempt	037c66	a.i	typed:85b58b1b882ea867	"$1.6, \\frac{9}{5}, 2.0, \\frac{11}{5}$"	true
+attempt	037c66	a.i	typed:93253d0dea45c5fc	"$1.6, \\frac{9}{5}, 2.0, \\frac{11}{5}$"	true
+attempt	037c66	b.i	typed:18e5d0746d02cf4a	"$T_n=0.2n+1.4$"	true
+attempt	037c66	b.i	typed:39dad3f661060761	"$T_n=0.2n+1.4$"	false
+attempt	037c66	b.i	typed:85e57abbf2e6c9f1	"$T_n=0.2n+1.4$"	true
+attempt	037c66	d.i	typed:535fa30d7e25dd8a	"$23$"	true
+attempt	037c6e	a.i	typed:5316ca1c5ddca8e6	"81 kg"	true
+attempt	037c6e	a.i	typed:60c775a5b4010d6c	"81 kg"	false
+attempt	037c6e	a.i	typed:630eb1fc09e3b6ca	"81 kg"	true
+attempt	037c6e	b.shares	typed:071c34e938ef26f7	"18 kg, 27 kg, 36 kg"	false
+attempt	037c6e	b.shares	typed:0ae75e2f6cba0bc9	"18 kg, 27 kg, 36 kg"	true
+attempt	037c6e	b.shares	typed:c6ebec671f4c3376	"18 kg, 27 kg, 36 kg"	true
+attempt	037c6e	d.i	typed:6b86b273ff34fce1	"1 bag per day"	true
+attempt	037c88	b.i	typed:b17ef6d19c7a5b1e	"16"	true
+attempt	037c88	b.ii	typed:b458944d9ec4322f	"\\$1 600"	true
+attempt	037c88	c.i	typed:6af1f692e9496c6d	"\\$240"	true
+attempt	037c88	d.i	typed:f23173a6a69eac18	"\\$1 840"	true
+attempt	0ab933	a.i	typed:a06483011d6b1fcc	"144 000"	true
+attempt	0ab933	b.i	typed:09b259b80740faa6	"1 056 000"	false
+attempt	0ab933	b.i	typed:5087c5ac0b6df259	"1 056 000"	true
+attempt	0ab933	b.i	typed:e2819fbe22224ae0	"1 056 000"	false
+attempt	0ab933	b.ii	typed:09b259b80740faa6	"88%"	true
+attempt	0ab933	b.ii	typed:5087c5ac0b6df259	"88%"	false
+attempt	0ab933	b.ii	typed:6cce36d9f8a9e151	"88%"	false
+attempt	0ab933	c.ii	typed:1ea442a134b2a184	"$2.4 \\times 10^4$"	false
+attempt	0ab933	c.ii	typed:3a462bafa0b1fc9b	"$2.4 \\times 10^4$"	true
+attempt	0ab933	c.ii	typed:4c23a91cfa699d82	"$2.4 \\times 10^4$"	false
+attempt	0ab933	c.ii	typed:d75951918728395f	"$2.4 \\times 10^4$"	true
+attempt	0ab933	c.ii	typed:e3cfb218302a5fb4	"$2.4 \\times 10^4$"	true
+attempt	0ab945	a.i	typed:f1a7e1f991156dea	"5"	false
+attempt	0ab945	b.axis	typed:5feceb66ffc86f38	"$t=3$"	false
+attempt	0ab945	b.maximum	typed:0c33fd8fd116b250	"9"	false
+attempt	0ab945	c.i	typed:4a44dc15364204a8	"$5$ seconds"	false
+attempt	0ab945	d.composite	typed:6b86b273ff34fce1	"$gf(t)=-(t-3)^2+4$"	false
+attempt	0ab945	d.number	typed:6b86b273ff34fce1	"2"	false
+attempt	220c3b	a.i	typed:0602d7c813c1f6e7	"$0.05\\text{ m}$"	true
+attempt	2f9272	a.x	typed:d4735e3a265e16ee	"2"	true
+attempt	2f9272	a.y	typed:d4735e3a265e16ee	"2"	true
+attempt	2f9272	b.i	typed:7a863135111e7bc0	"\\begin{pmatrix}9\\\\2\\end{pmatrix}"	true
+attempt	2f9272	c.i	typed:6f9ca1f75055df14	"\\begin{pmatrix}7\\\\8\\end{pmatrix}"	true
+attempt	2f9272	d.i	typed:eed871ab59251c7f	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	true
+attempt	4af6d2	a.i	typed:4e07408562bedb8b	"3"	true
+attempt	4af6d2	a.ii	typed:ef2d127de37b942b	"5"	true
+attempt	4af6d2	a.iii	typed:7902699be42c8a8e	"7"	true
+attempt	4af6d2	a.iv	typed:4b227777d4dd1fc6	"4"	true
+attempt	4af6d2	a.v	typed:6b86b273ff34fce1	"1"	true
+attempt	4af6d2	b.mean	typed:46478a9c805793c4	"3.95"	true
+attempt	4af6d2	b.median	typed:4b227777d4dd1fc6	"4"	true
+attempt	4af6d2	b.mode	typed:4b227777d4dd1fc6	"4"	true
+attempt	4af6d2	c.comparison	typed:187897ce0afcf20b	"more"	true
+attempt	4af6d2	c.days	typed:7902699be42c8a8e	"7"	true
+attempt	4af6d2	c.decision	typed:bc16f5825a9dafc8	"should"	false
+attempt	5cb2e6	a.i	typed:122ffeeee2d4198c	"$75\\pi\\text{ m}^2$"	true
+attempt	5cb2e6	c.i	typed:af4d3ef6a3042fba	"$10\\sqrt{2}\\text{ m}$"	true
+attempt	5cb2e6	d.i	typed:14976c045dde6d3e	"$\\frac{250\\sqrt{2}\\pi}{3}\\text{ m}^3$"	true
+attempt	5cb2fb	b.i	typed:4b227777d4dd1fc6	"$4\\text{ cm}$"	true
+attempt	5cb2fb	c.i	typed:320afe61ee03acc4	"$25\\text{ cm}^2$"	true
+attempt	5cb2fb	d.i	typed:fd9736555970600c	"$78.5\\text{ cm}^2$"	true
+attempt	5cb2fb	d.ii	typed:46621106fbaa4c45	"$180^\\circ$"	true
+attempt	5d3d6c	a.x	typed:d4735e3a265e16ee	"2"	true
+attempt	5d3d6c	a.y	typed:d4735e3a265e16ee	"2"	true
+attempt	5d3d6c	b.i	typed:7a863135111e7bc0	"\\begin{pmatrix}9\\\\2\\end{pmatrix}"	true
+attempt	5d3d6c	c.i	typed:6f9ca1f75055df14	"\\begin{pmatrix}7\\\\8\\end{pmatrix}"	true
+attempt	5d3d6c	d.i	typed:38088764cb30d43c	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	false
+attempt	620313	a.i	typed:98f1f17f9a73ccfe	"432"	true
+attempt	620313	b.i	typed:80c3cd40fa35f908	"168"	true
+attempt	620313	b.ii	typed:b7a56873cd771f2c	"25"	true
+attempt	620313	b.iii	typed:284b7e6d788f363f	"600"	true
+attempt	620313	c.i	typed:f369cb89fc627e66	"75"	true
+attempt	620313	d.i	typed:4a44dc15364204a8	"10"	true
+attempt	620313	d.ii	typed:ef2d127de37b942b	"5"	true
+attempt	821070	a.i	typed:4b227777d4dd1fc6	"16"	false
+attempt	821070	a.i	typed:b17ef6d19c7a5b1e	"16"	true
+attempt	821070	b.i	typed:26d228663f13a885	"\\$400"	true
+attempt	821070	b.i	typed:4b227777d4dd1fc6	"\\$400"	false
+attempt	821070	b.i	typed:983bd614bb5afece	"\\$400"	false
+attempt	821070	c.i	typed:39fa9ec190eee7b6	"15%"	false
+attempt	821070	c.i	typed:4b227777d4dd1fc6	"15%"	false
+attempt	821070	c.i	typed:b5f6dbae04bd764b	"15%"	true
+attempt	821070	c.i	typed:f5ca38f748a1d6ea	"15%"	false
+attempt	8210d8	a.i	typed:dde3980ce758b725	"$30\\,000\\text{ m}$"	true
+attempt	8210d8	b.i	typed:bc54807d7df55aba	"$45\\text{ min}$"	true
+attempt	8210d8	c.i	typed:e86d9d0a3ffd463c	"$34.3\\text{ km/h}$"	true
+attempt	8210d8	d.i	typed:82f1e31dadf54422	"\\$303.75"	true
+attempt	9cc6c1	a.i	typed:dcc4ef0d48a735e9	"\\begin{pmatrix}2 & 0 \\\\ 0 & 2\\end{pmatrix}"	true
+attempt	9cc6c1	b.i	typed:c890b24db0ada4b3	"\\begin{pmatrix}0 & -2 \\\\ 2 & 0\\end{pmatrix}"	false
+attempt	9cc6c1	c.i	typed:aadb92a9f6ea93d5	"\\begin{pmatrix}0 & \\frac{1}{2} \\\\ -\\frac{1}{2} & 0\\end{pmatrix}"	false
+attempt	9cc6c1	d.i	typed:a83dd0ccbffe39d0	"I"	true
+attempt	9cc6c1	d.ii	typed:be8e2e344b01916f	"$(3,4)$"	false
+attempt	9e8767	a.i	typed:37a98dd90ff9a51f	"$\\sqrt[3]{\\frac{3V}{4\\pi}}$"	true
+attempt	9e8767	b.i	typed:e3760ca6709aa3f7	"$6\\text{ cm}$"	true
+attempt	9e8767	c.i	typed:af92b187ac1df244	"$\\begin{pmatrix}-18\\\\12\\end{pmatrix}$"	true
+attempt	9e877e	a.i	typed:a06483011d6b1fcc	"12"	false
+attempt	9e877e	b.i	typed:09b259b80740faa6	"\\$180"	false
+attempt	9e877e	c.i	typed:06e01dc1011ecca6	"12 bags"	false
+attempt	9e87bd	a.i	typed:18ac3e7343f01689	"108°"	false
+attempt	9e87bd	b.i	typed:18ac3e7343f01689	"108°"	false
+attempt	9e87bd	d.i	typed:18ac3e7343f01689	"18°"	false
+attempt	9e88e3	a.i	typed:18ac3e7343f01689	"40"	false
+attempt	9e88e3	b.i	typed:18ac3e7343f01689	"80\\%"	false
+attempt	9e88e3	c.decision	typed:043a718774c572bd	"meets"	false
+attempt	9e88e3	c.minimum	typed:043a718774c572bd	"30"	false
+attempt	a9f5af	a.i	typed:ef2d127de37b942b	"$14\\text{ cm}$"	false
+attempt	a9f5af	b.i	typed:ef2d127de37b942b	"$124\\text{ cm}$"	false
+attempt	a9f5af	c.i	typed:ef2d127de37b942b	"$31\\text{ cm}$"	false
+attempt	a9f5af	d.i	typed:ef2d127de37b942b	"$31\\sqrt{2}$"	false
+attempt	a9f5af	d.ii	typed:ef2d127de37b942b	"4 lines of symmetry and rotational symmetry of order 4"	false
+attempt	b1a5fb	a.i	typed:0604cd3138feed20	"\\$500"	true
+attempt	b1a5fb	c.i	typed:7ca707075dfad1d2	"$6.4\\%$ more"	false
+attempt	b1a63a	b.i	typed:ba8f64a9a8dbba56	"$(0,16)$ and $(6,4)$"	true
+attempt	b1a63a	d.profit	typed:3a0e14026c6b1d6b	"$26$ hundred dollars"	true
+attempt	b1a668	b.centre	typed:7334821429a99561	"$O(0,0)$"	true
+attempt	b1a668	b.factor	typed:d4735e3a265e16ee	"$2$"	true
+attempt	b1a668	b.type	typed:92e9d3ed8fb9bf71	"enlargement"	true
+attempt	b1a668	c.A''	typed:a28c539185b8a27d	"$(8,-6)$"	true
+attempt	b1a668	c.B''	typed:9e323e55a96ea9ea	"$(8,6)$"	true
+attempt	b1a668	d.i	typed:b61752d1fa9b5a86	"$73.7°, 53.1°$"	true
+attempt	b1a692	b.i	typed:baa8ff16645596e4	"$68\\text{ m}$"	true
+attempt	b1a692	c.i	typed:83461df26a040ee1	"$40\\text{ m}$"	false
+attempt	b1a692	d.i	typed:3f9807cb9ae9fb6c	"$164^\\circ$"	true
+attempt	c0bf0b	a.i	typed:c2356069e9d1e79c	"24"	true
+attempt	c0bf0b	b.i	typed:16a699699f599b6b	"$2^3 \\times 3$"	true
+attempt	c0bf0b	b.i	typed:ff5a1ae012afa5d4	"$2^3 \\times 3$"	false
+attempt	c0bf0b	b.ii	typed:9be8b385dcaebc44	"$2^2 \\times 3^2$"	true
+attempt	c0bf0b	b.ii	typed:ef2d127de37b942b	"$2^2 \\times 3^2$"	false
+attempt	c0bf0b	b.iii	typed:4a44dc15364204a8	"12"	false
+attempt	c0bf0b	b.iii	typed:6b51d431df5d7f14	"12"	true
+attempt	c0bfa2	a.i	typed:eeba0ec4dabd3538	"$6x+12$"	true
+attempt	c0c009	b.i	typed:dcc4ef0d48a735e9	"$\\begin{pmatrix}0&2\\\\2&0\\end{pmatrix}$"	false
+attempt	c0c009	c.i	typed:7a0a81dbe2debf17	"$\\begin{pmatrix}0&\\frac{1}{2}\\\\\\frac{1}{2}&0\\end{pmatrix}$"	true
+attempt	c0c009	d.i	typed:2c355e70e1c3f444	"$\\begin{pmatrix}3\\\\5\\end{pmatrix}$"	false
+attempt	c0c05d	a.i	typed:4f4449e325fc3af4	"$\\frac{3}{8}$"	true
+attempt	c0c05d	a.i	typed:7902699be42c8a8e	"$\\frac{3}{8}$"	false
+attempt	c0c05d	a.i	typed:896af01783cc4ba6	"$\\frac{3}{8}$"	true
+attempt	c0c05d	a.i	typed:ef2d127de37b942b	"$\\frac{3}{8}$"	false
+attempt	c0c05d	b.i	typed:2c624232cdd22177	"36"	false
+attempt	c0c05d	b.i	typed:76a50887d8f1c2e9	"36"	true
+attempt	c0c05d	b.i	typed:ef2d127de37b942b	"36"	false
+attempt	c0c05d	c.i	typed:41f215981b5f3d34	"$1,36$"	true
+attempt	c0c05d	c.i	typed:869b32240b8eef48	"$1,36$"	false
+attempt	c0c05d	c.i	typed:99d2088ea67754a8	"$1,36$"	false
+attempt	c0c05d	c.ii	typed:52e8a1ee2932705a	"$2,18$"	false
+attempt	c0c05d	c.ii	typed:9e048c0d142cc23b	"$2,18$"	false
+attempt	c0c05d	c.ii	typed:aedc1b5a6d344403	"$2,18$"	true
+attempt	c0c05d	c.iii	typed:3346911d1a5d38d6	"$3,12$"	false
+attempt	c0c05d	c.iii	typed:95baf56be4959ffb	"$3,12$"	false
+attempt	c0c05d	c.iii	typed:edeb89cb9ed774f6	"$3,12$"	true
+attempt	c0c05d	c.iv	typed:475e961f87b5c3bb	"$4,9$"	false
+attempt	c0c05d	c.iv	typed:571f549e4f984b12	"$4,9$"	false
+attempt	c0c05d	c.iv	typed:ad390e6fd4e0147a	"$4,9$"	false
+attempt	c0c05d	c.iv	typed:d63e3d823d7d7f18	"$4,9$"	false
+attempt	c0c05d	c.iv	typed:e1e8622e9470df5f	"$4,9$"	true
+attempt	c0c05d	d.i	typed:18f5384d58bcb1bb	"No"	false
+attempt	c0c05d	d.i	typed:1ea442a134b2a184	"No"	true
+attempt	c0c05d	d.i	typed:85a39ab345d672ff	"No"	false
+attempt	c0c05d	d.i	typed:8a798890fe938171	"No"	false
+attempt	d0dc6a	a.i	typed:4a44dc15364204a8	"$24\\text{ m} \\times 16\\text{ m}$"	false
+attempt	d0dc6a	a.i	typed:5fbd130f7a401125	"$24\\text{ m} \\times 16\\text{ m}$"	false
+attempt	d0dc6a	a.i	typed:6983a274e9d0f3b7	"$24\\text{ m} \\times 16\\text{ m}$"	true
+attempt	d0dc6a	a.i	typed:8422f853f57eb26c	"$24\\text{ m} \\times 16\\text{ m}$"	true
+attempt	d0dc6a	a.i	typed:fb33179e5dc541dc	"$24\\text{ m} \\times 16\\text{ m}$"	true
+attempt	d0dc6a	a.ii	typed:5120eb19528b1e57	"$8\\text{ m} \\times 6\\text{ m}$"	false
+attempt	d0dc6a	a.ii	typed:51a253ffc02af34b	"$8\\text{ m} \\times 6\\text{ m}$"	true
+attempt	d0dc6a	a.ii	typed:6451671abb113b50	"$8\\text{ m} \\times 6\\text{ m}$"	true
+attempt	d0dc6a	a.ii	typed:792ac5a55b09c85c	"$8\\text{ m} \\times 6\\text{ m}$"	false
+attempt	d0dc6a	a.ii	typed:a82a0caa19e17791	"$8\\text{ m} \\times 6\\text{ m}$"	false
+attempt	d0dc6a	a.ii	typed:d1102f644e0cac3f	"$8\\text{ m} \\times 6\\text{ m}$"	false
+attempt	d0dc6a	b.i	typed:2f962f60eedd4ef0	"$336\\text{ m}^2$"	true
+attempt	d0dc6a	b.i	typed:5120eb19528b1e57	"$336\\text{ m}^2$"	false
+attempt	d0dc6a	b.i	typed:8239268c34193cd1	"$336\\text{ m}^2$"	true
+attempt	d0dc6a	b.i	typed:e632b7095b0bf32c	"$336\\text{ m}^2$"	false
+attempt	d0dc6a	b.i	typed:eaa0689a095d4394	"$336\\text{ m}^2$"	true
+attempt	d0dc6a	c.i	typed:0602d7c813c1f6e7	"$0.050\\text{ m}$"	true
+attempt	d0dc6a	c.i	typed:1c0380c246a49b0f	"$0.050\\text{ m}$"	true
+attempt	d0dc6a	c.i	typed:5baebc7cd5b55797	"$0.050\\text{ m}$"	false
+attempt	d0dc6a	c.i	typed:67bb39062cd35244	"$0.050\\text{ m}$"	true
+attempt	d0dc6a	c.i	typed:89f21f552b5a920d	"$0.050\\text{ m}$"	false
+attempt	d0dc6a	d.i	typed:070c160a6299c543	"341.4"	false
+attempt	d0dc6a	d.i	typed:580948dc02192f8d	"341.4"	false
+attempt	d0dc6a	d.i	typed:dba5aa01e6c48e3e	"341.4"	true
+attempt	d0dc6a	d.i	typed:e7f6c011776e8db7	"341.4"	false
+attempt	d0dc6a	d.iii	typed:0320fb3682ad23a2	"does not"	true
+attempt	d0dc6a	d.iii	typed:0602d7c813c1f6e7	"does not"	false
+attempt	d0dc6a	d.iii	typed:1ea442a134b2a184	"does not"	false
+attempt	d0dc6a	d.iii	typed:9569452f77e89e4a	"does not"	false
+attempt	d0dc72	a.midpoint	typed:5120eb19528b1e57	"$34.5$ kg"	true
+attempt	d0dc72	a.width	typed:4a44dc15364204a8	"$10$ kg"	true
+attempt	d0dc72	a.width	typed:ff5a1ae012afa5d4	"$10$ kg"	false
+attempt	d0dc72	b.i	typed:5120eb19528b1e57	"$34.5$ kg"	true
+attempt	d0dc72	c.i	typed:5baebc7cd5b55797	"$16.8$ kg, $8.4$ kg"	false
+attempt	d0dc72	c.i	typed:e8862b40921d5a01	"$16.8$ kg, $8.4$ kg"	true
+attempt	d0dc72	d.decision	typed:070c160a6299c543	"Yes"	true
+attempt	d0dc72	d.decision	typed:c125d0397b605657	"Yes"	false
+attempt	d0dc7f	a.i	typed:28f0522ff86977e3	"$\\binom{4}{-2}$"	true
+attempt	d0dc7f	a.i	typed:541b58386526dc13	"$\\binom{4}{-2}$"	true
+attempt	d0dc7f	b.i	typed:89274fc6d8d6e386	"$(3,3)$"	true
+attempt	d0dc7f	b.ii	typed:196fdacd8943bf33	"$(6,2)$"	true
+attempt	d0dc7f	b.ii	typed:95ba28afdbeec8f9	"$(6,2)$"	false
+attempt	d0dc7f	b.ii	typed:f64870f1c33a5090	"$(6,2)$"	false
+attempt	d0dc87	a.i	typed:40c817682000b8d7	"$\\begin{pmatrix}4\\\\2\\end{pmatrix}$"	true
+attempt	d0dc87	a.i	typed:8b99920ddbd13cda	"$\\begin{pmatrix}4\\\\2\\end{pmatrix}$"	false
+attempt	d0dc87	b.i	typed:4b227777d4dd1fc6	"$26.6°$"	false
+attempt	d0dc87	b.i	typed:5cd7f0f5c386938f	"$26.6°$"	false
+attempt	d0dc87	b.i	typed:717f3e0280b9113f	"$26.6°$"	true
+attempt	d0dc87	b.i	typed:7b55bfde46af2ac0	"$26.6°$"	true
+attempt	d0dc87	c.i	typed:9bec5111b258610b	"$(4,5)$"	true
+attempt	d0dc87	c.i	typed:d8992da4c57e26a4	"$(4,5)$"	false
+attempt	d0dc87	d.i	typed:4a44dc15364204a8	"$10$"	true
+attempt	d0dc87	d.i	typed:c2356069e9d1e79c	"$10$"	false
+attempt	d0dc87	d.ii	typed:14101bbeef69b5ba	"not parallel"	true
+attempt	d0dc8f	a.i	typed:6b86b273ff34fce1	"1"	true
+attempt	d0dc8f	b.i	typed:bb0e7555478d6916	"5 m"	true
+attempt	d0dc8f	c.i	typed:20d6f0654c6faf26	"12 m"	true
+attempt	d0dc8f	d.i	typed:69b82dcfa31403e0	"48"	false
+attempt	d0dca9	a.i	typed:18ac3e7343f01689	"10"	false
+attempt	d0dca9	a.i	typed:4a44dc15364204a8	"10"	true
+attempt	d0dca9	b.i	typed:6beab0e7b9b25e67	"\\{2,4,6,8,10\\}"	true
+attempt	d0dca9	b.i	typed:8ec5c1f700de33ed	"\\{2,4,6,8,10\\}"	false
+attempt	d0dca9	c.i	typed:18ac3e7343f01689	"8"	false
+attempt	d0dca9	c.i	typed:2c624232cdd22177	"8"	true
+attempt	d0dca9	c.i	typed:454349e422f05297	"8"	false
+attempt	d0dca9	d.i	typed:79bc9b3597a171a4	"\\{6,10\\}, \\{2,6,10\\}, \\{4,6,10\\}, \\{6,8,10\\}"	false
+attempt	d0dca9	d.i	typed:8ca22e8df715330b	"\\{6,10\\}, \\{2,6,10\\}, \\{4,6,10\\}, \\{6,8,10\\}"	true
+attempt	d0dca9	d.i	typed:cb90ba10414736f1	"\\{6,10\\}, \\{2,6,10\\}, \\{4,6,10\\}, \\{6,8,10\\}"	false
+attempt	d0dcb1	a.i	typed:82440bcac0e43d69	"$7n-18-4n$"	true
+attempt	d0dcb1	a.i	typed:972adc30a2b9cf9b	"$7n-18-4n$"	true
+attempt	d0dcb1	b.i	typed:03b26944890929ff	"$-6$ dollars"	true
+attempt	d0dcb1	b.i	typed:e7f6c011776e8db7	"$-6$ dollars"	false
+attempt	d0dcc3	a.i	typed:39bb88f40d3aa2b2	"\\$260"	true
+attempt	d0dcc3	b.i	typed:44896b09365746b5	"20%"	true
+attempt	d0dcc3	b.i	typed:dc934fe30a942bca	"20%"	true
+attempt	d0dcc3	b.i	typed:f5ca38f748a1d6ea	"20%"	true
+attempt	d0dcc3	c.i	typed:221764976efe0413	"\\$200"	false
+attempt	d0dcc3	c.i	typed:27badc983df1780b	"\\$200"	true
+attempt	d0dcc3	c.i	typed:7902699be42c8a8e	"\\$200"	false
+attempt	d0dcc3	c.i	typed:bfa7634640c53da7	"\\$200"	false
+attempt	d0dcc3	d.i	typed:19581e27de7ced00	"4%"	false
+attempt	d0dcc3	d.i	typed:27badc983df1780b	"4%"	false
+attempt	d0dcc3	d.i	typed:4b227777d4dd1fc6	"4%"	true
+attempt	d0dcc3	d.i	typed:700bfc5a3dbbd735	"4%"	false
+attempt	d0dccb	a.i	typed:4e07408562bedb8b	"3"	true
+attempt	d0dccb	a.ii	typed:ef2d127de37b942b	"5"	true
+attempt	d0dccb	a.iii	typed:7902699be42c8a8e	"7"	true
+attempt	d0dccb	a.iv	typed:4b227777d4dd1fc6	"4"	true
+attempt	d0dccb	a.v	typed:6b86b273ff34fce1	"1"	true
+attempt	d0dccb	b.mean	typed:46478a9c805793c4	"3.95"	true
+attempt	d0dccb	b.median	typed:4b227777d4dd1fc6	"4"	true
+attempt	d0dccb	b.mode	typed:4b227777d4dd1fc6	"4"	true
+attempt	d0dd05	a.i	typed:615bdd17c2556f82	"-3"	true
+attempt	d0dd05	b.i	typed:c090fc3999064580	"y = -3x + 36"	true
+attempt	d0dd05	c.i	typed:e629fa6598d73276	"15 m"	true
+attempt	d0dd05	d.number	typed:2c624232cdd22177	"7"	false
+attempt	d0dd9b	a.x	typed:1431b986377b5430	"2"	true
+attempt	d0dd9b	a.x	typed:d4735e3a265e16ee	"2"	true
+attempt	d0dd9b	a.y	typed:9067770c5cb46d61	"2"	true
+attempt	d0dd9b	a.y	typed:d4735e3a265e16ee	"2"	true
+attempt	d0dd9b	b.i	typed:7a863135111e7bc0	"\\begin{pmatrix}9\\\\2\\end{pmatrix}"	true
+attempt	d0dd9b	c.i	typed:6f9ca1f75055df14	"\\begin{pmatrix}7\\\\8\\end{pmatrix}"	true
+attempt	d0dd9b	d.i	typed:0433a100f64f2d1f	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	true
+attempt	d0dd9b	d.i	typed:eed871ab59251c7f	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	true
+attempt	d9c215	a.i	typed:ef2d127de37b942b	"3"	false
+attempt	d9c215	b.i	typed:ef2d127de37b942b	"3n+1"	false
+attempt	d9c215	c.i	typed:ef2d127de37b942b	"17"	false
+attempt	d9c21d	a.i	typed:d0290dbe33ad34d3	"55°"	false
+attempt	d9c21d	b.i	typed:5a05e3a43671b621	"11.6 km"	false
+attempt	d9c21d	c.i	typed:e86b4ed269bbc8b4	"135°"	false
+attempt	d9c237	a.i	typed:ef2d127de37b942b	"77.9 m"	false
+attempt	d9c237	b.i	typed:51b9b9d10cef09d1	"37.8°"	false
+attempt	d9c264	a.i	typed:62bb0897ad6f19d9	"\\$1 038.00"	true
+attempt	d9c264	b.i	typed:811bd8f02aa533a7	"\\$103.80"	true
+attempt	d9c264	c.i	typed:07beb67c5b59b712	"\\$1 135.98"	false
+attempt	d9c264	d.i	typed:a5a28a4523c87a8e	"cannot"	false
+attempt	d9c264	d.ii	typed:6bf9f727f5a0d7b7	"\\$5.98"	true
+attempt	fe84c4	a.i	typed:1bde41ce9b4fccbf	"$132°$"	false
+attempt	fe84c4	b.i	typed:c49b60838c5c6ddf	"$66°$"	false
 reading	004444	a.i	"$b=2,\\ c=2$"	list
 reading	004444	a.i	"$c=2,\\ b=2$"	list
 reading	004444	b.i	"$(n+1)^2+1$"	expression
