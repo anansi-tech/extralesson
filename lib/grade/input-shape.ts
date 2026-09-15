@@ -1,5 +1,5 @@
 import { parseQuantity } from './quantity';
-import { isProse, parseNumeric } from './equivalence';
+import { canEvaluate, isProse, parseNumeric } from './equivalence';
 
 /**
  * One box per value, so the student never types a delimiter. Read from the
@@ -153,6 +153,38 @@ function wrapped(s: string, open: '{' | '('): string | null {
 }
 
 /**
+ * The contents of the brace group starting at `from`, and where it ends.
+ * \binom{\frac{3}{5}}{\frac{4}{5}} nests, and a single [^{}]* pass stops at the
+ * first inner brace — so a column vector of fractions was not read as one and
+ * rendered a box asking the student to type KaTeX.
+ */
+function braceAt(s: string, from: number): { body: string; end: number } | null {
+  let i = from;
+  while (s[i] === ' ') i++;
+  if (s[i] !== '{') return null;
+  let depth = 0;
+  for (let j = i; j < s.length; j++) {
+    if (s[j] === '{') depth++;
+    else if (s[j] === '}' && --depth === 0) return { body: s.slice(i + 1, j), end: j + 1 };
+  }
+  return null;
+}
+
+/**
+ * A COMPONENT OF A POINT IS WHATEVER THE ANSWER IS EXACT IN. An intersection
+ * lands on \frac{5}{2} as readily as on 2, and the old rule admitted digits, a
+ * dot and a slash — so an exact point was not a point, split into no boxes, and
+ * was compared against its own decimal form as text.
+ *
+ * Prose is excluded by name: the comparator can settle "red" as a word, but
+ * (red, blue) is a pair of colours and not a coordinate.
+ */
+function isComponent(piece: string): boolean {
+  const p = piece.trim();
+  return p !== '' && !isProse(p) && canEvaluate(p);
+}
+
+/**
  * Members that are each a group — (1,H) or {1,2} — flattened with boundaries
  * recorded. Null when they are plain values, which is the ordinary case.
  */
@@ -184,14 +216,18 @@ export function readInputShape(rawAnswer: string): ShapeReading {
 
   // \binom{4}{-2} is a column vector too: the shorter way the papers and the
   // generator write a 2x1. Missing it renders a box asking for typed KaTeX.
-  const binom = s.match(/\\[dt]?binom\s*\{([^{}]*)\}\s*\{([^{}]*)\}/);
+  const binom = s.match(/\\[dt]?binom/);
   if (binom) {
-    return {
-      shape: 'column_vector',
-      boxes: 2,
-      ordered: true,
-      values: [binom[1].trim(), binom[2].trim()],
-    };
+    const top = braceAt(s, binom.index! + binom[0].length);
+    const bottom = top && braceAt(s, top.end);
+    if (top && bottom) {
+      return {
+        shape: 'column_vector',
+        boxes: 2,
+        ordered: true,
+        values: [top.body.trim(), bottom.body.trim()],
+      };
+    }
   }
 
   const grid = s.match(/\\begin\{[bp]matrix\}([\s\S]*?)\\end\{[bp]matrix\}/);
@@ -245,9 +281,12 @@ export function readInputShape(rawAnswer: string): ShapeReading {
   // The point may be named — O(0,0) is the point (0,0), the way "x = 5" is the
   // value 5 — and the comparator strips the name. Without the same reading here
   // the two sides split into different numbers of boxes and never meet.
-  const coord = s.match(/^(?:[A-Za-z]\s*)?\(\s*(-?[\d./\s]+)\s*,\s*(-?[\d./\s]+)\s*\)$/);
-  if (coord && isValue(coord[1]) && isValue(coord[2])) {
-    return { shape: 'coordinate', boxes: 2, ordered: true, values: [coord[1].trim(), coord[2].trim()] };
+  const point = wrapped(s.replace(/^[a-z]\s*(?=\()/i, ''), '(');
+  if (point !== null) {
+    const parts = splitTopLevel(point, ',');
+    if (parts.length === 2 && parts.every(isComponent)) {
+      return { shape: 'coordinate', boxes: 2, ordered: true, values: parts };
+    }
   }
 
   const ratio = s.split(/\s*:\s*/);

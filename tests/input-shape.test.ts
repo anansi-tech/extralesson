@@ -186,3 +186,28 @@ describe('the word path is arrived at, not fallen into', () => {
     expect(readInputShape('2x + 3').shape).toBe('expression');
   });
 });
+
+// A point lands where it lands. An intersection is at \frac{5}{2} as readily
+// as at 2, and the old rule admitted digits, a dot and a slash — so an exact
+// point was not a point, split into no boxes, and was compared as text.
+describe('a coordinate keeps its shape when its components are exact', () => {
+  it('reads a pair whose parts are fractions, surds or expressions', () => {
+    expect(readInputShape('$\\left(\\frac{5}{2},2\\right)$')).toMatchObject({
+      shape: 'coordinate', boxes: 2, values: ['\\frac{5}{2}', '2'],
+    });
+    expect(readInputShape('$(1+\\sqrt{2},0)$').shape).toBe('coordinate');
+    expect(readInputShape('(2.5,2)').shape, 'and the plain form is unchanged').toBe('coordinate');
+    expect(readInputShape('O(0,0)').values, 'a named point is still the point').toEqual(['0', '0']);
+  });
+
+  it('but a bracketed pair of words is not a point', () => {
+    expect(readInputShape('(red, blue)').shape).not.toBe('coordinate');
+  });
+
+  it('\\binom reads through nested braces', () => {
+    expect(readInputShape('$\\binom{\\frac{3}{5}}{\\frac{4}{5}}$')).toMatchObject({
+      shape: 'column_vector', boxes: 2, values: ['\\frac{3}{5}', '\\frac{4}{5}'],
+    });
+    expect(readInputShape('$\\binom{4}{-2}$').values, 'and the plain form is unchanged').toEqual(['4', '-2']);
+  });
+});
