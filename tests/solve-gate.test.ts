@@ -95,6 +95,50 @@ describe('independentSolve — mechanical agreement', () => {
   });
 });
 
+/**
+ * THE SOLVER NAMES A PART; THE GATE ASKS ABOUT A SLOT. Matching those as exact
+ * strings refused d0dd1a four times in ten with 24.5 written on both sides —
+ * the solver had said "(a.i)" where the gate asked about "(a)", and the
+ * operator was told the independent solve disagreed.
+ */
+describe('independentSolve — a label names a slot, not a string', () => {
+  it('a one-slot part answers to either form', async () => {
+    for (const label of ['a', 'a.i', '(a)', 'A', '(a)(i)', 'a.ii']) {
+      solverParts = [{ label, final_answer: '24.5' }];
+      const out = await independentSolve(draft([answerPart('a', '24.5')]));
+      expect(out.agrees, `solver said ${JSON.stringify(label)}`).toBe(true);
+    }
+  });
+
+  it('a multi-slot part still makes the solver say which slot', async () => {
+    const part = multiSlotPart('c', 'State the modal class and the median class.', [
+      { label: 'modal_class', answer: '20-29 min' },
+      { label: 'median_class', answer: '20-29 min' },
+    ]);
+    // Both answers right, and the bare label names neither of them.
+    solverParts = [
+      { label: 'c', final_answer: '20-29 min' },
+      { label: 'c', final_answer: '20-29 min' },
+    ];
+    expect((await independentSolve(draft([part]))).agrees, 'a bare c').toBe(false);
+
+    solverParts = [
+      { label: 'c.modal_class', final_answer: '20-29 min' },
+      { label: 'c.median_class', final_answer: '20-29 min' },
+    ];
+    expect((await independentSolve(draft([part]))).agrees, 'named').toBe(true);
+    expect(calls, 'and nobody had to be asked').toEqual(['solve', 'solve']);
+  });
+
+  it('and a wrong answer is still refused, whatever it calls itself', async () => {
+    verdicts = [{ same: false, reason: 'The values 24.5 and 25 differ.' }];
+    solverParts = [{ label: 'a.i', final_answer: '25' }];
+    const out = await independentSolve(draft([answerPart('a', '24.5')]));
+    expect(out.agrees).toBe(false);
+    expect(out.notes[0], 'refused on the value, having matched the slot').toContain('judged DIFFERENT');
+  });
+});
+
 describe('independentSolve — prose parts are judged, never string-matched (R1.6 §1)', () => {
   it('sends a show_that part to the judge instead of comparing its restated answer', async () => {
     solverParts = [

@@ -156,13 +156,47 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
       .toLowerCase()
       .replace(/[()\[\]]/g, '')
       .replace(/^([a-j])[.:]?$/, '$1');
-  const solByLabel = new Map(sol.part_answers.map((p) => [bareLabel(p.label), p.final_answer]));
-  const workByLabel = new Map(
-    sol.part_answers.map((p) => [
-      bareLabel(p.label),
-      { did: p.new_work, why: p.new_work_note, readOff: p.read_off_figure },
-    ]),
-  );
+
+  const clean = (l: string) =>
+    l
+      .trim()
+      .toLowerCase()
+      .replace(/\)\s*\(/g, '.') // "(a)(ii)" is a.ii, which the line above claimed and did not do
+      .replace(/[()\[\]]/g, '')
+      .replace(/[.:]\s*$/, '');
+
+  /**
+   * THE SOLVER NAMES A PART; THE GATE ASKS ABOUT A SLOT, and those are the same
+   * thing only where the part has ONE slot — which is also where the ref below
+   * is the bare part label. So a gate asking about "a" and a solver answering
+   * "(a.i)" are talking about the same answer, and requiring the two strings to
+   * match refused d0dd1a four times in ten with 24.5 written on both sides. The
+   * operator was told the independent solve disagreed.
+   *
+   * Where a part has several slots the ref is "d.i" or "c.modal_class" and the
+   * solver has to say which. A bare "d" names no answer there, and choosing one
+   * on its behalf is how a right answer to the wrong slot passes.
+   *
+   * The set mirrors how `askable` builds its refs — p.slots.length, not the
+   * askable count — so a part whose second slot is a construct still demands
+   * the slot be named.
+   */
+  const oneSlotParts = new Set(draft.parts.filter((p) => p.slots.length === 1).map((p) => clean(p.label)));
+  const refOf = (label: string): string | null => {
+    const c = clean(label);
+    const part = c.split('.')[0];
+    if (oneSlotParts.has(part)) return part;
+    return c.includes('.') ? c : null;
+  };
+
+  const solByRef = new Map<string, string>();
+  const workByRef = new Map<string, { did?: boolean; why?: string; readOff?: boolean }>();
+  for (const p of sol.part_answers) {
+    const ref = refOf(p.label);
+    if (ref === null) continue; // a bare "d" where d has several slots names nothing
+    solByRef.set(ref, p.final_answer);
+    workByRef.set(ref, { did: p.new_work, why: p.new_work_note, readOff: p.read_off_figure });
+  }
   const figure = figureNotes(sol.figure_check);
   const notes: string[] = [...figure.notes];
   // A construct slot asks for a drawing. There is nothing for a solver to
@@ -183,7 +217,7 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
 
   for (const p of askable) {
     if (!agrees) break;
-    const s = solByLabel.get(bareLabel(p.ref));
+    const s = solByRef.get(clean(p.ref));
     if (s === undefined) {
       agrees = false;
       break;
@@ -215,7 +249,7 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   const emptyParts: string[] = [];
   for (const p of askable) {
     if ((p.slot.response_mode ?? 'answer') !== 'answer') continue;
-    const work = workByLabel.get(bareLabel(p.ref));
+    const work = workByRef.get(clean(p.ref));
     if (work && work.did === false) {
       emptyParts.push(`(${p.ref}) demands no new work${work.why ? `: ${work.why}` : ''}`);
     }
@@ -240,7 +274,7 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   const readOff: string[] = [];
   for (const p of constructs ? [] : askable) {
     if ((p.slot.response_mode ?? 'answer') !== 'answer') continue;
-    if (!workByLabel.get(bareLabel(p.ref))?.readOff) continue;
+    if (!workByRef.get(clean(p.ref))?.readOff) continue;
     const marks = rubricMarksFor(p.ref);
     if (marks < 2) continue;
     readOff.push(`(${p.ref}) answer is readable off the figure, but its rubric awards ${marks} marks for deriving it`);
