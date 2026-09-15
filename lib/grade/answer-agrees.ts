@@ -34,7 +34,9 @@ export interface SlotAgreement {
 
 /** Rewrites a student may reasonably type, which must not change the value. */
 const REWRITES: { name: string; apply: (s: string) => string }[] = [
-  { name: '\\left and \\right stripped', apply: (s) => s.replace(/\\left|\\right/g, '') },
+  // Word-bounded, or the rewrite takes \right out of \rightarrow and asks the
+  // comparator whether "arrow" is the same answer. That is the probe's fault.
+  { name: '\\left and \\right stripped', apply: (s) => s.replace(/\\left\b|\\right\b/g, '') },
   { name: '\\times typed as ×', apply: (s) => s.replace(/\\times/g, '×') },
   { name: '\\div typed as ÷', apply: (s) => s.replace(/\\div/g, '÷') },
   { name: 'unicode superscripts', apply: (s) => s.replace(/\^2/g, '²').replace(/\^3/g, '³') },
@@ -51,7 +53,7 @@ export function notationIn(answer: string): string[] {
   if (/\\sqrt/.test(answer)) found.push('\\sqrt');
   if (/\\begin\{pmatrix\}/.test(answer)) found.push('pmatrix');
   if (/\\times|\\div/.test(answer)) found.push('\\times or \\div');
-  if (/\\left|\\right/.test(answer)) found.push('\\left/\\right');
+  if (/\\left\b|\\right\b/.test(answer)) found.push('\\left/\\right');
   if (/\\text/.test(answer)) found.push('\\text');
   if (/\\pi|π/.test(answer)) found.push('pi');
   if (/[²³]|\^/.test(answer)) found.push('powers');

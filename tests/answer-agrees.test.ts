@@ -175,3 +175,11 @@ describe('the approval gate', () => {
     expect((await approvalGate(two, solved)).reason).toContain('(b.i)');
   });
 });
+
+describe('a probe must not break the answer it is probing', () => {
+  it('stripping \\left and \\right leaves \\rightarrow alone', () => {
+    // The rewrite asked whether "f: x arrow (x-60)/25" is the same answer, and
+    // reported the question when it was not.
+    expect(slotDisagreements('a.i', slot({ answer: 'f^{-1}: x \\rightarrow \\frac{x-60}{25}' }))).toEqual([]);
+  });
+});
