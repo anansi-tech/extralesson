@@ -223,6 +223,14 @@ export function expandNestedCommands(s: string): string {
   for (let pass = 0; pass < 12; pass++) {
     const next = out
       .replace(/\\d?frac\{([^{}]*)\}\{([^{}]*)\}/g, '(($1)/($2))')
+      // \sqrt[3]{X} BEFORE \sqrt{X}: an index in brackets is a different root,
+      // and mathjs spells it nthRoot. Left unexpanded, a cube root reached the
+      // parser as the word "sqrt[3]" and never became a number, so a question
+      // whose canonical was \sqrt[3]{...} did not equal its own accept list.
+      // \frac13 is \frac{1}{3} without braces, which is how the bank writes a
+      // one-digit fraction inside an exponent: ^{\frac13}.
+      .replace(/\\[dt]?frac(\d)(\d)/g, '(($1)/($2))')
+      .replace(/\\sqrt\[([^\]]+)\]\{([^{}]*)\}/g, 'nthRoot($2, $1)')
       .replace(/\\sqrt\{([^{}]*)\}/g, 'sqrt($1)');
     if (next === out) break;
     out = next;
@@ -277,10 +285,50 @@ export function splitAdjacentSymbols(s: string): string {
   });
 }
 
+/** √ is a square root, ∛ a cube root, ∜ a fourth. */
+const ROOT_INDEX: Record<string, number> = { '\u221A': 2, '\u221B': 3, '\u221C': 4 };
+
+/**
+ * A ROOT SIGN TAKES WHAT FOLLOWS IT, however long. The old rule took a run of
+ * word characters, so ∛(3V/(4π)) — the way a student types a cube root — kept
+ * only the first bracket and the rest fell out of the expression.
+ */
+function expandRootSigns(s: string): string {
+  let out = '';
+  for (let i = 0; i < s.length; i++) {
+    const index = ROOT_INDEX[s[i]];
+    if (!index) { out += s[i]; continue; }
+    let j = i + 1;
+    while (s[j] === ' ') j++;
+    let body: string;
+    if (s[j] === '(') {
+      let depth = 0;
+      let k = j;
+      for (; k < s.length; k++) {
+        if (s[k] === '(') depth++;
+        else if (s[k] === ')' && --depth === 0) break;
+      }
+      body = s.slice(j + 1, k);
+      i = k;
+    } else {
+      let k = j;
+      while (k < s.length && /[\w.\\{}^]/.test(s[k])) k++;
+      body = s.slice(j, k);
+      i = k - 1;
+    }
+    out += index === 2 ? `sqrt(${body})` : `nthRoot(${body}, ${index})`;
+  }
+  return out;
+}
+
 function toMathExpr(s: string): string {
-  return splitAdjacentSymbols(expandNestedCommands(s)
+  return splitAdjacentSymbols(expandRootSigns(expandNestedCommands(s))
+    // \left and \right are spacing, and preClean drops them — but
+    // looksMathematical asks this of a RAW stored answer, where they survive
+    // to be read as the English words "left" and "right", so a bracketed
+    // expression looked like prose. The commands go; the words do not.
+    .replace(/\\left|\\right/g, '')
     .replace(/\^\s*\{([^{}]+)\}/g, '^($1)') // 10^{-5}: mathjs wants parentheses
-    .replace(/√\s*\(?([\d.a-z]+)\)?/g, 'sqrt($1)')
     .replace(/\\pi|π/g, 'pi')).replace(/\\/g, '');
 }
 
@@ -339,7 +387,12 @@ function sampledEquivalent(ea: string, eb: string, vars: string[]): boolean | nu
     } catch {
       continue; // this point is outside a domain (log, sqrt, /0) — try the next
     }
-    if (typeof va !== 'number' || typeof vb !== 'number') return null;
+    // A POINT OUTSIDE THE REALS SAYS NOTHING, and is skipped like one outside
+    // a domain: mathjs answers x^(1/3) with a COMPLEX number where x is
+    // negative, while nthRoot(x, 3) gives the real root, so one negative
+    // sample aborted the comparison of two forms of the same cube root
+    // instead of passing over it.
+    if (typeof va !== 'number' || typeof vb !== 'number') continue;
     if (!Number.isFinite(va) || !Number.isFinite(vb)) continue;
     if (!sameToFloatNoise(va, vb)) return false;
     agreed++;
@@ -378,7 +431,7 @@ function proportional(ea: string, eb: string, vars: string[]): boolean | null {
     } catch {
       continue;
     }
-    if (typeof va !== 'number' || typeof vb !== 'number') return null;
+    if (typeof va !== 'number' || typeof vb !== 'number') continue;
     if (!Number.isFinite(va) || !Number.isFinite(vb)) continue;
     if (Math.abs(vb) < 1e-9) {
       if (Math.abs(va) > 1e-6) return false;
@@ -503,12 +556,23 @@ function wordsEquivalent(a: string, b: string): boolean {
 // Prose is not algebra: mathjs reads "obtuse angle" as implicit multiplication
 // and rationalize() returns garbage that would read as "not equivalent", so the
 // symbolic path runs only when both sides look mathematical.
+/**
+ * The names an EXPANDED expression carries, so the prose guard does not read
+ * one as a word. nthRoot was missing, so "nth" read as prose and no nth root
+ * ever reached the symbolic path.
+ *
+ * Not every name mathjs owns: `min` and `max` are also units and English, and
+ * stripping them made "1 h 15 min" read as algebra — which put a unit answer
+ * back in front of a comparison that can never settle it.
+ */
+const NAME_WORDS = /sqrt|nthroot|cbrt|frac|pi|text|cdot|times/gi;
+
 export function looksMathematical(s: string): boolean {
   // Adjacent letters beside arithmetic are a product, not a word: gT^2 is g
   // times T squared, and reading it as prose kept the whole expression out of
   // the symbolic path. The question is asked of the form the symbolic path
   // receives, so the gate and the parse cannot disagree about what a string is.
-  const bare = toMathExpr(s).replace(/sqrt|frac|pi|text|cdot|times/g, '');
+  const bare = toMathExpr(s).replace(NAME_WORDS, '');
   return !/[a-z]{2,}/.test(bare);
 }
 

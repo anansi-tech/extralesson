@@ -261,6 +261,11 @@ export function readInputShape(rawAnswer: string): ShapeReading {
   if (/[=+\-*/^]/.test(s) && /[a-z]/i.test(s.replace(/\\[a-z]+/gi, ''))) return one('expression');
   if (/^\\?[a-z](\^|_|\()/i.test(s)) return one('expression');
 
+  // A TeX MATH COMMAND IS MATHEMATICS. \frac{2}{\sqrt{29}} and
+  // \sqrt[3]{\frac{3V}{4\pi}} carry no + - * / ^ = of their own, so the test
+  // above read them as prose and the comparator never treated them as values.
+  if (/\\[dt]?frac\b|\\sqrt\b|[\u221A\u221B\u221C]/.test(s)) return one('expression');
+
   return one('word');
 }
 

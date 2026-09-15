@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { answersEquivalent, answersEquivalentAny, parseNumeric, splitAdjacentSymbols } from '@/lib/grade/equivalence';
+import { answersEquivalent, answersEquivalentAny, looksMathematical, parseNumeric, splitAdjacentSymbols } from '@/lib/grade/equivalence';
+import { readInputShape } from '@/lib/grade/input-shape';
 
 describe('parseNumeric', () => {
   it('parses plain numbers, negatives, decimals', () => {
@@ -481,5 +482,65 @@ describe('a bare letter facing other variables is a variable', () => {
     expect(answersEquivalent('h = d', 'd = h')).toBe(true);
     expect(answersEquivalent('y = x', 'x = y')).toBe(true);
     expect(answersEquivalent('f(x) = x^2', 'x^2')).toBe(true);
+  });
+});
+
+/**
+ * AN NTH ROOT IS A VALUE, NOT A WORD. `\sqrt[3]{X}` reached the parser
+ * unexpanded, so 9e8767's canonical did not equal its own accept list and a
+ * student writing ∛(3V/(4π)) was refused a correct answer.
+ */
+describe('cube roots and the forms a student writes them in', () => {
+  const CANON = '$\\sqrt[3]{\\frac{3V}{4\\pi}}$';
+
+  it('reads the same value however it is written', () => {
+    for (const form of [
+      '∛(3V/(4π))',
+      '$\\left(\\frac{3V}{4\\pi}\\right)^{\\frac13}$',
+      '(3V/(4\\pi))^{1/3}',
+      '\\sqrt[3]{\\frac{3V}{4\\pi}}',
+    ]) {
+      expect(answersEquivalent(form, CANON), form).toBe(true);
+    }
+  });
+
+  it('and still refuses a different one', () => {
+    expect(answersEquivalent('∛(3V/(2π))', CANON)).toBe(false);
+    expect(answersEquivalent('\\sqrt{\\frac{3V}{4\\pi}}', CANON), 'a square root is not a cube root').toBe(false);
+  });
+
+  it('evaluates a numeric nth root', () => {
+    expect(answersEquivalent('∛8', '2')).toBe(true);
+    expect(answersEquivalent('\\sqrt[3]{27}', '3')).toBe(true);
+    expect(answersEquivalent('\\sqrt[4]{16}', '2')).toBe(true);
+    expect(answersEquivalent('\\sqrt[3]{27}', '4')).toBe(false);
+  });
+
+  it('takes everything under the sign, not the first bracket', () => {
+    // The old rule took a run of word characters, so ∛(3V/(4π)) kept "(3V" and
+    // the rest fell out of the expression.
+    expect(answersEquivalent('∛(27)', '3')).toBe(true);
+    expect(answersEquivalent('∛(8/27)', '2/3')).toBe(true);
+  });
+
+  it('reads a root or a fraction as an expression, never as prose', () => {
+    for (const v of [CANON, '\\frac{2}{\\sqrt{29}}', '\\sqrt{29}', '\\sqrt[3]{8}']) {
+      expect(readInputShape(v).shape, v).toBe('expression');
+    }
+    expect(readInputShape('a straight line').shape, 'and prose is still prose').toBe('word');
+  });
+
+  it('a bracketed expression is not prose because TeX spaced it', () => {
+    // looksMathematical asks this of a RAW stored answer, where \left and
+    // \right survive and were read as the English words.
+    expect(looksMathematical('$\\left(\\frac{3V}{4\\pi}\\right)^{\\frac13}$')).toBe(true);
+    expect(looksMathematical('turn left at the corner'), 'the words are untouched').toBe(false);
+  });
+
+  it('a sample point outside the reals is skipped, not fatal', () => {
+    // mathjs answers x^(1/3) with a complex number where x is negative, while
+    // nthRoot(x, 3) gives the real root; one such point used to end the
+    // comparison of two forms of the same cube root.
+    expect(answersEquivalent('\\sqrt[3]{x}', 'x^{1/3}')).toBe(true);
   });
 });
