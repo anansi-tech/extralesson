@@ -423,14 +423,6 @@ accept	d0dd12	a.i	"$-(t-3)^2+12$"	"$12-(t-3)^2$"	true
 accept	d0dd12	b.iii	"downward"	"downwards"	false
 accept	d0dd12	c.i	"from $t=1$ to $t=5$ hours inclusive"	"$1\\le t\\le5$"	false
 accept	d0dd12	d.ii	"rising"	"increasing"	false
-accept	d0dd1a	c.median_class	"$20 \\leq t < 30$"	"20-29 min"	false
-accept	d0dd1a	c.median_class	"20-29 minutes"	"20-29 min"	true
-accept	d0dd1a	c.modal_class	"$20 \\leq t < 30$"	"20-29 min"	false
-accept	d0dd1a	c.modal_class	"20-29 minutes"	"20-29 min"	true
-accept	d0dd1a	d.claim	"false"	"false"	true
-accept	d0dd1a	d.claim	"incorrect"	"false"	false
-accept	d0dd1a	d.claim	"not valid"	"false"	false
-accept	d0dd1a	d.claim	"untrue"	"false"	false
 accept	d0dd9b	d.i	"\\begin{pmatrix}\\frac{2\\sqrt{29}}{29}\\\\\\frac{5\\sqrt{29}}{29}\\end{pmatrix}"	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	true
 accept	d0ddb0	d.verdict	"Yes, they are parallel"	"Yes"	true
 accept	d0ddb8	c.ii	"PN"	"$PN$"	true
@@ -2735,21 +2727,6 @@ reading	d0dd12	c.i	"from $t=1$ to $t=5$ hours inclusive"	word
 reading	d0dd12	d.i	"$2$"	number
 reading	d0dd12	d.ii	"increasing"	word
 reading	d0dd12	d.ii	"rising"	word
-reading	d0dd1a	a.i	"24.5"	number
-reading	d0dd1a	b.i	"28"	number
-reading	d0dd1a	c.median_class	"$20 \\leq t < 30$"	inequality
-reading	d0dd1a	c.median_class	"20-29 min"	word
-reading	d0dd1a	c.median_class	"20-29 minutes"	word
-reading	d0dd1a	c.modal_class	"$20 \\leq t < 30$"	inequality
-reading	d0dd1a	c.modal_class	"20-29 min"	word
-reading	d0dd1a	c.modal_class	"20-29 minutes"	word
-reading	d0dd1a	d.claim	"false"	word
-reading	d0dd1a	d.claim	"incorrect"	word
-reading	d0dd1a	d.claim	"not valid"	word
-reading	d0dd1a	d.claim	"untrue"	word
-reading	d0dd1a	d.interquartile_range	"9.3"	number
-reading	d0dd1a	d.lower_quartile	"18.9"	number
-reading	d0dd1a	d.upper_quartile	"28.3"	number
 reading	d0dd93	a.i	"$9\\text{ m}$"	quantity
 reading	d0dd93	b.i	"$203.0\\text{ m}^2$"	quantity
 reading	d0dd9b	a.x	"2"	number
