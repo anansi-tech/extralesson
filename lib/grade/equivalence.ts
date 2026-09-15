@@ -1,6 +1,6 @@
 import { evaluate, rationalize, simplify } from 'mathjs';
 import { markMoney, normaliseDigitGroups } from '@/lib/money';
-import { bracketedCells, carriesOrder, matrixRows, wrapped } from './answer-syntax';
+import { bracketedCells, carriesOrder, matrixRows, splitOutsideBrackets, splitTopLevel, wrapped } from './answer-syntax';
 import { expandNestedCommands, freeVariables, splitAdjacentSymbols, toMathExpr } from './notation';
 import { parseQuantity, parseQuantityProduct, productsEqual, sameDimension, UNIT_WORDS } from './quantity';
 import { baseUnit } from './units';
@@ -55,6 +55,7 @@ function preClean(raw: string): string {
     .replace(/\\([{}])/g, '$1')
     .replace(/\\[dt]frac\b/g, '\\frac') // display/inline fractions are one fraction
     .replace(/[−–]/g, '-') // unicode minus / en-dash
+    .replace(/[’‘]/g, "'") // a phone's apostrophe is the complement prime
     // One spelling per relation, whichever notation the writer reached for.
     .replace(/\\mapsto|\\rightarrow|\\to(?![a-z])|↦|→/g, '->')
     .replace(/\\neq?(?![a-z])|≠/g, '!=')
@@ -64,6 +65,8 @@ function preClean(raw: string): string {
     .replace(/\\geq?(?![a-z])|≥/g, '>=')
     .replace(/\\lt\b/g, '<')
     .replace(/\\gt\b/g, '>')
+    .replace(/\\cap\b/g, '∩')
+    .replace(/\\cup\b/g, '∪')
     // One SPACING too. "fg\\ne gf" keeps the space the command ate and
     // "fg \u2260 gf" does not, so the same statement reached the comparison as
     // two different strings — which only a token comparison could see past.
@@ -103,12 +106,13 @@ function rewritePositionalTimes(s: string): string {
 // Input is pre-cleaned, so digit grouping is already gone and every comma
 // still standing is a separator. Requiring a space after it marked
 // "18kg,27kg,36kg" wrong against the same list typed with the spacebar.
+const PART_SEP = /^(?:\s+or\s+|\s+and\s+|;|\n|,\s*)/;
+
 function splitParts(cleaned: string): string[] {
   // A SET'S BRACES ARE DELIMITERS, NOT PART OF ITS MEMBERS. Splitting "{1,2}"
   // on the comma left "{1" and "2}", and only a token comparison could put
   // those back together — which is what the comparison below no longer does.
-  return (wrapped(cleaned, '{') ?? wrapped(cleaned, '(') ?? cleaned)
-    .split(/\s+or\s+|\s+and\s+|;|\n|,\s*/)
+  return splitOutsideBrackets(wrapped(cleaned, '{') ?? wrapped(cleaned, '(') ?? cleaned, PART_SEP)
     .map(stripLabel)
     .filter((p) => p.length > 0);
 }
@@ -487,6 +491,45 @@ function sameInequality(a: Inequality, b: Inequality): boolean {
 }
 
 /**
+ * INTERSECTION AND UNION ARE COMMUTATIVE. C' ∩ P' is P' ∩ C', and the only
+ * thing that ever said so was wordsEquivalent comparing the token set — which
+ * said it of every other pair of the same letters too. Set DIFFERENCE is not
+ * commutative and is deliberately absent.
+ *
+ * One operator throughout, or the terms would need precedence to be read at
+ * all: A ∩ B ∪ C says nothing without brackets.
+ */
+function commutativeSetTerms(raw: string): { op: string; terms: string[] } | null {
+  // "(A ∪ B)'" is the complement of a union, and the union inside it is still
+  // commutative. The prime rides along in the operator's identity, so a
+  // complement never matches the thing it is the complement of.
+  const trimmed = raw.trim();
+  const complement = trimmed.endsWith("'");
+  const inner = complement ? (wrapped(trimmed.slice(0, -1), '(') ?? trimmed) : trimmed;
+  for (const op of ['∩', '∪']) {
+    if (!inner.includes(op)) continue;
+    if (inner.includes(op === '∩' ? '∪' : '∩')) return null;
+    const terms = splitOutsideBrackets(inner, new RegExp(`^\\s*${op}\\s*`)).map((t) => t.trim());
+    if (terms.length >= 2 && terms.every((t) => t !== '')) {
+      return { op: complement ? `${op}'` : op, terms };
+    }
+  }
+  return null;
+}
+
+/** An unordered match, member for member — which is what a set is. */
+function sameMembers(a: string[], b: string[], rounding: Rounding | null): boolean {
+  if (a.length !== b.length) return false;
+  const used = new Array<boolean>(b.length).fill(false);
+  return a.every((x) => {
+    const i = b.findIndex((y, j) => !used[j] && valueEquivalent(x, y, rounding));
+    if (i === -1) return false;
+    used[i] = true;
+    return true;
+  });
+}
+
+/**
  * A RATIO IS A FRACTION, not two numbers side by side. 3 : 2 is 6 : 4 and is
  * not 2 : 3 — and both of those were decided by wordsEquivalent comparing the
  * token SET {2, 3}, which cannot tell the two apart at all.
@@ -604,7 +647,9 @@ const GENERIC_WORDS = new Set([
 
 function contentTokens(s: string): string[] {
   const all = s
-    .replace(/[^a-z0-9°/.\s-]/g, ' ')
+    // The PRIME STAYS. It is the complement of a set, not punctuation: dropping
+    // it made C' the same word as C, so a complement matched the set itself.
+    .replace(/[^a-z0-9°'/.\s-]/g, ' ')
     .split(/\s+/)
     .filter(Boolean);
   // A UNIT'S ABBREVIATION IS THE UNIT. "20-29 min" and "20-29 minutes" are one
@@ -681,6 +726,8 @@ export function canEvaluate(s: string): boolean {
     if (parseQuantity(part) !== null) return true;
     if (parseQuantityProduct(part) !== null) return true;
     if (parseInequality(part) !== null) return true;
+    if (commutativeSetTerms(part) !== null) return true;
+    if (wrapped(part, '{') !== null) return true; // a set is its members
     if (isProse(part)) return true; // words, compared as words
     // The symbolic path, which is the last one that yields a VALUE: past here
     // valueEquivalent has only string and word comparison left. An equation is
@@ -727,6 +774,21 @@ function valueEquivalent(a: string, b: string, rounding: Rounding | null): boole
   const rb = parseRatio(b);
   if (ra && rb) return sameRatio(ra, rb);
   if (ra || rb) return false;
+
+  // A SET IS ITS MEMBERS IN NO ORDER, AND A MEMBER MAY BE A SET. {{D,A},{K,A}}
+  // is {{A,D},{A,K}}: the nesting is what a plain comma split could not see, so
+  // the braces came off their own contents and only a token match survived.
+  const ma = wrapped(a, '{');
+  const mb = wrapped(b, '{');
+  if (ma !== null && mb !== null) {
+    return sameMembers(splitTopLevel(ma, ','), splitTopLevel(mb, ','), rounding);
+  }
+  if (ma !== null || mb !== null) return false;
+
+  const ea = commutativeSetTerms(a);
+  const eb = commutativeSetTerms(b);
+  if (ea && eb) return ea.op === eb.op && sameMembers(ea.terms, eb.terms, rounding);
+  if (ea || eb) return false;
   // QUANTITIES FIRST, and decisively: if either side carries a unit the numeric
   // path below must not see it, because that path drops the unit — which is how
   // 72 cm came to equal 72 m. A product of quantities is tried before a single

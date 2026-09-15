@@ -221,3 +221,32 @@ export function bracketedCells(s: string): string[] | null {
   const cells = splitTopLevel(body, ',');
   return cells.length >= 2 ? cells : null;
 }
+
+/**
+ * Split on a delimiter, but never inside a bracket. "{D,A}, {K,A}" is two
+ * members and not four: a plain split cut the braces off their own contents,
+ * and only a token comparison could put them back together.
+ */
+export function splitOutsideBrackets(s: string, sep: RegExp): string[] {
+  const out: string[] = [];
+  let depth = 0;
+  let current = '';
+  for (let i = 0; i < s.length; ) {
+    if (depth === 0) {
+      const m = sep.exec(s.slice(i));
+      if (m && m.index === 0) {
+        out.push(current);
+        current = '';
+        i += m[0].length;
+        continue;
+      }
+    }
+    const ch = s[i];
+    if ('([{'.includes(ch)) depth++;
+    else if (')]}'.includes(ch)) depth = Math.max(0, depth - 1);
+    current += ch;
+    i++;
+  }
+  out.push(current);
+  return out;
+}

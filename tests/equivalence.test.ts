@@ -769,3 +769,32 @@ describe('a value that is not words is never token-matched', () => {
     expect(answersEquivalent('$a \\star b = 2a + b$', '$a \\star b = b + 2a$')).toBe(false);
   });
 });
+
+describe('set notation says what it means', () => {
+  it('intersection and union are commutative', () => {
+    expect(answersEquivalent("$C' \\cap P'$", "$P' \\cap C'$")).toBe(true);
+    expect(answersEquivalent("$C' \\cup P'$", "$P' \\cup C'$")).toBe(true);
+    expect(answersEquivalent("$C' \\cap P'$", "$C' \\cup P'$"), 'but not each other').toBe(false);
+    expect(answersEquivalent('$(A \\cup B)$', '$(B \\cup A)$')).toBe(true);
+  });
+
+  it('a complement is not the set it is the complement of', () => {
+    // mathjs reads C' as the TRANSPOSE of C, which for a scalar is C, so the
+    // symbolic path sampled a set equal to its own complement.
+    expect(answersEquivalent("$C'$", '$C$')).toBe(false);
+    expect(answersEquivalent("$C \\cap P$", "$C' \\cap P$")).toBe(false);
+    expect(answersEquivalent("$(A \\cup B)'$", '$A \\cup B$')).toBe(false);
+    expect(answersEquivalent("$(A \\cup B)'$", "$(B \\cup A)'$"), 'inside it is still a union').toBe(true);
+  });
+
+  it('a nested set is an unordered set of unordered sets', () => {
+    expect(answersEquivalent('$\\{\\{D,A\\},\\{K,A\\},\\{K,D\\}\\}$', '$\\{\\{A,D\\},\\{A,K\\},\\{D,K\\}\\}$')).toBe(true);
+    expect(answersEquivalent('$\\{\\{D,A\\},\\{K,A\\}\\}$', '$\\{\\{A,D\\},\\{A,X\\}\\}$')).toBe(false);
+    expect(answersEquivalent('$\\{\\{1,2\\},\\{3,4\\}\\}$', '$\\{\\{1,3\\},\\{2,4\\}\\}$'), 'the grouping is part of it').toBe(false);
+  });
+
+  it('and a set is not equal to something that is not one', () => {
+    expect(answersEquivalent('{2,4,6}', '2, 4, 6')).toBe(true);
+    expect(answersEquivalent('{2,4,6}', 'the even numbers')).toBe(false);
+  });
+});

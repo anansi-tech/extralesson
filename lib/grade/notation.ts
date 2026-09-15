@@ -134,6 +134,10 @@ export function toMathExpr(s: string): string {
     // to be read as the English words "left" and "right", so a bracketed
     // expression looked like prose. The commands go; the words do not.
     .replace(/\\left\b|\\right\b/g, '')
+    // A PRIME IS A COMPLEMENT, not a transpose. mathjs reads C' as the
+    // transpose of C, which for a scalar IS C — so a set sampled equal to its
+    // own complement, and nothing above could tell them apart.
+    .replace(/([a-z])'/gi, '$1_c')
     .replace(/\^\s*\{([^{}]+)\}/g, '^($1)') // 10^{-5}: mathjs wants parentheses
     .replace(/\\pi|π/g, 'pi')).replace(/\\/g, '');
 }
