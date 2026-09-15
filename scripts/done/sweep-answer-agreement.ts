@@ -14,8 +14,11 @@ async function main() {
     for (const p of q.parts ?? []) for (const s of p.slots ?? []) if (s.answer && (s.response_mode ?? 'answer') === 'answer') slots++;
     for (const d of questionDisagreements(q.parts ?? [])) all.push({ ...d, qid: String(q._id) });
   }
+  const blind = all.filter((a) => a.kind === 'unparseable');
+  const wrong = all.filter((a) => a.kind !== 'unparseable');
   console.log(`approved questions: ${qs.length} · answer slots: ${slots}`);
-  console.log(`slots that disagree with themselves: ${new Set(all.map((a) => a.qid + a.ref)).size}  (${all.length} findings)\n`);
+  console.log(`slots that disagree with themselves: ${new Set(wrong.map((a) => a.qid + a.ref)).size}  (${wrong.length} findings)`);
+  console.log(`slots the comparator cannot evaluate: ${new Set(blind.map((a) => a.qid + a.ref)).size}  (${blind.length} findings)\n`);
 
   const byKind: Record<string, (SlotAgreement & { qid: string })[]> = {};
   for (const a of all) (byKind[a.kind] ??= []).push(a);

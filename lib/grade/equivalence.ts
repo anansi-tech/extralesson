@@ -567,6 +567,36 @@ function wordsEquivalent(a: string, b: string): boolean {
  */
 const NAME_WORDS = /sqrt|nthroot|cbrt|frac|pi|text|cdot|times/gi;
 
+/**
+ * WHETHER THE COMPARATOR CAN GET A VALUE OUT OF THIS AT ALL.
+ *
+ * A value that looks like mathematics but that nothing here can evaluate falls
+ * through to a STRING comparison, where it equals itself and nothing else — so
+ * a question whose canonical is written one way and whose accept list is
+ * written another passes every check by being compared as text. \sqrt[3]{X}
+ * did exactly that until the expansion learned it.
+ *
+ * Prose is not unevaluable: it is compared as words, deliberately.
+ */
+export function canEvaluate(s: string): boolean {
+  const parts = splitParts(preClean(s));
+  if (parts.length === 0) return false;
+  // Every part, because a whole answer is compared part by part.
+  return parts.every((raw) => {
+    const part = stripLabel(raw);
+    if (part === '') return false;
+    if (parseNumeric(part) !== null) return true;
+    if (parseQuantity(part) !== null) return true;
+    if (parseQuantityProduct(part) !== null) return true;
+    // The symbolic path, which is the last one that yields a VALUE: past here
+    // valueEquivalent has only string and word comparison left. An equation is
+    // parsed the way the comparator parses one — as the difference of its
+    // sides — because "27x = 120 + 15x" is not an assignment.
+    if (!looksMathematical(part)) return false;
+    return freeVariables(toMathExpr(asDifference(part))) !== null;
+  });
+}
+
 export function looksMathematical(s: string): boolean {
   // Adjacent letters beside arithmetic are a product, not a word: gT^2 is g
   // times T squared, and reading it as prose kept the whole expression out of

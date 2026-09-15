@@ -1,5 +1,5 @@
 import { componentsEquivalent } from './components';
-import { looksMathematical } from './equivalence';
+import { canEvaluate, looksMathematical } from './equivalence';
 import { readInputShape } from './input-shape';
 import { roundingOf } from './rounding';
 
@@ -27,7 +27,7 @@ export interface SlotAgreement {
   canonical: string;
   /** What failed: the rewrite's name, or the accept entry that disagreed. */
   failure: string;
-  kind: 'self' | 'rewrite' | 'accept';
+  kind: 'self' | 'rewrite' | 'accept' | 'unparseable';
   /** The notation in the canonical, for grouping a sweep's findings. */
   notation: string[];
 }
@@ -99,6 +99,32 @@ export function slotDisagreements(
   for (const entry of slot.accept ?? []) {
     if (!looksMathematical(canonical) || !looksMathematical(entry)) continue;
     if (!agrees(entry)) out.push({ ref, canonical, failure: entry, kind: 'accept', notation });
+  }
+
+  /**
+   * AND WHAT THE COMPARATOR CANNOT EVALUATE IS SAID, NEVER ABSTAINED ON.
+   *
+   * A value it cannot get a number or an expression out of falls through to a
+   * STRING comparison, where it equals itself and nothing else. The checks
+   * above then pass for the wrong reason: the canonical equals itself as text,
+   * and an accept entry written any other way is skipped. \sqrt[3]{X} sat
+   * there for the life of the bank, and the sweep said the question was fine.
+   *
+   * PROSE IS NOT THIS. "No" beside "cannot" is compared as words, deliberately
+   * and correctly, so a value read as a word is left alone.
+   */
+  for (const [whole, source] of [[canonical, 'the answer'], ...(slot.accept ?? []).map((e) => [e, `accept ${JSON.stringify(e)}`] as const)] as [string, string][]) {
+    const reading = readInputShape(whole);
+    if (reading.shape === 'word') continue;
+    const blind = reading.values.filter((v) => !canEvaluate(v));
+    if (blind.length === 0) continue;
+    out.push({
+      ref,
+      canonical,
+      failure: `${source} cannot be evaluated: ${blind.map((v) => JSON.stringify(v)).join(', ')} (read as ${reading.shape})`,
+      kind: 'unparseable',
+      notation: notationIn(whole),
+    });
   }
   return out;
 }

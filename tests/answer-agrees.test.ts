@@ -87,6 +87,40 @@ describe('a slot that disagrees with itself', () => {
     expect(slotDisagreements('a.i', slot({ answer: 'a straight line', response_mode: 'construct', accept: ['a line'] }))).toEqual([]);
   });
 
+  /**
+   * A VALUE NOTHING CAN EVALUATE IS SAID, NEVER ABSTAINED ON. It falls through
+   * to a STRING comparison, where it equals itself and nothing else — so the
+   * checks above pass for the wrong reason, and the sweep called the question
+   * fine. \sqrt[3]{X} sat there for the life of the bank.
+   */
+  it('reports a canonical the comparator cannot evaluate', () => {
+    const found = slotDisagreements('a.i', slot({ answer: '$2 \\le x \\le 7$' }));
+
+    expect(found).toHaveLength(1);
+    expect(found[0]).toMatchObject({ ref: 'a.i', kind: 'unparseable' });
+    expect(found[0].failure).toContain('the answer cannot be evaluated');
+    expect(found[0].failure, 'and how it was read').toContain('inequality');
+  });
+
+  it('reports an accept entry it cannot evaluate, beside a canonical it can', () => {
+    const found = slotDisagreements('a.i', slot({ answer: '12', accept: ['$x \\ge 12$'] }));
+    expect(found.filter((f) => f.kind === 'unparseable')).toHaveLength(1);
+    expect(found.find((f) => f.kind === 'unparseable')!.failure).toContain('accept');
+  });
+
+  it('says nothing about prose, which is compared as words on purpose', () => {
+    // "No" beside "cannot" is doing real work at marking time; a value read as
+    // a word is not an abstention, it is a different comparison.
+    expect(slotDisagreements('d.i', slot({ answer: 'cannot', accept: ['No'] }))).toEqual([]);
+    expect(slotDisagreements('d.i', slot({ answer: 'a straight line' }))).toEqual([]);
+  });
+
+  it('says nothing about a value it can evaluate, of any shape', () => {
+    for (const answer of ['42', '5 cm', '(2, 5)', '\\begin{pmatrix}3\\\\-2\\end{pmatrix}', 'y = 2x + 3', '$\\sqrt[3]{27}$']) {
+      expect(slotDisagreements('a.i', slot({ answer })).filter((f) => f.kind === 'unparseable'), answer).toEqual([]);
+    }
+  });
+
   it('groups a finding by the notation that caused it', () => {
     const found = slotDisagreements('a.i', slot({ answer: '\\frac{1}{\\sqrt{2}}', accept: ['\\frac{1}{\\sqrt{3}}'] }));
     expect(found[0].notation).toEqual(['\\frac', '\\sqrt']);
@@ -118,6 +152,20 @@ describe('the approval gate', () => {
     });
 
     expect(asked, 'a broken question costs no model call').toBe(false);
+  });
+
+  it('refuses a question whose own answers nothing here can check', async () => {
+    const res = await approvalGate(draft([slot({ answer: '$2 \\le x \\le 7$' })]), solved);
+
+    expect(res.ok).toBe(false);
+    expect(res.reason).toContain('cannot evaluate');
+    expect(res.reason, 'and not as a disagreement, which it is not').not.toContain('disagrees with itself');
+  });
+
+  it('says which fault it is when a question has both', async () => {
+    const res = await approvalGate(draft([slot({ answer: '12', accept: ['13'] }), slot({ label: 'ii', answer: '$x \\ge 12$' })]), solved);
+    // A wrong accept list is the stronger claim and is said first.
+    expect(res.reason).toContain('disagrees with itself');
   });
 
   it('finds a disagreement in any part, not only the first', async () => {

@@ -48,10 +48,19 @@ export async function approvalGate(
    * value, cannot be answered correctly by anybody — so it is refused here
    * rather than found by the student who meets it.
    */
-  const disagreements = questionDisagreements(draft.parts);
+  const findings = questionDisagreements(draft.parts);
+  // A value nothing here can evaluate is a different fault from a value that
+  // disagrees: the question is not wrong, it is UNCHECKABLE, and saying so is
+  // the point — an abstention that passes quietly is how \sqrt[3]{X} lived in
+  // the bank for its whole life with the sweep calling every question fine.
+  const blind = findings.filter((d) => d.kind === 'unparseable');
+  const disagreements = findings.filter((d) => d.kind !== 'unparseable');
   if (disagreements.length > 0) {
     const said = disagreements.map((d) => `(${d.ref}) ${d.kind === 'accept' ? `accept ${JSON.stringify(d.failure)} does not equal the answer` : d.failure}`);
     return { ok: false, reason: `the question disagrees with itself: ${said.join(' | ')}` };
+  }
+  if (blind.length > 0) {
+    return { ok: false, reason: `the comparator cannot evaluate this question's own answers, so nothing here can check it: ${blind.map((d) => `(${d.ref}) ${d.failure}`).join(' | ')}` };
   }
 
   const outcome = await solve(draft);
