@@ -491,6 +491,27 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const outOf = outcome.assessed;
   const stateOf = new Map(outcome.rows.map((r) => [r.code, r.state]));
 
+  /**
+   * A SLOT'S VERDICT IS THE FOLD'S. partResults is the grader's word on the
+   * TYPED value, decided at submit and never revisited — so a slot whose rows
+   * the page later earned still drew a red cross and a hint telling the student
+   * what to do, beside a header saying they had every mark. The header, the
+   * rows under the part and the slot all read the fold now, so they cannot
+   * disagree: a cross means the fold withheld a row on that slot, and nothing
+   * else does.
+   *
+   * `formWithheld` is untouched — it is about the FORM of a right value, which
+   * no row on the page speaks to.
+   */
+  const verdictFor = (ref: string) => {
+    const graded = feedback?.partResults.find((r) => r.label === ref);
+    if (!graded) return undefined;
+    const rows = outcome.rows.filter((r) => r.slot_ref === ref);
+    // A slot no row names keeps the grader's word: there is no fold to read.
+    const correct = rows.length ? !rows.some((r) => r.state === 'withheld') : graded.correct;
+    return { ...graded, correct, reasonHtml: correct ? undefined : graded.reasonHtml };
+  };
+
   // THE ROWS SIT UNDER THEIR PARTS (ROUND_8 Task 3): the latest marked read's
   // rows, by the part each code belongs to; a part with nothing typed keeps
   // its rows under the read. The query control needs the read they came from.
@@ -745,7 +766,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                               'min-h-11 w-24 border-0 border-b-[1.5px] border-ink bg-transparent px-1 py-2 text-center font-mono text-sm',
                           })}
                           {p.slots[i].mode === 'answer' && (
-                            <AnswerVerdict inline result={feedback?.partResults.find((r) => r.label === p.slots[i].ref)} />
+                            <AnswerVerdict inline result={verdictFor(p.slots[i].ref)} />
                           )}
                           </span>
                         )}
@@ -788,7 +809,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 {/* One row per slot: the paper's (i), (ii), a table cell, or a
                     single unlabelled answer when the part asks for one thing. */}
                 {!p.statementHtml && p.slots.map((slot) => {
-                  const partFeedback = feedback?.partResults.find((r) => r.label === slot.ref);
+                  const partFeedback = verdictFor(slot.ref);
                   return (
                     <div key={slot.ref} className={p.slots.length > 1 ? 'mt-2 pl-4' : ''}>
                       {slot.mode === 'answer' ? (
