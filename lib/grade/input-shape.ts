@@ -1,5 +1,5 @@
 import { parseQuantity } from './quantity';
-import { parseNumeric } from './equivalence';
+import { isProse, parseNumeric } from './equivalence';
 
 /**
  * One box per value, so the student never types a delimiter. Read from the
@@ -74,7 +74,7 @@ function bare(raw: string): string {
   return raw
     .trim()
     .replace(/^\$+|\$+$/g, '')
-    .replace(/\\left|\\right|\\,|\;|\\!/g, '')
+    .replace(/\\left\b|\\right\b|\\,|\;|\\!/g, '')
     .replace(/\\text\{([^{}]*)\}/g, '$1')
     .replace(/\\[dt]frac/g, '\\frac')
     .replace(/²/g, '^2')
@@ -180,6 +180,7 @@ function asGroups(
 export function readInputShape(rawAnswer: string): ShapeReading {
   const s = bare(rawAnswer);
   const lower = s.toLowerCase();
+  const one = (shape: InputShape): ShapeReading => ({ shape, boxes: 1, ordered: true, values: [s] });
 
   // \binom{4}{-2} is a column vector too: the shorter way the papers and the
   // generator write a 2x1. Missing it renders a box asking for typed KaTeX.
@@ -232,6 +233,11 @@ export function readInputShape(rawAnswer: string): ShapeReading {
     if (rootish) return { shape: 'roots', boxes: roots.length, ordered: false, values: roots };
   }
 
+  // A RELATION SIGN ON ITS OWN answers "which sign goes in the box": a symbol to
+  // choose, not a statement to satisfy. Read as an inequality it had no terms,
+  // so nothing could evaluate it and it was compared as raw text.
+  if (/^(<|>|=|<=|>=|\\le|\\ge|\\leq|\\geq|≤|≥)$/.test(s.trim())) return one('word');
+
   if (/(<|>|\\le\b|\\ge\b|\\leq\b|\\geq\b|≤|≥)/.test(s)) {
     return { shape: 'inequality', boxes: 1, ordered: true, values: [s] };
   }
@@ -254,9 +260,15 @@ export function readInputShape(rawAnswer: string): ShapeReading {
     return { shape: 'list', boxes: pieces.length, ordered: true, values: pieces.map((p) => p.trim()) };
   }
 
-  const one = (shape: InputShape): ShapeReading => ({ shape, boxes: 1, ordered: true, values: [s] });
   if (parseQuantity(lower) !== null) return one('quantity');
   if (parseNumeric(lower) !== null) return one('number');
+
+  // PROSE GOES TO THE WORD PATH BECAUSE IT IS PROSE, not because it fell past
+  // every other test. The expression tests below ask only whether an operator is
+  // present, and a hyphen is one — so "non-square" and "right-angled isosceles
+  // triangle" were read as algebra, which the comparator cannot evaluate, and a
+  // sentence quoting a value went the same way.
+  if (isProse(s)) return one('word');
 
   if (/[=+\-*/^]/.test(s) && /[a-z]/i.test(s.replace(/\\[a-z]+/gi, ''))) return one('expression');
   if (/^\\?[a-z](\^|_|\()/i.test(s)) return one('expression');

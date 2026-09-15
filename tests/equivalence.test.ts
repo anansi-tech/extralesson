@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { answersEquivalent, answersEquivalentAny, looksMathematical, parseNumeric, splitAdjacentSymbols } from '@/lib/grade/equivalence';
+import { answersEquivalent, answersEquivalentAny, canEvaluate, isProse, looksMathematical, parseNumeric, splitAdjacentSymbols } from '@/lib/grade/equivalence';
 import { readInputShape } from '@/lib/grade/input-shape';
 
 describe('parseNumeric', () => {
@@ -542,5 +542,117 @@ describe('cube roots and the forms a student writes them in', () => {
     // nthRoot(x, 3) gives the real root; one such point used to end the
     // comparison of two forms of the same cube root.
     expect(answersEquivalent('\\sqrt[3]{x}', 'x^{1/3}')).toBe(true);
+  });
+});
+
+/**
+ * The notations the self-agreement sweep could not evaluate, which meant they
+ * were compared as TEXT — equal to themselves and to nothing else, so a scheme
+ * and its own accept list passed every check by being spelt the same way.
+ */
+describe('a vector is its symbol', () => {
+  it('reads \\vec, \\mathbf and \\underline as the letter underneath', () => {
+    expect(answersEquivalent('2\\mathbf{b}-\\mathbf{a}', '-\\mathbf{a}+2\\mathbf{b}')).toBe(true);
+    expect(answersEquivalent('3\\vec{a}+3\\vec{b}', '3\\vec{b}+3\\vec{a}')).toBe(true);
+    expect(answersEquivalent('\\underline{a}+\\underline{b}', 'a + b')).toBe(true);
+  });
+
+  it('order and sign are differences, which the word path could not see', () => {
+    // wordsEquivalent compares token SETS, so both of these were accepted.
+    expect(answersEquivalent('2\\mathbf{b}-\\mathbf{a}', '2\\mathbf{a}-\\mathbf{b}')).toBe(false);
+    expect(answersEquivalent('2\\mathbf{b}-\\mathbf{a}', '2\\mathbf{b}+\\mathbf{a}')).toBe(false);
+    expect(answersEquivalent('11\\vec{a}+8\\vec{b}', '8\\vec{a}+11\\vec{b}')).toBe(false);
+  });
+
+  it('\\right no longer eats the arrow it starts', () => {
+    expect(answersEquivalent('f: x \\rightarrow 2x+1', '2x+1')).toBe(true);
+  });
+});
+
+describe('an inequality is the set of values it admits', () => {
+  it('a chain compares as an interval, whichever way round it is written', () => {
+    expect(answersEquivalent('$2 \\le x \\le 7$', '$7 \\ge x \\ge 2$')).toBe(true);
+    expect(answersEquivalent('1\\leq x\\leq5', '$1 \\le x \\le 5$')).toBe(true);
+    expect(answersEquivalent('$10 \\le t < 15$ minutes', '$10 \\le t < 15$ minutes')).toBe(true);
+  });
+
+  it('a bound is the same bound at any positive scale', () => {
+    expect(answersEquivalent('$18x - 36 \\ge 180$', '$x \\ge 12$')).toBe(true);
+    expect(answersEquivalent('$y \\geq -x+2$', '$x + y \\ge 2$')).toBe(true);
+    expect(answersEquivalent('$18x - 36 \\ge 180$', '$x \\le 12$'), 'turned round').toBe(false);
+  });
+
+  it('a closed end is not an open one', () => {
+    expect(answersEquivalent('$2 \\le x \\le 7$', '$2 < x < 7$')).toBe(false);
+    expect(answersEquivalent('$20 \\le x < 30$', '$20 \\le x \\le 30$')).toBe(false);
+  });
+
+  it('an impossible interval equals nothing, including its own mirror', () => {
+    expect(answersEquivalent('$7 \\le x \\le 2$', '$2 \\le x \\le 7$')).toBe(false);
+    expect(answersEquivalent('$7 \\le x \\le 2$', '$7 \\le x \\le 2$')).toBe(false);
+  });
+
+  it('an inequality is never equal to a value', () => {
+    expect(answersEquivalent('$x \\ge 12$', '12')).toBe(false);
+  });
+});
+
+describe('set-builder is the inequality inside it', () => {
+  it('reads the condition, and the braces do not have to be there', () => {
+    expect(answersEquivalent('$\\{x \\in \\mathbb{R}: 9 \\le x \\le 12\\}$', '$\\{x \\in \\mathbb{R} : 12 \\ge x \\ge 9\\}$')).toBe(true);
+    expect(answersEquivalent('x \\in \\mathbb{N} : x \\ge 12', '$\\{x \\in \\mathbb{N} : x \\ge 12\\}$')).toBe(true);
+  });
+
+  it('the domain is part of what the set says', () => {
+    expect(answersEquivalent('$\\{x \\in \\mathbb{R}: 3 \\le x \\le 6\\}$', '$\\{n \\in \\mathbb{N}: 3 \\le n \\le 6\\}$')).toBe(false);
+    expect(answersEquivalent('$\\{x \\in \\mathbb{N} : x \\ge 12\\}$', '$x \\ge 12$')).toBe(false);
+  });
+});
+
+describe('prose reaches the word path because it is prose', () => {
+  it('a hyphen joins words; it does not subtract them', () => {
+    expect(isProse('non-square')).toBe(true);
+    expect(isProse('right-angled isosceles triangle')).toBe(true);
+    expect(isProse('break-even')).toBe(true);
+    expect(answersEquivalent('non-square', 'non-parallel')).toBe(false);
+  });
+
+  it('a sentence that quotes a value is still a sentence', () => {
+    expect(isProse('The $x$-intercept is $(3,0)$ and the $y$-intercept is $(0,-15)$.')).toBe(true);
+    expect(isProse('$R$ is a many-to-one function.')).toBe(true);
+  });
+
+  it('a value dressed in words is not prose', () => {
+    for (const v of ['5\\sqrt{2}\\text{ cm}', '20-29 min', '$2 \\le x \\le 7$', '2x + 3']) {
+      expect(isProse(v), v).toBe(false);
+    }
+  });
+});
+
+describe('what the comparator still cannot evaluate', () => {
+  it('a custom operator is left for a question edit, not guessed at', () => {
+    // The question defines \star itself; nothing here can know what it means.
+    expect(canEvaluate('$a \\star b = 2a + b$')).toBe(false);
+  });
+
+  it('every notation this commit taught it now evaluates', () => {
+    for (const v of ['2\\mathbf{b}-\\mathbf{a}', '$2 \\le x \\le 7$', '1\\leq x\\leq5',
+      '$\\{x \\in \\mathbb{R}: 0 < x \\le 12\\}$', 'non-square', 'red', 'f: x \\rightarrow 2x+1']) {
+      expect(canEvaluate(v), v).toBe(true);
+    }
+  });
+});
+
+describe('a command ends where its letters do', () => {
+  // \right is a prefix of \rightarrow; \to of \top; and a DIGIT straight after
+  // a command is not a word boundary, which is how "\leq5" and "x\to2" — both
+  // of them how the bank writes it with no space — went unread.
+  it('a mapping arrow written against its value', () => {
+    expect(answersEquivalent('f^{-1}:x\\to2+\\sqrt{x-1}', '2+\\sqrt{x-1}')).toBe(true);
+  });
+
+  it('a relation written against its bound', () => {
+    expect(answersEquivalent('1\\le x\\le17', '$1 \\le x \\le 17$')).toBe(true);
+    expect(answersEquivalent('x\\ge12', '$x \\ge 12$')).toBe(true);
   });
 });

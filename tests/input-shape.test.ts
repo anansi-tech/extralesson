@@ -165,3 +165,24 @@ describe('roots are told apart from prose that says "or"', () => {
     expect(r.boxes).toBe(1);
   });
 });
+
+// A relation sign on its own answers "which sign goes in the box", and prose
+// reached the expression tests because a hyphen counts as an operator there.
+describe('the word path is arrived at, not fallen into', () => {
+  it('a relation sign alone is a symbol to choose, not a statement', () => {
+    expect(readInputShape('<').shape).toBe('word');
+    expect(readInputShape('\\ge').shape).toBe('word');
+    expect(readInputShape('$2 \\le x \\le 7$').shape, 'a real one still reads as one').toBe('inequality');
+  });
+
+  it('prose is a word answer however it is punctuated', () => {
+    expect(readInputShape('right-angled isosceles triangle').shape).toBe('word');
+    expect(readInputShape('non-singular').shape).toBe('word');
+    expect(readInputShape('A closed circle at $-4$, with shading to the right.').shape).toBe('word');
+  });
+
+  it('and a value is not made prose by carrying a unit', () => {
+    expect(readInputShape('$5\\sqrt{2}\\text{ cm}$').shape).toBe('expression');
+    expect(readInputShape('2x + 3').shape).toBe('expression');
+  });
+});

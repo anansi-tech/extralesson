@@ -94,16 +94,16 @@ describe('a slot that disagrees with itself', () => {
    * fine. \sqrt[3]{X} sat there for the life of the bank.
    */
   it('reports a canonical the comparator cannot evaluate', () => {
-    const found = slotDisagreements('a.i', slot({ answer: '$2 \\le x \\le 7$' }));
+    const found = slotDisagreements('a.i', slot({ answer: '$a \\star b = 2a + b$' }));
 
     expect(found).toHaveLength(1);
     expect(found[0]).toMatchObject({ ref: 'a.i', kind: 'unparseable' });
     expect(found[0].failure).toContain('the answer cannot be evaluated');
-    expect(found[0].failure, 'and how it was read').toContain('inequality');
+    expect(found[0].failure, 'and how it was read').toContain('expression');
   });
 
   it('reports an accept entry it cannot evaluate, beside a canonical it can', () => {
-    const found = slotDisagreements('a.i', slot({ answer: '12', accept: ['$x \\ge 12$'] }));
+    const found = slotDisagreements('a.i', slot({ answer: '12', accept: ['$a \\star b = 2a + b$'] }));
     expect(found.filter((f) => f.kind === 'unparseable')).toHaveLength(1);
     expect(found.find((f) => f.kind === 'unparseable')!.failure).toContain('accept');
   });
@@ -116,7 +116,8 @@ describe('a slot that disagrees with itself', () => {
   });
 
   it('says nothing about a value it can evaluate, of any shape', () => {
-    for (const answer of ['42', '5 cm', '(2, 5)', '\\begin{pmatrix}3\\\\-2\\end{pmatrix}', 'y = 2x + 3', '$\\sqrt[3]{27}$']) {
+    for (const answer of ['42', '5 cm', '(2, 5)', '\\begin{pmatrix}3\\\\-2\\end{pmatrix}', 'y = 2x + 3', '$\\sqrt[3]{27}$',
+      '$2 \\le x \\le 7$', '$\\{x \\in \\mathbb{R} : 0 < x \\le 12\\}$', '$2\\mathbf{b}-\\mathbf{a}$', 'non-square']) {
       expect(slotDisagreements('a.i', slot({ answer })).filter((f) => f.kind === 'unparseable'), answer).toEqual([]);
     }
   });
@@ -155,7 +156,7 @@ describe('the approval gate', () => {
   });
 
   it('refuses a question whose own answers nothing here can check', async () => {
-    const res = await approvalGate(draft([slot({ answer: '$2 \\le x \\le 7$' })]), solved);
+    const res = await approvalGate(draft([slot({ answer: '$a \\star b = 2a + b$' })]), solved);
 
     expect(res.ok).toBe(false);
     expect(res.reason).toContain('cannot evaluate');
@@ -163,7 +164,7 @@ describe('the approval gate', () => {
   });
 
   it('says which fault it is when a question has both', async () => {
-    const res = await approvalGate(draft([slot({ answer: '12', accept: ['13'] }), slot({ label: 'ii', answer: '$x \\ge 12$' })]), solved);
+    const res = await approvalGate(draft([slot({ answer: '12', accept: ['13'] }), slot({ label: 'ii', answer: '$a \\star b = 2a + b$' })]), solved);
     // A wrong accept list is the stronger claim and is said first.
     expect(res.reason).toContain('disagrees with itself');
   });

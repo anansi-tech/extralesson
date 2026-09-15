@@ -25,20 +25,37 @@ function preClean(raw: string): string {
   // forms that strip cleanly were past saving by then. `\\ ` is a thin space and
   // `\\\\ ` is a matrix row separator followed by one, so only an unpaired
   // backslash is a space.
-  const despaced = stripInvisible(raw).replace(/\\left|\\right|\\,|\\;|(?<!\\)\\ /g, '');
+  // WORD-BOUNDED, because \right is a prefix of \rightarrow: stripping it left
+  // the word "arrow" standing in the middle of a mapping, so "f: x \rightarrow 2x+1"
+  // read as prose and never reached the symbolic path.
+  const despaced = stripInvisible(raw).replace(/\\left\b|\\right\b|\\,|\\;|(?<!\\)\\ /g, '');
   const cleaned = normaliseDigitGroups(markMoney(despaced))
     .trim()
     .toLowerCase()
     .replace(/\$+/g, '') // KaTeX delimiters and bare dollar signs
     .replace(/\\text\{([^{}]*)\}/g, '$1') // \text{ and } wrappers carry no value
+    // A VECTOR IS ITS SYMBOL. \vec{a}, \mathbf{a} and \underline{a} are three
+    // spellings of "this is a vector", and what a mark scheme compares is the
+    // expression they sit in: 2b - a and -a + 2b are one answer, 2a - b is a
+    // different one, and only the symbols can tell those apart. Read as prose —
+    // which is what an unknown command becomes — every vector answer matched
+    // every rearrangement of its own terms, including the wrong ones.
+    .replace(/\\(?:vec|mathbf|underline)\s*\{([^{}]*)\}/g, '$1')
+    .replace(/\\(?:vec|mathbf|underline)\s+([a-z])/g, '$1')
     // Authored answers are KaTeX, where a literal percent is \%. It is the same
     // sign, so unescaping it is what lets "10\%" match "10" and "10%".
     .replace(/\\%/g, '%')
     .replace(/\\[dt]frac\b/g, '\\frac') // display/inline fractions are one fraction
     .replace(/[−–]/g, '-') // unicode minus / en-dash
     // One spelling per relation, whichever notation the writer reached for.
-    .replace(/\\mapsto|\\rightarrow|\\to\b|↦|→/g, '->')
-    .replace(/\\neq?\b|≠/g, '!=')
+    .replace(/\\mapsto|\\rightarrow|\\to(?![a-z])|↦|→/g, '->')
+    .replace(/\\neq?(?![a-z])|≠/g, '!=')
+    // Not \b: the bank writes "x\\leq5" with no space, and a digit after q is not
+    // a word boundary, so the whole chain went unrecognised.
+    .replace(/\\leq?(?![a-z])|≤/g, '<=')
+    .replace(/\\geq?(?![a-z])|≥/g, '>=')
+    .replace(/\\lt\b/g, '<')
+    .replace(/\\gt\b/g, '>')
     .replace(/⁻¹/g, '^{-1}')
     .replace(/[×·]|\\times|\\cdot/g, '*')
     .replace(/÷|\\div\b/g, '/')
@@ -327,7 +344,7 @@ function toMathExpr(s: string): string {
     // looksMathematical asks this of a RAW stored answer, where they survive
     // to be read as the English words "left" and "right", so a bracketed
     // expression looked like prose. The commands go; the words do not.
-    .replace(/\\left|\\right/g, '')
+    .replace(/\\left\b|\\right\b/g, '')
     .replace(/\^\s*\{([^{}]+)\}/g, '^($1)') // 10^{-5}: mathjs wants parentheses
     .replace(/\\pi|π/g, 'pi')).replace(/\\/g, '');
 }
@@ -417,7 +434,11 @@ function sampledEquivalent(ea: string, eb: string, vars: string[]): boolean | nu
  * the other is a real difference; an identically-zero equation proves nothing
  * and stays undecided.
  */
-function proportional(ea: string, eb: string, vars: string[]): boolean | null {
+/**
+ * a/b at every sample point it can be taken at. Null means the two are not in
+ * any ratio at all: one side vanishes where the other does not.
+ */
+function sampleRatios(ea: string, eb: string, vars: string[]): { ratios: number[]; sawNonZero: boolean } | null {
   const ratios: number[] = [];
   let sawNonZero = false;
   for (const base of SAMPLE_POINTS) {
@@ -434,16 +455,192 @@ function proportional(ea: string, eb: string, vars: string[]): boolean | null {
     if (typeof va !== 'number' || typeof vb !== 'number') continue;
     if (!Number.isFinite(va) || !Number.isFinite(vb)) continue;
     if (Math.abs(vb) < 1e-9) {
-      if (Math.abs(va) > 1e-6) return false;
+      if (Math.abs(va) > 1e-6) return null;
       continue;
     }
     ratios.push(va / vb);
     if (Math.abs(va) > 1e-9) sawNonZero = true;
   }
-  if (ratios.length < 3 || !sawNonZero) return null;
-  const k = ratios[0];
-  if (Math.abs(k) < 1e-9) return false;
-  return ratios.every((r) => Math.abs(r - k) <= 1e-6 * Math.max(1, Math.abs(k)));
+  return { ratios, sawNonZero };
+}
+
+function constantRatio(sampled: { ratios: number[]; sawNonZero: boolean }): number | null {
+  if (sampled.ratios.length < 3 || !sampled.sawNonZero) return null;
+  const k = sampled.ratios[0];
+  if (Math.abs(k) < 1e-9) return null;
+  return sampled.ratios.every((r) => Math.abs(r - k) <= 1e-6 * Math.max(1, Math.abs(k))) ? k : null;
+}
+
+function proportional(ea: string, eb: string, vars: string[]): boolean | null {
+  const sampled = sampleRatios(ea, eb, vars);
+  if (sampled === null) return false;
+  if (sampled.ratios.length < 3 || !sampled.sawNonZero) return null;
+  if (Math.abs(sampled.ratios[0]) < 1e-9) return false;
+  return constantRatio(sampled) !== null;
+}
+
+/**
+ * AN INEQUALITY IS A SET OF VALUES, not a value, so it reduces to the bounds
+ * that set has. Each one is written `expr >= 0`, or `expr > 0` when strict, and
+ * a chain contributes one per link: 2 <= x <= 7 is `x - 2 >= 0` and `7 - x >= 0`.
+ */
+interface Bound {
+  expr: string;
+  strict: boolean;
+}
+
+interface Inequality {
+  /** The set the variable is drawn from, when the answer names one. */
+  domain: string | null;
+  /** A unit written after the last bound, which belongs to the whole interval. */
+  unit: string | null;
+  bounds: Bound[];
+}
+
+/**
+ * Set-builder is the inequality inside it, said about a named domain:
+ * {x \in \mathbb{R} : 9 <= x <= 12} bounds the same values as 9 <= x <= 12, and
+ * the domain is the rest of what it says. The braces may already be gone —
+ * readInputShape hands a set-builder over as its one member.
+ */
+function splitDomain(body: string): { domain: string | null; rest: string } {
+  const inner = body.replace(/^\\?\{\s*/, '').replace(/\s*\\?\}$/, '');
+  const named = inner.match(/^[a-z]\s*(?:\\in|∈)\s*(?:\\mathbb\{([a-z])\}|([a-z]))\s*(?::|\||\\mid\b)\s*(.+)$/);
+  if (!named) return { domain: null, rest: inner };
+  return { domain: named[1] ?? named[2], rest: named[3].trim() };
+}
+
+/**
+ * The unit written once at the end of an interval — "10 <= t < 15 minutes" —
+ * measures every bound in it, so it comes off the last term and is compared
+ * separately. A one-letter tail is left alone: it cannot be told from a
+ * variable.
+ */
+function splitTrailingUnit(term: string): { term: string; unit: string | null } {
+  const m = term.match(/^(.+?)\s+([a-z]{2,})$/);
+  if (!m || !UNIT_WORDS.has(m[2])) return { term, unit: null };
+  return { term: m[1].trim(), unit: m[2] };
+}
+
+/** Null when the string is not an inequality. Input is pre-cleaned. */
+function parseInequality(s: string): Inequality | null {
+  const { domain, rest } = splitDomain(s.trim());
+  const pieces = rest.split(/\s*(<=|>=|<|>)\s*/);
+  if (pieces.length < 3 || pieces.length % 2 === 0) return null;
+  const terms: string[] = [];
+  const rels: string[] = [];
+  pieces.forEach((piece, i) => (i % 2 === 0 ? terms : rels).push(piece.trim()));
+  const tail = splitTrailingUnit(terms[terms.length - 1]);
+  terms[terms.length - 1] = tail.term;
+  if (terms.some((t) => t === '' || !looksMathematical(t))) return null;
+
+  const bounds: Bound[] = [];
+  for (let i = 0; i < rels.length; i++) {
+    const [lo, hi] = rels[i].startsWith('<') ? [terms[i], terms[i + 1]] : [terms[i + 1], terms[i]];
+    const expr = toMathExpr(`(${hi}) - (${lo})`);
+    if (freeVariables(expr) === null) return null;
+    bounds.push({ expr, strict: rels[i].length === 1 });
+  }
+  return { domain, unit: tail.unit, bounds };
+}
+
+/**
+ * The value of an expression that does not VARY, or null. Asking whether it
+ * carries free variables is not the same question: (x - 7) + (2 - x) carries x
+ * and is nevertheless -5, which is the whole of why those two bounds contradict.
+ */
+function constantValue(expr: string): number | null {
+  const vars = freeVariables(expr);
+  if (vars === null) return null;
+  const seen: number[] = [];
+  for (const base of SAMPLE_POINTS) {
+    const scope: Record<string, number> = {};
+    vars.forEach((v, j) => (scope[v] = base + j * 0.618));
+    try {
+      const v = evaluate(expr, { ...scope });
+      if (typeof v === 'number' && Number.isFinite(v)) seen.push(v);
+    } catch {
+      continue;
+    }
+    if (vars.length === 0) break;
+  }
+  if (seen.length === 0 || (vars.length > 0 && seen.length < 3)) return null;
+  return seen.every((v) => sameToFloatNoise(v, seen[0])) ? seen[0] : null;
+}
+
+/**
+ * AN IMPOSSIBLE INTERVAL DESCRIBES NOTHING, so it equals nothing — including
+ * another impossible interval. 7 <= x <= 2 is not a set written backwards; it
+ * is a wrong answer, and marking it against its mirror image would award it.
+ *
+ * Two bounds contradict when they cannot both hold: add them, and if the
+ * variable cancels to a negative constant there is no value that satisfies both.
+ */
+function unsatisfiable(ineq: Inequality): boolean {
+  for (let i = 0; i < ineq.bounds.length; i++) {
+    for (let j = i + 1; j < ineq.bounds.length; j++) {
+      const sum = constantValue(`(${ineq.bounds[i].expr}) + (${ineq.bounds[j].expr})`);
+      if (sum === null) continue;
+      if (sum < 0) return true;
+      if (sum === 0 && (ineq.bounds[i].strict || ineq.bounds[j].strict)) return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Two bounds cut at the same place the same way round. "18x - 216 >= 0" and
+ * "x - 12 >= 0" admit exactly the same x, because one is a POSITIVE multiple of
+ * the other; a negative multiple is the same line facing the other way, which
+ * is a different set.
+ */
+function sameBound(a: Bound, b: Bound): boolean {
+  if (a.strict !== b.strict) return false;
+  const va = freeVariables(a.expr);
+  const vb = freeVariables(b.expr);
+  if (va === null || vb === null) return false;
+  const vars = [...new Set([...va, ...vb])];
+  if (vars.length === 0) {
+    const na = constantValue(a.expr);
+    const nb = constantValue(b.expr);
+    return na !== null && nb !== null && na >= 0 === nb >= 0;
+  }
+  const sampled = sampleRatios(a.expr, b.expr, vars);
+  if (sampled === null) return false;
+  const k = constantRatio(sampled);
+  return k !== null && k > 0;
+}
+
+function sameInequality(a: Inequality, b: Inequality): boolean {
+  if (a.domain !== b.domain || a.unit !== b.unit) return false;
+  if (a.bounds.length !== b.bounds.length) return false;
+  if (unsatisfiable(a) || unsatisfiable(b)) return false;
+  const used = new Array<boolean>(b.bounds.length).fill(false);
+  return a.bounds.every((ba) => {
+    const i = b.bounds.findIndex((bb, j) => !used[j] && sameBound(ba, bb));
+    if (i === -1) return false;
+    used[i] = true;
+    return true;
+  });
+}
+
+/**
+ * WORDS, NOT SYMBOLS. "non-square", "right-angled isosceles triangle" and a
+ * sentence that quotes a value are English, and English is compared as words —
+ * mathjs reads "obtuse angle" as a product of eleven letters. A hyphen joins
+ * words far more often than it subtracts, which is what put every one of these
+ * on the expression path, where nothing but string equality could settle them.
+ */
+export function isProse(s: string): boolean {
+  const plain = s
+    .replace(/\$[^$]*\$/g, ' ') // inline mathematics is not prose
+    .replace(/\\[a-z]+\s*\{[^{}]*\}|\\[a-z]+/gi, ' ')
+    .trim();
+  if (plain === '') return false;
+  if (/^[a-z][a-z\s-]*$/i.test(plain)) return true;
+  // A sentence keeps its values, so it is the WORDS that say what it is.
+  const words = plain.replace(/[^a-z\s-]/gi, ' ').split(/[\s-]+/).filter((w) => w.length >= 3);
+  return words.length >= 3;
 }
 
 /** "A = 5x" as the student may answer it, with the name left off. */
@@ -588,6 +785,8 @@ export function canEvaluate(s: string): boolean {
     if (parseNumeric(part) !== null) return true;
     if (parseQuantity(part) !== null) return true;
     if (parseQuantityProduct(part) !== null) return true;
+    if (parseInequality(part) !== null) return true;
+    if (isProse(part)) return true; // words, compared as words
     // The symbolic path, which is the last one that yields a VALUE: past here
     // valueEquivalent has only string and word comparison left. An equation is
     // parsed the way the comparator parses one — as the difference of its
@@ -608,6 +807,14 @@ export function looksMathematical(s: string): boolean {
 
 function valueEquivalent(a: string, b: string, rounding: Rounding | null): boolean {
   const close = (x: number, y: number) => closeEnough(x, y, rounding);
+  // INEQUALITIES FIRST, and decisively: an interval is not a number, and every
+  // path below reads one as the value after its last relation sign. "2 <= x <= 7"
+  // against "7 <= x <= 2" compared as the word set {2, 7, x} and agreed, so a
+  // student could be awarded an interval that holds nothing.
+  const ia = parseInequality(a);
+  const ib = parseInequality(b);
+  if (ia && ib) return sameInequality(ia, ib);
+  if (ia || ib) return false;
   // QUANTITIES FIRST, and decisively: if either side carries a unit the numeric
   // path below must not see it, because that path drops the unit — which is how
   // 72 cm came to equal 72 m. A product of quantities is tried before a single
