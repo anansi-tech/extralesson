@@ -134,6 +134,20 @@ export function toMathExpr(s: string): string {
     // to be read as the English words "left" and "right", so a bracketed
     // expression looked like prose. The commands go; the words do not.
     .replace(/\\left\b|\\right\b/g, '')
+    // The degree sign, spelt the way preClean spells it. This reader is asked
+    // about RAW stored answers too — that is what the \left note below is
+    // about — so a form only preClean understood left "circ" standing as a
+    // word, and a whole equation read as prose on one path and as mathematics
+    // on the other.
+    .replace(/\^\s*\{?\s*\\?circ\s*\}?/g, '°')
+    // A TRIG FUNCTION OF A DEGREE VALUE. mathjs works in radians and the degree
+    // sign is not an operator it knows, so "\tan 30°" reached it as the word
+    // "tan" beside a number and the whole equation read as prose.
+    // Its own brackets or none, never one of each: an optional closing bracket
+    // ate the one that CLOSED THE EXPRESSION, and asDifference handed mathjs a
+    // string with a paren missing.
+    .replace(/\\?(sin|cos|tan|sec|csc|cot)\s*\(\s*(-?[\d.]+)\s*°\s*\)/gi, ' $1(($2) * pi / 180)')
+    .replace(/\\?(sin|cos|tan|sec|csc|cot)\s*(-?[\d.]+)\s*°/gi, ' $1(($2) * pi / 180)')
     // A PRIME IS A COMPLEMENT, not a transpose. mathjs reads C' as the
     // transpose of C, which for a scalar IS C — so a set sampled equal to its
     // own complement, and nothing above could tell them apart.

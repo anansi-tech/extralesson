@@ -798,3 +798,29 @@ describe('set notation says what it means', () => {
     expect(answersEquivalent('{2,4,6}', 'the even numbers')).toBe(false);
   });
 });
+
+describe('a trig function of a degree value', () => {
+  it('is read in degrees, not in radians', () => {
+    expect(answersEquivalent('$\\sin 30^\\circ$', '0.5')).toBe(true);
+    expect(answersEquivalent('$\\sin(30^\\circ)$', '0.5'), 'its own brackets or none').toBe(true);
+    expect(answersEquivalent('$\\tan 45^\\circ$', '1')).toBe(true);
+    expect(answersEquivalent('$\\cos 60^\\circ$', '$\\sin 30^\\circ$')).toBe(true);
+    expect(answersEquivalent('$\\sin 30^\\circ$', '0.6')).toBe(false);
+    expect(answersEquivalent('$6\\tan 30^\\circ$', '$2\\sqrt{3}$'), 'with a coefficient').toBe(true);
+  });
+
+  it('inside an equation, which is where the bank writes it', () => {
+    expect(canEvaluate('$\\tan 30^\\circ = \\frac{QR}{6}$')).toBe(true);
+    expect(answersEquivalent('$\\tan 30^\\circ = \\frac{QR}{6}$', '$\\tan 30^\\circ = \\frac{QR}{6}$')).toBe(true);
+    expect(answersEquivalent('$\\tan 30^\\circ = \\frac{QR}{6}$', '$\\tan 30^\\circ = \\frac{QR}{PQ}$')).toBe(false);
+  });
+
+  it('and the raw form reads the same as the cleaned one', () => {
+    // looksMathematical is asked of a RAW stored answer, so a degree written
+    // ^\circ left "circ" standing as a word — and the same equation read as
+    // prose on one path and as mathematics on the other, which is how a slot
+    // stopped being reported at all.
+    expect(looksMathematical('$\\tan 30^\\circ = \\frac{QR}{6}$')).toBe(true);
+    expect(looksMathematical('the cost of one pineapple'), 'and a name inside a word is not a name').toBe(false);
+  });
+});

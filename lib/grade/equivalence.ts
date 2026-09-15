@@ -700,9 +700,15 @@ function wordsEquivalent(a: string, b: string): boolean {
  *
  * Not every name mathjs owns: `min` and `max` are also units and English, and
  * stripping them made "1 h 15 min" read as algebra — which put a unit answer
- * back in front of a comparison that can never settle it.
+ * back in front of a comparison that can never settle it. `sec` is out for the
+ * same reason, which is why the trig names here stop one short.
+ *
+ * Bounded by LETTERS and not by \b, two ways round. A name inside a word must
+ * not be cut out of it — "cost" without "cos" is a single letter, and a single
+ * letter is mathematics — and a digit is not a word boundary, so \b left the
+ * name in "2\\sqrt{3}" standing and read an exact surd as prose.
  */
-const NAME_WORDS = /sqrt|nthroot|cbrt|frac|pi|text|cdot|times/gi;
+const NAME_WORDS = /(?<![a-z])(?:sqrt|nthroot|cbrt|frac|pi|text|cdot|times|sin|cos|tan|cot|csc)(?![a-z])/gi;
 
 /**
  * WHETHER THE COMPARATOR CAN GET A VALUE OUT OF THIS AT ALL.
