@@ -196,3 +196,28 @@ describe('typing is not mathematics', () => {
     expect(answersEquivalent('4%', '4 m')).toBe(false);
   });
 });
+
+// A rate has three spellings and one meaning, and the papers use all three.
+// An exact area is written in "square units", which had no unit at all: the
+// power was refused on any base the conversion table did not already name.
+describe('the unit grammar covers how the papers actually write units', () => {
+  it('per is division, and so is a negative exponent', () => {
+    expect(both('37.5 km h^{-1}', '37.5 km/h')).toEqual([true, true]);
+    expect(both('1.93 m^2 per litre', '1.93 m^2/l')).toEqual([true, true]);
+    expect(both('20 metres per second', '20 m/s')).toEqual([true, true]);
+    expect(both('37.5 km h^{-1}', '37.5 km'), 'a rate is not a distance').toEqual([false, false]);
+  });
+
+  it('square and cubic resolve on any base, named or not', () => {
+    expect(both('$\\frac{9}{2}$ square units', '4.5 square units')).toEqual([true, true]);
+    expect(both('$(12\\pi-9\\sqrt{3})$ square units', '$12\\pi-9\\sqrt{3}$ square units')).toEqual([true, true]);
+    expect(both('4.5 square units', '4.5 units'), 'an area is not a count').toEqual([false, false]);
+    expect(both('4.5 square units', '4.5 cubic units')).toEqual([false, false]);
+  });
+
+  it('and the conversions that had names keep them', () => {
+    expect(both('336 m²', '336 square metres')).toEqual([true, true]);
+    expect(both('1 m^3', '1000000 cm^3')).toEqual([true, true]);
+    expect(both('336 m', '336 m²')).toEqual([false, false]);
+  });
+});

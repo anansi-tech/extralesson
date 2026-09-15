@@ -75,7 +75,7 @@ function bare(raw: string): string {
     .trim()
     .replace(/^\$+|\$+$/g, '')
     .replace(/\\left\b|\\right\b|\\,|\;|\\!/g, '')
-    .replace(/\\text\{([^{}]*)\}/g, '$1')
+    .replace(/\\(?:text|mathrm)\{([^{}]*)\}/g, '$1')
     .replace(/\\[dt]frac/g, '\\frac')
     .replace(/²/g, '^2')
     .replace(/³/g, '^3')

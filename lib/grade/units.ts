@@ -99,6 +99,15 @@ export function resolveUnit(raw: string): { dimension: string; factor: number } 
   let u = raw.trim().replace(/²/g, '^2').replace(/³/g, '^3').replace(/\./g, '').replace(/\s+/g, ' ');
   if (u === '') return null;
 
+  // A RATE HAS THREE SPELLINGS AND ONE MEANING. "metres per second", "m s^{-1}"
+  // and "m/s" are the same unit; the papers use all three. Both of the first two
+  // are rewritten as the third, so only one of them has to be understood below.
+  const rate = u
+    .replace(/\s+per\s+/g, '/')
+    .replace(/\s*([a-z]+)\s*\^\s*\{?\s*-\s*([123])\s*\}?$/, (_whole, unit: string, power: string) =>
+      `/${unit}${power === '1' ? '' : `^${power}`}`);
+  if (rate !== u) return resolveUnit(rate);
+
   const slash = u.split('/');
   if (slash.length === 2) {
     const top = resolveUnit(slash[0]);
@@ -128,21 +137,25 @@ export function resolveUnit(raw: string): { dimension: string; factor: number } 
   const known = BASE[unit];
   if (known) {
     if (power === 1) return known;
-    // A squared length is an area; a cubed one is a volume. Anything else
-    // raised to a power is not a shape the syllabus asks for.
-    if (known.dimension !== 'length') return null;
-    return {
-      dimension: power === 2 ? 'area' : 'volume',
-      factor: Math.pow(known.factor, power),
-    };
+    // A squared length is an area and a cubed one is a volume, which are the
+    // names the syllabus uses. Every other base keeps its own dimension, raised
+    // — a unit is squared by squaring it, whatever it measures.
+    const dimension = known.dimension === 'length'
+      ? (power === 2 ? 'area' : 'volume')
+      : `${known.dimension}^${power}`;
+    return { dimension, factor: Math.pow(known.factor, power) };
   }
 
   // An unrecognised word is still a unit: "5 pieces" is not "5 kg". It is kept
   // as its own dimension so it matches itself and nothing else. Single letters
   // are excluded — those are algebra, and "3 x" must stay an expression.
+  //
+  // Raising one is the same move: "square units" is a dimensionless area, which
+  // every exact area in the bank is written in, and refusing the power left it
+  // with no unit at all.
   const singular = unit.replace(/s$/, '');
-  if (power === 1 && /^[a-z]{3,}$/.test(singular) && !MATH_WORDS.has(singular)) {
-    return { dimension: `count:${singular}`, factor: 1 };
+  if (/^[a-z]{3,}$/.test(singular) && !MATH_WORDS.has(singular)) {
+    return { dimension: power === 1 ? `count:${singular}` : `count:${singular}^${power}`, factor: 1 };
   }
   return null;
 }

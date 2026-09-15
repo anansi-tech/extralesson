@@ -34,7 +34,10 @@ function preClean(raw: string): string {
     .trim()
     .toLowerCase()
     .replace(/\$+/g, '') // KaTeX delimiters and bare dollar signs
-    .replace(/\\text\{([^{}]*)\}/g, '$1') // \text{ and } wrappers carry no value
+    // \text{ and \mathrm{ are the same wrapper: upright letters round a unit,
+    // carrying no value of their own. Left in, \mathrm{C} was three letters of
+    // prose glued to a number.
+    .replace(/\\(?:text|mathrm)\{([^{}]*)\}/g, '$1')
     // A VECTOR IS ITS SYMBOL. \vec{a}, \mathbf{a} and \underline{a} are three
     // spellings of "this is a vector", and what a mark scheme compares is the
     // expression they sit in: 2b - a and -a + 2b are one answer, 2a - b is a
