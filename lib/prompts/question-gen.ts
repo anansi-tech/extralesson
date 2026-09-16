@@ -275,6 +275,8 @@ ARCHETYPE CONTRACT (hard requirement): ${ARCHETYPE_CONTRACTS[recipe.archetype]}
 
 ${demandRequirements(recipe)}
 
+READING A VALUE OFF THE FIGURE IS WORTH ONE MARK, NEVER TWO. Where the answer is simply visible in the figure — an intercept on a drawn line, a labelled point, a component read off a grid, a value the axis or the table already prints — the whole slot gets ONE rubric row. Do not split it into a row for knowing where to look ("the y-intercept occurs when x=0", "the vertices are where the boundaries meet") and a second row for the value itself: a candidate who reads the line collects both, and the part pays twice for one act. Two marks are for two acts. If the value has to be worked out from what the figure supplies, say the work in the rows and the two marks are earned.
+
 MARK PROFILES (official CXC): every mark is CK (Conceptual Knowledge — recalling/recognising concepts), AK (Algorithmic Knowledge — carrying out procedures), or R (Reasoning — translating, justifying, multi-step problem solving). Aim for a sensible CK/AK/R blend for the difficulty; rubric codes are CK1, AK1, R1... and each rubric row carries the "part_label" it marks.
 
 ${setting}
