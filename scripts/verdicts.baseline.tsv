@@ -184,7 +184,7 @@ accept	8049f4	d.property	"distributive property"	"distributive"	true
 accept	804a04	a.i	"$l=\\frac{g}{4\\pi^2}T^2$"	"$l=\\frac{gT^2}{4\\pi^2}$"	true
 accept	804a04	d.decision	"is safe"	"meets"	false
 accept	804a04	d.decision	"satisfies the safety requirement"	"meets"	false
-accept	804a11	d.ii	"reject"	"rejected"	false
+accept	804a11	d.ii	"reject"	"rejected"	true
 accept	804a29	a.i	"$x^2 - 2x - 8$"	"$x^2-2x-8$"	true
 accept	804a29	c.axis	"$x = 1$"	"$x=1$"	true
 accept	804a31	b.notation	"$C' \\cap P'$"	"$P' \\cap C'$"	true
@@ -410,7 +410,7 @@ accept	d0dcd3	c.i	"$(2.5,2)$"	"$\\left(\\frac{5}{2},2\\right)$"	true
 accept	d0dce8	a.i	"line $AC$"	"$AC$"	true
 accept	d0dce8	a.ii	"order $1$"	"$1$"	true
 accept	d0dd12	a.i	"$-(t-3)^2+12$"	"$12-(t-3)^2$"	true
-accept	d0dd12	b.iii	"downward"	"downwards"	false
+accept	d0dd12	b.iii	"downward"	"downwards"	true
 accept	d0dd12	c.i	"from $t=1$ to $t=5$ hours inclusive"	"$1\\le t\\le5$"	false
 accept	d0dd12	d.ii	"rising"	"increasing"	false
 accept	d0dd1a	c.median_class	"$19.5 \\leq t < 29.5$"	"20-29 min"	false
@@ -767,7 +767,7 @@ attempt	d0dc72	b.i	typed:5120eb19528b1e57	"$34.5$ kg"	true
 attempt	d0dc72	c.i	typed:5baebc7cd5b55797	"$16.8$ kg, $8.4$ kg"	false
 attempt	d0dc72	c.i	typed:e8862b40921d5a01	"$16.8$ kg, $8.4$ kg"	true
 attempt	d0dc72	d.decision	typed:070c160a6299c543	"Yes"	true
-attempt	d0dc72	d.decision	typed:c125d0397b605657	"Yes"	false
+attempt	d0dc72	d.decision	typed:c125d0397b605657	"Yes"	true
 attempt	d0dc7f	a.i	typed:28f0522ff86977e3	"$\\binom{4}{-2}$"	true
 attempt	d0dc7f	a.i	typed:541b58386526dc13	"$\\binom{4}{-2}$"	true
 attempt	d0dc7f	b.i	typed:89274fc6d8d6e386	"$(3,3)$"	true

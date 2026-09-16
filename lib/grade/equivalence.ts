@@ -640,10 +640,38 @@ function mathEquivalent(a: string, b: string, rounding: Rounding | null): boolea
 
 // Generic nouns that never distinguish two answers ("obtuse" vs "obtuse
 // angle" is one answer). Never strip an answer down to nothing.
+/** Words that turn an answer into its opposite, stemmed as contentTokens stems. */
+const NEGATIONS = new Set(['not', 'no', 'non', 'never', 'cannot', 'neither', 'nor', 'none', 'without', 'fals', 'incorrect', 'untru']);
+
 const GENERIC_WORDS = new Set([
   'a', 'an', 'the', 'is', 'are', 'of',
   'angle', 'angles', 'degree', 'degrees', 'unit', 'units',
 ]);
+
+/**
+ * TENSE IS NOT A DIFFERENCE. The gate's adjudicator refused a whole question
+ * because the scheme said "exceeded" and the solver said "exceeds", and a
+ * marker would not. Only the three endings English inflects a verb with, and
+ * a trailing "e" after them, so the three forms of one word meet:
+ *
+ *   exceeds -> exceed   exceeded -> exceed   exceed -> exceed
+ *   decreases, decreased, decreasing -> decreas
+ *
+ * "-ed" is left ON when what remains ends in "e", or "exceed" would stem to
+ * "exce" while "exceeds" stemmed to "exceed" — the bare form is the one a
+ * scheme is most likely to use, and it must not be the odd one out.
+ *
+ * Nothing here touches a prefix, so "safe" and "unsafe" stay two words. The
+ * rule is deliberately short: a real stemmer collapses pairs a mark scheme
+ * means to keep apart.
+ */
+function stem(w: string): string {
+  let out = w;
+  if (out.length > 5 && out.endsWith('ing')) out = out.slice(0, -3);
+  else if (out.length > 4 && out.endsWith('ed') && !out.slice(0, -2).endsWith('e')) out = out.slice(0, -2);
+  else if (out.length > 3 && out.endsWith('s') && !out.endsWith('ss')) out = out.slice(0, -1);
+  return out.endsWith('e') ? out.slice(0, -1) : out;
+}
 
 function contentTokens(s: string): string[] {
   const all = s
@@ -655,8 +683,8 @@ function contentTokens(s: string): string[] {
   // A UNIT'S ABBREVIATION IS THE UNIT. "20-29 min" and "20-29 minutes" are one
   // answer, and an accept list written in the other spelling is not a
   // difference the marker should find.
-  const kept = all.filter((t) => !GENERIC_WORDS.has(t)).map(baseUnit);
-  return kept.length > 0 ? kept : all.map(baseUnit);
+  const kept = all.filter((t) => !GENERIC_WORDS.has(t)).map(baseUnit).map(stem);
+  return kept.length > 0 ? kept : all.map(baseUnit).map(stem);
 }
 
 // Short classification answers must match on content words exactly, so "acute"
@@ -682,7 +710,23 @@ function wordsEquivalent(a: string, b: string): boolean {
 
   // One side adding a qualifier the other omits ("hexagon" / "regular
   // hexagon") is one answer at mark-scheme level. Disjoint answers are not.
-  if (shared === small.size) return true;
+  //
+  // A NEGATION IS NOT A QUALIFIER YOU CAN LEAVE OFF. "not valid" and "valid"
+  // are opposite answers and this rule called them one, because "valid" is a
+  // subset of {not, valid} — so was "not disjoint" against "disjoint", on a
+  // verdict slot where the student's whole answer is which way round it goes.
+  // Only the words the SHORTER side omits are looked at, so "No; x=-1 also
+  // maps to -5" still meets "Incorrect; by symmetry ..." — two negations
+  // worded differently are not in a subset relation at all.
+  if (shared === small.size) {
+    // Unless the SHORTER side is negated already: "No" against "No, it does
+    // not comply" is one answer spelt out, and the extra "not" belongs to the
+    // negation both sides are making. Nine accept entries in the bank read
+    // exactly like that.
+    const smallNegated = [...small].some((t) => NEGATIONS.has(t));
+    const omitted = [...large].filter((t) => !small.has(t));
+    if (smallNegated || !omitted.some((t) => NEGATIONS.has(t))) return true;
+  }
 
   if (ta.length >= 4 || tb.length >= 4) {
     return shared / Math.max(setA.size, setB.size) >= 0.6;

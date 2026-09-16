@@ -824,3 +824,39 @@ describe('a trig function of a degree value', () => {
     expect(looksMathematical('the cost of one pineapple'), 'and a name inside a word is not a name').toBe(false);
   });
 });
+
+/**
+ * TENSE IS NOT A DIFFERENCE, and a NEGATION IS NOT A QUALIFIER. The gate's
+ * adjudicator refused a whole question because the scheme said "exceeded" and
+ * the solver said "exceeds"; separately, the rule that lets one side add a
+ * qualifier the other omits called "not valid" and "valid" one answer.
+ */
+describe('words are compared as words, inflection and all', () => {
+  it('a verb meets its own tenses', () => {
+    expect(answersEquivalent('Exceeded', 'exceeds')).toBe(true);
+    expect(answersEquivalent('exceed', 'exceeds'), 'and the bare form is not the odd one out').toBe(true);
+    expect(answersEquivalent('increases', 'increasing')).toBe(true);
+    expect(answersEquivalent('decreased', 'decreases')).toBe(true);
+    expect(answersEquivalent('The amount exceeded the limit', 'The amount exceeds the limit')).toBe(true);
+  });
+
+  it('but a prefix is not an ending', () => {
+    expect(answersEquivalent('unsafe', 'safe')).toBe(false);
+    expect(answersEquivalent('acute', 'obtuse')).toBe(false);
+    expect(answersEquivalent('less', 'least'), 'and a short word is left alone').toBe(false);
+  });
+
+  it('a negation is not a qualifier the other side may leave off', () => {
+    expect(answersEquivalent('not valid', 'valid')).toBe(false);
+    expect(answersEquivalent('not disjoint', 'disjoint')).toBe(false);
+    expect(answersEquivalent('does not contain', 'contains')).toBe(false);
+  });
+
+  it('unless both sides are negating, and one spells it out', () => {
+    // Nine accept entries in the bank read like this: a bare "No" beside the
+    // same answer with its reason attached.
+    expect(answersEquivalent('No', 'No, it does not comply')).toBe(true);
+    expect(answersEquivalent('No', 'No, Devon is not correct')).toBe(true);
+    expect(answersEquivalent('hexagon', 'regular hexagon'), 'and an ordinary qualifier still is one').toBe(true);
+  });
+});
