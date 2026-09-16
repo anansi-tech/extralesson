@@ -219,6 +219,16 @@ export const circleCenter: VisualTemplate<CircleCenterParams> = {
     for (const a of p.angles) {
       const shown = a.variable ?? (a.value !== undefined ? `${a.value}°` : null);
       if (!shown) continue;
+      // THE EXTERNAL POINT IS A THIRD PLACE AN ANGLE CAN BE. This had two —
+      // the centre, or the circumference — so the angle between two tangents
+      // was described as being at a point ON the circle, one sentence after
+      // saying that point was outside it. A reader given both refuses the
+      // figure for contradicting itself, and the solve gate did: fe84c4 could
+      // not be edited at all while its own description disagreed with itself.
+      if (p.externalPoint && a.vertex === p.externalPoint.label) {
+        out.push(`The angle at ${a.vertex} between the tangents ${a.vertex}${a.arc[0]} and ${a.vertex}${a.arc[1]} is marked ${shown}.`);
+        continue;
+      }
       const where = a.vertex === 'O' ? 'at the centre O' : `at ${a.vertex} on the circumference`;
       out.push(`The angle ${where} subtended by arc ${a.arc[0]}${a.arc[1]} is marked ${shown}.`);
     }
