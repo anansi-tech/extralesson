@@ -150,18 +150,11 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   // "(a)", "a)", " A " and "a" are one label; "a.ii" and "(a)(ii)" are one slot.
   // A formatting difference is not a disagreement, and a whole run was lost to
   // the model echoing the parenthesised form from the parts list.
-  const bareLabel = (l: string) =>
-    l
-      .trim()
-      .toLowerCase()
-      .replace(/[()\[\]]/g, '')
-      .replace(/^([a-j])[.:]?$/, '$1');
-
   const clean = (l: string) =>
     l
       .trim()
       .toLowerCase()
-      .replace(/\)\s*\(/g, '.') // "(a)(ii)" is a.ii, which the line above claimed and did not do
+      .replace(/\)\s*\(/g, '.') // "(a)(ii)" is a.ii, which the comment claimed and the old matcher did not do
       .replace(/[()\[\]]/g, '')
       .replace(/[.:]\s*$/, '');
 
@@ -263,10 +256,17 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   // deriving it, marks a derivation the question never made the student do.
   // Gated at two marks or more: reading a value off a graph is a real one-mark
   // demand and the papers set it constantly.
-  const rubricMarksFor = (ref: string) =>
-    (draft.rubric ?? [])
-      .filter((r) => bareLabel(r.slot_ref) === bareLabel(ref))
+  // A RUBRIC ROW NAMES A SLOT, AND SO DOES A REF — the same resolution the
+  // answers use. Compared as bare strings, a one-slot part's ref is "a" while
+  // its rubric says "a.i", so the marks read as zero and the check below could
+  // never reach its two-mark gate. It has never fired on a one-slot part.
+  const rubricMarksFor = (ref: string) => {
+    const want = refOf(ref);
+    if (want === null) return 0;
+    return (draft.rubric ?? [])
+      .filter((r) => refOf(r.slot_ref) === want)
       .reduce((sum, r) => sum + r.mark_value, 0);
+  };
   // A construct question is exempt: it asks the student to DRAW the figure and
   // then read it, so an answer legible in the figure is the design, not a
   // defect. Its reads are checked against the equation instead.
@@ -277,12 +277,29 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     if (!workByRef.get(clean(p.ref))?.readOff) continue;
     const marks = rubricMarksFor(p.ref);
     if (marks < 2) continue;
-    readOff.push(`(${p.ref}) answer is readable off the figure, but its rubric awards ${marks} marks for deriving it`);
+    readOff.push(`report-only: (${p.ref}) answer is readable off the figure, but its rubric awards ${marks} marks for deriving it`);
   }
-  if (readOff.length > 0) {
-    agrees = false;
-    notes.push(...readOff);
-  }
+  /**
+   * REPORT-ONLY UNTIL THE BANK IS DEALT WITH.
+   *
+   * Fixing rubricMarksFor woke this check on 990 slots it could never see —
+   * 1229 of 1939 answer slots had their rubric marks read as zero, so the
+   * two-mark gate was unreachable for any one-slot part. A sample of the 292
+   * approved questions it can now reach refused 3 in 20, and the verdicts are
+   * real: a "State the y-intercept" paid two marks over a drawn line, a
+   * "determine the days equal to the mean" paid three over a table printing
+   * both. But an unknown number of live questions would become uneditable with
+   * no warning, so it says what it found and refuses nothing.
+   *
+   * NOTE WHAT THIS ALSO TURNS OFF. The check DID refuse where the ref happened
+   * to match already — a slot_ref like "b.ii" on a multi-slot part — and now it
+   * does not. That is a deliberate, temporary loosening, not an oversight.
+   *
+   * And note what report-only means here: notes are printed with a REJECTION,
+   * so on a passing solve these go nowhere a person will see. The list they are
+   * for is gathered by running the bank, not by watching the gate.
+   */
+  notes.push(...readOff);
 
   // Deterministic verification is AUTHORITATIVE where it applies; the solve
   // pass is a second opinion everywhere else, and independent in PROMPT only —

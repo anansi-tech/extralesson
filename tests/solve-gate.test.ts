@@ -139,6 +139,43 @@ describe('independentSolve — a label names a slot, not a string', () => {
   });
 });
 
+/**
+ * THE READ-OFF CHECK, AWAKE AND SILENT. rubricMarksFor compared a rubric's
+ * slot_ref against a ref as bare strings, so a one-slot part's ref "a" never
+ * matched its rubric's "a.i": the marks read as zero and the two-mark gate
+ * below could not be reached. It has never fired on a one-slot part.
+ */
+describe('independentSolve — a rubric row names a slot', () => {
+  const withRubric = (marks: number) => {
+    const d = draft([answerPart('a', '(0, 12)')]);
+    return { ...d, rubric: [{ code: 'AK1', profile: 'AK', criterion: 'Reads it', mark_value: marks, slot_ref: 'a.i', part_label: 'a' }] } as typeof d;
+  };
+
+  it('finds a one-slot part its rubric pays two marks to derive', async () => {
+    solverParts = [{ label: 'a', final_answer: '(0, 12)', read_off_figure: true } as never];
+    const out = await independentSolve(withRubric(2));
+    expect(out.notes.join(' ')).toContain('readable off the figure');
+    expect(out.notes.join(' ')).toContain('awards 2 marks');
+  });
+
+  it('and leaves a one-mark read alone, which the papers set constantly', async () => {
+    solverParts = [{ label: 'a', final_answer: '(0, 12)', read_off_figure: true } as never];
+    expect((await independentSolve(withRubric(1))).notes.join(' ')).not.toContain('readable off');
+  });
+
+  /**
+   * REPORT-ONLY until the bank is dealt with: waking it put the refusal rate at
+   * 3 in 20 across the 292 approved questions it can now reach, and an unknown
+   * number of live questions would become uneditable with no warning.
+   */
+  it('says so and refuses nothing', async () => {
+    solverParts = [{ label: 'a', final_answer: '(0, 12)', read_off_figure: true } as never];
+    const out = await independentSolve(withRubric(3));
+    expect(out.notes.some((n) => n.startsWith('report-only:'))).toBe(true);
+    expect(out.agrees, 'the answers agree; only the rubric is in question').toBe(true);
+  });
+});
+
 describe('independentSolve — prose parts are judged, never string-matched (R1.6 §1)', () => {
   it('sends a show_that part to the judge instead of comparing its restated answer', async () => {
     solverParts = [
