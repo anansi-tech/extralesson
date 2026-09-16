@@ -39,13 +39,18 @@ function draft(parts: QuestionDraft['parts']): QuestionDraft {
     difficulty: 3,
     marks: parts.reduce((s, p) => s + p.marks, 0),
     parts,
-    rubric: parts.map((p, i) => ({
-      code: `AK${i + 1}`,
-      profile: 'AK' as const,
-      criterion: 'Works the part',
-      mark_value: p.marks,
-      part_label: p.label,
-    })),
+    // slot_ref, as every real rubric row carries it: the schema requires it and
+    // the gate resolves a row to a slot through it.
+    rubric: parts.flatMap((p, i) =>
+      p.slots.map((slot, j) => ({
+        code: `AK${i + 1}${j > 0 ? `_${j}` : ''}`,
+        profile: 'AK' as const,
+        criterion: 'Works the part',
+        mark_value: Math.max(1, Math.round(p.marks / p.slots.length)),
+        part_label: p.label,
+        slot_ref: `${p.label}.${slot.label}`,
+      })),
+    ),
     final_answer: parts.map((p) => p.slots[0].answer).join('; '),
     worked_solution: 'Step by step.',
     misconceptions: [],
@@ -400,6 +405,36 @@ describe('independentSolve — a part that demands no new work', () => {
     ];
     verdicts = [{ same: true, reason: 'same derivation' }];
     const out = await independentSolve(withShowThat);
+    expect(out.agrees).toBe(true);
+  });
+});
+
+/**
+ * A PART THAT DEMANDS NOTHING is a part the student cannot get wrong, and no
+ * structural check sees it: depends_on is satisfied by a part that repeats its
+ * own premise. The solver, having just done the work, is the only reader who
+ * knows what each part cost.
+ */
+describe('independentSolve — a part that demands nothing', () => {
+  const noWork = (label: string) => [{ label, final_answer: '5', new_work: false, new_work_note: 'restated from (a)' }];
+
+  it('is refused where the rubric pays for it', async () => {
+    solverParts = noWork('a');
+    const out = await independentSolve(draft([answerPart('a', '5')]));
+    expect(out.agrees).toBe(false);
+    expect(out.notes.join(' ')).toContain('demands no new work');
+  });
+
+  it('and is not, once nothing is paid for it', async () => {
+    // 80498a's cloze restates the x its own part (b) asked for. Deleting that
+    // mark is the fix, and refusing the question anyway left it unapprovable
+    // by the very edit that fixed it: the blank now costs nothing and
+    // completes a sentence.
+    const d = draft([answerPart('a', '5')]);
+    solverParts = noWork('a');
+    const unpaid = { ...d, rubric: [] } as typeof d;
+    const out = await independentSolve(unpaid);
+    expect(out.notes.join(' ')).not.toContain('demands no new work');
     expect(out.agrees).toBe(true);
   });
 });

@@ -239,9 +239,22 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   // structural check sees it: depends_on proves the parts CONNECT, which a (b)
   // restating its own premise satisfies. Only the solver, having just done the
   // work, knows what each part cost.
+  /**
+   * ONLY WHERE A MARK IS PAID FOR IT. The complaint is that the question buys
+   * nothing with a mark, so a slot the rubric does not pay for cannot be making
+   * it: 80498a's cloze restates the x it asked for in (b), and once that mark
+   * is deleted the blank costs nothing and completes a sentence. Refusing it
+   * anyway left the question unapprovable by the very edit that fixed it.
+   */
+  const paidFor = (ref: string) => {
+    const want = refOf(ref);
+    if (want === null) return 0;
+    return (draft.rubric ?? []).filter((r) => refOf(r.slot_ref) === want).reduce((n, r) => n + r.mark_value, 0);
+  };
   const emptyParts: string[] = [];
   for (const p of askable) {
     if ((p.slot.response_mode ?? 'answer') !== 'answer') continue;
+    if (paidFor(p.ref) === 0) continue;
     const work = workByRef.get(clean(p.ref));
     if (work && work.did === false) {
       emptyParts.push(`(${p.ref}) demands no new work${work.why ? `: ${work.why}` : ''}`);
