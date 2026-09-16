@@ -154,6 +154,7 @@ accept	797bb6	c.i	"$-15,\\ 1$"	"$1,\\ -15$"	false
 accept	797bbe	d.ii	"appropriate"	"suitable"	false
 accept	797bbe	d.iii	"higher"	"greater"	false
 accept	797bbe	d.iii	"more"	"greater"	false
+accept	797bda	c.composite	"$x^2-6x$"	"$(x-3)^2-9$"	true
 accept	797bf4	c.congruency	"the same size and shape"	"congruent"	false
 accept	797bf4	c.orientation	"changed"	"reversed"	false
 accept	797bf4	c.orientation	"opposite orientation"	"reversed"	false
@@ -214,6 +215,11 @@ accept	804af7	c.i	"x=-1, x=3"	"-1, 3"	true
 accept	804af7	d.i	"2, 0"	"0, 2"	false
 accept	804af7	d.i	"x = 0, x = 2"	"0, 2"	true
 accept	804af7	d.i	"x=0, x=2"	"0, 2"	true
+accept	804b1c	c.i	"$2$ L per hour"	"$2$ litres per hour"	true
+accept	804b1c	c.i	"$2\\text{ L/h}$"	"$2$ litres per hour"	true
+accept	804b1c	d.i	"$6\\text{ L}$"	"$6$ litres"	true
+accept	804b1c	d.ii	"does not have"	"does not contain"	false
+accept	804b1c	d.ii	"does not hold"	"does not contain"	false
 accept	804b2c	c.i	"\\frac{1}{5}\\begin{pmatrix}3\\\\4\\end{pmatrix}"	"\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}"	false
 accept	8210a8	d.i	"Figure 5"	"5"	true
 accept	8210b8	a.i	"spherical solid"	"sphere"	false
@@ -429,6 +435,8 @@ accept	d0dd1a	d.claim	"untrue"	"false"	false
 accept	d0dd9b	d.i	"\\begin{pmatrix}\\frac{2\\sqrt{29}}{29}\\\\\\frac{5\\sqrt{29}}{29}\\end{pmatrix}"	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	true
 accept	d0ddb0	d.verdict	"Yes, they are parallel"	"Yes"	true
 accept	d0ddb8	c.ii	"PN"	"$PN$"	true
+accept	d16f32	d.verdict	"did exceed"	"exceeded"	true
+accept	d16f32	d.verdict	"yes"	"exceeded"	false
 accept	d16f3a	c.comparison	"the same as"	"equal to"	false
 accept	d16f3a	c.delivery	"must be"	"will"	false
 accept	d16f3a	c.delivery	"must"	"will"	false
@@ -558,6 +566,7 @@ accept	d9c3db	d.decision	"yes"	"Yes"	true
 accept	d9c40e	d.i	"a loss"	"loss"	true
 accept	d9c41e	b.i	"l=g\\left(\\frac{T}{2\\pi}\\right)^2"	"l=\\frac{gT^2}{4\\pi^2}"	true
 accept	e5141b	a.day	"Monday"	"Monday"	true
+accept	fe84af	c.i	"4x^2+4x+1"	"(2x+1)^2"	true
 accept	fe84b7	b.i	"3n + 2"	"T = 3n + 2"	true
 accept	fe84b7	b.i	"T=3n+2"	"T = 3n + 2"	true
 accept	fe84c4	d.verdict	"not a tangent"	"No"	false
@@ -1389,6 +1398,16 @@ reading	797bbe	d.ii	"suitable"	word
 reading	797bbe	d.iii	"greater"	word
 reading	797bbe	d.iii	"higher"	word
 reading	797bbe	d.iii	"more"	word
+reading	797bda	a.axis	"$x=4$"	number
+reading	797bda	a.minimum	"$-9$"	number
+reading	797bda	b.root	"$1$"	number
+reading	797bda	b.underfilled_interval	"$1<x<7$"	inequality
+reading	797bda	c.composite	"$(x-3)^2-9$"	expression
+reading	797bda	c.composite	"$x^2-6x$"	expression
+reading	797bda	c.number_of_roots	"$2$"	number
+reading	797bda	d.calibration_setting	"$5$"	number
+reading	797bda	d.gradient	"$4$"	number
+reading	797bda	d.original_setting	"$6$"	number
 reading	797be2	a.i	"$10$ kg"	number
 reading	797be2	b.i	"$47.5$ kg"	number
 reading	797be2	c.i	"$40 \\le m < 50$"	inequality
@@ -1422,6 +1441,15 @@ reading	797c67	d.i	"\\$528"	number
 reading	797c67	d.ii	"No"	word
 reading	797c67	d.ii	"not"	word
 reading	797c67	d.ii	"unacceptable"	word
+reading	797c83	a.i	"$3,4,5,6,7$"	list
+reading	797c83	a.ii	"1"	number
+reading	797c83	a.iii	"5"	number
+reading	797c83	a.iv	"4"	number
+reading	797c83	a.v	"3"	number
+reading	797c83	a.vi	"2"	number
+reading	797c83	b.i	"5"	number
+reading	797c83	c.i	"5"	number
+reading	797c83	c.ii	"4"	number
 reading	797c8b	a.i	"$42\\text{ cm}^2$"	quantity
 reading	797c8b	b.i	"$168\\text{ m}^2$"	quantity
 reading	797c8b	c.i	"$3.8\\text{ m}^2$"	quantity
@@ -1664,6 +1692,16 @@ reading	804b0f	a.i	"$5x(3x+4)$"	expression
 reading	804b0f	b.i	"$3x+4$"	expression
 reading	804b0f	c.i	"$2$"	number
 reading	804b0f	d.i	"$100$"	number
+reading	804b1c	a.i	"$(0,16)$"	coordinate
+reading	804b1c	b.i	"$(8,0)$"	coordinate
+reading	804b1c	c.i	"$2$ L per hour"	number
+reading	804b1c	c.i	"$2$ litres per hour"	number
+reading	804b1c	c.i	"$2\\text{ L/h}$"	quantity
+reading	804b1c	d.i	"$6$ litres"	number
+reading	804b1c	d.i	"$6\\text{ L}$"	quantity
+reading	804b1c	d.ii	"does not contain"	word
+reading	804b1c	d.ii	"does not have"	word
+reading	804b1c	d.ii	"does not hold"	word
 reading	804b2c	a.i	"\\begin{pmatrix}3\\\\4\\end{pmatrix}"	column_vector
 reading	804b2c	b.i	"500\\text{ m}"	quantity
 reading	804b2c	c.i	"\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}"	column_vector
@@ -2777,6 +2815,14 @@ reading	d16f18	b.i	"\\begin{pmatrix}60&90\\\\48&90\\end{pmatrix}"	matrix
 reading	d16f18	c.i	"\\begin{pmatrix}\\$1 860&\\$3 150\\end{pmatrix}"	matrix
 reading	d16f25	a.i	"\\begin{pmatrix}4\\\\3\\end{pmatrix}"	column_vector
 reading	d16f25	b.i	"\\begin{pmatrix}5\\\\8\\end{pmatrix}"	column_vector
+reading	d16f32	a.i	"16"	number
+reading	d16f32	b.i	"D = n^2"	expression
+reading	d16f32	c.amount	"\\$911.25"	number
+reading	d16f32	c.number	"36"	number
+reading	d16f32	d.percentage	"40.625"	number
+reading	d16f32	d.verdict	"did exceed"	word
+reading	d16f32	d.verdict	"exceeded"	word
+reading	d16f32	d.verdict	"yes"	word
 reading	d16f3a	a.i	"33"	number
 reading	d16f3a	b.i	"55%"	quantity
 reading	d16f3a	c.comparison	"equal to"	word
@@ -3231,6 +3277,12 @@ reading	fbf65e	b.i	"$\\{x \\in \\mathbb{N} : x \\ge 12\\}$"	set
 reading	fe84a7	a.i	"$\\begin{pmatrix}5\\\\3\\end{pmatrix}$"	column_vector
 reading	fe84a7	b.i	"$\\begin{pmatrix}12\\\\11\\end{pmatrix}$"	column_vector
 reading	fe84a7	c.i	"$\\begin{pmatrix}-2\\\\0\\end{pmatrix}$"	column_vector
+reading	fe84af	a.i	"f:x\\rightarrow 2x+1"	expression
+reading	fe84af	b.i	"2x^2+1"	expression
+reading	fe84af	c.i	"(2x+1)^2"	expression
+reading	fe84af	c.i	"4x^2+4x+1"	expression
+reading	fe84af	c.ii	"\\ne"	word
+reading	fe84af	d.i	"30"	number
 reading	fe84b7	a.i	"3"	number
 reading	fe84b7	b.i	"3n + 2"	expression
 reading	fe84b7	b.i	"T = 3n + 2"	expression
