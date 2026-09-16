@@ -46,6 +46,12 @@ describe('a slot whose whole rubric is reading', () => {
 });
 
 describe('the generation recipe', () => {
+  it('tells the writer a cloze blank never restates a value found earlier', () => {
+    const prompt = readFileSync('lib/prompts/question-gen.ts', 'utf8');
+    expect(prompt).toContain('A CLOZE BLANK NEVER RESTATES A VALUE FOUND EARLIER');
+    expect(prompt).toMatch(/asks the candidate to copy their own work across/);
+  });
+
   it('tells the writer a figure read is worth one mark', () => {
     const prompt = readFileSync('lib/prompts/question-gen.ts', 'utf8');
     expect(prompt).toContain('READING A VALUE OFF THE FIGURE IS WORTH ONE MARK, NEVER TWO');
