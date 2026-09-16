@@ -154,7 +154,6 @@ accept	797bb6	c.i	"$-15,\\ 1$"	"$1,\\ -15$"	false
 accept	797bbe	d.ii	"appropriate"	"suitable"	false
 accept	797bbe	d.iii	"higher"	"greater"	false
 accept	797bbe	d.iii	"more"	"greater"	false
-accept	797bda	c.composite	"$x^2-6x$"	"$(x-3)^2-9$"	true
 accept	797bf4	c.congruency	"the same size and shape"	"congruent"	false
 accept	797bf4	c.orientation	"changed"	"reversed"	false
 accept	797bf4	c.orientation	"opposite orientation"	"reversed"	false
@@ -187,7 +186,6 @@ accept	804a04	d.decision	"is safe"	"meets"	false
 accept	804a04	d.decision	"satisfies the safety requirement"	"meets"	false
 accept	804a11	d.ii	"reject"	"rejected"	false
 accept	804a29	a.i	"$x^2 - 2x - 8$"	"$x^2-2x-8$"	true
-accept	804a29	b.ii	"$2, 0$"	"$0, 2$"	false
 accept	804a29	c.axis	"$x = 1$"	"$x=1$"	true
 accept	804a31	b.notation	"$C' \\cap P'$"	"$P' \\cap C'$"	true
 accept	804a31	d.verdict	"No, insufficient vouchers"	"No"	true
@@ -216,11 +214,6 @@ accept	804af7	c.i	"x=-1, x=3"	"-1, 3"	true
 accept	804af7	d.i	"2, 0"	"0, 2"	false
 accept	804af7	d.i	"x = 0, x = 2"	"0, 2"	true
 accept	804af7	d.i	"x=0, x=2"	"0, 2"	true
-accept	804b1c	c.i	"$2$ L per hour"	"$2$ litres per hour"	true
-accept	804b1c	c.i	"$2\\text{ L/h}$"	"$2$ litres per hour"	true
-accept	804b1c	d.i	"$6\\text{ L}$"	"$6$ litres"	true
-accept	804b1c	d.ii	"does not have"	"does not contain"	false
-accept	804b1c	d.ii	"does not hold"	"does not contain"	false
 accept	804b2c	c.i	"\\frac{1}{5}\\begin{pmatrix}3\\\\4\\end{pmatrix}"	"\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}"	false
 accept	8210a8	d.i	"Figure 5"	"5"	true
 accept	8210b8	a.i	"spherical solid"	"sphere"	false
@@ -350,10 +343,6 @@ accept	a9f570	d.i	"yes"	"Yes"	true
 accept	a9f592	d.iii	"No"	"false"	false
 accept	a9f592	d.iii	"incorrect"	"false"	false
 accept	a9f592	d.iii	"not true"	"false"	false
-accept	a9f59f	d.i	"Similar"	"similar"	true
-accept	a9f59f	d.iii	"Congruent"	"congruent"	true
-accept	a9f59f	d.v	"same"	"the same"	true
-accept	a9f59f	d.v	"unchanged"	"the same"	false
 accept	a9f5a7	d.verdict	"YES"	"Yes"	true
 accept	a9f5af	d.ii	"four lines of symmetry and rotational symmetry of order four"	"4 lines of symmetry and rotational symmetry of order 4"	false
 accept	a9f5bc	d.verdict	"No, Devon is not correct"	"No"	true
@@ -399,6 +388,7 @@ accept	c0c045	c.mode	"bus"	"Bus"	true
 accept	c0c05d	d.i	"No, Devon is not correct"	"No"	true
 accept	c0c08e	a.i	"$\\frac{h}{12}$"	"$\\frac{BC}{AB}$"	false
 accept	c0c08e	d.i	"6 of each type"	"6 vertical poles and 6 diagonal poles"	false
+accept	c0c0d6	d.i	"$\\frac{3}{2\\sqrt{3}}$"	"$\\frac{\\sqrt{3}}{2}$"	true
 accept	c0c0ed	b.type	"reflection in a line"	"reflection"	true
 accept	c0c102	c.ii	"$J' \\cap P'$"	"$(J \\cup P)'$"	false
 accept	c29c20	b.ii	"a lower standard deviation"	"the smaller standard deviation"	false
@@ -423,11 +413,18 @@ accept	d0dd12	a.i	"$-(t-3)^2+12$"	"$12-(t-3)^2$"	true
 accept	d0dd12	b.iii	"downward"	"downwards"	false
 accept	d0dd12	c.i	"from $t=1$ to $t=5$ hours inclusive"	"$1\\le t\\le5$"	false
 accept	d0dd12	d.ii	"rising"	"increasing"	false
+accept	d0dd1a	c.median_class	"$19.5 \\leq t < 29.5$"	"20-29 min"	false
+accept	d0dd1a	c.median_class	"20-29 minutes"	"20-29 min"	true
+accept	d0dd1a	c.modal_class	"$19.5 \\leq t < 29.5$"	"20-29 min"	false
+accept	d0dd1a	c.modal_class	"20-29 minutes"	"20-29 min"	true
+accept	d0dd1a	d.claim	"No"	"false"	false
+accept	d0dd1a	d.claim	"false"	"false"	true
+accept	d0dd1a	d.claim	"incorrect"	"false"	false
+accept	d0dd1a	d.claim	"not valid"	"false"	false
+accept	d0dd1a	d.claim	"untrue"	"false"	false
 accept	d0dd9b	d.i	"\\begin{pmatrix}\\frac{2\\sqrt{29}}{29}\\\\\\frac{5\\sqrt{29}}{29}\\end{pmatrix}"	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	true
 accept	d0ddb0	d.verdict	"Yes, they are parallel"	"Yes"	true
 accept	d0ddb8	c.ii	"PN"	"$PN$"	true
-accept	d16f32	d.verdict	"did exceed"	"exceeded"	false
-accept	d16f32	d.verdict	"yes"	"exceeded"	false
 accept	d16f3a	c.comparison	"the same as"	"equal to"	false
 accept	d16f3a	c.delivery	"must be"	"will"	false
 accept	d16f3a	c.delivery	"must"	"will"	false
@@ -469,6 +466,7 @@ accept	d1707c	d.axis	"$x=4$"	"x = 4"	true
 accept	d1707c	e.population_attribute	"a parameter"	"population parameter"	true
 accept	d1707c	e.sample_attribute	"a statistic"	"sample statistic"	true
 accept	d2fe2d	a.i	"$\\frac{9}{16}$"	"$\\frac{9}{16}$"	true
+accept	d2fe37	a.i	"$\\binom{\\frac{3}{5}}{\\frac{4}{5}}$"	"$\\binom{\\frac{3}{5}}{\\frac{4}{5}}$"	true
 accept	d2fe4b	a.i	"$70°$"	"$70°$"	true
 accept	d2fe4b	a.i	"70°"	"$70°$"	true
 accept	d2fe55	a.i	"$21$"	"$21$"	true
@@ -550,13 +548,9 @@ accept	d9c388	b.i	"$\\sqrt{52}$"	"$2\\sqrt{13}$"	true
 accept	d9c3ac	b.i	"2 by 4"	"2 \\times 4"	false
 accept	d9c3ac	c.i	"non-square"	"rectangular"	false
 accept	d9c3c1	d.verdict	"Yes, they do"	"Yes"	true
-accept	d9c3db	a.i	"\\{(1,H),(2,H),(3,H),(4,H),(1,T),(2,T),(3,T),(4,T)\\}"	"\\{(1,H),(1,T),(2,H),(2,T),(3,H),(3,T),(4,H),(4,T)\\}"	true
-accept	d9c3db	b.i	"\\{(2,H),(1,H)\\}"	"\\{(1,H),(2,H)\\}"	true
-accept	d9c3db	d.decision	"yes"	"Yes"	true
 accept	d9c40e	d.i	"a loss"	"loss"	true
 accept	d9c41e	b.i	"l=g\\left(\\frac{T}{2\\pi}\\right)^2"	"l=\\frac{gT^2}{4\\pi^2}"	true
 accept	e5141b	a.day	"Monday"	"Monday"	true
-accept	fe84af	c.i	"4x^2+4x+1"	"(2x+1)^2"	true
 accept	fe84b7	b.i	"3n + 2"	"T = 3n + 2"	true
 accept	fe84b7	b.i	"T=3n+2"	"T = 3n + 2"	true
 accept	fe84c4	d.verdict	"not a tangent"	"No"	false
@@ -642,6 +636,16 @@ attempt	620313	b.iii	typed:284b7e6d788f363f	"600"	true
 attempt	620313	c.i	typed:f369cb89fc627e66	"75"	true
 attempt	620313	d.i	typed:4a44dc15364204a8	"10"	true
 attempt	620313	d.ii	typed:ef2d127de37b942b	"5"	true
+attempt	797ba6	a.i	typed:e7f6c011776e8db7	"$6$"	true
+attempt	797ba6	b.i	typed:bad28f10e8228cf0	"$\\{1,2,3,6\\}$"	true
+attempt	797ba6	c.i	typed:6e17a693818ebd33	"$\\{\\{1,2\\},\\{1,3\\},\\{1,6\\},\\{2,3\\},\\{2,6\\},\\{3,6\\}\\}$"	true
+attempt	797ba6	d.i	typed:4b227777d4dd1fc6	"$4$"	true
+attempt	797bbe	a.i	typed:785f3ec7eb32f30b	"6"	false
+attempt	797bbe	b.i	typed:03b26944890929ff	"85%"	false
+attempt	797bbe	c.i	typed:e7f6c011776e8db7	"8 500 000"	false
+attempt	797bbe	d.i	typed:d4735e3a265e16ee	"$8.5 \\times 10^6$"	false
+attempt	797bbe	d.ii	typed:2c624232cdd22177	"suitable"	false
+attempt	797bbe	d.iii	typed:2c624232cdd22177	"greater"	false
 attempt	821070	a.i	typed:4b227777d4dd1fc6	"16"	false
 attempt	821070	a.i	typed:b17ef6d19c7a5b1e	"16"	true
 attempt	821070	b.i	typed:26d228663f13a885	"\\$400"	true
@@ -819,6 +823,11 @@ attempt	d0dccb	a.v	typed:6b86b273ff34fce1	"1"	true
 attempt	d0dccb	b.mean	typed:46478a9c805793c4	"3.95"	true
 attempt	d0dccb	b.median	typed:4b227777d4dd1fc6	"4"	true
 attempt	d0dccb	b.mode	typed:4b227777d4dd1fc6	"4"	true
+attempt	d0dcf8	a.i	typed:7902699be42c8a8e	"4 000"	false
+attempt	d0dcf8	b.i	typed:4e07408562bedb8b	"400 000"	false
+attempt	d0dcf8	c.i	typed:d4735e3a265e16ee	"328 000"	false
+attempt	d0dcf8	c.ii	typed:19581e27de7ced00	"82"	false
+attempt	d0dcf8	d.i	typed:ef2d127de37b942b	"$3.28 \\times 10^5$"	false
 attempt	d0dd05	a.i	typed:615bdd17c2556f82	"-3"	true
 attempt	d0dd05	b.i	typed:c090fc3999064580	"y = -3x + 36"	true
 attempt	d0dd05	c.i	typed:e629fa6598d73276	"15 m"	true
@@ -831,6 +840,10 @@ attempt	d0dd9b	b.i	typed:7a863135111e7bc0	"\\begin{pmatrix}9\\\\2\\end{pmatrix}"
 attempt	d0dd9b	c.i	typed:6f9ca1f75055df14	"\\begin{pmatrix}7\\\\8\\end{pmatrix}"	true
 attempt	d0dd9b	d.i	typed:0433a100f64f2d1f	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	true
 attempt	d0dd9b	d.i	typed:eed871ab59251c7f	"\\begin{pmatrix}\\frac{2}{\\sqrt{29}}\\\\\\frac{5}{\\sqrt{29}}\\end{pmatrix}"	true
+attempt	d0ddc5	a.i	typed:ef2d127de37b942b	"\\$600"	false
+attempt	d0ddc5	b.i	typed:ef2d127de37b942b	"\\$540"	false
+attempt	d0ddc5	b.ii	typed:ef2d127de37b942b	"$10\\%$"	false
+attempt	d0ddc5	c.i	typed:ef2d127de37b942b	"$12.5\\%$"	false
 attempt	d9c215	a.i	typed:ef2d127de37b942b	"3"	false
 attempt	d9c215	b.i	typed:ef2d127de37b942b	"3n+1"	false
 attempt	d9c215	c.i	typed:ef2d127de37b942b	"17"	false
@@ -1369,16 +1382,6 @@ reading	797bbe	d.ii	"suitable"	word
 reading	797bbe	d.iii	"greater"	word
 reading	797bbe	d.iii	"higher"	word
 reading	797bbe	d.iii	"more"	word
-reading	797bda	a.axis	"$x=4$"	number
-reading	797bda	a.minimum	"$-9$"	number
-reading	797bda	b.root	"$1$"	number
-reading	797bda	b.underfilled_interval	"$1<x<7$"	inequality
-reading	797bda	c.composite	"$(x-3)^2-9$"	expression
-reading	797bda	c.composite	"$x^2-6x$"	expression
-reading	797bda	c.number_of_roots	"$2$"	number
-reading	797bda	d.calibration_setting	"$5$"	number
-reading	797bda	d.gradient	"$4$"	number
-reading	797bda	d.original_setting	"$6$"	number
 reading	797be2	a.i	"$10$ kg"	number
 reading	797be2	b.i	"$47.5$ kg"	number
 reading	797be2	c.i	"$40 \\le m < 50$"	inequality
@@ -1412,15 +1415,6 @@ reading	797c67	d.i	"\\$528"	number
 reading	797c67	d.ii	"No"	word
 reading	797c67	d.ii	"not"	word
 reading	797c67	d.ii	"unacceptable"	word
-reading	797c83	a.i	"$3,4,5,6,7$"	list
-reading	797c83	a.ii	"1"	number
-reading	797c83	a.iii	"5"	number
-reading	797c83	a.iv	"4"	number
-reading	797c83	a.v	"3"	number
-reading	797c83	a.vi	"2"	number
-reading	797c83	b.i	"5"	number
-reading	797c83	c.i	"5"	number
-reading	797c83	c.ii	"4"	number
 reading	797c8b	a.i	"$42\\text{ cm}^2$"	quantity
 reading	797c8b	b.i	"$168\\text{ m}^2$"	quantity
 reading	797c8b	c.i	"$3.8\\text{ m}^2$"	quantity
@@ -1560,7 +1554,6 @@ reading	804a29	a.i	"$x^2 - 2x - 8$"	expression
 reading	804a29	a.i	"$x^2-2x-8$"	expression
 reading	804a29	b.i	"$-5$"	number
 reading	804a29	b.ii	"$0, 2$"	list
-reading	804a29	b.ii	"$2, 0$"	list
 reading	804a29	c.axis	"$x = 1$"	number
 reading	804a29	c.axis	"$x=1$"	number
 reading	804a29	c.minimum	"$-9$"	number
@@ -1664,16 +1657,6 @@ reading	804b0f	a.i	"$5x(3x+4)$"	expression
 reading	804b0f	b.i	"$3x+4$"	expression
 reading	804b0f	c.i	"$2$"	number
 reading	804b0f	d.i	"$100$"	number
-reading	804b1c	a.i	"$(0,16)$"	coordinate
-reading	804b1c	b.i	"$(8,0)$"	coordinate
-reading	804b1c	c.i	"$2$ L per hour"	number
-reading	804b1c	c.i	"$2$ litres per hour"	number
-reading	804b1c	c.i	"$2\\text{ L/h}$"	quantity
-reading	804b1c	d.i	"$6$ litres"	number
-reading	804b1c	d.i	"$6\\text{ L}$"	quantity
-reading	804b1c	d.ii	"does not contain"	word
-reading	804b1c	d.ii	"does not have"	word
-reading	804b1c	d.ii	"does not hold"	word
 reading	804b2c	a.i	"\\begin{pmatrix}3\\\\4\\end{pmatrix}"	column_vector
 reading	804b2c	b.i	"500\\text{ m}"	quantity
 reading	804b2c	c.i	"\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}"	column_vector
@@ -2262,19 +2245,6 @@ reading	a9f592	d.iii	"No"	word
 reading	a9f592	d.iii	"false"	word
 reading	a9f592	d.iii	"incorrect"	word
 reading	a9f592	d.iii	"not true"	word
-reading	a9f59f	a.i	"$\\begin{pmatrix}5\\\\-2\\end{pmatrix}$"	column_vector
-reading	a9f59f	b.i	"$(4,3)$"	coordinate
-reading	a9f59f	b.ii	"$(6,0)$"	coordinate
-reading	a9f59f	c.i	"$(2,0)$"	coordinate
-reading	a9f59f	c.ii	"$(6,6)$"	coordinate
-reading	a9f59f	c.iii	"$(10,0)$"	coordinate
-reading	a9f59f	d.i	"Similar"	word
-reading	a9f59f	d.i	"similar"	word
-reading	a9f59f	d.iii	"Congruent"	word
-reading	a9f59f	d.iii	"congruent"	word
-reading	a9f59f	d.v	"same"	word
-reading	a9f59f	d.v	"the same"	word
-reading	a9f59f	d.v	"unchanged"	word
 reading	a9f5a7	a.i	"$\\begin{pmatrix}4\\\\4\\end{pmatrix}$"	column_vector
 reading	a9f5a7	b.i	"$045°$"	quantity
 reading	a9f5a7	c.i	"$3$"	number
@@ -2310,8 +2280,6 @@ reading	b1a584	d.i	"4 km"	quantity
 reading	b1a58c	a.i	"$x<3$"	inequality
 reading	b1a58c	c.i	"B, C, A"	word
 reading	b1a58c	c.i	"Heat B, Heat C, Heat A"	word
-reading	b1a594	b.i	"$0\\text{ s}$ and $4\\text{ s}$"	word
-reading	b1a594	c.i	"$4\\text{ s}$"	quantity
 reading	b1a59c	a.i	"$3\\text{ m}^3$"	quantity
 reading	b1a59c	c.i	"\\$2400"	number
 reading	b1a59c	d.i	"\\$300"	number
@@ -2598,6 +2566,11 @@ reading	c0c0ad	c.i	"$34.6\\text{ m}$"	quantity
 reading	c0c0ce	a.i	"$x+y\\leq12$"	number
 reading	c0c0ce	b.i	"$(0,0), (12,0), (6,6), (0,10)$"	set
 reading	c0c0ce	c.profits	"$0, \\$840, \\$960, \\$900$"	list
+reading	c0c0d6	a.i	"$\\tan 30^\\circ = \\frac{QR}{6}$"	expression
+reading	c0c0d6	b.i	"$2\\sqrt{3}\\text{ m}$"	quantity
+reading	c0c0d6	c.i	"$4\\sqrt{3}\\text{ m}$"	quantity
+reading	c0c0d6	d.i	"$\\frac{3}{2\\sqrt{3}}$"	expression
+reading	c0c0d6	d.i	"$\\frac{\\sqrt{3}}{2}$"	expression
 reading	c0c0ed	b.type	"reflection in a line"	word
 reading	c0c0ed	b.type	"reflection"	word
 reading	c0c0ed	c.i	"$G(-1,-4), H(7,-4), I(3,-10)$"	expression
@@ -2727,6 +2700,22 @@ reading	d0dd12	c.i	"from $t=1$ to $t=5$ hours inclusive"	word
 reading	d0dd12	d.i	"$2$"	number
 reading	d0dd12	d.ii	"increasing"	word
 reading	d0dd12	d.ii	"rising"	word
+reading	d0dd1a	a.i	"24.5"	number
+reading	d0dd1a	b.i	"28"	number
+reading	d0dd1a	c.median_class	"$19.5 \\leq t < 29.5$"	inequality
+reading	d0dd1a	c.median_class	"20-29 min"	word
+reading	d0dd1a	c.median_class	"20-29 minutes"	word
+reading	d0dd1a	c.modal_class	"$19.5 \\leq t < 29.5$"	inequality
+reading	d0dd1a	c.modal_class	"20-29 min"	word
+reading	d0dd1a	c.modal_class	"20-29 minutes"	word
+reading	d0dd1a	d.claim	"No"	word
+reading	d0dd1a	d.claim	"false"	word
+reading	d0dd1a	d.claim	"incorrect"	word
+reading	d0dd1a	d.claim	"not valid"	word
+reading	d0dd1a	d.claim	"untrue"	word
+reading	d0dd1a	d.interquartile_range	"9.3"	number
+reading	d0dd1a	d.lower_quartile	"18.9"	number
+reading	d0dd1a	d.upper_quartile	"28.3"	number
 reading	d0dd93	a.i	"$9\\text{ m}$"	quantity
 reading	d0dd93	b.i	"$203.0\\text{ m}^2$"	quantity
 reading	d0dd9b	a.x	"2"	number
@@ -2766,14 +2755,6 @@ reading	d16f18	b.i	"\\begin{pmatrix}60&90\\\\48&90\\end{pmatrix}"	matrix
 reading	d16f18	c.i	"\\begin{pmatrix}\\$1 860&\\$3 150\\end{pmatrix}"	matrix
 reading	d16f25	a.i	"\\begin{pmatrix}4\\\\3\\end{pmatrix}"	column_vector
 reading	d16f25	b.i	"\\begin{pmatrix}5\\\\8\\end{pmatrix}"	column_vector
-reading	d16f32	a.i	"16"	number
-reading	d16f32	b.i	"D = n^2"	expression
-reading	d16f32	c.amount	"\\$911.25"	number
-reading	d16f32	c.number	"36"	number
-reading	d16f32	d.percentage	"40.625"	number
-reading	d16f32	d.verdict	"did exceed"	word
-reading	d16f32	d.verdict	"exceeded"	word
-reading	d16f32	d.verdict	"yes"	word
 reading	d16f3a	a.i	"33"	number
 reading	d16f3a	b.i	"55%"	quantity
 reading	d16f3a	c.comparison	"equal to"	word
@@ -2932,6 +2913,7 @@ reading	d1707c	e.sample_attribute	"a statistic"	word
 reading	d1707c	e.sample_attribute	"sample statistic"	word
 reading	d2fe23	a.i	"$AB$ is a square matrix of order $2$."	word
 reading	d2fe2d	a.i	"$\\frac{9}{16}$"	number
+reading	d2fe37	a.i	"$\\binom{\\frac{3}{5}}{\\frac{4}{5}}$"	column_vector
 reading	d2fe4b	a.i	"$70°$"	quantity
 reading	d2fe4b	a.i	"70°"	quantity
 reading	d2fe55	a.i	"$21$"	number
@@ -3183,13 +3165,6 @@ reading	d9c3c1	d.verdict	"Yes, they do"	word
 reading	d9c3c9	a.i	"245°"	quantity
 reading	d9c3c9	b.i	"90°"	quantity
 reading	d9c3c9	c.i	"088°"	quantity
-reading	d9c3db	a.i	"\\{(1,H),(1,T),(2,H),(2,T),(3,H),(3,T),(4,H),(4,T)\\}"	set
-reading	d9c3db	a.i	"\\{(1,H),(2,H),(3,H),(4,H),(1,T),(2,T),(3,T),(4,T)\\}"	set
-reading	d9c3db	b.i	"\\{(1,H),(2,H)\\}"	set
-reading	d9c3db	b.i	"\\{(2,H),(1,H)\\}"	set
-reading	d9c3db	c.i	"\\frac{1}{4}"	number
-reading	d9c3db	d.decision	"Yes"	word
-reading	d9c3db	d.decision	"yes"	word
 reading	d9c3e8	a.i	"$24.8\\text{ m}$"	quantity
 reading	d9c3e8	b.i	"$49.8\\text{ m}$"	quantity
 reading	d9c3e8	c.i	"$19.9°$"	quantity
@@ -3227,12 +3202,6 @@ reading	fbf65e	b.i	"$\\{x \\in \\mathbb{N} : x \\ge 12\\}$"	set
 reading	fe84a7	a.i	"$\\begin{pmatrix}5\\\\3\\end{pmatrix}$"	column_vector
 reading	fe84a7	b.i	"$\\begin{pmatrix}12\\\\11\\end{pmatrix}$"	column_vector
 reading	fe84a7	c.i	"$\\begin{pmatrix}-2\\\\0\\end{pmatrix}$"	column_vector
-reading	fe84af	a.i	"f:x\\rightarrow 2x+1"	expression
-reading	fe84af	b.i	"2x^2+1"	expression
-reading	fe84af	c.i	"(2x+1)^2"	expression
-reading	fe84af	c.i	"4x^2+4x+1"	expression
-reading	fe84af	c.ii	"\\ne"	word
-reading	fe84af	d.i	"30"	number
 reading	fe84b7	a.i	"3"	number
 reading	fe84b7	b.i	"3n + 2"	expression
 reading	fe84b7	b.i	"T = 3n + 2"	expression
