@@ -178,13 +178,21 @@ describe('an account row', () => {
 describe('a refunded student', () => {
   it('stays on the paid list, marked revoked, with the reason, the operator and the date', async () => {
     const p = await payment({ ...(await import('@/lib/payment-state')).transition('refunded') });
+    // RELATIVE TO NOW, or the test rots. The changed list is "the last
+    // CHANGED_WITHIN_DAYS days" measured from Date.now(), and a pinned
+    // 2026-09-09 sat inside that window until the evening of 2026-09-15 and
+    // outside it afterwards — the suite went red on the calendar rather than on
+    // anything anyone wrote.
+    const grantedAt = new Date(Date.now() - 6 * 86_400_000);
+    const revokedAt = new Date(Date.now() - 2 * 86_400_000);
+    const revokedDay = revokedAt.toISOString().slice(0, 10);
     await student('gone@example.com', {
       sitting: SITTING,
-      granted_at: new Date('2026-09-01'),
+      granted_at: grantedAt,
       source: 'stripe',
       note: 'stripe evt_1',
       payment_id: p._id,
-      revoked_at: new Date('2026-09-09'),
+      revoked_at: revokedAt,
       revoked_by: 'ops@example.com',
       revoked_reason: 'refunded, asked in the window',
     });
@@ -197,7 +205,7 @@ describe('a refunded student', () => {
     // NEVER SILENTLY ABSENT: the changed list holds them, under the one word.
     expect(text).toContain('gone@example.com');
     expect(text).toContain('revoked');
-    expect(revokedLineOf(s.access)).toBe('revoked 2026-09-09 by ops@example.com · refunded, asked in the window');
+    expect(revokedLineOf(s.access)).toBe(`revoked ${revokedDay} by ops@example.com · refunded, asked in the window`);
     // And no control offering to refund it again.
     expect(grantControl({ id: String(s._id), email: 'gone@example.com', access: s.access }, p, true)).toBeNull();
     expect(text).not.toContain('The money goes back');
