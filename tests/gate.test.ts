@@ -3,6 +3,7 @@ import { createHmac } from 'node:crypto';
 import mongoose from 'mongoose';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { STUDENT_EMAIL_FIELD } from '@/lib/stripe-webhook';
+import { nextSittingAt } from '@/lib/sittings';
 
 // ROUND_11 Task 6 — THE GATE. Nine cases, against a replica set, because the
 // claim is a transaction and a test that cannot open one would prove nothing.
@@ -25,7 +26,11 @@ vi.mock('@/lib/auth/session', () => ({
 }));
 
 const SECRET = 'whsec_gate';
-const SITTING = 'may-june-2027';
+// THE SITTING IS DERIVED, NOT NAMED. A pinned 'may-june-2027' is a live grant
+// until that sitting's access ends and an expired one afterwards, so these
+// fixtures would have gone red on 2027-07-31 — the suite failing on the
+// calendar rather than on anything anyone wrote, as 801b4f5 already found once.
+const SITTING = nextSittingAt(new Date())!.value;
 let mongod: MongoMemoryReplSet;
 beforeAll(async () => {
   mongod = await MongoMemoryReplSet.create({ replSet: { count: 1 } });

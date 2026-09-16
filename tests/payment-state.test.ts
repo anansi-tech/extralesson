@@ -6,6 +6,13 @@ import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { createHmac } from 'node:crypto';
 import { STUDENT_EMAIL_FIELD } from '@/lib/stripe-webhook';
 import { transition } from '@/lib/payment-state';
+import { nextSittingAt } from '@/lib/sittings';
+
+// THE SITTING IS DERIVED, NOT NAMED. A pinned 'may-june-2027' is a live grant
+// until that sitting's access ends and an expired one afterwards, so these
+// fixtures would have gone red on 2027-07-31 — the suite failing on the
+// calendar rather than on anything anyone wrote, as 801b4f5 already found once.
+const SITTING = nextSittingAt(new Date())!.value;
 
 // ROUND_11 Task 1, ADDITIVE: the payment carries what happened to the money,
 // written beside the old fields. Nothing reads it yet, and every writer that
@@ -52,7 +59,7 @@ const delivery = (eventId: string, sessionId: string, email: string) => {
 
 async function student(email: string, access?: Record<string, unknown>) {
   const { Student } = await import('@/lib/db');
-  return Student.create({ email, name: 'Kiara', exam_sitting: 'may-june-2027', target_modules: [1, 2, 3], password_hash: 'x', syllabus_mode: 'modular-2027', ...(access ? { access } : {}) });
+  return Student.create({ email, name: 'Kiara', exam_sitting: SITTING, target_modules: [1, 2, 3], password_hash: 'x', syllabus_mode: 'modular-2027', ...(access ? { access } : {}) });
 }
 const stateOf = async (eventId: string) => {
   const { Payment } = await import('@/lib/db');
@@ -90,12 +97,12 @@ describe('every writer keeps both representations', () => {
   }, 60000);
 
   it('a payment for a covered sitting writes duplicate, with the reason', async () => {
-    await student('paid@example.com', { sitting: 'may-june-2027', granted_at: new Date(), source: 'manual', note: 'comp · pilot' });
+    await student('paid@example.com', { sitting: SITTING, granted_at: new Date(), source: 'manual', note: 'comp · pilot' });
     const { POST } = await import('@/app/api/stripe/webhook/route');
     await POST(delivery('evt_d', 'cs_d', 'paid@example.com'));
     const p = await stateOf('evt_d');
     expect(p!.state).toBe('duplicate');
-    expect(p!.state_reason).toBe('already had access for may-june-2027');
+    expect(p!.state_reason).toBe(`already had access for ${SITTING}`);
   }, 60000);
 
   it('closing writes closed, the reason and the operator', async () => {

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { nextSittingAt } from '@/lib/sittings';
 
 // ROUND_11 Task 4. One list from one record. A replica set, because granting
 // from the queue runs the claim, and the claim is a transaction.
@@ -35,7 +36,13 @@ beforeEach(async () => {
   redirects.length = 0;
 });
 
-const SITTING = 'may-june-2027';
+// THE SITTING IS DERIVED, NOT NAMED. A pinned 'may-june-2027' is a live grant
+// until that sitting's access ends and an expired one afterwards, so these
+// fixtures would have gone red on 2027-07-31 — the suite failing on the
+// calendar rather than on anything anyone wrote, as 801b4f5 already found once.
+const SITTING = nextSittingAt(new Date())!.value;
+/** Its label, for the screens that print one. */
+const SITTING_LABEL = nextSittingAt(new Date())!.label;
 async function student(email: string, access?: Record<string, unknown>) {
   const { Student } = await import('@/lib/db');
   return Student.create({ email, name: 'Kiara', exam_sitting: SITTING, target_modules: [1, 2, 3], password_hash: 'x', syllabus_mode: 'modular-2027', ...(access ? { access } : {}) });
@@ -235,9 +242,9 @@ describe('/welcome reads the payment', () => {
 
     expect(await Payment.findById(p._id).lean<{ email: string }>().then((r) => r!.email)).toBe('kiara@exampel.test');
     expect(await resolveWelcome('cs_typo', { student_id: String(s._id) })).toEqual({
-      state: 'payer', email: 'kiara@example.com', sitting: 'May/June 2027', studentId: String(s._id),
+      state: 'payer', email: 'kiara@example.com', sitting: SITTING_LABEL, studentId: String(s._id),
     });
-    expect(await resolveWelcome('cs_typo', null)).toEqual({ state: 'other', email: 'kiara@example.com', sitting: 'May/June 2027' });
+    expect(await resolveWelcome('cs_typo', null)).toEqual({ state: 'other', email: 'kiara@example.com', sitting: SITTING_LABEL });
   }, 60000);
 
   it('keeps asking while a payment waits, and stops on one that is closed or not ours', async () => {

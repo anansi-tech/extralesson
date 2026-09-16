@@ -5,14 +5,17 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import mongoose from 'mongoose';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { STUDENT_EMAIL_FIELD } from '@/lib/stripe-webhook';
+import { sittingsOpenAt } from '@/lib/sittings';
 
 // Set before the modules under test are imported: the route reads
 // STRIPE_WEBHOOK_SECRET at call time, but dbConnect caches on MONGODB_URI.
 let mongod: MongoMemoryReplSet;
 const SECRET = 'whsec_ordering_test';
 
-const REGISTERED = 'may-june-2027';
-const OTHER_SITTING = 'jan-2027';
+// DERIVED, NOT NAMED: a pinned sitting is live until its access ends and
+// expired afterwards, so this pair would have gone red on 2027-07-31. The two
+// are simply the next sitting on the books and the one after it.
+const [REGISTERED, OTHER_SITTING] = sittingsOpenAt(new Date());
 
 /** A genuinely signed delivery, built the way Stripe builds one. */
 function signed(body: string, secret = SECRET, skewSeconds = 0) {

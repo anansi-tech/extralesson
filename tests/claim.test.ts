@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import mongoose from 'mongoose';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
+import { nextSittingAt, sittingsOpenAt } from '@/lib/sittings';
 
 // ROUND_11 Task 2. A replica set, not a standalone: the point of this task is
 // the transaction, and a test that cannot run one would prove nothing.
@@ -29,7 +30,13 @@ beforeEach(async () => {
   sent.length = 0;
 });
 
-const SITTING = 'may-june-2027';
+// THE SITTING IS DERIVED, NOT NAMED. A pinned 'may-june-2027' is a live grant
+// until that sitting's access ends and an expired one afterwards, so these
+// fixtures would have gone red on 2027-07-31 — the suite failing on the
+// calendar rather than on anything anyone wrote, as 801b4f5 already found once.
+const SITTING = nextSittingAt(new Date())!.value;
+/** A different open sitting, for the fixtures that need one that is not SITTING. */
+const OTHER_SITTING = sittingsOpenAt(new Date())[1];
 
 async function student(email: string, access?: Record<string, unknown>) {
   const { Student } = await import('@/lib/db');
@@ -108,12 +115,12 @@ describe('claim', () => {
 
   it('a grant for another sitting, or an expired one, is claimable', async () => {
     const { claim } = await import('@/lib/claim');
-    const s = await student('other@example.com', { sitting: 'jan-2028', granted_at: new Date(), source: 'manual', note: 'comp · pilot' });
+    const s = await student('other@example.com', { sitting: OTHER_SITTING, granted_at: new Date(), source: 'manual', note: 'comp · pilot' });
     await waitingPayment('cs_other');
     expect(await claim('cs_other', { id: s._id })).toBe('granted');
     const access = await accessOf('other@example.com');
     expect(access!.sitting).toBe(SITTING);
-    expect(access!.note).toContain('was jan-2028 manual: comp · pilot');
+    expect(access!.note).toContain(`was ${OTHER_SITTING} manual: comp · pilot`);
   }, 60000);
 
   // ONE GENERATION. A note used to carry every grant before it, so the third
@@ -133,11 +140,11 @@ describe('claim', () => {
     expect(third.split(' · was ')).toHaveLength(2);
 
     // And the same through a real claim, not only through the helper.
-    const s = await student('chained@example.com', { sitting: 'jan-2028', granted_at: new Date(), source: 'manual', note: second });
+    const s = await student('chained@example.com', { sitting: OTHER_SITTING, granted_at: new Date(), source: 'manual', note: second });
     await waitingPayment('cs_chain');
     expect(await claim('cs_chain', { id: s._id })).toBe('granted');
     const access = await accessOf('chained@example.com');
-    expect(access!.note).toContain('was jan-2028 manual: comp · pilot seat · 2026-09-01');
+    expect(access!.note).toContain(`was ${OTHER_SITTING} manual: comp · pilot seat · 2026-09-01`);
     expect(access!.note).not.toContain('evt_first');
   }, 60000);
 });

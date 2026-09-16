@@ -4,10 +4,17 @@ import { join } from 'node:path';
 import { PAYMENT_STATES, QUEUE_STATES, REFUNDABLE_FROM, isRefundState, isRefundable } from '@/lib/payment-state';
 import { attemptFor, refundStatusChange, type RefundAttempt } from '@/lib/refund-state';
 import { grantFor, hasAccess } from '@/lib/access';
+import { nextSittingAt, sittingsOpenAt } from '@/lib/sittings';
 
 // ROUND_12 Task 1. The states and the two event rules. Nothing calls any of it
 // yet: this is the shape the refund operation will be built on.
-const SITTING = 'may-june-2027';
+// THE SITTING IS DERIVED, NOT NAMED. A pinned 'may-june-2027' is a live grant
+// until that sitting's access ends and an expired one afterwards, so these
+// fixtures would have gone red on 2027-07-31 — the suite failing on the
+// calendar rather than on anything anyone wrote, as 801b4f5 already found once.
+const SITTING = nextSittingAt(new Date())!.value;
+/** A different open sitting, for the fixtures that need one that is not SITTING. */
+const OTHER_SITTING = sittingsOpenAt(new Date())[1];
 const attempt = (over: Partial<RefundAttempt> = {}): RefundAttempt => ({
   key: 'k1',
   at: new Date('2026-09-09T10:00:00Z'),
@@ -52,7 +59,7 @@ describe('a revoked grant', () => {
   it('is still returned, so a screen can say what happened and when', () => {
     expect(grantFor(revoked, SITTING)).toEqual(revoked);
     expect(grantFor(revoked, SITTING)!.revoked_reason).toBe('refunded');
-    expect(grantFor(revoked, 'jan-2028')).toBeNull();
+    expect(grantFor(revoked, OTHER_SITTING)).toBeNull();
   });
 });
 

@@ -8,6 +8,7 @@ import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { REFUND_DAYS } from '@/lib/access';
 import { reasonWithWindow } from '@/lib/refund';
 import { dashboardUrl, windowOf } from '@/lib/payment-queue';
+import { nextSittingAt } from '@/lib/sittings';
 
 // ROUND_12 Task 4. What an operator sees and what they can do about it.
 vi.mock('@/lib/email', async (orig) => ({
@@ -21,7 +22,11 @@ vi.mock('next/navigation', async (orig) => ({
 }));
 vi.mock('@/lib/auth/session', () => ({ requireAdmin: async () => ({ student_id: 'a', email: 'ops@example.com', role: 'admin' }) }));
 
-const SITTING = 'may-june-2027';
+// THE SITTING IS DERIVED, NOT NAMED. A pinned 'may-june-2027' is a live grant
+// until that sitting's access ends and an expired one afterwards, so these
+// fixtures would have gone red on 2027-07-31 — the suite failing on the
+// calendar rather than on anything anyone wrote, as 801b4f5 already found once.
+const SITTING = nextSittingAt(new Date())!.value;
 const DAY = 86_400_000;
 let mongod: MongoMemoryReplSet;
 beforeAll(async () => {

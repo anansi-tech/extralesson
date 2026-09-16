@@ -159,6 +159,24 @@ this document.
   schema change — access as a list — and every reader of `access`
   follows it.
 
+  **THE TABLE RUNS OUT ON 2031-07-30, and nothing says so yet.**
+  `lib/sittings.ts` ends at May/June 2031; access outlives a sitting by
+  `GRACE_DAYS`, so after that date `sittingsOpenAt` returns nothing,
+  `nextSittingAt` returns null, and the landing page has no sitting to
+  promise. The sitting-passed refusal writes to Help "only while there is
+  none", which is the one path that already expects it — the paywall and
+  the landing copy do not. Found by running the suite with the clock moved
+  forward: `legal.test.ts` destructures two open sittings and throws from
+  2031-02-01, when there is only one left, and two `claim.test.ts`
+  fixtures need a second open sitting and fail from the same day.
+
+  The rows from 2028 are provisional anyway (CXC publishes each year's
+  dates), so the table is meant to be extended rather than to stand for
+  five years. What is missing is not the rows but the BEHAVIOUR when it
+  empties: decide what the landing, the paywall and registration say with
+  no sitting on the books, and the extension becomes routine instead of a
+  cliff.
+
 ## R10
 
 Admin on the chrome: access, review, coverage, topics, disputes, the
