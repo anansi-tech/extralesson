@@ -183,12 +183,12 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
   };
 
   const solByRef = new Map<string, string>();
-  const workByRef = new Map<string, { did?: boolean; why?: string; readOff?: boolean }>();
+  const workByRef = new Map<string, { did?: boolean; why?: string }>();
   for (const p of sol.part_answers) {
     const ref = refOf(p.label);
     if (ref === null) continue; // a bare "d" where d has several slots names nothing
     solByRef.set(ref, p.final_answer);
-    workByRef.set(ref, { did: p.new_work, why: p.new_work_note, readOff: p.read_off_figure });
+    workByRef.set(ref, { did: p.new_work, why: p.new_work_note });
   }
   const figure = figureNotes(sol.figure_check);
   const notes: string[] = [...figure.notes];
@@ -251,55 +251,6 @@ export async function independentSolve(draft: QuestionDraft): Promise<SolveOutco
     agrees = false;
     notes.push(...emptyParts);
   }
-
-  // A slot whose answer the figure already shows, while its rubric pays for
-  // deriving it, marks a derivation the question never made the student do.
-  // Gated at two marks or more: reading a value off a graph is a real one-mark
-  // demand and the papers set it constantly.
-  // A RUBRIC ROW NAMES A SLOT, AND SO DOES A REF — the same resolution the
-  // answers use. Compared as bare strings, a one-slot part's ref is "a" while
-  // its rubric says "a.i", so the marks read as zero and the check below could
-  // never reach its two-mark gate. It has never fired on a one-slot part.
-  const rubricMarksFor = (ref: string) => {
-    const want = refOf(ref);
-    if (want === null) return 0;
-    return (draft.rubric ?? [])
-      .filter((r) => refOf(r.slot_ref) === want)
-      .reduce((sum, r) => sum + r.mark_value, 0);
-  };
-  // A construct question is exempt: it asks the student to DRAW the figure and
-  // then read it, so an answer legible in the figure is the design, not a
-  // defect. Its reads are checked against the equation instead.
-  const constructs = draft.parts.some((p) => p.slots.some((s) => s.response_mode === 'construct'));
-  const readOff: string[] = [];
-  for (const p of constructs ? [] : askable) {
-    if ((p.slot.response_mode ?? 'answer') !== 'answer') continue;
-    if (!workByRef.get(clean(p.ref))?.readOff) continue;
-    const marks = rubricMarksFor(p.ref);
-    if (marks < 2) continue;
-    readOff.push(`report-only: (${p.ref}) answer is readable off the figure, but its rubric awards ${marks} marks for deriving it`);
-  }
-  /**
-   * REPORT-ONLY UNTIL THE BANK IS DEALT WITH.
-   *
-   * Fixing rubricMarksFor woke this check on 990 slots it could never see —
-   * 1229 of 1939 answer slots had their rubric marks read as zero, so the
-   * two-mark gate was unreachable for any one-slot part. A sample of the 292
-   * approved questions it can now reach refused 3 in 20, and the verdicts are
-   * real: a "State the y-intercept" paid two marks over a drawn line, a
-   * "determine the days equal to the mean" paid three over a table printing
-   * both. But an unknown number of live questions would become uneditable with
-   * no warning, so it says what it found and refuses nothing.
-   *
-   * NOTE WHAT THIS ALSO TURNS OFF. The check DID refuse where the ref happened
-   * to match already — a slot_ref like "b.ii" on a multi-slot part — and now it
-   * does not. That is a deliberate, temporary loosening, not an oversight.
-   *
-   * And note what report-only means here: notes are printed with a REJECTION,
-   * so on a passing solve these go nowhere a person will see. The list they are
-   * for is gathered by running the bank, not by watching the gate.
-   */
-  notes.push(...readOff);
 
   // Deterministic verification is AUTHORITATIVE where it applies; the solve
   // pass is a second opinion everywhere else, and independent in PROMPT only —

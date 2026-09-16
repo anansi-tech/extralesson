@@ -52,3 +52,53 @@ describe('the generation recipe', () => {
     expect(prompt).toMatch(/an intercept on a drawn line, a labelled point, a component read off a grid/);
   });
 });
+
+const withFigure = (rows: [string, string, number?][]) => ({
+  visual: { template: 'coordinateGrid' },
+  rubric: rows.map(([code, criterion, m]) => ({ code, slot_ref: 'a.i', mark_value: m ?? 1, criterion })),
+});
+
+describe('work named in prose, with no verb to catch it by', () => {
+  it('a percentage step is work, however the criterion words it', () => {
+    expect(readOffSlots(withFigure([
+      ['CK1', 'Identifies the discount as $15\\%$ of the marked price'], ['AK1', 'CAO \\$360'],
+    ]))).toEqual([]);
+    expect(readOffSlots(withFigure([
+      ['CK1', 'Recognises that the discounted price is $80\\%$ of the marked price'], ['AK1', 'CAO \\$40'],
+    ]))).toEqual([]);
+  });
+
+  it('and so is a named theorem or arithmetic written out', () => {
+    expect(readOffSlots(withFigure([
+      ['CK1', 'Recognises that the angle at the centre is twice the angle at the circumference'], ['AK1', 'CAO $64°$'],
+    ]))).toEqual([]);
+    expect(readOffSlots(withFigure([
+      ['CK1', 'Identifies the total number of mangoes as $18 \\times 24$'], ['AK1', 'CAO 432'],
+    ]))).toEqual([]);
+  });
+});
+
+describe('only the exact shape is refused', () => {
+  it('two rows over a figure — where to look, then the value', () => {
+    const [hit] = readOffSlots(withFigure([
+      ['CK1', 'Identifies that the $y$-intercept occurs when $x=0$'], ['R1', 'CAO $(0,12)$'],
+    ]));
+    expect(hit.shape).toBe('exact');
+    expect(hit.dropCode, 'and it says which row a fix drops').toBe('CK1');
+  });
+
+  it('a read split per component is reported, not refused — there is no row to drop', () => {
+    const [hit] = readOffSlots(withFigure([
+      ['R1', 'Reads the $x$-coordinate of $M$ as $2$'], ['R2', 'Reads the $y$-coordinate of $M$ as $5$'],
+    ]));
+    expect(hit.shape).toBe('other');
+    expect(hit.dropCode).toBeUndefined();
+  });
+
+  it('and the same two rows with no figure are not the exact shape', () => {
+    const [hit] = readOffSlots({ rubric: withFigure([
+      ['CK1', 'Identifies that the $y$-intercept occurs when $x=0$'], ['R1', 'CAO $(0,12)$'],
+    ]).rubric });
+    expect(hit.shape).toBe('other');
+  });
+});

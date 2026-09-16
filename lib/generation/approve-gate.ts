@@ -1,5 +1,6 @@
 import { questionDisagreements } from '@/lib/grade/answer-agrees';
 import { verifyQuestionVisual, verifyStimulusTable } from '@/lib/visuals/verify';
+import { readOffSlots } from './read-off';
 import { independentSolve, type SolveOutcome } from './solve';
 import type { QuestionDraft } from '@/lib/validation/question';
 
@@ -74,6 +75,23 @@ export async function approvalGate(
   }
   if (blind.length > 0) {
     return { ok: false, kind: 'question', reason: `the comparator cannot evaluate this question's own answers, so nothing here can check it: ${blind.map((d) => `(${d.ref}) ${d.failure}`).join(' | ')}` };
+  }
+
+  // A SLOT THAT PAYS TWICE FOR ONE READ, and only where the shape is exactly
+  // that: two rows over a figure, one saying where to look and one giving the
+  // value. Everything else readOffSlots finds is reported by the bank sweep and
+  // refused by nobody — half of that was a rubric naming its work in prose.
+  //
+  // Before the solve, because it costs no model call.
+  const readOff = readOffSlots(draft).filter((s) => s.shape === 'exact');
+  if (readOff.length > 0) {
+    return {
+      ok: false,
+      kind: 'question',
+      reason: `a slot pays twice for reading one value off the figure: ${readOff
+        .map((s) => `(${s.ref}) ${s.marks} marks — ${s.criteria.join(' | ')}`)
+        .join(' · ')}`,
+    };
   }
 
   const outcome = await solve(draft);
