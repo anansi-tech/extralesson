@@ -139,6 +139,26 @@ const QuestionSchema = new Schema({
     recipe: { type: Schema.Types.Mixed }, // R1.5: the 6-field recipe, shown to reviewers
     dedup_score: { type: Number }, // R1.5: max cosine vs approved bank (score only)
   },
+  /**
+   * WHAT THE GATE FOUND LAST TIME IT LOOKED, so a fault that was already there
+   * does not refuse an edit it has nothing to do with. 804a29 could not take a
+   * one-mark correction because a slot in another part accepted a reordered
+   * pair; four more could not because a cloze blank restates a value.
+   *
+   * `failed` names the checks — approve-gate's GateCheck — and a check in it is
+   * REPORTED on the next save rather than refusing it. A check that was passing
+   * and now fails still refuses: that is the edit's own doing.
+   *
+   * Absent means nothing is known to have failed, which is the conservative
+   * reading — every failure blocks, exactly as before this field existed. The
+   * backfill beside this commit runs the deterministic checks over the bank and
+   * records what they find; the solve is not backfilled, because "we have not
+   * asked" is not the same as "we know it was broken".
+   */
+  gate: {
+    at: { type: Date },
+    failed: { type: [String], default: undefined },
+  },
 },
 {
   /**

@@ -9,7 +9,7 @@ vi.mock('@/lib/auth/session', () => ({ requireAdmin: async () => ({ role: 'admin
 vi.mock('next/cache', () => ({ revalidatePath: () => {} }));
 // The gate's solve is a model call. Stubbed, and counted: a save that cannot
 // land must not reach it.
-const gate = vi.hoisted(() => vi.fn(async () => ({ ok: true }) as { ok: boolean; reason?: string; kind?: 'question' | 'model' }));
+const gate = vi.hoisted(() => vi.fn(async () => ({ ok: true, failed: [], tolerated: [] }) as { ok: boolean; reason?: string; kind?: 'question' | 'model'; failed: string[]; tolerated: string[] }));
 vi.mock('@/lib/generation/approve-gate', () => ({ approvalGate: gate }));
 
 let mongod: MongoMemoryServer;
@@ -75,7 +75,7 @@ afterAll(async () => {
 });
 beforeEach(async () => {
   gate.mockClear();
-  gate.mockResolvedValue({ ok: true });
+  gate.mockResolvedValue({ ok: true, failed: [], tolerated: [] });
   await mongoose.connection.collection('questions').deleteMany({});
 });
 
@@ -110,7 +110,7 @@ describe('saving an edit', () => {
 
   it('a refused gate is still reported, and still writes nothing', async () => {
     const id = await question('approved');
-    gate.mockResolvedValue({ ok: false, reason: 'visual verify failed: nope' });
+    gate.mockResolvedValue({ ok: false, reason: 'visual verify failed: nope', failed: ['visual'], tolerated: [] });
 
     expect(await actions.saveQuestionEdit(id, edit(EDITED))).toEqual({ error: 'visual verify failed: nope' });
     expect(await read(id)).toMatchObject({ stem: STEM, status: 'approved' });
@@ -126,7 +126,7 @@ describe('saving an edit', () => {
 describe('a refusal the operator can simply try again', () => {
   it('carries retry when the independent solve is what disagreed', async () => {
     const id = await question('draft');
-    gate.mockResolvedValue({ ok: false, kind: 'model', reason: 'independent solve disagreed — draft: 12 · solver: 13' });
+    gate.mockResolvedValue({ ok: false, kind: 'model', reason: 'independent solve disagreed — draft: 12 · solver: 13', failed: ['solve'], tolerated: [] });
 
     const res = await actions.saveQuestionEdit(id, edit(EDITED));
 
@@ -137,7 +137,7 @@ describe('a refusal the operator can simply try again', () => {
 
   it('and does not when the question itself is at fault', async () => {
     const id = await question('draft');
-    gate.mockResolvedValue({ ok: false, kind: 'question', reason: 'the question disagrees with itself: (a.i) …' });
+    gate.mockResolvedValue({ ok: false, kind: 'question', reason: 'the question disagrees with itself: (a.i) …', failed: ['self_disagreement'], tolerated: [] });
 
     const res = await actions.saveQuestionEdit(id, edit(EDITED));
 

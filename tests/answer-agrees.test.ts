@@ -142,7 +142,8 @@ describe('the approval gate', () => {
   });
 
   it('lets a question through when it agrees with itself', async () => {
-    expect(await approvalGate(draft([slot({ answer: UNIT_VECTOR, accept: [RATIONALISED] })]), solved)).toEqual({ ok: true });
+    expect(await approvalGate(draft([slot({ answer: UNIT_VECTOR, accept: [RATIONALISED] })]), solved))
+      .toEqual({ ok: true, failed: [], tolerated: [] });
   });
 
   it('refuses before it asks a model anything', async () => {
@@ -193,6 +194,52 @@ describe('the approval gate', () => {
       expect(res.ok).toBe(false);
       expect(res.kind, res.reason).toBe('question');
     }
+  });
+
+  /**
+   * A FAULT THAT WAS ALREADY THERE DOES NOT REFUSE AN EDIT IT HAS NOTHING TO DO
+   * WITH. 804a29 could not take a one-mark correction on part (b) because a
+   * slot accepted a reordered pair; four more could not because a cloze blank
+   * restates a value. The gate refused the whole save on a fault the save did
+   * not introduce and did not touch.
+   */
+  it('a question with a known self-disagreement takes an edit to another part', async () => {
+    const broken = draft([
+      slot({ answer: '12', accept: ['13'] }),
+      slot({ label: 'ii', answer: '5' }),
+    ]);
+
+    expect((await approvalGate(broken, solved)).ok, 'refused when nothing is known').toBe(false);
+
+    const res = await approvalGate(broken, solved, ['self_disagreement']);
+    expect(res.ok, 'and allowed when the last run already found it').toBe(true);
+    expect(res.tolerated, 'said, never silently').toContain('self_disagreement');
+    expect(res.failed).toContain('self_disagreement');
+  });
+
+  it('but a fault the edit introduces still refuses', async () => {
+    const res = await approvalGate(draft([slot({ answer: '12', accept: ['13'] })]), solved, ['unparseable']);
+    expect(res.ok).toBe(false);
+    expect(res.reason).toContain('disagrees with itself');
+  });
+
+  it('names every check that failed, not only the one that refused', async () => {
+    const res = await approvalGate(
+      draft([slot({ answer: '12', accept: ['13'] }), slot({ label: 'ii', answer: '$a \\star b = 2a + b$' })]),
+      solved,
+    );
+    expect(res.failed).toEqual(expect.arrayContaining(['self_disagreement', 'unparseable']));
+  });
+
+  it('and the solve is not excused by a result that never recorded it', async () => {
+    const disagreed = async () => ({ agrees: false, draftAnswer: '12', solveAnswer: '13' }) as never;
+    const res = await approvalGate(draft([slot({ answer: '12' })]), disagreed, ['self_disagreement']);
+    expect(res.ok, 'we have not asked is not we know it was broken').toBe(false);
+    expect(res.kind).toBe('model');
+
+    const excused = await approvalGate(draft([slot({ answer: '12' })]), disagreed, ['solve']);
+    expect(excused.ok, 'once a run has recorded it, it reports instead').toBe(true);
+    expect(excused.tolerated).toContain('solve');
   });
 
   it('finds a disagreement in any part, not only the first', async () => {

@@ -7,7 +7,7 @@ import { snapshotLongMath } from '@/lib/admin/long-math-fixture';
 import { requireAdmin } from '@/lib/auth/session';
 import { explainDraftError } from '@/lib/admin/draft-error';
 import { QuestionDraftZ } from '@/lib/validation/question';
-import { approvalGate } from '@/lib/generation/approve-gate';
+import { approvalGate, type GateCheck } from '@/lib/generation/approve-gate';
 import { hintsOrProblems } from '@/lib/generation/hints';
 import { earnableByMethod } from '@/lib/grade/method-marks';
 
@@ -117,10 +117,14 @@ export async function saveQuestionEdit(
   // call; a save that cannot land must not pay for one.
   const _id = IdZ.parse(id);
   await dbConnect();
-  if ((await Question.countDocuments({ _id })) === 0) {
+  const existing = await Question.findById(_id).select('gate').lean<{ gate?: { failed?: string[] } } | null>();
+  if (!existing) {
     return { error: 'Nothing was written: this question is no longer in the bank. Reload the queue.' };
   }
-  const gate = await approvalGate(validated.data);
+  // WHAT THE GATE FOUND LAST TIME. A check that was already failing is reported
+  // and does not refuse this save; one that was passing and now fails does.
+  const known = (existing.gate?.failed ?? []) as GateCheck[];
+  const gate = await approvalGate(validated.data, undefined, known);
   if (!gate.ok) {
     // The independent solve is a model check, and the card has to say so: an
     // operator shown only "disagreed" reads it as a verdict on their edit.
@@ -128,7 +132,10 @@ export async function saveQuestionEdit(
     // the shape it had.
     return gate.kind === 'model' ? { error: gate.reason, retry: true } : { error: gate.reason };
   }
-  const written = await Question.updateOne({ _id }, { $set: { ...validated.data, status: 'draft' } });
+  const written = await Question.updateOne(
+    { _id },
+    { $set: { ...validated.data, status: 'draft', gate: { at: new Date(), failed: gate.failed } } },
+  );
   const gone = refused(written, 'no longer in the bank');
   if (gone) return { error: gone };
   revalidatePath('/admin/review');

@@ -51,7 +51,7 @@ const disagree = async (): Promise<SolveOutcome> => ({
 describe('approvalGate — Edit→Approve re-runs the gates', () => {
   it('passes a consistent edit whose re-solve agrees', async () => {
     const res = await approvalGate(baseDraft, agree);
-    expect(res).toEqual({ ok: true });
+    expect(res).toEqual({ ok: true, failed: [], tolerated: [] });
   });
 
   it('rejects when the independent re-solve disagrees', async () => {
