@@ -14,7 +14,9 @@ const QUESTION = 'The diagram shows triangle ABC, right-angled at B, with AB = 8
 const PART_A = '(a) Calculate the length of BC. [3] Answer to (a) 11.9 ✓ ';
 const PART_B = '(b) Calculate the area of triangle ABC. [2] Answer to (b) 95.2 ✗ You wrote 8 × 11.9 and stopped — the half is missing. Area of a triangle is ½ × base × height. The multiplication earned the method mark; the value did not earn the accuracy mark. ';
 const ROWS_B = '✓ Correct base and height used – Area correct to 1 d.p. — 95.2 is twice the area ';
-const PART_C = '(c) Show that the perimeter is less than 35 cm. [2] Work this one on paper — it is marked from your photo. ';
+// No "work this on paper" once the question is handed in: it is an instruction
+// for work already done, and the rows stand where it stood.
+const PART_C = '(c) Show that the perimeter is less than 35 cm. [2] ';
 // A part earned wholly from the page carries its rows too: the tick and the
 // quoted line sit under (c), exactly where (b)'s sit under (b).
 const ROWS_C = '✓ Perimeter formed from all three sides ✓ Comparison with 35 cm stated ';

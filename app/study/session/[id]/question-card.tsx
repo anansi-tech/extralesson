@@ -786,7 +786,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                     ) : (
                       <p className="mt-1">Give the reason that completes the statement.</p>
                     )}
-                    <p className="mt-1 text-xs text-dim">Write your reason on paper, labelled ({p.label}) ({slot.label}). It is marked from your photo; nothing to type here.</p>
+                    {!feedback && (
+                      <p className="mt-1 text-xs text-dim">Write your reason on paper, labelled ({p.label}) ({slot.label}). It is marked from your photo; nothing to type here.</p>
+                    )}
                   </div>
                 ))}
                 {/* A cloze part's gaps are answer slots too. One strip serves
@@ -904,9 +906,13 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                             : 'The finished graph is shown once you submit your answers'}{' '}
                           — these marks are left out of your estimate.
                         </p>
-                      ) : (
+                      ) : feedback ? null : (
+                        // An instruction only while there is still work to do: once the
+                        // question is marked the rows under the part say what the page
+                        // earned, and telling the student to work it on paper is telling
+                        // them to do what they have done.
                         <p className="mt-2 border-l-3 border-paper-deep bg-[#FFFDF6] px-3 py-1.5 text-[13px] leading-snug text-dim">
-                          {pageRead && !feedback
+                          {pageRead
                             ? 'Marked from your photo — nothing to type.'
                             : readExists
                               ? 'Work this one on paper — it is marked from your photo.'
