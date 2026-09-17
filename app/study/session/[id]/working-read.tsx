@@ -133,7 +133,7 @@ export function WorkingRead({
 /**
  * The marker's rows with their reasons, a tick or a dash in the hand font,
  * and the query control under a withheld row. Under the part they belong to
- * on the marked question, and under the read for a part with nothing typed.
+ * on the marked question, and under the read for a part nothing was written for.
  */
 export function MethodRows({
   method,

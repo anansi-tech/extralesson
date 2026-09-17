@@ -107,6 +107,13 @@ export function TypedInput({
     </span>
   );
 
+  // A SEPARATOR BELONGS TO THE BOX BEFORE IT, so a row that wraps starts with a
+  // box. Printed ahead of its box, the comma of a fourth value that dropped to
+  // the next line sat alone at the left margin, reading as punctuation with
+  // nothing on either side of it.
+  const between = shape === 'roots' ? 'or' : ',';
+  const trailing = (i: number, of: number) => i < of - 1 && punct(between);
+
   if (shape === 'coordinate') {
     return (
       <div className="mt-1 flex items-center gap-1">
@@ -150,12 +157,12 @@ export function TypedInput({
   if (member) {
     const open = shape === 'set' ? '{' : '';
     const close = shape === 'set' ? '}' : '';
+    const groups = Math.ceil(count / size);
     return (
       <div className="mt-1 flex flex-wrap items-center gap-1">
         {open && punct(open)}
-        {Array.from({ length: Math.ceil(count / size) }, (_, g) => (
+        {Array.from({ length: groups }, (_, g) => (
           <span key={g} className="flex items-center gap-1">
-            {g > 0 && punct(',')}
             {punct(member.kind)}
             {Array.from({ length: size }, (_, i) => (
               <span key={i} className="flex items-center gap-1">
@@ -163,6 +170,7 @@ export function TypedInput({
               </span>
             ))}
             {punct(member.kind === '(' ? ')' : '}')}
+            {trailing(g, groups)}
           </span>
         ))}
         {close && punct(close)}
@@ -175,15 +183,14 @@ export function TypedInput({
   // it sat under the row and took thumbs aimed at the last box.
   const open = shape === 'set' ? '{' : '';
   const close = shape === 'set' ? '}' : '';
-  const between = shape === 'roots' ? 'or' : ',';
   return (
     <div className="mt-1">
       <div className="flex flex-wrap items-center gap-1">
         {open && punct(open)}
         {Array.from({ length: count }, (_, i) => (
           <span key={i} className="flex items-center gap-1">
-            {i > 0 && punct(between)}
             {box(i)}
+            {trailing(i, count)}
           </span>
         ))}
         {close && punct(close)}

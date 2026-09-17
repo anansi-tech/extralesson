@@ -513,14 +513,18 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   };
 
   // THE ROWS SIT UNDER THEIR PARTS (ROUND_8 Task 3): the latest marked read's
-  // rows, by the part each code belongs to; a part with nothing typed keeps
-  // its rows under the read. The query control needs the read they came from.
+  // rows, by the part each code belongs to; a part the student never wrote for
+  // keeps its rows under the read. The query control needs the read they came from.
   const lastTake = [...(question.prior?.working ?? [])].reverse().find((w) => w.marked);
   const rows = feedback?.working?.marked ? feedback.working.method : (lastTake?.method ?? []);
   const partOf = new Map(question.rubricCodes.map((r) => [r.code, r.part_label]));
-  const typedParts = new Set(question.parts.filter((p) => p.slots.some((sl) => sl.mode === 'answer')).map((p) => p.label));
+  // A SHOW-THAT IS WRITTEN WORK TOO. Gating on a typed box left a part that is
+  // all show-that saying nothing about what it earned, while a part with one
+  // typed box beside a self-marked one showed both. Only a construction has
+  // nothing under the part, because its marks are left out of the estimate.
+  const writtenParts = new Set(question.parts.filter((p) => p.slots.some((sl) => sl.mode !== 'construct')).map((p) => p.label));
   const rowsFor = (label: string) => rows.filter((m) => partOf.get(m.code) === label);
-  const partRowCodes = new Set(rows.filter((m) => typedParts.has(partOf.get(m.code) ?? '')).map((m) => m.code));
+  const partRowCodes = new Set(rows.filter((m) => writtenParts.has(partOf.get(m.code) ?? '')).map((m) => m.code));
   const rowDispute =
     feedback?.working?.marked && !reviewing
       ? { attemptId: feedback.attemptId, transcriptionId: feedback.working.transcriptionId, disputed: [] as string[] }
@@ -915,7 +919,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                   );
                 })}
                 {/* The marker's rows for this part, with the query control under a withheld one. */}
-                {feedback && typedParts.has(p.label) && (
+                {feedback && writtenParts.has(p.label) && (
                   <MethodRows method={rowsFor(p.label)} dispute={rowDispute} className="mt-3 lg:mt-3.5 lg:gap-2.5" />
                 )}
               </div>

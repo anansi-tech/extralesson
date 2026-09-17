@@ -61,6 +61,36 @@ const illegible = {
   transcriptionId: 't2',
 } as NonNullable<CardQuestion['draft']>['read'];
 
+/**
+ * The widest answer a phone has to hold: four boxes and their printed commas
+ * on one row, which no other state has, and the row that wraps at 390. Its own
+ * export rather than a state: it carries no figure, and STATES is the set the
+ * width test holds the figure and its pill to.
+ */
+export const FOUR_BOX: CardQuestion = {
+  ...base,
+  stemHtml: 'Four samples of rice have masses 2.0 kg, 1.6 kg, 2.2 kg and 1.8 kg.',
+  visualHtml: undefined,
+  figureMinWidth: undefined,
+  figureMaxWidth: undefined,
+  parts: [
+    {
+      label: 'a',
+      promptHtml: 'Write the masses in ascending order.',
+      promptText: 'Write the masses in ascending order.',
+      marks: 2,
+      slots: [{ ref: 'a.i', label: 'i', mode: 'answer', hints: [], symbols: [], input: { shape: 'list', boxes: 4 } }],
+    },
+  ],
+  marks: 2,
+  marksAnswered: 2,
+  rubricCodes: [
+    { code: 'CK1', profile: 'CK', mark_value: 1, part_label: 'a', slot_ref: 'a.i' },
+    { code: 'AK1', profile: 'AK', mark_value: 1, part_label: 'a', slot_ref: 'a.i' },
+  ],
+  draft: { answers: {}, values: { 'a.i': ['1.6', '9/5', '2.0', '11/5'] } },
+};
+
 export const STATES: Record<'unanswered' | 'reading' | 'read' | 'blanks' | 'illegible', CardQuestion> = {
   unanswered: base,
   reading: base,
