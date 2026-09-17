@@ -1,5 +1,5 @@
 import { Attempt, CapturedImage, LineRejected, MarkDispute, Question, Transcription } from '@/lib/db';
-import { markableSlots } from '@/lib/grade/mark';
+import { markableSlots, writtenSlots } from '@/lib/grade/mark';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 import { goldenCaseId } from './import';
 
@@ -114,7 +114,9 @@ export async function buildGoldenBundle(disputeId: string, opts: { withImage?: b
     review: {
       id,
       case: `Field dispute on ${dispute.code}: the student queried "${byMarker.get(dispute.code)?.reason ?? 'a withheld row'}".`,
-      student_answers: splitStoredAnswer(String(attempt.answer), markableSlots(question.parts ?? [])),
+      // Split on every ref the string may carry; slot_refs above stays the
+      // markable list, which is what an eval replays.
+      student_answers: splitStoredAnswer(String(attempt.answer), writtenSlots(question.parts ?? [])),
       marks,
       proposed: true,
     },

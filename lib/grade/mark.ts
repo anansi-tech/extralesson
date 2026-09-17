@@ -119,6 +119,30 @@ export function markableSlots(
   );
 }
 
+/**
+ * EVERY SLOT THE STUDENT WRITES INTO, which is not the same question as which
+ * slots the marker can mark.
+ *
+ * The reader was handed markableSlots, so a "show that" derivation and an
+ * "explain" reason were not among the labels it was told the question had. It
+ * transcribed them anyway — 037c66's part (c) came back at 0.98 confidence,
+ * with the reader noting "the c and d.ii working is legible but those slots
+ * were not included among the requested answer slots" — and left them
+ * unattributed. linesForSlot then carries an unlabelled line onto the PREVIOUS
+ * part, so part (c)'s working was filed under part (b) and part (c) showed the
+ * student nothing to self-mark.
+ *
+ * A construct slot is absent because it is a drawing: checkConstruction looks
+ * at it, and the reader has nothing to transcribe there.
+ */
+export function writtenSlots(
+  parts: { label: string; slots: { label: string; response_mode?: string }[] }[],
+): string[] {
+  return parts.flatMap((p) =>
+    p.slots.filter((s) => (s.response_mode ?? 'answer') !== 'construct').map((s) => `${p.label}.${s.label}`),
+  );
+}
+
 export function markStructured(
   rubric: RubricItem[],
   canonicalAnswer: string,

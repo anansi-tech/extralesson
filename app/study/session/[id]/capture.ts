@@ -13,7 +13,7 @@ import {
   readExpiry,
 } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
-import { markableSlots } from '@/lib/grade/mark';
+import { writtenSlots } from '@/lib/grade/mark';
 import { MAX_BYTES, MAX_TAKES, transcribeWorking, type TranscriptionResult } from '@/lib/grade/transcribe';
 import { constructionRows, alreadyEarnedByMethod } from '@/lib/grade/method-marks';
 import { constructionChecks } from '@/lib/grade/construction';
@@ -116,7 +116,7 @@ export async function readWorking(input: {
 
   let read;
   try {
-    read = await transcribeWorking({ image: bytes, contentType, slotRefs: markableSlots(parts), context: readContext(question) });
+    read = await transcribeWorking({ image: bytes, contentType, slotRefs: writtenSlots(parts), context: readContext(question) });
   } catch {
     // The reservation goes with the failure, so the take is not spent.
     await Transcription.deleteOne({ _id: shell._id });

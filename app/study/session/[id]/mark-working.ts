@@ -1,6 +1,6 @@
 import { renderMathHtml } from '@/lib/katex';
 import { Attempt, CapturedImage, LineRejected, PracticeSession, Question, Transcription } from '@/lib/db';
-import { markableSlots } from '@/lib/grade/mark';
+import { markableSlots, writtenSlots } from '@/lib/grade/mark';
 import { MAX_TAKES, linesForSlot, type TranscriptionResult } from '@/lib/grade/transcribe';
 import { earnableByMethod, constructionRows, alreadyEarnedByMethod, applyFormatDependency, requireEvidence, requireGrounding, oneDecisionPerRow, supportedSlips } from '@/lib/grade/method-marks';
 import { markMethod, type MethodDecision, type Slip } from '@/lib/grade/mark-method';
@@ -107,7 +107,9 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
       const lines = linesForSlot(transcription, part.label).filter((t) => t !== '');
       if (lines.length > 0) workingByPart[part.label] = lines;
     }
-    const confirmed = splitStoredAnswer(String(attempt.answer), markableSlots(question.parts ?? []));
+    // Every ref the stored string may carry: splitStoredAnswer cuts it at the
+    // refs it is given, so an explain slot left out is glued onto the one before.
+    const confirmed = splitStoredAnswer(String(attempt.answer), writtenSlots(question.parts ?? []));
     // A slip is asked for where a TYPED value was wrong and the part has lines: a
     // blank has no line the working went wrong on.
     const slipParts = (question.parts ?? [])

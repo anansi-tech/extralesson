@@ -106,7 +106,9 @@ async function readOnce(args: TranscribeArgs): Promise<TranscribeOutcome> {
               `This is a photograph of a student's handwritten working for one CSEC ` +
               `Mathematics question. Transcribe it. Do not mark it, do not say whether ` +
               `anything is right, and do not solve anything.\n\n` +
-              `The question has these parts and answer slots: ${slotRefs.join(', ')}. ` +
+              `The question has these parts and slots: ${slotRefs.join(', ')}. ` +
+              `Some of them hold WORKING rather than a boxed answer — a "show that" derivation, ` +
+              `an explanation — and those lines are transcribed and attributed like any other. ` +
               `Attribute each line to the part the student wrote beside it. A line with ` +
               `no label of its own belongs to the same part as the line above it. If a ` +
               `line cannot be attributed, set part_label to null.\n\n` +

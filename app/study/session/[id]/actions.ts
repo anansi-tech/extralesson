@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { dbConnect, Attempt, PracticeSession, Question, SessionDraft, Transcription } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
-import { markMcq, markStructuredParts, markableSlots } from '@/lib/grade/mark';
+import { markMcq, markStructuredParts, markableSlots, writtenSlots } from '@/lib/grade/mark';
 import { GRADER_VERSION, questionFingerprint, rubricHash } from '@/lib/grade/version';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { componentsEquivalent, composeAnswer } from '@/lib/grade/components';
@@ -312,7 +312,10 @@ async function feedbackFor(attempt: StoredAttempt, sessionId: string, questionIn
   if (question.kind === 'structured') {
     const parts = question.parts ?? [];
     const refs = markableSlots(parts);
-    const answers = splitStoredAnswer(String(attempt.answer), refs);
+    // EVERY ref the stored string may carry, because splitStoredAnswer cuts it
+    // at the refs it is given: leaving an explain slot out glues its text onto
+    // the answer slot before it. What is MARKED is still markableSlots.
+    const answers = splitStoredAnswer(String(attempt.answer), writtenSlots(parts));
     const marked = markStructuredParts(question.rubric ?? [], parts, refs.map((ref) => ({ ref, answer: answers[ref] ?? '' })));
     partResults = marked.slot_results.map((sr) => {
       const line = sr.correct ? undefined : hintLine(question.rubric ?? [], sr.ref);
