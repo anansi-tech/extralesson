@@ -1,5 +1,6 @@
-// The width fixture by hand; approval takes it on its own (lib/admin/long-math-fixture.ts).
-// Run: pnpm tsx scripts/snapshot-long-math.ts
+// THE ONLY THING THAT WRITES THE WIDTH FIXTURE (lib/admin/long-math-fixture.ts).
+// Run it when the bank has grown enough that the hardest cases have moved, and
+// commit what it writes. Run: pnpm fixture:long-math
 import 'dotenv/config';
 import { dbConnect } from '@/lib/db';
 import { snapshotLongMath } from '@/lib/admin/long-math-fixture';

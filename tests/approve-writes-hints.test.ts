@@ -7,7 +7,9 @@ vi.mock('@/lib/auth/session', () => ({
   requireAdmin: async () => ({ student_id: 'x', email: 'admin@extralesson.invalid', role: 'admin' }),
 }));
 vi.mock('next/cache', () => ({ revalidatePath: () => {} }));
-// The width fixture is a snapshot of the REAL bank: this test's bank must never be written over it.
+// The width fixture is a snapshot of the REAL bank, and approval no longer
+// takes it. The mock stays as the guard: re-add the call and this test's
+// in-memory bank would be written over the checked-in file again.
 const snapshotLongMath = vi.fn(async () => []);
 vi.mock('@/lib/admin/long-math-fixture', () => ({ snapshotLongMath: () => snapshotLongMath() }));
 
@@ -65,8 +67,8 @@ describe('approving a question writes its hints', () => {
     snapshotLongMath.mockClear();
     const res = await approveQuestion(id);
     expect(res.ok).toBe(true);
-    // The bank grew: the width fixture is taken again in the same action.
-    expect(snapshotLongMath).toHaveBeenCalledTimes(1);
+    // Approving edits the bank; it does not edit a file in the checkout.
+    expect(snapshotLongMath).not.toHaveBeenCalled();
     const q = await rows(id);
     expect(q.status).toBe('approved');
     expect(q.rubric.map((r) => [r.code, r.hint])).toEqual([

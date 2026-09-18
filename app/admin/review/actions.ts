@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { dbConnect, Question } from '@/lib/db';
-import { snapshotLongMath } from '@/lib/admin/long-math-fixture';
 import { requireAdmin } from '@/lib/auth/session';
 import { explainDraftError } from '@/lib/admin/draft-error';
 import { QuestionDraftZ } from '@/lib/validation/question';
@@ -53,8 +52,6 @@ export async function approveQuestion(id: string): Promise<ApproveResult> {
   const written = await Question.updateOne({ _id: id, status: 'draft' }, { $set: set });
   const gone = refused(written, 'no longer a draft');
   if (gone) return { ok: false, error: gone, problems: [] };
-  // The bank grew, so the width fixture is taken again; an approval never fails on it.
-  await snapshotLongMath().catch((e) => console.error('[long-math] snapshot failed:', e));
   revalidatePath('/admin/review');
   return { ok: true, hints };
 }

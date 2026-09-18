@@ -5,8 +5,8 @@ import { join } from 'node:path';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-// The width fixture is a snapshot of the approved bank: taken on approval and
-// by hand, written only where there is a checkout to write into.
+// The width fixture is a snapshot of the approved bank: taken by hand, and
+// written only where there is a checkout to write into.
 let mongod: MongoMemoryServer;
 let Question: typeof import('@/lib/db').Question;
 let snapshotLongMath: typeof import('@/lib/admin/long-math-fixture').snapshotLongMath;

@@ -6,9 +6,12 @@ import { Question } from '@/lib/db';
  * THE WIDTH FIXTURE: the bank's hardest cases for a 320px page — the twenty
  * longest worked solutions, the five longest runs of inline math, and every
  * set of three or more items — which tests/long-math-width.test.ts renders.
- * A snapshot of the bank, so it is taken again whenever the bank grows: on
- * approval, and by scripts/snapshot-long-math.ts by hand. On a deployment
- * there is no checkout to write into, and nothing is written.
+ * A snapshot of the bank, and scripts/snapshot-long-math.ts is the only thing
+ * that takes it. Approving a question used to take it too, which meant editing
+ * the bank rewrote a checked-in file: whoever pulled next got a diff they had
+ * not caused, and it sat dirty in the tree for days. A fixture is pinned or it
+ * is not a fixture. On a deployment there is no checkout to write into, and
+ * nothing is written.
  */
 export const LONG_MATH_FIXTURE = join(process.cwd(), 'tests', 'fixtures', 'long-math.json');
 

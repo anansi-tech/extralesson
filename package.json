@@ -15,6 +15,7 @@
     "generate": "tsx scripts/generate.ts",
     "golden:import": "tsx scripts/golden-import.ts",
     "check:figures": "tsx scripts/check-figures.ts",
+    "fixture:long-math": "tsx scripts/snapshot-long-math.ts",
     "check:kill-list": "bash scripts/check-kill-list.sh",
     "prepare": "git config core.hooksPath .githooks || true",
     "admin:provision": "tsx scripts/provision-admin.ts",
