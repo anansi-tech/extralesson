@@ -16,7 +16,7 @@ import { MethodRows, WorkingRead } from './working-read';
 import { Html } from './html';
 import { isPositionalLabel } from '@/lib/notation';
 import { PROFILE_GLOSS } from '@/lib/study/profiles';
-import { fillEmpty, readDiffers } from '@/lib/grade/fill-empty';
+import { fillEmpty } from '@/lib/grade/fill-empty';
 
 export interface CardQuestion {
   sessionId: string;
@@ -75,8 +75,8 @@ export interface CardQuestion {
     /** The page already photographed for this question, before submit. */
     read?: ReadResult & {
       rejected?: number[];
-      /** What the page read for a box that already held something else. */
-      differs?: Record<string, string>;
+      /** Boxes the page disagreed with, and what each held when that was judged. */
+      differs?: Record<string, { read: string; held: string }>;
     };
   };
   prior?: {
@@ -204,11 +204,17 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     const filled = [...Object.keys(prefill?.answers ?? {}), ...Object.keys(prefill?.values ?? {})];
     return filled.length > 0 ? filled : null;
   });
-  // WHAT THE PAGE READ WHERE THE BOX SAYS SOMETHING ELSE. fillEmpty keeps the
+  // WHAT THE PAGE READ WHERE THE BOX DISAGREES WITH IT. fillEmpty keeps the
   // student's entry and the read is dropped; unsaid, that is the same screen as
   // a page which read nothing there, and a box holding one stray character
   // stays wrong with the right value sitting unused in the response.
-  const [readSaid, setReadSaid] = useState<Record<string, string>>(() => question.draft?.read?.differs ?? {});
+  //
+  // WHETHER IT IS A DISAGREEMENT OR ONE ANSWER WRITTEN TWICE IS THE MARKER'S
+  // QUESTION, so it is settled once where marking lives and arrives decided.
+  // "40 ≤ m < 50" from the strip's own key and "40 <= m < 50" from the reader
+  // are the same answer, and the card comparing strings called that a
+  // disagreement — a note over a box that was already right.
+  const [readSaid, setReadSaid] = useState<Record<string, { read: string; held: string }>>(() => question.draft?.read?.differs ?? {});
   const [error, setError] = useState<string>();
   const [pending, startTransition] = useTransition();
   const startedAt = useRef(Date.now());
@@ -331,12 +337,12 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     });
   };
 
-  // Recomputed each render against what the box holds now, so the note goes as
-  // soon as the student types what the page read.
+  // The judgement was made against what the box held then. Once it holds
+  // something else the note is stale, and re-judging needs the marker.
   const pageSaid = (ref: string) => {
-    const read = readSaid[ref];
-    const held = (partAnswers[ref] ?? boxValues[ref]?.join(', ') ?? '').trim();
-    return read && held && held !== read.trim() ? read : undefined;
+    const noted = readSaid[ref];
+    const now = (partAnswers[ref] ?? boxValues[ref]?.join(', ') ?? '').trim();
+    return noted && now === noted.held ? noted.read : undefined;
   };
 
   const filled = (s: { ref: string; input?: unknown }) =>
@@ -697,14 +703,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
           sessionId={question.sessionId}
           questionIndex={question.index}
           initial={question.draft?.read}
-          onRead={(prefill) => {
+          onRead={(prefill, differs) => {
             const applied = fillEmpty(currentEntries.current, prefill);
             setPartAnswers((prev) => ({ ...prev, ...applied.answers }));
             // A multi-box slot fills only when the read split into exactly its
             // boxes, so these arrive whole or not at all.
             setBoxValues((prev) => ({ ...prev, ...applied.values }));
             setReadFilled((prev) => [...new Set([...(prev ?? []), ...Object.keys(applied.answers), ...Object.keys(applied.values)])]);
-            setReadSaid((prev) => ({ ...prev, ...readDiffers(currentEntries.current, prefill) }));
+            setReadSaid((prev) => ({ ...prev, ...differs }));
           }}
           onState={setCapture}
           className={`order-3 ${pageRead ? 'lg:order-first' : 'lg:order-none'}`}

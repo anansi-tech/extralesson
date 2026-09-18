@@ -29,8 +29,7 @@ import { hintLine } from '@/lib/grade/reason';
 import { roundingOf } from '@/lib/grade/rounding';
 import { constructActs, figureGivesAnswer } from '@/lib/targets/construct';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
-import { structuredPrefill } from '@/lib/grade/prefill';
-import { readDiffers } from '@/lib/grade/fill-empty';
+import { readDiffers, structuredPrefill } from '@/lib/grade/prefill';
 import type { ModuleNumber, ProfileMarks } from '@/lib/types';
 
 
@@ -475,7 +474,7 @@ export default async function SessionPage({
   const rejectedLines = latest
     ? (await LineRejected.find({ transcription_id: latest._id }).select('line_index').lean<{ line_index: number }[]>()).map((r) => r.line_index)
     : [];
-  const read: (ReadResult & { rejected: number[]; differs: Record<string, string> }) | undefined = latest
+  const read: (ReadResult & { rejected: number[] }) | undefined = latest
     ? {
         transcription: { lines: latest.lines, answers: latest.answers ?? [], legible: latest.legible },
         transcriptionId: String(latest._id),

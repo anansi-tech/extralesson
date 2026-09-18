@@ -18,7 +18,7 @@ import { MAX_BYTES, MAX_TAKES, transcribeWorking, type TranscriptionResult } fro
 import { constructionRows, alreadyEarnedByMethod } from '@/lib/grade/method-marks';
 import { constructionChecks } from '@/lib/grade/construction';
 import { checkConstruction } from '@/lib/grade/check-construction';
-import { structuredPrefill, type Prefill } from '@/lib/grade/prefill';
+import { readDiffers, structuredPrefill, type Prefill } from '@/lib/grade/prefill';
 import { fillEmpty } from '@/lib/grade/fill-empty';
 import { readContext, type ReadPart } from '@/lib/grade/read-fields';
 import { markWorking, type CaptureResult } from './mark-working';
@@ -50,6 +50,8 @@ export interface ReadResult {
   takesLeft: number;
   /** Single-box slots the read filled, by slot ref. */
   prefill: Prefill;
+  /** Boxes the page disagreed with, and what each held when that was judged. */
+  differs: Record<string, { read: string; held: string }>;
 }
 
 /**
@@ -177,11 +179,18 @@ export async function readWorking(input: {
   const suggested = structuredPrefill(parts, read.transcription);
   const submitted = await Attempt.exists({ session_id: sessionId, question_id: questionId });
   const filled = Object.keys(suggested.answers).length + Object.keys(suggested.values).length;
+  let differs: Record<string, { read: string; held: string }> = {};
   if (filled > 0 && !submitted) {
     const draft = await SessionDraft.findOne({ session_id: sessionId, question_index: questionIndex })
       .select('answers values updated_at')
       .lean<{ _id: unknown; updated_at: Date; answers?: Record<string, string>; values?: Record<string, string[]> } | null>();
-    const applied = fillEmpty({ answers: draft?.answers ?? {}, values: draft?.values ?? {} }, suggested);
+    const saved = { answers: draft?.answers ?? {}, values: draft?.values ?? {} };
+    const applied = fillEmpty(saved, suggested);
+    // Judged against the SAVED draft, because agreement needs the marker and the
+    // marker is not in the browser. A box typed into since the last autosave is
+    // judged against the older value, and the card then drops the note rather
+    // than showing one about an entry that has moved on.
+    differs = readDiffers(saved, suggested);
     const fields = {
       answers: { ...(draft?.answers ?? {}), ...applied.answers },
       values: { ...(draft?.values ?? {}), ...applied.values },
@@ -203,7 +212,7 @@ export async function readWorking(input: {
     }
   }
 
-  return { transcription: read.transcription, transcriptionId: String(stored._id), take, takesLeft: MAX_TAKES - take, prefill: suggested };
+  return { transcription: read.transcription, transcriptionId: String(stored._id), take, takesLeft: MAX_TAKES - take, prefill: suggested, differs };
 }
 
 const RetryZ = z.object({ attemptId: z.string().regex(/^[a-f0-9]{24}$/) });

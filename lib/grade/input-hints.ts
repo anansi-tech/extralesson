@@ -24,33 +24,48 @@ interface Rule {
    * so every promise is asserted against the real marker in the tests.
    */
   promise?: [string, string];
+  /**
+   * WHAT THE KEY PUTS IN THE BOX, as a whole answer. "Tap √" promises the
+   * tapped form marks as well as the typed one, and both go to the real marker.
+   */
+  tapped?: string;
 }
+
+// A HINT BESIDE A KEY DESCRIBES THE KEY. "Type <= for ≤" was printed directly
+// under a button that inserts ≤: the product advising against its own control,
+// and the student left to guess whether the two are the same answer. Where a
+// rule offers keys, its hint names them first and the typing second.
+
 
 // Ordered by how much a student loses for not knowing it.
 const RULES: Rule[] = [
   {
     when: /\\sqrt|√/,
-    hint: 'A square root can be typed sqrt(…) — e.g. sqrt(7) for √7.',
+    hint: 'Tap √ or type sqrt(…) — e.g. sqrt(7) for √7.',
     symbols: ['√'],
     promise: ['sqrt(7)', '$\\sqrt{7}$'],
+    tapped: '√7',
   },
   {
     when: /\\le\b|\\ge\b|\\leq|\\geq|≤|≥/,
-    hint: 'Type <= for ≤ and >= for ≥.',
+    hint: 'Tap ≤ or ≥, or type <= and >=.',
     symbols: ['≤', '≥'],
     promise: ['n<=7', '$n \\le 7$'],
+    tapped: 'n≤7',
   },
   {
     when: /\\pi\b|π/,
-    hint: 'Pi can be typed pi — e.g. 3pi for 3π.',
+    hint: 'Tap π or type pi — e.g. 3pi for 3π.',
     symbols: ['π'],
     promise: ['3pi', '$3\\pi$'],
+    tapped: '3π',
   },
   {
     when: /\^\s*\{?\s*\\circ|°/,
-    hint: 'The degree sign is optional — e.g. 47 or 47°.',
+    hint: 'Tap ° or leave it out — e.g. 47 and 47° are both accepted.',
     symbols: ['°'],
     promise: ['47', '$47^\\circ$'],
+    tapped: '47°',
   },
   // The example carries "e.g." and an unroundable number on purpose: a student
   // read a tidy "20%" here as the answer they were being told to give.
@@ -68,10 +83,15 @@ const RULES: Rule[] = [
   { when: /\^\s*\{?\s*[23]\}?|²|³/, symbols: ['²', '³'] },
 ];
 
+/** Every hint that sits beside keys, for the test that holds it to them. */
+export const HINT_KEYS: { hint: string; symbols: string[] }[] = RULES.filter(
+  (r) => r.hint && r.symbols?.length,
+).map((r) => ({ hint: r.hint!, symbols: r.symbols! }));
+
 /** Every promise the hints make, for the test that holds them to the marker. */
-export const HINT_PROMISES: { hint: string; typed: string; canonical: string }[] = RULES.filter(
+export const HINT_PROMISES: { hint: string; typed: string; canonical: string; tapped?: string }[] = RULES.filter(
   (r) => r.promise,
-).map((r) => ({ hint: r.hint ?? '', typed: r.promise![0], canonical: r.promise![1] }));
+).map((r) => ({ hint: r.hint ?? '', typed: r.promise![0], canonical: r.promise![1], tapped: r.tapped }));
 
 /**
  * The unit is the SLOT'S OWN — a hint under a mass answer talking about

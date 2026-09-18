@@ -1,3 +1,4 @@
+import { answersEquivalentAny } from './equivalence';
 import { isMultiValue, readInputShape } from './input-shape';
 import { normaliseSlotRef, readFields, type ReadPart } from './read-fields';
 import { groupedEntries } from './grouped-entries';
@@ -48,5 +49,31 @@ export function structuredPrefill(
     if (field.shape && isMultiValue(field.shape)) out.values[ref] = entries;
     else out.answers[ref] = entries[0];
   }
+  return out;
+}
+
+/**
+ * WHAT THE READ HAD FOR A BOX THAT DISAGREES WITH IT. fillEmpty keeps the
+ * student's entry and says nothing about what it kept it over, so a box seeded
+ * with one stray character looked exactly like a box the page never read.
+ *
+ * The test is AGREEMENT, not sameness: "40 ≤ m < 50" typed with the strip's own
+ * key and "40 <= m < 50" from the reader are one answer written two ways, and a
+ * note over that is a false alarm on a box that is already right. fillEmpty
+ * keeps its own string test — never overwriting is about ownership, not
+ * agreement, and it must hold whatever the box says.
+ *
+ * Each entry carries what the page read AND what the box held when it was
+ * judged, so the card can drop a note the moment that box changes without
+ * needing the marker in the browser.
+ */
+export function readDiffers(current: Prefill, suggested: Prefill): Record<string, { read: string; held: string }> {
+  const out: Record<string, { read: string; held: string }> = {};
+  const note = (ref: string, read: string) => {
+    const held = (current.answers[ref] ?? current.values[ref]?.join(', ') ?? '').trim();
+    if (held && !answersEquivalentAny(held, read)) out[ref] = { read, held };
+  };
+  for (const [ref, value] of Object.entries(suggested.answers)) note(ref, value);
+  for (const [ref, values] of Object.entries(suggested.values)) note(ref, values.join(', '));
   return out;
 }

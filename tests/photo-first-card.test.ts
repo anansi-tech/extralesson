@@ -32,7 +32,9 @@ describe('the photo-first card', () => {
   it('reads before submit and marks after it, through one control', () => {
     expect(photo).toMatch(/attemptId\s*\?\s*await captureWorking/);
     expect(photo).toMatch(/:\s*await readWorking/);
-    expect(photo).toMatch(/if \('prefill' in res && res\.transcription\.legible\) onRead\?\.\(res\.prefill\)/);
+    // The read hands back what it suggests AND which boxes it disagreed with;
+    // the card judges neither, because agreement is the marker's to decide.
+    expect(photo).toMatch(/if \('prefill' in res && res\.transcription\.legible\) onRead\?\.\(res\.prefill, res\.differs \?\? \{\}\)/);
     expect(photo).toContain("'Take it again'");
     expect(photo).toContain('Check the answer boxes below. If we misread your working, tell us:');
   });

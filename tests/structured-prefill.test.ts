@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFields, readContext, normaliseSlotRef, type ReadPart } from '@/lib/grade/read-fields';
-import { structuredPrefill } from '@/lib/grade/prefill';
-import { fillEmpty, readDiffers } from '@/lib/grade/fill-empty';
+import { readDiffers, structuredPrefill } from '@/lib/grade/prefill';
+import { fillEmpty } from '@/lib/grade/fill-empty';
 
 const parts: ReadPart[] = [
   { label: 'a', prompt: 'Complete the statement.', statement: 'The frame has {} line of symmetry and order {}.', slots: [{ label: 'i', answer: '1' }, { label: 'ii', answer: '1' }] },
@@ -76,19 +76,30 @@ describe('photo entries have a form, not just a label', () => {
 
   // What fillEmpty kept the student's entry OVER. A drop said nothing, so a box
   // holding one stray character looked exactly like a box the page never read.
-  it('names every box the read disagreed with, and what it read there', () => {
+  it('names every box the read disagreed with, what it read, and what the box held', () => {
     expect(readDiffers({ answers: { 'a.i': '2' }, values: { 'c.i': ['9', ''] } }, {
       answers: { 'a.i': '1', 'a.ii': '1' }, values: { 'c.i': ['4', '5'] },
-    })).toEqual({ 'a.i': '1', 'c.i': '4, 5' });
+    })).toEqual({ 'a.i': { read: '1', held: '2' }, 'c.i': { read: '4, 5', held: '9,' } });
   });
-  it('says nothing about an empty box, which the read fills, or one that already agrees', () => {
-    expect(readDiffers({ answers: { 'a.i': '', 'a.ii': '  1  ' }, values: {} }, {
-      answers: { 'a.i': '1', 'a.ii': '1' }, values: {} },
-    )).toEqual({});
+  it('says nothing about an empty box, which the read fills instead', () => {
+    expect(readDiffers({ answers: { 'a.i': '' }, values: {} }, { answers: { 'a.i': '1' }, values: {} })).toEqual({});
   });
   it('reports a gap seeded with one character against the value the page held', () => {
     // 797be2 (c.i): the strip's own key in the box, "40 <= m < 50" on the page.
     expect(readDiffers({ answers: { 'c.i': '≤' }, values: {} }, { answers: { 'c.i': '40 <= m < 50' }, values: {} }))
-      .toEqual({ 'c.i': '40 <= m < 50' });
+      .toEqual({ 'c.i': { read: '40 <= m < 50', held: '≤' } });
+  });
+
+  // THE TEST IS AGREEMENT, NOT SAMENESS. The strip's own key writes ≤ while the
+  // reader writes <=, by the conventions each is given; they are one answer, and
+  // a note over that is a false alarm on a box that is already right.
+  it('says nothing when the box and the page are the same answer spelt differently', () => {
+    expect(readDiffers({ answers: { 'c.i': '40 ≤ m < 50' }, values: {} }, { answers: { 'c.i': '40 <= m < 50' }, values: {} })).toEqual({});
+    expect(readDiffers({ answers: { 'a.i': '0.875' }, values: {} }, { answers: { 'a.i': '7/8' }, values: {} })).toEqual({});
+    expect(readDiffers({ answers: { 'a.i': '  47  ' }, values: {} }, { answers: { 'a.i': '47' }, values: {} })).toEqual({});
+  });
+  // fillEmpty keeps its own string test: never overwriting is about ownership.
+  it('leaves fillEmpty judging occupancy, not agreement', () => {
+    expect(fillEmpty({ answers: { 'c.i': '40 ≤ m < 50' }, values: {} }, { answers: { 'c.i': '40 <= m < 50' }, values: {} })).toEqual({ answers: {}, values: {} });
   });
 });

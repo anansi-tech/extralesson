@@ -116,18 +116,20 @@ describe('the question card, four states', () => {
   // is right, and the box now says what the page read instead of leaving the
   // screen identical to one where the page read nothing there.
   describe('a box the read disagreed with', () => {
-    const readOf = (differs: Record<string, string>) =>
+    // What the page read for a box, and what that box held when the server
+    // judged them to disagree.
+    const readOf = (differs: Record<string, { read: string; held: string }>) =>
       ({ ...STATES.read.draft!.read!, prefill: { answers: {}, values: {} }, differs });
 
     it('says what the page read, under a stacked box', () => {
-      const q = { ...STATES.unanswered, draft: { answers: { 'a.i': '≤' }, values: {}, read: readOf({ 'a.i': '11.9' }) } };
+      const q = { ...STATES.unanswered, draft: { answers: { 'a.i': '≤' }, values: {}, read: readOf({ 'a.i': { read: '11.9', held: '≤' } }) } };
       expect(visibleText(renderCard(q))).toContain('Your page reads 11.9 — left as you typed it.');
     });
 
     it('says it under the statement for a cloze gap, which has no room beside it', () => {
       // 797be2 (c.i): a tap on the strip seeded the first gap, and the read of
       // it — "40 <= m < 50" — was dropped for a box that was no longer empty.
-      const q = { ...CLOZE_REASON, draft: { answers: { 'd.angle': '≤' }, values: {}, read: readOf({ 'd.angle': '40 <= m < 50' }) } };
+      const q = { ...CLOZE_REASON, draft: { answers: { 'd.angle': '≤' }, values: {}, read: readOf({ 'd.angle': { read: '40 <= m < 50', held: '≤' } }) } };
       const t = visibleText(renderCard(q));
       expect(t).toContain('Your page reads 40 <= m < 50 — left as you typed it.');
       // Under the statement it completes, before the reason's prompt.
@@ -135,8 +137,9 @@ describe('the question card, four states', () => {
       expect(t.indexOf('Your page reads')).toBeLessThan(t.indexOf('Explain why'));
     });
 
-    it('goes as soon as the box holds what the page read', () => {
-      const q = { ...CLOZE_REASON, draft: { answers: { 'd.angle': '40 <= m < 50' }, values: {}, read: readOf({ 'd.angle': '40 <= m < 50' }) } };
+    it('goes as soon as the box stops holding what was judged', () => {
+      const judged = readOf({ 'd.angle': { read: '40 <= m < 50', held: '≤' } });
+      const q = { ...CLOZE_REASON, draft: { answers: { 'd.angle': '40 <= m < 50' }, values: {}, read: judged } };
       expect(visibleText(renderCard(q))).not.toContain('Your page reads');
     });
 

@@ -63,7 +63,10 @@ export function WorkingPhoto({
   /** A read already taken, so a reload or a submit does not lose it. */
   initial?: (ReadResult | CaptureResult) | null;
   /** The boxes to fill from a read; only ever called before submit. */
-  onRead?: (prefill: import('@/lib/grade/prefill').Prefill) => void;
+  onRead?: (
+    prefill: import('@/lib/grade/prefill').Prefill,
+    differs: Record<string, { read: string; held: string }>,
+  ) => void;
   /** The one state of the photograph, as it changes: the card orders and words itself by it. */
   onState?: (state: CaptureState) => void;
   /** After submit, the marking of a read: the card shows the rows beside the parts. */
@@ -116,7 +119,7 @@ export function WorkingPhoto({
           onMarked?.(res);
         }
         // An unreadable page filled nothing and says so once, on the failure panel.
-        if ('prefill' in res && res.transcription.legible) onRead?.(res.prefill);
+        if ('prefill' in res && res.transcription.legible) onRead?.(res.prefill, res.differs ?? {});
       } catch {
         setError('That photo could not be prepared on this device.');
         setTakes((t) => [...t, { legible: false, failed: true }]);

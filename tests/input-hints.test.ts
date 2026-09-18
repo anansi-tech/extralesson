@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { HINT_PROMISES, inputAffordance } from '@/lib/grade/input-hints';
+import { HINT_KEYS, HINT_PROMISES, inputAffordance } from '@/lib/grade/input-hints';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 
 describe('inputAffordance — what is legal to type, where the typing happens', () => {
@@ -47,7 +47,23 @@ describe('inputAffordance — what is legal to type, where the typing happens', 
 // that stops being true fails the build rather than telling a student a form is
 // accepted and then marking it wrong.
 describe('every hint is true of the marker that will mark it', () => {
-  it.each(HINT_PROMISES)('$hint', ({ typed, canonical }) => {
-    expect(answersEquivalentAny(typed, canonical)).toBe(true);
+  it.each(HINT_PROMISES)('$hint', ({ typed, canonical, tapped }) => {
+    expect(answersEquivalentAny(typed, canonical), 'the spelling the hint tells them to type').toBe(true);
+    // "Tap √" is a promise too, and one the product had never made before: the
+    // hint used to name only the typed form and say nothing of its own button.
+    if (tapped) expect(answersEquivalentAny(tapped, canonical), 'what the key puts in the box').toBe(true);
+  });
+});
+
+// A HINT SITS UNDER THE KEYS IT IS ABOUT. "Type <= for ≤" was printed beneath a
+// button that inserts ≤ — the product advising against its own control, and the
+// student left to guess whether the two are one answer.
+describe('a hint beside a key describes the key', () => {
+  it('finds the hints that sit beside keys', () => {
+    expect(HINT_KEYS.length).toBeGreaterThanOrEqual(4);
+  });
+  it.each(HINT_KEYS)('$hint', ({ hint, symbols }) => {
+    expect(hint, 'names tapping before typing').toMatch(/^Tap /);
+    for (const symbol of symbols) expect(hint, `names the ${symbol} key`).toContain(symbol);
   });
 });

@@ -50,6 +50,7 @@ const read = {
   take: 1,
   takesLeft: 1,
   prefill: { answers: { 'a.i': '11.9', 'b.i': '47.6' }, values: {} },
+  differs: {},
   rejected: [],
 } as NonNullable<CardQuestion['draft']>['read'];
 
