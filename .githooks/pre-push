@@ -51,6 +51,12 @@ echo "types pass"
 # capped here too; the COMMIT gate is untouched and still runs wide. Off Linux
 # there is no /proc/meminfo and it falls back to two, the lowest number seen to
 # work here rather than a guess at another machine.
+#
+# OVER-BUILT, KNOWINGLY. This machine almost never has more than 3 GB spare, so
+# the arithmetic has only ever chosen two. `--maxWorkers=2` would do the same
+# job in one word. Left standing because replacing it costs a full push to
+# prove; collapse it to a flat 2 the next time this file is opened for
+# something else.
 free_kb=$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo 2>/dev/null)
 if [ -n "$free_kb" ]; then
   workers=$(( free_kb / 1500000 ))
