@@ -755,7 +755,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                 </div>
                 {/* A statement completed in place: the prose runs on and the
                     answers sit inside it, which is how the papers print it and
-                    is why it is one item rather than two questions. */}
+                    is why it is one item rather than two questions. A reason is
+                    written on paper, but its gap is the same blank as the rest:
+                    a cross-reference in the prose read as part of the sentence. */}
                 {p.statementHtml && (
                   <div className="mt-2 flex flex-wrap items-baseline gap-x-1 gap-y-2 pl-4 text-sm">
                     {p.statementHtml.map((piece, i) => (
@@ -767,7 +769,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                         {i < p.slots.length && (
                           <span className="inline-flex items-baseline gap-1">
                           {p.slots[i].mode === 'explain' ? (
-                            <span className="text-xs text-dim">[reason {i + 1} below]</span>
+                            // A rule, not a disabled box; the name is for a reader it is silent to.
+                            <span className="inline-block min-h-11 w-24 border-b-[1.5px] border-ink px-1 py-2 align-baseline">
+                              <span className="sr-only">written on paper</span>
+                            </span>
                           ) : slotAnswerInput(p.slots[i], {
                             describe: `Answer ${i + 1} in the statement for part (${p.label})`,
                             className:
@@ -782,16 +787,18 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                     ))}
                   </div>
                 )}
-                {p.statementHtml && p.slots.map((slot, i) => slot.mode === 'explain' && (
+                {/* What the gap asks for, under the statement it completes. No
+                    heading: the instruction names the label, and a number over
+                    the prompt was a second name for the same gap. */}
+                {p.statementHtml && p.slots.map((slot) => slot.mode === 'explain' && (
                   <div key={`reason-${slot.ref}`} className="mt-3 ml-4 border-l-3 border-paper-deep pl-3 text-sm">
-                    <span className="font-mono text-[11px] text-dim">Reason {i + 1}</span>
                     {slot.promptHtml ? (
-                      <Html as="p" className="question-prose mt-1" html={slot.promptHtml} />
+                      <Html as="p" className="question-prose" html={slot.promptHtml} />
                     ) : (
-                      <p className="mt-1">Give the reason that completes the statement.</p>
+                      <p>Give the reason that completes the statement.</p>
                     )}
                     {!partHasRows(p.label) && (
-                      <p className="mt-1 text-xs text-dim">Write your reason on paper, labelled ({p.label}) ({slot.label}). It is marked from your photo; nothing to type here.</p>
+                      <p className="mt-1 text-xs text-dim">Write this on paper, labelled ({p.label})({slot.label}). It is marked from your photo; nothing to type here.</p>
                     )}
                   </div>
                 ))}

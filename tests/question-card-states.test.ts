@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { STATES, readingPieces, renderBar, renderCard, visibleText } from './helpers/card-states';
+import { CLOZE_REASON, STATES, readingPieces, renderBar, renderCard, visibleText } from './helpers/card-states';
 import { MARKED } from './helpers/marked-states';
 import QuestionCard from '@/app/study/session/[id]/question-card';
 import { createElement } from 'react';
@@ -83,6 +83,22 @@ describe('the question card, four states', () => {
     expect(src).not.toMatch(/Mark it yourself/);
     // The one clause that stays is the construction's, which nothing assesses.
     expect(src.match(/left out of your estimate/g)).toHaveLength(1);
+  });
+
+  // A reason gap is written on paper, but in the sentence it is the same blank
+  // as the typed ones, and the label is named once — in the instruction under
+  // the prompt, never again as a heading over it.
+  it('a cloze reason is a blank in the statement and a prompt beneath it, with no index', () => {
+    const html = renderCard(CLOZE_REASON);
+    const t = visibleText(html);
+    expect(t).toContain('Since written on paper , angle PAB = angle PBA, and angle APB = . Explain why angle PAB = angle PBA, using the tangent lengths. Write this on paper, labelled (d)(reason).');
+    // No cross-reference in the prose and no heading over the prompt.
+    expect(t).not.toMatch(/reason \d|below\]|Reason \d/i);
+    // The label is named once, and by the instruction.
+    expect(t.match(/\(d\)\(reason\)/g)).toHaveLength(1);
+    // The gap is a rule, not a box: only the typed slot has one to type in.
+    expect(html).toContain('id="slot-d.angle"');
+    expect(html).not.toContain('slot-d.reason');
   });
 
   // One surface for an illegible read: the failure panel and its one "Take it

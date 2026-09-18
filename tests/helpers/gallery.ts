@@ -5,7 +5,7 @@ import type { CaptureState } from '@/app/study/session/[id]/capture-state';
 import type { CardQuestion } from '@/app/study/session/[id]/question-card';
 import type { DashboardProps } from '@/app/study/dashboard';
 import { STATES as DASH, render as renderDashboard } from './dashboard-states';
-import { FOUR_BOX, STATES as CARD, renderBar, renderCard } from './card-states';
+import { CLOZE_REASON, FOUR_BOX, STATES as CARD, renderBar, renderCard } from './card-states';
 import { MARKED, renderMarked } from './marked-states';
 import { DIAGNOSTIC } from './diagnostic-states';
 import { SUMMARIES } from './summary-states';
@@ -99,6 +99,7 @@ export const GALLERY: Shot[] = [
   card('unanswered-failed', CARD.unanswered, 'failed'),
   card('unanswered-exhausted', exhausted),
   card('four-box', FOUR_BOX),
+  card('cloze-reason', CLOZE_REASON),
   handedIn('none', { ...handed, prior: { ...prior, feedback: { ...prior.feedback, working: undefined }, working: [] } }),
   handedIn('reading', { ...handed, prior: { ...prior, feedback: { ...prior.feedback, working: undefined }, working: [] } }, 'reading'),
   handedIn('read', { ...handed, prior }),

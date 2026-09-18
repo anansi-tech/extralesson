@@ -91,6 +91,35 @@ export const FOUR_BOX: CardQuestion = {
   draft: { answers: {}, values: { 'a.i': ['1.6', '9/5', '2.0', '11/5'] } },
 };
 
+/**
+ * A STATEMENT COMPLETED IN PLACE WITH A REASON IN IT: the shape 54 of the
+ * approved questions carry, and the only one where a gap is written on paper
+ * rather than typed. Its own export for the same reason as FOUR_BOX.
+ */
+export const CLOZE_REASON: CardQuestion = {
+  ...base,
+  stemHtml: 'The diagram shows a circle with tangents PA and PB, and angle APB unknown.',
+  parts: [
+    {
+      label: 'd',
+      promptHtml: 'Complete the statement below.',
+      promptText: 'Complete the statement below.',
+      marks: 4,
+      statementHtml: ['Since ', ', angle PAB = angle PBA, and angle APB = ', '.'],
+      slots: [
+        { ref: 'd.reason', label: 'reason', mode: 'explain', promptHtml: 'Explain why angle PAB = angle PBA, using the tangent lengths.' },
+        { ref: 'd.angle', label: 'angle', mode: 'answer', hints: [], symbols: [] },
+      ],
+    },
+  ],
+  marks: 4,
+  marksAnswered: 4,
+  rubricCodes: [
+    { code: 'R1', profile: 'R', mark_value: 1, part_label: 'd', slot_ref: 'd.reason' },
+    { code: 'AK1', profile: 'AK', mark_value: 1, part_label: 'd', slot_ref: 'd.angle' },
+  ],
+};
+
 export const STATES: Record<'unanswered' | 'reading' | 'read' | 'blanks' | 'illegible', CardQuestion> = {
   unanswered: base,
   reading: base,

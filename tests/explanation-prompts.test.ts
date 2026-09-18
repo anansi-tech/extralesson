@@ -20,9 +20,15 @@ describe('specific photo-reason instructions, not disabled-looking answer blanks
     const html = renderToStaticMarkup(createElement(QuestionCard, { question }));
     expect(html).toContain('id="slot-a.i"');
     expect(html).not.toContain('id="slot-a.ii"');
-    expect(html).toContain('[reason 2 below]');
+    // The reason's gap is a RULE, not a box that cannot be typed in: no input,
+    // nothing focusable, nothing to read as broken. It is the blank the other
+    // gap is, and the prompt beneath says what goes on the line.
+    expect(html).not.toMatch(/disabled[^>]*slot-a\.ii|slot-a\.ii[^>]*disabled/);
+    expect(html).toContain('<span class="inline-block min-h-11 w-24 border-b-[1.5px] border-ink px-1 py-2 align-baseline">');
     expect(html).toContain('State the circle theorem used.');
-    expect(html).toContain('Write your reason on paper, labelled (a) (ii)');
+    // The label is named once, by the instruction, and never as a heading.
+    expect(html).toContain('Write this on paper, labelled (a)(ii)');
+    expect(html).not.toMatch(/Reason \d|reason \d below/);
     expect(html).toContain('nothing to type here');
   });
   it('recognises an explicitly prompted explanation as a valid statement configuration', () => {
