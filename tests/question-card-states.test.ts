@@ -75,13 +75,10 @@ describe('the question card, four states', () => {
     const prior = MARKED.marked.prior!;
     const noPhoto = { ...MARKED.marked, prior: { ...prior, working: [], feedback: { ...prior.feedback!, working: undefined } } };
     const html = renderToStaticMarkup(createElement(QuestionCard, { question: noPhoto }));
-    // Before hand-in the part says what marks it; after, the instruction has
-    // been carried out and only the rows speak for the part.
-    expect(visibleText(renderCard(STATES.unanswered))).toContain('Work this on paper — it’s marked from your photo.');
-    expect(visibleText(html)).not.toContain('marked from your photo');
-    for (const t of [visibleText(html), visibleText(renderCard(STATES.unanswered))]) {
-      expect(t).not.toMatch(/mark it yourself|left out of your estimate/i);
-    }
+    // Handed in with nothing photographed, the marks are still earnable, so the
+    // part says what marks them rather than falling silent.
+    expect(visibleText(html)).toContain('Work this on paper — it’s marked from your photo.');
+    expect(visibleText(html)).not.toMatch(/mark it yourself|left out of your estimate/i);
     const src = readFileSync(join(process.cwd(), 'app', 'study', 'session', '[id]', 'question-card.tsx'), 'utf8');
     expect(src).not.toMatch(/Mark it yourself/);
     // The one clause that stays is the construction's, which nothing assesses.

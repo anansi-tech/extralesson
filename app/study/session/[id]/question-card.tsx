@@ -524,6 +524,10 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   // nothing under the part, because its marks are left out of the estimate.
   const writtenParts = new Set(question.parts.filter((p) => p.slots.some((sl) => sl.mode !== 'construct')).map((p) => p.label));
   const rowsFor = (label: string) => rows.filter((m) => partOf.get(m.code) === label);
+  // Whether anything stands under this part yet: the instruction to work it on
+  // paper goes when rows take its place, and stays while a marking that did not
+  // finish or a page never photographed leaves the marks still earnable.
+  const partHasRows = (label: string) => rowsFor(label).length > 0;
   const partRowCodes = new Set(rows.filter((m) => writtenParts.has(partOf.get(m.code) ?? '')).map((m) => m.code));
   const rowDispute =
     feedback?.working?.marked && !reviewing
@@ -786,7 +790,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                     ) : (
                       <p className="mt-1">Give the reason that completes the statement.</p>
                     )}
-                    {!feedback && (
+                    {!partHasRows(p.label) && (
                       <p className="mt-1 text-xs text-dim">Write your reason on paper, labelled ({p.label}) ({slot.label}). It is marked from your photo; nothing to type here.</p>
                     )}
                   </div>
@@ -906,11 +910,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                             : 'The finished graph is shown once you submit your answers'}{' '}
                           — these marks are left out of your estimate.
                         </p>
-                      ) : feedback ? null : (
-                        // An instruction only while there is still work to do: once the
-                        // question is marked the rows under the part say what the page
-                        // earned, and telling the student to work it on paper is telling
-                        // them to do what they have done.
+                      ) : partHasRows(p.label) ? null : (
+                        // An instruction only while there is still work to do: once rows
+                        // stand under the part they say what the page earned, and telling
+                        // the student to work it on paper is telling them to do what they
+                        // have done.
                         <p className="mt-2 border-l-3 border-paper-deep bg-[#FFFDF6] px-3 py-1.5 text-[13px] leading-snug text-dim">
                           {pageRead
                             ? 'Marked from your photo — nothing to type.'
