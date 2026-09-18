@@ -40,14 +40,27 @@ echo "types pass"
 # Timeout" waiting on a page that was only starved. A gate that fails for a
 # reason that is not the code is the thing that teaches --no-verify.
 #
-# Four is measured. Under the load that broke the default — an editor, a dev
-# server and 3 GB free — four passed all 25 browser suites in 4:00, against
-# 7:41 at two. It is a ceiling, not a target: on a bigger machine it costs some
-# wall time, and a gate that always finishes is worth more than one that is
-# sometimes faster. vitest takes it for the run, not per project, so the unit
-# half is capped here too; the COMMIT gate is untouched and still runs wide.
-echo "running the whole suite…"
-if ! pnpm vitest run --silent --maxWorkers=4 >/tmp/el-pre-push-tests.log 2>&1; then
+# A FIXED NUMBER IS THE WRONG SHAPE, because the load is not fixed. Four was
+# measured against 5 GB free and passed all 25 browser suites in 4:00; the next
+# push hit the same timeouts at 3 GB, with the dev server grown. What the run
+# can afford is whatever is free WHEN IT RUNS, so that is what it reads: about
+# 1.5 GB per worker, between one and four. Four passed at 5 GB and two passed
+# at 3 GB — in 7:41, which is the price of a gate that finishes.
+#
+# vitest takes the setting for the run, not per project, so the unit half is
+# capped here too; the COMMIT gate is untouched and still runs wide. Off Linux
+# there is no /proc/meminfo and it falls back to two, the lowest number seen to
+# work here rather than a guess at another machine.
+free_kb=$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo 2>/dev/null)
+if [ -n "$free_kb" ]; then
+  workers=$(( free_kb / 1500000 ))
+  [ "$workers" -lt 1 ] && workers=1
+  [ "$workers" -gt 4 ] && workers=4
+else
+  workers=2
+fi
+echo "running the whole suite… (${workers} workers, $(( ${free_kb:-0} / 1024 / 1024 )) GB free)"
+if ! pnpm vitest run --silent --maxWorkers="$workers" >/tmp/el-pre-push-tests.log 2>&1; then
   echo "TESTS FAILED — push refused. Full output:"
   tail -40 /tmp/el-pre-push-tests.log
   echo "(bypass with --no-verify if you know why)"
