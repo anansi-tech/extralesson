@@ -32,8 +32,22 @@ if ! pnpm tsc --noEmit -p . >/tmp/el-pre-push.log 2>&1; then
 fi
 echo "types pass"
 
+# CHROMES, NOT CORES. Every browser suite launches its own, so what the run can
+# take is memory and vitest's default is the core count — eight here, against a
+# working set that wants well over a gigabyte once a few pages are open. Three
+# pushes failed that way, each with a different scattered set of suites and
+# never an assertion: "Hook timed out" closing a browser, "page.setContent:
+# Timeout" waiting on a page that was only starved. A gate that fails for a
+# reason that is not the code is the thing that teaches --no-verify.
+#
+# Four is measured. Under the load that broke the default — an editor, a dev
+# server and 3 GB free — four passed all 25 browser suites in 4:00, against
+# 7:41 at two. It is a ceiling, not a target: on a bigger machine it costs some
+# wall time, and a gate that always finishes is worth more than one that is
+# sometimes faster. vitest takes it for the run, not per project, so the unit
+# half is capped here too; the COMMIT gate is untouched and still runs wide.
 echo "running the whole suite…"
-if ! pnpm vitest run --silent >/tmp/el-pre-push-tests.log 2>&1; then
+if ! pnpm vitest run --silent --maxWorkers=4 >/tmp/el-pre-push-tests.log 2>&1; then
   echo "TESTS FAILED — push refused. Full output:"
   tail -40 /tmp/el-pre-push-tests.log
   echo "(bypass with --no-verify if you know why)"
