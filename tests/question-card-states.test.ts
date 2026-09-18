@@ -112,6 +112,53 @@ describe('the question card, four states', () => {
     expect(html).not.toMatch(/<span class="question-prose">[,.;:!?)%°]/);
   });
 
+  // THE DROP IS NO LONGER SILENT. fillEmpty keeps what the student typed, which
+  // is right, and the box now says what the page read instead of leaving the
+  // screen identical to one where the page read nothing there.
+  describe('a box the read disagreed with', () => {
+    const readOf = (differs: Record<string, string>) =>
+      ({ ...STATES.read.draft!.read!, prefill: { answers: {}, values: {} }, differs });
+
+    it('says what the page read, under a stacked box', () => {
+      const q = { ...STATES.unanswered, draft: { answers: { 'a.i': '≤' }, values: {}, read: readOf({ 'a.i': '11.9' }) } };
+      expect(visibleText(renderCard(q))).toContain('Your page reads 11.9 — left as you typed it.');
+    });
+
+    it('says it under the statement for a cloze gap, which has no room beside it', () => {
+      // 797be2 (c.i): a tap on the strip seeded the first gap, and the read of
+      // it — "40 <= m < 50" — was dropped for a box that was no longer empty.
+      const q = { ...CLOZE_REASON, draft: { answers: { 'd.angle': '≤' }, values: {}, read: readOf({ 'd.angle': '40 <= m < 50' }) } };
+      const t = visibleText(renderCard(q));
+      expect(t).toContain('Your page reads 40 <= m < 50 — left as you typed it.');
+      // Under the statement it completes, before the reason's prompt.
+      expect(t.indexOf('Your page reads')).toBeGreaterThan(t.indexOf('angle APB ='));
+      expect(t.indexOf('Your page reads')).toBeLessThan(t.indexOf('Explain why'));
+    });
+
+    it('goes as soon as the box holds what the page read', () => {
+      const q = { ...CLOZE_REASON, draft: { answers: { 'd.angle': '40 <= m < 50' }, values: {}, read: readOf({ 'd.angle': '40 <= m < 50' }) } };
+      expect(visibleText(renderCard(q))).not.toContain('Your page reads');
+    });
+
+    it('says nothing about an empty box, which the read fills instead', () => {
+      const q = { ...CLOZE_REASON, draft: { answers: {}, values: {}, read: readOf({}) } };
+      expect(visibleText(renderCard(q))).not.toContain('Your page reads');
+    });
+  });
+
+  // A SYMBOL GOES WHERE THE CARET IS, OR NOWHERE. The strip used to fall back to
+  // the box it sat under — for a cloze, the part's first gap, which the student
+  // may not have reached. There is no hydration here, so the invariant is
+  // pinned where the defect lived: in there being a fallback at all.
+  it('the insert strip writes only into a focused box', () => {
+    const src = readFileSync(join(process.cwd(), 'app', 'study', 'session', '[id]', 'question-card.tsx'), 'utf8');
+    expect(src).toMatch(/const insertSymbol = \(ch: string\) => \{\s*if \(!focus\) return;/);
+    // Neither strip may name a target of its own.
+    expect(src).not.toMatch(/insertSymbol\([^)]*slots\[0\]/);
+    expect(src).not.toContain('p.slots[0].ref');
+    expect(src.match(/onInsert=\{insertSymbol\}/g)).toHaveLength(2);
+  });
+
   // One surface for an illegible read: the failure panel and its one "Take it
   // again" — no read section, no second retake, no prefill line, none of the
   // reader's prose, and no slot id a student would not recognise.

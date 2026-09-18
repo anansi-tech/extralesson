@@ -16,7 +16,7 @@ import { MethodRows, WorkingRead } from './working-read';
 import { Html } from './html';
 import { isPositionalLabel } from '@/lib/notation';
 import { PROFILE_GLOSS } from '@/lib/study/profiles';
-import { fillEmpty } from '@/lib/grade/fill-empty';
+import { fillEmpty, readDiffers } from '@/lib/grade/fill-empty';
 
 export interface CardQuestion {
   sessionId: string;
@@ -73,7 +73,11 @@ export interface CardQuestion {
     values: Record<string, string[]>;
     selected?: number;
     /** The page already photographed for this question, before submit. */
-    read?: ReadResult & { rejected?: number[] };
+    read?: ReadResult & {
+      rejected?: number[];
+      /** What the page read for a box that already held something else. */
+      differs?: Record<string, string>;
+    };
   };
   prior?: {
     answers: Record<string, string>;
@@ -200,6 +204,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
     const filled = [...Object.keys(prefill?.answers ?? {}), ...Object.keys(prefill?.values ?? {})];
     return filled.length > 0 ? filled : null;
   });
+  // WHAT THE PAGE READ WHERE THE BOX SAYS SOMETHING ELSE. fillEmpty keeps the
+  // student's entry and the read is dropped; unsaid, that is the same screen as
+  // a page which read nothing there, and a box holding one stray character
+  // stays wrong with the right value sitting unused in the response.
+  const [readSaid, setReadSaid] = useState<Record<string, string>>(() => question.draft?.read?.differs ?? {});
   const [error, setError] = useState<string>();
   const [pending, startTransition] = useTransition();
   const startedAt = useRef(Date.now());
@@ -285,8 +294,16 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
   const [focus, setFocus] = useState<{ ref: string; box: number } | null>(null);
   const boxId = (ref: string, box: number) => (box < 0 ? `slot-${ref}` : `slot-${ref}-${box}`);
 
-  const insertSymbol = (ref: string, hasBoxes: boolean, ch: string) => {
-    const box = focus?.ref === ref ? focus.box : hasBoxes ? 0 : -1;
+  /**
+   * A SYMBOL GOES WHERE THE CARET IS, OR NOWHERE. It used to fall back to the
+   * box the strip sat under, which for a cloze is the part's FIRST gap — one
+   * stray tap put a character in a box the student had not chosen and could be
+   * reading past, and the read then refused to fill an occupied box and said
+   * nothing. A tap with nothing focused does nothing instead.
+   */
+  const insertSymbol = (ch: string) => {
+    if (!focus) return;
+    const { ref, box } = focus;
     const id = boxId(ref, box);
     const el = document.getElementById(id) as HTMLInputElement | null;
     const caret = el?.selectionStart ?? null;
@@ -312,6 +329,14 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       after.focus();
       after.setSelectionRange(at, at);
     });
+  };
+
+  // Recomputed each render against what the box holds now, so the note goes as
+  // soon as the student types what the page read.
+  const pageSaid = (ref: string) => {
+    const read = readSaid[ref];
+    const held = (partAnswers[ref] ?? boxValues[ref]?.join(', ') ?? '').trim();
+    return read && held && held !== read.trim() ? read : undefined;
   };
 
   const filled = (s: { ref: string; input?: unknown }) =>
@@ -679,6 +704,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
             // boxes, so these arrive whole or not at all.
             setBoxValues((prev) => ({ ...prev, ...applied.values }));
             setReadFilled((prev) => [...new Set([...(prev ?? []), ...Object.keys(applied.answers), ...Object.keys(applied.values)])]);
+            setReadSaid((prev) => ({ ...prev, ...readDiffers(currentEntries.current, prefill) }));
           }}
           onState={setCapture}
           className={`order-3 ${pageRead ? 'lg:order-first' : 'lg:order-none'}`}
@@ -811,6 +837,15 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                     ))}
                   </div>
                 )}
+                {/* A gap has no room beside it for a note, so what the page read
+                    sits under the statement, one line per gap in the order they
+                    are read. This is the case it was built for: a cloze gap
+                    seeded with one character, and the read of it dropped. */}
+                {!feedback && p.statementHtml && p.slots.map((slot) => pageSaid(slot.ref) && (
+                  <p key={`differs-${slot.ref}`} className="mt-1 ml-4 font-mono text-[11px] leading-snug text-dim">
+                    Your page reads {pageSaid(slot.ref)} — left as you typed it.
+                  </p>
+                ))}
                 {/* What the gap asks for, under the statement it completes. No
                     heading: the instruction names the label, and a number over
                     the prompt was a second name for the same gap. */}
@@ -833,15 +868,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                     <SymbolStrip
                       symbols={[...new Set(p.slots.flatMap((sl) => sl.symbols ?? []))]}
                       disabled={!!feedback}
-                      onInsert={(ch) =>
-                        insertSymbol(
-                          focus && p.slots.some((sl) => sl.ref === focus.ref)
-                            ? focus.ref
-                            : p.slots[0].ref,
-                          false,
-                          ch,
-                        )
-                      }
+                      onInsert={insertSymbol}
                     />
                     <HintLines hints={[...new Set(p.slots.flatMap((sl) => sl.hints ?? []))].slice(0, 2)} />
                   </div>
@@ -902,6 +929,9 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                             {!feedback && readFilled?.includes(slot.ref) && (partAnswers[slot.ref] ?? '').trim() !== '' && (
                               <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.1em] text-dim">From your page — check it</div>
                             )}
+                            {!feedback && pageSaid(slot.ref) && (
+                              <div className="mt-1 font-mono text-[11px] leading-snug text-dim">Your page reads {pageSaid(slot.ref)} — left as you typed it.</div>
+                            )}
                             {/* THE SLIP COMES FIRST (ROUND_7 Task 1): the sentence, then the scheme's reason. */}
                             {partFeedback && !partFeedback.correct && typedFor(p.label) && slipFor(p.label) && (
                               <p className="mt-2 font-hand text-base leading-snug text-red-pen lg:mt-2.5 lg:text-[17px]">{slipFor(p.label)}</p>
@@ -915,7 +945,7 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                             <SymbolStrip
                               symbols={slot.symbols ?? []}
                               disabled={!!feedback}
-                              onInsert={(ch) => insertSymbol(slot.ref, !!slot.input, ch)}
+                              onInsert={insertSymbol}
                             />
                             <HintLines hints={feedback ? [] : (slot.hints ?? [])} />
                           </div>

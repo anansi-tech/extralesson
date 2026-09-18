@@ -169,17 +169,22 @@ export async function readWorking(input: {
 
   // Prefill goes into the DRAFT, never an attempt: the student confirms it by
   // submitting. A question already handed in has no draft to fill.
-  let prefill = structuredPrefill(parts, read.transcription);
+  // EVERYTHING THE READ HAD, not only what it was allowed to fill: the draft
+  // takes what fillEmpty allows, and the whole suggestion goes back to the
+  // client, which applies the same rule against its own live entries and says
+  // what it kept them over. Filtering here left a dropped value in no response
+  // at all, so a box the read disagreed with looked like a box it never saw.
+  const suggested = structuredPrefill(parts, read.transcription);
   const submitted = await Attempt.exists({ session_id: sessionId, question_id: questionId });
-  const filled = Object.keys(prefill.answers).length + Object.keys(prefill.values).length;
+  const filled = Object.keys(suggested.answers).length + Object.keys(suggested.values).length;
   if (filled > 0 && !submitted) {
     const draft = await SessionDraft.findOne({ session_id: sessionId, question_index: questionIndex })
       .select('answers values updated_at')
       .lean<{ _id: unknown; updated_at: Date; answers?: Record<string, string>; values?: Record<string, string[]> } | null>();
-    prefill = fillEmpty({ answers: draft?.answers ?? {}, values: draft?.values ?? {} }, prefill);
+    const applied = fillEmpty({ answers: draft?.answers ?? {}, values: draft?.values ?? {} }, suggested);
     const fields = {
-      answers: { ...(draft?.answers ?? {}), ...prefill.answers },
-      values: { ...(draft?.values ?? {}), ...prefill.values },
+      answers: { ...(draft?.answers ?? {}), ...applied.answers },
+      values: { ...(draft?.values ?? {}), ...applied.values },
       updated_at: new Date(),
     };
     // Do not overwrite a manual save that raced this read. The client also
@@ -198,7 +203,7 @@ export async function readWorking(input: {
     }
   }
 
-  return { transcription: read.transcription, transcriptionId: String(stored._id), take, takesLeft: MAX_TAKES - take, prefill };
+  return { transcription: read.transcription, transcriptionId: String(stored._id), take, takesLeft: MAX_TAKES - take, prefill: suggested };
 }
 
 const RetryZ = z.object({ attemptId: z.string().regex(/^[a-f0-9]{24}$/) });

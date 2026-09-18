@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFields, readContext, normaliseSlotRef, type ReadPart } from '@/lib/grade/read-fields';
 import { structuredPrefill } from '@/lib/grade/prefill';
-import { fillEmpty } from '@/lib/grade/fill-empty';
+import { fillEmpty, readDiffers } from '@/lib/grade/fill-empty';
 
 const parts: ReadPart[] = [
   { label: 'a', prompt: 'Complete the statement.', statement: 'The frame has {} line of symmetry and order {}.', slots: [{ label: 'i', answer: '1' }, { label: 'ii', answer: '1' }] },
@@ -72,5 +72,23 @@ describe('photo entries have a form, not just a label', () => {
     expect(fillEmpty({ answers: { 'a.i': '2' }, values: { 'c.i': ['9', ''] } }, {
       answers: { 'a.i': '1', 'a.ii': '1' }, values: { 'c.i': ['4', '5'] },
     })).toEqual({ answers: { 'a.ii': '1' }, values: {} });
+  });
+
+  // What fillEmpty kept the student's entry OVER. A drop said nothing, so a box
+  // holding one stray character looked exactly like a box the page never read.
+  it('names every box the read disagreed with, and what it read there', () => {
+    expect(readDiffers({ answers: { 'a.i': '2' }, values: { 'c.i': ['9', ''] } }, {
+      answers: { 'a.i': '1', 'a.ii': '1' }, values: { 'c.i': ['4', '5'] },
+    })).toEqual({ 'a.i': '1', 'c.i': '4, 5' });
+  });
+  it('says nothing about an empty box, which the read fills, or one that already agrees', () => {
+    expect(readDiffers({ answers: { 'a.i': '', 'a.ii': '  1  ' }, values: {} }, {
+      answers: { 'a.i': '1', 'a.ii': '1' }, values: {} },
+    )).toEqual({});
+  });
+  it('reports a gap seeded with one character against the value the page held', () => {
+    // 797be2 (c.i): the strip's own key in the box, "40 <= m < 50" on the page.
+    expect(readDiffers({ answers: { 'c.i': '≤' }, values: {} }, { answers: { 'c.i': '40 <= m < 50' }, values: {} }))
+      .toEqual({ 'c.i': '40 <= m < 50' });
   });
 });

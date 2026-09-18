@@ -29,6 +29,8 @@ import { hintLine } from '@/lib/grade/reason';
 import { roundingOf } from '@/lib/grade/rounding';
 import { constructActs, figureGivesAnswer } from '@/lib/targets/construct';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
+import { structuredPrefill } from '@/lib/grade/prefill';
+import { readDiffers } from '@/lib/grade/fill-empty';
 import type { ModuleNumber, ProfileMarks } from '@/lib/types';
 
 
@@ -473,7 +475,7 @@ export default async function SessionPage({
   const rejectedLines = latest
     ? (await LineRejected.find({ transcription_id: latest._id }).select('line_index').lean<{ line_index: number }[]>()).map((r) => r.line_index)
     : [];
-  const read: (ReadResult & { rejected: number[] }) | undefined = latest
+  const read: (ReadResult & { rejected: number[]; differs: Record<string, string> }) | undefined = latest
     ? {
         transcription: { lines: latest.lines, answers: latest.answers ?? [], legible: latest.legible },
         transcriptionId: String(latest._id),
@@ -481,6 +483,16 @@ export default async function SessionPage({
         takesLeft: MAX_TAKES - reads.length,
         // Rebuilt from the stored read; the boxes already hold what it filled.
         prefill: { answers: {}, values: {} },
+        // What the page read for a box holding something else. The suggestion
+        // itself is not sent back — nothing refills on a reload — but which
+        // boxes it disagreed with, and what it read there, survives one.
+        differs: readDiffers(
+          { answers: draftRow?.answers ?? {}, values: draftRow?.values ?? {} },
+          structuredPrefill(
+            (question.parts ?? []).map((p) => ({ ...p, slots: p.slots ?? [] })),
+            { legible: latest.legible, lines: latest.lines, answers: latest.answers ?? [] },
+          ),
+        ),
         rejected: rejectedLines,
       }
     : undefined;
