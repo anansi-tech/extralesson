@@ -101,6 +101,17 @@ describe('the question card, four states', () => {
     expect(html).not.toContain('slot-d.reason');
   });
 
+  // Punctuation that opens a piece of the statement closes the gap before it,
+  // so the two wrap as one: at 390 a comma after a gap started the line below
+  // it and a closing full stop was stranded on a line of its own.
+  it('a cloze gap carries the punctuation that follows it', () => {
+    const html = renderCard(CLOZE_REASON);
+    expect(html).toContain('<span class="sr-only">written on paper</span></span><span>,</span></span>');
+    expect(html).toContain('<span>.</span></span>');
+    // Nothing is left behind: no piece of the statement opens with punctuation.
+    expect(html).not.toMatch(/<span class="question-prose">[,.;:!?)%°]/);
+  });
+
   // One surface for an illegible read: the failure panel and its one "Take it
   // again" — no read section, no second retake, no prefill line, none of the
   // reader's prose, and no slot id a student would not recognise.

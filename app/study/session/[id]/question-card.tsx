@@ -127,6 +127,25 @@ function describeSlot(part: CardPart, slot: CardSlot): string {
   return isPositionalLabel(slot.label) ? part.promptText : slot.label.replace(/[_-]+/g, ' ');
 }
 
+/**
+ * The punctuation a cloze piece opens with, which closes the gap before it.
+ * Left at the head of its own piece it is a flex item of its own, and at 390 a
+ * comma after a gap started the line below it while a closing full stop was
+ * stranded on a line of its own. 226 of the 400 pieces that follow a gap in the
+ * bank open this way. Trailing the gap is the rule the typed input follows.
+ */
+function closesTheGap(html: string): string {
+  return /^[,.;:!?)%°]+(?=\s|$|<)/.exec(html)?.[0] ?? '';
+}
+
+/** A gap answered on paper: the rule the typed gaps draw, with nothing to type in. */
+const PAPER_BLANK = (
+  <span className="inline-block min-h-11 w-24 border-b-[1.5px] border-ink px-1 py-2 align-baseline">
+    {/* The cross-reference it replaced was announced; a rule alone is silent. */}
+    <span className="sr-only">written on paper</span>
+  </span>
+);
+
 function slotAriaLabel(part: CardPart, slot: CardSlot): string {
   if (part.slots.length === 1) return `Answer to part (${part.label})`;
   const named = slot.promptText?.trim() || describeSlot(part, slot);
@@ -741,6 +760,11 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
       {question.kind === 'structured' && (
         <div id="parts" className="order-5 mt-5 space-y-[18px] lg:mt-0 lg:space-y-5">
           {question.parts.map((p) => {
+            // The punctuation a piece opens with is rendered with the gap before
+            // it, so `prose` is each piece without it and `closing[i]` is what
+            // gap i - 1 carries.
+            const closing = (p.statementHtml ?? []).map((html, i) => (i > 0 ? closesTheGap(html) : ''));
+            const prose = (p.statementHtml ?? []).map((html, i) => html.slice(closing[i].length));
             return (
               <div key={p.label}>
                 <div className="flex items-baseline gap-2 text-sm lg:text-[15px]">
@@ -760,24 +784,24 @@ export default function QuestionCard({ question }: { question: CardQuestion }) {
                     a cross-reference in the prose read as part of the sentence. */}
                 {p.statementHtml && (
                   <div className="mt-2 flex flex-wrap items-baseline gap-x-1 gap-y-2 pl-4 text-sm">
-                    {p.statementHtml.map((piece, i) => (
+                    {p.statementHtml.map((_, i) => (
                       <Fragment key={i}>
-                        <Html as="span"
-                          className="question-prose"
-                          html={piece}
-                        />
+                        {prose[i] && (
+                          <Html as="span"
+                            className="question-prose"
+                            html={prose[i]}
+                          />
+                        )}
                         {i < p.slots.length && (
                           <span className="inline-flex items-baseline gap-1">
-                          {p.slots[i].mode === 'explain' ? (
-                            // A rule, not a disabled box; the name is for a reader it is silent to.
-                            <span className="inline-block min-h-11 w-24 border-b-[1.5px] border-ink px-1 py-2 align-baseline">
-                              <span className="sr-only">written on paper</span>
-                            </span>
-                          ) : slotAnswerInput(p.slots[i], {
+                          <span className="inline-flex items-baseline">
+                          {p.slots[i].mode === 'explain' ? PAPER_BLANK : slotAnswerInput(p.slots[i], {
                             describe: `Answer ${i + 1} in the statement for part (${p.label})`,
                             className:
                               'min-h-11 w-24 border-0 border-b-[1.5px] border-ink bg-transparent px-1 py-2 text-center font-mono text-sm',
                           })}
+                          {closing[i + 1] && <span>{closing[i + 1]}</span>}
+                          </span>
                           {p.slots[i].mode === 'answer' && (
                             <AnswerVerdict inline result={verdictFor(p.slots[i].ref)} />
                           )}
