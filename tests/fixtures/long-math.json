@@ -1,5 +1,178 @@
 [
  {
+  "id": "6a854012e7fc40f429797be2",
+  "why": "longest solution",
+  "stem": "Use the histogram to answer the questions below.",
+  "stimulus": "A building contractor recorded the masses of 40 bags of cement in a delivery. The histogram shows the results. A bag is accepted if its mass lies within one estimated semi-interquartile range of the estimated median mass.",
+  "worked_solution": "(a) The class width is $50-40=10$ kg.\n\n(b) The class midpoints are $25,35,45,55,65$. The weighted total is\n\\[\n(25\\times4)+(35\\times7)+(45\\times12)+(55\\times9)+(65\\times8)=1900.\n\\]\nThe total frequency is $40$, giving an estimated mean of $1900\\div40=47.5$ kg.\n\n(c) The median position is $\\frac{40}{2}=20$. The cumulative frequencies are $4,11,23,32,40$, so the median class is $40\\le m<50$. The estimated median is\n\\[\n40+\\left(\\frac{20-11}{12}\\right)\\times10=47.5\\text{ kg}.\n\\]\nThe estimated mean and median are both $47.5$ kg, but this alone does not establish symmetry. The histogram is not exactly symmetrical: the frequencies in corresponding classes are $4$ and $8$, and $7$ and $9$. Another supported description is that it has a single peak in the $40\\le m<50$ class, whose frequency is $12$. A qualified description of approximate symmetry may refer to the central peak and decreasing frequencies towards both ends, while acknowledging the unequal corresponding bars.\n\n(d) The lower-quartile position is $\\frac{40}{4}=10$ and the upper-quartile position is $\\frac{3\\times40}{4}=30$. The estimated lower quartile is\n\\[\n30+\\left(\\frac{10-4}{7}\\right)\\times10=38.6\\text{ kg} \\text{ approximately}.\n\\]\nThe estimated upper quartile is\n\\[\n50+\\left(\\frac{30-23}{9}\\right)\\times10=57.8\\text{ kg} \\text{ approximately}.\n\\]\nTherefore, the estimated interquartile range is $57.8-38.6=19.2$ kg and the estimated semi-interquartile range is $19.2\\div2=9.6$ kg. The acceptable interval is approximately $47.5\\pm9.6$, or from $37.9$ kg to $57.1$ kg. Since $58$ kg is outside this interval, the bag is not acceptable.",
+  "remediations": [
+   "The value 12 is the greatest frequency, not a mass estimate. For grouped data, multiply each class midpoint by its frequency and divide the total by 40.",
+   "The interquartile range is one number. Subtract the lower quartile from the upper quartile: $57.8-38.6=19.2$ kg."
+  ],
+  "parts": [
+   {
+    "label": "a",
+    "prompt": "State the class width for the interval $40 \\le m < 50$.",
+    "marks": 1,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$10$ kg"
+     }
+    ]
+   },
+   {
+    "label": "b",
+    "prompt": "Estimate the mean mass of a bag of cement.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$47.5$ kg"
+     }
+    ]
+   },
+   {
+    "label": "c",
+    "prompt": "Complete the statement below.",
+    "marks": 3,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$40 \\le m < 50$"
+     },
+     {
+      "label": "ii",
+      "answer": "$47.5$"
+     },
+     {
+      "label": "iii",
+      "prompt": "Describe a feature of the shape of the distribution and justify your description using the histogram.",
+      "answer": "not exactly symmetrical: corresponding bars have unequal frequencies, 4 and 8 at the ends and 7 and 9 beside the central class"
+     }
+    ]
+   },
+   {
+    "label": "d",
+    "prompt": "Complete the statement below. Give numerical estimates correct to 1 decimal place.",
+    "marks": 5,
+    "slots": [
+     {
+      "label": "i",
+      "answer": "$19.2$"
+     },
+     {
+      "label": "ii",
+      "answer": "$9.6$"
+     },
+     {
+      "label": "iii",
+      "prompt": "Use your estimated median and semi-interquartile range to form the acceptable mass interval. Compare 58 kg with that interval and justify your decision.",
+      "answer": "not acceptable"
+     }
+    ]
+   }
+  ],
+  "rubric": [
+   {
+    "code": "CK1",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "a",
+    "slot_ref": "a.i",
+    "criterion": "States class width $50 - 40 = 10$ kg."
+   },
+   {
+    "code": "CK2",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Selects appropriate class midpoints."
+   },
+   {
+    "code": "AK1",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Obtains weighted total $\\sum fx = 1900$."
+   },
+   {
+    "code": "AK2",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "b",
+    "slot_ref": "b.i",
+    "criterion": "Divides by total frequency to obtain $1900 \\div 40 = 47.5$."
+   },
+   {
+    "code": "CK3",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.i",
+    "criterion": "Identifies the 20th value and the median class $40 \\le m < 50$."
+   },
+   {
+    "code": "AK3",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.ii",
+    "criterion": "Interpolates to obtain estimated median $40 + \\frac{20-11}{12}\\times10 = 47.5$."
+   },
+   {
+    "code": "R1",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "c",
+    "slot_ref": "c.iii",
+    "criterion": "Describes a feature of the distribution correctly and supports it with bar heights or frequencies from the histogram. Accept a single peak in the 40–50 kg class with frequency 12, or lack of exact symmetry supported by unequal corresponding bars. A qualified judgement of approximate symmetry is acceptable when supported by the central peak and decreasing frequencies towards both ends, with unequal corresponding bars acknowledged. Equal estimated mean and median alone, or an unsupported shape label, is insufficient."
+   },
+   {
+    "code": "CK4",
+    "profile": "CK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Identifies quartile positions as the 10th and 30th values."
+   },
+   {
+    "code": "AK4",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Interpolates to obtain $Q_1 \\approx 38.6$ and $Q_3 \\approx 57.8$."
+   },
+   {
+    "code": "AK5",
+    "profile": "AK",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.i",
+    "criterion": "Uses their quartiles to calculate interquartile range and semi-interquartile range."
+   },
+   {
+    "code": "R2",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.ii",
+    "criterion": "Expresses the estimated semi-interquartile range correct to 1 decimal place."
+   },
+   {
+    "code": "R3",
+    "profile": "R",
+    "mark_value": 1,
+    "part_label": "d",
+    "slot_ref": "d.iii",
+    "criterion": "Uses their estimated median and semi-interquartile range to form the acceptable interval and makes the correct acceptance decision for 58 kg relative to that interval."
+   }
+  ]
+ },
+ {
   "id": "6a8538a6ed771942b6d0dd9b",
   "why": "longest solution",
   "stem": "Answer the following questions.",
@@ -379,6 +552,7 @@
      },
      {
       "label": "reason",
+      "prompt": "State whether the beacon lies on ray $AB$ and justify your answer by relating its displacement from $A$ to $\\overrightarrow{AB}$.",
       "answer": "Yes; $\\overrightarrow{A\\text{beacon}}=\\dfrac{15}{2\\sqrt{13}}\\overrightarrow{AB}$, which is a positive scalar multiple of $\\overrightarrow{AB}$."
      }
     ]
@@ -480,177 +654,6 @@
     "part_label": "d",
     "slot_ref": "d.reason",
     "criterion": "Justifies that the beacon lies on ray $AB$ because its displacement from $A$ is a positive scalar multiple of $\\overrightarrow{AB}$."
-   }
-  ]
- },
- {
-  "id": "6a854012e7fc40f429797be2",
-  "why": "longest solution",
-  "stem": "Use the histogram to answer the questions below.",
-  "stimulus": "A building contractor recorded the masses of 40 bags of cement in a delivery. The histogram shows the results. A bag is accepted if its mass lies within one estimated semi-interquartile range of the estimated median mass.",
-  "worked_solution": "(a) The class width is $50-40=10$ kg.\n\n(b) The class midpoints are $25,35,45,55,65$. The weighted total is\n\\[\n(25\\times4)+(35\\times7)+(45\\times12)+(55\\times9)+(65\\times8)=1900.\n\\]\nThe total frequency is $40$, giving an estimated mean of $1900\\div40=47.5$ kg.\n\n(c) The median position is $\\frac{40}{2}=20$. The cumulative frequencies are $4,11,23,32,40$, so the median class is $40\\le m<50$. The estimated median is\n\\[\n40+\\left(\\frac{20-11}{12}\\right)\\times10=47.5\\text{ kg}.\n\\]\nThe estimated mean and estimated median are both $47.5$ kg, so the distribution is approximately symmetrical.\n\n(d) The lower-quartile position is $\\frac{40}{4}=10$ and the upper-quartile position is $\\frac{3\\times40}{4}=30$. The estimated lower quartile is\n\\[\n30+\\left(\\frac{10-4}{7}\\right)\\times10=38.6\\text{ kg} \\text{ approximately}.\n\\]\nThe estimated upper quartile is\n\\[\n50+\\left(\\frac{30-23}{9}\\right)\\times10=57.8\\text{ kg} \\text{ approximately}.\n\\]\nTherefore, the estimated interquartile range is $57.8-38.6=19.2$ kg and the estimated semi-interquartile range is $19.2\\div2=9.6$ kg. The acceptable interval is approximately $47.5\\pm9.6$, or from $37.9$ kg to $57.1$ kg. Since $58$ kg is outside this interval, the bag is not acceptable.",
-  "remediations": [
-   "The value 12 is the greatest frequency, not a mass estimate. For grouped data, multiply each class midpoint by its frequency and divide the total by 40.",
-   "The interquartile range is one number. Subtract the lower quartile from the upper quartile: $57.8-38.6=19.2$ kg."
-  ],
-  "parts": [
-   {
-    "label": "a",
-    "prompt": "State the class width for the interval $40 \\le m < 50$.",
-    "marks": 1,
-    "slots": [
-     {
-      "label": "i",
-      "answer": "$10$ kg"
-     }
-    ]
-   },
-   {
-    "label": "b",
-    "prompt": "Estimate the mean mass of a bag of cement.",
-    "marks": 3,
-    "slots": [
-     {
-      "label": "i",
-      "answer": "$47.5$ kg"
-     }
-    ]
-   },
-   {
-    "label": "c",
-    "prompt": "Complete the statement below.",
-    "marks": 3,
-    "slots": [
-     {
-      "label": "i",
-      "answer": "$40 \\le m < 50$"
-     },
-     {
-      "label": "ii",
-      "answer": "$47.5$"
-     },
-     {
-      "label": "iii",
-      "answer": "approximately symmetrical"
-     }
-    ]
-   },
-   {
-    "label": "d",
-    "prompt": "Complete the statement below. Give numerical estimates correct to 1 decimal place.",
-    "marks": 5,
-    "slots": [
-     {
-      "label": "i",
-      "answer": "$19.2$"
-     },
-     {
-      "label": "ii",
-      "answer": "$9.6$"
-     },
-     {
-      "label": "iii",
-      "answer": "not acceptable"
-     }
-    ]
-   }
-  ],
-  "rubric": [
-   {
-    "code": "CK1",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "a",
-    "slot_ref": "a.i",
-    "criterion": "States class width $50 - 40 = 10$ kg."
-   },
-   {
-    "code": "CK2",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "b",
-    "slot_ref": "b.i",
-    "criterion": "Selects appropriate class midpoints."
-   },
-   {
-    "code": "AK1",
-    "profile": "AK",
-    "mark_value": 1,
-    "part_label": "b",
-    "slot_ref": "b.i",
-    "criterion": "Obtains weighted total $\\sum fx = 1900$."
-   },
-   {
-    "code": "AK2",
-    "profile": "AK",
-    "mark_value": 1,
-    "part_label": "b",
-    "slot_ref": "b.i",
-    "criterion": "Divides by total frequency to obtain $1900 \\div 40 = 47.5$."
-   },
-   {
-    "code": "CK3",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "c",
-    "slot_ref": "c.i",
-    "criterion": "Identifies the 20th value and the median class $40 \\le m < 50$."
-   },
-   {
-    "code": "AK3",
-    "profile": "AK",
-    "mark_value": 1,
-    "part_label": "c",
-    "slot_ref": "c.ii",
-    "criterion": "Interpolates to obtain estimated median $40 + \\frac{20-11}{12}\\times10 = 47.5$."
-   },
-   {
-    "code": "R1",
-    "profile": "R",
-    "mark_value": 1,
-    "part_label": "c",
-    "slot_ref": "c.iii",
-    "criterion": "Compares their estimated mean and median to conclude that the distribution is approximately symmetrical."
-   },
-   {
-    "code": "CK4",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "d",
-    "slot_ref": "d.i",
-    "criterion": "Identifies quartile positions as the 10th and 30th values."
-   },
-   {
-    "code": "AK4",
-    "profile": "AK",
-    "mark_value": 1,
-    "part_label": "d",
-    "slot_ref": "d.i",
-    "criterion": "Interpolates to obtain $Q_1 \\approx 38.6$ and $Q_3 \\approx 57.8$."
-   },
-   {
-    "code": "AK5",
-    "profile": "AK",
-    "mark_value": 1,
-    "part_label": "d",
-    "slot_ref": "d.i",
-    "criterion": "Uses their quartiles to calculate interquartile range and semi-interquartile range."
-   },
-   {
-    "code": "R2",
-    "profile": "R",
-    "mark_value": 1,
-    "part_label": "d",
-    "slot_ref": "d.ii",
-    "criterion": "Expresses the estimated semi-interquartile range correct to 1 decimal place."
-   },
-   {
-    "code": "R3",
-    "profile": "R",
-    "mark_value": 1,
-    "part_label": "d",
-    "slot_ref": "d.iii",
-    "criterion": "Uses their estimated median plus or minus their semi-interquartile range to decide that $58$ kg is not acceptable."
    }
   ]
  },
@@ -877,6 +880,7 @@
      },
      {
       "label": "iii",
+      "prompt": "Calculate $\\overrightarrow{DA}$ using your position vectors, then compare it with your $\\overrightarrow{AB}$ and $\\overrightarrow{BC}$ using scalar multiples and direction.",
       "answer": "$\\overrightarrow{DA}=\\begin{pmatrix}4\\\\3\\end{pmatrix}=\\overrightarrow{AB}$ and $\\overrightarrow{BC}=2\\overrightarrow{AB}$, so the vectors are in the same direction."
      }
     ]
@@ -1337,10 +1341,12 @@
     "slots": [
      {
       "label": "i",
+      "prompt": "Could the stated area result from measurement error alone?",
       "answer": "No"
      },
      {
       "label": "ii",
+      "prompt": "Compare $3760\\text{ m}^2$ with your minimum possible area to justify your decision.",
       "answer": "$3760\\text{ m}^2$ is less than the minimum possible area of $3777\\text{ m}^2$"
      }
     ]
@@ -1490,6 +1496,7 @@
      },
      {
       "label": "reason",
+      "prompt": "State the magnitude required for a unit vector and calculate the magnitude of the given vector to support your answer.",
       "answer": "\\left|\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}\\right|=1\\text{ and }\\begin{pmatrix}\\frac{3}{5}\\\\\\frac{4}{5}\\end{pmatrix}=\\frac{1}{10}\\overrightarrow{AB}"
      }
     ]
@@ -2244,7 +2251,7 @@
   "remediations": [
    "The interquartile range is one number, found by subtracting the lower quartile from the upper quartile. It is not the pair of quartile values or a class interval.",
    "The frequency 28 identifies the most common class. The modal class is the waiting-time interval 20-29 min.",
-   "For grouped-data interpolation, use class boundaries. The relevant lower boundaries are 9.5 and 19.5, not 10 and 20."
+   "Subtracting the rounded quartiles, 28.3 - 18.9, gives 9.4. Keep the unrounded quartile estimates in the subtraction, then round the interquartile range to one decimal place."
   ],
   "parts": [
    {
@@ -2403,7 +2410,7 @@
     "mark_value": 1,
     "part_label": "d",
     "slot_ref": "d.interquartile_range",
-    "criterion": "Expresses the quartile estimates and interquartile range to 1 decimal place"
+    "criterion": "Expresses the interquartile range to 1 decimal place"
    }
   ]
  },
@@ -2923,6 +2930,7 @@
      },
      {
       "label": "reason",
+      "prompt": "Compare your estimated mean and semi-interquartile range with both stated acceptance limits.",
       "answer": "$34.5 \\geq 34$ and $8.4 < 9$"
      }
     ]
@@ -3042,7 +3050,7 @@
    {
     "label": "a",
     "prompt": "Write, in column matrix form, the vector which maps $A$ onto $A'$.",
-    "marks": 2,
+    "marks": 1,
     "slots": [
      {
       "label": "i",
@@ -3100,6 +3108,7 @@
      },
      {
       "label": "ii",
+      "prompt": "Justify the first conclusion using corresponding angles and side lengths.",
       "answer": "corresponding angles are equal and corresponding sides are in the ratio $2:1$"
      },
      {
@@ -3108,6 +3117,7 @@
      },
      {
       "label": "iv",
+      "prompt": "Justify why the triangles are not congruent.",
       "answer": "corresponding sides are not equal in length"
      },
      {
@@ -3118,14 +3128,6 @@
    }
   ],
   "rubric": [
-   {
-    "code": "CK1",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "a",
-    "slot_ref": "a.i",
-    "criterion": "Identifies the displacement as 5 units right and 2 units down."
-   },
    {
     "code": "AK1",
     "profile": "AK",
@@ -3809,7 +3811,7 @@
    {
     "label": "c",
     "prompt": "List all the subsets of $S$ which have exactly two elements.",
-    "marks": 4,
+    "marks": 2,
     "slots": [
      {
       "label": "i",
@@ -3824,10 +3826,12 @@
     "slots": [
      {
       "label": "i",
+      "prompt": "Number of accepted inspection pairs",
       "answer": "$4$"
      },
      {
       "label": "ii",
+      "prompt": "Identify the accepted pairs and justify them by testing divisibility of their products by your number of commuters who used both routes.",
       "answer": "$1\\times6$, $2\\times3$, $2\\times6$ and $3\\times6$ are divisible by $6$"
      }
     ]
@@ -3875,14 +3879,6 @@
     "criterion": "Writes the factors in roster form"
    },
    {
-    "code": "CK3",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "c",
-    "slot_ref": "c.i",
-    "criterion": "Recognises that each required subset contains two distinct elements"
-   },
-   {
     "code": "AK3",
     "profile": "AK",
     "mark_value": 1,
@@ -3896,15 +3892,7 @@
     "mark_value": 1,
     "part_label": "c",
     "slot_ref": "c.i",
-    "criterion": "Lists $\\{2,3\\}$ and $\\{2,6\\}$"
-   },
-   {
-    "code": "AK5",
-    "profile": "AK",
-    "mark_value": 1,
-    "part_label": "c",
-    "slot_ref": "c.i",
-    "criterion": "Lists $\\{3,6\\}$"
+    "criterion": "Lists $\\{2,3\\}$, $\\{2,6\\}$ and $\\{3,6\\}$"
    },
    {
     "code": "R2",
@@ -3957,7 +3945,7 @@
    {
     "label": "b",
     "prompt": "List all the two-element subsets of $A$ which contain type 3.",
-    "marks": 3,
+    "marks": 2,
     "slots": [
      {
       "label": "i",
@@ -4004,14 +3992,6 @@
     "part_label": "a",
     "slot_ref": "a.i",
     "criterion": "Writes the identified elements correctly in listing form"
-   },
-   {
-    "code": "CK2",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "b",
-    "slot_ref": "b.i",
-    "criterion": "Recognises that each required subset contains type 3 and one other element of \"their\" set $A$"
    },
    {
     "code": "AK2",
@@ -4102,7 +4082,7 @@
    {
     "label": "a",
     "prompt": "Write, in listing form, the set $L$ of players who play at least one of the two sports.",
-    "marks": 2,
+    "marks": 1,
     "slots": [
      {
       "label": "i",
@@ -4124,7 +4104,7 @@
    {
     "label": "c",
     "prompt": "List all the two-member subsets of $P$ whose members both play netball.",
-    "marks": 3,
+    "marks": 2,
     "slots": [
      {
       "label": "i",
@@ -4139,24 +4119,18 @@
     "slots": [
      {
       "label": "i",
+      "prompt": "Is the coach's claim correct?",
       "answer": "Yes"
      },
      {
       "label": "ii",
-      "answer": "$3 \\times 2 = 6$"
+      "prompt": "Use your two-member subsets for the netball-only pair, identify the possible players who play both sports, and combine the choices to justify the team count.",
+      "answer": "The netball-only pairs are $\\{A,D\\}$, $\\{A,K\\}$ and $\\{D,K\\}$, and $R$ or $S$ can be the player who plays both sports, so $3\\times2=6$ teams."
      }
     ]
    }
   ],
   "rubric": [
-   {
-    "code": "CK1",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "a",
-    "slot_ref": "a.i",
-    "criterion": "Recognises that players in at least one sport occupy the three inner regions."
-   },
    {
     "code": "AK1",
     "profile": "AK",
@@ -4188,14 +4162,6 @@
     "part_label": "b",
     "slot_ref": "b.i",
     "criterion": "CAO $P=\\{A,D,K,M,J,N\\}$."
-   },
-   {
-    "code": "CK3",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "c",
-    "slot_ref": "c.i",
-    "criterion": "Identifies $A$, $D$ and $K$ as the netball-only members of \"their\" set $P$."
    },
    {
     "code": "AK4",
@@ -4613,7 +4579,7 @@
    {
     "label": "a",
     "prompt": "Write the sample space for this experiment.",
-    "marks": 3,
+    "marks": 2,
     "slots": [
      {
       "label": "i",
@@ -4654,20 +4620,13 @@
      },
      {
       "label": "reason",
+      "prompt": "Compare your probability from (c) with $\\frac{1}{3}$ and justify the decision about using the moisture test.",
       "answer": "\\frac{1}{4}<\\frac{1}{3}"
      }
     ]
    }
   ],
   "rubric": [
-   {
-    "code": "CK1",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "a",
-    "slot_ref": "a.i",
-    "criterion": "Recognises that each outcome consists of a card number and a coin result"
-   },
    {
     "code": "AK1",
     "profile": "AK",
@@ -4859,6 +4818,7 @@
      },
      {
       "label": "ii",
+      "prompt": "Use your changed-rule reward outcomes to count those containing card $2$ and those containing spinner result $P$. Compare the counts.",
       "answer": "the reward outcomes are $(P,1)$, $(G,2)$ and $(M,2)$; card $2$ occurs in two outcomes while $P$ occurs in one outcome"
      }
     ]
@@ -4977,7 +4937,7 @@
    {
     "label": "a",
     "prompt": "List the sample space for the colour of the token selected.",
-    "marks": 2,
+    "marks": 1,
     "slots": [
      {
       "label": "i",
@@ -5020,14 +4980,6 @@
    }
   ],
   "rubric": [
-   {
-    "code": "CK1",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "a",
-    "slot_ref": "a.i",
-    "criterion": "Identifies red, blue and green as the possible token colours"
-   },
    {
     "code": "AK1",
     "profile": "AK",
@@ -5288,7 +5240,7 @@
    {
     "label": "b",
     "prompt": "State the solutions of $f(x)=g(x)$.",
-    "marks": 3,
+    "marks": 2,
     "slots": [
      {
       "label": "i",
@@ -5340,14 +5292,6 @@
     "part_label": "a",
     "slot_ref": "a.i",
     "criterion": "Draws the straight line $y=x-1$ correctly."
-   },
-   {
-    "code": "CK2",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "b",
-    "slot_ref": "b.i",
-    "criterion": "Recognises that the solutions are given by the $x$-coordinates of the intersections."
    },
    {
     "code": "AK4",
@@ -5417,7 +5361,7 @@
    {
     "label": "b",
     "prompt": "State the roots of $f$.",
-    "marks": 2,
+    "marks": 1,
     "slots": [
      {
       "label": "i",
@@ -5480,14 +5424,6 @@
     "part_label": "a",
     "slot_ref": "a.i",
     "criterion": "Draws the straight line $y=x+1$ correctly"
-   },
-   {
-    "code": "CK2",
-    "profile": "CK",
-    "mark_value": 1,
-    "part_label": "b",
-    "slot_ref": "b.i",
-    "criterion": "Identifies the roots as the $x$-intercepts of $f$"
    },
    {
     "code": "AK4",
