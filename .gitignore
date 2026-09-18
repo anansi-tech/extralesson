@@ -52,3 +52,7 @@ design/golden/field/*
 calibration/results/
 # The gallery is a rendering of the code, remade by `pnpm gallery`; never committed.
 calibration/gallery/
+
+# .claude/settings.json IS committed — the no-clobber hook is the repo's, not a
+# preference. A personal override of it is not.
+.claude/settings.local.json
