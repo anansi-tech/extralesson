@@ -11,7 +11,7 @@ import { TypedInput } from './typed-input';
 import { HintLines, SymbolStrip } from './affordance';
 import { WorkingPhoto, takesOf } from './working-photo';
 import { captureState, type CaptureState } from './capture-state';
-import { MAX_TAKES } from '@/lib/grade/transcribe';
+import { MAX_TAKES } from '@/lib/grade/takes';
 import { MethodRows, WorkingRead } from './working-read';
 import { Html } from './html';
 import { isPositionalLabel } from '@/lib/notation';

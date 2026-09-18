@@ -23,7 +23,7 @@ import { inputAffordance } from '@/lib/grade/input-hints';
 import QuestionCard, { type CardQuestion } from './question-card';
 import { SessionBar } from './session-bar';
 import type { ReadResult } from './capture';
-import { MAX_TAKES } from '@/lib/grade/transcribe';
+import { MAX_TAKES } from '@/lib/grade/takes';
 import { answersEquivalentAny } from '@/lib/grade/equivalence';
 import { hintLine } from '@/lib/grade/reason';
 import { roundingOf } from '@/lib/grade/rounding';

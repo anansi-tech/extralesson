@@ -14,7 +14,8 @@ import {
 } from '@/lib/db';
 import { requireSession } from '@/lib/auth/session';
 import { writtenSlots } from '@/lib/grade/mark';
-import { MAX_BYTES, MAX_TAKES, transcribeWorking, type TranscriptionResult } from '@/lib/grade/transcribe';
+import { MAX_BYTES, transcribeWorking, type TranscriptionResult } from '@/lib/grade/transcribe';
+import { MAX_TAKES } from '@/lib/grade/takes';
 import { constructionRows, alreadyEarnedByMethod } from '@/lib/grade/method-marks';
 import { constructionChecks } from '@/lib/grade/construction';
 import { checkConstruction } from '@/lib/grade/check-construction';

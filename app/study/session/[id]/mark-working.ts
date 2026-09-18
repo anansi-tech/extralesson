@@ -1,7 +1,8 @@
 import { renderMathHtml } from '@/lib/katex';
 import { Attempt, CapturedImage, LineRejected, PracticeSession, Question, Transcription } from '@/lib/db';
 import { markableSlots, writtenSlots } from '@/lib/grade/mark';
-import { MAX_TAKES, linesForSlot, type TranscriptionResult } from '@/lib/grade/transcribe';
+import { linesForSlot, type TranscriptionResult } from '@/lib/grade/transcribe';
+import { MAX_TAKES } from '@/lib/grade/takes';
 import { earnableByMethod, constructionRows, alreadyEarnedByMethod, applyFormatDependency, requireEvidence, requireGrounding, oneDecisionPerRow, supportedSlips } from '@/lib/grade/method-marks';
 import { markMethod, type MethodDecision, type Slip } from '@/lib/grade/mark-method';
 import { MARKER_VERSION } from '@/lib/grade/version';

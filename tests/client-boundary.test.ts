@@ -33,9 +33,14 @@ const read = (file: string) => readFileSync(file, 'utf8');
 const show = (file: string) => relative(ROOT, file);
 
 /**
- * Every local import a file makes AT RUNTIME, resolved to a file on disk.
+ * Every import a file makes AT RUNTIME: local ones resolved to a file on disk,
+ * bare ones kept as the package they name.
+ *
  * `import type` is erased before anything is bundled, so a client component may
- * take a type from a server module and ship none of it — three of them do.
+ * take a type from a server module and ship none of it — four of them do. An
+ * INLINE `import('x').Type` is erased too, but it is indistinguishable here from
+ * a real dynamic import, so it counts as runtime: take a type with `import
+ * type`, which is what every file in this codebase does.
  */
 function importsOf(file: string): string[] {
   const source = read(file);
@@ -47,8 +52,13 @@ function importsOf(file: string): string[] {
 
   const resolved: string[] = [];
   for (const spec of specifiers) {
-    const base = spec.startsWith('@/') ? join(ROOT, spec.slice(2)) : spec.startsWith('.') ? resolve(dirname(file), spec) : null;
-    if (!base) continue;
+    // A bare specifier is a package, kept under its install name so the second
+    // question can weigh it. `@scope/name/deep` is still `@scope/name`.
+    if (!spec.startsWith('@/') && !spec.startsWith('.')) {
+      resolved.push(PACKAGE + (spec.startsWith('@') ? spec.split('/').slice(0, 2).join('/') : spec.split('/')[0]));
+      continue;
+    }
+    const base = spec.startsWith('@/') ? join(ROOT, spec.slice(2)) : resolve(dirname(file), spec);
     const hit = [...EXTENSIONS.map((e) => base + e), ...EXTENSIONS.map((e) => join(base, 'index' + e)), base].find(
       (p) => existsSync(p) && statSync(p).isFile(),
     );
@@ -56,6 +66,8 @@ function importsOf(file: string): string[] {
   }
   return resolved;
 }
+
+const PACKAGE = 'package:';
 
 const IMPORTS = new Map(FILES.map((f) => [f, importsOf(f)]));
 const directive = (file: string, name: string) => new RegExp(`^(['"])use ${name}\\1`).test(read(file).trimStart().split('\n')[0] ?? '');
@@ -79,7 +91,7 @@ function chainToDatabase(entry: string): string[] | null {
   while (queue.length) {
     const chain = queue.shift()!;
     for (const next of IMPORTS.get(chain[chain.length - 1]) ?? []) {
-      if (seen.has(next)) continue;
+      if (next.startsWith(PACKAGE) || seen.has(next)) continue;
       seen.add(next);
       const extended = [...chain, next];
       if (isServerOnly(next)) return extended;
@@ -88,6 +100,74 @@ function chainToDatabase(entry: string): string[] | null {
     }
   }
   return null;
+}
+
+/**
+ * SECOND QUESTION: WHAT DOES A CLIENT ENTRY DRAG IN BEHIND IT?
+ *
+ * question-card.tsx imported one constant — MAX_TAKES, the number 2 — from
+ * lib/grade/transcribe.ts, and behind it came the AI SDK, zod, and read-fields
+ * → input-shape → equivalence → mathjs. Measured with `next build`, that put
+ * 61.4 kB into /study/session/[id] (78.3 kB → 16.9 kB) and 62 kB into its
+ * First Load JS (184 kB → 122 kB), on a product used on phones.
+ *
+ * INSTALLED SIZE IS A TRIPWIRE, NOT THE BILL, and the same build says why: of
+ * those packages mathjs is the biggest on disk at 17.6 MB and shipped NOTHING
+ * — webpack shook every byte of it out — while zod at 4.8 MB shipped most of
+ * the 61 kB. So this cannot tell you what a package costs. What it can tell you
+ * is that a client entry has reached for something it has no business with,
+ * which is the shape the defect had. Bytes are measured by a build, and a build
+ * is not in either hook.
+ *
+ * The bar is what is actually there: after the move NO client entry reaches any
+ * package outside the framework, so anything over the threshold is new. Raise
+ * the threshold or allow a package by name when a client genuinely needs one —
+ * deliberately, in this file, where the decision is read.
+ */
+const FRAMEWORK = /^(react|react-dom|next|node:)/;
+const ALLOWED_PACKAGES: string[] = [];
+const HEAVY_KB = 500;
+
+/** Installed size, counting only far enough to answer the question. */
+function packageKb(pkg: string, limit: number): number {
+  const root = join(ROOT, 'node_modules', ...pkg.split('/'));
+  if (!existsSync(root)) return 0;
+  let total = 0;
+  const stack = [root];
+  while (stack.length) {
+    const dir = stack.pop()!;
+    for (const entry of readdirSync(dir)) {
+      const full = join(dir, entry);
+      const stat = statSync(full);
+      if (stat.isDirectory()) stack.push(full);
+      else total += stat.size;
+      if (total / 1024 > limit) return limit + 1;
+    }
+  }
+  return Math.round(total / 1024);
+}
+
+/** The shortest path from a client module to a package, if there is one. */
+function chainToPackage(entry: string): string[][] {
+  const out: string[][] = [];
+  const queue: string[][] = [[entry]];
+  const seen = new Set([entry]);
+  while (queue.length) {
+    const chain = queue.shift()!;
+    for (const next of IMPORTS.get(chain[chain.length - 1]) ?? []) {
+      if (next.startsWith(PACKAGE)) {
+        const pkg = next.slice(PACKAGE.length);
+        if (FRAMEWORK.test(pkg) || ALLOWED_PACKAGES.includes(pkg)) continue;
+        out.push([...chain, pkg]);
+        continue;
+      }
+      if (seen.has(next)) continue;
+      seen.add(next);
+      if (isServerBoundary(next)) continue;
+      queue.push([...chain, next]);
+    }
+  }
+  return out;
 }
 
 describe('the client/server boundary', () => {
@@ -105,6 +185,27 @@ describe('the client/server boundary', () => {
       .map((r) => r.chain!.map(show).join('\n      → '));
 
     expect(broken, `a client bundle that reaches the database throws in the browser:\n\n   ${broken.join('\n\n   ')}\n`).toEqual([]);
+  });
+
+  it('no client module reaches a package over the size threshold, however far round', () => {
+    const heavy = clients.flatMap((entry) =>
+      chainToPackage(entry)
+        .map((chain) => ({ chain, kb: packageKb(chain[chain.length - 1], HEAVY_KB) }))
+        .filter((r) => r.kb > HEAVY_KB)
+        .map((r) => `${r.chain[r.chain.length - 1]} (${r.kb > HEAVY_KB ? `over ${HEAVY_KB}` : r.kb} kB installed)\n      ${r.chain.map((p, i) => (i === r.chain.length - 1 ? p : show(p))).join('\n      → ')}`),
+    );
+    expect(heavy, `a client bundle reaching for this had better mean to:\n\n   ${heavy.join('\n\n   ')}\n`).toEqual([]);
+  });
+
+  it('would still catch the import that put zod and the AI SDK on a phone', () => {
+    // MAX_TAKES moved to lib/grade/takes.ts, which imports nothing, and the
+    // reader it used to sit beside still reaches all of it.
+    expect(read(join(ROOT, 'lib', 'grade', 'takes.ts'))).not.toMatch(/(^|\n)\s*import\s/);
+    const reader = join(ROOT, 'lib', 'grade', 'transcribe.ts');
+    const packages = chainToPackage(reader).map((c) => c[c.length - 1]);
+    expect(packages, 'the reader still pulls what the card no longer does').toContain('zod');
+    expect(packages).toContain('mathjs');
+    expect(chainToPackage(join(ROOT, 'app', 'study', 'session', '[id]', 'question-card.tsx'))).toEqual([]);
   });
 
   it('stops at a server action, which is how a client is meant to reach the database', () => {

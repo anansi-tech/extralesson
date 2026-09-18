@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { captureWorking, readWorking, type ReadResult } from './capture';
 import type { CaptureResult } from './mark-working';
+import type { Prefill } from '@/lib/grade/prefill';
 import { WorkingRead } from './working-read';
 import { captureState, retakesLeft, type CaptureState, type Take } from './capture-state';
-import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
+import type { TranscriptionResult } from '@/lib/grade/transcribe';
+import { MAX_TAKES } from '@/lib/grade/takes';
 import { Refusal } from '../../../refusal';
 import { TOO_MANY, windowMinutes } from '@/lib/auth/limits';
 import { LANDING } from '@/lib/landing-content';
@@ -64,7 +66,7 @@ export function WorkingPhoto({
   initial?: (ReadResult | CaptureResult) | null;
   /** The boxes to fill from a read; only ever called before submit. */
   onRead?: (
-    prefill: import('@/lib/grade/prefill').Prefill,
+    prefill: Prefill,
     differs: Record<string, { read: string; held: string }>,
   ) => void;
   /** The one state of the photograph, as it changes: the card orders and words itself by it. */

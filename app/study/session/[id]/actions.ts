@@ -17,7 +17,8 @@ import { ANSWER_REF_RE } from '@/lib/notation';
 import { renderVisual } from '@/lib/visuals';
 import { constructActs, constructFamily, figureGivesAnswer } from '@/lib/targets/construct';
 import { markWorking, type CaptureResult } from './mark-working';
-import { MAX_TAKES, type TranscriptionResult } from '@/lib/grade/transcribe';
+import type { TranscriptionResult } from '@/lib/grade/transcribe';
+import { MAX_TAKES } from '@/lib/grade/takes';
 import { isDuplicateKey } from '@/lib/db';
 import { splitStoredAnswer } from '@/lib/study/attempt-answers';
 

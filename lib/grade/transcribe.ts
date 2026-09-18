@@ -7,8 +7,8 @@ import { normaliseSlotRef, readFields } from './read-fields';
  * READING A PHOTOGRAPHED PAGE, AND NOTHING ELSE: marking is a separate call
  * over what this produced, in the conventions the grader already parses. A
  * retake is for a bad photograph, not a better answer. ROUND_2 §2, §3.
+ * How many takes that allows is in ./takes, which imports nothing.
  */
-export const MAX_TAKES = 2;
 
 /**
  * ~1.5MB after the device has scaled it down; a phone photo is far larger.
