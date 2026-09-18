@@ -72,3 +72,23 @@ if ! pnpm verdicts >/tmp/el-pre-push-verdicts.log 2>&1; then
   exit 1
 fi
 tail -1 /tmp/el-pre-push-verdicts.log
+
+# WHAT THE READER PUT IN EACH BOX, against what a person said was on the page.
+# The verdicts above hold the MARKER to what it decided last time; they say
+# nothing about the step before it, where a photograph becomes the entries a
+# student is shown and asked to check. A read that quietly stops filling a box,
+# or fills it with the wrong value, changes no verdict at all: the box is simply
+# empty or wrong when they hand in, and the first report of it is a lost mark.
+#
+# The bar is zero wrong and at most one missing, over the hand-labelled holdout
+# in design/research/prefill-holdout-labels.md. REWRITTEN — the same value spelt
+# another way — is reported and does not fail, until there is enough of it to
+# say whether a student reading their own answer back would object.
+echo "checking the prefill holdout…"
+if ! pnpm eval:holdout >/tmp/el-pre-push-prefill.log 2>&1; then
+  echo "PREFILL HOLDOUT FAILED — push refused."
+  cat /tmp/el-pre-push-prefill.log
+  echo "(bypass with --no-verify if you know why)"
+  exit 1
+fi
+tail -2 /tmp/el-pre-push-prefill.log

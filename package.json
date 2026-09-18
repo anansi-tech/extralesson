@@ -28,6 +28,7 @@
     "hints:next": "tsx scripts/generate-hints.ts --next",
     "golden:pull": "tsx scripts/golden-pull.ts",
     "verdicts": "tsx scripts/verdicts.ts",
+    "eval:holdout": "tsx scripts/eval-prefill-holdout.ts",
     "verdicts:update": "tsx scripts/verdicts.ts --update"
   },
   "dependencies": {
