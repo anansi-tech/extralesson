@@ -146,7 +146,10 @@ describe('the gate refuses a rubric row that cannot be claimed', () => {
       }],
       rubric: [{ code: 'AK1', profile: 'AK', criterion: 'Reaches $55\\%$, the required proportion', mark_value: 2, slot_ref: 'a.i', part_label: 'a' }],
     } as never);
-    const res = await approvalGate(withTemplates(inStatement as never) as QuestionDraft, agree);
+    // 'statement' is passed as known: the cloze form is refused for NEW
+    // questions, and this one stands for one already in the bank, where the
+    // templates still have to be derived correctly.
+    const res = await approvalGate(withTemplates(inStatement as never) as QuestionDraft, agree, ['statement']);
     expect(res.ok).toBe(false);
     expect(res.failed).toContain('template');
     expect(res.reason).toContain('is a question constant and the value of a.i');
@@ -157,5 +160,44 @@ describe('the gate refuses a rubric row that cannot be claimed', () => {
     // An MCQ carries exactly one part and no rubric, so it has no claims to make.
     const mcq = { ...baseDraft, kind: 'mcq', representation: 'prose', visual: undefined, options: ['40°', '50°', '60°', '70°'], answer_key: 0, rubric: undefined } as unknown as QuestionDraft;
     expect((await approvalGate(mcq, agree)).failed).not.toContain('template');
+  });
+});
+
+/**
+ * THE CLOZE FORM IS PAPER 03, NOT PAPER 02. A part printing a sentence with
+ * gaps is the School-Based Assessment's shape; four Paper 02s and the 2027
+ * syllabus's Glossary of Examination Terms — 45 command words, no "Complete" —
+ * say the written paper does not set it. A student practising for Paper 02
+ * should not meet an item Paper 02 does not set.
+ */
+describe('a part that completes a statement in place', () => {
+  const cloze = {
+    ...baseDraft,
+    representation: 'prose',
+    visual: undefined,
+    parts: [{
+      label: 'a', prompt: 'Complete the statement below.', marks: 2,
+      statement: 'The third angle is {} degrees.',
+      slots: [{ label: 'i', answer: '40', response_mode: 'answer' }],
+    }],
+  } as unknown as QuestionDraft;
+
+  it('is refused on a new question, and says which part', async () => {
+    const res = await approvalGate(withTemplates(cloze as never) as QuestionDraft, agree);
+    expect(res.ok).toBe(false);
+    expect(res.failed).toContain('statement');
+    expect(res.reason).toContain('Paper 03 form');
+    expect(res.reason).toContain('(a)');
+  });
+
+  it('is tolerated where it was already there, so an unrelated edit still lands', async () => {
+    const res = await approvalGate(withTemplates(cloze as never) as QuestionDraft, agree, ['statement']);
+    expect(res.ok).toBe(true);
+    expect(res.failed).toContain('statement');
+    expect(res.tolerated).toContain('statement');
+  });
+
+  it('says nothing about a part that has no statement', async () => {
+    expect((await approvalGate(withTemplates(baseDraft as never) as QuestionDraft, agree)).failed).not.toContain('statement');
   });
 });

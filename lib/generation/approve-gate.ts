@@ -17,6 +17,7 @@ export type GateCheck =
   | 'unparseable'
   | 'read_off'
   | 'template'
+  | 'statement'
   | 'solve';
 
 export interface ApprovalGateResult {
@@ -116,6 +117,36 @@ export async function approvalGate(
    * requirement written only in a cloze was invisible and nine rows templated
    * it as a student value.
    */
+  /**
+   * THE CLOZE FORM IS PAPER 03, NOT PAPER 02. A part that prints a sentence with
+   * gaps in it — "The median class is {}. The estimated median is {} kg." — is
+   * the School-Based Assessment's shape, not the written paper's.
+   *
+   * Read out of design/syllabus-2027.pdf rather than assumed. Appendix 1A,
+   * "Glossary of Examination Terms" (pages 64-67), lists exactly 45 command
+   * words and "Complete" is not among them. Across all 222 pages the phrase
+   * "Complete the statement" occurs ONCE, on page 189 — inside the specimen
+   * coded 01234032, Paper 032, which runs pages 171-208. The Paper 02 specimen
+   * is 01234020, pages 114-168, and contains no such item; "blank", "cloze" and
+   * "gap" appear nowhere in the syllabus, and every "fill in" is a cover sheet
+   * telling a candidate to write their name. So the form is not merely absent
+   * from Paper 02 — it is present in Paper 032, which is where it belongs.
+   * A student practising for Paper 02 should not meet an item Paper 02 does
+   * not set.
+   *
+   * EXISTING QUESTIONS ARE NOT REOPENED BY THIS. The caller passes 'statement'
+   * in `known` when the stored question already had one, so a cloze question
+   * already in the bank can still be edited for anything else; what is refused
+   * is a NEW one, or an edit that introduces the form where it was not.
+   */
+  if (draft.parts.some((p) => p.statement)) {
+    const which = draft.parts.filter((p) => p.statement).map((p) => `(${p.label})`).join(' ');
+    found.push({
+      check: 'statement',
+      reason: `a part completes a statement in place, which is a Paper 03 form and not one Paper 02 sets: ${which}`,
+    });
+  }
+
   // An MCQ has no rubric rows, so it has no claims to render.
   const rubric = 'rubric' in draft ? (draft.rubric ?? []) : [];
   if (rubric.length) {

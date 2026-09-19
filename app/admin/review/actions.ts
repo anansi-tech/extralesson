@@ -115,13 +115,21 @@ export async function saveQuestionEdit(
   // call; a save that cannot land must not pay for one.
   const _id = IdZ.parse(id);
   await dbConnect();
-  const existing = await Question.findById(_id).select('gate').lean<{ gate?: { failed?: string[] } } | null>();
+  const existing = await Question.findById(_id)
+    .select('gate parts')
+    .lean<{ gate?: { failed?: string[] }; parts?: { statement?: string }[] } | null>();
   if (!existing) {
     return { error: 'Nothing was written: this question is no longer in the bank. Reload the queue.' };
   }
   // WHAT THE GATE FOUND LAST TIME. A check that was already failing is reported
   // and does not refuse this save; one that was passing and now fails does.
-  const known = (existing.gate?.failed ?? []) as GateCheck[];
+  const known = [
+    ...(existing.gate?.failed ?? []),
+    // The cloze form is refused for NEW questions only. One already in the bank
+    // keeps it, so an edit to anything else about it is not blocked by a shape
+    // that was there before this rule was.
+    ...((existing.parts ?? []).some((p) => p.statement) ? ['statement'] : []),
+  ] as GateCheck[];
   // EVERY ROW'S CLAIM, DERIVED BEFORE THE GATE SEES IT. An edit changes the
   // criteria and the answers the criteria are read against, so a template from
   // the previous save can name a value that is no longer there. Derived here

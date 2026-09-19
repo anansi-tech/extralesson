@@ -53,7 +53,13 @@ const PartSchema = new Schema(
     prompt: { type: String, required: true },
     marks: { type: Number, required: true },
     slots: { type: [SlotSchema], required: true },
-    // A statement completed in place, {} per gap — the paper's cloze item.
+    // A statement completed in place, {} per gap. KEPT FOR THE QUESTIONS THAT
+    // HAVE IT, not offered to new ones: this is a Paper 03 convention, and the
+    // 2027 syllabus's Glossary of Examination Terms (Appendix 1A, pages 64-67)
+    // lists 45 command words without "Complete" among them, and the one
+    // "Complete the statement" in the whole syllabus is on page 189, inside the
+    // Paper 032 specimen. The comment here used to say "the paper's cloze
+    // item", which was asserted rather than checked; it is checked now.
     statement: { type: String },
   },
   { _id: false },

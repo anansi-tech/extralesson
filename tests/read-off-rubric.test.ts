@@ -46,10 +46,14 @@ describe('a slot whose whole rubric is reading', () => {
 });
 
 describe('the generation recipe', () => {
-  it('tells the writer a cloze blank never restates a value found earlier', () => {
+  // The cloze form is Paper 03, not Paper 02, so the prompt no longer offers it
+  // and the rules that served it went with it. The approval gate refuses a new
+  // one; questions already in the bank keep theirs.
+  it('does not offer a statement the student completes in place', () => {
     const prompt = readFileSync('lib/prompts/question-gen.ts', 'utf8');
-    expect(prompt).toContain('A CLOZE BLANK NEVER RESTATES A VALUE FOUND EARLIER');
-    expect(prompt).toMatch(/asks the candidate to copy their own work across/);
+    expect(prompt).not.toContain('STATEMENT THE STUDENT COMPLETES IN PLACE');
+    expect(prompt).not.toContain('A CLOZE BLANK NEVER RESTATES A VALUE FOUND EARLIER');
+    expect(prompt).not.toContain('A CLOZE GAP {} MUST SIT OUTSIDE MATHS');
   });
 
   it('tells the writer a figure read is worth one mark', () => {
