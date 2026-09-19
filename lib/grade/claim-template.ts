@@ -19,7 +19,7 @@ export interface ScopeSlot {
 export interface Authored {
   stem: string;
   stimulus?: string;
-  parts: { label: string; prompt: string; statement?: string; slots: { label: string; answer?: string; prompt?: string; depends_on?: string[] }[] }[];
+  parts: { label: string; prompt: string; statement?: string; slots: { label: string; answer?: string; prompt?: string; depends_on?: string[]; response_mode?: string }[] }[];
   visual?: { params?: unknown };
   stimulus_table?: unknown;
   rubric?: { code: string; criterion: string; slot_ref: string; template?: string }[];
@@ -119,11 +119,21 @@ export function slotsOf(q: Authored): Map<string, ScopeSlot> {
 export function templatesFor(q: Authored): { code: string; slotRef: string; derived: Derived }[] {
   const slots = slotsOf(q);
   const text = questionText(q);
-  return (q.rubric ?? []).map((r) => ({
-    code: r.code,
-    slotRef: r.slot_ref,
-    derived: deriveTemplate({ criterion: r.criterion, slotRef: r.slot_ref, slots, questionText: text }),
-  }));
+  const modes = new Map(
+    (q.parts ?? []).flatMap((p) => p.slots.map((sl) => [`${p.label}.${sl.label}` as string, sl.response_mode ?? 'answer'] as const)),
+  );
+  return (q.rubric ?? []).map((r) => {
+    const derived = deriveTemplate({ criterion: r.criterion, slotRef: r.slot_ref, slots, questionText: text });
+    // A SHOW-THAT PRINTS ITS OWN ANSWER. "Show that the total is $3 300" states
+    // the target in the question, so 3 300 is a constant AND the slot's value by
+    // construction — the collision is the form, not a fault, and no rewording
+    // removes it. The criterion keeps its literals, which is what an ambiguous
+    // row does anyway; what goes is calling it ambiguous.
+    if (derived.ambiguous && modes.get(r.slot_ref) === 'show_that') {
+      return { code: r.code, slotRef: r.slot_ref, derived: { template: r.criterion, refs: [] } };
+    }
+    return { code: r.code, slotRef: r.slot_ref, derived };
+  });
 }
 
 /**

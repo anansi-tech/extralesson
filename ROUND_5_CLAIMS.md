@@ -117,10 +117,38 @@ The derivation that produced all of them is fixed: `questionText` now reads
 part statements, so a requirement written only in a cloze is seen as the
 constant it is.
 
+## A literal is correct — settled, not a backlog
+
+The authoring rule below was deferred, and the deferral had a cost nobody was
+watching: nothing derived a template after the migration, so every question
+authored since carried none, and `claimsFor` read `template ?? criterion` and
+marked them against the author's numbers. A student who answered 45 was shown
+"CAO 47.5". Both write paths derive now, the approval gate refuses a row it
+cannot render, and the fallback is gone from the type.
+
+What the gate cannot do is invent a reading. **137 of 474 approved questions —
+304 rows of 4705 — have a criterion whose literal genuinely collides with an
+answer**, and each is recorded as a known `template` failure so a pre-existing
+collision never blocks an unrelated edit, the treatment fe84af already has.
+They split two ways: 267 rows where a question constant is also a slot's value,
+and 37 where one literal matches two slots.
+
+**These keep their literals, and that is the finished state.** A literal
+criterion is CORRECT — the marker reads the number the author wrote, which is
+the number the question states. It is less informative than a templated one,
+which reads the student's own value, and that is the whole of the difference.
+Where the two readings cannot be told apart, guessing is the only way to be
+wrong; keeping the literal is the way to be merely plainer. So this is not a
+queue to work through, and a later round should not open it as one. Three
+narrowings have already removed the collisions that were artefacts rather than
+judgements — a figure's own coordinates, a relation's bound, and a show-that's
+printed answer — and what remains is the genuine article.
+
 ## After launch — written down so it stays out
 
 - Dispute resolution as a correction event folded into mastery.
 - Second vision/marking provider behind `lib/ai.ts`.
 - Teacher digest, student-initiated.
-- Authoring rule: new questions write `template` directly; `criterion`
-  becomes its rendering with canonical values.
+- ~~Authoring rule: new questions write `template` directly~~ — done instead by
+  deriving on both write paths, which is stricter: the deriver decides, so an
+  author cannot write a reference the slot graph does not allow.

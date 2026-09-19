@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { claimsFor, deriveTemplate, questionText, renderClaim, scopeOf, type ScopeSlot } from '@/lib/grade/claim-template';
+import { claimsFor, deriveTemplate, questionText, renderClaim, scopeOf, templatesFor, type ScopeSlot } from '@/lib/grade/claim-template';
 
 // ROUND_5 Task 1: a criterion becomes a claim by replacing every literal that
 // is a canonical value in scope with a reference. Constants stay; anything
@@ -119,6 +119,34 @@ describe('the constants a criterion can collide with', () => {
     expect(d.ambiguous).toBeUndefined();
     expect(d.refs).toEqual([]);
     expect(d.template).toBe('Forms $18x - 36 \\ge 180$');
+  });
+});
+
+/**
+ * A SHOW-THAT PRINTS ITS OWN ANSWER, so the collision is the form and not a
+ * fault: "Show that the total is $3 300" states the target, and no rewording
+ * of the criterion separates the constant from the value.
+ */
+describe('a row on a show_that slot', () => {
+  const showThat = (mode: string) => ({
+    stem: 'He pays a deposit of \\$600 and 12 instalments of \\$225.',
+    parts: [{
+      label: 'a',
+      prompt: 'Show that the total amount paid is \\$3 300.',
+      slots: [{ label: 'i', answer: '\\$3 300', response_mode: mode }],
+    }],
+    rubric: [{ code: 'AK2', slot_ref: 'a.i', criterion: 'Adds the deposit to the instalments to reach \\$3 300' }],
+  });
+
+  it('is not ambiguous, and keeps its literals', () => {
+    const [row] = templatesFor(showThat('show_that'));
+    expect(row.derived.ambiguous).toBeUndefined();
+    expect(row.derived.template).toBe('Adds the deposit to the instalments to reach \\$3 300');
+    expect(row.derived.refs).toEqual([]);
+  });
+
+  it('is still checked on a typed slot, where the answer is not printed', () => {
+    expect(templatesFor(showThat('answer'))[0].derived.ambiguous).toContain('is a question constant and the value of a.i');
   });
 });
 
