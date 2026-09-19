@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { correction } from '@/scripts/done/repair-d0dccb-cloze';
 import { markStructuredParts, markableSlots } from '@/lib/grade/mark';
 import { structuredPrefill } from '@/lib/grade/prefill';
 import type { RubricItem } from '@/lib/types';
@@ -22,17 +21,6 @@ const rubric: RubricItem[] = [
 ].map(([code, slot_ref, criterion]) => ({ code, slot_ref, criterion, profile: 'R', mark_value: 1, part_label: 'c' }));
 
 describe('reviewed d0dccb correction', () => {
-  it('changes only the three modes, without mutating its input', () => {
-    const before = structuredClone(part);
-    expect(correction({ parts: [part] })).toEqual({
-      'parts.0.slots.0.response_mode': 'answer', 'parts.0.slots.1.response_mode': 'answer', 'parts.0.slots.2.response_mode': 'answer',
-    });
-    expect(part).toEqual(before);
-    expect(correction({ parts })).toEqual({});
-  });
-  it('refuses unexpected content instead of applying a generic conversion', () => {
-    expect(() => correction({ parts: [{ ...part, marks: 5 }] })).toThrow();
-  });
   it('prefills the readable blanks and lets the student supply the missed conclusion', () => {
     const fill = structuredPrefill(parts, { legible: true, lines: [{ text: '7 of the 20 days, more than one-third' }], answers: [
       { slot_ref: 'c.days', entries: ['7'], source_lines: [1] },

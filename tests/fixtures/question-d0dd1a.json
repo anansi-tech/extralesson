@@ -1,0 +1,387 @@
+{
+ "_id": "6a852fcaed771942b6d0dd1a",
+ "objective_ids": [
+  "M3.1.2",
+  "M3.1.4",
+  "M3.1.5"
+ ],
+ "module": 3,
+ "kind": "structured",
+ "stimulus": "A health clinic recorded the waiting times of patients on one morning. The table shows the grouped data. The frequency for patients waiting from 20 to 29 minutes was obscured and is represented by $x$. The estimated mean waiting time was $23.5$ minutes. The clinic manager claims that the middle 50% of waiting times lies entirely within the modal class.",
+ "stem": "Use the table to answer the questions below.",
+ "context_category": "health",
+ "visual": {
+  "template": "dataTable",
+  "params": {
+   "caption": "Waiting times of patients at a health clinic",
+   "headers": [
+    "Waiting time (min)",
+    "Class midpoint",
+    "Frequency"
+   ],
+   "rows": [
+    [
+     "0-9",
+     "4.5",
+     "4"
+    ],
+    [
+     "10-19",
+     "14.5",
+     "9"
+    ],
+    [
+     "20-29",
+     {
+      "slots": [
+       "a.i"
+      ]
+     },
+     "x"
+    ],
+    [
+     "30-39",
+     "34.5",
+     "6"
+    ],
+    [
+     "40-49",
+     "44.5",
+     "3"
+    ]
+   ]
+  }
+ },
+ "parts": [
+  {
+   "label": "a",
+   "prompt": "Determine the class midpoint for the waiting-time class 20-29 minutes.",
+   "marks": 1,
+   "slots": [
+    {
+     "label": "i",
+     "answer": "24.5",
+     "response_mode": "answer",
+     "rubric_codes": [
+      "CK1"
+     ],
+     "depends_on": [],
+     "objective_id": "M3.1.2"
+    }
+   ]
+  },
+  {
+   "label": "b",
+   "prompt": "Determine the value of $x$.",
+   "marks": 4,
+   "slots": [
+    {
+     "label": "i",
+     "answer": "28",
+     "response_mode": "answer",
+     "rubric_codes": [
+      "CK2",
+      "AK1",
+      "AK2",
+      "R1"
+     ],
+     "depends_on": [
+      "a.i"
+     ],
+     "objective_id": "M3.1.4"
+    }
+   ]
+  },
+  {
+   "label": "c",
+   "prompt": "State the modal class and the median class.",
+   "marks": 2,
+   "slots": [
+    {
+     "label": "modal_class",
+     "answer": "20-29 min",
+     "accept": [
+      "20-29 minutes",
+      "$20 \\leq t < 30$"
+     ],
+     "response_mode": "answer",
+     "rubric_codes": [
+      "CK3"
+     ],
+     "depends_on": [
+      "b.i"
+     ],
+     "objective_id": "M3.1.4"
+    },
+    {
+     "label": "median_class",
+     "answer": "20-29 min",
+     "accept": [
+      "20-29 minutes",
+      "$20 \\leq t < 30$"
+     ],
+     "response_mode": "answer",
+     "rubric_codes": [
+      "CK4"
+     ],
+     "depends_on": [
+      "b.i"
+     ],
+     "objective_id": "M3.1.4"
+    }
+   ]
+  },
+  {
+   "label": "d",
+   "prompt": "Complete the statement below. Give the estimates correct to 1 decimal place.",
+   "marks": 5,
+   "slots": [
+    {
+     "label": "lower_quartile",
+     "answer": "18.9",
+     "response_mode": "answer",
+     "rubric_codes": [
+      "AK3"
+     ],
+     "depends_on": [
+      "b.i"
+     ],
+     "objective_id": "M3.1.5"
+    },
+    {
+     "label": "upper_quartile",
+     "answer": "28.3",
+     "response_mode": "answer",
+     "rubric_codes": [
+      "AK4"
+     ],
+     "depends_on": [
+      "b.i"
+     ],
+     "objective_id": "M3.1.5"
+    },
+    {
+     "label": "interquartile_range",
+     "answer": "9.3",
+     "response_mode": "answer",
+     "answer_format": "dp:1",
+     "rubric_codes": [
+      "AK5",
+      "R3"
+     ],
+     "depends_on": [
+      "d.lower_quartile",
+      "d.upper_quartile"
+     ],
+     "objective_id": "M3.1.5"
+    },
+    {
+     "label": "claim",
+     "answer": "false",
+     "accept": [
+      "incorrect",
+      "not valid",
+      "untrue",
+      "false"
+     ],
+     "response_mode": "answer",
+     "rubric_codes": [
+      "R2"
+     ],
+     "depends_on": [
+      "c.modal_class",
+      "d.lower_quartile",
+      "d.upper_quartile"
+     ],
+     "objective_id": "M3.1.5"
+    }
+   ],
+   "statement": "The lower quartile is {} min, the upper quartile is {} min and the interquartile range is {} min. Therefore, the manager's claim is {}."
+  }
+ ],
+ "archetype": "reverse-reasoning",
+ "representation": "table",
+ "shape": "paper",
+ "options": [],
+ "difficulty": 3,
+ "marks": 12,
+ "rubric": [
+  {
+   "code": "CK1",
+   "profile": "CK",
+   "criterion": "CAO $24.5$",
+   "mark_value": 1,
+   "slot_ref": "a.i",
+   "part_label": "a",
+   "for_format": false,
+   "template": "CAO ${a.i}$"
+  },
+  {
+   "code": "CK2",
+   "profile": "CK",
+   "criterion": "Uses the grouped-data mean with the class midpoints",
+   "mark_value": 1,
+   "slot_ref": "b.i",
+   "part_label": "b",
+   "for_format": false,
+   "template": "Uses the grouped-data mean with the class midpoints",
+   "hint": "Multiply each class frequency by its class midpoint, add these products, and divide by the total frequency to find the grouped-data mean."
+  },
+  {
+   "code": "AK1",
+   "profile": "AK",
+   "criterion": "Forms $\\frac{489 + 24.5x}{22 + x} = 23.5$",
+   "mark_value": 1,
+   "slot_ref": "b.i",
+   "part_label": "b",
+   "for_format": false,
+   "template": "Forms $\\frac{489 + {a.i}x}{22 + x} = 23.5$",
+   "hint": "Form the mean equation $\\frac{T+mx}{N+x}=\\bar{x}$ by adding the unknown class contribution to the known weighted total and total frequency."
+  },
+  {
+   "code": "AK2",
+   "profile": "AK",
+   "criterion": "Solves the equation to obtain $x = 28$",
+   "mark_value": 1,
+   "slot_ref": "b.i",
+   "part_label": "b",
+   "for_format": false,
+   "template": "Solves the equation to obtain $x = {b.i}$",
+   "hint": "Solve your mean equation carefully for $x$ by clearing the denominator first and collecting the $x$ terms."
+  },
+  {
+   "code": "R1",
+   "profile": "R",
+   "criterion": "Interprets the solution as a valid whole-number frequency",
+   "mark_value": 1,
+   "slot_ref": "b.i",
+   "part_label": "b",
+   "for_format": false,
+   "template": "Interprets the solution as a valid whole-number frequency",
+   "hint": "Check that your value of $x$ can represent a frequency by confirming that it is a non-negative whole number."
+  },
+  {
+   "code": "CK3",
+   "profile": "CK",
+   "criterion": "CAO modal class $20-29$ min",
+   "mark_value": 1,
+   "slot_ref": "c.modal_class",
+   "part_label": "c",
+   "for_format": false,
+   "template": "CAO modal class $20-29$ min"
+  },
+  {
+   "code": "CK4",
+   "profile": "CK",
+   "criterion": "CAO median class $20-29$ min",
+   "mark_value": 1,
+   "slot_ref": "c.median_class",
+   "part_label": "c",
+   "for_format": false,
+   "template": "CAO median class $20-29$ min"
+  },
+  {
+   "code": "AK3",
+   "profile": "AK",
+   "criterion": "Calculates lower quartile as $9.5 + \\frac{12.5-4}{9}\\times10 = 18.9$ to 1 d.p., using \"their\" frequency",
+   "mark_value": 1,
+   "slot_ref": "d.lower_quartile",
+   "part_label": "d",
+   "for_format": false,
+   "template": "Calculates lower quartile as $9.5 + \\frac{12.5-4}{9}\\times10 = {d.lower_quartile}$ to 1 d.p., using \"their\" frequency",
+   "hint": "Use your frequency in the lower-quartile interpolation formula $L+\\frac{p-c}{f}\\times w$ and round the estimate to one decimal place."
+  },
+  {
+   "code": "AK4",
+   "profile": "AK",
+   "criterion": "Calculates upper quartile as $19.5 + \\frac{37.5-13}{28}\\times10 = 28.3$ to 1 d.p., using \"their\" frequency",
+   "mark_value": 1,
+   "slot_ref": "d.upper_quartile",
+   "part_label": "d",
+   "for_format": false,
+   "template": "Calculates upper quartile as $19.5 + \\frac{37.5-13}{{b.i}}\\times10 = {d.upper_quartile}$ to 1 d.p., using \"their\" frequency",
+   "hint": "Use your frequency in the upper-quartile interpolation formula $L+\\frac{p-c}{f}\\times w$ and round the estimate to one decimal place."
+  },
+  {
+   "code": "AK5",
+   "profile": "AK",
+   "criterion": "Finds $28.25 - 18.94\\ldots = 9.3$ to 1 d.p.",
+   "mark_value": 1,
+   "slot_ref": "d.interquartile_range",
+   "part_label": "d",
+   "for_format": false,
+   "template": "Finds $28.25 - 18.94\\ldots = {d.interquartile_range}$ to 1 d.p.",
+   "hint": "Subtract your lower-quartile estimate from your upper-quartile estimate, use $\\ldots$ for any continuing decimal if needed, and round the interquartile range to one decimal place."
+  },
+  {
+   "code": "R2",
+   "profile": "R",
+   "criterion": "Concludes that the claim is false since \"their\" lower quartile is below the lower boundary $19.5$ of the modal class",
+   "mark_value": 1,
+   "slot_ref": "d.claim",
+   "part_label": "d",
+   "for_format": false,
+   "template": "Concludes that the claim is false since \"their\" lower quartile is below the lower boundary $19.5$ of the modal class",
+   "hint": "Compare your lower-quartile estimate with the lower boundary of the modal class and use this comparison to decide whether the claim is false."
+  },
+  {
+   "code": "R3",
+   "profile": "R",
+   "criterion": "Expresses the interquartile range to 1 decimal place",
+   "mark_value": 1,
+   "slot_ref": "d.interquartile_range",
+   "part_label": "d",
+   "for_format": true,
+   "template": "Expresses the interquartile range to 1 decimal place",
+   "hint": "Write the interquartile range to one decimal place, using unrounded quartile estimates in the subtraction."
+  }
+ ],
+ "final_answer": "24.5; 28; 20-29 min; 20-29 min; 18.9; 28.3; 9.3; false",
+ "worked_solution": "(a) The midpoint of the class is $\\frac{20+29}{2}=24.5$.\n\n(b) The known total frequency is $4+9+6+3=22$. The known total of frequency multiplied by midpoint is $(4\\times4.5)+(9\\times14.5)+(6\\times34.5)+(3\\times44.5)=489$. Therefore,\n\\[\n\\frac{489+24.5x}{22+x}=23.5.\n\\]\nMultiplying through gives $489+24.5x=517+23.5x$, so $x=28$.\n\n(c) The largest frequency is $28$, so the modal class is 20-29 min. The total frequency is $50$, and the median position is the $25$th value. The cumulative frequency reaches $41$ in the class 20-29 min, so this is also the median class.\n\n(d) The lower-quartile position is $\\frac{50}{4}=12.5$. This lies in the class 10-19 min, giving $Q_1=9.5+\\frac{12.5-4}{9}\\times10=18.94\\ldots$, or $18.9$ min.\n\nThe upper-quartile position is $\\frac{3(50)}{4}=37.5$. This lies in the class 20-29 min, giving $Q_3=19.5+\\frac{37.5-13}{28}\\times10=28.25$, or $28.3$ min.\n\nThe interquartile range is $28.25-18.94\\ldots=9.30\\ldots$, or $9.3$ min. The claim is false because $Q_1=18.9$ min is below $19.5$ min, the lower class boundary of the modal class.",
+ "misconceptions": [
+  {
+   "trigger": "20-29",
+   "name": "Range reported as an interval",
+   "remediation": "The interquartile range is one number, found by subtracting the lower quartile from the upper quartile. It is not the pair of quartile values or a class interval."
+  },
+  {
+   "trigger": "28",
+   "name": "Modal frequency given instead of modal class",
+   "remediation": "The frequency 28 identifies the most common class. The modal class is the waiting-time interval 20-29 min."
+  },
+  {
+   "trigger": "9.4",
+   "name": "Rounded before subtracting",
+   "remediation": "Subtracting the rounded quartiles, 28.3 - 18.9, gives 9.4. Keep the unrounded quartile estimates in the subtraction, then round the interquartile range to one decimal place."
+  }
+ ],
+ "status": "approved",
+ "gen_meta": {
+  "model": "gpt-5.6-terra",
+  "prompt_version": "v40",
+  "verified": true,
+  "ts": "2026-08-19T04:23:38.357Z",
+  "recipe": {
+   "objective_ids": [
+    "M3.1.2",
+    "M3.1.4",
+    "M3.1.5"
+   ],
+   "kind": "structured",
+   "difficulty": 3,
+   "marks": 12,
+   "archetype": "reverse-reasoning",
+   "representation": "table",
+   "rubric_split": {
+    "CK": 4,
+    "AK": 5,
+    "R": 3
+   },
+   "shape": "paper",
+   "integrate": true
+  },
+  "dedup_score": 0.856
+ },
+ "__v": 0,
+ "created_at": "2026-08-19T04:23:38.000Z"
+}

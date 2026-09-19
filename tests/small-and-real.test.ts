@@ -107,14 +107,16 @@ describe('(4) the backfill stamps what exists', () => {
   });
 });
 
-describe('(5) one instruction file, one place for finished scripts', () => {
-  it('has no AGENTS.md, points the README at R6, and keeps the one-offs under scripts/done', () => {
+describe('(5) one instruction file, and a finished one-off is deleted', () => {
+  it('has no AGENTS.md, points the README at R6, and parks no repair script in scripts/', () => {
     expect(existsSync(join(process.cwd(), 'AGENTS.md'))).toBe(false);
     const readme = readFileSync(join(process.cwd(), 'README.md'), 'utf8');
     expect(readme).toMatch(/ROUND_6_ONE_TRUTH\.md/);
     expect(readme).toMatch(/pnpm eval:marker[\s\S]*pnpm eval:reads[\s\S]*pnpm eval:pipeline/);
     const top = readdirSync(join(process.cwd(), 'scripts')).filter((f) => /^(repair-|relabel-|reset-question-bank)/.test(f));
     expect(top).toEqual([]);
-    expect(readdirSync(join(process.cwd(), 'scripts', 'done')).length).toBeGreaterThan(10);
+    // scripts/done held 47 spent one-offs and is gone: git is the record, and a
+    // repair that has run is deleted rather than parked in a second place.
+    expect(existsSync(join(process.cwd(), 'scripts', 'done'))).toBe(false);
   });
 });

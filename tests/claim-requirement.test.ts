@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { deriveTemplate, renderClaim, type ScopeSlot } from '@/lib/grade/claim-template';
-import { questionText } from '../scripts/done/backfill-rubric-template';
+import { questionText } from './helpers/claim-scope';
 
 /**
  * ONLY THE STUDENT'S VALUE IS A REFERENCE. A requirement the question fixes is

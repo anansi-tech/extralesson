@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { prepare, repairs } from '@/scripts/done/repair-explanation-prompts';
 import QuestionCard, { type CardQuestion } from '@/app/study/session/[id]/question-card';
 import { MARKED } from './helpers/marked-states';
 import { reviewFlags } from '@/lib/admin/review-flags';
@@ -35,24 +34,5 @@ describe('specific photo-reason instructions, not disabled-looking answer blanks
     expect(reviewFlags({ module: 2, stem: 'A triangle.', parts: [{ label: 'a', prompt: 'Complete.', statement: '{}', slots: [
       { label: 'i', response_mode: 'explain', prompt: 'Give a reason.' },
     ] }] })).toEqual([]);
-  });
-  for (const repair of repairs) it(`${repair.id}: changes prompts only and refuses stale content`, () => {
-    const q = { ...structuredClone(repair.expected), status: 'approved' };
-    const before = structuredClone(q);
-    const plan = prepare(q, repair);
-    expect(plan.changed).toBe(true);
-    expect(q).toEqual(before);
-    const reverted = structuredClone(plan.parts);
-    for (const { ref, prompt } of repair.changes) {
-      const [part, slot] = ref.split('.');
-      const s = reverted.find(p => p.label === part)!.slots.find(s => s.label === slot)!;
-      expect(s.prompt).toBe(prompt);
-      expect(s.response_mode).toBe('explain');
-      delete s.prompt;
-    }
-    expect(reverted).toEqual(q.parts);
-    expect(prepare({ ...q, parts: plan.parts }, repair).changed).toBe(false);
-    expect(() => prepare({ ...q, stem: 'changed' }, repair)).toThrow('content changed');
-    expect(() => prepare({ ...q, status: 'draft' }, repair)).toThrow('no longer approved');
   });
 });

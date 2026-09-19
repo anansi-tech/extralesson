@@ -1,0 +1,311 @@
+{
+ "_id": "6a867895274ccc2bbe037e5d",
+ "objective_ids": [
+  "M2.4.9",
+  "M2.4.8",
+  "M2.4.6"
+ ],
+ "module": 2,
+ "kind": "structured",
+ "stimulus": "A vertical flagpole $BT$ stands on level ground at a visitor site. Points $X$, $Y$ and $B$ lie on the same straight path, with $Y$ between $X$ and $B$ and $XY=20\\text{ m}$. The angle of elevation of $T$ from $X$ is $30^\\circ$ and the angle of elevation of $T$ from $Y$ is $45^\\circ$. Let $YB=d\\text{ m}$ and let $BT=h\\text{ m}$.",
+ "stem": "Answer the questions below.",
+ "context_category": "tourism",
+ "parts": [
+  {
+   "label": "a",
+   "prompt": "Calculate $\\angle BTX$.",
+   "marks": 2,
+   "slots": [
+    {
+     "label": "i",
+     "answer": "$60^\\circ$",
+     "response_mode": "answer",
+     "rubric_codes": [
+      "CK1",
+      "AK1"
+     ],
+     "depends_on": [],
+     "objective_id": "M2.4.6"
+    }
+   ]
+  },
+  {
+   "label": "b",
+   "prompt": "Write an equation connecting $d$ and $h$.",
+   "marks": 2,
+   "slots": [
+    {
+     "label": "i",
+     "answer": "$h=d$",
+     "accept": [
+      "$d=h$"
+     ],
+     "response_mode": "answer",
+     "rubric_codes": [
+      "CK2",
+      "AK2"
+     ],
+     "depends_on": [],
+     "objective_id": "M2.4.8"
+    }
+   ]
+  },
+  {
+   "label": "c",
+   "prompt": "Determine the value of $d$ in exact form.",
+   "marks": 4,
+   "slots": [
+    {
+     "label": "i",
+     "answer": "$10(\\sqrt{3}+1)$",
+     "accept": [
+      "$\\frac{20}{\\sqrt{3}-1}$"
+     ],
+     "response_mode": "answer",
+     "answer_format": "exact",
+     "rubric_codes": [
+      "R1",
+      "R2",
+      "AK3",
+      "AK4"
+     ],
+     "depends_on": [
+      "a.i",
+      "b.i"
+     ],
+     "objective_id": "M2.4.9"
+    }
+   ]
+  },
+  {
+   "label": "d",
+   "prompt": "Complete the statement below.",
+   "marks": 4,
+   "slots": [
+    {
+     "label": "i",
+     "answer": "27.3",
+     "response_mode": "answer",
+     "answer_format": "sf:3",
+     "rubric_codes": [
+      "AK5",
+      "R3"
+     ],
+     "depends_on": [
+      "b.i",
+      "c.i"
+     ],
+     "objective_id": "M2.4.8"
+    },
+    {
+     "label": "ii",
+     "answer": "isosceles right triangle",
+     "accept": [
+      "right-angled isosceles triangle"
+     ],
+     "response_mode": "answer",
+     "rubric_codes": [
+      "CK3"
+     ],
+     "depends_on": [
+      "b.i"
+     ],
+     "objective_id": "M2.4.6"
+    },
+    {
+     "label": "iii",
+     "answer": "$YB=BT$ and $\\angle YBT=90^\\circ$",
+     "accept": [
+      "the two perpendicular sides $YB$ and $BT$ are equal",
+      "it has equal legs and a right angle"
+     ],
+     "response_mode": "explain",
+     "rubric_codes": [
+      "R4"
+     ],
+     "depends_on": [
+      "b.i"
+     ],
+     "objective_id": "M2.4.6"
+    }
+   ],
+   "statement": "The height of the flagpole is {} m, correct to 3 significant figures. Triangle $YBT$ is {} because {}."
+  }
+ ],
+ "archetype": "reverse-reasoning",
+ "representation": "prose",
+ "shape": "paper",
+ "options": [],
+ "difficulty": 3,
+ "marks": 12,
+ "rubric": [
+  {
+   "code": "CK1",
+   "profile": "CK",
+   "criterion": "Recognises that $BT$ is perpendicular to the level ground.",
+   "mark_value": 1,
+   "slot_ref": "a.i",
+   "part_label": "a",
+   "template": "Recognises that $BT$ is perpendicular to the level ground.",
+   "hint": "Recognise that $BT$ is perpendicular to the level ground, so you can use a right-angled triangle."
+  },
+  {
+   "code": "AK1",
+   "profile": "AK",
+   "criterion": "Uses complementary angles, CAO $60^\\circ$.",
+   "mark_value": 1,
+   "slot_ref": "a.i",
+   "part_label": "a",
+   "template": "Uses complementary angles, CAO ${a.i}^\\circ$."
+  },
+  {
+   "code": "CK2",
+   "profile": "CK",
+   "criterion": "Selects the tangent ratio for the $45^\\circ$ angle of elevation.",
+   "mark_value": 1,
+   "slot_ref": "b.i",
+   "part_label": "b",
+   "template": "Selects the tangent ratio for the $45^\\circ$ angle of elevation.",
+   "hint": "Select the tangent ratio using the $45^\\circ$ angle of elevation."
+  },
+  {
+   "code": "AK2",
+   "profile": "AK",
+   "criterion": "Simplifies $\\tan45^\\circ=h/d$ to give $h=d$.",
+   "mark_value": 1,
+   "slot_ref": "b.i",
+   "part_label": "b",
+   "template": "Simplifies $\\tan45^\\circ=h/d$ to give $h=d$.",
+   "hint": "Simplify $\\tan45^\\circ=h/d$ to show the relationship between $h$ and $d$."
+  },
+  {
+   "code": "R1",
+   "profile": "R",
+   "criterion": "States that $XB=d+20$.",
+   "mark_value": 1,
+   "slot_ref": "c.i",
+   "part_label": "c",
+   "template": "States that $XB=d+20$.",
+   "hint": "State the full horizontal distance as $XB=d+20$."
+  },
+  {
+   "code": "R2",
+   "profile": "R",
+   "criterion": "Forms $\\tan(\\text{their answer to (a)})=(d+20)/h$.",
+   "mark_value": 1,
+   "slot_ref": "c.i",
+   "part_label": "c",
+   "template": "Forms $\\tan(\\text{their answer to (a)})=(d+20)/h$.",
+   "hint": "Form $\\tan(\\text{your angle from (a)})=(d+20)/h$ using your angle from part (a)."
+  },
+  {
+   "code": "AK3",
+   "profile": "AK",
+   "criterion": "Substitutes $h=d$ and solves using their angle.",
+   "mark_value": 1,
+   "slot_ref": "c.i",
+   "part_label": "c",
+   "template": "Substitutes $h=d$ and solves using their angle.",
+   "hint": "Substitute $h=d$ into your tangent equation and solve for $d$ using your angle from part (a)."
+  },
+  {
+   "code": "AK4",
+   "profile": "AK",
+   "criterion": "Expresses the correct value of $d$ in exact form, CAO $10(\\sqrt{3}+1)$.",
+   "mark_value": 1,
+   "slot_ref": "c.i",
+   "part_label": "c",
+   "template": "Expresses the correct value of $d$ in exact form, CAO $10(\\sqrt{3}+1)$.",
+   "for_format": true
+  },
+  {
+   "code": "AK5",
+   "profile": "AK",
+   "criterion": "Uses $h=d$ and their value of $d$ to obtain $h\\approx27.3205$.",
+   "mark_value": 1,
+   "slot_ref": "d.i",
+   "part_label": "d",
+   "template": "Uses $h=d$ and their value of $d$ to obtain $h\\approx27.3205$.",
+   "hint": "Use $h=d$ and your value of $d$ to calculate the unrounded height, writing it as $h\\approx\\text{(your decimal)}$."
+  },
+  {
+   "code": "R3",
+   "profile": "R",
+   "criterion": "Expresses their height correct to 3 significant figures.",
+   "mark_value": 1,
+   "slot_ref": "d.i",
+   "part_label": "d",
+   "for_format": true,
+   "template": "Expresses their height correct to 3 significant figures.",
+   "hint": "Round your height to 3 significant figures."
+  },
+  {
+   "code": "CK3",
+   "profile": "CK",
+   "criterion": "Identifies triangle $YBT$ as an isosceles right triangle.",
+   "mark_value": 1,
+   "slot_ref": "d.ii",
+   "part_label": "d",
+   "template": "Identifies triangle $YBT$ as an isosceles right triangle.",
+   "hint": "Identify triangle $YBT$ as an isosceles right triangle."
+  },
+  {
+   "code": "R4",
+   "profile": "R",
+   "criterion": "Justifies the classification using equal perpendicular sides.",
+   "mark_value": 1,
+   "slot_ref": "d.iii",
+   "part_label": "d",
+   "template": "Justifies the classification using equal perpendicular sides.",
+   "hint": "Justify this by showing that $YB=BT$ and that these equal sides meet at a right angle."
+  }
+ ],
+ "final_answer": "$60^\\circ$; $h=d$; $10(\\sqrt{3}+1)$; 27.3; isosceles right triangle; $YB=BT$ and $\\angle YBT=90^\\circ$",
+ "worked_solution": "(a) Since the flagpole is vertical and the ground is level, $\\angle XBT=90^\\circ$. The angle at $X$ is $30^\\circ$, so $\\angle BTX=90^\\circ-30^\\circ=60^\\circ$.\n\n(b) From $Y$, $\\tan45^\\circ=\\frac{h}{d}$. Since $\\tan45^\\circ=1$, it follows that $h=d$.\n\n(c) The distance $XB=d+20$. In right triangle $XBT$, using the angle found in (a),\n\\[\n\\tan60^\\circ=\\frac{d+20}{h}.\n\\]\nUsing $h=d$ gives $\\sqrt{3}=\\frac{d+20}{d}$. Therefore $d(\\sqrt{3}-1)=20$, so\n\\[\nd=\\frac{20}{\\sqrt{3}-1}=10(\\sqrt{3}+1).\n\\]\n\n(d) Since $h=d$, the flagpole height is $10(\\sqrt{3}+1)\\approx27.3205\\text{ m}$, giving $27.3\\text{ m}$ correct to 3 significant figures. Also, $YB=BT$ and $\\angle YBT=90^\\circ$, so triangle $YBT$ is an isosceles right triangle.",
+ "misconceptions": [
+  {
+   "trigger": "$20\\sqrt{3}$",
+   "name": "Ignoring the 20 m separation",
+   "remediation": "The distance from $X$ to the base is not $d$; it is $d+20$. Include the full distance $XB$ when forming the trigonometric ratio."
+  },
+  {
+   "trigger": "$11.5$",
+   "name": "Using the tangent ratio upside down",
+   "remediation": "For $\\angle BTX$, the side opposite is $XB=d+20$ and the adjacent side is $BT=h$. Therefore $\\tan60^\\circ=(d+20)/h$."
+  },
+  {
+   "trigger": "right triangle",
+   "name": "Incomplete classification",
+   "remediation": "Triangle $YBT$ has a right angle and also has equal perpendicular sides, since $YB=BT$. Its full classification is an isosceles right triangle."
+  }
+ ],
+ "status": "approved",
+ "gen_meta": {
+  "model": "gpt-5.6-terra",
+  "prompt_version": "v45",
+  "verified": true,
+  "ts": "2026-08-20T03:46:29.506Z",
+  "recipe": {
+   "objective_ids": [
+    "M2.4.9",
+    "M2.4.8",
+    "M2.4.6"
+   ],
+   "kind": "structured",
+   "difficulty": 3,
+   "marks": 12,
+   "archetype": "reverse-reasoning",
+   "representation": "prose",
+   "rubric_split": {
+    "CK": 3,
+    "AK": 5,
+    "R": 4
+   },
+   "shape": "paper",
+   "integrate": true
+  },
+  "dedup_score": 0.583
+ },
+ "__v": 0,
+ "created_at": "2026-08-20T03:46:29.000Z"
+}

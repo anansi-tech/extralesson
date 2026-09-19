@@ -29,8 +29,14 @@ const TOP_LEVEL_CALL = /^(?:void\s+)?(?:[A-Za-z_$][\w$.]*\(|\(async|\(function)/
 describe('every script under scripts/ guards its entry point', () => {
   const files = walk(SCRIPTS);
 
+  // FLOORS, NOT A CENSUS. They exist so an empty or broken walk cannot pass
+  // silently; they are not a count of the scripts. Both were set at 40 when
+  // scripts/done held 42 one-offs, and deleting those left 42 files and 38
+  // calling main() — one floor passing by two, the other failing for a reason
+  // that had nothing to do with entry points. Set below today's numbers with
+  // room to delete, and say what today's numbers are so the gap stays visible.
   it('finds the scripts, so an empty sweep cannot pass', () => {
-    expect(files.length).toBeGreaterThan(40);
+    expect(files.length, '42 .ts files under scripts/ today').toBeGreaterThan(30);
   });
 
   for (const file of walk(SCRIPTS)) {
@@ -48,7 +54,7 @@ describe('every script under scripts/ guards its entry point', () => {
 
   it('a file that calls main() wraps it in the shared guard', () => {
     const callers = files.filter((f) => /\bmain\(\)/.test(readFileSync(f, 'utf8')));
-    expect(callers.length).toBeGreaterThan(40);
+    expect(callers.length, '38 of them call main() today').toBeGreaterThan(25);
 
     for (const f of callers) {
       const src = readFileSync(f, 'utf8');

@@ -85,7 +85,9 @@ pnpm golden:import <bundle>     # a field dispute into design/golden, proposed
 pnpm golden:field-prune --yes   # delete field images older than 90 days
 ```
 
-One-off repairs and backfills that have already run live in `scripts/done/`.
+A one-off repair or backfill is deleted once it has run. Git is the record, and
+a second place to keep spent scripts only fills up: `scripts/done/` held 47 of
+them before it went.
 
 To demonstrate the pipeline's independent-solve rejection, run generation with
 the `--poison` test hook and watch drafts get auto-rejected:

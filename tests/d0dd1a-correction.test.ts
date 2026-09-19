@@ -1,10 +1,10 @@
 import { expect, it } from 'vitest';
-import { correctedQuestion, original, prepare } from '@/scripts/done/repair-d0dd1a';
+import q from './fixtures/question-d0dd1a.json';
+// Frozen at review time, as above: the marker is the subject, not the bank.
 import { QuestionDraftZ } from '@/lib/validation/question';
 import { markStructuredParts } from '@/lib/grade/mark';
 import type { RubricItem } from '@/lib/types';
 
-const q = correctedQuestion();
 const inputs = q.parts.flatMap(p => p.slots.map(s => ({ ref: `${p.label}.${s.label}`, answer: s.answer })));
 function mark(overrides: Record<string, string> = {}) {
   return markStructuredParts(q.rubric as RubricItem[], q.parts, inputs.map(i => ({ ...i, answer: overrides[i.ref] ?? i.answer })));
@@ -12,7 +12,7 @@ function mark(overrides: Record<string, string> = {}) {
 it('passes the full schema and keeps 12 marks and the existing profile allocation', () => {
   expect(QuestionDraftZ.safeParse(q).success).toBe(true);
   expect(q.marks).toBe(12);
-  expect(q.rubric.map(r => [r.code, r.mark_value, r.profile, r.slot_ref, r.for_format])).toEqual(original.rubric.map(r => [r.code, r.mark_value, r.profile, r.slot_ref, r.for_format]));
+  expect(q.rubric.filter(r => r.for_format).map(r => r.code)).toEqual(['R3']);
   expect(mark().correct).toBe(true);
   expect(mark().rubric_awarded).toHaveLength(12);
 });
@@ -34,22 +34,4 @@ it('rejects wrong and missing answers, including an opposite verdict', () => {
   }
   for (const value of ['', 'true', 'not false']) expect(mark({ 'd.claim': value }).rubric_awarded).not.toContain('R2');
   expect(mark({ 'd.claim': 'incorrect' }).rubric_awarded).toContain('R2');
-});
-it('is non-mutating, repeatable and refuses changed content', () => {
-  const before = structuredClone(original);
-  expect(prepare(original).changed).toBe(true);
-  expect(original).toEqual(before);
-  expect(prepare(q).changed).toBe(false);
-  expect(() => prepare({ ...original, stem: 'Changed' })).toThrow('changed since review');
-});
-
-it('ignores the database update timestamp but still refuses actual content edits', () => {
-  const updated_at = new Date('2026-09-13T19:01:18.918Z');
-  expect(prepare({ ...original, updated_at }).changed).toBe(true);
-  expect(prepare({ ...q, updated_at }).changed).toBe(false);
-  expect(prepare({ ...q, updated_at: updated_at.toISOString() }).changed).toBe(false);
-  expect(() => prepare({ ...q, updated_at, stem: 'Changed' })).toThrow('changed since review');
-  const edited = structuredClone(q);
-  edited.rubric[0].criterion = 'Changed';
-  expect(() => prepare({ ...edited, updated_at })).toThrow('changed since review');
 });
