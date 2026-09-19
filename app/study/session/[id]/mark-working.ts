@@ -119,9 +119,16 @@ export async function markWorking(attemptId: string): Promise<CaptureResult | nu
     const canonical = Object.fromEntries(
       (question.parts ?? []).flatMap((p) => p.slots.map((s) => [`${p.label}.${s.label}`, s.answer ?? ''])),
     );
+    // A TEMPLATE IS THE ROW'S CLAIM and the approval gate refuses a row without
+    // one, so this cannot be an approved question — say so instead of marking
+    // against the author's literals, which is what the old fallback did quietly.
+    const untemplated = unearned.filter((r) => !r.template);
+    if (untemplated.length) {
+      throw new Error(`rubric rows have no template and cannot be claimed: ${untemplated.map((r) => r.code).join(', ')}`);
+    }
     try {
       const result = await markMethod({
-        rows: claimsFor(unearned, confirmed, canonical),
+        rows: claimsFor(unearned as (typeof unearned[number] & { template: string })[], confirmed, canonical),
         workingByPart,
         typedAnswers: confirmed,
         workedSolution: question.worked_solution ?? '',

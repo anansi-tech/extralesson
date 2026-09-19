@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { dbConnect, Question } from '@/lib/db';
+import { withTemplates } from '@/lib/grade/claim-template';
 import { requireAdmin } from '@/lib/auth/session';
 import { explainDraftError } from '@/lib/admin/draft-error';
 import { QuestionDraftZ } from '@/lib/validation/question';
@@ -121,7 +122,13 @@ export async function saveQuestionEdit(
   // WHAT THE GATE FOUND LAST TIME. A check that was already failing is reported
   // and does not refuse this save; one that was passing and now fails does.
   const known = (existing.gate?.failed ?? []) as GateCheck[];
-  const gate = await approvalGate(validated.data, undefined, known);
+  // EVERY ROW'S CLAIM, DERIVED BEFORE THE GATE SEES IT. An edit changes the
+  // criteria and the answers the criteria are read against, so a template from
+  // the previous save can name a value that is no longer there. Derived here
+  // and checked by the gate with the same function, so what is stored is what
+  // the deriver produced rather than whatever survived the edit.
+  const edited = withTemplates(validated.data as never) as typeof validated.data;
+  const gate = await approvalGate(edited, undefined, known);
   if (!gate.ok) {
     // The independent solve is a model check, and the card has to say so: an
     // operator shown only "disagreed" reads it as a verdict on their edit.
@@ -131,7 +138,7 @@ export async function saveQuestionEdit(
   }
   const written = await Question.updateOne(
     { _id },
-    { $set: { ...validated.data, status: 'draft', gate: { at: new Date(), failed: gate.failed } } },
+    { $set: { ...edited, status: 'draft', gate: { at: new Date(), failed: gate.failed } } },
   );
   const gone = refused(written, 'no longer in the bank');
   if (gone) return { error: gone };

@@ -1,5 +1,6 @@
 import { questionDisagreements } from '@/lib/grade/answer-agrees';
 import { verifyQuestionVisual, verifyStimulusTable } from '@/lib/visuals/verify';
+import { scopeOf, slotsOf, templatesFor } from '@/lib/grade/claim-template';
 import { readOffSlots } from './read-off';
 import { independentSolve, type SolveOutcome } from './solve';
 import type { QuestionDraft } from '@/lib/validation/question';
@@ -15,6 +16,7 @@ export type GateCheck =
   | 'self_disagreement'
   | 'unparseable'
   | 'read_off'
+  | 'template'
   | 'solve';
 
 export interface ApprovalGateResult {
@@ -97,6 +99,41 @@ export async function approvalGate(
   }
   if (blind.length > 0) {
     found.push({ check: 'unparseable', reason: `the comparator cannot evaluate this question's own answers, so nothing here can check it: ${blind.map((d) => `(${d.ref}) ${d.failure}`).join(' | ')}` });
+  }
+
+  /**
+   * EVERY ROW IS A CLAIM ABOUT THE PAGE, and the marker is shown it in the
+   * student's own numbers (ROUND_5 Task 1). A row without a template is marked
+   * against the author's literals instead — the same words, the wrong figures —
+   * and it used to happen quietly: claimsFor fell back to the criterion, so the
+   * only sign was a marker reading "CAO 47.5" at a student who answered 45. The
+   * fallback is gone, so the row is caught here, where it can be fixed.
+   *
+   * AMBIGUITY IS REFUSED, NOT RESOLVED. deriveTemplate already reports a
+   * literal that is both a question constant and a slot's value, or one
+   * matching two slots; this is that report, made blocking. Its constants come
+   * from questionText, which reads part statements — before it did, a
+   * requirement written only in a cloze was invisible and nine rows templated
+   * it as a student value.
+   */
+  // An MCQ has no rubric rows, so it has no claims to render.
+  const rubric = 'rubric' in draft ? (draft.rubric ?? []) : [];
+  if (rubric.length) {
+    const templates = templatesFor(draft as never);
+    const slots = slotsOf(draft as never);
+    const said: string[] = [];
+    for (const t of templates) {
+      const written = rubric.find((r) => r.code === t.code)?.template;
+      if (!written) { said.push(`${t.code} has no template`); continue; }
+      if (t.derived.ambiguous) { said.push(`${t.code}: ${t.derived.ambiguous}`); continue; }
+      const inScope = new Set(scopeOf(t.slotRef, slots).map((sl) => sl.ref));
+      for (const m of written.matchAll(/\{([a-j]\.[^{}]+)\}/g)) {
+        if (!inScope.has(m[1])) said.push(`${t.code} references {${m[1]}}, which ${t.slotRef} does not depend on`);
+      }
+    }
+    if (said.length) {
+      found.push({ check: 'template', reason: `a rubric row cannot be rendered for this student's values: ${said.join(' | ')}` });
+    }
   }
 
   // A SLOT THAT PAYS TWICE FOR ONE READ, and only where the shape is exactly

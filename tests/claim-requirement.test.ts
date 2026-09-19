@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { deriveTemplate, renderClaim, type ScopeSlot } from '@/lib/grade/claim-template';
-import { questionText } from './helpers/claim-scope';
+import { deriveTemplate, questionText, renderClaim, type ScopeSlot } from '@/lib/grade/claim-template';
 
 /**
  * ONLY THE STUDENT'S VALUE IS A REFERENCE. A requirement the question fixes is

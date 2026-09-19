@@ -31,6 +31,7 @@ import { paramsDocFor } from '@/lib/visuals';
 import { figureGivesAnswer } from '@/lib/targets/construct';
 import type { ModuleNumber } from '@/lib/types';
 import { isEntryPoint } from './entry';
+import { withTemplates } from '@/lib/grade/claim-template';
 
 const ArgsZ = z.object({
   count: z.coerce.number().int().min(1).max(50),
@@ -490,7 +491,10 @@ async function main() {
       }
 
       const created = await Question.create({
-        ...draft,
+        // Every rubric row carries its claim, derived from the criterion and the
+        // slot graph. The approval gate refuses a row without one, so a draft
+        // that reaches review already has them (ROUND_5 Task 1).
+        ...(withTemplates(draft as never) as object),
         status: 'draft',
         gen_meta: {
           model: MODEL_ID,

@@ -15,6 +15,16 @@ export interface ScopeSlot {
   depends_on?: string[];
 }
 
+/** A question as the deriver reads it: everything it states, and its slot graph. */
+export interface Authored {
+  stem: string;
+  stimulus?: string;
+  parts: { label: string; prompt: string; statement?: string; slots: { label: string; answer?: string; prompt?: string; depends_on?: string[] }[] }[];
+  visual?: { params?: unknown };
+  stimulus_table?: unknown;
+  rubric?: { code: string; criterion: string; slot_ref: string; template?: string }[];
+}
+
 export interface Derived {
   template: string;
   refs: string[];
@@ -53,6 +63,62 @@ export function scopeOf(slotRef: string, slots: Map<string, ScopeSlot>): ScopeSl
   };
   visit(slotRef);
   return out;
+}
+
+/**
+ * EVERYTHING THE QUESTION STATES, and the cloze statement is part of that. It
+ * was missing once, so a requirement written only in a statement — "the
+ * required $55\%$" — was invisible as a CONSTANT and a criterion's 55 looked
+ * like the student's answer alone. The ambiguity guard never fired, and nine
+ * rows across three questions templated a fixed requirement as a student value:
+ * a student whose part (b) read 67.3% was marked against "an amount equal to
+ * 67.3% satisfies the condition at least 67.3%", true of any number at all.
+ * Fixed 16 Sep; the statement is read here and nowhere else decides it.
+ */
+export function questionText(q: Authored): string {
+  return [
+    q.stem,
+    q.stimulus ?? '',
+    ...(q.parts ?? []).flatMap((p) => [p.prompt, p.statement ?? '', ...p.slots.map((s) => s.prompt ?? '')]),
+    JSON.stringify(q.visual?.params ?? ''),
+    JSON.stringify(q.stimulus_table ?? ''),
+  ].join(' ');
+}
+
+/** The slot graph a row's scope is walked over. */
+export function slotsOf(q: Authored): Map<string, ScopeSlot> {
+  return new Map(
+    (q.parts ?? []).flatMap((p) =>
+      p.slots.map((s) => [`${p.label}.${s.label}`, { ref: `${p.label}.${s.label}`, answer: s.answer ?? '', depends_on: s.depends_on }] as const),
+    ),
+  );
+}
+
+/**
+ * EVERY ROW'S CLAIM, derived once. The pipeline writes these onto the draft and
+ * the gate derives them again to check what was written: one function, so a
+ * template that passes the gate is the template the deriver would produce, and
+ * an author cannot hand-write a reference the scope does not allow.
+ */
+export function templatesFor(q: Authored): { code: string; slotRef: string; derived: Derived }[] {
+  const slots = slotsOf(q);
+  const text = questionText(q);
+  return (q.rubric ?? []).map((r) => ({
+    code: r.code,
+    slotRef: r.slot_ref,
+    derived: deriveTemplate({ criterion: r.criterion, slotRef: r.slot_ref, slots, questionText: text }),
+  }));
+}
+
+/**
+ * The draft with every rubric row's template written on it. Both write paths
+ * call this — generation and the operator's edit — so the gate that follows
+ * checks a template the deriver produced rather than one a model invented.
+ */
+export function withTemplates<T extends Authored>(q: T): T {
+  if (!q.rubric?.length) return q;
+  const derived = new Map(templatesFor(q).map((t) => [t.code, t.derived]));
+  return { ...q, rubric: q.rubric.map((r) => ({ ...r, template: derived.get(r.code)?.template ?? r.criterion })) };
 }
 
 export function deriveTemplate(args: {
@@ -124,11 +190,20 @@ function bare(value: string, after: string): string {
   return v;
 }
 
-/** Rows as the marker should see them: the claim rendered, the criterion kept for the record. */
-export function claimsFor<R extends { criterion: string; template?: string }>(
+/**
+ * Rows as the marker should see them: the claim rendered, the criterion kept
+ * for the record.
+ *
+ * A TEMPLATE IS REQUIRED, and asking for it in the type is the point. This
+ * read `r.template ?? r.criterion`, so a row without one was marked against
+ * the author's literals — "CAO 47.5" shown to a student who answered 45 — and
+ * nothing anywhere said so. The approval gate refuses such a row now, which is
+ * where it can be fixed; here the fallback simply cannot be written.
+ */
+export function claimsFor<R extends { criterion: string; template: string }>(
   rows: R[],
   confirmed: Record<string, string>,
   canonical: Record<string, string>,
 ): (R & { claim: string })[] {
-  return rows.map((r) => ({ ...r, claim: renderClaim(r.template ?? r.criterion, confirmed, canonical) }));
+  return rows.map((r) => ({ ...r, claim: renderClaim(r.template, confirmed, canonical) }));
 }

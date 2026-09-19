@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { withTemplates } from '@/lib/grade/claim-template';
 
 const STUDENT = new mongoose.Types.ObjectId();
 vi.mock('@/lib/auth/session', () => ({
@@ -88,7 +89,7 @@ async function question(construct = false) {
     misconceptions: [],
     status: 'approved',
   };
-  const { insertedId } = await db.Question.collection.insertOne(doc);
+  const { insertedId } = await db.Question.collection.insertOne(withTemplates(doc as never) as never);
   return insertedId;
 }
 

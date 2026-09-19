@@ -18,6 +18,7 @@
 //
 // Run: pnpm tsx scripts/eval-marker.ts
 import 'dotenv/config';
+import type { RubricItem } from '@/lib/types';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { goldenSetExists, loadGoldenSet } from './golden-set';
@@ -280,10 +281,14 @@ async function main() {
             (q.parts ?? []).flatMap((p: any) => (p.slots ?? []).map((s: any) => [`${p.label}.${s.label}`, s.answer ?? ''])),
           );
           const pageLines = e.transcript.map((l) => l.text);
+          // The eval replays golden cases recorded before templates existed, so
+          // here the criterion stands in for a missing one. The PRODUCT may not
+          // do that — the gate refuses such a row — but refusing history would
+          // only shrink the eval set for a reason the eval is not about.
           decisions = applyFormatDependency(
             requireGrounding(
               requireEvidence((await markMethod({
-                rows: claimsFor(rows, e.studentAnswers, canonical),
+                rows: claimsFor((rows as RubricItem[]).map((r) => ({ ...r, template: r.template ?? r.criterion })), e.studentAnswers, canonical),
                 workingByPart,
                 typedAnswers: e.studentAnswers,
                 workedSolution: q.worked_solution,

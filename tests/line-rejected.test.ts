@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { withTemplates } from '@/lib/grade/claim-template';
 
 const STUDENT = new mongoose.Types.ObjectId();
 vi.mock('@/lib/auth/session', () => ({
@@ -46,7 +47,7 @@ let rejectLine: typeof import('@/app/study/session/[id]/reject-line').rejectLine
 const IMAGE = { contentType: 'image/jpeg', data: Buffer.from('page').toString('base64') };
 
 async function cocoa() {
-  const { insertedId } = await db.Question.collection.insertOne({
+  const { insertedId } = await db.Question.collection.insertOne(withTemplates({
     kind: 'structured',
     stem: 'Use the table to answer the questions below.',
     stimulus: 'A cocoa farmer sorts a harvest of 1 200 000 cocoa beans.',
@@ -63,7 +64,7 @@ async function cocoa() {
     worked_solution: '1 200 000 - 144 000 = 1 056 000',
     misconceptions: [],
     status: 'approved',
-  });
+  }) as never);
   const s = await db.PracticeSession.create({ student_id: STUDENT, question_ids: [insertedId], mode: 'adaptive', started_at: new Date() });
   return String(s._id);
 }

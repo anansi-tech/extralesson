@@ -94,8 +94,12 @@ describe('renderClaim', () => {
     expect(renderClaim('an angle of {a.i}°', { 'a.i': '45°' }, {})).toBe('an angle of 45°');
   });
 
-  it('is the criterion itself when a row has no template', () => {
-    expect(claimsFor([{ criterion: 'Adds the frequencies' }], {}, {})[0].claim).toBe('Adds the frequencies');
+  // The fallback this replaced — claimsFor reading `template ?? criterion` —
+  // marked a row against the author's literals and said nothing. A row with no
+  // template is refused by the approval gate now, and the type here no longer
+  // admits one, so the substitution cannot be written by accident.
+  it('renders from the template, which every row must carry', () => {
+    expect(claimsFor([{ criterion: 'Adds {a.i}', template: 'Adds {a.i}' }], { 'a.i': '7' }, {})[0].claim).toBe('Adds 7');
   });
 });
 

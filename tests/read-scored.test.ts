@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { withTemplates } from '@/lib/grade/claim-template';
 
 // ROUND_6 Task 1, as behaviour: every surface reads lib/study/outcome.ts, so
 // the audit's cases are asserted on the loaders the pages call, not on source.
@@ -42,7 +43,7 @@ const IMAGE = { contentType: 'image/jpeg', data: Buffer.from('not really a jpeg'
 
 // Three marks the grader settles, one the page has to earn.
 async function question() {
-  const { insertedId } = await db.Question.collection.insertOne({
+  const { insertedId } = await db.Question.collection.insertOne(withTemplates({
     kind: 'structured',
     stem: 'Three parts.',
     marks: 4,
@@ -61,7 +62,7 @@ async function question() {
     worked_solution: 'x = 5',
     misconceptions: [],
     status: 'approved',
-  });
+  }) as never);
   return insertedId;
 }
 

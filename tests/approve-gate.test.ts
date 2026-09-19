@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { approvalGate } from '@/lib/generation/approve-gate';
+import { withTemplates } from '@/lib/grade/claim-template';
 import type { QuestionDraft } from '@/lib/validation/question';
 import type { SolveOutcome } from '@/lib/generation/solve';
 
@@ -7,7 +8,7 @@ import type { SolveOutcome } from '@/lib/generation/solve';
 // question must pass visual verify AND an independent re-solve before
 // approval. The solve pass is stubbed; visual verify runs for real.
 
-const baseDraft: QuestionDraft = {
+const baseDraft: QuestionDraft = withTemplates({
   kind: 'structured',
   objective_ids: ['M1.5.10'],
   module: 1,
@@ -33,7 +34,7 @@ const baseDraft: QuestionDraft = {
   final_answer: '40°',
   worked_solution: '$180 - 60 - 80 = 40°$.',
   misconceptions: [],
-} as unknown as QuestionDraft;
+} as unknown as QuestionDraft) as QuestionDraft;
 
 const agree = async (): Promise<SolveOutcome> => ({
   notes: [],
@@ -94,5 +95,67 @@ describe('approvalGate — Edit→Approve re-runs the gates', () => {
     } as unknown as QuestionDraft;
     expect((await approvalGate(prose, agree)).ok).toBe(true);
     expect((await approvalGate(prose, disagree)).ok).toBe(false);
+  });
+});
+
+/**
+ * EVERY ROW IS A CLAIM ABOUT THE PAGE (ROUND_5 Task 1). The marker is shown it
+ * in the student's own numbers, so a row that cannot be rendered that way is
+ * refused here — where it can be fixed — rather than marked against the
+ * author's literals, which is what claimsFor's fallback did quietly.
+ */
+describe('the gate refuses a rubric row that cannot be claimed', () => {
+  const prose = (over: Partial<QuestionDraft>): QuestionDraft =>
+    ({ ...baseDraft, representation: 'prose', visual: undefined, ...over }) as unknown as QuestionDraft;
+
+  it('refuses a row with no template at all', async () => {
+    const bare = prose({ rubric: [{ code: 'AK1', profile: 'AK', criterion: 'Angle sum of a triangle', mark_value: 2, slot_ref: 'a.i', part_label: 'a' }] } as never);
+    const res = await approvalGate(bare, agree);
+    expect(res.ok).toBe(false);
+    expect(res.failed).toContain('template');
+    expect(res.reason).toContain('AK1 has no template');
+  });
+
+  it('refuses a reference to a slot the row does not depend on', async () => {
+    const reaching = prose({
+      rubric: [{ code: 'AK1', profile: 'AK', criterion: 'Angle sum of a triangle', mark_value: 2, slot_ref: 'a.i', part_label: 'a', template: 'Adds {b.i} to the sum' }],
+    } as never);
+    const res = await approvalGate(reaching, agree);
+    expect(res.ok).toBe(false);
+    expect(res.reason).toContain('{b.i}, which a.i does not depend on');
+  });
+
+  /**
+   * THE AMBIGUITY RULE READS part.statement, fixed 16 Sep. A requirement
+   * written only in a cloze was invisible as a constant, so a criterion's 55
+   * looked like the student's answer alone: nine rows across three questions
+   * templated a question's own requirement as a student value, and a student
+   * whose part (b) read 67.3% was marked against "an amount equal to 67.3%
+   * satisfies the condition at least 67.3%" — true of any number at all.
+   */
+  it('refuses a literal that is both the question’s own requirement and a slot value', async () => {
+    const inStatement = prose({
+      stem: 'A factory checks a batch.',
+      parts: [{
+        label: 'a', prompt: 'Complete the statement.', marks: 2,
+        statement: 'The required proportion is $55\\%$. The batch reached {} and so {} the requirement.',
+        slots: [
+          { label: 'i', answer: '55\\%', response_mode: 'answer' },
+          { label: 'ii', answer: 'meets', response_mode: 'answer' },
+        ],
+      }],
+      rubric: [{ code: 'AK1', profile: 'AK', criterion: 'Reaches $55\\%$, the required proportion', mark_value: 2, slot_ref: 'a.i', part_label: 'a' }],
+    } as never);
+    const res = await approvalGate(withTemplates(inStatement as never) as QuestionDraft, agree);
+    expect(res.ok).toBe(false);
+    expect(res.failed).toContain('template');
+    expect(res.reason).toContain('is a question constant and the value of a.i');
+  });
+
+  it('passes once the templates are derived, and says nothing about an MCQ', async () => {
+    expect((await approvalGate(withTemplates(prose({}) as never) as QuestionDraft, agree)).failed).not.toContain('template');
+    // An MCQ carries exactly one part and no rubric, so it has no claims to make.
+    const mcq = { ...baseDraft, kind: 'mcq', representation: 'prose', visual: undefined, options: ['40°', '50°', '60°', '70°'], answer_key: 0, rubric: undefined } as unknown as QuestionDraft;
+    expect((await approvalGate(mcq, agree)).failed).not.toContain('template');
   });
 });
