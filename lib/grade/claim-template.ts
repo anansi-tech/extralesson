@@ -41,9 +41,17 @@ function valueOf(literal: string, tail: string): number[] {
   return /^\s*\\?%/.test(tail) ? [n / 100, n] : [n];
 }
 
+/**
+ * A SLOT'S VALUE, or nothing where it has no single one. A relation does not
+ * have one: parseNumeric read "$18x - 36 \ge 180$" as 180, so a part asking
+ * for an inequality took the value of the bound the STEM had given it, and
+ * every "form the inequality" row whose bound is stated in the question
+ * collided with its own answer. The answer there is the relation; 180 is the
+ * question's target, and the criterion quoting it is quoting the question.
+ */
 function canonicalValue(answer: string): number | null {
   const reading = readInputShape(answer);
-  if (isMultiValue(reading.shape)) return null;
+  if (isMultiValue(reading.shape) || reading.shape === 'inequality') return null;
   return parseNumeric(answer);
 }
 
@@ -74,14 +82,22 @@ export function scopeOf(slotRef: string, slots: Map<string, ScopeSlot>): ScopeSl
  * a student whose part (b) read 67.3% was marked against "an amount equal to
  * 67.3% satisfies the condition at least 67.3%", true of any number at all.
  * Fixed 16 Sep; the statement is read here and nowhere else decides it.
+ *
+ * WHAT IT DOES NOT READ is the figure. visual.params and stimulus_table were
+ * stringified in here, so every coordinate, bar height and table cell became a
+ * "constant a criterion might quote" — and four of the six questions this check
+ * refused were refused for that: a gradient of 2 on a graph through x = 2, a
+ * median of 2 against a bar of height 2, a duration of 10 minutes against a
+ * distance of 10 km. A figure is data the question DRAWS, not a number its
+ * criteria quote, and the collision has no units to tell it apart. The read-off
+ * check and the visual verifier read those fields as they always did; this is
+ * the ambiguity check's own view of the question.
  */
 export function questionText(q: Authored): string {
   return [
     q.stem,
     q.stimulus ?? '',
     ...(q.parts ?? []).flatMap((p) => [p.prompt, p.statement ?? '', ...p.slots.map((s) => s.prompt ?? '')]),
-    JSON.stringify(q.visual?.params ?? ''),
-    JSON.stringify(q.stimulus_table ?? ''),
   ].join(' ');
 }
 

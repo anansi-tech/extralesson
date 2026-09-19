@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { claimsFor, deriveTemplate, renderClaim, scopeOf, type ScopeSlot } from '@/lib/grade/claim-template';
+import { claimsFor, deriveTemplate, questionText, renderClaim, scopeOf, type ScopeSlot } from '@/lib/grade/claim-template';
 
 // ROUND_5 Task 1: a criterion becomes a claim by replacing every literal that
 // is a canonical value in scope with a reference. Constants stay; anything
@@ -67,6 +67,58 @@ describe('deriveTemplate', () => {
 
   it('walks depends_on transitively', () => {
     expect(scopeOf('c.ii', cocoa).map((s) => s.ref)).toEqual(['c.ii', 'b.i', 'a.i']);
+  });
+});
+
+/**
+ * WHAT COUNTS AS A QUESTION CONSTANT. Both of these refused real questions:
+ * four of six refusals were a figure's own numbers, and the fifth was an
+ * inequality reduced to the bound the stem had given it.
+ */
+describe('the constants a criterion can collide with', () => {
+  const drawn = {
+    stem: 'The graph shows the delivery charge.',
+    parts: [{ label: 'a', prompt: 'Calculate the gradient.', slots: [{ label: 'i', answer: '2' }] }],
+    visual: { params: { points: [{ x: 0, y: 5 }, { x: 2, y: 9 }], lines: [{ m: 2, c: 5 }] } },
+    stimulus_table: { rows: [['0', '$5'], ['2', '$9']] },
+  };
+
+  it('does not take a figure\u2019s coordinates, bar heights or table cells as constants', () => {
+    // A gradient of 2 on a graph that passes through x = 2 collided every time,
+    // and km collided with minutes: the figure has no units to tell them apart.
+    expect(questionText(drawn)).not.toContain('points');
+    expect(questionText(drawn)).not.toContain('rows');
+    const d = deriveTemplate({
+      criterion: 'CAO $2$',
+      slotRef: 'a.i',
+      slots: new Map([['a.i', { ref: 'a.i', answer: '2' }]]),
+      questionText: questionText(drawn),
+    });
+    expect(d.ambiguous).toBeUndefined();
+    expect(d.template).toBe('CAO ${a.i}$');
+  });
+
+  it('still reads the statement, the prompts and the stem', () => {
+    const text = questionText({
+      stem: 'A factory checks a batch.',
+      parts: [{ label: 'a', prompt: 'Complete.', statement: 'The required proportion is $55\\%$. {}', slots: [{ label: 'i', answer: '55\\%', prompt: 'the batch' }] }],
+    });
+    expect(text).toContain('55');
+    expect(text).toContain('the batch');
+  });
+
+  it('gives a relation no value of its own, so its bound stays the question\u2019s', () => {
+    // "$18x - 36 \\ge 180$" read as 180, so forming the inequality collided
+    // with the target the stem had already stated.
+    const d = deriveTemplate({
+      criterion: 'Forms $18x - 36 \\ge 180$',
+      slotRef: 'a.i',
+      slots: new Map([['a.i', { ref: 'a.i', answer: '$18x - 36 \\ge 180$' }]]),
+      questionText: 'He wants his earnings to be at least \\$180.',
+    });
+    expect(d.ambiguous).toBeUndefined();
+    expect(d.refs).toEqual([]);
+    expect(d.template).toBe('Forms $18x - 36 \\ge 180$');
   });
 });
 
